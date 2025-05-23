@@ -112,7 +112,7 @@
     "@sentry/nextjs": "^7.118.0",
     "lighthouse": "^11.7.1",
     "artillery": "^2.0.15",
-    "next-bundle-analyzer": "^0.7.0",
+    "@next/bundle-analyzer": "^14.1.0",
     "node-cron": "^3.0.3"
   },
   "lint-staged": {
