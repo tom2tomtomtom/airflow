@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
-import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
+import { env } from '@/lib/env';
 
 // Input validation schema
 const loginSchema = z.object({
@@ -77,6 +77,7 @@ export default async function handler(
           id: authData.user.id,
           email: authData.user.email!,
           full_name: authData.user.user_metadata?.full_name || email.split('@')[0],
+          role: 'user',
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })
@@ -94,30 +95,46 @@ export default async function handler(
       profile = newProfile;
     }
 
-    // Create JWT token
-    if (!process.env.JWT_SECRET) {
-      console.error('JWT_SECRET not configured');
-      return res.status(500).json({
-        success: false,
-        message: 'Server configuration error'
-      });
-    }
-
+    // Create JWT token with proper expiry from env
     const tokenPayload = {
       sub: authData.user.id,
       email: authData.user.email,
       role: profile?.role || 'user',
       iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60), // 24 hours
     };
 
-    const token = jwt.sign(tokenPayload, process.env.JWT_SECRET);
+    // Parse expiry duration (e.g., "7d" -> 7 days)
+    const expiryMatch = env.JWT_EXPIRY.match(/(\d+)([dhms])/);
+    let expirySeconds = 86400; // Default 24 hours
+    
+    if (expiryMatch) {
+      const [, num, unit] = expiryMatch;
+      const multipliers: Record<string, number> = {
+        s: 1,
+        m: 60,
+        h: 3600,
+        d: 86400
+      };
+      expirySeconds = parseInt(num) * (multipliers[unit] || 86400);
+    }
+
+    const token = jwt.sign(
+      { ...tokenPayload, exp: Math.floor(Date.now() / 1000) + expirySeconds },
+      env.JWT_SECRET,
+      { algorithm: 'HS256' }
+    );
 
     // Set secure HTTP-only cookie
-    const isProduction = process.env.NODE_ENV === 'production';
-    res.setHeader('Set-Cookie', [
-      `auth_token=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${24 * 60 * 60}${isProduction ? '; Secure' : ''}`
-    ]);
+    const cookieOptions = [
+      `auth_token=${token}`,
+      'Path=/',
+      'HttpOnly',
+      'SameSite=Lax',
+      `Max-Age=${expirySeconds}`,
+      env.NODE_ENV === 'production' ? 'Secure' : ''
+    ].filter(Boolean).join('; ');
+
+    res.setHeader('Set-Cookie', cookieOptions);
 
     // Return success response
     return res.status(200).json({
@@ -125,7 +142,7 @@ export default async function handler(
       user: {
         id: authData.user.id,
         email: authData.user.email!,
-        name: profile?.full_name || email.split('@')[0],
+        name: profile?.full_name || profile?.first_name || email.split('@')[0],
         role: profile?.role || 'user',
       },
       token, // Also return token for client-side storage if needed
