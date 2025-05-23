@@ -39,7 +39,12 @@ AIrWAVE is a comprehensive platform that streamlines the creation, management, a
    NEXT_PUBLIC_API_URL=your_api_url
    OPENAI_API_KEY=your_openai_key
    ELEVENLABS_API_KEY=your_elevenlabs_key
+   SUPABASE_URL=your_supabase_url
+   SUPABASE_ANON_KEY=your_supabase_anon_key
+   SUPABASE_SERVICE_KEY=your_supabase_service_key
    ```
+
+   `SUPABASE_SERVICE_KEY` is only required when running maintenance scripts such as `create-test-users.js`.
 
 4. Start the development server:
    ```

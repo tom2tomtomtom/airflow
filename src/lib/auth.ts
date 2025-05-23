@@ -2,22 +2,38 @@ import { supabase } from './supabase';
 import { User, AuthTokens } from '@/types/auth';
 import axios from 'axios';
 
+// API base configuration
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
+
+// Create axios instance with default config
+const authAxios = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 10000,
+});
+
 // Sign in with email and password
-export async function signIn(email: string, password: string): Promise<{ user: User; tokens: AuthTokens }> {
+export async function signIn(email: string, password: string): Promise<{ user: User; token: string }> {
   try {
-    const response = await axios.post('/api/auth/login', { email, password });
+    const response = await authAxios.post('/api/auth/login', { 
+      email, 
+      password 
+    });
 
     if (!response.data.success) {
-      throw new Error(response.data.error?.message || 'Login failed');
+      throw new Error(response.data.message || 'Login failed');
     }
 
-    return {
-      user: response.data.user,
-      tokens: response.data.tokens
-    };
+    const { user, token } = response.data;
+
+    // Store user info in localStorage (token is in httpOnly cookie)
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('airwave_user', JSON.stringify(user));
+    }
+
+    return { user, token };
   } catch (error: any) {
     console.error('Sign in error:', error);
-    throw new Error(error.response?.data?.error?.message || error.message || 'Login failed');
+    throw new Error(error.response?.data?.message || error.message || 'Login failed');
   }
 }
 
@@ -27,82 +43,66 @@ export async function signUp(
   password: string,
   firstName?: string,
   lastName?: string
-): Promise<{ user: any; session: any }> {
+): Promise<{ user: User; token?: string; emailConfirmationRequired?: boolean }> {
   try {
-    // Sign up directly with Supabase
-    const { data, error } = await supabase.auth.signUp({
+    const response = await authAxios.post('/api/auth/signup', {
       email,
       password,
-      options: {
-        data: {
-          first_name: firstName,
-          last_name: lastName
-        }
-      }
+      firstName,
+      lastName,
     });
 
-    if (error) {
-      throw error;
+    if (!response.data.success) {
+      throw new Error(response.data.message || 'Sign up failed');
     }
 
-    return data;
+    const { user, token } = response.data;
+
+    // Store user info if login was successful (email confirmed)
+    if (token && typeof window !== 'undefined') {
+      localStorage.setItem('airwave_user', JSON.stringify(user));
+    }
+
+    return { 
+      user, 
+      token,
+      emailConfirmationRequired: !user.emailConfirmed 
+    };
   } catch (error: any) {
     console.error('Sign up error:', error);
-    throw new Error(error.message || 'Sign up failed');
+    throw new Error(error.response?.data?.message || error.message || 'Sign up failed');
   }
 }
 
 // Sign out
 export async function signOut(): Promise<void> {
   try {
-    // Get the current access token
-    const accessToken = localStorage.getItem('accessToken');
-
-    if (accessToken) {
-      // Call the logout API
-      await axios.post('/api/auth/logout', {}, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      });
-    }
-
-    // Clear local storage
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
-
-    // Sign out from Supabase
-    await supabase.auth.signOut();
+    // Call the logout API
+    await authAxios.post('/api/auth/logout');
   } catch (error) {
-    console.error('Sign out error:', error);
-    // Still clear local storage even if the API call fails
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
-  }
-}
-
-// Refresh token
-export async function refreshToken(refreshToken: string): Promise<AuthTokens> {
-  try {
-    const response = await axios.post('/api/auth/refresh', { refreshToken });
-
-    if (!response.data.success) {
-      throw new Error(response.data.error?.message || 'Token refresh failed');
+    console.error('Sign out API error:', error);
+    // Continue with cleanup even if API call fails
+  } finally {
+    // Clear local storage
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('airwave_user');
     }
-
-    return response.data.tokens;
-  } catch (error: any) {
-    console.error('Token refresh error:', error);
-    throw new Error(error.response?.data?.error?.message || error.message || 'Token refresh failed');
+    
+    // Sign out from Supabase client
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Supabase signout error:', error);
+    }
   }
 }
 
 // Get current user from local storage
 export function getCurrentUser(): User | null {
   try {
-    const userJson = localStorage.getItem('user');
+    if (typeof window === 'undefined') return null;
+    
+    const userJson = localStorage.getItem('airwave_user');
     if (!userJson) return null;
 
     return JSON.parse(userJson) as User;
@@ -114,90 +114,104 @@ export function getCurrentUser(): User | null {
 
 // Set current user in local storage
 export function setCurrentUser(user: User): void {
-  localStorage.setItem('user', JSON.stringify(user));
-}
-
-// Set tokens in local storage
-export function setTokens(tokens: AuthTokens): void {
-  localStorage.setItem('accessToken', tokens.accessToken);
-  localStorage.setItem('refreshToken', tokens.refreshToken);
-}
-
-// Get access token from local storage
-export function getAccessToken(): string | null {
-  return localStorage.getItem('accessToken');
-}
-
-// Get refresh token from local storage
-export function getRefreshToken(): string | null {
-  return localStorage.getItem('refreshToken');
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('airwave_user', JSON.stringify(user));
+  }
 }
 
 // Check if user is authenticated
 export function isAuthenticated(): boolean {
-  return !!getAccessToken() && !!getCurrentUser();
+  return !!getCurrentUser();
 }
 
-// Create axios instance with authentication
-export const authAxios = axios.create();
-
-// Add request interceptor to add authorization header and CSRF token
-authAxios.interceptors.request.use(
-  async (config) => {
-    const accessToken = getAccessToken();
-
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
-    }
-
-    // Add CSRF token if available
-    const csrfToken = localStorage.getItem('csrf_token');
-    if (csrfToken) {
-      config.headers['X-CSRF-Token'] = csrfToken;
-    }
-
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// Add response interceptor to handle token refresh
-authAxios.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-
-    // If error is 401 and we haven't tried to refresh the token yet
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-
-      try {
-        const refreshTokenValue = getRefreshToken();
-
-        if (!refreshTokenValue) {
-          // No refresh token, sign out
-          await signOut();
-          return Promise.reject(error);
-        }
-
-        // Try to refresh the token
-        const tokens = await refreshToken(refreshTokenValue);
-
-        // Update tokens in local storage
-        setTokens(tokens);
-
-        // Update the authorization header
-        originalRequest.headers.Authorization = `Bearer ${tokens.accessToken}`;
-
-        // Retry the original request
-        return authAxios(originalRequest);
-      } catch (refreshError) {
-        // Token refresh failed, sign out
-        await signOut();
-        return Promise.reject(refreshError);
-      }
-    }
-
-    return Promise.reject(error);
+// Refresh token (handled by httpOnly cookies, so this is mostly a placeholder)
+export async function refreshToken(): Promise<boolean> {
+  try {
+    // With httpOnly cookies, token refresh is handled automatically by the browser
+    // We can make a request to a protected endpoint to verify if the token is still valid
+    const response = await authAxios.get('/api/auth/me');
+    return response.data.success;
+  } catch (error) {
+    console.error('Token refresh check failed:', error);
+    return false;
   }
-);
+}
+
+// Request password reset
+export async function requestPasswordReset(email: string): Promise<void> {
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+
+    if (error) {
+      throw error;
+    }
+  } catch (error: any) {
+    console.error('Password reset request error:', error);
+    throw new Error(error.message || 'Failed to send password reset email');
+  }
+}
+
+// Reset password with token
+export async function resetPassword(token: string, newPassword: string): Promise<void> {
+  try {
+    const { error } = await supabase.auth.updateUser({ 
+      password: newPassword 
+    });
+
+    if (error) {
+      throw error;
+    }
+  } catch (error: any) {
+    console.error('Password reset error:', error);
+    throw new Error(error.message || 'Failed to reset password');
+  }
+}
+
+// Create authenticated axios instance
+export const createAuthenticatedAxios = () => {
+  const instance = axios.create({
+    baseURL: API_BASE_URL,
+    timeout: 10000,
+  });
+
+  // Request interceptor to add CSRF protection
+  instance.interceptors.request.use(
+    async (config) => {
+      // CSRF token handling if needed
+      const csrfToken = typeof window !== 'undefined' 
+        ? localStorage.getItem('csrf_token') 
+        : null;
+      
+      if (csrfToken) {
+        config.headers['X-CSRF-Token'] = csrfToken;
+      }
+
+      return config;
+    },
+    (error) => Promise.reject(error)
+  );
+
+  // Response interceptor to handle auth errors
+  instance.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      if (error.response?.status === 401) {
+        // Token expired or invalid, sign out user
+        await signOut();
+        
+        // Redirect to login page
+        if (typeof window !== 'undefined') {
+          window.location.href = '/login';
+        }
+      }
+      return Promise.reject(error);
+    }
+  );
+
+  return instance;
+};
+
+// Default authenticated axios instance
+export const authAPI = createAuthenticatedAxios();
