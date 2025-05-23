@@ -26,6 +26,7 @@ import {
   FormControl,
   InputLabel,
   Select,
+  SelectChangeEvent,
   CircularProgress,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -252,7 +253,7 @@ const TemplatesNew: React.FC = () => {
     setSearchQuery(e.target.value);
   };
   
-  const handlePlatformFilterChange = (e: React.ChangeEvent<{ value: unknown }>) => {
+  const handlePlatformFilterChange = (e: SelectChangeEvent) => {
     setPlatformFilter(e.target.value as string);
   };
   
@@ -336,7 +337,7 @@ const TemplatesNew: React.FC = () => {
                   id="platform-filter"
                   value={platformFilter}
                   label="Platform"
-                  onChange={e => setPlatformFilter(e.target.value)}
+                  onChange={handlePlatformFilterChange}
                 >
                   <MenuItem value="All">All Platforms</MenuItem>
                   <MenuItem value="Instagram">Instagram</MenuItem>
