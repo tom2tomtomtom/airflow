@@ -1,57 +1,62 @@
-# Node
+# Dependencies
 node_modules/
 
-# Next.js
+# Production build
 .next/
-
-# Build output
-dist/
 out/
+build/
+
+# Development
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# OS
-.DS_Store
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
 
-# Env
-.env
-.env.*
+# Coverage directory used by tools like istanbul
+coverage/
 
-# Vite
-.vite/
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
 
 # IDE
 .vscode/
 .idea/
-
-# Misc
-*.local
-*.cache
-*.log
-
-# Mac
-*.DS_Store
-
-# Test coverage
-coverage/
-
-# Others
 *.swp
 *.swo
+*~
 
-# Ignore temp
-*.bak
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+temp.txt
 *.tmp
-*.temp
 
-# Ignore Supabase generated
-.supabase/
+# Fix scripts (should be removed after use)
+fix_*.js
 
-# TypeScript build info
-tsconfig.tsbuildinfo
+# Test files
+test.php
 
 # Husky
 .husky/_
+
+# Vercel
+.vercel
+
+# Supabase
+.supabase/
