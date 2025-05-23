@@ -9,6 +9,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "export": "next export",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
@@ -113,7 +114,7 @@
     "lighthouse": "^11.7.1",
     "artillery": "^2.0.15",
     "@next/bundle-analyzer": "^14.1.0",
-    "node-cron": "^3.0.3"
+    "node-cron": "^3.0.3"  
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -128,5 +129,5 @@
     "*.{json,css,md}": [
       "prettier --write"
     ]
-  }
+  }  
 }
