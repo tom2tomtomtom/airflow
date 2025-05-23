@@ -1,43 +1,76 @@
 import { createClient } from '@supabase/supabase-js';
+import { env } from './env';
 
-// Validate environment variables at startup
-if (!process.env.SUPABASE_URL) {
-  throw new Error('SUPABASE_URL environment variable is required');
-}
-
-if (!process.env.SUPABASE_ANON_KEY) {
-  throw new Error('SUPABASE_ANON_KEY environment variable is required');
-}
-
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: true
+// Create Supabase client with validated environment variables
+export const supabase = createClient(
+  env.NEXT_PUBLIC_SUPABASE_URL,
+  env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  {
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true
+    },
+    global: {
+      headers: {
+        'x-application-name': 'airwave'
+      }
+    }
   }
-});
+);
 
-// Helper function to get user from token
+// Create service role client for server-side operations (when available)
+export const getServiceSupabase = () => {
+  if (!env.SUPABASE_SERVICE_KEY) {
+    throw new Error('Service role key not configured. This is required for server-side operations.');
+  }
+  
+  return createClient(
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.SUPABASE_SERVICE_KEY,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
+    }
+  );
+};
+
+// Helper function to get user from token with better error handling
 export async function getUserFromToken(token: string) {
+  if (!token) {
+    throw new Error('Token is required');
+  }
+
   try {
     const { data, error } = await supabase.auth.getUser(token);
     
-    if (error || !data.user) {
-      throw new Error('Invalid or expired token');
+    if (error) {
+      console.error('Supabase auth error:', error);
+      throw new Error(`Authentication failed: ${error.message}`);
+    }
+    
+    if (!data.user) {
+      throw new Error('No user found for provided token');
     }
     
     return data.user;
   } catch (error) {
     console.error('Error getting user from token:', error);
+    if (error instanceof Error) {
+      throw error;
+    }
     throw new Error('Failed to validate user token');
   }
 }
 
-// Helper function to get user profile
+// Helper function to get user profile with better error handling
 export async function getUserProfile(userId: string) {
+  if (!userId) {
+    throw new Error('User ID is required');
+  }
+
   try {
     const { data, error } = await supabase
       .from('profiles')
@@ -46,6 +79,10 @@ export async function getUserProfile(userId: string) {
       .single();
     
     if (error) {
+      // Handle case where profile doesn't exist
+      if (error.code === 'PGRST116') {
+        return null;
+      }
       throw new Error(`Failed to get user profile: ${error.message}`);
     }
     
@@ -56,8 +93,12 @@ export async function getUserProfile(userId: string) {
   }
 }
 
-// Helper function to get user's client access
+// Helper function to get user's client access with better error handling
 export async function getUserClients(userId: string) {
+  if (!userId) {
+    throw new Error('User ID is required');
+  }
+
   try {
     const { data, error } = await supabase
       .from('user_clients')
@@ -68,10 +109,21 @@ export async function getUserClients(userId: string) {
       throw new Error(`Failed to get user clients: ${error.message}`);
     }
     
-    return data.map(uc => uc.client_id);
+    return data?.map(uc => uc.client_id) || [];
   } catch (error) {
     console.error('Error getting user clients:', error);
     throw error;
+  }
+}
+
+// Helper to check if user has access to a specific client
+export async function userHasClientAccess(userId: string, clientId: string): Promise<boolean> {
+  try {
+    const userClients = await getUserClients(userId);
+    return userClients.includes(clientId);
+  } catch (error) {
+    console.error('Error checking client access:', error);
+    return false;
   }
 }
 
@@ -462,10 +514,6 @@ export interface Database {
           created_at?: string | null;
         };
       };
-
-
-
-
     };
     Views: {
       [_ in never]: never;
