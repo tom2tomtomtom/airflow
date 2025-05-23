@@ -27,6 +27,7 @@ import {
   Pinterest as PinterestIcon
 } from '@mui/icons-material';
 import { Template, DynamicField } from "@/types/models";
+
 const platformIcons: Record<string, React.ReactNode> = {
   Instagram: <InstagramIcon sx={{ color: '#E1306C' }} />,
   Facebook: <FacebookIcon sx={{ color: '#1877F2' }} />,
@@ -35,6 +36,7 @@ const platformIcons: Record<string, React.ReactNode> = {
   LinkedIn: <LinkedInIcon sx={{ color: '#0A66C2' }} />,
   Pinterest: <PinterestIcon sx={{ color: '#E60023' }} />,
   TikTok: <AspectRatioIcon sx={{ color: '#000000' }} />,
+};
 
 interface TemplateCardProps {
   template: Template;
