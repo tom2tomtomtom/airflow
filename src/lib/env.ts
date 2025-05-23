@@ -16,20 +16,21 @@ const envSchema = z.object({
   // AI Services
   OPENAI_API_KEY: z.string().startsWith('sk-').describe('OpenAI API key'),
   ELEVENLABS_API_KEY: z.string().min(1).describe('ElevenLabs API key'),
-  
+  RUNWAY_API_KEY: z.string().min(1).describe('RunwayML API key'),
+
   // Optional services
   CREATOMATE_API_KEY: z.string().min(1).optional().describe('Creatomate API key for video rendering'),
-  
+
   // Email configuration (optional)
   SMTP_HOST: z.string().optional(),
   SMTP_PORT: z.string().transform(Number).optional(),
   SMTP_USER: z.string().email().optional(),
   SMTP_PASS: z.string().optional(),
-  
+
   // Storage
   STORAGE_BUCKET: z.string().default('airwave-assets'),
   MAX_FILE_SIZE: z.string().transform(Number).default('52428800'), // 50MB default
-  
+
   // Environment
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
 });
