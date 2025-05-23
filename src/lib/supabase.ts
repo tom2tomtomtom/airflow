@@ -79,62 +79,367 @@ export async function getUserClients(userId: string) {
 export interface Database {
   public: {
     Tables: {
-      profiles: {
+      assets: {
         Row: {
           id: string;
-          email: string;
-          full_name: string | null;
-          avatar_url: string | null;
-          created_at: string;
-          updated_at: string;
+          name: string;
+          updated_at: string | null;
+          created_at: string | null;
+          created_by: string | null;
+          client_id: string | null;
+          tags: string[] | null;
+          metadata: Record<string, any> | null;
+          duration_seconds: number | null;
+          height: number | null;
+          width: number | null;
+          size_bytes: number | null;
+          mime_type: string | null;
+          thumbnail_url: string | null;
+          url: string;
+          type: string;
         };
         Insert: {
-          id: string;
-          email: string;
-          full_name?: string | null;
-          avatar_url?: string | null;
-          created_at?: string;
-          updated_at?: string;
+          id?: string;
+          name: string;
+          updated_at?: string | null;
+          created_at?: string | null;
+          created_by?: string | null;
+          client_id?: string | null;
+          tags?: string[] | null;
+          metadata?: Record<string, any> | null;
+          duration_seconds?: number | null;
+          height?: number | null;
+          width?: number | null;
+          size_bytes?: number | null;
+          mime_type?: string | null;
+          thumbnail_url?: string | null;
+          url: string;
+          type: string;
         };
         Update: {
           id?: string;
-          email?: string;
-          full_name?: string | null;
-          avatar_url?: string | null;
-          created_at?: string;
-          updated_at?: string;
+          name?: string;
+          updated_at?: string | null;
+          created_at?: string | null;
+          created_by?: string | null;
+          client_id?: string | null;
+          tags?: string[] | null;
+          metadata?: Record<string, any> | null;
+          duration_seconds?: number | null;
+          height?: number | null;
+          width?: number | null;
+          size_bytes?: number | null;
+          mime_type?: string | null;
+          thumbnail_url?: string | null;
+          url?: string;
+          type?: string;
         };
       };
       clients: {
         Row: {
           id: string;
           name: string;
+          industry: string | null;
           description: string | null;
-          primary_color: string;
-          secondary_color: string;
           logo_url: string | null;
-          created_at: string;
-          updated_at: string;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          industry?: string | null;
+          description?: string | null;
+          logo_url?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          industry?: string | null;
+          description?: string | null;
+          logo_url?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+      };
+      copy_assets: {
+        Row: {
+          id: string;
+          metadata: Record<string, any> | null;
+          client_id: string | null;
+          tags: string[] | null;
+          created_by: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+          content: string | null;
+          type: string | null;
+        };
+        Insert: {
+          id?: string;
+          metadata?: Record<string, any> | null;
+          client_id?: string | null;
+          tags?: string[] | null;
+          created_by?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+          content?: string | null;
+          type?: string | null;
+        };
+        Update: {
+          id?: string;
+          metadata?: Record<string, any> | null;
+          client_id?: string | null;
+          tags?: string[] | null;
+          created_by?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+          content?: string | null;
+          type?: string | null;
+        };
+      };
+      copy_texts: {
+        Row: {
+          id: string;
+          type: string;
+          content: string;
+          metadata: Record<string, any> | null;
+          tags: string[] | null;
+          client_id: string | null;
+          created_by: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          type: string;
+          content: string;
+          metadata?: Record<string, any> | null;
+          tags?: string[] | null;
+          client_id?: string | null;
+          created_by?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          type?: string;
+          content?: string;
+          metadata?: Record<string, any> | null;
+          tags?: string[] | null;
+          client_id?: string | null;
+          created_by?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+      };
+      executions: {
+        Row: {
+          id: string;
+          name: string;
+          description: string | null;
+          status: string;
+          matrix_id: string | null;
+          output_url: string | null;
+          metadata: Record<string, any> | null;
+          client_id: string | null;
+          created_by: string | null;
+          approved_at: string | null;
+          approved_by: string | null;
+          created_at: string | null;
+          updated_at: string | null;
         };
         Insert: {
           id?: string;
           name: string;
           description?: string | null;
-          primary_color: string;
-          secondary_color: string;
-          logo_url?: string | null;
-          created_at?: string;
-          updated_at?: string;
+          status: string;
+          matrix_id?: string | null;
+          output_url?: string | null;
+          metadata?: Record<string, any> | null;
+          client_id?: string | null;
+          created_by?: string | null;
+          approved_at?: string | null;
+          approved_by?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
         };
         Update: {
           id?: string;
           name?: string;
           description?: string | null;
-          primary_color?: string;
-          secondary_color?: string;
-          logo_url?: string | null;
-          created_at?: string;
-          updated_at?: string;
+          status?: string;
+          matrix_id?: string | null;
+          output_url?: string | null;
+          metadata?: Record<string, any> | null;
+          client_id?: string | null;
+          created_by?: string | null;
+          approved_at?: string | null;
+          approved_by?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+      };
+      matrices: {
+        Row: {
+          id: string;
+          name: string;
+          description: string | null;
+          structure: Record<string, any>;
+          template_id: string | null;
+          client_id: string | null;
+          created_by: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          description?: string | null;
+          structure: Record<string, any>;
+          template_id?: string | null;
+          client_id?: string | null;
+          created_by?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          description?: string | null;
+          structure?: Record<string, any>;
+          template_id?: string | null;
+          client_id?: string | null;
+          created_by?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+      };
+      profiles: {
+        Row: {
+          id: string;
+          first_name: string | null;
+          last_name: string | null;
+          avatar_url: string | null;
+          role: string;
+          permissions: Record<string, any> | null;
+          preferences: Record<string, any> | null;
+          metadata: Record<string, any> | null;
+          tenant_id: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          first_name?: string | null;
+          last_name?: string | null;
+          avatar_url?: string | null;
+          role: string;
+          permissions?: Record<string, any> | null;
+          preferences?: Record<string, any> | null;
+          metadata?: Record<string, any> | null;
+          tenant_id?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          first_name?: string | null;
+          last_name?: string | null;
+          avatar_url?: string | null;
+          role?: string;
+          permissions?: Record<string, any> | null;
+          preferences?: Record<string, any> | null;
+          metadata?: Record<string, any> | null;
+          tenant_id?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+      };
+      strategies: {
+        Row: {
+          id: string;
+          name: string;
+          description: string | null;
+          target_audience: string | null;
+          goals: Record<string, any> | null;
+          key_messages: Record<string, any> | null;
+          created_by: string | null;
+          client_id: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          description?: string | null;
+          target_audience?: string | null;
+          goals?: Record<string, any> | null;
+          key_messages?: Record<string, any> | null;
+          created_by?: string | null;
+          client_id?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          description?: string | null;
+          target_audience?: string | null;
+          goals?: Record<string, any> | null;
+          key_messages?: Record<string, any> | null;
+          created_by?: string | null;
+          client_id?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+      };
+      templates: {
+        Row: {
+          id: string;
+          name: string;
+          aspect_ratio: string;
+          platform: string;
+          description: string | null;
+          height: number;
+          width: number;
+          structure: Record<string, any>;
+          thumbnail_url: string | null;
+          created_by: string | null;
+          client_id: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          aspect_ratio: string;
+          platform: string;
+          description?: string | null;
+          height: number;
+          width: number;
+          structure: Record<string, any>;
+          thumbnail_url?: string | null;
+          created_by?: string | null;
+          client_id?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          aspect_ratio?: string;
+          platform?: string;
+          description?: string | null;
+          height?: number;
+          width?: number;
+          structure?: Record<string, any>;
+          thumbnail_url?: string | null;
+          created_by?: string | null;
+          client_id?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
         };
       };
       user_clients: {
@@ -142,24 +447,25 @@ export interface Database {
           id: string;
           user_id: string;
           client_id: string;
-          role: string;
-          created_at: string;
+          created_at: string | null;
         };
         Insert: {
           id?: string;
           user_id: string;
           client_id: string;
-          role?: string;
-          created_at?: string;
+          created_at?: string | null;
         };
         Update: {
           id?: string;
           user_id?: string;
           client_id?: string;
-          role?: string;
-          created_at?: string;
+          created_at?: string | null;
         };
       };
+
+
+
+
     };
     Views: {
       [_ in never]: never;

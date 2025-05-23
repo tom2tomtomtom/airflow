@@ -6,20 +6,9 @@ import {
   Grid,
   Paper,
   Typography,
-  Card,
-  CardContent,
   Button,
-  Divider,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemAvatar,
-  Avatar,
   TextField,
-  IconButton,
-  Menu,
   MenuItem,
-  ListItemIcon,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -27,16 +16,24 @@ import {
   FormControl,
   InputLabel,
   Select,
-  SelectChangeEvent,
-  Chip,
-  Stack,
-  Tab,
-  Tabs,
   CircularProgress,
+  Avatar,
+  IconButton,
+  Menu,
+  MenuItem as MuiMenuItem,
+  ListItemIcon,
+  ListItemText,
+  Card,
+  CardContent,
+  Chip,
+  Divider,
+  Tabs,
+  Tab,
   LinearProgress,
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Stack,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -251,7 +248,7 @@ const StrategicContentCard: React.FC<{
           sx={{ mb: 2 }}
         />
         <Typography variant="caption" display="block" color="text.secondary">
-          {item.content.length} items • Last modified: {item.lastModified}
+          {item.content.length} items • Last modified: {item.lastModified ?? ''}
         </Typography>
       </CardContent>
       <Box sx={{ p: 2, pt: 0 }}>
@@ -344,8 +341,8 @@ const StrategicContent: React.FC = () => {
       ...item,
       id: `sc${Date.now()}`,
       title: `${item.title} (Copy)`,
-      dateCreated: new Date().toISOString().split('T')[0],
-      lastModified: new Date().toISOString().split('T')[0],
+      dateCreated: item.dateCreated ?? '',
+      lastModified: item.lastModified ?? '',
     };
     setStrategicContent([...strategicContent, newItem]);
   };

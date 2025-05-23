@@ -6,20 +6,9 @@ import {
   Grid,
   Paper,
   Typography,
-  Card,
-  CardContent,
   Button,
-  Divider,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemAvatar,
-  Avatar,
   TextField,
-  IconButton,
-  Menu,
   MenuItem,
-  ListItemIcon,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -28,29 +17,12 @@ import {
   InputLabel,
   Select,
   SelectChangeEvent,
-  Chip,
-  Stack,
   Tab,
   Tabs,
   CircularProgress,
-  Collapse,
-  Switch,
-  FormControlLabel,
-  InputAdornment,
 } from '@mui/material';
 import {
   Add as AddIcon,
-  MoreVert as MoreIcon,
-  Delete as DeleteIcon,
-  Edit as EditIcon,
-  ContentCopy as DuplicateIcon,
-  Instagram as InstagramIcon,
-  Facebook as FacebookIcon,
-  Twitter as TwitterIcon,
-  YouTube as YouTubeIcon,
-  LinkedIn as LinkedInIcon,
-  Pinterest as PinterestIcon,
-  // TikTok as TikTokIcon,
   AspectRatio as AspectRatioIcon,
 } from '@mui/icons-material';
 import { useAuth } from '@/contexts/AuthContext';
@@ -434,16 +406,7 @@ const mockTemplates = [
   },
 ];
 
-// Platform icons mapping
-const platformIcons: Record<string, React.ReactNode> = {
-  Instagram: <InstagramIcon sx={{ color: '#E1306C' }} />,
-  Facebook: <FacebookIcon sx={{ color: '#1877F2' }} />,
-  Twitter: <TwitterIcon sx={{ color: '#1DA1F2' }} />,
-  YouTube: <YouTubeIcon sx={{ color: '#FF0000' }} />,
-  LinkedIn: <LinkedInIcon sx={{ color: '#0A66C2' }} />,
-  Pinterest: <PinterestIcon sx={{ color: '#E60023' }} />,
-  TikTok: <AspectRatioIcon sx={{ color: '#000000' }} />, // Using AspectRatioIcon as placeholder
-};
+
 
 // Interface for template data
 interface DynamicField {
@@ -491,13 +454,13 @@ const Templates: React.FC = () => {
   const [filteredTemplates, setFilteredTemplates] = useState<Template[]>(mockTemplates);
   const [searchQuery, setSearchQuery] = useState('');
   const [platformFilter, setPlatformFilter] = useState<string>('All');
-  const [industryFilter, setIndustryFilter] = useState<string>('All');
-  const [contentTypeFilter, setContentTypeFilter] = useState<string>('All');
-  const [aspectRatioFilter, setAspectRatioFilter] = useState<string>('All');
-  const [sortBy, setSortBy] = useState<string>('lastModified');
-  const [creatomateOnly, setCreatomateOnly] = useState<boolean>(false);
-  const [highPerformingOnly, setHighPerformingOnly] = useState<boolean>(false);
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState<boolean>(false);
+  const [industryFilter] = useState<string>('All');
+  const [contentTypeFilter] = useState<string>('All');
+  const [aspectRatioFilter] = useState<string>('All');
+  const [sortBy] = useState<string>('lastModified');
+  const [creatomateOnly] = useState<boolean>(false);
+  const [highPerformingOnly] = useState<boolean>(false);
+  const [showAdvancedFilters] = useState<boolean>(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [currentTemplate, setCurrentTemplate] = useState<Template | null>(null);
   const [tabValue, setTabValue] = useState(0);
@@ -606,21 +569,6 @@ const Templates: React.FC = () => {
     setPlatformFilter(event.target.value);
   };
 
-  const handleIndustryFilterChange = (event: SelectChangeEvent) => {
-    setIndustryFilter(event.target.value);
-  };
-
-  const handleContentTypeFilterChange = (event: SelectChangeEvent) => {
-    setContentTypeFilter(event.target.value);
-  };
-
-  const handleAspectRatioFilterChange = (event: SelectChangeEvent) => {
-    setAspectRatioFilter(event.target.value);
-  };
-
-  const handleSortByChange = (event: SelectChangeEvent) => {
-    setSortBy(event.target.value);
-  };
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
