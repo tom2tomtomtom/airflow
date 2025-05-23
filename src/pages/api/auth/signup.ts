@@ -1,4 +1,16 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { supabase } from '@/lib/supabase';
+import jwt from 'jsonwebtoken';
+import { z } from 'zod';
+
+// Input validation schema
+const signupSchema = z.object({
+  email: z.string().email('Invalid email format'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  name: z.string().min(1, 'Name is required').optional(),
+  firstName: z.string().min(1, 'First name is required').optional(),
+  lastName: z.string().min(1, 'Last name is required').optional(),
+});
 
 type ResponseData = {
   success: boolean;
@@ -7,45 +19,165 @@ type ResponseData = {
     id: string;
     email: string;
     name: string;
-    token?: string;
+    role: string;
+    emailConfirmed: boolean;
   };
+  token?: string;
 };
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ) {
   // Only allow POST requests
   if (req.method !== 'POST') {
-    return res.status(405).json({ success: false, message: 'Method not allowed' });
+    return res.status(405).json({ 
+      success: false, 
+      message: 'Method not allowed' 
+    });
   }
 
   try {
-    const { email, password, name } = req.body;
-
-    // Basic validation
-    if (!email || !password || !name) {
-      return res.status(400).json({ success: false, message: 'Email, password, and name are required' });
+    // Validate input
+    const validationResult = signupSchema.safeParse(req.body);
+    
+    if (!validationResult.success) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid input: ' + validationResult.error.errors.map(e => e.message).join(', ')
+      });
     }
 
-    // In a real app, you would create a user in the database
-    // For this demo, we'll just return a success response
+    const { email, password, name, firstName, lastName } = validationResult.data;
     
-    // Generate a mock user
-    const user = {
-      id: 'user_' + Math.random().toString(36).substring(2, 9),
-      email,
-      name,
-      token: 'mock_token_' + Math.random().toString(36).substring(2, 15),
-    };
+    // Determine full name
+    const fullName = name || 
+                    (firstName && lastName ? `${firstName} ${lastName}` : '') ||
+                    firstName || 
+                    lastName || 
+                    email.split('@')[0];
 
-    // Return success response with user data
-    return res.status(201).json({
-      success: true,
-      user,
+    // Create user with Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+          first_name: firstName,
+          last_name: lastName,
+        }
+      }
     });
+
+    if (authError) {
+      console.error('Supabase signup error:', authError);
+      
+      // Handle specific error cases
+      if (authError.message.includes('already registered')) {
+        return res.status(409).json({
+          success: false,
+          message: 'An account with this email already exists'
+        });
+      }
+      
+      if (authError.message.includes('Password')) {
+        return res.status(400).json({
+          success: false,
+          message: 'Password does not meet requirements'
+        });
+      }
+
+      return res.status(400).json({
+        success: false,
+        message: authError.message || 'Failed to create account'
+      });
+    }
+
+    if (!authData.user) {
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to create user account'
+      });
+    }
+
+    // Create user profile in our profiles table
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .insert({
+        id: authData.user.id,
+        email: authData.user.email!,
+        full_name: fullName,
+        role: 'user', // Default role
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
+
+    if (profileError) {
+      console.error('Profile creation error:', profileError);
+      // Don't fail the request if profile creation fails, as the user is already created
+      console.warn('User created but profile creation failed - user can still log in');
+    }
+
+    // If user is immediately confirmed (no email verification required)
+    if (authData.user.email_confirmed_at) {
+      // Create JWT token
+      if (!process.env.JWT_SECRET) {
+        console.error('JWT_SECRET not configured');
+        return res.status(500).json({
+          success: false,
+          message: 'Server configuration error'
+        });
+      }
+
+      const tokenPayload = {
+        sub: authData.user.id,
+        email: authData.user.email,
+        role: 'user',
+        iat: Math.floor(Date.now() / 1000),
+        exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60), // 24 hours
+      };
+
+      const token = jwt.sign(tokenPayload, process.env.JWT_SECRET);
+
+      // Set secure HTTP-only cookie
+      const isProduction = process.env.NODE_ENV === 'production';
+      res.setHeader('Set-Cookie', [
+        `auth_token=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${24 * 60 * 60}${isProduction ? '; Secure' : ''}`
+      ]);
+
+      return res.status(201).json({
+        success: true,
+        message: 'Account created successfully',
+        user: {
+          id: authData.user.id,
+          email: authData.user.email!,
+          name: fullName,
+          role: 'user',
+          emailConfirmed: true,
+        },
+        token,
+      });
+    } else {
+      // Email confirmation required
+      return res.status(201).json({
+        success: true,
+        message: 'Account created successfully. Please check your email to verify your account.',
+        user: {
+          id: authData.user.id,
+          email: authData.user.email!,
+          name: fullName,
+          role: 'user',
+          emailConfirmed: false,
+        },
+      });
+    }
+
   } catch (error) {
     console.error('Signup error:', error);
-    return res.status(500).json({ success: false, message: 'Internal server error' });
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Internal server error' 
+    });
   }
 }
