@@ -24,7 +24,31 @@
     "cleanup:repo": "rm -f fix_*.js temp.txt test.php tsconfig.tsbuildinfo && rm -f src/pages/strategic-content-fixed.tsx src/pages/matrix.tsx.new",
     "prepare": "husky install",
     "postinstall": "npm run cleanup:repo || true",
-    "prebuild": "npm run validate:env"
+    "prebuild": "npm run validate:env",
+    "monitor:setup": "node scripts/monitoring-setup.js",
+    "monitor:uptime": "node scripts/uptime-monitor.js",
+    "monitor:performance": "node -e \"const { performanceMonitor } = require('./src/lib/monitoring/performance'); performanceMonitor.logSummary();\"",
+    "health:check": "curl -f http://localhost:3000/api/health || exit 1",
+    "perf:test": "node scripts/performance-testing.js",
+    "perf:lighthouse": "node scripts/performance-testing.js --skip-load-test --skip-bundle",
+    "perf:load-test": "node scripts/performance-testing.js --skip-lighthouse --skip-bundle",
+    "perf:bundle": "node scripts/performance-testing.js --skip-lighthouse --skip-load-test",
+    "backup:full": "bash scripts/backup-recovery.sh full_backup",
+    "backup:database": "bash scripts/backup-recovery.sh backup_database",
+    "backup:files": "bash scripts/backup-recovery.sh backup_files",
+    "backup:config": "bash scripts/backup-recovery.sh backup_config",
+    "backup:list": "bash scripts/backup-recovery.sh list_backups",
+    "backup:cleanup": "bash scripts/backup-recovery.sh cleanup_old_backups",
+    "backup:health": "bash scripts/backup-recovery.sh health_check",
+    "backup:schedule": "bash scripts/backup-recovery.sh schedule_backups",
+    "smoke:test": "node scripts/smoke-tests.js",
+    "smoke:test:prod": "node scripts/smoke-tests.js --url $PRODUCTION_URL",
+    "deploy:verify": "npm run smoke:test:prod && npm run health:check:prod",
+    "health:check:prod": "curl -f $PRODUCTION_URL/api/health || exit 1",
+    "production:checklist": "echo '🚀 Running production readiness checklist...' && npm run validate:production && npm run perf:test && npm run backup:health && npm run smoke:test",
+    "docker:build": "docker build -t airwave:latest .",
+    "docker:run": "docker run -p 3000:3000 --env-file .env.production airwave:latest",
+    "docker:test": "npm run docker:build && npm run docker:run"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -84,7 +108,12 @@
     "lint-staged": "^15.2.0",
     "prettier": "^3.5.3",
     "typescript": "^5.2.2",
-    "vitest": "^3.1.4"
+    "vitest": "^3.1.4",
+    "@sentry/nextjs": "^7.118.0",
+    "lighthouse": "^11.7.1",
+    "artillery": "^2.0.15",
+    "next-bundle-analyzer": "^0.7.0",
+    "node-cron": "^3.0.3"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
