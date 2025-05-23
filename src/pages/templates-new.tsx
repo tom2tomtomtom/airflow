@@ -251,13 +251,16 @@ const TemplatesNew: React.FC = () => {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
+  
   const handlePlatformFilterChange = (e: React.ChangeEvent<{ value: unknown }>) => {
     setPlatformFilter(e.target.value as string);
   };
+  
   const handleAddTemplate = () => {
     setCurrentTemplate(null);
     setOpenDialog(true);
   };
+  
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setCurrentTemplate(null);
@@ -350,7 +353,7 @@ const TemplatesNew: React.FC = () => {
               <Button
                 variant="contained"
                 startIcon={<AddIcon />}
-                // onClick={handleAddTemplate}
+                onClick={handleAddTemplate}
               >
                 Create Template
               </Button>
@@ -379,6 +382,8 @@ const TemplatesNew: React.FC = () => {
             </Grid>
           )}
         </Grid>
+        
+        {/* Create/Edit Template Dialog */}
         <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
           <DialogTitle>
             {currentTemplate ? 'Edit Template' : 'Create New Template'}
@@ -426,12 +431,25 @@ const TemplatesNew: React.FC = () => {
                   <MenuItem value="16:9">16:9 (Landscape)</MenuItem>
                   <MenuItem value="9:16">9:16 (Vertical)</MenuItem>
                   <MenuItem value="2:3">2:3 (Pinterest)</MenuItem>
+                </Select>
+              </FormControl>
+              <TextField
+                margin="dense"
+                id="description"
+                label="Description"
+                type="text"
+                fullWidth
+                multiline
+                rows={3}
+                variant="outlined"
+                defaultValue={currentTemplate?.description || ''}
+              />
             </Box>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDialog}>Cancel</Button>
-            <Button>
-              Save
+            <Button variant="contained">
+              {currentTemplate ? 'Update' : 'Create'}
             </Button>
           </DialogActions>
         </Dialog>
