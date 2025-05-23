@@ -18,7 +18,9 @@
     "seed": "node scripts/seed-data.js",
     "db:reset": "npm run seed",
     "cleanup": "node scripts/cleanup.js",
-    "prepare": "husky install"
+    "cleanup:repo": "rm -f fix_*.js temp.txt test.php tsconfig.tsbuildinfo && rm -f src/pages/strategic-content-fixed.tsx src/pages/matrix.tsx.new",
+    "prepare": "husky install",
+    "postinstall": "npm run cleanup:repo || true"
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
