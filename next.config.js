@@ -3,8 +3,8 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   
-  // Enable standalone output for Docker deployments
-  output: 'standalone',
+  // Remove standalone output for Netlify - only use for Docker
+  // output: 'standalone', // Commented out for Netlify deployment
   
   // Security headers
   async headers() {
@@ -45,24 +45,25 @@ const nextConfig = {
     ];
   },
   
-  // Redirects
-  async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/dashboard',
-        permanent: false,
-      },
-    ];
-  },
+  // Remove dashboard redirect for now - let index page load
+  // async redirects() {
+  //   return [
+  //     {
+  //       source: '/',
+  //       destination: '/dashboard',
+  //       permanent: false,
+  //     },
+  //   ];
+  // },
   
   // Environment variables accessible in the browser
   env: {
     NEXT_PUBLIC_APP_VERSION: process.env.npm_package_version || '0.1.0',
   },
   
-  // Image optimization
+  // Image optimization - disable for Netlify compatibility
   images: {
+    unoptimized: true,
     domains: [
       'localhost',
       // Add your Supabase storage domain
@@ -83,6 +84,18 @@ const nextConfig = {
     }
     return config;
   },
+  
+  // Trailing slash for better Netlify compatibility
+  trailingSlash: true,
+  
+  // Export configuration for static deployment
+  ...(process.env.NODE_ENV === 'production' && process.env.NETLIFY && {
+    output: 'export',
+    assetPrefix: '',
+    images: {
+      unoptimized: true,
+    },
+  }),
 };
 
 module.exports = nextConfig;
