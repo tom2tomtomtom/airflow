@@ -182,7 +182,7 @@ export const CompletionStatus: React.FC<CompletionStatusProps> = ({
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
       <StatusIndicator
         status={getStatus()}
-        label={showPercentage ? `${percentage}%` : undefined}
+        {...(showPercentage && { label: `${percentage}%` })}
         size={size}
         variant="badge"
       />
