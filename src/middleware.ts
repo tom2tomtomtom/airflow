@@ -18,9 +18,9 @@ const publicRoutes = [
   '/api/auth/forgot-password',
   '/api/auth/reset-password',
   '/api/auth/change-password',
-  '/api/clients',
-  '/api/clients/index',
-  '/api/users/profile'
+  // Health check endpoints
+  '/api/health',
+  '/api/status'
 ];
 
 // Define routes that require specific roles
@@ -31,34 +31,67 @@ const roleBasedRoutes: Record<string, string[]> = {
 };
 
 export async function middleware(request: NextRequest) {
-  // Temporarily disable middleware to debug the infinite redirect loop
-  return NextResponse.next();
-
-  /* Original middleware code commented out for debugging
   const { pathname } = request.nextUrl;
 
-  // Allow public routes
-  if (publicRoutes.some(route => pathname.startsWith(route))) {
+  // Allow public routes and static assets
+  if (
+    publicRoutes.some(route => pathname.startsWith(route)) ||
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/favicon') ||
+    pathname.includes('.') // Static files
+  ) {
     return NextResponse.next();
   }
 
-  // Check for auth token
-  const token = request.cookies.get('auth_token')?.value;
+  // Check for auth token in cookies (secure) or headers (for API calls)
+  const tokenFromCookie = request.cookies.get('auth_token')?.value;
+  const tokenFromHeader = request.headers.get('authorization')?.replace('Bearer ', '');
+  const token = tokenFromCookie || tokenFromHeader;
 
   if (!token) {
-    // Redirect to login if no token is found
+    // For API routes, return 401
+    if (pathname.startsWith('/api')) {
+      return NextResponse.json(
+        { success: false, message: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+    // For pages, redirect to login
     return redirectToLogin(request);
   }
 
   try {
     // Verify the token
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'default_secret_key_change_in_production');
+    if (!process.env.JWT_SECRET) {
+      console.error('JWT_SECRET not found in environment variables');
+      throw new Error('Server configuration error');
+    }
+
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
     const { payload } = await jwtVerify(token, secret);
+
+    // Validate payload structure
+    if (!payload.sub || !payload.role || !payload.exp) {
+      throw new Error('Invalid token structure');
+    }
+
+    // Check token expiration (jwtVerify already does this, but adding explicit check)
+    const now = Math.floor(Date.now() / 1000);
+    if (payload.exp < now) {
+      throw new Error('Token expired');
+    }
 
     // Check role-based access for protected routes
     for (const [route, roles] of Object.entries(roleBasedRoutes)) {
       if (pathname.startsWith(route) && !roles.includes(payload.role as string)) {
-        // Redirect to dashboard if user doesn't have required role
+        // For API routes, return 403
+        if (pathname.startsWith('/api')) {
+          return NextResponse.json(
+            { success: false, message: 'Insufficient permissions' },
+            { status: 403 }
+          );
+        }
+        // For pages, redirect to dashboard
         return NextResponse.redirect(new URL('/dashboard', request.url));
       }
     }
@@ -68,6 +101,7 @@ export async function middleware(request: NextRequest) {
       const requestHeaders = new Headers(request.headers);
       requestHeaders.set('x-user-id', payload.sub as string);
       requestHeaders.set('x-user-role', payload.role as string);
+      requestHeaders.set('x-user-email', payload.email as string || '');
 
       return NextResponse.next({
         request: {
@@ -81,19 +115,30 @@ export async function middleware(request: NextRequest) {
   } catch (error) {
     console.error('Token verification failed:', error);
 
-    // Clear invalid token
-    const response = redirectToLogin(request);
-    response.cookies.delete('auth_token');
+    // Clear invalid token from cookies
+    const response = pathname.startsWith('/api') 
+      ? NextResponse.json(
+          { success: false, message: 'Invalid or expired token' },
+          { status: 401 }
+        )
+      : redirectToLogin(request);
 
+    // Clear the invalid token
+    response.cookies.delete('auth_token');
+    
     return response;
   }
-  */
 }
 
 function redirectToLogin(request: NextRequest) {
   const url = request.nextUrl.clone();
   url.pathname = '/login';
-  url.searchParams.set('from', request.nextUrl.pathname);
+  
+  // Preserve the original URL for redirect after login
+  if (request.nextUrl.pathname !== '/') {
+    url.searchParams.set('from', request.nextUrl.pathname + request.nextUrl.search);
+  }
+  
   return NextResponse.redirect(url);
 }
 
@@ -106,7 +151,8 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public files (public directory)
+     * - file extensions (images, fonts, etc.)
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js)$).*)',
   ],
 };
