@@ -22,7 +22,7 @@ type ResponseData = {
 };
 
 // Mock database for assets
-let mockAssets: Asset[] = [
+const mockAssets: Asset[] = [
   {
     id: 'asset_1',
     name: 'Product Image 1',

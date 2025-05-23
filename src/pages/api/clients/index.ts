@@ -18,7 +18,7 @@ type ResponseData = {
 };
 
 // Mock database for clients
-let mockClients: Client[] = [
+const mockClients: Client[] = [
   {
     id: 'client_1',
     name: 'Acme Corporation',
