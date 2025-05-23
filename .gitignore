@@ -49,3 +49,9 @@ coverage/
 
 # Ignore Supabase generated
 .supabase/
+
+# TypeScript build info
+tsconfig.tsbuildinfo
+
+# Husky
+.husky/_
