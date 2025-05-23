@@ -82,20 +82,20 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({
 
   // Chip variant
   if (variant === 'chip') {
-    return (
-      <Chip
-        label={config.label}
-        color={config.color}
-        size={size}
-        icon={showIcon ? config.icon : undefined}
-        sx={{
-          fontWeight: 500,
-          '& .MuiChip-icon': {
-            fontSize: size === 'small' ? '16px' : '20px',
-          },
-        }}
-      />
-    );
+    const chipProps = {
+      label: config.label,
+      color: config.color,
+      size: size,
+      sx: {
+        fontWeight: 500,
+        '& .MuiChip-icon': {
+          fontSize: size === 'small' ? '16px' : '20px',
+        },
+      },
+      ...(showIcon && { icon: config.icon }), // Only include icon prop if showIcon is true
+    };
+
+    return <Chip {...chipProps} />;
   }
 
   // Badge variant
