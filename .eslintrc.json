@@ -14,6 +14,16 @@
   ],
   "rules": {
     "react/react-in-jsx-scope": "off",
-    "react/prop-types": "off"
+    "react/prop-types": "off",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "react/no-unescaped-entities": "warn",
+    "react/display-name": "warn",
+    "@typescript-eslint/no-require-imports": "warn",
+    "@typescript-eslint/ban-ts-comment": "warn",
+    "no-case-declarations": "warn",
+    "prefer-spread": "warn",
+    "jsx-a11y/no-autofocus": "warn",
+    "import/no-anonymous-default-export": "warn"
   }
 }
