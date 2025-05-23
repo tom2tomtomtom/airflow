@@ -1,28 +1,39 @@
 [build]
-  publish = "out"
-  command = "npm run build && npm run export"
+  publish = ".next"
+  command = "npm run build"
 
 [build.environment]
   NODE_VERSION = "18"
   NPM_VERSION = "10"
 
-# Redirect all requests to index.html for client-side routing
+# Build hook for production environment
+[context.production]
+  command = "npm run build"
+
+[context.deploy-preview]
+  command = "npm run build"
+
+# Functions configuration for API routes
+[functions]
+  directory = ".netlify/functions"
+
+# Redirect rules for Next.js
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
+  from = "/_next/*"
+  to = "/_next/:splat"
   status = 200
 
-# API routes handling
+# Handle API routes
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/:splat"
+  to = "/.netlify/functions/nextjs"
   status = 200
 
-# Health check endpoint
-[[headers]]
-  for = "/api/health"
-  [headers.values]
-    Cache-Control = "no-cache"
+# Handle all other routes through Next.js
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/nextjs"
+  status = 200
 
 # Security headers
 [[headers]]
@@ -33,9 +44,10 @@
     X-XSS-Protection = "1; mode=block"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
 
 # Cache static assets
 [[headers]]
-  for = "/_next/static/*"
+  for = "/_next/static/*"  
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
