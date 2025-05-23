@@ -23,8 +23,8 @@ AIrWAVE is a comprehensive platform that streamlines the creation, management, a
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/airwave.git
-   cd airwave
+   git clone https://github.com/tom2tomtomtom/AIRWAVE_0525_CODEX.git
+   cd AIRWAVE_0525_CODEX
    ```
 
 2. Install dependencies:
