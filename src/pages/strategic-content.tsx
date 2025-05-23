@@ -16,6 +16,7 @@ import {
   FormControl,
   InputLabel,
   Select,
+  SelectChangeEvent,
   CircularProgress,
   Avatar,
   IconButton,
@@ -219,24 +220,24 @@ const StrategicContentCard: React.FC<{
               'aria-labelledby': `content-menu-${item.id}`,
             }}
           >
-            <MenuItem onClick={() => { handleClose(); onEdit(item); }}>
+            <MuiMenuItem onClick={() => { handleClose(); onEdit(item); }}>
               <ListItemIcon>
                 <EditIcon fontSize="small" />
               </ListItemIcon>
               <ListItemText>Edit</ListItemText>
-            </MenuItem>
-            <MenuItem onClick={() => { handleClose(); onDuplicate(item); }}>
+            </MuiMenuItem>
+            <MuiMenuItem onClick={() => { handleClose(); onDuplicate(item); }}>
               <ListItemIcon>
                 <DuplicateIcon fontSize="small" />
               </ListItemIcon>
               <ListItemText>Duplicate</ListItemText>
-            </MenuItem>
-            <MenuItem onClick={() => { handleClose(); onDelete(item.id); }}>
+            </MuiMenuItem>
+            <MuiMenuItem onClick={() => { handleClose(); onDelete(item.id); }}>
               <ListItemIcon>
                 <DeleteIcon fontSize="small" />
               </ListItemIcon>
               <ListItemText>Delete</ListItemText>
-            </MenuItem>
+            </MuiMenuItem>
           </Menu>
         </Box>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -248,7 +249,7 @@ const StrategicContentCard: React.FC<{
           sx={{ mb: 2 }}
         />
         <Typography variant="caption" display="block" color="text.secondary">
-          {item.content.length} items • Last modified: {item.lastModified ?? ''}
+          {item.content.length} items • Last modified: {item.lastModified}
         </Typography>
       </CardContent>
       <Box sx={{ p: 2, pt: 0 }}>
@@ -341,8 +342,8 @@ const StrategicContent: React.FC = () => {
       ...item,
       id: `sc${Date.now()}`,
       title: `${item.title} (Copy)`,
-      dateCreated: item.dateCreated ?? '',
-      lastModified: item.lastModified ?? '',
+      dateCreated: new Date().toISOString().split('T')[0],
+      lastModified: new Date().toISOString().split('T')[0],
     };
     setStrategicContent([...strategicContent, newItem]);
   };
