@@ -7,6 +7,8 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { ClientProvider } from '@/contexts/ClientContext';
 import '@/styles/globals.css';
 
 // Create a client
@@ -32,12 +34,18 @@ const theme = createTheme({
     mode: 'light',
     primary: {
       main: '#1976d2',
+      light: '#bbdefb',
     },
     secondary: {
       main: '#dc004e',
     },
     background: {
       default: '#f5f5f5',
+      paper: '#ffffff',
+    },
+    text: {
+      primary: '#333333',
+      secondary: '#666666',
     },
   },
   typography: {
@@ -56,6 +64,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           textTransform: 'none',
+          borderRadius: 8,
         },
       },
     },
@@ -63,6 +72,21 @@ const theme = createTheme({
       defaultProps: {
         variant: 'outlined',
         size: 'small',
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
+        },
       },
     },
   },
@@ -111,11 +135,15 @@ function MyApp({ Component, pageProps }: AppProps) {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <CssBaseline />
-            <Component {...pageProps} />
-            {process.env.NODE_ENV === 'development' && (
-              <ReactQueryDevtools initialIsOpen={false} />
-            )}
+            <AuthProvider>
+              <ClientProvider>
+                <CssBaseline />
+                <Component {...pageProps} />
+                {process.env.NODE_ENV === 'development' && (
+                  <ReactQueryDevtools initialIsOpen={false} />
+                )}
+              </ClientProvider>
+            </AuthProvider>
           </LocalizationProvider>
         </ThemeProvider>
       </QueryClientProvider>
