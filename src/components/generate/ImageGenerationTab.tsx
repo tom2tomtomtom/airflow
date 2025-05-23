@@ -25,7 +25,7 @@ import {
   Fullscreen as FullscreenIcon,
   Style as StyleIcon,
   AspectRatio as AspectRatioIcon,
-  ImageIcon,
+  Image as ImageIcon,
 } from '@mui/icons-material';
 
 // Interface for generated image
