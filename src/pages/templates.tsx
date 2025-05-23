@@ -56,6 +56,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useClient } from '@/contexts/ClientContext';
 import DashboardLayout from '@/components/DashboardLayout';
+import TemplateList from "@/components/TemplateList";
 
 // Mock data for templates
 const mockTemplates = [
@@ -481,153 +482,6 @@ interface Template {
   isShared?: boolean;
 }
 
-// Template card component
-const TemplateCard: React.FC<{
-  template: Template;
-  onEdit: (template: Template) => void;
-  onDelete: (templateId: string) => void;
-  onDuplicate: (template: Template) => void;
-  onCreateMatrix: (templateId: string) => void;
-}> = ({ template, onEdit, onDelete, onDuplicate, onCreateMatrix }) => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  return (
-    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Box
-        sx={{
-          height: 180,
-          bgcolor: 'grey.200',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          position: 'relative',
-        }}
-      >
-        {platformIcons[template.platform] || <AspectRatioIcon sx={{ fontSize: 48, color: 'grey.400' }} />}
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 8,
-            right: 8,
-          }}
-        >
-          <IconButton
-            aria-label="more"
-            id={`template-menu-${template.id}`}
-            aria-controls={open ? `template-menu-${template.id}` : undefined}
-            aria-expanded={open ? 'true' : undefined}
-            aria-haspopup="true"
-            onClick={handleClick}
-            size="small"
-          >
-            <MoreIcon />
-          </IconButton>
-          <Menu
-            id={`template-menu-${template.id}`}
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            MenuListProps={{
-              'aria-labelledby': `template-menu-${template.id}`,
-            }}
-          >
-            <MenuItem onClick={() => { handleClose(); onEdit(template); }}>
-              <ListItemIcon>
-                <EditIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>Edit</ListItemText>
-            </MenuItem>
-            <MenuItem onClick={() => { handleClose(); onDuplicate(template); }}>
-              <ListItemIcon>
-                <DuplicateIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>Duplicate</ListItemText>
-            </MenuItem>
-            <MenuItem onClick={() => { handleClose(); onDelete(template.id); }}>
-              <ListItemIcon>
-                <DeleteIcon fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>Delete</ListItemText>
-            </MenuItem>
-          </Menu>
-        </Box>
-      </Box>
-      <CardContent sx={{ flexGrow: 1 }}>
-        <Typography variant="h6" component="div" gutterBottom noWrap>
-          {template.name}
-        </Typography>
-        <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
-          <Chip
-            size="small"
-            icon={platformIcons[template.platform] as React.ReactElement}
-            label={template.platform}
-          />
-          <Chip
-            size="small"
-            icon={<AspectRatioIcon />}
-            label={template.aspectRatio}
-          />
-        </Stack>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          {template.description}
-        </Typography>
-        <Grid container spacing={1}>
-          <Grid item xs={12}>
-            <Button
-              variant="contained"
-              color="primary"
-              fullWidth
-              size="large"
-              onClick={() => onCreateMatrix(template.id)}
-              sx={{
-                mb: 1,
-                fontWeight: 'bold',
-                py: 1
-              }}
-            >
-              SELECT
-            </Button>
-          </Grid>
-          <Grid item xs={6}>
-            <Button
-              variant="outlined"
-              fullWidth
-              onClick={() => onCreateMatrix(template.id)}
-            >
-              Use Template
-            </Button>
-          </Grid>
-          <Grid item xs={6}>
-            <Button
-              variant="outlined"
-              fullWidth
-              onClick={() => {
-                // Use window.open for client-side navigation to a new tab
-                window.open(`/preview?templateId=${template.id}`, '_blank');
-              }}
-            >
-              Preview
-            </Button>
-          </Grid>
-        </Grid>
-      </CardContent>
-      <Box sx={{ p: 2, pt: 0 }}>
-        <Typography variant="caption" color="text.secondary">
-          Last modified: {template.lastModified}
-        </Typography>
-      </Box>
-    </Card>
-  );
-};
 
 const Templates: React.FC = () => {
   const router = useRouter();
@@ -891,45 +745,15 @@ const Templates: React.FC = () => {
           </Tabs>
         </Box>
 
-        {/* Templates Grid */}
-        <Grid container spacing={3}>
-          {filteredTemplates.length > 0 ? (
-            filteredTemplates.map((template) => (
-              <Grid item key={template.id} xs={12} sm={6} md={4}>
-                <TemplateCard
-                  template={template}
-                  onEdit={handleEditTemplate}
-                  onDelete={handleDeleteTemplate}
-                  onDuplicate={handleDuplicateTemplate}
-                  onCreateMatrix={handleCreateMatrix}
-                />
-              </Grid>
-            ))
-          ) : (
-            <Grid item xs={12}>
-              <Paper sx={{ p: 4, textAlign: 'center' }}>
-                <Typography variant="h6" color="text.secondary" gutterBottom>
-                  No templates found
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {searchQuery || platformFilter !== 'All'
-                    ? 'Try adjusting your search or filters'
-                    : 'Create your first template to get started'}
-                </Typography>
-                <Button
-                  variant="contained"
-                  startIcon={<AddIcon />}
-                  onClick={handleAddTemplate}
-                  sx={{ mt: 2 }}
-                >
-                  Create Template
-                </Button>
-              </Paper>
-            </Grid>
-          )}
-        </Grid>
-
-        {/* Template Dialog (simplified for this example) */}
+        <TemplateList
+          templates={filteredTemplates}
+          onEdit={handleEditTemplate}
+          onDelete={handleDeleteTemplate}
+          onDuplicate={handleDuplicateTemplate}
+          onCreateMatrix={handleCreateMatrix}
+          onAddTemplate={handleAddTemplate}
+          emptyMessage={searchQuery || platformFilter !== 'All' ? 'Try adjusting your search or filters' : 'Create your first template to get started'}
+        />
         <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
           <DialogTitle>
             {currentTemplate ? 'Edit Template' : 'Create New Template'}

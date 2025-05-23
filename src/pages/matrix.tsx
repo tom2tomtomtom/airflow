@@ -71,6 +71,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useClient } from '@/contexts/ClientContext';
 import DashboardLayout from '@/components/DashboardLayout';
+import MatrixEditor from "@/components/MatrixEditor";
 
 // Define types
 interface DynamicField {
@@ -1456,159 +1457,12 @@ const MatrixPage = () => {
               </Box>
             </Box>
 
-            {/* Matrix Content */}
-            <Paper sx={{ p: 3, mb: 4 }}>
-              <Typography variant="h6" gutterBottom>
-                Template Fields Matrix
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                Assign assets and content to each template field
-              </Typography>
-
-              {selectedProject.templates.map(template => (
-                <Box key={template.id} sx={{ mb: 4 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <Typography variant="subtitle1" fontWeight="medium">
-                      {template.name}
-                    </Typography>
-                    <Chip
-                      label={template.platform}
-                      size="small"
-                      sx={{ ml: 1 }}
-                    />
-                    <Chip
-                      label={template.aspectRatio}
-                      size="small"
-                      variant="outlined"
-                      sx={{ ml: 1 }}
-                    />
-                  </Box>
-
-                  <TableContainer component={Paper} variant="outlined" sx={{ mb: 3 }}>
-                    <Table>
-                      <TableHead>
-                        <TableRow>
-                          <TableCell width="20%">Field</TableCell>
-                          <TableCell width="15%">Type</TableCell>
-                          <TableCell width="45%">Content</TableCell>
-                          <TableCell width="20%">Status</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {template.dynamicFields.map(field => {
-                          const fieldKey = `${template.id}-${field.id}`;
-                          const fieldAssignment = selectedProject.fieldAssignments[fieldKey];
-                          const asset = fieldAssignment?.assetId ? getAssetById(fieldAssignment.assetId) : null;
-
-                          return (
-                            <TableRow key={field.id}>
-                              <TableCell>
-                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                  {field.name}
-                                  {field.required && (
-                                    <Chip
-                                      label="Required"
-                                      size="small"
-                                      color="primary"
-                                      variant="outlined"
-                                      sx={{ ml: 1, height: 20, fontSize: '0.7rem' }}
-                                    />
-                                  )}
-                                </Box>
-                                <Typography variant="caption" color="text.secondary" display="block">
-                                  {field.description}
-                                </Typography>
-                              </TableCell>
-                              <TableCell>
-                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                  {getFieldTypeIcon(field.type)}
-                                  <Typography variant="body2" sx={{ ml: 1 }}>
-                                    {field.type.charAt(0).toUpperCase() + field.type.slice(1)}
-                                  </Typography>
-                                </Box>
-                              </TableCell>
-                              <TableCell>
-                                {field.type === 'text' || field.type === 'color' ? (
-                                  <TextField
-                                    fullWidth
-                                    size="small"
-                                    placeholder={`Enter ${field.type}...`}
-                                    value={fieldAssignment?.value || ''}
-                                    onChange={(e) => handleTextFieldChange(template.id, field.id, e.target.value)}
-                                    type={field.type === 'color' ? 'color' : 'text'}
-                                  />
-                                ) : field.type === 'image' || field.type === 'video' || field.type === 'audio' ? (
-                                  asset ? (
-                                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                      {field.type === 'image' && (
-                                        <Box
-                                          component="img"
-                                          src={asset.url}
-                                          alt={asset.name}
-                                          sx={{
-                                            width: 60,
-                                            height: 60,
-                                            objectFit: 'cover',
-                                            borderRadius: 1,
-                                            mr: 2
-                                          }}
-                                        />
-                                      )}
-                                      <Box>
-                                        <Typography variant="body2">
-                                          {asset.name}
-                                        </Typography>
-                                        <Typography variant="caption" color="text.secondary">
-                                          {asset.metadata.fileSize} • {asset.metadata.dimensions || asset.metadata.duration}
-                                        </Typography>
-                                      </Box>
-                                      <IconButton
-                                        size="small"
-                                        sx={{ ml: 'auto' }}
-                                        onClick={() => handleOpenAssetDialog(template.id, field.id)}
-                                      >
-                                        <EditIcon fontSize="small" />
-                                      </IconButton>
-                                    </Box>
-                                  ) : (
-                                    <Button
-                                      variant="outlined"
-                                      startIcon={getFieldTypeIcon(field.type)}
-                                      onClick={() => handleOpenAssetDialog(template.id, field.id)}
-                                    >
-                                      Select {field.type}
-                                    </Button>
-                                  )
-                                ) : (
-                                  <TextField
-                                    fullWidth
-                                    size="small"
-                                    placeholder={`Enter ${field.type}...`}
-                                    value={fieldAssignment?.value || ''}
-                                    onChange={(e) => handleTextFieldChange(template.id, field.id, e.target.value)}
-                                  />
-                                )}
-                              </TableCell>
-                              <TableCell>
-                                <Chip
-                                  label={fieldAssignment?.status === 'completed' ? 'Completed' :
-                                         fieldAssignment?.status === 'in-progress' ? 'In Progress' : 'Empty'}
-                                  color={fieldAssignment?.status === 'completed' ? 'success' :
-                                         fieldAssignment?.status === 'in-progress' ? 'primary' : 'default'}
-                                  size="small"
-                                  icon={fieldAssignment?.status === 'completed' ? <CheckIcon /> :
-                                        fieldAssignment?.status === 'in-progress' ? <RefreshIcon /> : <CloseIcon />}
-                                />
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Box>
-              ))}
-            </Paper>
+            <MatrixEditor
+              project={selectedProject}
+              getAssetById={getAssetById}
+              handleTextFieldChange={handleTextFieldChange}
+              handleOpenAssetDialog={handleOpenAssetDialog}
+            />
           </>
         )}
 
