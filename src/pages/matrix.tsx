@@ -1,4 +1,378 @@
-                    </Typography>
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import Head from 'next/head';
+import {
+  Box,
+  Typography,
+  Button,
+  Grid,
+  Paper,
+  Card,
+  CardContent,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Chip,
+  IconButton,
+  InputAdornment,
+  CircularProgress,
+} from '@mui/material';
+import {
+  Edit as EditIcon,
+  Search as SearchIcon,
+  Add as AddIcon,
+  Check as CheckIcon,
+  Refresh as RefreshIcon,
+  Close as CloseIcon,
+  Image as ImageIcon,
+  VideoLibrary as VideoIcon,
+  Audiotrack as AudiotrackIcon,
+  ThumbUp as ThumbUpIcon,
+} from '@mui/icons-material';
+import { useAuth } from '@/contexts/AuthContext';
+import { useClient } from '@/contexts/ClientContext';
+import DashboardLayout from '@/components/DashboardLayout';
+
+// Types
+interface Template {
+  id: string;
+  name: string;
+  description: string;
+  platform: string;
+  aspect_ratio: string;
+  dynamicFields: DynamicField[];
+  created_at: string;
+  updated_at: string;
+}
+
+interface DynamicField {
+  id: string;
+  name: string;
+  type: 'text' | 'image' | 'video' | 'audio' | 'color' | 'link' | 'any';
+  required: boolean;
+  description: string;
+}
+
+interface Asset {
+  id: string;
+  name: string;
+  type: 'image' | 'video' | 'audio';
+  url: string;
+  metadata: {
+    fileSize: string;
+    dimensions?: string;
+    duration?: string;
+  };
+  tags?: string[];
+  isFavorite: boolean;
+  dateCreated: string;
+}
+
+interface FieldAssignment {
+  id: string;
+  fieldId: string;
+  templateId: string;
+  value?: string;
+  assetId?: string;
+  status: 'empty' | 'in-progress' | 'completed';
+}
+
+interface CurrentField {
+  templateId: string;
+  fieldId: string;
+}
+
+// Mock data
+const mockTemplates: Template[] = [
+  {
+    id: 'template-1',
+    name: 'Instagram Post Template',
+    description: 'Standard Instagram post template',
+    platform: 'Instagram',
+    aspect_ratio: '1:1',
+    dynamicFields: [
+      {
+        id: 'field-1',
+        name: 'Main Image',
+        type: 'image',
+        required: true,
+        description: 'Primary image for the post',
+      },
+      {
+        id: 'field-2',
+        name: 'Caption Text',
+        type: 'text',
+        required: true,
+        description: 'Main caption text',
+      },
+      {
+        id: 'field-3',
+        name: 'Background Music',
+        type: 'audio',
+        required: false,
+        description: 'Optional background audio',
+      },
+    ],
+    created_at: '2023-05-15T10:30:00Z',
+    updated_at: '2023-05-15T10:30:00Z',
+  },
+];
+
+const mockAssets: Asset[] = [
+  {
+    id: 'asset-1',
+    name: 'Product Hero Image',
+    type: 'image',
+    url: '/mock-images/product-hero.jpg',
+    metadata: {
+      fileSize: '2.3 MB',
+      dimensions: '1920x1080',
+    },
+    tags: ['product', 'hero', 'lifestyle'],
+    isFavorite: true,
+    dateCreated: '2023-05-15T09:00:00Z',
+  },
+  {
+    id: 'asset-2',
+    name: 'Brand Video',
+    type: 'video',
+    url: '/mock-videos/brand-video.mp4',
+    metadata: {
+      fileSize: '15.7 MB',
+      duration: '0:30',
+    },
+    tags: ['brand', 'promotional'],
+    isFavorite: false,
+    dateCreated: '2023-05-14T14:30:00Z',
+  },
+];
+
+const MatrixPage: React.FC = () => {
+  const router = useRouter();
+  const { isAuthenticated, loading: authLoading } = useAuth();
+  const { activeClient, loading: clientLoading } = useClient();
+
+  // State
+  const [templates] = useState<Template[]>(mockTemplates);
+  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+  const [fieldAssignments, setFieldAssignments] = useState<FieldAssignment[]>([]);
+  const [assets] = useState<Asset[]>(mockAssets);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [openAssetDialog, setOpenAssetDialog] = useState(false);
+  const [currentField, setCurrentField] = useState<CurrentField | null>(null);
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push('/login');
+    }
+  }, [isAuthenticated, authLoading, router]);
+
+  // Initialize with first template
+  useEffect(() => {
+    if (templates.length > 0 && !selectedTemplate) {
+      setSelectedTemplate(templates[0]);
+    }
+  }, [templates, selectedTemplate]);
+
+  // Get field type icon
+  const getFieldTypeIcon = (type: string) => {
+    switch (type) {
+      case 'image':
+        return <ImageIcon fontSize="small" />;
+      case 'video':
+        return <VideoIcon fontSize="small" />;
+      case 'audio':
+        return <AudiotrackIcon fontSize="small" />;
+      default:
+        return <EditIcon fontSize="small" />;
+    }
+  };
+
+  // Handle text field changes
+  const handleTextFieldChange = (fieldId: string, value: string) => {
+    if (!selectedTemplate) return;
+
+    setFieldAssignments(prev => {
+      const existing = prev.find(fa => fa.fieldId === fieldId && fa.templateId === selectedTemplate.id);
+      
+      if (existing) {
+        return prev.map(fa => 
+          fa.id === existing.id
+            ? { ...fa, value, status: value.trim() ? 'completed' : 'empty' }
+            : fa
+        );
+      } else {
+        return [...prev, {
+          id: `assignment-${Date.now()}`,
+          fieldId,
+          templateId: selectedTemplate.id,
+          value,
+          status: value.trim() ? 'completed' : 'empty',
+        }];
+      }
+    });
+  };
+
+  // Handle opening asset dialog
+  const handleOpenAssetDialog = (fieldId: string) => {
+    if (!selectedTemplate) return;
+    
+    setCurrentField({
+      templateId: selectedTemplate.id,
+      fieldId,
+    });
+    setOpenAssetDialog(true);
+  };
+
+  // Handle asset selection
+  const handleSelectAsset = (assetId: string) => {
+    if (!currentField || !selectedTemplate) return;
+
+    setFieldAssignments(prev => {
+      const existing = prev.find(fa => 
+        fa.fieldId === currentField.fieldId && fa.templateId === currentField.templateId
+      );
+      
+      if (existing) {
+        return prev.map(fa => 
+          fa.id === existing.id
+            ? { ...fa, assetId, status: 'completed' }
+            : fa
+        );
+      } else {
+        return [...prev, {
+          id: `assignment-${Date.now()}`,
+          fieldId: currentField.fieldId,
+          templateId: currentField.templateId,
+          assetId,
+          status: 'completed',
+        }];
+      }
+    });
+
+    setOpenAssetDialog(false);
+    setCurrentField(null);
+  };
+
+  // Handle search change
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
+
+  // Filter assets based on search
+  const filteredAssets = assets.filter(asset =>
+    asset.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    asset.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
+  if (authLoading || clientLoading || !activeClient) {
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh'
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  return (
+    <>
+      <Head>
+        <title>Content Matrix | AIrWAVE</title>
+      </Head>
+      <DashboardLayout title="Content Matrix">
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" component="h1" gutterBottom fontWeight={600}>
+            Content Matrix
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Assign assets and content to template fields for content generation
+          </Typography>
+        </Box>
+
+        {selectedTemplate && (
+          <>
+            <Paper sx={{ p: 3, mb: 4 }}>
+              <Typography variant="h6" gutterBottom>
+                {selectedTemplate.name}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" paragraph>
+                {selectedTemplate.description}
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Chip label={selectedTemplate.platform} size="small" />
+                <Chip label={selectedTemplate.aspect_ratio} size="small" variant="outlined" />
+              </Box>
+            </Paper>
+
+            <Paper sx={{ mb: 4 }}>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Field Name</TableCell>
+                      <TableCell>Type</TableCell>
+                      <TableCell>Required</TableCell>
+                      <TableCell>Content</TableCell>
+                      <TableCell>Status</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {selectedTemplate.dynamicFields.map(field => {
+                      const fieldAssignment = fieldAssignments.find(fa => 
+                        fa.fieldId === field.id && fa.templateId === selectedTemplate.id
+                      );
+                      const asset = fieldAssignment?.assetId ? 
+                        assets.find(a => a.id === fieldAssignment.assetId) : null;
+
+                      return (
+                        <TableRow key={field.id}>
+                          <TableCell>
+                            <Typography variant="subtitle2">
+                              {field.name}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              {field.description}
+                            </Typography>
+                          </TableCell>
+                          <TableCell>
+                            <Chip
+                              icon={getFieldTypeIcon(field.type)}
+                              label={field.type}
+                              size="small"
+                              variant="outlined"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Chip
+                              label={field.required ? 'Required' : 'Optional'}
+                              size="small"
+                              color={field.required ? 'error' : 'default'}
+                              variant="outlined"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            {['image', 'video', 'audio'].includes(field.type) ? (
+                              asset ? (
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                  <Box>
+                                    <Typography variant="body2">
+                                      {asset.name}
+                                    </Typography>
                                     <Typography variant="caption" color="text.secondary">
                                       {asset.metadata.fileSize} • {asset.metadata.dimensions || asset.metadata.duration}
                                     </Typography>
