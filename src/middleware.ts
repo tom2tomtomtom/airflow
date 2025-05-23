@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
+import { env } from './lib/env';
 
 // Define public routes that don't require authentication
 const publicRoutes = [
@@ -30,8 +31,83 @@ const roleBasedRoutes: Record<string, string[]> = {
   '/admin/settings': ['admin'],
 };
 
+// Rate limiting map (simple in-memory implementation)
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+
+// Simple rate limiter
+function checkRateLimit(identifier: string, limit: number = 10, windowMs: number = 60000): boolean {
+  const now = Date.now();
+  const record = rateLimitMap.get(identifier);
+  
+  if (!record || now > record.resetTime) {
+    rateLimitMap.set(identifier, { count: 1, resetTime: now + windowMs });
+    return true;
+  }
+  
+  if (record.count >= limit) {
+    return false;
+  }
+  
+  record.count++;
+  return true;
+}
+
+// Add security headers
+function addSecurityHeaders(response: NextResponse): NextResponse {
+  // Prevent clickjacking
+  response.headers.set('X-Frame-Options', 'DENY');
+  
+  // Prevent MIME type sniffing
+  response.headers.set('X-Content-Type-Options', 'nosniff');
+  
+  // Enable XSS protection
+  response.headers.set('X-XSS-Protection', '1; mode=block');
+  
+  // Control referrer information
+  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  
+  // Content Security Policy
+  const csp = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "img-src 'self' data: https: blob:",
+    "font-src 'self' https://fonts.gstatic.com",
+    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.openai.com https://api.elevenlabs.io",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'"
+  ].join('; ');
+  
+  response.headers.set('Content-Security-Policy', csp);
+  
+  // Permissions Policy
+  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  
+  return response;
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  
+  // Create response object
+  let response = NextResponse.next();
+  
+  // Add security headers to all responses
+  response = addSecurityHeaders(response);
+  
+  // Apply rate limiting to auth endpoints
+  if (pathname.startsWith('/api/auth/')) {
+    const ip = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
+    const rateLimitKey = `${ip}:${pathname}`;
+    
+    if (!checkRateLimit(rateLimitKey, 20, 60000)) { // 20 requests per minute
+      return NextResponse.json(
+        { success: false, message: 'Too many requests. Please try again later.' },
+        { status: 429 }
+      );
+    }
+  }
 
   // Allow public routes and static assets
   if (
@@ -40,7 +116,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/favicon') ||
     pathname.includes('.') // Static files
   ) {
-    return NextResponse.next();
+    return response;
   }
 
   // Check for auth token in cookies (secure) or headers (for API calls)
@@ -62,13 +138,10 @@ export async function middleware(request: NextRequest) {
 
   try {
     // Verify the token
-    if (!process.env.JWT_SECRET) {
-      console.error('JWT_SECRET not found in environment variables');
-      throw new Error('Server configuration error');
-    }
-
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-    const { payload } = await jwtVerify(token, secret);
+    const secret = new TextEncoder().encode(env.JWT_SECRET);
+    const { payload } = await jwtVerify(token, secret, {
+      algorithms: ['HS256']
+    });
 
     // Validate payload structure
     if (!payload.sub || !payload.role || !payload.exp) {
@@ -103,20 +176,23 @@ export async function middleware(request: NextRequest) {
       requestHeaders.set('x-user-role', payload.role as string);
       requestHeaders.set('x-user-email', payload.email as string || '');
 
-      return NextResponse.next({
+      response = NextResponse.next({
         request: {
           headers: requestHeaders,
         },
       });
+      
+      // Re-apply security headers
+      response = addSecurityHeaders(response);
     }
 
     // Allow access to the requested page
-    return NextResponse.next();
+    return response;
   } catch (error) {
     console.error('Token verification failed:', error);
 
     // Clear invalid token from cookies
-    const response = pathname.startsWith('/api') 
+    const errorResponse = pathname.startsWith('/api') 
       ? NextResponse.json(
           { success: false, message: 'Invalid or expired token' },
           { status: 401 }
@@ -124,9 +200,9 @@ export async function middleware(request: NextRequest) {
       : redirectToLogin(request);
 
     // Clear the invalid token
-    response.cookies.delete('auth_token');
+    errorResponse.cookies.delete('auth_token');
     
-    return response;
+    return errorResponse;
   }
 }
 
@@ -139,7 +215,10 @@ function redirectToLogin(request: NextRequest) {
     url.searchParams.set('from', request.nextUrl.pathname + request.nextUrl.search);
   }
   
-  return NextResponse.redirect(url);
+  const response = NextResponse.redirect(url);
+  response.cookies.delete('auth_token');
+  
+  return response;
 }
 
 // Configure middleware to run on specific paths
