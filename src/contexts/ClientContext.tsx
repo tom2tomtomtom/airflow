@@ -249,8 +249,8 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         throw new Error('Client not found');
       }
 
-      // Update client data
-      const updatedClient = { ...clients[clientIndex], ...clientData };
+      // Update client data with explicit typing
+      const updatedClient: Client = { ...clients[clientIndex], ...clientData };
       const updatedClients = [...clients];
       updatedClients[clientIndex] = updatedClient;
 
@@ -272,7 +272,8 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         throw new Error('Client not found');
       }
 
-      const updatedClient = { ...clients[clientIndex], ...clientData };
+      // Update client data with explicit typing
+      const updatedClient: Client = { ...clients[clientIndex], ...clientData };
       const updatedClients = [...clients];
       updatedClients[clientIndex] = updatedClient;
 
