@@ -1,0 +1,23 @@
+  const handlePlatformFilterChange = (event: SelectChangeEvent) => {
+    setPlatformFilter(event.target.value);
+  };
+  
+  const handleIndustryFilterChange = (event: SelectChangeEvent) => {
+    setIndustryFilter(event.target.value);
+  };
+  
+  const handleContentTypeFilterChange = (event: SelectChangeEvent) => {
+    setContentTypeFilter(event.target.value);
+  };
+  
+  const handleAspectRatioFilterChange = (event: SelectChangeEvent) => {
+    setAspectRatioFilter(event.target.value);
+  };
+  
+  const handleSortByChange = (event: SelectChangeEvent) => {
+    setSortBy(event.target.value);
+  };
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+  };

@@ -1,0 +1,51 @@
+# Node
+node_modules/
+
+# Next.js
+.next/
+
+# Build output
+dist/
+out/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+
+# Env
+.env
+.env.*
+
+# Vite
+.vite/
+
+# IDE
+.vscode/
+.idea/
+
+# Misc
+*.local
+*.cache
+*.log
+
+# Mac
+*.DS_Store
+
+# Test coverage
+coverage/
+
+# Others
+*.swp
+*.swo
+
+# Ignore temp
+*.bak
+*.tmp
+*.temp
+
+# Ignore Supabase generated
+.supabase/

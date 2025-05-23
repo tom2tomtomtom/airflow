@@ -1,0 +1,325 @@
+import React from 'react';
+import {
+  Box,
+  Typography,
+  Grid,
+  Paper,
+  Button,
+  CircularProgress,
+  Stack,
+  Chip,
+  IconButton,
+  Tooltip,
+} from '@mui/material';
+import {
+  Star as StarIcon,
+  StarBorder as StarBorderIcon,
+  Refresh as RefreshIcon,
+  Edit as EditIcon,
+  ContentCopy as ContentCopyIcon,
+  Save as SaveIcon,
+  AutoAwesome as AutoAwesomeIcon,
+} from '@mui/icons-material';
+
+// Interfaces
+interface Motivation {
+  id: string;
+  title: string;
+  description: string;
+  relevanceScore: number;
+  selected: boolean;
+}
+
+interface CopyVariation {
+  id: string;
+  text: string;
+  motivationId: string;
+  favorite: boolean;
+}
+
+interface CopySettings {
+  tone: string;
+  style: string;
+  length: string;
+  frameCount: number;
+  includeCta: boolean;
+}
+
+interface CopyGenerationTabProps {
+  motivations: Motivation[];
+  copyVariations: CopyVariation[];
+  copySettings: CopySettings;
+  setCopySettings: (settings: CopySettings) => void;
+  isGeneratingCopy: boolean;
+  handleGenerateCopy: () => void;
+  handleToggleCopyFavorite: (id: string) => void;
+}
+
+const CopyGenerationTab: React.FC<CopyGenerationTabProps> = ({
+  motivations,
+  copyVariations,
+  copySettings,
+  setCopySettings,
+  isGeneratingCopy,
+  handleGenerateCopy,
+  handleToggleCopyFavorite,
+}) => {
+  return (
+    <Box>
+      <Typography variant="h6" gutterBottom>
+        Generate Copy
+      </Typography>
+      <Typography variant="body2" color="text.secondary" paragraph>
+        Configure copy generation settings and create variations based on your selected motivations.
+      </Typography>
+      
+      <Grid container spacing={4}>
+        <Grid item xs={12} md={4}>
+          <Paper sx={{ p: 3, height: '100%' }}>
+            <Typography variant="subtitle1" gutterBottom fontWeight={600}>
+              Copy Settings
+            </Typography>
+            
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="body2" gutterBottom>
+                Tone
+              </Typography>
+              <Stack direction="row" spacing={1} sx={{ mb: 1, flexWrap: 'wrap', gap: 1 }}>
+                {['Professional', 'Casual', 'Inspirational', 'Urgent'].map(tone => (
+                  <Chip
+                    key={tone}
+                    label={tone}
+                    onClick={() => setCopySettings({
+                      ...copySettings,
+                      tone: tone.toLowerCase(),
+                    })}
+                    color={copySettings.tone === tone.toLowerCase() ? 'primary' : 'default'}
+                    variant={copySettings.tone === tone.toLowerCase() ? 'filled' : 'outlined'}
+                  />
+                ))}
+              </Stack>
+            </Box>
+            
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="body2" gutterBottom>
+                Style
+              </Typography>
+              <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
+                {['Direct', 'Storytelling', 'Question-based', 'Statistic-led'].map(style => (
+                  <Chip
+                    key={style}
+                    label={style}
+                    onClick={() => setCopySettings({
+                      ...copySettings,
+                      style: style.toLowerCase(),
+                    })}
+                    color={copySettings.style === style.toLowerCase() ? 'primary' : 'default'}
+                    variant={copySettings.style === style.toLowerCase() ? 'filled' : 'outlined'}
+                  />
+                ))}
+              </Stack>
+            </Box>
+            
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="body2" gutterBottom>
+                Length
+              </Typography>
+              <Stack direction="row" spacing={1}>
+                {['Short', 'Medium', 'Long'].map(length => (
+                  <Chip
+                    key={length}
+                    label={length}
+                    onClick={() => setCopySettings({
+                      ...copySettings,
+                      length: length.toLowerCase(),
+                    })}
+                    color={copySettings.length === length.toLowerCase() ? 'primary' : 'default'}
+                    variant={copySettings.length === length.toLowerCase() ? 'filled' : 'outlined'}
+                  />
+                ))}
+              </Stack>
+            </Box>
+            
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="body2" gutterBottom>
+                Number of variations per motivation
+              </Typography>
+              <Stack direction="row" spacing={1}>
+                {[2, 3, 4].map(count => (
+                  <Chip
+                    key={count}
+                    label={count}
+                    onClick={() => setCopySettings({
+                      ...copySettings,
+                      frameCount: count,
+                    })}
+                    color={copySettings.frameCount === count ? 'primary' : 'default'}
+                    variant={copySettings.frameCount === count ? 'filled' : 'outlined'}
+                  />
+                ))}
+              </Stack>
+            </Box>
+            
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="body2" gutterBottom>
+                Include call-to-action
+              </Typography>
+              <Stack direction="row" spacing={1}>
+                <Chip
+                  label="Yes"
+                  onClick={() => setCopySettings({
+                    ...copySettings,
+                    includeCta: true,
+                  })}
+                  color={copySettings.includeCta ? 'primary' : 'default'}
+                  variant={copySettings.includeCta ? 'filled' : 'outlined'}
+                />
+                <Chip
+                  label="No"
+                  onClick={() => setCopySettings({
+                    ...copySettings,
+                    includeCta: false,
+                  })}
+                  color={!copySettings.includeCta ? 'primary' : 'default'}
+                  variant={!copySettings.includeCta ? 'filled' : 'outlined'}
+                />
+              </Stack>
+            </Box>
+            
+            <Box sx={{ mt: 4 }}>
+              <Button
+                variant="contained"
+                fullWidth
+                onClick={handleGenerateCopy}
+                disabled={isGeneratingCopy}
+                startIcon={isGeneratingCopy ? <CircularProgress size={20} /> : <AutoAwesomeIcon />}
+              >
+                {isGeneratingCopy ? 'Generating...' : 'Generate Copy'}
+              </Button>
+            </Box>
+          </Paper>
+        </Grid>
+        
+        <Grid item xs={12} md={8}>
+          <Paper sx={{ p: 3 }}>
+            <Typography variant="subtitle1" gutterBottom fontWeight={600}>
+              Generated Copy
+            </Typography>
+            
+            <Box sx={{ mb: 3 }}>
+              <Typography variant="body2" color="text.secondary">
+                Review and select your preferred copy variations for each motivation.
+              </Typography>
+            </Box>
+            
+            {motivations
+              .filter(m => m.selected)
+              .map(motivation => {
+                const variations = copyVariations.filter(v => v.motivationId === motivation.id);
+                
+                return (
+                  <Box key={motivation.id} sx={{ mb: 4 }}>
+                    <Box sx={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      mb: 2,
+                      pb: 1,
+                      borderBottom: '1px solid',
+                      borderColor: 'divider',
+                    }}>
+                      <Typography variant="h6" color="primary">
+                        {motivation.title}
+                      </Typography>
+                    </Box>
+                    
+                    <Grid container spacing={2}>
+                      {variations.map(variation => (
+                        <Grid item key={variation.id} xs={12}>
+                          <Paper
+                            variant="outlined"
+                            sx={{ 
+                              p: 2,
+                              position: 'relative',
+                              pl: 4,
+                            }}
+                          >
+                            <IconButton
+                              sx={{ 
+                                position: 'absolute', 
+                                left: 8, 
+                                top: '50%', 
+                                transform: 'translateY(-50%)',
+                              }}
+                              color={variation.favorite ? 'error' : 'default'}
+                              onClick={() => handleToggleCopyFavorite(variation.id)}
+                            >
+                              {variation.favorite ? <StarIcon /> : <StarBorderIcon />}
+                            </IconButton>
+                            
+                            <Typography variant="body1">
+                              {variation.text}
+                            </Typography>
+                            
+                            <Box sx={{ 
+                              display: 'flex', 
+                              justifyContent: 'flex-end',
+                              mt: 1,
+                            }}>
+                              <Tooltip title="Edit">
+                                <IconButton size="small">
+                                  <EditIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip title="Regenerate">
+                                <IconButton size="small">
+                                  <RefreshIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip title="Copy to clipboard">
+                                <IconButton size="small">
+                                  <ContentCopyIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip title="Save to assets">
+                                <IconButton size="small" color="primary">
+                                  <SaveIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                            </Box>
+                          </Paper>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </Box>
+                );
+              })}
+              
+            {motivations.filter(m => m.selected).length === 0 && (
+              <Box sx={{ textAlign: 'center', py: 4 }}>
+                <Typography variant="body1" color="text.secondary">
+                  No motivations selected
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  Please select at least one motivation from the Strategic Motivations tab to generate copy
+                </Typography>
+              </Box>
+            )}
+            
+            {motivations.filter(m => m.selected).length > 0 && copyVariations.length === 0 && (
+              <Box sx={{ textAlign: 'center', py: 4 }}>
+                <Typography variant="body1" color="text.secondary">
+                  No copy generated yet
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  Configure your settings and click "Generate Copy" to create AI-generated copy
+                </Typography>
+              </Box>
+            )}
+          </Paper>
+        </Grid>
+      </Grid>
+    </Box>
+  );
+};
+
+export default CopyGenerationTab;
