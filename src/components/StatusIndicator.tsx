@@ -146,7 +146,6 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({
           <LinearProgress 
             variant="determinate" 
             value={progress} 
-            size={size === 'small' ? 'small' : 'medium'}
             sx={{ height: size === 'small' ? 4 : 6 }}
           />
         </Box>
