@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import React, { useState } from 'react';
 import Head from 'next/head';
 import {
   Box,
@@ -17,8 +16,6 @@ import {
   Chip,
   TextField,
   Button,
-  Tabs,
-  Tab,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -72,15 +69,6 @@ const platformIcons: Record<string, React.ReactNode> = {
   Pinterest: <PinterestIcon sx={{ color: '#E60023' }} />,
   TikTok: <TikTokIcon sx={{ color: '#000000' }} />, // Using TikTokIcon
 };
-
-// Interface for template data
-interface DynamicField {
-  id: string;
-  name: string;
-  type: 'text' | 'image' | 'video' | 'audio' | 'color' | 'link';
-  required: boolean;
-  description: string;
-}
 
 // Template card component
 const TemplateCard: React.FC<{
@@ -231,7 +219,10 @@ const TemplateCard: React.FC<{
 };
 
 const TemplatesNew: React.FC = () => {
-  const { data: templates, isLoading, error } = useQuery(['templates'], fetchTemplates);
+  const { data: templates, isLoading, error } = useQuery({
+    queryKey: ['templates'],
+    queryFn: fetchTemplates,
+  });
 
   // Example filter state (you may already have these)
   const [platformFilter, setPlatformFilter] = useState('All');
@@ -248,10 +239,6 @@ const TemplatesNew: React.FC = () => {
     // Add more filters as needed
     return true;
   });
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  };
   
   const handlePlatformFilterChange = (e: SelectChangeEvent) => {
     setPlatformFilter(e.target.value as string);
@@ -392,7 +379,6 @@ const TemplatesNew: React.FC = () => {
           <DialogContent>
             <Box sx={{ pt: 1 }}>
               <TextField
-                autoFocus
                 margin="dense"
                 id="name"
                 label="Template Name"
