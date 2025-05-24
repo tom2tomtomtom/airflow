@@ -316,3 +316,251 @@ const mockApprovalItems: ApprovalItem[] = [
     ],
   },
 ];
+
+// Sign Off Page Component
+const SignOffPage: React.FC = () => {
+  const router = useRouter();
+  const { user } = useAuth();
+  const { selectedClient } = useClient();
+  const [activeTab, setActiveTab] = useState(0);
+  const [approvalItems, setApprovalItems] = useState<ApprovalItem[]>(mockApprovalItems);
+  const [selectedItem, setSelectedItem] = useState<ApprovalItem | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [comment, setComment] = useState('');
+  const [filter, setFilter] = useState('all');
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
+  };
+
+  const handleApprove = (itemId: string) => {
+    // Handle approval logic
+    console.log('Approving item:', itemId);
+  };
+
+  const handleReject = (itemId: string) => {
+    // Handle rejection logic
+    console.log('Rejecting item:', itemId);
+  };
+
+  const handleRequestChanges = (itemId: string) => {
+    // Handle request changes logic
+    console.log('Requesting changes for item:', itemId);
+  };
+
+  const handleViewDetails = (item: ApprovalItem) => {
+    setSelectedItem(item);
+    setDetailsOpen(true);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'approved':
+        return 'success';
+      case 'rejected':
+        return 'error';
+      case 'changes_requested':
+        return 'warning';
+      default:
+        return 'default';
+    }
+  };
+
+  const filteredItems = approvalItems.filter(item => {
+    if (filter === 'all') return true;
+    return item.status === filter;
+  });
+
+  return (
+    <DashboardLayout>
+      <Head>
+        <title>Sign Off - Airwave</title>
+      </Head>
+
+      <Box sx={{ p: 3 }}>
+        <Typography variant="h4" gutterBottom>
+          Approval Workflow
+        </Typography>
+
+        <Paper sx={{ mb: 3 }}>
+          <Tabs value={activeTab} onChange={handleTabChange}>
+            <Tab label="Pending Approvals" />
+            <Tab label="My Approvals" />
+            <Tab label="All Items" />
+          </Tabs>
+        </Paper>
+
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={3}>
+            <Paper sx={{ p: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                Filters
+              </Typography>
+              <FormControl fullWidth sx={{ mb: 2 }}>
+                <InputLabel>Status</InputLabel>
+                <Select
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value)}
+                  label="Status"
+                >
+                  <MenuItem value="all">All</MenuItem>
+                  <MenuItem value="pending">Pending</MenuItem>
+                  <MenuItem value="approved">Approved</MenuItem>
+                  <MenuItem value="rejected">Rejected</MenuItem>
+                  <MenuItem value="changes_requested">Changes Requested</MenuItem>
+                </Select>
+              </FormControl>
+
+              <Divider sx={{ my: 2 }} />
+
+              <Box>
+                <Typography variant="subtitle2" gutterBottom>
+                  Statistics
+                </Typography>
+                <Box sx={{ mt: 1 }}>
+                  <Typography variant="body2">
+                    Pending: {approvalItems.filter(i => i.status === 'pending').length}
+                  </Typography>
+                  <Typography variant="body2">
+                    Approved: {approvalItems.filter(i => i.status === 'approved').length}
+                  </Typography>
+                  <Typography variant="body2">
+                    Rejected: {approvalItems.filter(i => i.status === 'rejected').length}
+                  </Typography>
+                </Box>
+              </Box>
+            </Paper>
+          </Grid>
+
+          <Grid item xs={12} md={9}>
+            <Grid container spacing={2}>
+              {filteredItems.map((item) => (
+                <Grid item xs={12} key={item.id}>
+                  <Card>
+                    <CardContent>
+                      <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                        <Box>
+                          <Typography variant="h6">
+                            {item.title}
+                          </Typography>
+                          <Box display="flex" gap={1} mt={1}>
+                            <Chip 
+                              label={item.type} 
+                              size="small" 
+                              color="primary" 
+                            />
+                            {item.platform && (
+                              <Chip 
+                                label={item.platform} 
+                                size="small" 
+                                variant="outlined" 
+                              />
+                            )}
+                            <Chip 
+                              label={item.status.replace('_', ' ')} 
+                              size="small" 
+                              color={getStatusColor(item.status) as any}
+                            />
+                          </Box>
+                          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                            Submitted by {item.submittedBy} on {item.submittedDate}
+                          </Typography>
+                          {item.dueDate && (
+                            <Typography variant="body2" color="warning.main">
+                              Due: {item.dueDate}
+                            </Typography>
+                          )}
+                        </Box>
+                        <Button
+                          variant="outlined"
+                          onClick={() => handleViewDetails(item)}
+                        >
+                          View Details
+                        </Button>
+                      </Box>
+
+                      <Box sx={{ mt: 2 }}>
+                        <Typography variant="subtitle2" gutterBottom>
+                          Approvers
+                        </Typography>
+                        <Box display="flex" gap={1} flexWrap="wrap">
+                          {item.approvers.map((approver) => (
+                            <Chip
+                              key={approver.id}
+                              label={`${approver.name} (${approver.status})`}
+                              size="small"
+                              color={getStatusColor(approver.status) as any}
+                              variant={approver.status === 'pending' ? 'outlined' : 'filled'}
+                            />
+                          ))}
+                        </Box>
+                      </Box>
+                    </CardContent>
+                    <CardActions>
+                      <Button
+                        startIcon={<ApproveIcon />}
+                        onClick={() => handleApprove(item.id)}
+                        color="success"
+                      >
+                        Approve
+                      </Button>
+                      <Button
+                        startIcon={<RejectIcon />}
+                        onClick={() => handleReject(item.id)}
+                        color="error"
+                      >
+                        Reject
+                      </Button>
+                      <Button
+                        startIcon={<EditIcon />}
+                        onClick={() => handleRequestChanges(item.id)}
+                        color="warning"
+                      >
+                        Request Changes
+                      </Button>
+                    </CardActions>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </Grid>
+        </Grid>
+
+        {/* Details Dialog */}
+        <Dialog
+          open={detailsOpen}
+          onClose={() => setDetailsOpen(false)}
+          maxWidth="md"
+          fullWidth
+        >
+          {selectedItem && (
+            <>
+              <DialogTitle>
+                {selectedItem.title}
+              </DialogTitle>
+              <DialogContent>
+                <Typography variant="body1" paragraph>
+                  {selectedItem.content.description}
+                </Typography>
+                {selectedItem.content.preview && (
+                  <img 
+                    src={selectedItem.content.preview} 
+                    alt="Preview" 
+                    style={{ width: '100%', maxHeight: 400, objectFit: 'contain' }}
+                  />
+                )}
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setDetailsOpen(false)}>
+                  Close
+                </Button>
+              </DialogActions>
+            </>
+          )}
+        </Dialog>
+      </Box>
+    </DashboardLayout>
+  );
+};
+
+export default SignOffPage;
