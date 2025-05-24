@@ -62,7 +62,8 @@ export default async function handler(
     }
 
     // Get user profile from our profiles table
-    const { data: profile, error: profileError } = await supabase
+    let profile;
+    const { data: profileData, error: profileError } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', authData.user.id)
@@ -93,6 +94,8 @@ export default async function handler(
       }
 
       profile = newProfile;
+    } else {
+      profile = profileData;
     }
 
     // Create JWT token with proper expiry from env
