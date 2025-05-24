@@ -51,11 +51,19 @@ export default async function handler(
     const { email, password, name, firstName, lastName } = validationResult.data;
     
     // Determine full name - ensure it's always a string
-    const fullName: string = name || 
-                    (firstName && lastName ? `${firstName} ${lastName}` : '') ||
-                    firstName || 
-                    lastName || 
-                    email.split('@')[0];
+    let fullName: string;
+    
+    if (name) {
+      fullName = name;
+    } else if (firstName && lastName) {
+      fullName = `${firstName} ${lastName}`;
+    } else if (firstName) {
+      fullName = firstName;
+    } else if (lastName) {
+      fullName = lastName;
+    } else {
+      fullName = email.split('@')[0];
+    }
 
     // Create user with Supabase Auth
     const { data: authData, error: authError } = await supabase.auth.signUp({
