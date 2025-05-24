@@ -59,13 +59,13 @@ export default async function handler(
     }
     
     // Determine full name with guaranteed string result
-    const fullName = (
+    const fullName: string = (
       name ?? 
       (firstName && lastName ? `${firstName} ${lastName}` : null) ??
       firstName ?? 
       lastName ?? 
       email.split('@')[0]
-    );
+    ) || 'User'; // Fallback to ensure it's never empty
 
     // Create user with Supabase Auth
     const { data: authData, error: authError } = await supabase.auth.signUp({
