@@ -152,6 +152,11 @@ export default async function handler(
       .from('assets')
       .getPublicUrl(`${client_id}/ai-generated/${filename}`);
 
+    // Parse dimensions safely
+    const dimensions = size.split('x');
+    const width = parseInt(dimensions[0] || '1024');
+    const height = parseInt(dimensions[1] || '1024');
+
     // Create asset record
     const { data: asset, error: assetError } = await supabase
       .from('assets')
@@ -161,8 +166,8 @@ export default async function handler(
         url: urlData.publicUrl,
         thumbnail_url: urlData.publicUrl,
         mime_type: 'image/png',
-        width: parseInt(size.split('x')[0]),
-        height: parseInt(size.split('x')[1]),
+        width,
+        height,
         client_id,
         tags: [...tags, 'ai-generated', 'dalle-3', purpose].filter(Boolean),
         metadata: {
