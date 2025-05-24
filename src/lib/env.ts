@@ -41,12 +41,14 @@ const parseEnv = () => {
     return envSchema.parse(process.env);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      console.error('❌ Invalid environment variables:');
+      const errorMessage = ['❌ Invalid environment variables:'];
       error.errors.forEach((err) => {
-        console.error(`   ${err.path.join('.')}: ${err.message}`);
+        errorMessage.push(`   ${err.path.join('.')}: ${err.message}`);
       });
-      console.error('\n💡 Please check your .env file against .env.example');
-      process.exit(1);
+      errorMessage.push('\n💡 Please check your .env file against .env.example');
+      
+      // Throw error instead of process.exit to avoid Edge Runtime warning
+      throw new Error(errorMessage.join('\n'));
     }
     throw error;
   }
