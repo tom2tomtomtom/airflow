@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
-import { env } from './lib/env';
+
+// Get JWT_SECRET directly for Edge Runtime compatibility
+const JWT_SECRET = process.env.JWT_SECRET || '';
 
 // Define public routes that don't require authentication
 const publicRoutes = [
@@ -138,7 +140,7 @@ export async function middleware(request: NextRequest) {
 
   try {
     // Verify the token
-    const secret = new TextEncoder().encode(env.JWT_SECRET);
+    const secret = new TextEncoder().encode(JWT_SECRET);
     const { payload } = await jwtVerify(token, secret, {
       algorithms: ['HS256']
     });
