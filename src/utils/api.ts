@@ -1,4 +1,5 @@
 // API utility functions for making requests to the backend
+import type { NextApiResponse } from 'next';
 
 // Error codes enum
 export enum ErrorCode {
@@ -15,7 +16,7 @@ export enum ErrorCode {
 
 // Error response helper
 export const errorResponse = (
-  res: any,
+  res: NextApiResponse,
   code: ErrorCode,
   message: string,
   statusCode: number = 400
