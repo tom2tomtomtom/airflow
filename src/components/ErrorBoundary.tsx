@@ -84,7 +84,7 @@ class ErrorBoundary extends Component<Props, State> {
             </Typography>
             
             <Typography variant="body1" color="text.secondary" paragraph>
-              We're sorry for the inconvenience. An unexpected error occurred.
+              We&apos;re sorry for the inconvenience. An unexpected error occurred.
             </Typography>
 
             {/* Show error details in development */}
@@ -131,6 +131,8 @@ class ErrorBoundary extends Component<Props, State> {
   }
 }
 
+ErrorBoundary.displayName = 'ErrorBoundary';
+
 export default ErrorBoundary;
 
 // Hook for functional components to trigger error boundaries
@@ -145,9 +147,13 @@ export function withErrorBoundary<P extends object>(
   Component: React.ComponentType<P>,
   fallback?: ReactNode
 ) {
-  return (props: P) => (
+  const WrappedComponent = (props: P) => (
     <ErrorBoundary fallback={fallback}>
       <Component {...props} />
     </ErrorBoundary>
   );
+  
+  WrappedComponent.displayName = `withErrorBoundary(${Component.displayName || Component.name || 'Component'})`;
+  
+  return WrappedComponent;
 }
