@@ -48,9 +48,35 @@ const LoginPage: React.FC = () => {
 
   const handleDemoLogin = () => {
     setLoading(true);
+    
+    // Set demo user data
+    const demoUser = {
+      id: 'demo-user-' + Date.now(),
+      email: 'demo@airwave.app',
+      name: 'Demo User',
+      token: 'demo-token-' + Math.random().toString(36).substring(7)
+    };
+    
+    // Store in localStorage to persist auth state
+    localStorage.setItem('airwave_user', JSON.stringify(demoUser));
+    
+    // Also set a demo client
+    const demoClient = {
+      id: 'demo-client-' + Date.now(),
+      name: 'Demo Company',
+      description: 'Demo client for testing AIrWAVE features',
+      primaryColor: '#1976d2',
+      secondaryColor: '#dc004e',
+      logoUrl: ''
+    };
+    
+    localStorage.setItem('airwave_active_client', JSON.stringify(demoClient));
+    localStorage.setItem('airwave_clients', JSON.stringify([demoClient]));
+    
     setTimeout(() => {
       setLoading(false);
-      router.push('/');
+      // Force a page reload to trigger auth context update
+      window.location.href = '/';
     }, 500);
   };
 
@@ -212,8 +238,7 @@ const LoginPage: React.FC = () => {
 
           <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
             <Typography variant="caption" color="text.secondary" align="center" display="block">
-              <strong>Demo Note:</strong> Authentication is not yet implemented. 
-              Click "Continue with Demo" to explore the application.
+              <strong>Demo Note:</strong> Click "Continue with Demo" to explore the application with sample data.
             </Typography>
           </Box>
         </Paper>
