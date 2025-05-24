@@ -8,3 +8,11 @@
 [build.environment]
   NODE_VERSION = "18"
   NPM_VERSION = "10"
+  NEXT_PUBLIC_DEMO_MODE = "true"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
