@@ -1,0 +1,11 @@
+{
+  "version": "0.1.0",
+  "app_name": "AIrWAVE",
+  "initialized": true,
+  "features": {
+    "ai_generation": true,
+    "template_library": true,
+    "asset_management": true,
+    "client_management": true
+  }
+}
