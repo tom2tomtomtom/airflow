@@ -6,6 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET || '';
 
 // Define public routes that don't require authentication
 const publicRoutes = [
+  '/',  // Add root path as public
   '/login',
   '/signup',
   '/forgot-password',
