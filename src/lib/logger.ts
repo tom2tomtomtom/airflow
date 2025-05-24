@@ -157,7 +157,7 @@ export function logPerformance<T>(
 }
 
 // Type definition for Express Request to include custom properties
-interface CustomRequest extends Request {
+interface CustomRequest extends Omit<Request, 'ip' | 'connection'> {
   ip?: string;
   connection?: {
     remoteAddress?: string;
@@ -178,21 +178,35 @@ export function logRequest(req: CustomRequest, res: Response, next: NextFunction
   });
 
   // Override res.end to log response
-  const originalEnd = res.end;
-  res.end = function(...args: [any, BufferEncoding?, (() => void)?]) {
+  const originalEnd = res.end.bind(res);
+  res.end = function(chunk?: any, encoding?: any, cb?: any) {
     res.end = originalEnd;
-    const result = res.end.apply(res, args);
     
-    const duration = Date.now() - start;
-    logger.info(`${req.method} ${req.url} ${res.statusCode}`, {
-      method: req.method,
-      url: req.url,
-      statusCode: res.statusCode,
-      duration: `${duration}ms`,
-    });
+    // Call original end with proper arguments
+    if (typeof chunk === 'function') {
+      const result = originalEnd(chunk);
+      logResponse();
+      return result;
+    } else if (typeof encoding === 'function') {
+      const result = originalEnd(chunk, encoding);
+      logResponse();
+      return result;
+    } else {
+      const result = originalEnd(chunk, encoding, cb);
+      logResponse();
+      return result;
+    }
     
-    return result;
-  };
+    function logResponse() {
+      const duration = Date.now() - start;
+      logger.info(`${req.method} ${req.url} ${res.statusCode}`, {
+        method: req.method,
+        url: req.url,
+        statusCode: res.statusCode,
+        duration: `${duration}ms`,
+      });
+    }
+  } as any;
 
   next();
 }

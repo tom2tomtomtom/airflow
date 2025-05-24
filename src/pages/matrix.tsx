@@ -286,7 +286,7 @@ const mockTemplates: Template[] = [
 const MatrixPage: React.FC = () => {
   const router = useRouter();
   const { user } = useAuth();
-  const { selectedClient } = useClient();
+  const { activeClient: selectedClient } = useClient();
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [fieldAssignments, setFieldAssignments] = useState<Record<string, FieldAssignment>>({});
   const [loading, setLoading] = useState(false);

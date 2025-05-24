@@ -321,7 +321,7 @@ const mockApprovalItems: ApprovalItem[] = [
 const SignOffPage: React.FC = () => {
   const router = useRouter();
   const { user } = useAuth();
-  const { selectedClient } = useClient();
+  const { activeClient: selectedClient } = useClient();
   const [activeTab, setActiveTab] = useState(0);
   const [approvalItems, setApprovalItems] = useState<ApprovalItem[]>(mockApprovalItems);
   const [selectedItem, setSelectedItem] = useState<ApprovalItem | null>(null);
