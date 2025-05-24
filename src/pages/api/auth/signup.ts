@@ -70,7 +70,8 @@ export default async function handler(
     } else if (lastName) {
       fullName = lastName;
     } else {
-      fullName = email.split('@')[0];
+      // Use a fallback to ensure TypeScript knows this is always a string
+      fullName = email ? email.split('@')[0] : 'User';
     }
 
     // Create user with Supabase Auth
