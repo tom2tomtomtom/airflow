@@ -1,9 +1,10 @@
 import { env } from './env';
+import { Request, Response, NextFunction } from 'express';
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 interface LogContext {
-  [key: string]: any;
+  [key: string]: string | number | boolean | null | undefined | LogContext;
 }
 
 class Logger {
@@ -92,7 +93,7 @@ class Logger {
         stack: error.stack,
       };
     } else if (error) {
-      errorContext.error = error;
+      errorContext.error = String(error);
     }
 
     this.log('error', message, errorContext);
@@ -155,8 +156,16 @@ export function logPerformance<T>(
   }
 }
 
+// Type definition for Express Request to include custom properties
+interface CustomRequest extends Request {
+  ip?: string;
+  connection?: {
+    remoteAddress?: string;
+  };
+}
+
 // Request logging middleware helper
-export function logRequest(req: any, res: any, next: any) {
+export function logRequest(req: CustomRequest, res: Response, next: NextFunction) {
   const logger = loggers.api;
   const start = Date.now();
   
@@ -164,15 +173,15 @@ export function logRequest(req: any, res: any, next: any) {
   logger.info(`${req.method} ${req.url}`, {
     method: req.method,
     url: req.url,
-    ip: req.ip || req.connection.remoteAddress,
-    userAgent: req.headers['user-agent'],
+    ip: req.ip || req.connection?.remoteAddress || 'unknown',
+    userAgent: req.headers['user-agent'] || 'unknown',
   });
 
   // Override res.end to log response
   const originalEnd = res.end;
-  res.end = function(...args: any[]) {
+  res.end = function(...args: [any, BufferEncoding?, (() => void)?]) {
     res.end = originalEnd;
-    res.end.apply(res, args);
+    const result = res.end.apply(res, args);
     
     const duration = Date.now() - start;
     logger.info(`${req.method} ${req.url} ${res.statusCode}`, {
@@ -181,6 +190,8 @@ export function logRequest(req: any, res: any, next: any) {
       statusCode: res.statusCode,
       duration: `${duration}ms`,
     });
+    
+    return result;
   };
 
   next();
