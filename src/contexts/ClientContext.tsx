@@ -250,7 +250,13 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       }
 
       // Update client data with explicit typing
-      const updatedClient: Client = { ...clients[clientIndex], ...clientData };
+      const existingClient = clients[clientIndex];
+      const updatedClient: Client = {
+        ...existingClient,
+        ...Object.fromEntries(
+          Object.entries(clientData).filter(([_, value]) => value !== undefined)
+        )
+      } as Client;
       const updatedClients = [...clients];
       updatedClients[clientIndex] = updatedClient;
 
@@ -273,7 +279,13 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       }
 
       // Update client data with explicit typing
-      const updatedClient: Client = { ...clients[clientIndex], ...clientData };
+      const existingClient = clients[clientIndex];
+      const updatedClient: Client = {
+        ...existingClient,
+        ...Object.fromEntries(
+          Object.entries(clientData).filter(([_, value]) => value !== undefined)
+        )
+      } as Client;
       const updatedClients = [...clients];
       updatedClients[clientIndex] = updatedClient;
 
