@@ -50,8 +50,8 @@ export default async function handler(
 
     const { email, password, name, firstName, lastName } = validationResult.data;
     
-    // Determine full name
-    const fullName = name || 
+    // Determine full name - ensure it's always a string
+    const fullName: string = name || 
                     (firstName && lastName ? `${firstName} ${lastName}` : '') ||
                     firstName || 
                     lastName || 
