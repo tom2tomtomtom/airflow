@@ -10,6 +10,30 @@ const openai = new OpenAI({
   apiKey: env.OPENAI_API_KEY,
 });
 
+// Define brand guidelines schema
+const BrandGuidelinesSchema = z.object({
+  voiceTone: z.string().optional(),
+  targetAudience: z.string().optional(),
+  keyMessages: z.array(z.string()).optional(),
+  colors: z.object({
+    primary: z.string().optional(),
+    secondary: z.string().optional(),
+    accent: z.string().optional(),
+    background: z.string().optional(),
+    text: z.string().optional(),
+  }).optional(),
+  typography: z.object({
+    headingFont: z.string().optional(),
+    bodyFont: z.string().optional(),
+    sizes: z.record(z.string()).optional(),
+  }).optional(),
+  logoUsage: z.string().optional(),
+  dosDonts: z.object({
+    dos: z.array(z.string()).optional(),
+    donts: z.array(z.string()).optional(),
+  }).optional(),
+}).optional();
+
 // Request schema
 const GenerateImageSchema = z.object({
   prompt: z.string().min(1).max(4000),
@@ -25,7 +49,7 @@ const GenerateImageSchema = z.object({
   tags: z.array(z.string()).optional(),
   // Optional enhancement
   enhance_prompt: z.boolean().default(true), // Use AI to enhance the prompt
-  brand_guidelines: z.any().optional(), // Include brand guidelines in prompt
+  brand_guidelines: BrandGuidelinesSchema,
 });
 
 export default async function handler(
