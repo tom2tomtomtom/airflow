@@ -88,7 +88,13 @@ export default async function handler(
         temperature: 0.7,
       });
 
-      finalPrompt = enhancementResponse.choices[0].message.content || prompt;
+      // Add proper null checking for TypeScript
+      if (enhancementResponse.choices && 
+          enhancementResponse.choices.length > 0 && 
+          enhancementResponse.choices[0].message && 
+          enhancementResponse.choices[0].message.content) {
+        finalPrompt = enhancementResponse.choices[0].message.content;
+      }
     }
 
     // Add safety prefix for brand safety
