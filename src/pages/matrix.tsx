@@ -281,3 +281,272 @@ const mockTemplates: Template[] = [
     creatomateId: 'crt-345678'
   }
 ];
+
+// Matrix Page Component
+const MatrixPage: React.FC = () => {
+  const router = useRouter();
+  const { user } = useAuth();
+  const { selectedClient } = useClient();
+  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+  const [fieldAssignments, setFieldAssignments] = useState<Record<string, FieldAssignment>>({});
+  const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    // Initialize field assignments when template is selected
+    if (selectedTemplate) {
+      const initialAssignments: Record<string, FieldAssignment> = {};
+      selectedTemplate.dynamicFields.forEach(field => {
+        initialAssignments[field.id] = {
+          fieldId: field.id,
+          status: 'empty'
+        };
+      });
+      setFieldAssignments(initialAssignments);
+    }
+  }, [selectedTemplate]);
+
+  const handleTemplateSelect = (template: Template) => {
+    setSelectedTemplate(template);
+  };
+
+  const handleFieldUpdate = (fieldId: string, value: string | undefined, assetId?: string) => {
+    setFieldAssignments(prev => ({
+      ...prev,
+      [fieldId]: {
+        ...prev[fieldId],
+        value,
+        assetId,
+        status: value || assetId ? 'completed' : 'empty'
+      }
+    }));
+  };
+
+  const handleSaveMatrix = async () => {
+    setLoading(true);
+    try {
+      // Save matrix logic here
+      console.log('Saving matrix:', { selectedTemplate, fieldAssignments });
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+    } catch (error) {
+      console.error('Error saving matrix:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getFieldIcon = (type: string) => {
+    switch (type) {
+      case 'text':
+        return <TextFieldsIcon />;
+      case 'image':
+        return <ImageIcon />;
+      case 'video':
+        return <VideoIcon />;
+      case 'audio':
+        return <AudiotrackIcon />;
+      case 'color':
+        return <ColorLensIcon />;
+      case 'link':
+        return <LinkIcon />;
+      default:
+        return <TextFieldsIcon />;
+    }
+  };
+
+  const filteredTemplates = mockTemplates.filter(template =>
+    template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    template.platform.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    template.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  return (
+    <DashboardLayout>
+      <Head>
+        <title>Matrix Editor - Airwave</title>
+      </Head>
+
+      <Box sx={{ p: 3 }}>
+        <Typography variant="h4" gutterBottom>
+          Matrix Editor
+        </Typography>
+
+        <Grid container spacing={3}>
+          {/* Template Selection */}
+          <Grid item xs={12} md={4}>
+            <Paper sx={{ p: 2, mb: 2 }}>
+              <TextField
+                fullWidth
+                placeholder="Search templates..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{ mb: 2 }}
+              />
+              
+              <Typography variant="h6" gutterBottom>
+                Select Template
+              </Typography>
+              
+              <Box sx={{ maxHeight: 600, overflowY: 'auto' }}>
+                {filteredTemplates.map((template) => (
+                  <Card
+                    key={template.id}
+                    sx={{
+                      mb: 2,
+                      cursor: 'pointer',
+                      border: selectedTemplate?.id === template.id ? 2 : 0,
+                      borderColor: 'primary.main',
+                    }}
+                    onClick={() => handleTemplateSelect(template)}
+                  >
+                    <CardContent>
+                      <Typography variant="subtitle1">
+                        {template.name}
+                      </Typography>
+                      <Box display="flex" gap={1} mt={1}>
+                        <Chip label={template.platform} size="small" />
+                        <Chip label={template.aspectRatio} size="small" variant="outlined" />
+                      </Box>
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                        {template.description}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                ))}
+              </Box>
+            </Paper>
+          </Grid>
+
+          {/* Field Assignment */}
+          <Grid item xs={12} md={8}>
+            {selectedTemplate ? (
+              <Paper sx={{ p: 3 }}>
+                <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+                  <Box>
+                    <Typography variant="h5">
+                      {selectedTemplate.name}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {selectedTemplate.platform} • {selectedTemplate.dimensions}
+                    </Typography>
+                  </Box>
+                  <Button
+                    variant="contained"
+                    startIcon={<SaveIcon />}
+                    onClick={handleSaveMatrix}
+                    disabled={loading}
+                  >
+                    Save Matrix
+                  </Button>
+                </Box>
+
+                <Divider sx={{ mb: 3 }} />
+
+                <Typography variant="h6" gutterBottom>
+                  Dynamic Fields
+                </Typography>
+
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow>
+                        <TableCell>Field</TableCell>
+                        <TableCell>Type</TableCell>
+                        <TableCell>Required</TableCell>
+                        <TableCell>Value/Asset</TableCell>
+                        <TableCell>Status</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {selectedTemplate.dynamicFields.map((field) => (
+                        <TableRow key={field.id}>
+                          <TableCell>
+                            <Box display="flex" alignItems="center" gap={1}>
+                              {getFieldIcon(field.type)}
+                              <Box>
+                                <Typography variant="body1">
+                                  {field.name}
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                  {field.description}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          </TableCell>
+                          <TableCell>
+                            <Chip label={field.type} size="small" />
+                          </TableCell>
+                          <TableCell>
+                            {field.required ? (
+                              <Chip label="Required" size="small" color="error" />
+                            ) : (
+                              <Chip label="Optional" size="small" variant="outlined" />
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {field.type === 'text' ? (
+                              <TextField
+                                size="small"
+                                fullWidth
+                                value={fieldAssignments[field.id]?.value || ''}
+                                onChange={(e) => handleFieldUpdate(field.id, e.target.value)}
+                                placeholder="Enter text..."
+                              />
+                            ) : field.type === 'color' ? (
+                              <TextField
+                                size="small"
+                                type="color"
+                                value={fieldAssignments[field.id]?.value || '#000000'}
+                                onChange={(e) => handleFieldUpdate(field.id, e.target.value)}
+                              />
+                            ) : (
+                              <Button
+                                size="small"
+                                startIcon={<AddIcon />}
+                                onClick={() => {/* Open asset picker */}}
+                              >
+                                Select {field.type}
+                              </Button>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <Chip
+                              label={fieldAssignments[field.id]?.status || 'empty'}
+                              size="small"
+                              color={
+                                fieldAssignments[field.id]?.status === 'completed'
+                                  ? 'success'
+                                  : fieldAssignments[field.id]?.status === 'in-progress'
+                                  ? 'warning'
+                                  : 'default'
+                              }
+                            />
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Paper>
+            ) : (
+              <Paper sx={{ p: 3, textAlign: 'center' }}>
+                <Typography variant="h6" color="text.secondary">
+                  Select a template to begin creating your matrix
+                </Typography>
+              </Paper>
+            )}
+          </Grid>
+        </Grid>
+      </Box>
+    </DashboardLayout>
+  );
+};
+
+export default MatrixPage;
