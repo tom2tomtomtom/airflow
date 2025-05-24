@@ -118,7 +118,12 @@ export default async function handler(
         h: 3600,
         d: 86400
       };
-      expirySeconds = parseInt(num) * (multipliers[unit] || 86400);
+      
+      if (num && unit) {
+        const parsedNum = parseInt(num, 10);
+        const multiplier = multipliers[unit] || 86400;
+        expirySeconds = parsedNum * multiplier;
+      }
     }
 
     const token = jwt.sign(
