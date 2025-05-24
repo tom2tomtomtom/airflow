@@ -1,3 +1,7 @@
+// Define specific metadata types
+export type MetadataValue = string | number | boolean | null | undefined;
+export type BaseMetadata = Record<string, MetadataValue | Record<string, MetadataValue>>;
+
 // Base model with common fields
 export interface BaseModel {
   id: string;
@@ -5,7 +9,7 @@ export interface BaseModel {
   lastModified: string;
   createdBy: string;
   version: number;
-  metadata: Record<string, any>;
+  metadata: BaseMetadata;
 }
 
 // Client Model
@@ -107,38 +111,51 @@ export interface CampaignSchedule {
   };
 }
 
+// Define specific types for demographics and locations
+export interface Demographics {
+  ageRanges?: string[];
+  genders?: string[];
+  incomes?: string[];
+  educationLevels?: string[];
+}
+
+export interface Locations {
+  countries?: string[];
+  regions?: string[];
+  cities?: string[];
+  postalCodes?: string[];
+  radius?: {
+    lat: number;
+    lng: number;
+    distance: number;
+    unit: 'km' | 'mi';
+  };
+}
+
 // Campaign Target Model
 export interface CampaignTarget {
   platforms: string[];
-  demographics?: {
-    ageRanges?: string[];
-    genders?: string[];
-    incomes?: string[];
-    educationLevels?: string[];
-  };
-  locations?: {
-    countries?: string[];
-    regions?: string[];
-    cities?: string[];
-    postalCodes?: string[];
-    radius?: {
-      lat: number;
-      lng: number;
-      distance: number;
-      unit: 'km' | 'mi';
-    };
-  };
+  demographics?: Demographics;
+  locations?: Locations;
   interests?: string[];
   behaviors?: string[];
   devices?: string[];
   languages?: string[];
   customAudiences?: string[];
   exclusions?: {
-    demographics?: any;
-    locations?: any;
+    demographics?: Demographics;
+    locations?: Locations;
     interests?: string[];
     behaviors?: string[];
   };
+}
+
+// Define specific content metadata
+export interface ContentMetadata {
+  customText?: string;
+  customUrl?: string;
+  customData?: Record<string, string | number | boolean>;
+  [key: string]: MetadataValue | Record<string, MetadataValue> | undefined;
 }
 
 // Campaign Content Model
@@ -169,7 +186,7 @@ export interface CampaignContent {
     comments: number;
     likes: number;
   };
-  metadata?: Record<string, any>;
+  metadata?: ContentMetadata;
 }
 
 // Campaign Performance Model
@@ -223,7 +240,10 @@ export interface AssetMetadata {
   expiryDate?: string;
   aiGenerated?: boolean;
   aiPrompt?: string;
-  [key: string]: any;
+  width?: number;
+  height?: number;
+  mimeType?: string;
+  [key: string]: string | number | boolean | null | undefined;
 }
 
 // Template Model
