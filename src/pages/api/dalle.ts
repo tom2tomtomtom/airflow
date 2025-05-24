@@ -112,11 +112,10 @@ export default async function handler(
       response_format: 'url',
     });
 
-    if (!imageResponse.data || imageResponse.data.length === 0) {
+    const generatedImage = imageResponse.data?.[0];
+    if (!generatedImage) {
       throw new Error('No image generated');
     }
-
-    const generatedImage = imageResponse.data[0];
     
     // Download the image to upload to Supabase
     const imageUrl = generatedImage.url;
