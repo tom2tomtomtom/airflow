@@ -13,6 +13,15 @@ export interface UserPermission {
   scope: 'global' | 'client' | 'campaign' | 'asset';
 }
 
+// Define specific metadata interface
+export interface UserMetadata {
+  lastLoginDevice?: string;
+  browserInfo?: string;
+  ipAddress?: string;
+  customFields?: Record<string, string | number | boolean>;
+  [key: string]: string | number | boolean | undefined | Record<string, string | number | boolean>;
+}
+
 export interface User {
   id: string;
   email: string;
@@ -24,7 +33,7 @@ export interface User {
   lastLogin: string;
   isActive: boolean;
   preferences: UserPreferences;
-  metadata: Record<string, any>;
+  metadata: UserMetadata;
   tenantId: string;
 }
 
