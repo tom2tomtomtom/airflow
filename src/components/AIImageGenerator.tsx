@@ -27,12 +27,31 @@ import {
   Download,
   ContentCopy,
 } from '@mui/icons-material';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+import { Asset, BrandGuidelines } from '@/types/models';
+
+// Define the response type for generated images
+interface GeneratedImageResponse {
+  success: boolean;
+  message?: string;
+  asset: Asset;
+  generation_details: {
+    original_prompt: string;
+    enhanced_prompt?: string;
+    revised_prompt?: string;
+    model: string;
+    settings: {
+      size: string;
+      quality: string;
+      style: string;
+    };
+  };
+}
 
 interface AIImageGeneratorProps {
   clientId: string;
-  onImageGenerated?: (asset: any) => void;
-  brandGuidelines?: any;
+  onImageGenerated?: (asset: Asset) => void;
+  brandGuidelines?: BrandGuidelines;
 }
 
 export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
@@ -43,7 +62,7 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [generatedImage, setGeneratedImage] = useState<any>(null);
+  const [generatedImage, setGeneratedImage] = useState<GeneratedImageResponse | null>(null);
   const [showDialog, setShowDialog] = useState(false);
   
   // Generation options
@@ -65,7 +84,7 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
     setError(null);
 
     try {
-      const response = await axios.post('/api/dalle', {
+      const response = await axios.post<GeneratedImageResponse>('/api/dalle', {
         prompt,
         client_id: clientId,
         ...options,
@@ -81,14 +100,22 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
           onImageGenerated(response.data.asset);
         }
       } else {
-        setError(response.data.message);
+        setError(response.data.message || 'Failed to generate image');
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Generation error:', err);
-      setError(
-        err.response?.data?.message || 
-        'Failed to generate image. Please try again.'
-      );
+      
+      if (axios.isAxiosError(err)) {
+        const axiosError = err as AxiosError<{ message?: string }>;
+        setError(
+          axiosError.response?.data?.message || 
+          'Failed to generate image. Please try again.'
+        );
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unexpected error occurred');
+      }
     } finally {
       setLoading(false);
     }
