@@ -1,40 +1,52 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { vi } from 'vitest';
-import StatusIndicator from '../StatusIndicator';
+import { describe, it, expect } from 'vitest';
+import StatusIndicator, { StatusType } from '../StatusIndicator';
 
 describe('StatusIndicator', () => {
-  it('renders with success status', () => {
-    render(<StatusIndicator status="success" />);
-    const indicator = screen.getByTestId('status-indicator');
-    expect(indicator).toBeInTheDocument();
-    expect(indicator).toHaveClass('success');
+  it('renders with completed status', () => {
+    render(<StatusIndicator status="completed" />);
+    const chip = screen.getByText('Completed');
+    expect(chip).toBeInTheDocument();
   });
 
   it('renders with error status', () => {
     render(<StatusIndicator status="error" />);
-    const indicator = screen.getByTestId('status-indicator');
-    expect(indicator).toBeInTheDocument();
-    expect(indicator).toHaveClass('error');
+    const chip = screen.getByText('Error');
+    expect(chip).toBeInTheDocument();
   });
 
   it('renders with warning status', () => {
     render(<StatusIndicator status="warning" />);
-    const indicator = screen.getByTestId('status-indicator');
-    expect(indicator).toBeInTheDocument();
-    expect(indicator).toHaveClass('warning');
+    const chip = screen.getByText('Warning');
+    expect(chip).toBeInTheDocument();
   });
 
-  it('renders with custom message', () => {
-    const message = 'Custom status message';
-    render(<StatusIndicator status="success" message={message} />);
-    expect(screen.getByText(message)).toBeInTheDocument();
+  it('renders with custom label', () => {
+    const customLabel = 'Custom status message';
+    render(<StatusIndicator status="completed" label={customLabel} />);
+    expect(screen.getByText(customLabel)).toBeInTheDocument();
   });
 
-  it('handles undefined status gracefully', () => {
-    render(<StatusIndicator status={undefined} />);
-    const indicator = screen.getByTestId('status-indicator');
-    expect(indicator).toBeInTheDocument();
-    expect(indicator).toHaveClass('default');
+  it('handles empty status', () => {
+    render(<StatusIndicator status="empty" />);
+    const chip = screen.getByText('Empty');
+    expect(chip).toBeInTheDocument();
+  });
+
+  it('renders with text variant', () => {
+    render(<StatusIndicator status="completed" variant="text" />);
+    expect(screen.getByText('Completed')).toBeInTheDocument();
+  });
+
+  it('renders with badge variant', () => {
+    render(<StatusIndicator status="in-progress" variant="badge" />);
+    expect(screen.getByText('In Progress')).toBeInTheDocument();
+  });
+
+  it('renders without icon when showIcon is false', () => {
+    render(<StatusIndicator status="completed" showIcon={false} />);
+    const chip = screen.getByText('Completed');
+    expect(chip).toBeInTheDocument();
   });
 });

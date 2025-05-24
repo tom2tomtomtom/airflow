@@ -17,7 +17,6 @@ import {
 } from '@mui/material';
 import {
   Menu as MenuIcon,
-  Dashboard as DashboardIcon,
   Image as AssetsIcon,
   ViewModule as MatrixIcon,
   Description as TemplatesIcon,

@@ -205,8 +205,8 @@ const PreviewPage = () => {
   // Get aspect ratio dimensions for preview
   const getAspectRatioDimensions = (aspectRatio: string) => {
     const parts = aspectRatio.split(':').map(Number);
-    const width = parts[0] || 1;
-    const height = parts[1] || 1;
+    const width = parts[0] ?? 1;
+    const height = parts[1] ?? 1;
     const maxWidth = 400;
     const maxHeight = 600;
 

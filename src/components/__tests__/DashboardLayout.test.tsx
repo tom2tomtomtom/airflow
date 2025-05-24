@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { useRouter } from 'next/router';
-import { vi } from 'vitest';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import DashboardLayout from '../DashboardLayout';
 
 vi.mock('next/router', () => ({
@@ -12,7 +12,7 @@ describe('DashboardLayout', () => {
   const mockPush = vi.fn();
   
   beforeEach(() => {
-    (useRouter as any).mockReturnValue({
+    (useRouter as ReturnType<typeof vi.fn>).mockReturnValue({
       pathname: '/',
       push: mockPush,
     });
@@ -33,7 +33,7 @@ describe('DashboardLayout', () => {
   });
 
   it('highlights active route', () => {
-    (useRouter as any).mockReturnValue({
+    (useRouter as ReturnType<typeof vi.fn>).mockReturnValue({
       pathname: '/generate',
       push: mockPush,
     });
