@@ -1,5 +1,32 @@
 // API utility functions for making requests to the backend
 
+// Error codes enum
+export enum ErrorCode {
+  INVALID_REQUEST = 'INVALID_REQUEST',
+  UNAUTHORIZED = 'UNAUTHORIZED',
+  FORBIDDEN = 'FORBIDDEN',
+  NOT_FOUND = 'NOT_FOUND',
+  INTERNAL_ERROR = 'INTERNAL_ERROR',
+  RATE_LIMIT_EXCEEDED = 'RATE_LIMIT_EXCEEDED',
+  VALIDATION_ERROR = 'VALIDATION_ERROR',
+}
+
+// Error response helper
+export const errorResponse = (
+  res: any,
+  code: ErrorCode,
+  message: string,
+  statusCode: number = 400
+) => {
+  return res.status(statusCode).json({
+    success: false,
+    error: {
+      code,
+      message,
+    },
+  });
+};
+
 // Get the authentication token from localStorage
 const getAuthToken = (): string | null => {
   try {
