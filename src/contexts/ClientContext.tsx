@@ -68,7 +68,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             const storedActiveClient = localStorage.getItem("airwave_active_client");
             if (storedActiveClient) {
               setActiveClient(JSON.parse(storedActiveClient));
-            } else if (data.clients.length > 0) {
+            } else if (data.clients.length > 0 && data.clients[0]) {
               // Set first client as active if none is selected
               setActiveClient(data.clients[0]);
               localStorage.setItem("airwave_active_client", JSON.stringify(data.clients[0]));
@@ -83,7 +83,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             const storedActiveClient = localStorage.getItem('airwave_active_client');
             if (storedActiveClient) {
               setActiveClient(JSON.parse(storedActiveClient));
-            } else if (parsedClients.length > 0) {
+            } else if (parsedClients.length > 0 && parsedClients[0]) {
               // Set first client as active if none is selected
               setActiveClient(parsedClients[0]);
               localStorage.setItem('airwave_active_client', JSON.stringify(parsedClients[0]));
@@ -100,7 +100,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           const storedActiveClient = localStorage.getItem('airwave_active_client');
           if (storedActiveClient) {
             setActiveClient(JSON.parse(storedActiveClient));
-          } else if (parsedClients.length > 0) {
+          } else if (parsedClients.length > 0 && parsedClients[0]) {
             setActiveClient(parsedClients[0]);
             localStorage.setItem('airwave_active_client', JSON.stringify(parsedClients[0]));
           }

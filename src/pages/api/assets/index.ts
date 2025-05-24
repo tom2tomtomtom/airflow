@@ -162,6 +162,9 @@ function createAsset(
     }
 
     // Create new asset
+    const isoDate = new Date().toISOString();
+    const dateOnly = isoDate.split('T')[0]!; // Non-null assertion since ISO date always has 'T'
+    
     const newAsset: Asset = {
       id: 'asset_' + Math.random().toString(36).substring(2, 9),
       name,
@@ -170,7 +173,7 @@ function createAsset(
       thumbnailUrl,
       description,
       tags: tags || [],
-      dateCreated: new Date().toISOString().split('T')[0],
+      dateCreated: dateOnly,
       clientId,
       userId,
       favorite: false,
