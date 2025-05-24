@@ -78,9 +78,15 @@ function getClient(
   clientIndex: number
 ) {
   try {
+    const client = mockClients[clientIndex];
+    
+    if (!client) {
+      return res.status(404).json({ success: false, message: 'Client not found' });
+    }
+    
     return res.status(200).json({
       success: true,
-      client: mockClients[clientIndex],
+      client: client,
     });
   } catch (error) {
     console.error('Error fetching client:', error);
@@ -96,15 +102,21 @@ function updateClient(
 ) {
   try {
     const { name, description, primaryColor, secondaryColor, logoUrl } = req.body;
+    
+    const existingClient = mockClients[clientIndex];
+    
+    if (!existingClient) {
+      return res.status(404).json({ success: false, message: 'Client not found' });
+    }
 
     // Update client data
     const updatedClient = {
-      ...mockClients[clientIndex],
-      name: name || mockClients[clientIndex].name,
-      description: description || mockClients[clientIndex].description,
-      primaryColor: primaryColor || mockClients[clientIndex].primaryColor,
-      secondaryColor: secondaryColor || mockClients[clientIndex].secondaryColor,
-      logoUrl: logoUrl || mockClients[clientIndex].logoUrl,
+      ...existingClient,
+      name: name || existingClient.name,
+      description: description || existingClient.description,
+      primaryColor: primaryColor || existingClient.primaryColor,
+      secondaryColor: secondaryColor || existingClient.secondaryColor,
+      logoUrl: logoUrl || existingClient.logoUrl,
     };
 
     // Update in mock database
@@ -129,6 +141,11 @@ function deleteClient(
   try {
     // Remove from mock database
     const deletedClient = mockClients[clientIndex];
+    
+    if (!deletedClient) {
+      return res.status(404).json({ success: false, message: 'Client not found' });
+    }
+    
     mockClients = mockClients.filter((_, index) => index !== clientIndex);
 
     return res.status(200).json({
