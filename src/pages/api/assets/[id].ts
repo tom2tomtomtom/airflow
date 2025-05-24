@@ -116,9 +116,15 @@ function getAsset(
   assetIndex: number
 ) {
   try {
+    const asset = mockAssets[assetIndex];
+    
+    if (!asset) {
+      return res.status(404).json({ success: false, message: 'Asset not found' });
+    }
+    
     return res.status(200).json({
       success: true,
-      asset: mockAssets[assetIndex],
+      asset: asset,
     });
   } catch (error) {
     console.error('Error fetching asset:', error);
@@ -133,17 +139,23 @@ function updateAsset(
   assetIndex: number
 ) {
   try {
+    const existingAsset = mockAssets[assetIndex];
+    
+    if (!existingAsset) {
+      return res.status(404).json({ success: false, message: 'Asset not found' });
+    }
+    
     const { name, url, thumbnailUrl, description, tags, favorite } = req.body;
 
     // Update asset data
     const updatedAsset = {
-      ...mockAssets[assetIndex],
-      name: name || mockAssets[assetIndex].name,
-      url: url || mockAssets[assetIndex].url,
-      thumbnailUrl: thumbnailUrl !== undefined ? thumbnailUrl : mockAssets[assetIndex].thumbnailUrl,
-      description: description !== undefined ? description : mockAssets[assetIndex].description,
-      tags: tags || mockAssets[assetIndex].tags,
-      favorite: favorite !== undefined ? favorite : mockAssets[assetIndex].favorite,
+      ...existingAsset,
+      name: name || existingAsset.name,
+      url: url || existingAsset.url,
+      thumbnailUrl: thumbnailUrl !== undefined ? thumbnailUrl : existingAsset.thumbnailUrl,
+      description: description !== undefined ? description : existingAsset.description,
+      tags: tags || existingAsset.tags,
+      favorite: favorite !== undefined ? favorite : existingAsset.favorite,
     };
 
     // Update in mock database
@@ -166,8 +178,14 @@ function deleteAsset(
   assetIndex: number
 ) {
   try {
-    // Remove from mock database
+    // Check if asset exists
     const deletedAsset = mockAssets[assetIndex];
+    
+    if (!deletedAsset) {
+      return res.status(404).json({ success: false, message: 'Asset not found' });
+    }
+    
+    // Remove from mock database
     mockAssets = mockAssets.filter((_, index) => index !== assetIndex);
 
     return res.status(200).json({
