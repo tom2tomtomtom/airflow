@@ -236,7 +236,7 @@ const mockGeneratedVideos: GeneratedVideo[] = [
     id: 'vid1',
     url: '/mock-videos/weight-loss-journey.mp4',
     thumbnail: '/mock-videos/weight-loss-journey-thumb.jpg',
-    prompt: 'A montage showing a person's weight loss journey over 3 months',
+    prompt: 'A montage showing a person\'s weight loss journey over 3 months',
     duration: '00:30',
     resolution: '1080p',
     dateCreated: '2023-05-16T09:45:00Z',
