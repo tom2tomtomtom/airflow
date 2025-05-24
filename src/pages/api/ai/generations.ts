@@ -36,8 +36,8 @@ let mockGenerations: GenerationResult[] = [
     id: 'gen_3',
     type: 'text',
     content: [
-      'Our commitment to sustainability goes beyond materials. We're reimagining our entire supply chain to minimize environmental impact.',
-      'Sustainability isn't just a feature of our products—it's the foundation of our business model and vision for the future.'
+      'Our commitment to sustainability goes beyond materials. We\'re reimagining our entire supply chain to minimize environmental impact.',
+      'Sustainability isn\'t just a feature of our products--it\'s the foundation of our business model and vision for the future.'
     ],
     prompt: 'Generate sustainability statement for company website',
     dateCreated: '2023-05-03T09:45:00Z',
