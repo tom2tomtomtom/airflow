@@ -332,7 +332,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
         // If active client is deleted, set another one as active
         if (activeClient?.id === id) {
-          if (updatedClients.length > 0) {
+          if (updatedClients.length > 0 && updatedClients[0]) {
             handleSetActiveClient(updatedClients[0]);
           } else {
             setActiveClient(null);
@@ -349,7 +349,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       localStorage.setItem('airwave_clients', JSON.stringify(updatedClients));
 
       if (activeClient?.id === id) {
-        if (updatedClients.length > 0) {
+        if (updatedClients.length > 0 && updatedClients[0]) {
           handleSetActiveClient(updatedClients[0]);
         } else {
           setActiveClient(null);
