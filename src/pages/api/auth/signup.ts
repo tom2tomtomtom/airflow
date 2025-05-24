@@ -50,6 +50,14 @@ export default async function handler(
 
     const { email, password, name, firstName, lastName } = validationResult.data;
     
+    // Email is guaranteed to exist after validation, but TypeScript doesn't know this
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is required'
+      });
+    }
+    
     // Determine full name - ensure it's always a string
     let fullName: string;
     
