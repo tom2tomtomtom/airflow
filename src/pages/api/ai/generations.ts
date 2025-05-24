@@ -9,7 +9,7 @@ type ResponseData = {
 };
 
 // Mock database for generations
-let mockGenerations: GenerationResult[] = [
+const mockGenerations: GenerationResult[] = [
   {
     id: 'gen_1',
     type: 'text',
