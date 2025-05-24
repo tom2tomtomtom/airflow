@@ -131,8 +131,6 @@ class ErrorBoundary extends Component<Props, State> {
   }
 }
 
-ErrorBoundary.displayName = 'ErrorBoundary';
-
 export default ErrorBoundary;
 
 // Hook for functional components to trigger error boundaries
