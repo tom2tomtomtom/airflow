@@ -315,7 +315,11 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
                       </Typography>
                       <IconButton
                         size="small"
-                        onClick={() => copyPrompt(generatedImage.generation_details.enhanced_prompt)}
+                        onClick={() => {
+                          if (generatedImage.generation_details.enhanced_prompt) {
+                            copyPrompt(generatedImage.generation_details.enhanced_prompt);
+                          }
+                        }}
                       >
                         <ContentCopy fontSize="small" />
                       </IconButton>
