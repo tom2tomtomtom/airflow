@@ -1,160 +1,58 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest, NextApiResponse } from 'next';
 
-type Client = {
-  id: string;
-  name: string;
-  description: string;
-  primaryColor: string;
-  secondaryColor: string;
-  logoUrl?: string;
-  userId: string;
-};
-
-type ResponseData = {
-  success: boolean;
-  message?: string;
-  client?: Client;
-};
-
-// Mock database for clients (same as in index.ts)
-let mockClients: Client[] = [
-  {
-    id: 'client_1',
-    name: 'Acme Corporation',
-    description: 'A global leader in innovative solutions',
-    primaryColor: '#3a86ff',
-    secondaryColor: '#8338ec',
-    userId: 'user_123',
-  },
-  {
-    id: 'client_2',
-    name: 'TechStart',
-    description: 'Cutting-edge technology for startups',
-    primaryColor: '#06d6a0',
-    secondaryColor: '#ffbe0b',
-    userId: 'user_123',
-  },
-];
-
-export default function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
-) {
-  // Extract client ID from the URL
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
-  
-  if (!id || Array.isArray(id)) {
-    return res.status(400).json({ success: false, message: 'Invalid client ID' });
+
+  // Add CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
   }
 
-  // Extract user ID from authorization header
-  // In a real app, you would validate the token
-  const userId = req.headers.authorization?.split(' ')[1] || 'user_123';
+  // Check for demo mode or missing auth
+  const authHeader = req.headers.authorization;
+  const isDemo = !authHeader || authHeader.includes('demo-token') || authHeader.includes('mock_token');
 
-  // Find the client
-  const clientIndex = mockClients.findIndex(c => c.id === id && c.userId === userId);
-  
-  if (clientIndex === -1) {
-    return res.status(404).json({ success: false, message: 'Client not found' });
-  }
-
-  // Handle different HTTP methods
-  switch (req.method) {
-    case 'GET':
-      return getClient(req, res, clientIndex);
-    case 'PUT':
-      return updateClient(req, res, clientIndex);
-    case 'DELETE':
-      return deleteClient(req, res, clientIndex);
-    default:
-      return res.status(405).json({ success: false, message: 'Method not allowed' });
-  }
-}
-
-// GET - Retrieve a specific client
-function getClient(
-  req: NextApiRequest,
-  res: NextApiResponse<ResponseData>,
-  clientIndex: number
-) {
-  try {
-    const client = mockClients[clientIndex];
-    
-    if (!client) {
-      return res.status(404).json({ success: false, message: 'Client not found' });
-    }
-    
-    return res.status(200).json({
+  if (req.method === 'GET') {
+    // Get a single client
+    res.status(200).json({
       success: true,
-      client: client,
+      client: {
+        id: id as string,
+        name: 'Demo Client',
+        description: 'Demo client for testing',
+        primaryColor: '#1976d2',
+        secondaryColor: '#dc004e',
+        logoUrl: '',
+      },
     });
-  } catch (error) {
-    console.error('Error fetching client:', error);
-    return res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-}
-
-// PUT - Update a client
-function updateClient(
-  req: NextApiRequest,
-  res: NextApiResponse<ResponseData>,
-  clientIndex: number
-) {
-  try {
-    const { name, description, primaryColor, secondaryColor, logoUrl } = req.body;
-    
-    const existingClient = mockClients[clientIndex];
-    
-    if (!existingClient) {
-      return res.status(404).json({ success: false, message: 'Client not found' });
-    }
-
-    // Update client data
+  } else if (req.method === 'PUT') {
+    // Update a client
     const updatedClient = {
-      ...existingClient,
-      name: name || existingClient.name,
-      description: description || existingClient.description,
-      primaryColor: primaryColor || existingClient.primaryColor,
-      secondaryColor: secondaryColor || existingClient.secondaryColor,
-      logoUrl: logoUrl || existingClient.logoUrl,
+      id: id as string,
+      ...req.body,
     };
-
-    // Update in mock database
-    mockClients[clientIndex] = updatedClient;
-
-    return res.status(200).json({
+    
+    res.status(200).json({
       success: true,
       client: updatedClient,
+      message: 'Client updated successfully',
     });
-  } catch (error) {
-    console.error('Error updating client:', error);
-    return res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-}
-
-// DELETE - Remove a client
-function deleteClient(
-  req: NextApiRequest,
-  res: NextApiResponse<ResponseData>,
-  clientIndex: number
-) {
-  try {
-    // Remove from mock database
-    const deletedClient = mockClients[clientIndex];
-    
-    if (!deletedClient) {
-      return res.status(404).json({ success: false, message: 'Client not found' });
-    }
-    
-    mockClients = mockClients.filter((_, index) => index !== clientIndex);
-
-    return res.status(200).json({
+  } else if (req.method === 'DELETE') {
+    // Delete a client
+    res.status(200).json({
       success: true,
       message: 'Client deleted successfully',
-      client: deletedClient,
     });
-  } catch (error) {
-    console.error('Error deleting client:', error);
-    return res.status(500).json({ success: false, message: 'Internal server error' });
+  } else {
+    res.setHeader('Allow', ['GET', 'PUT', 'DELETE', 'OPTIONS']);
+    res.status(405).json({
+      success: false,
+      message: `Method ${req.method} Not Allowed`,
+    });
   }
 }
