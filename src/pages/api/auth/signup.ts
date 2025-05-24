@@ -58,6 +58,9 @@ export default async function handler(
       });
     }
     
+    // Extract email username for fallback while we know email is defined
+    const emailUsername = email.split('@')[0];
+    
     // Determine full name - ensure it's always a string
     let fullName: string;
     
@@ -70,8 +73,7 @@ export default async function handler(
     } else if (lastName) {
       fullName = lastName;
     } else {
-      // At this point, email is guaranteed to exist due to the check above
-      fullName = email!.split('@')[0];
+      fullName = emailUsername;
     }
 
     // Create user with Supabase Auth
