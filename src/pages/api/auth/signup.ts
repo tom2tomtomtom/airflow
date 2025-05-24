@@ -58,23 +58,12 @@ export default async function handler(
       });
     }
     
-    // Extract email username for fallback while we know email is defined
-    const emailUsername = email.split('@')[0];
-    
-    // Determine full name - ensure it's always a string
-    let fullName: string;
-    
-    if (name) {
-      fullName = name;
-    } else if (firstName && lastName) {
-      fullName = `${firstName} ${lastName}`;
-    } else if (firstName) {
-      fullName = firstName;
-    } else if (lastName) {
-      fullName = lastName;
-    } else {
-      fullName = emailUsername;
-    }
+    // Determine full name using a single expression
+    const fullName: string = name || 
+                            (firstName && lastName ? `${firstName} ${lastName}` : null) ||
+                            firstName || 
+                            lastName || 
+                            email.split('@')[0];
 
     // Create user with Supabase Auth
     const { data: authData, error: authError } = await supabase.auth.signUp({
