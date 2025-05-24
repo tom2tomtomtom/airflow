@@ -7,7 +7,7 @@ import path from 'path';
 import { z } from 'zod';
 import mammoth from 'mammoth';
 // @ts-ignore - pdf.js-extract types are incomplete
-import PDFExtract from 'pdf.js-extract';
+import { PDFExtract } from 'pdf.js-extract';
 
 export const config = {
   api: {
