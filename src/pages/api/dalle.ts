@@ -1,14 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
-import { env } from '@/lib/env';
+import { env, isDemo, hasOpenAI } from '@/lib/env';
 import OpenAI from 'openai';
 import { z } from 'zod';
 import axios from 'axios';
 
-// Initialize OpenAI
-const openai = new OpenAI({
+// Initialize OpenAI only if we have a key
+const openai = hasOpenAI ? new OpenAI({
   apiKey: env.OPENAI_API_KEY,
-});
+}) : null;
 
 // Define brand guidelines schema
 const BrandGuidelinesSchema = z.object({
@@ -37,7 +37,7 @@ const BrandGuidelinesSchema = z.object({
 // Request schema
 const GenerateImageSchema = z.object({
   prompt: z.string().min(1).max(4000),
-  client_id: z.string().uuid(),
+  client_id: z.string(),
   // DALL-E 3 specific options
   model: z.enum(['dall-e-3', 'dall-e-2']).default('dall-e-3'),
   size: z.enum(['1024x1024', '1792x1024', '1024x1792']).default('1024x1024'),
@@ -64,7 +64,8 @@ export default async function handler(
   }
 
   // Get user info from headers
-  const userId = req.headers['x-user-id'] as string;
+  const userId = req.headers['x-user-id'] as string || 'demo-user';
+  const isDemoRequest = req.headers['x-demo-mode'] === 'true' || isDemo;
 
   try {
     // Validate request
@@ -91,6 +92,62 @@ export default async function handler(
       enhance_prompt,
       brand_guidelines
     } = validationResult.data;
+
+    // Demo mode response
+    if (isDemoRequest || !hasOpenAI) {
+      const timestamp = Date.now();
+      const demoAsset = {
+        id: `demo-asset-${timestamp}`,
+        name: `Demo: ${prompt.substring(0, 50)}...`,
+        type: 'image',
+        url: `https://via.placeholder.com/${size.replace('x', 'x')}?text=AI+Generated+Demo`,
+        thumbnail_url: `https://via.placeholder.com/256x256?text=AI+Demo`,
+        mime_type: 'image/png',
+        width: parseInt(size.split('x')[0]),
+        height: parseInt(size.split('x')[1]),
+        client_id,
+        tags: [...tags, 'ai-generated', 'demo', model, purpose].filter(Boolean),
+        metadata: {
+          ai_model: model,
+          original_prompt: prompt,
+          enhanced_prompt: enhance_prompt ? `Enhanced: ${prompt}` : prompt,
+          generation_settings: {
+            size,
+            quality,
+            style,
+          },
+          revised_prompt: prompt,
+          purpose,
+          generated_at: new Date().toISOString(),
+          demo: true,
+        },
+        created_by: userId,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+      return res.status(200).json({
+        success: true,
+        message: 'Demo image generated successfully',
+        asset: demoAsset,
+        generation_details: {
+          original_prompt: prompt,
+          enhanced_prompt: enhance_prompt ? `Enhanced: ${prompt}` : undefined,
+          revised_prompt: prompt,
+          model,
+          settings: { size, quality, style },
+          demo: true,
+        },
+      });
+    }
+
+    // Real OpenAI implementation
+    if (!openai) {
+      return res.status(503).json({
+        success: false,
+        message: 'AI service not available',
+      });
+    }
 
     // Enhance prompt if requested
     let finalPrompt = prompt;
