@@ -31,14 +31,9 @@ import {
   Select,
   MenuItem,
   Alert,
-  SpeedDial,
-  SpeedDialAction,
-  SpeedDialIcon,
   Checkbox,
   FormControlLabel,
   Stack,
-  Tooltip,
-  Badge,
   Avatar,
   ListItem,
   ListItemAvatar,
@@ -49,10 +44,7 @@ import {
 } from '@mui/material';
 import {
   Add as AddIcon,
-  Edit as EditIcon,
   Save as SaveIcon,
-  Check as CheckIcon,
-  Close as CloseIcon,
   Image as ImageIcon,
   TextFields as TextFieldsIcon,
   Videocam as VideoIcon,
@@ -64,10 +56,6 @@ import {
   Delete as DeleteIcon,
   Preview as PreviewIcon,
   AutoAwesome as MagicIcon,
-  Compare as CompareIcon,
-  Timeline as TimelineIcon,
-  Shuffle as ShuffleIcon,
-  CheckCircle as ApproveIcon,
   Send as SendIcon,
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
@@ -116,7 +104,7 @@ const MatrixPage: React.FC = () => {
   const { data: templates, isLoading: templatesLoading } = useTemplates();
   const { data: assets, isLoading: assetsLoading } = useAssets(activeClient?.id);
   const { data: campaigns } = useCampaigns(activeClient?.id);
-  const { createMatrix, updateMatrix, isLoading: savingMatrix } = useCreateMatrix();
+  const { createMatrix, isLoading: savingMatrix } = useCreateMatrix();
 
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
@@ -140,7 +128,7 @@ const MatrixPage: React.FC = () => {
     // Load template from query params if provided
     const templateId = router.query.templateId as string;
     if (templateId && templates) {
-      const template = templates.find(t => t.id === templateId);
+      const template = templates.find((t: Template) => t.id === templateId);
       if (template) {
         setSelectedTemplate(template);
       }
@@ -321,7 +309,7 @@ const MatrixPage: React.FC = () => {
       }, {} as any),
     };
 
-    const { data, error } = await createMatrix(matrixData);
+    const { error } = await createMatrix(matrixData);
     if (error) {
       showNotification('Failed to save matrix', 'error');
     } else {
@@ -352,7 +340,7 @@ const MatrixPage: React.FC = () => {
     return fieldValues.find(fv => fv.fieldId === fieldId && fv.variationId === variationId);
   };
 
-  const filteredTemplates = templates?.filter(template =>
+  const filteredTemplates = templates?.filter((template: Template) =>
     template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     template.platform.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
@@ -512,7 +500,7 @@ const MatrixPage: React.FC = () => {
                 <Divider sx={{ mb: 3 }} />
 
                 {/* Tabs */}
-                <Tabs value={activeTab} onChange={(e, v) => setActiveTab(v)} sx={{ mb: 3 }}>
+                <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)} sx={{ mb: 3 }}>
                   <Tab label={`Variations (${variations.length})`} />
                   <Tab label={`Combinations (${combinations.length})`} />
                   <Tab label="Performance" />
@@ -812,10 +800,10 @@ const MatrixPage: React.FC = () => {
                 }}
               />
               <List>
-                {assets?.filter(asset => {
+                {assets?.filter((asset: Asset) => {
                   const field = selectedField ? selectedTemplate?.dynamicFields.find(f => f.id === selectedField) : null;
                   return !field || asset.type === field.type;
-                }).map(asset => (
+                }).map((asset: Asset) => (
                   <ListItem
                     key={asset.id}
                     button

@@ -11,39 +11,19 @@ import {
   CardContent,
   CardHeader,
   CardMedia,
-  CardActionArea,
   Tabs,
   Tab,
   TextField,
   CircularProgress,
-  Divider,
   IconButton,
   Chip,
   Rating,
   Stack,
   Alert,
   Snackbar,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Slider,
-  FormControlLabel,
-  Switch,
-  Radio,
-  RadioGroup,
   Tooltip,
   LinearProgress,
-  Avatar,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  ListItemAvatar,
-  ListItemButton,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
 } from '@mui/material';
 import {
   Image as ImageIcon,
@@ -56,35 +36,17 @@ import {
   Check as CheckIcon,
   Edit as EditIcon,
   Save as SaveIcon,
-  Delete as DeleteIcon,
   Add as AddIcon,
   Videocam as VideocamIcon,
   Collections as CollectionsIcon,
-  Tune as TuneIcon,
   ContentCopy as ContentCopyIcon,
   Download as DownloadIcon,
   AspectRatio as AspectRatioIcon,
-  FormatColorFill as ColorIcon,
   Style as StyleIcon,
-  Palette as PaletteIcon,
-  Brush as BrushIcon,
-  Crop as CropIcon,
   Fullscreen as FullscreenIcon,
-  SettingsVoice as SettingsVoiceIcon,
-  Speed as SpeedIcon,
-  RecordVoiceOver as RecordVoiceOverIcon,
-  Language as LanguageIcon,
-  Person as PersonIcon,
-  Audiotrack as AudiotrackIcon,
   PlayArrow as PlayArrowIcon,
-  Pause as PauseIcon,
   Stop as StopIcon,
-  Visibility as VisibilityIcon,
-  VisibilityOff as VisibilityOffIcon,
-  ExpandMore as ExpandMoreIcon,
   AutoAwesome as AutoAwesomeIcon,
-  History as HistoryIcon,
-  Folder as FolderIcon,
 } from '@mui/icons-material';
 import { useAuth } from '@/contexts/AuthContext';
 import { useClient } from '@/contexts/ClientContext';
@@ -337,7 +299,7 @@ const GenerateEnhancedPage: React.FC = () => {
   }, [isAuthenticated, authLoading, router]);
 
   // Handle tab change
-  const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: string) => {
     setActiveTab(newValue);
   };
 
@@ -1235,7 +1197,7 @@ const GenerateEnhancedPage: React.FC = () => {
                       </Typography>
                       <Slider
                         value={videoDuration}
-                        onChange={(e, newValue) => setVideoDuration(newValue as number)}
+                        onChange={(_, newValue) => setVideoDuration(newValue as number)}
                         min={5}
                         max={60}
                         step={5}
