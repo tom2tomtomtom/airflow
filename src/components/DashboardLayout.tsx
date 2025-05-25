@@ -30,6 +30,7 @@ import {
   AutoAwesome as GenerateIcon,
 } from '@mui/icons-material';
 import { useRouter } from 'next/router';
+import ClientSelector from './ClientSelector';
 
 const drawerWidth = 240;
 
@@ -153,9 +154,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 600 }}>
+          <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 600, flexGrow: 1 }}>
             {title || 'AIrWAVE Dashboard'}
           </Typography>
+          <Box sx={{ ml: 2 }}>
+            <ClientSelector variant="chip" />
+          </Box>
         </Toolbar>
       </AppBar>
       <Box
