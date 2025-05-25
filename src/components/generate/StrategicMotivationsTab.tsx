@@ -12,7 +12,6 @@ import {
   CircularProgress,
   IconButton,
   Rating,
-  Stack,
 } from '@mui/material';
 import {
   Add as AddIcon,

@@ -15,12 +15,6 @@ import {
   Stack,
   Divider,
   Button,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  ListItemAvatar,
-  Avatar,
 } from '@mui/material';
 import {
   Star as StarIcon,
@@ -33,12 +27,8 @@ import {
   Download as DownloadIcon,
   Edit as EditIcon,
   Save as SaveIcon,
-  Delete as DeleteIcon,
   Fullscreen as FullscreenIcon,
   ContentCopy as ContentCopyIcon,
-  FilterList as FilterIcon,
-  Search as SearchIcon,
-  History as HistoryIcon,
   Folder as FolderIcon,
 } from '@mui/icons-material';
 
@@ -146,7 +136,7 @@ const ResultsTab: React.FC<ResultsTabProps> = ({
           <Grid item xs={12} md={8}>
             <Tabs
               value={resultType}
-              onChange={(e, newValue) => setResultType(newValue)}
+              onChange={(_, newValue) => setResultType(newValue)}
               variant="scrollable"
               scrollButtons="auto"
             >

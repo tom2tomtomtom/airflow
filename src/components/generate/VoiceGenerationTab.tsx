@@ -13,9 +13,7 @@ import {
   Card,
   CardContent,
   IconButton,
-  Tooltip,
   LinearProgress,
-  Divider,
   FormControl,
   InputLabel,
   Select,
@@ -28,16 +26,11 @@ import {
   PlayArrow as PlayArrowIcon,
   Pause as PauseIcon,
   Download as DownloadIcon,
-  Edit as EditIcon,
   Save as SaveIcon,
-  Delete as DeleteIcon,
-  SettingsVoice as SettingsVoiceIcon,
   Speed as SpeedIcon,
   RecordVoiceOver as RecordVoiceOverIcon,
   Language as LanguageIcon,
   Person as PersonIcon,
-  Audiotrack as AudiotrackIcon,
-  AutoAwesome as AutoAwesomeIcon,
 } from '@mui/icons-material';
 
 // Interface for generated voice
@@ -51,30 +44,6 @@ interface GeneratedVoice {
   dateCreated: string;
   favorite: boolean;
 }
-
-// Mock data for generated voices
-const mockGeneratedVoices: GeneratedVoice[] = [
-  {
-    id: 'voice1',
-    url: '/mock-voices/weight-loss-intro.mp3',
-    text: 'Welcome to your sustainable weight loss journey. Our science-backed approach focuses on long-term results through healthy lifestyle changes.',
-    voice: 'Emma',
-    language: 'English (US)',
-    duration: '00:15',
-    dateCreated: '2023-05-17T14:20:00Z',
-    favorite: true,
-  },
-  {
-    id: 'voice2',
-    url: '/mock-voices/expert-advice.mp3',
-    text: 'Our team of certified nutritionists and fitness experts will guide you through every step of your personalized weight loss program.',
-    voice: 'James',
-    language: 'English (UK)',
-    duration: '00:12',
-    dateCreated: '2023-05-17T14:35:00Z',
-    favorite: false,
-  },
-];
 
 interface VoiceGenerationTabProps {
   voiceText: string;
@@ -207,7 +176,7 @@ const VoiceGenerationTab: React.FC<VoiceGenerationTabProps> = ({
                 <Grid item xs>
                   <Slider
                     value={voiceSpeed}
-                    onChange={(e, newValue) => setVoiceSpeed(newValue as number)}
+                    onChange={(_, newValue) => setVoiceSpeed(newValue as number)}
                     min={0.5}
                     max={2.0}
                     step={0.1}

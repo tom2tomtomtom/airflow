@@ -26,7 +26,7 @@ import {
   LinkedIn as LinkedInIcon,
   Pinterest as PinterestIcon
 } from '@mui/icons-material';
-import { Template, DynamicField } from "@/types/models";
+import { Template } from "@/types/models";
 
 const platformIcons: Record<string, React.ReactNode> = {
   Instagram: <InstagramIcon sx={{ color: '#E1306C' }} />,

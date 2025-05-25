@@ -131,7 +131,7 @@ const VideoGenerationTab: React.FC<VideoGenerationTabProps> = ({
               </Typography>
               <Slider
                 value={videoDuration}
-                onChange={(e, newValue) => setVideoDuration(newValue as number)}
+                onChange={(_, newValue) => setVideoDuration(newValue as number)}
                 min={5}
                 max={60}
                 step={5}

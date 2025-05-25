@@ -10,10 +10,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "lint:fix": "next lint --fix",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "type-check": "tsc --noEmit",
+    "type:strict": "tsc --noEmit --strict",
+    "lint:unused": "eslint . --fix --rule 'no-unused-vars: off, @typescript-eslint/no-unused-vars: off, unused-imports/no-unused-imports: error, unused-imports/no-unused-vars: error'",
     "validate": "npm run type-check && npm run lint && npm run format:check && npm run test && npm run validate:env",
     "validate:env": "node scripts/validate-env.js",
     "validate:env:production": "node scripts/validate-env.js .env.production",
@@ -86,6 +88,8 @@
     "zustand": "^4.4.6"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^14.1.0",
+    "@sentry/nextjs": "^7.118.0",
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^14.1.2",
     "@testing-library/user-event": "^14.5.2",
@@ -100,23 +104,22 @@
     "@typescript-eslint/eslint-plugin": "^8.32.1",
     "@typescript-eslint/parser": "^8.32.1",
     "@vitest/coverage-v8": "^3.1.4",
+    "artillery": "^2.0.15",
     "eslint": "^8.57.1",
     "eslint-config-next": "^14.0.3",
-    "eslint-config-prettier": "^10.1.5",  
+    "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-unused-imports": "^4.1.4",
     "husky": "^8.0.3",
     "jest-environment-jsdom": "^29.7.0",
+    "lighthouse": "^11.7.1",
     "lint-staged": "^15.2.0",
+    "node-cron": "^3.0.3",
     "prettier": "^3.5.3",
     "typescript": "^5.2.2",
-    "vitest": "^3.1.4",
-    "@sentry/nextjs": "^7.118.0",
-    "lighthouse": "^11.7.1",
-    "artillery": "^2.0.15",
-    "@next/bundle-analyzer": "^14.1.0",
-    "node-cron": "^3.0.3"  
+    "vitest": "^3.1.4"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -125,11 +128,11 @@
       "vitest related --run"
     ],
     "*.{js,jsx}": [
-      "eslint --fix",  
+      "eslint --fix",
       "prettier --write"
     ],
     "*.{json,css,md}": [
       "prettier --write"
     ]
-  }  
+  }
 }
