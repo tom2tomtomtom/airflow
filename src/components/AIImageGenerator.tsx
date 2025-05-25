@@ -1,459 +1,490 @@
 import React, { useState } from 'react';
 import {
   Box,
-  Typography,
-  Paper,
-  Card,
-  CardContent,
-  CardMedia,
   Button,
   TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Card,
+  CardContent,
+  Typography,
   CircularProgress,
-  Stack,
-  Chip,
-  IconButton,
-  Tooltip,
-  LinearProgress,
-  Grid,
   Alert,
+  Chip,
+  Grid,
+  FormControlLabel,
+  Switch,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  IconButton,
+  FormHelperText,
 } from '@mui/material';
 import {
-  Star as StarIcon,
-  StarBorder as StarBorderIcon,
-  Download as DownloadIcon,
-  Save as SaveIcon,
-  Fullscreen as FullscreenIcon,
-  Style as StyleIcon,
-  AspectRatio as AspectRatioIcon,
-  Image as ImageIcon,
-  Refresh as RefreshIcon,
+  AutoAwesome,
+  Close as CloseIcon,
+  Download,
+  ContentCopy,
+  Info as InfoIcon,
 } from '@mui/icons-material';
-import { useAuth } from '@/contexts/AuthContext';
-import { useClient } from '@/contexts/ClientContext';
-import { useNotification } from '@/contexts/NotificationContext';
+import axios, { AxiosError } from 'axios';
+import { Asset, BrandGuidelines } from '@/types/models';
+import { demoAssets } from '@/utils/demoData';
 
-interface GeneratedImage {
-  id: string;
-  url: string;
-  prompt: string;
-  style: string;
-  aspectRatio: string;
-  dateCreated: string;
-  favorite: boolean;
+// Define the response type for generated images
+interface GeneratedImageResponse {
+  success: boolean;
+  message?: string;
+  asset: Asset;
+  generation_details: {
+    original_prompt: string;
+    enhanced_prompt?: string;
+    revised_prompt?: string;
+    model: string;
+    settings: {
+      size: string;
+      quality: string;
+      style: string;
+    };
+  };
 }
 
 interface AIImageGeneratorProps {
-  onImageGenerated?: (image: GeneratedImage) => void;
-  showSettings?: boolean;
-  maxImages?: number;
+  clientId: string;
+  onImageGenerated?: (asset: Asset) => void;
+  brandGuidelines?: BrandGuidelines;
 }
 
-const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
+export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
+  clientId,
   onImageGenerated,
-  showSettings = true,
-  maxImages = 6,
+  brandGuidelines,
 }) => {
-  const { user } = useAuth();
-  const { activeClient } = useClient();
-  const { showNotification } = useNotification();
-
-  // State
-  const [imagePrompt, setImagePrompt] = useState('');
-  const [imageStyle, setImageStyle] = useState('photorealistic');
-  const [imageAspectRatio, setImageAspectRatio] = useState('1:1');
-  const [imageCount, setImageCount] = useState(1);
-  const [isGeneratingImages, setIsGeneratingImages] = useState(false);
-  const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
+  const [prompt, setPrompt] = useState('');
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const [generatedImage, setGeneratedImage] = useState<GeneratedImageResponse | null>(null);
+  const [showDialog, setShowDialog] = useState(false);
+  
+  // Generation options
+  const [options, setOptions] = useState({
+    size: '1024x1024',
+    quality: 'standard',
+    style: 'vivid',
+    purpose: 'general',
+    enhance_prompt: true,
+  });
 
-  const handleGenerateImages = async () => {
-    if (!imagePrompt.trim()) {
-      showNotification('Please enter an image prompt', 'error');
-      return;
+  const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+  const hasApiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY || false;
+
+  const validateInput = (): string[] => {
+    const errors: string[] = [];
+    
+    if (!prompt || prompt.trim().length === 0) {
+      errors.push('Please enter a description for your image');
+    } else if (prompt.trim().length < 3) {
+      errors.push('Description must be at least 3 characters long');
+    } else if (prompt.trim().length > 1000) {
+      errors.push('Description must be less than 1000 characters');
     }
-
-    if (!activeClient?.id) {
-      showNotification('Please select a client first', 'error');
-      return;
+    
+    // Check for inappropriate content
+    const bannedWords = ['explicit', 'violence', 'gore']; // Add more as needed
+    const lowerPrompt = prompt.toLowerCase();
+    if (bannedWords.some(word => lowerPrompt.includes(word))) {
+      errors.push('Your prompt contains inappropriate content');
     }
+    
+    return errors;
+  };
 
-    if (!user?.id) {
-      showNotification('User not authenticated', 'error');
-      return;
-    }
-
-    setIsGeneratingImages(true);
+  const handleGenerate = async () => {
+    // Clear previous errors
     setError(null);
+    setValidationError(null);
+
+    // Validate input
+    const validationErrors = validateInput();
+    if (validationErrors.length > 0) {
+      setValidationError(validationErrors.join('. '));
+      return;
+    }
+
+    setLoading(true);
 
     try {
-      const newImages: GeneratedImage[] = [];
-      const imagesToGenerate = Math.min(imageCount, maxImages);
-
-      for (let i = 0; i < imagesToGenerate; i++) {
-        try {
-          // Generating image ${i + 1}/${imagesToGenerate}
-
-          const response = await fetch('/api/dalle', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-user-id': user.id,
+      // Demo mode - return a random demo image
+      if (isDemoMode) {
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate delay
+        
+        const demoImage = demoAssets[Math.floor(Math.random() * 3)]; // Random AI generated asset
+        const response: GeneratedImageResponse = {
+          success: true,
+          asset: {
+            ...demoImage,
+            name: `AI Generated - ${prompt.substring(0, 50)}...`,
+            ai_prompt: prompt,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          } as Asset,
+          generation_details: {
+            original_prompt: prompt,
+            enhanced_prompt: isDemoMode ? `[DEMO MODE] Enhanced: ${prompt}` : undefined,
+            model: 'dall-e-3',
+            settings: {
+              size: options.size,
+              quality: options.quality,
+              style: options.style,
             },
-            body: JSON.stringify({
-              prompt: imagePrompt,
-              client_id: activeClient.id,
-              model: 'dall-e-3',
-              size: imageAspectRatio === '16:9' 
-                ? '1792x1024' 
-                : imageAspectRatio === '9:16' 
-                ? '1024x1792' 
-                : '1024x1024',
-              style: imageStyle === 'photorealistic' ? 'natural' : 'vivid',
-              quality: 'hd',
-              enhance_prompt: true,
-              purpose: 'social',
-              tags: ['ai-generated', imageStyle],
-            }),
-          });
+          },
+        };
+        
+        setGeneratedImage(response);
+        setShowDialog(true);
+        
+        if (onImageGenerated) {
+          onImageGenerated(response.asset);
+        }
+        return;
+      }
 
-          if (!response.ok) {
-            const errorData = await response.json();
-            // Failed to generate image ${i + 1}
-            showNotification(`Image ${i + 1} failed: ${errorData.message || 'Unknown error'}`, 'warning');
-            continue;
-          }
+      // Check for API key
+      if (!hasApiKey) {
+        setError('OpenAI API key is not configured. Please add NEXT_PUBLIC_OPENAI_API_KEY to your environment variables.');
+        return;
+      }
 
-          const result = await response.json();
-          // Image generation result received
+      // Make actual API call
+      const response = await axios.post<GeneratedImageResponse>('/api/dalle', {
+        prompt,
+        client_id: clientId,
+        ...options,
+        brand_guidelines: brandGuidelines,
+        tags: ['ai-generated', options.purpose],
+      });
 
-          if (result.success && result.asset?.url) {
-            const newImage: GeneratedImage = {
-              id: result.asset.id || `img-${Date.now()}-${i}`,
-              url: result.asset.url,
-              prompt: imagePrompt,
-              style: imageStyle,
-              aspectRatio: imageAspectRatio,
-              dateCreated: new Date().toISOString(),
-              favorite: false,
-            };
-
-            newImages.push(newImage);
-            // Successfully generated image
-
-            // Call callback if provided
-            if (onImageGenerated) {
-              onImageGenerated(newImage);
-            }
-          } else {
-            // Image generation failed - no asset URL in response
-          }
-        } catch (imageError) {
-          // Error generating image
-          showNotification(
-            `Image ${i + 1} failed: ${imageError instanceof Error ? imageError.message : 'Network error'}`,
-            'warning'
+      if (response.data.success) {
+        setGeneratedImage(response.data);
+        setShowDialog(true);
+        
+        if (onImageGenerated) {
+          onImageGenerated(response.data.asset);
+        }
+      } else {
+        setError(response.data.message || 'Failed to generate image');
+      }
+    } catch (err) {
+      console.error('Generation error:', err);
+      
+      if (axios.isAxiosError(err)) {
+        const axiosError = err as AxiosError<{ message?: string; error?: string }>;
+        
+        // Specific error messages based on status codes
+        if (axiosError.response?.status === 401) {
+          setError('Invalid API key. Please check your OpenAI API key configuration.');
+        } else if (axiosError.response?.status === 429) {
+          setError('Rate limit exceeded. Please try again in a few moments.');
+        } else if (axiosError.response?.status === 400) {
+          setError(axiosError.response?.data?.message || 'Invalid request. Please check your prompt and try again.');
+        } else {
+          setError(
+            axiosError.response?.data?.message || 
+            axiosError.response?.data?.error ||
+            'Failed to generate image. Please try again.'
           );
         }
-      }
-
-      if (newImages.length > 0) {
-        setGeneratedImages([...newImages, ...generatedImages]);
-        showNotification(
-          `Successfully generated ${newImages.length} image${newImages.length > 1 ? 's' : ''}`,
-          'success'
-        );
+      } else if (err instanceof Error) {
+        setError(err.message);
       } else {
-        setError('Failed to generate any images. Please try again.');
-        showNotification('Failed to generate any images. Please try again.', 'error');
+        setError('An unexpected error occurred. Please try again.');
       }
-    } catch (error) {
-      // Image generation error occurred
-      setError('Failed to generate images. Please try again.');
-      showNotification('Failed to generate images. Please try again.', 'error');
     } finally {
-      setIsGeneratingImages(false);
+      setLoading(false);
     }
   };
 
-  const handleToggleImageFavorite = (id: string) => {
-    setGeneratedImages(
-      generatedImages.map((image) =>
-        image.id === id ? { ...image, favorite: !image.favorite } : image
-      )
-    );
-  };
-
-  const handleViewImageFullSize = (image: GeneratedImage) => {
-    window.open(image.url, '_blank', 'noopener,noreferrer');
-  };
-
-  const handleDownloadImage = async (image: GeneratedImage) => {
-    try {
-      const response = await fetch(image.url);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+  const handleDownload = async () => {
+    if (generatedImage?.asset?.file_url) {
       const link = document.createElement('a');
-      link.href = url;
-      link.download = `airwave-generated-${image.id}.png`;
+      link.href = generatedImage.asset.file_url;
+      link.download = `ai-generated-${Date.now()}.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-      showNotification('Image downloaded successfully', 'success');
-    } catch (error) {
-      // Download error occurred
-      showNotification('Failed to download image', 'error');
     }
   };
 
-  const handleRegenerateImage = (image: GeneratedImage) => {
-    setImagePrompt(image.prompt);
-    setImageStyle(image.style);
-    setImageAspectRatio(image.aspectRatio);
-    setImageCount(1);
+  const copyPrompt = (text: string) => {
+    navigator.clipboard.writeText(text);
+    // You could add a toast notification here
   };
 
   return (
-    <Box>
-      <Typography variant="h5" gutterBottom>
-        AI Image Generator
-      </Typography>
-      <Typography variant="body2" color="text.secondary" paragraph>
-        Create custom images using DALL-E 3 based on your prompts and brand guidelines.
-      </Typography>
+    <Card>
+      <CardContent>
+        <Box display="flex" alignItems="center" mb={3}>
+          <AutoAwesome sx={{ mr: 1, color: 'primary.main' }} />
+          <Typography variant="h5">AI Image Generator (DALL-E 3)</Typography>
+          {isDemoMode && (
+            <Chip 
+              label="DEMO MODE" 
+              size="small" 
+              color="info" 
+              sx={{ ml: 2 }}
+            />
+          )}
+        </Box>
 
-      {error && (
-        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
-          {error}
-        </Alert>
-      )}
-
-      <Grid container spacing={4}>
-        {showSettings && (
-          <Grid size={{ xs: 12, md: 4 }}>
-            <Paper sx={{ p: 3, height: 'fit-content' }}>
-              <Typography variant="subtitle1" gutterBottom fontWeight={600}>
-                Image Settings
-              </Typography>
-
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="body2" gutterBottom>
-                  Prompt
-                </Typography>
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={4}
-                  variant="outlined"
-                  placeholder="Describe the image you want to generate..."
-                  value={imagePrompt}
-                  onChange={(e) => setImagePrompt(e.target.value)}
-                  sx={{ mb: 1 }}
-                />
-                <Typography variant="caption" color="text.secondary">
-                  Be specific about details, style, mood, lighting, and composition.
-                </Typography>
-              </Box>
-
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="body2" gutterBottom>
-                  Style
-                </Typography>
-                <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
-                  {['Photorealistic', 'Cinematic', 'Artistic', 'Cartoon', '3D Render'].map((style) => (
-                    <Chip
-                      key={style}
-                      label={style}
-                      onClick={() => setImageStyle(style.toLowerCase())}
-                      color={imageStyle === style.toLowerCase() ? 'primary' : 'default'}
-                      variant={imageStyle === style.toLowerCase() ? 'filled' : 'outlined'}
-                      icon={<StyleIcon />}
-                    />
-                  ))}
-                </Stack>
-              </Box>
-
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="body2" gutterBottom>
-                  Aspect Ratio
-                </Typography>
-                <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
-                  {[
-                    { label: 'Square (1:1)', value: '1:1' },
-                    { label: 'Portrait (4:5)', value: '4:5' },
-                    { label: 'Landscape (16:9)', value: '16:9' },
-                    { label: 'Vertical (9:16)', value: '9:16' },
-                  ].map((ratio) => (
-                    <Chip
-                      key={ratio.value}
-                      label={ratio.label}
-                      onClick={() => setImageAspectRatio(ratio.value)}
-                      color={imageAspectRatio === ratio.value ? 'primary' : 'default'}
-                      variant={imageAspectRatio === ratio.value ? 'filled' : 'outlined'}
-                      icon={<AspectRatioIcon />}
-                    />
-                  ))}
-                </Stack>
-              </Box>
-
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="body2" gutterBottom>
-                  Number of Images
-                </Typography>
-                <Stack direction="row" spacing={1}>
-                  {[1, 2, 4, Math.min(6, maxImages)].map((count) => (
-                    <Chip
-                      key={count}
-                      label={count}
-                      onClick={() => setImageCount(count)}
-                      color={imageCount === count ? 'primary' : 'default'}
-                      variant={imageCount === count ? 'filled' : 'outlined'}
-                    />
-                  ))}
-                </Stack>
-              </Box>
-
-              <Box sx={{ mt: 4 }}>
-                <Button
-                  variant="contained"
-                  fullWidth
-                  onClick={handleGenerateImages}
-                  disabled={isGeneratingImages || !imagePrompt.trim()}
-                  startIcon={isGeneratingImages ? <CircularProgress size={20} /> : <ImageIcon />}
-                >
-                  {isGeneratingImages ? 'Generating...' : 'Generate Images'}
-                </Button>
-              </Box>
-            </Paper>
-          </Grid>
+        {isDemoMode && (
+          <Alert severity="info" sx={{ mb: 3 }} icon={<InfoIcon />}>
+            You're in demo mode. Generated images will be sample images for demonstration purposes.
+          </Alert>
         )}
 
-        <Grid size={{ xs: 12, md: showSettings ? 8 : 12 }}>
-          <Paper sx={{ p: 3 }}>
-            <Typography variant="subtitle1" gutterBottom fontWeight={600}>
-              Generated Images
-            </Typography>
+        {!hasApiKey && !isDemoMode && (
+          <Alert severity="warning" sx={{ mb: 3 }}>
+            OpenAI API key is not configured. Add NEXT_PUBLIC_OPENAI_API_KEY to your .env file to enable image generation.
+          </Alert>
+        )}
 
-            {isGeneratingImages && (
-              <Box sx={{ width: '100%', mb: 3 }}>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                  Generating {imageCount} images...
-                </Typography>
-                <LinearProgress />
-              </Box>
-            )}
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              multiline
+              rows={3}
+              label="Describe the image you want to create"
+              value={prompt}
+              onChange={(e) => {
+                setPrompt(e.target.value);
+                setValidationError(null); // Clear validation error on change
+              }}
+              placeholder="A modern office space with natural lighting, minimalist design, and plants..."
+              disabled={loading}
+              error={!!validationError}
+              helperText={validationError || `${prompt.length}/1000 characters`}
+            />
+          </Grid>
 
-            <Grid container spacing={2}>
-              {generatedImages.map((image) => (
-                <Grid size={{ xs: 12, sm: 6, md: imageCount > 2 ? 6 : 12 }}
-                  key={image.id}
-                >
-                  <Card>
-                    <Box sx={{ position: 'relative' }}>
-                      <CardMedia
-                        component="img"
-                        height={
-                          imageAspectRatio === '1:1'
-                            ? 200
-                            : imageAspectRatio === '4:5'
-                            ? 250
-                            : imageAspectRatio === '16:9'
-                            ? 150
-                            : 300
-                        }
-                        image={image.url}
-                        alt={image.prompt}
-                      />
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <InputLabel>Image Size</InputLabel>
+              <Select
+                value={options.size}
+                onChange={(e) => setOptions({ ...options, size: e.target.value })}
+                disabled={loading}
+              >
+                <MenuItem value="1024x1024">Square (1024×1024)</MenuItem>
+                <MenuItem value="1792x1024">Landscape (1792×1024)</MenuItem>
+                <MenuItem value="1024x1792">Portrait (1024×1792)</MenuItem>
+              </Select>
+              <FormHelperText>Choose based on your intended use</FormHelperText>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <InputLabel>Purpose</InputLabel>
+              <Select
+                value={options.purpose}
+                onChange={(e) => setOptions({ ...options, purpose: e.target.value })}
+                disabled={loading}
+              >
+                <MenuItem value="general">General</MenuItem>
+                <MenuItem value="hero">Hero Image</MenuItem>
+                <MenuItem value="background">Background</MenuItem>
+                <MenuItem value="product">Product Shot</MenuItem>
+                <MenuItem value="social">Social Media</MenuItem>
+                <MenuItem value="banner">Banner</MenuItem>
+                <MenuItem value="icon">Icon/Logo</MenuItem>
+              </Select>
+              <FormHelperText>Helps categorize your generated images</FormHelperText>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <FormControl fullWidth>
+              <InputLabel>Quality</InputLabel>
+              <Select
+                value={options.quality}
+                onChange={(e) => setOptions({ ...options, quality: e.target.value })}
+                disabled={loading}
+              >
+                <MenuItem value="standard">Standard</MenuItem>
+                <MenuItem value="hd">HD (2x cost)</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <FormControl fullWidth>
+              <InputLabel>Style</InputLabel>
+              <Select
+                value={options.style}
+                onChange={(e) => setOptions({ ...options, style: e.target.value })}
+                disabled={loading}
+              >
+                <MenuItem value="vivid">Vivid (More artistic)</MenuItem>
+                <MenuItem value="natural">Natural (More realistic)</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item xs={12} md={4}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={options.enhance_prompt}
+                  onChange={(e) => setOptions({ ...options, enhance_prompt: e.target.checked })}
+                  disabled={loading}
+                />
+              }
+              label="AI Enhance Prompt"
+            />
+          </Grid>
+
+          {error && (
+            <Grid item xs={12}>
+              <Alert severity="error" onClose={() => setError(null)}>
+                {error}
+              </Alert>
+            </Grid>
+          )}
+
+          <Grid item xs={12}>
+            <Button
+              variant="contained"
+              size="large"
+              onClick={handleGenerate}
+              disabled={loading || !prompt.trim()}
+              startIcon={loading ? <CircularProgress size={20} /> : <AutoAwesome />}
+              fullWidth
+            >
+              {loading ? 'Generating...' : 'Generate Image'}
+            </Button>
+          </Grid>
+        </Grid>
+
+        {/* Result Dialog */}
+        <Dialog
+          open={showDialog}
+          onClose={() => setShowDialog(false)}
+          maxWidth="lg"
+          fullWidth
+        >
+          <DialogTitle>
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+              <Typography variant="h6">Generated Image</Typography>
+              <IconButton onClick={() => setShowDialog(false)}>
+                <CloseIcon />
+              </IconButton>
+            </Box>
+          </DialogTitle>
+          <DialogContent>
+            {generatedImage && (
+              <Box>
+                <Box
+                  component="img"
+                  src={generatedImage.asset.file_url}
+                  alt="Generated image"
+                  sx={{
+                    width: '100%',
+                    maxHeight: '70vh',
+                    objectFit: 'contain',
+                    borderRadius: 2,
+                    mb: 2,
+                  }}
+                />
+
+                <Box mb={2}>
+                  <Typography variant="subtitle2" gutterBottom>
+                    Original Prompt:
+                  </Typography>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Typography variant="body2" sx={{ flex: 1 }}>
+                      {generatedImage.generation_details.original_prompt}
+                    </Typography>
+                    <IconButton
+                      size="small"
+                      onClick={() => copyPrompt(generatedImage.generation_details.original_prompt)}
+                    >
+                      <ContentCopy fontSize="small" />
+                    </IconButton>
+                  </Box>
+                </Box>
+
+                {generatedImage.generation_details.enhanced_prompt && (
+                  <Box mb={2}>
+                    <Typography variant="subtitle2" gutterBottom>
+                      Enhanced Prompt:
+                    </Typography>
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <Typography variant="body2" sx={{ flex: 1 }}>
+                        {generatedImage.generation_details.enhanced_prompt}
+                      </Typography>
                       <IconButton
-                        sx={{
-                          position: 'absolute',
-                          top: 8,
-                          right: 8,
-                          bgcolor: 'rgba(255,255,255,0.8)',
-                          '&:hover': {
-                            bgcolor: 'rgba(255,255,255,0.9)',
-                          },
-                        }}
                         size="small"
-                        color={image.favorite ? 'error' : 'default'}
-                        onClick={() => handleToggleImageFavorite(image.id)}
+                        onClick={() => {
+                          if (generatedImage.generation_details.enhanced_prompt) {
+                            copyPrompt(generatedImage.generation_details.enhanced_prompt);
+                          }
+                        }}
                       >
-                        {image.favorite ? <StarIcon /> : <StarBorderIcon />}
+                        <ContentCopy fontSize="small" />
                       </IconButton>
                     </Box>
-                    <CardContent>
-                      <Typography variant="body2" noWrap>
-                        {image.prompt}
-                      </Typography>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          mt: 1,
-                        }}
-                      >
-                        <Chip size="small" label={image.style} />
-                        <Chip size="small" label={image.aspectRatio} variant="outlined" />
-                      </Box>
-                      <Box
-                        sx={{
-                          display: 'flex',
-                          justifyContent: 'flex-end',
-                          mt: 2,
-                        }}
-                      >
-                        <Tooltip title="View full size">
-                          <IconButton
-                            size="small"
-                            onClick={() => handleViewImageFullSize(image)}
-                          >
-                            <FullscreenIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Regenerate with same prompt">
-                          <IconButton
-                            size="small"
-                            onClick={() => handleRegenerateImage(image)}
-                          >
-                            <RefreshIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Download">
-                          <IconButton
-                            size="small"
-                            onClick={() => handleDownloadImage(image)}
-                          >
-                            <DownloadIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Saved to assets automatically">
-                          <IconButton size="small" color="primary" disabled>
-                            <SaveIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
+                  </Box>
+                )}
 
-            {generatedImages.length === 0 && !isGeneratingImages && (
-              <Box sx={{ textAlign: 'center', py: 4 }}>
-                <ImageIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
-                <Typography variant="body1" color="text.secondary">
-                  No images generated yet
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  Configure your settings and click &quot;Generate Images&quot; to create AI-generated images
-                </Typography>
+                {generatedImage.generation_details.revised_prompt && (
+                  <Box mb={2}>
+                    <Typography variant="subtitle2" gutterBottom>
+                      DALL-E Revised Prompt:
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {generatedImage.generation_details.revised_prompt}
+                    </Typography>
+                  </Box>
+                )}
+
+                <Box display="flex" gap={1} mt={2}>
+                  <Chip label={generatedImage.generation_details.model} size="small" />
+                  <Chip label={generatedImage.generation_details.settings.size} size="small" />
+                  <Chip label={generatedImage.generation_details.settings.quality} size="small" />
+                  <Chip label={generatedImage.generation_details.settings.style} size="small" />
+                  {isDemoMode && <Chip label="DEMO" size="small" color="info" />}
+                </Box>
+
+                <Box display="flex" gap={2} mt={3}>
+                  <Button
+                    variant="contained"
+                    startIcon={<Download />}
+                    onClick={handleDownload}
+                    fullWidth
+                  >
+                    Download Image
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      setShowDialog(false);
+                      setPrompt('');
+                    }}
+                    fullWidth
+                  >
+                    Generate Another
+                  </Button>
+                </Box>
               </Box>
             )}
-          </Paper>
-        </Grid>
-      </Grid>
-    </Box>
+          </DialogContent>
+        </Dialog>
+      </CardContent>
+    </Card>
   );
 };
 
