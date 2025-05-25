@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import {
@@ -13,12 +13,9 @@ import {
   CardActions,
   IconButton,
   Chip,
-  LinearProgress,
 } from '@mui/material';
 import {
-  Dashboard as DashboardIcon,
   Image as ImageIcon,
-  VideoLibrary as VideoIcon,
   Description as DescriptionIcon,
   Campaign as CampaignIcon,
   AutoAwesome as AIIcon,
@@ -50,7 +47,7 @@ interface StatCard {
 const DashboardPage = () => {
   const router = useRouter();
   const { user } = useAuth();
-  const { activeClient, clients } = useClient();
+  const { activeClient } = useClient();
 
   // Quick actions for easy navigation
   const quickActions: QuickAction[] = [
