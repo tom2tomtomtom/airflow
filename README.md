@@ -1,42 +1,57 @@
-# AIrWAVE - AI-Powered Digital Asset Production Platform
+# AIrWAVE - AI-Powered Campaign Management Platform
 
-AIrWAVE is a comprehensive content management platform that leverages AI to streamline digital asset creation, management, and optimization.
+A comprehensive digital marketing platform that leverages AI to streamline campaign creation, asset management, and content generation.
 
-## Demo Mode
+## 🚀 Features
 
-The application now includes a fully functional demo mode that allows you to explore all features without setting up authentication or backend services.
+### ✅ Implemented Features
 
-### Quick Start
+- **Client Management System**
+  - Client listing page with search and filtering
+  - Detailed client profiles with editing capabilities
+  - Client selector for easy switching between clients
+  - Brand guidelines management
 
-1. Visit the deployed application on Netlify
-2. On the login page, click **"Continue with Demo"**
-3. The app will automatically log you in with a demo account and sample client data
-4. You can now explore all features including:
-   - AI-powered content generation
-   - Asset management
-   - Template library
-   - Client management
-   - Content matrix
-   - Strategic content planning
+- **Campaign Management**
+  - Campaign listing with status tracking
+  - Budget and timeline visualization
+  - Platform-specific campaign targeting
 
-### Features
+- **AI-Powered Tools**
+  - DALL-E 3 image generation with customizable parameters
+  - Demo mode for testing without API keys
+  - Prompt enhancement for better results
 
-- **AI Integration**: Generate images using DALL-E 3, create content with GPT-4
-- **Asset Management**: Upload, organize, and manage digital assets
-- **Template System**: Pre-built templates for various content types
-- **Client Management**: Manage multiple clients and their brand guidelines
-- **Content Matrix**: Strategic content planning and execution
-- **Approval Workflows**: Streamline content approval processes
+- **Asset Management**
+  - Centralized asset library
+  - AI-generated asset tracking
+  - Multi-file upload support (in progress)
 
-## Development Setup
+- **UI/UX Enhancements**
+  - Loading spinners and skeleton screens
+  - User-friendly error messages
+  - Global notification system
+  - Responsive design
 
-### Prerequisites
+### 🚧 In Progress
 
-- Node.js 18+
-- npm 10+
-- Git
+- Campaign creation and editing
+- Template marketplace
+- Matrix functionality improvements
+- Real-time collaboration features
+- Analytics dashboard
 
-### Installation
+## 🛠️ Tech Stack
+
+- **Frontend**: Next.js 14, React 18, TypeScript
+- **UI Framework**: Material-UI (MUI) v5
+- **State Management**: Zustand, React Query
+- **Authentication**: Supabase Auth
+- **Database**: Supabase (PostgreSQL)
+- **AI Integration**: OpenAI API (DALL-E 3)
+- **Deployment**: Vercel/Netlify ready
+
+## 📦 Installation
 
 1. Clone the repository:
 ```bash
@@ -49,79 +64,95 @@ cd AIRWAVE_0525_CODEX
 npm install
 ```
 
-3. Copy environment variables:
+3. Set up environment variables:
 ```bash
-cp .env.example .env
+cp .env.example .env.local
 ```
 
-4. Configure environment variables in `.env`:
-   - Add your OpenAI API key for AI features
-   - Configure Supabase credentials for database
-   - Add other service API keys as needed
+4. Configure your environment variables:
+```env
+# For demo mode (no external services required)
+NEXT_PUBLIC_DEMO_MODE=true
+
+# For production mode
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+OPENAI_API_KEY=your_openai_api_key
+```
 
 5. Run the development server:
 ```bash
 npm run dev
 ```
 
-6. Open [http://localhost:3000](http://localhost:3000) in your browser
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-## Deployment
+## 🎮 Demo Mode
 
-The application is configured for deployment on Netlify:
+The application includes a comprehensive demo mode that allows you to explore all features without setting up external services:
 
-1. Connect your GitHub repository to Netlify
-2. Set environment variables in Netlify dashboard
-3. Deploy automatically on push to main branch
+- Demo clients with brand guidelines
+- Sample campaigns and assets
+- Simulated AI image generation
+- Mock data for all features
 
-### Environment Variables
+To enable demo mode, set `NEXT_PUBLIC_DEMO_MODE=true` in your environment variables.
 
-Required for full functionality:
-- `OPENAI_API_KEY` - For AI content generation
-- `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key
-- `SUPABASE_SERVICE_KEY` - Supabase service key
+## 📚 Project Structure
 
-Optional:
-- `ELEVENLABS_API_KEY` - For AI voice generation
-- `CREATOMATE_API_KEY` - For video rendering
+```
+src/
+├── components/        # Reusable UI components
+├── contexts/         # React contexts for global state
+├── hooks/           # Custom React hooks
+├── lib/             # Utility functions and configurations
+├── pages/           # Next.js pages and API routes
+├── types/           # TypeScript type definitions
+└── utils/           # Helper functions
+```
 
-## Tech Stack
-
-- **Frontend**: Next.js, React, TypeScript
-- **UI**: Material-UI (MUI)
-- **State Management**: React Context API, Zustand
-- **Authentication**: Supabase Auth (with demo mode)
-- **Database**: Supabase (PostgreSQL)
-- **AI Services**: OpenAI (GPT-4, DALL-E 3)
-- **Deployment**: Netlify
-
-## Scripts
+## 🔧 Available Scripts
 
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
+- `npm run start` - Start production server
 - `npm run test` - Run tests
 - `npm run lint` - Run ESLint
 - `npm run format` - Format code with Prettier
 
-## Contributing
+## 🤝 Contributing
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## License
+## 📝 Implementation Progress
+
+### Week 1: Critical Fixes ✅
+- Fixed navigation and routing
+- Implemented AI image generation
+- Added demo mode with sample data
+- Created reusable UI components
+
+### Week 2: Core Features 🚧
+- Client Management System ✅
+- Campaign Management (partial)
+- Matrix functionality (existing)
+
+### Upcoming Phases
+- Week 3: UI/UX & Integrations
+- Week 4-5: Missing Features
+- Week 6: Performance & Security
+
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Support
+## 🙏 Acknowledgments
 
-For issues and questions:
-- Open an issue on GitHub
-- Contact the development team
-
----
-
-Built with ❤️ using Next.js and AI
+- OpenAI for DALL-E 3 API
+- Supabase for backend infrastructure
+- Material-UI for component library
+- Vercel/Next.js team for the framework
