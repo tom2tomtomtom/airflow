@@ -1,50 +1,52 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { Box, Typography, Button, Container, Paper } from '@mui/material';
-import { ErrorOutline } from '@mui/icons-material';
+import { Box, Container, Typography, Button, Paper, Alert } from '@mui/material';
+import { ErrorOutline, Refresh, Home } from '@mui/icons-material';
 
-interface ErrorBoundaryProps {
+interface Props {
   children: ReactNode;
+  fallback?: ReactNode;
 }
 
-interface ErrorBoundaryState {
+interface State {
   hasError: boolean;
   error: Error | null;
   errorInfo: ErrorInfo | null;
+  errorId: string;
 }
 
-class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  constructor(props: ErrorBoundaryProps) {
+class ErrorBoundary extends Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = {
       hasError: false,
       error: null,
       errorInfo: null,
+      errorId: this.generateErrorId(),
     };
   }
 
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+  static getDerivedStateFromError(error: Error): Partial<State> {
     // Update state so the next render will show the fallback UI
-    return {
-      hasError: true,
-      error,
-      errorInfo: null,
-    };
+    return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // Log error to error reporting service
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
-    
-    // Update state with error details
+    // Log error to console in development
+    if (process.env.NODE_ENV === 'development') {
+      console.error('ErrorBoundary caught an error:', error, errorInfo);
+    }
+
+    // In production, you would send this to an error reporting service
+    // Example: logErrorToService(error, errorInfo);
+
     this.setState({
       error,
       errorInfo,
     });
-    
-    // In production, you would send this to an error tracking service like Sentry
-    if (process.env.NODE_ENV === 'production') {
-      // TODO: Send to error tracking service
-    }
+  }
+
+  generateErrorId(): string {
+    return `ERR_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 
   handleReset = () => {
@@ -52,72 +54,107 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       hasError: false,
       error: null,
       errorInfo: null,
+      errorId: this.generateErrorId(),
     });
-    
-    // Optionally reload the page
-    window.location.reload();
+  };
+
+  handleGoHome = () => {
+    window.location.href = '/';
   };
 
   render() {
     if (this.state.hasError) {
+      // Custom fallback UI
+      if (this.props.fallback) {
+        return <>{this.props.fallback}</>;
+      }
+
+      // Default error UI
       return (
-        <Container maxWidth="sm" sx={{ mt: 8 }}>
-          <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
-            <Box sx={{ mb: 3 }}>
-              <ErrorOutline sx={{ fontSize: 64, color: 'error.main' }} />
-            </Box>
-            
+        <Container maxWidth="md" sx={{ mt: 8, mb: 8 }}>
+          <Paper
+            elevation={3}
+            sx={{
+              p: 4,
+              textAlign: 'center',
+              borderTop: 4,
+              borderColor: 'error.main',
+            }}
+          >
+            <ErrorOutline
+              sx={{
+                fontSize: 64,
+                color: 'error.main',
+                mb: 2,
+              }}
+            />
+
             <Typography variant="h4" gutterBottom>
               Oops! Something went wrong
             </Typography>
-            
+
             <Typography variant="body1" color="text.secondary" paragraph>
-              We're sorry for the inconvenience. An unexpected error has occurred.
+              We're sorry for the inconvenience. The application encountered an unexpected error.
             </Typography>
-            
+
             {process.env.NODE_ENV === 'development' && this.state.error && (
-              <Box
-                sx={{
-                  mt: 3,
-                  p: 2,
-                  bgcolor: 'grey.100',
-                  borderRadius: 1,
-                  textAlign: 'left',
-                }}
-              >
+              <Alert severity="error" sx={{ mt: 2, mb: 3, textAlign: 'left' }}>
                 <Typography variant="subtitle2" gutterBottom>
-                  Error Details (Development Only):
+                  Error Details (Development Mode):
                 </Typography>
                 <Typography
                   variant="body2"
                   component="pre"
                   sx={{
-                    overflow: 'auto',
+                    fontFamily: 'monospace',
                     whiteSpace: 'pre-wrap',
                     wordBreak: 'break-word',
                   }}
                 >
                   {this.state.error.toString()}
-                  {this.state.errorInfo && this.state.errorInfo.componentStack}
                 </Typography>
-              </Box>
+                {this.state.errorInfo && (
+                  <Typography
+                    variant="body2"
+                    component="pre"
+                    sx={{
+                      fontFamily: 'monospace',
+                      whiteSpace: 'pre-wrap',
+                      wordBreak: 'break-word',
+                      mt: 1,
+                    }}
+                  >
+                    {this.state.errorInfo.componentStack}
+                  </Typography>
+                )}
+              </Alert>
             )}
-            
-            <Box sx={{ mt: 4, display: 'flex', gap: 2, justifyContent: 'center' }}>
+
+            <Box sx={{ mt: 3, display: 'flex', gap: 2, justifyContent: 'center' }}>
               <Button
                 variant="contained"
+                startIcon={<Refresh />}
                 onClick={this.handleReset}
                 color="primary"
               >
-                Reload Page
+                Try Again
               </Button>
               <Button
                 variant="outlined"
-                onClick={() => window.history.back()}
+                startIcon={<Home />}
+                onClick={this.handleGoHome}
               >
-                Go Back
+                Go to Home
               </Button>
             </Box>
+
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ mt: 3, display: 'block' }}
+            >
+              Error ID: {this.state.errorId}
+            </Typography>
           </Paper>
         </Container>
       );
@@ -128,3 +165,15 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 }
 
 export default ErrorBoundary;
+
+// Higher-order component for easier use with functional components
+export function withErrorBoundary<P extends object>(
+  Component: React.ComponentType<P>,
+  fallback?: ReactNode
+) {
+  return (props: P) => (
+    <ErrorBoundary fallback={fallback}>
+      <Component {...props} />
+    </ErrorBoundary>
+  );
+}
