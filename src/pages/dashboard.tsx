@@ -27,6 +27,7 @@ import {
   Add,
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
+import ActivityFeed from '@/components/ActivityFeed';
 import { useAuth } from '@/contexts/AuthContext';
 import { useClient } from '@/contexts/ClientContext';
 
@@ -115,30 +116,33 @@ const DashboardPage = () => {
     },
   ];
 
-  // Recent activity (mock data)
-  const recentActivity = [
-    {
-      id: 1,
-      action: 'Generated AI image',
-      details: 'Modern office space with natural lighting',
-      time: '2 hours ago',
-      type: 'ai',
-    },
-    {
-      id: 2,
-      action: 'Created content matrix',
-      details: 'Q2 2024 Social Media Campaign',
-      time: '5 hours ago',
-      type: 'matrix',
-    },
-    {
-      id: 3,
-      action: 'Uploaded assets',
-      details: '5 product images',
-      time: '1 day ago',
-      type: 'upload',
-    },
-  ];
+  // Handle activity click
+  const handleActivityClick = (activity: any) => {
+    // Navigate based on activity type
+    switch (activity.type) {
+      case 'campaign_created':
+      case 'campaign_updated':
+      case 'campaign_launched':
+        router.push('/campaigns');
+        break;
+      case 'asset_uploaded':
+      case 'asset_generated':
+        router.push('/assets');
+        break;
+      case 'matrix_created':
+      case 'matrix_approved':
+        router.push('/matrix');
+        break;
+      case 'approval_requested':
+        router.push('/sign-off');
+        break;
+      case 'performance_alert':
+        router.push('/analytics');
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -268,39 +272,14 @@ const DashboardPage = () => {
           ))}
         </Grid>
 
-        {/* Recent Activity and Getting Started */}
+        {/* Activity Feed and Getting Started */}
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
-            <Paper sx={{ p: 3, height: '100%' }}>
-              <Typography variant="h6" gutterBottom>
-                Recent Activity
-              </Typography>
-              {recentActivity.map((activity) => (
-                <Box
-                  key={activity.id}
-                  sx={{
-                    py: 2,
-                    borderBottom: '1px solid',
-                    borderColor: 'divider',
-                    '&:last-child': {
-                      borderBottom: 'none',
-                    },
-                  }}
-                >
-                  <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-                    <Box>
-                      <Typography variant="body1">{activity.action}</Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {activity.details}
-                      </Typography>
-                    </Box>
-                    <Typography variant="caption" color="text.secondary">
-                      {activity.time}
-                    </Typography>
-                  </Box>
-                </Box>
-              ))}
-            </Paper>
+            <ActivityFeed
+              compact
+              maxItems={5}
+              onActivityClick={handleActivityClick}
+            />
           </Grid>
 
           <Grid item xs={12} md={6}>
@@ -331,6 +310,16 @@ const DashboardPage = () => {
                   <Box component="li" sx={{ mb: 1 }}>
                     <Typography variant="body2">
                       Manage and organize your digital assets
+                    </Typography>
+                  </Box>
+                  <Box component="li" sx={{ mb: 1 }}>
+                    <Typography variant="body2">
+                      Track campaign performance with analytics
+                    </Typography>
+                  </Box>
+                  <Box component="li" sx={{ mb: 1 }}>
+                    <Typography variant="body2">
+                      Get real-time updates with the activity feed
                     </Typography>
                   </Box>
                 </Box>
