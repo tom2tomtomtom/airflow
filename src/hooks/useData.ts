@@ -7,7 +7,9 @@ import {
   getDemoAssets, 
   getDemoTemplates, 
   getDemoCampaigns,
-  getDemoMatrices 
+  getDemoMatrices,
+  campaignToUICampaign,
+  type UICampaign
 } from '@/lib/demo-data';
 import type { Client, Asset, Template, Campaign, Matrix } from '@/types/models';
 
@@ -16,7 +18,7 @@ type EntityTypes = {
   clients: Client;
   assets: Asset;
   templates: Template;
-  campaigns: Campaign;
+  campaigns: Campaign | UICampaign;
   matrices: Matrix;
 };
 
@@ -41,13 +43,15 @@ export function useData<T extends keyof EntityTypes>(
 
         if (isDemoMode()) {
           // Demo mode data fetching
+          await new Promise(resolve => setTimeout(resolve, 300)); // Simulate network delay
+          
           switch (entityType) {
             case 'clients':
               const clients = getDemoClients();
               result = id ? clients.find(c => c.id === id) : clients;
               break;
             case 'campaigns':
-              const campaigns = getDemoCampaigns();
+              const campaigns = getDemoCampaigns() as UICampaign[];
               result = id ? campaigns.find(c => c.id === id) : campaigns;
               break;
             case 'assets':
@@ -73,7 +77,13 @@ export function useData<T extends keyof EntityTypes>(
               .single();
             
             if (error) throw error;
-            result = data;
+            
+            // Convert campaign data for UI if needed
+            if (entityType === 'campaigns' && data) {
+              result = campaignToUICampaign(data as Campaign);
+            } else {
+              result = data;
+            }
           } else {
             const { data, error } = await supabase
               .from(entityType)
@@ -81,7 +91,13 @@ export function useData<T extends keyof EntityTypes>(
               .order('created_at', { ascending: false });
             
             if (error) throw error;
-            result = data || [];
+            
+            // Convert campaign data for UI if needed
+            if (entityType === 'campaigns' && data) {
+              result = (data as Campaign[]).map(campaignToUICampaign);
+            } else {
+              result = data || [];
+            }
           }
         }
 
@@ -105,6 +121,7 @@ export const useClients = () => {
     queryKey: ['clients'],
     queryFn: async () => {
       if (isDemoMode()) {
+        await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
         return getDemoClients();
       }
       
@@ -126,6 +143,7 @@ export const useAssets = (clientId?: string) => {
     queryKey: ['assets', clientId],
     queryFn: async () => {
       if (isDemoMode()) {
+        await new Promise(resolve => setTimeout(resolve, 300));
         return getDemoAssets(clientId);
       }
       
@@ -151,6 +169,7 @@ export const useTemplates = () => {
     queryKey: ['templates'],
     queryFn: async () => {
       if (isDemoMode()) {
+        await new Promise(resolve => setTimeout(resolve, 400));
         return getDemoTemplates();
       }
       
@@ -172,7 +191,8 @@ export const useCampaigns = (clientId?: string) => {
     queryKey: ['campaigns', clientId],
     queryFn: async () => {
       if (isDemoMode()) {
-        return getDemoCampaigns(clientId);
+        await new Promise(resolve => setTimeout(resolve, 350));
+        return getDemoCampaigns(clientId) as UICampaign[];
       }
       
       let query = supabase.from('campaigns').select('*');
@@ -184,7 +204,9 @@ export const useCampaigns = (clientId?: string) => {
       const { data, error } = await query.order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data || [];
+      
+      // Convert to UI format
+      return (data || []).map(campaignToUICampaign);
     },
     staleTime: 5 * 60 * 1000,
   });
@@ -196,6 +218,7 @@ export const useMatrices = (clientId?: string) => {
     queryKey: ['matrices', clientId],
     queryFn: async () => {
       if (isDemoMode()) {
+        await new Promise(resolve => setTimeout(resolve, 300));
         return getDemoMatrices(clientId);
       }
       
