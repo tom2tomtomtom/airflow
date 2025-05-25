@@ -1,9 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 
-// Get JWT_SECRET directly for Edge Runtime compatibility
-const JWT_SECRET = process.env.JWT_SECRET || 'demo-jwt-secret-that-is-at-least-32-characters-long';
+// Security: Ensure JWT_SECRET is properly set
 const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+// Validate JWT_SECRET in production
+if (!isDemoMode && !JWT_SECRET) {
+  throw new Error('JWT_SECRET environment variable is required in production mode');
+}
+
+// In production, ensure JWT_SECRET meets minimum security requirements
+if (!isDemoMode && JWT_SECRET && JWT_SECRET.length < 32) {
+  throw new Error('JWT_SECRET must be at least 32 characters long for security');
+}
 
 // Define public routes that don't require authentication
 const publicRoutes = [
@@ -26,10 +36,6 @@ const publicRoutes = [
   // Health check endpoints
   '/api/health',
   '/api/status',
-  // API endpoints that should work in demo mode
-  '/api/clients',
-  '/api/templates',
-  '/api/assets',
 ];
 
 // Define routes that are allowed in demo mode
@@ -43,6 +49,9 @@ const demoAllowedRoutes = [
   '/sign-off',
   '/execute',
   '/dashboard',
+  '/api/clients',
+  '/api/templates',
+  '/api/assets',
 ];
 
 // Define routes that require specific roles
@@ -87,23 +96,43 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
   // Control referrer information
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   
-  // Content Security Policy
-  const csp = [
+  // Content Security Policy - Stricter in production
+  const cspBase = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "img-src 'self' data: https: blob:",
     "font-src 'self' https://fonts.gstatic.com",
-    "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.openai.com https://api.elevenlabs.io",
-    "frame-ancestors 'none'",
+    "img-src 'self' data: https: blob:",
+    "object-src 'none'",
     "base-uri 'self'",
-    "form-action 'self'"
-  ].join('; ');
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+    "upgrade-insecure-requests"
+  ];
+
+  // More permissive in development/demo mode
+  if (isDemoMode || process.env.NODE_ENV === 'development') {
+    cspBase.push(
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.openai.com https://api.elevenlabs.io https://api.creatomate.com ws://localhost:*"
+    );
+  } else {
+    // Stricter CSP for production
+    cspBase.push(
+      "script-src 'self'",
+      "style-src 'self' https://fonts.googleapis.com",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.openai.com https://api.elevenlabs.io https://api.creatomate.com"
+    );
+  }
   
-  response.headers.set('Content-Security-Policy', csp);
+  response.headers.set('Content-Security-Policy', cspBase.join('; '));
   
   // Permissions Policy
-  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
+  
+  // Additional security headers for production
+  if (process.env.NODE_ENV === 'production') {
+    response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  }
   
   return response;
 }
@@ -119,8 +148,8 @@ export async function middleware(request: NextRequest) {
   
   // Apply rate limiting to auth endpoints
   if (pathname.startsWith('/api/auth/')) {
-    const ip = request.headers.get('x-forwarded-for') || request.ip || 'unknown';
-    const rateLimitKey = `${ip}:${pathname}`;
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || request.ip || 'unknown';
+    const rateLimitKey = `auth:${ip}`;
     
     if (!checkRateLimit(rateLimitKey, 20, 60000)) { // 20 requests per minute
       return NextResponse.json(
@@ -130,39 +159,43 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // In demo mode, allow most routes without authentication
-  if (isDemoMode) {
-    // Check if it's a protected route that should work in demo
-    if (demoAllowedRoutes.some(route => pathname.startsWith(route))) {
-      return response;
-    }
+  // Allow public routes and static assets
+  const isPublicRoute = publicRoutes.some(route => 
+    pathname === route || pathname.startsWith(route + '/')
+  );
+  
+  const isStaticAsset = pathname.startsWith('/_next') || 
+    pathname.startsWith('/favicon') || 
+    pathname.includes('.');
     
-    // Check if it's an API route that should work in demo
-    if (pathname.startsWith('/api/') && !pathname.startsWith('/api/auth/')) {
-      // Add demo headers for API routes
-      const requestHeaders = new Headers(request.headers);
-      requestHeaders.set('x-demo-mode', 'true');
-      requestHeaders.set('x-user-id', 'demo-user');
-      requestHeaders.set('x-user-role', 'user');
-      
-      response = NextResponse.next({
-        request: {
-          headers: requestHeaders,
-        },
-      });
-      
-      return addSecurityHeaders(response);
-    }
+  if (isPublicRoute || isStaticAsset) {
+    return response;
   }
 
-  // Allow public routes and static assets
-  if (
-    publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/')) ||
-    pathname.startsWith('/_next') ||
-    pathname.startsWith('/favicon') ||
-    pathname.includes('.') // Static files
-  ) {
-    return response;
+  // In demo mode, handle authentication differently
+  if (isDemoMode) {
+    const isDemoAllowed = demoAllowedRoutes.some(route => pathname.startsWith(route));
+    
+    if (isDemoAllowed) {
+      // Add demo headers for API routes
+      if (pathname.startsWith('/api/')) {
+        const requestHeaders = new Headers(request.headers);
+        requestHeaders.set('x-demo-mode', 'true');
+        requestHeaders.set('x-user-id', 'demo-user');
+        requestHeaders.set('x-user-role', 'user');
+        requestHeaders.set('x-user-email', 'demo@airwave.app');
+        
+        response = NextResponse.next({
+          request: {
+            headers: requestHeaders,
+          },
+        });
+        
+        return addSecurityHeaders(response);
+      }
+      
+      return response;
+    }
   }
 
   // Check for auth token in cookies (secure) or headers (for API calls)
@@ -170,14 +203,16 @@ export async function middleware(request: NextRequest) {
   const tokenFromHeader = request.headers.get('authorization')?.replace('Bearer ', '');
   const token = tokenFromCookie || tokenFromHeader;
 
-  // In demo mode, create a fake token if none exists
+  // In demo mode, create a demo session if no token exists
   if (!token && isDemoMode) {
-    const demoToken = 'demo-token';
+    // Generate a demo token (this is only for demo mode)
+    const demoToken = `demo-${Date.now()}`;
     response.cookies.set('auth_token', demoToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
+      maxAge: 60 * 60 * 24, // 24 hours
     });
     
     return response;
@@ -196,8 +231,8 @@ export async function middleware(request: NextRequest) {
   }
 
   try {
-    // In demo mode, skip token verification
-    if (isDemoMode && (token === 'demo-token' || token.startsWith('demo-'))) {
+    // In demo mode, accept demo tokens
+    if (isDemoMode && token.startsWith('demo-')) {
       // Add demo user info to headers for API routes
       if (pathname.startsWith('/api')) {
         const requestHeaders = new Headers(request.headers);
@@ -218,7 +253,11 @@ export async function middleware(request: NextRequest) {
       return response;
     }
 
-    // Verify the token for non-demo mode
+    // Verify real JWT tokens
+    if (!JWT_SECRET) {
+      throw new Error('JWT_SECRET not configured');
+    }
+
     const secret = new TextEncoder().encode(JWT_SECRET);
     const { payload } = await jwtVerify(token, secret, {
       algorithms: ['HS256']
@@ -227,12 +266,6 @@ export async function middleware(request: NextRequest) {
     // Validate payload structure
     if (!payload.sub || !payload.role || !payload.exp) {
       throw new Error('Invalid token structure');
-    }
-
-    // Check token expiration (jwtVerify already does this, but adding explicit check)
-    const now = Math.floor(Date.now() / 1000);
-    if (payload.exp < now) {
-      throw new Error('Token expired');
     }
 
     // Check role-based access for protected routes
@@ -245,8 +278,8 @@ export async function middleware(request: NextRequest) {
             { status: 403 }
           );
         }
-        // For pages, redirect to assets page
-        return NextResponse.redirect(new URL('/assets', request.url));
+        // For pages, redirect to dashboard
+        return NextResponse.redirect(new URL('/dashboard', request.url));
       }
     }
 
