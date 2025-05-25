@@ -103,7 +103,11 @@ export function validationErrorResponse(error: ZodError): NextResponse {
     message: err.message,
   }));
   
-  logger.warn('Validation error', { errors });
+  logger.warn('Validation error', { 
+    message: 'Validation failed',
+    errorCount: errors.length,
+    fields: errors.map(e => e.field).join(', ')
+  });
   
   return NextResponse.json(
     {
@@ -182,30 +186,34 @@ export async function validateRequest<T>(
 }
 
 // File upload validation
+const fileAllowedTypes = {
+  image: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
+  video: ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-ms-wmv', 'video/webm'],
+  audio: ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp4'],
+  document: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'],
+};
+
+const fileMaxSizes = {
+  image: 10 * 1024 * 1024, // 10MB
+  video: 100 * 1024 * 1024, // 100MB
+  audio: 50 * 1024 * 1024, // 50MB
+  document: 20 * 1024 * 1024, // 20MB
+};
+
 export const fileValidation = {
   // Allowed file types by category
-  allowedTypes: {
-    image: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
-    video: ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-ms-wmv', 'video/webm'],
-    audio: ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp4'],
-    document: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'],
-  },
+  allowedTypes: fileAllowedTypes,
   
   // Maximum file sizes (in bytes)
-  maxSizes: {
-    image: 10 * 1024 * 1024, // 10MB
-    video: 100 * 1024 * 1024, // 100MB
-    audio: 50 * 1024 * 1024, // 50MB
-    document: 20 * 1024 * 1024, // 20MB
-  },
+  maxSizes: fileMaxSizes,
   
   // Validate file
-  validate(file: { type: string; size: number; name: string }, category: keyof typeof fileValidation.allowedTypes) {
-    const allowedTypes = fileValidation.allowedTypes[category];
-    const maxSize = fileValidation.maxSizes[category];
+  validate(file: { type: string; size: number; name: string }, category: keyof typeof fileAllowedTypes) {
+    const allowedTypes = fileAllowedTypes[category];
+    const maxSize = fileMaxSizes[category];
     
     if (!allowedTypes.includes(file.type)) {
-      throw new Error(`File type ${file.type} is not allowed for ${category}`);
+      throw new Error(`File type ${file.type} is not allowed for ${String(category)}`);
     }
     
     if (file.size > maxSize) {
@@ -263,9 +271,9 @@ export async function validateCSRFToken(request: NextRequest): Promise<boolean> 
 
 // Rate limiting check (integrates with middleware rate limiting)
 export function checkAPIRateLimit(
-  identifier: string,
-  limit: number = 100,
-  window: number = 60000
+  _identifier: string,
+  _limit: number = 100,
+  _window: number = 60000
 ): boolean {
   // This would integrate with Redis in production
   // For now, using in-memory store from middleware
@@ -284,12 +292,18 @@ export const apiSchemas = {
   signup: z.object({
     email: commonSchemas.email,
     password: commonSchemas.password,
-    name: commonSchemas.safeString.min(2, 'Name must be at least 2 characters'),
+    name: z.string().min(2, 'Name must be at least 2 characters')
+      .transform(str => str.trim())
+      .refine(str => !/<[^>]*>/.test(str), 'HTML tags are not allowed')
+      .refine(str => !/[<>'"`;]/.test(str), 'Special characters not allowed'),
   }),
   
   // Client schemas
   createClient: z.object({
-    name: commonSchemas.safeString.min(2, 'Client name is required'),
+    name: z.string().min(2, 'Client name is required')
+      .transform(str => str.trim())
+      .refine(str => !/<[^>]*>/.test(str), 'HTML tags are not allowed')
+      .refine(str => !/[<>'"`;]/.test(str), 'Special characters not allowed'),
     description: commonSchemas.safeText.optional(),
     brandColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid color format').optional(),
     secondaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid color format').optional(),
@@ -305,7 +319,10 @@ export const apiSchemas = {
   // Brief schemas
   createBrief: z.object({
     clientId: commonSchemas.uuid,
-    title: commonSchemas.safeString.min(3, 'Title must be at least 3 characters'),
+    title: z.string().min(3, 'Title must be at least 3 characters')
+      .transform(str => str.trim())
+      .refine(str => !/<[^>]*>/.test(str), 'HTML tags are not allowed')
+      .refine(str => !/[<>'"`;]/.test(str), 'Special characters not allowed'),
     content: commonSchemas.safeText,
     objectives: z.array(commonSchemas.safeText).optional(),
     targetAudience: commonSchemas.safeText.optional(),
