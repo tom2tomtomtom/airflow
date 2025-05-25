@@ -1,78 +1,54 @@
 import React, { useState } from 'react';
 import {
   Box,
-  Button,
   TextField,
-  Select,
-  MenuItem,
+  Button,
+  Grid,
+  Typography,
   FormControl,
   InputLabel,
-  Card,
-  CardContent,
-  Typography,
-  CircularProgress,
-  Alert,
+  Select,
+  MenuItem,
   Chip,
-  Grid,
+  Alert,
+  Paper,
+  CircularProgress,
+  IconButton,
+  Slider,
   FormControlLabel,
   Switch,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  IconButton,
 } from '@mui/material';
-import {
-  AutoAwesome,
-  Close as CloseIcon,
-  Download,
-  ContentCopy,
-} from '@mui/icons-material';
-import axios, { AxiosError } from 'axios';
-import { Asset, BrandGuidelines } from '@/types/models';
-
-// Define the response type for generated images
-interface GeneratedImageResponse {
-  success: boolean;
-  message?: string;
-  asset: Asset;
-  generation_details: {
-    original_prompt: string;
-    enhanced_prompt?: string;
-    revised_prompt?: string;
-    model: string;
-    settings: {
-      size: string;
-      quality: string;
-      style: string;
-    };
-  };
-}
+import { AutoAwesome, Close, Download } from '@mui/icons-material';
+import axios from 'axios';
+import { useClient } from '@/contexts/ClientContext';
+import LoadingSpinner from './LoadingSpinner';
+import ErrorMessage, { getUserFriendlyErrorMessage } from './ErrorMessage';
 
 interface AIImageGeneratorProps {
   clientId: string;
-  onImageGenerated?: (asset: Asset) => void;
-  brandGuidelines?: BrandGuidelines;
+  onImageGenerated?: (asset: any) => void;
+  onClose?: () => void;
 }
 
-export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
+const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
   clientId,
   onImageGenerated,
-  brandGuidelines,
+  onClose,
 }) => {
+  const { activeClient } = useClient();
   const [prompt, setPrompt] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [generatedImage, setGeneratedImage] = useState<GeneratedImageResponse | null>(null);
-  const [showDialog, setShowDialog] = useState(false);
+  const [generatedImage, setGeneratedImage] = useState<any>(null);
   
-  // Generation options
-  const [options, setOptions] = useState({
-    size: '1024x1024',
-    quality: 'standard',
-    style: 'vivid',
-    purpose: 'general',
-    enhance_prompt: true,
-  });
+  // DALL-E 3 Settings
+  const [size, setSize] = useState<'1024x1024' | '1792x1024' | '1024x1792'>('1024x1024');
+  const [quality, setQuality] = useState<'standard' | 'hd'>('standard');
+  const [style, setStyle] = useState<'vivid' | 'natural'>('vivid');
+  const [purpose, setPurpose] = useState<string>('social');
+  const [enhancePrompt, setEnhancePrompt] = useState(true);
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState('');
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
@@ -80,296 +56,260 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
       return;
     }
 
-    setLoading(true);
+    setIsGenerating(true);
     setError(null);
+    setGeneratedImage(null);
 
     try {
-      const response = await axios.post<GeneratedImageResponse>('/api/dalle', {
+      const response = await axios.post('/api/dalle', {
         prompt,
         client_id: clientId,
-        ...options,
-        brand_guidelines: brandGuidelines,
-        tags: ['ai-generated', options.purpose],
+        model: 'dall-e-3',
+        size,
+        quality,
+        style,
+        n: 1,
+        purpose,
+        tags,
+        enhance_prompt: enhancePrompt,
+        brand_guidelines: activeClient?.brandGuidelines,
+      }, {
+        headers: {
+          'x-user-id': 'current-user', // In real app, get from auth
+          'x-demo-mode': process.env.NEXT_PUBLIC_DEMO_MODE || 'false',
+        },
       });
 
       if (response.data.success) {
-        setGeneratedImage(response.data);
-        setShowDialog(true);
-        
+        setGeneratedImage(response.data.asset);
         if (onImageGenerated) {
           onImageGenerated(response.data.asset);
         }
       } else {
         setError(response.data.message || 'Failed to generate image');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Generation error:', err);
-      
-      if (axios.isAxiosError(err)) {
-        const axiosError = err as AxiosError<{ message?: string }>;
-        setError(
-          axiosError.response?.data?.message || 
-          'Failed to generate image. Please try again.'
-        );
-      } else if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('An unexpected error occurred');
-      }
+      setError(getUserFriendlyErrorMessage(err));
     } finally {
-      setLoading(false);
+      setIsGenerating(false);
     }
   };
 
-  const handleDownload = async () => {
-    if (generatedImage?.asset?.url) {
-      const link = document.createElement('a');
-      link.href = generatedImage.asset.url;
-      link.download = `ai-generated-${Date.now()}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+  const handleAddTag = () => {
+    if (tagInput.trim() && !tags.includes(tagInput.trim())) {
+      setTags([...tags, tagInput.trim()]);
+      setTagInput('');
     }
   };
 
-  const copyPrompt = (text: string) => {
-    navigator.clipboard.writeText(text);
-    // You could add a toast notification here
+  const handleRemoveTag = (tagToRemove: string) => {
+    setTags(tags.filter(tag => tag !== tagToRemove));
+  };
+
+  const handleDownload = () => {
+    if (generatedImage?.url) {
+      window.open(generatedImage.url, '_blank');
+    }
   };
 
   return (
-    <Card>
-      <CardContent>
-        <Box display="flex" alignItems="center" mb={3}>
-          <AutoAwesome sx={{ mr: 1, color: 'primary.main' }} />
-          <Typography variant="h5">AI Image Generator (DALL-E 3)</Typography>
-        </Box>
+    <Paper elevation={0} sx={{ p: 3 }}>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+        <Typography variant="h5" display="flex" alignItems="center" gap={1}>
+          <AutoAwesome color="primary" />
+          AI Image Generator (DALL-E 3)
+        </Typography>
+        {onClose && (
+          <IconButton onClick={onClose}>
+            <Close />
+          </IconButton>
+        )}
+      </Box>
 
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
+      {error && (
+        <ErrorMessage
+          title="Generation Failed"
+          message={error}
+          variant="inline"
+          onRetry={() => setError(null)}
+        />
+      )}
+
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
+          <Box>
             <TextField
               fullWidth
               multiline
-              rows={3}
-              label="Describe the image you want to create"
+              rows={4}
+              label="Describe your image"
+              placeholder="A modern office space with natural lighting, minimalist design..."
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              placeholder="A modern office space with natural lighting, minimalist design, and plants..."
-              disabled={loading}
+              disabled={isGenerating}
+              sx={{ mb: 2 }}
             />
-          </Grid>
 
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
-              <InputLabel>Image Size</InputLabel>
-              <Select
-                value={options.size}
-                onChange={(e) => setOptions({ ...options, size: e.target.value })}
-                disabled={loading}
-              >
-                <MenuItem value="1024x1024">Square (1024×1024)</MenuItem>
-                <MenuItem value="1792x1024">Landscape (1792×1024)</MenuItem>
-                <MenuItem value="1024x1792">Portrait (1024×1792)</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth size="small">
+                  <InputLabel>Size</InputLabel>
+                  <Select value={size} onChange={(e) => setSize(e.target.value as any)}>
+                    <MenuItem value="1024x1024">Square (1024x1024)</MenuItem>
+                    <MenuItem value="1792x1024">Landscape (1792x1024)</MenuItem>
+                    <MenuItem value="1024x1792">Portrait (1024x1792)</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
 
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
-              <InputLabel>Purpose</InputLabel>
-              <Select
-                value={options.purpose}
-                onChange={(e) => setOptions({ ...options, purpose: e.target.value })}
-                disabled={loading}
-              >
-                <MenuItem value="general">General</MenuItem>
-                <MenuItem value="hero">Hero Image</MenuItem>
-                <MenuItem value="background">Background</MenuItem>
-                <MenuItem value="product">Product Shot</MenuItem>
-                <MenuItem value="social">Social Media</MenuItem>
-                <MenuItem value="banner">Banner</MenuItem>
-                <MenuItem value="icon">Icon/Logo</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth size="small">
+                  <InputLabel>Purpose</InputLabel>
+                  <Select value={purpose} onChange={(e) => setPurpose(e.target.value)}>
+                    <MenuItem value="hero">Hero Image</MenuItem>
+                    <MenuItem value="background">Background</MenuItem>
+                    <MenuItem value="product">Product</MenuItem>
+                    <MenuItem value="social">Social Media</MenuItem>
+                    <MenuItem value="banner">Banner</MenuItem>
+                    <MenuItem value="icon">Icon</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
 
-          <Grid item xs={12} md={4}>
-            <FormControl fullWidth>
-              <InputLabel>Quality</InputLabel>
-              <Select
-                value={options.quality}
-                onChange={(e) => setOptions({ ...options, quality: e.target.value })}
-                disabled={loading}
-              >
-                <MenuItem value="standard">Standard</MenuItem>
-                <MenuItem value="hd">HD (costs 2x)</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth size="small">
+                  <InputLabel>Quality</InputLabel>
+                  <Select value={quality} onChange={(e) => setQuality(e.target.value as any)}>
+                    <MenuItem value="standard">Standard</MenuItem>
+                    <MenuItem value="hd">HD (2x cost)</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
 
-          <Grid item xs={12} md={4}>
-            <FormControl fullWidth>
-              <InputLabel>Style</InputLabel>
-              <Select
-                value={options.style}
-                onChange={(e) => setOptions({ ...options, style: e.target.value })}
-                disabled={loading}
-              >
-                <MenuItem value="vivid">Vivid</MenuItem>
-                <MenuItem value="natural">Natural</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth size="small">
+                  <InputLabel>Style</InputLabel>
+                  <Select value={style} onChange={(e) => setStyle(e.target.value as any)}>
+                    <MenuItem value="vivid">Vivid</MenuItem>
+                    <MenuItem value="natural">Natural</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
 
-          <Grid item xs={12} md={4}>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={options.enhance_prompt}
-                  onChange={(e) => setOptions({ ...options, enhance_prompt: e.target.checked })}
-                  disabled={loading}
+              <Grid item xs={12}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={enhancePrompt}
+                      onChange={(e) => setEnhancePrompt(e.target.checked)}
+                    />
+                  }
+                  label="Enhance prompt with AI"
                 />
-              }
-              label="AI Enhance Prompt"
-            />
-          </Grid>
+              </Grid>
 
-          {error && (
-            <Grid item xs={12}>
-              <Alert severity="error" onClose={() => setError(null)}>
-                {error}
-              </Alert>
+              <Grid item xs={12}>
+                <Box display="flex" gap={1} alignItems="center">
+                  <TextField
+                    size="small"
+                    placeholder="Add tags..."
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleAddTag()}
+                  />
+                  <Button size="small" onClick={handleAddTag}>Add</Button>
+                </Box>
+                <Box mt={1} display="flex" flexWrap="wrap" gap={0.5}>
+                  {tags.map((tag) => (
+                    <Chip
+                      key={tag}
+                      label={tag}
+                      size="small"
+                      onDelete={() => handleRemoveTag(tag)}
+                    />
+                  ))}
+                </Box>
+              </Grid>
             </Grid>
-          )}
 
-          <Grid item xs={12}>
             <Button
+              fullWidth
               variant="contained"
               size="large"
               onClick={handleGenerate}
-              disabled={loading || !prompt.trim()}
-              startIcon={loading ? <CircularProgress size={20} /> : <AutoAwesome />}
-              fullWidth
+              disabled={isGenerating || !prompt.trim()}
+              startIcon={isGenerating ? <CircularProgress size={20} /> : <AutoAwesome />}
+              sx={{ mt: 3 }}
             >
-              {loading ? 'Generating...' : 'Generate Image'}
+              {isGenerating ? 'Generating...' : 'Generate Image'}
             </Button>
-          </Grid>
+          </Box>
         </Grid>
 
-        {/* Result Dialog */}
-        <Dialog
-          open={showDialog}
-          onClose={() => setShowDialog(false)}
-          maxWidth="lg"
-          fullWidth
-        >
-          <DialogTitle>
-            <Box display="flex" justifyContent="space-between" alignItems="center">
-              <Typography variant="h6">Generated Image</Typography>
-              <IconButton onClick={() => setShowDialog(false)}>
-                <CloseIcon />
-              </IconButton>
-            </Box>
-          </DialogTitle>
-          <DialogContent>
-            {generatedImage && (
-              <Box>
-                <Box
-                  component="img"
-                  src={generatedImage.asset.url}
-                  alt="Generated image"
-                  sx={{
+        <Grid item xs={12} md={6}>
+          <Box
+            sx={{
+              height: 400,
+              bgcolor: 'grey.100',
+              borderRadius: 2,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative',
+              overflow: 'hidden',
+            }}
+          >
+            {isGenerating ? (
+              <LoadingSpinner message="Creating your image..." />
+            ) : generatedImage ? (
+              <>
+                <img
+                  src={generatedImage.url}
+                  alt={generatedImage.name}
+                  style={{
                     width: '100%',
-                    maxHeight: '70vh',
+                    height: '100%',
                     objectFit: 'contain',
-                    borderRadius: 2,
-                    mb: 2,
                   }}
                 />
-
-                <Box mb={2}>
-                  <Typography variant="subtitle2" gutterBottom>
-                    Original Prompt:
-                  </Typography>
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <Typography variant="body2" sx={{ flex: 1 }}>
-                      {generatedImage.generation_details.original_prompt}
-                    </Typography>
-                    <IconButton
-                      size="small"
-                      onClick={() => copyPrompt(generatedImage.generation_details.original_prompt)}
-                    >
-                      <ContentCopy fontSize="small" />
-                    </IconButton>
-                  </Box>
-                </Box>
-
-                {generatedImage.generation_details.enhanced_prompt && (
-                  <Box mb={2}>
-                    <Typography variant="subtitle2" gutterBottom>
-                      Enhanced Prompt:
-                    </Typography>
-                    <Box display="flex" alignItems="center" gap={1}>
-                      <Typography variant="body2" sx={{ flex: 1 }}>
-                        {generatedImage.generation_details.enhanced_prompt}
-                      </Typography>
-                      <IconButton
-                        size="small"
-                        onClick={() => {
-                          if (generatedImage.generation_details.enhanced_prompt) {
-                            copyPrompt(generatedImage.generation_details.enhanced_prompt);
-                          }
-                        }}
-                      >
-                        <ContentCopy fontSize="small" />
-                      </IconButton>
-                    </Box>
-                  </Box>
-                )}
-
-                {generatedImage.generation_details.revised_prompt && (
-                  <Box mb={2}>
-                    <Typography variant="subtitle2" gutterBottom>
-                      DALL-E Revised Prompt:
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {generatedImage.generation_details.revised_prompt}
-                    </Typography>
-                  </Box>
-                )}
-
-                <Box display="flex" gap={1} mt={2}>
-                  <Chip label={generatedImage.generation_details.model} size="small" />
-                  <Chip label={generatedImage.generation_details.settings.size} size="small" />
-                  <Chip label={generatedImage.generation_details.settings.quality} size="small" />
-                  <Chip label={generatedImage.generation_details.settings.style} size="small" />
-                </Box>
-
-                <Box display="flex" gap={2} mt={3}>
-                  <Button
-                    variant="contained"
-                    startIcon={<Download />}
-                    onClick={handleDownload}
-                    fullWidth
-                  >
-                    Download Image
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    onClick={() => {
-                      setShowDialog(false);
-                      setPrompt('');
-                    }}
-                    fullWidth
-                  >
-                    Generate Another
-                  </Button>
-                </Box>
+                <IconButton
+                  sx={{
+                    position: 'absolute',
+                    top: 8,
+                    right: 8,
+                    bgcolor: 'background.paper',
+                  }}
+                  onClick={handleDownload}
+                >
+                  <Download />
+                </IconButton>
+              </>
+            ) : (
+              <Box textAlign="center" color="text.secondary">
+                <AutoAwesome sx={{ fontSize: 48, opacity: 0.3, mb: 1 }} />
+                <Typography variant="body2">
+                  Your generated image will appear here
+                </Typography>
               </Box>
             )}
-          </DialogContent>
-        </Dialog>
-      </CardContent>
-    </Card>
+          </Box>
+
+          {generatedImage && (
+            <Box mt={2}>
+              <Alert severity="success">
+                Image generated successfully! It has been saved to your asset library.
+              </Alert>
+              <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                Revised prompt: {generatedImage.metadata?.revised_prompt}
+              </Typography>
+            </Box>
+          )}
+        </Grid>
+      </Grid>
+    </Paper>
   );
 };
+
+export { AIImageGenerator };
+export default AIImageGenerator;
