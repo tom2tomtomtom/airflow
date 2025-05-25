@@ -36,7 +36,7 @@ function createNextRequest(req: NextApiRequest): NextRequest {
   });
 
   return new NextRequest(url, {
-    method: req.method,
+    method: req.method || 'GET',
     headers,
     body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined,
   });
@@ -56,7 +56,9 @@ export default async function handler(
 
   try {
     // Rate limiting check
-    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+    const ip = (Array.isArray(req.headers['x-forwarded-for']) 
+      ? req.headers['x-forwarded-for'][0] 
+      : req.headers['x-forwarded-for']) || req.socket.remoteAddress || 'unknown';
     const rateLimitKey = `login:${ip}`;
     
     if (!checkAPIRateLimit(rateLimitKey, 5, 60000)) { // 5 attempts per minute
@@ -112,7 +114,7 @@ export default async function handler(
       const demoUser = {
         id: 'demo-user-id',
         email: email,
-        name: email.split('@')[0],
+        name: email.split('@')[0] || 'Demo User',
         role: 'user',
       };
 
@@ -225,6 +227,14 @@ export default async function handler(
         d: 86400
       };
       expirySeconds = parseInt(num, 10) * (multipliers[unit] || 86400);
+    }
+
+    if (!env.JWT_SECRET) {
+      logger.error('JWT_SECRET not configured');
+      return res.status(500).json({
+        success: false,
+        message: 'Server configuration error'
+      });
     }
 
     const token = jwt.sign(

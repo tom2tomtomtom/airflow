@@ -13,7 +13,6 @@ import {
   MenuItem,
   Tabs,
   Tab,
-  IconButton,
   Button,
   Stack,
   Chip,
@@ -32,7 +31,6 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemIcon,
   ListItemAvatar,
   useTheme,
 } from '@mui/material';
@@ -43,12 +41,9 @@ import {
   TouchApp as EngagementIcon,
   ShoppingCart as ConversionIcon,
   AttachMoney as RevenueIcon,
-  People as AudienceIcon,
   Timeline as TimelineIcon,
   BarChart as BarChartIcon,
-  PieChart as PieChartIcon,
   Download as DownloadIcon,
-  CalendarToday as CalendarIcon,
   Refresh as RefreshIcon,
   Instagram as InstagramIcon,
   Facebook as FacebookIcon,
@@ -56,13 +51,10 @@ import {
   LinkedIn as LinkedInIcon,
   YouTube as YouTubeIcon,
   Campaign as CampaignIcon,
-  Insights as InsightsIcon,
   ArrowUpward as ArrowUpIcon,
   ArrowDownward as ArrowDownIcon,
 } from '@mui/icons-material';
 import {
-  LineChart,
-  Line,
   AreaChart,
   Area,
   BarChart,
@@ -180,7 +172,7 @@ const AnalyticsPage: React.FC = () => {
   const theme = useTheme();
   const { activeClient } = useClient();
   const { data: campaigns, isLoading: campaignsLoading } = useCampaigns(activeClient?.id);
-  const { data: matrices, isLoading: matricesLoading } = useMatrices(activeClient?.id);
+  const { isLoading: matricesLoading } = useMatrices(activeClient?.id);
   
   const [timeRange, setTimeRange] = useState('7d');
   const [selectedCampaign, setSelectedCampaign] = useState('all');
@@ -382,7 +374,7 @@ const AnalyticsPage: React.FC = () => {
         {/* Main Content */}
         <Paper sx={{ p: 3 }}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs value={activeTab} onChange={(e, v) => setActiveTab(v)}>
+            <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)}>
               <Tab label="Overview" />
               <Tab label="Engagement" />
               <Tab label="Audience" />
@@ -400,7 +392,7 @@ const AnalyticsPage: React.FC = () => {
                   <ToggleButtonGroup
                     value={viewMode}
                     exclusive
-                    onChange={(e, v) => v && setViewMode(v)}
+                    onChange={(_, v) => v && setViewMode(v)}
                     size="small"
                   >
                     <ToggleButton value="chart">
