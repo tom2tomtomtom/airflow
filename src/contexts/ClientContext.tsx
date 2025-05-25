@@ -1,22 +1,14 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-
-interface Client {
-  id: string;
-  name: string;
-  description: string;
-  primaryColor: string;
-  secondaryColor: string;
-  logoUrl?: string;
-}
+import type { Client } from '@/types/models';
 
 interface ClientContextType {
   clients: Client[];
   activeClient: Client | null;
   loading: boolean;
-  setActiveClient: (client: Client) => void;
-  createClient: (clientData: Omit<Client, 'id'>) => Promise<Client>;
-  updateClient: (id: string, clientData: Partial<Omit<Client, 'id'>>) => Promise<Client>;
+  setActiveClient: (client: Client | null) => void;
+  createClient: (clientData: Partial<Client>) => Promise<Client>;
+  updateClient: (id: string, clientData: Partial<Client>) => Promise<Client>;
   deleteClient: (id: string) => Promise<void>;
 }
 
@@ -25,8 +17,12 @@ const ClientContext = createContext<ClientContextType>({
   activeClient: null,
   loading: true,
   setActiveClient: () => {},
-  createClient: async () => ({ id: '', name: '', description: '', primaryColor: '', secondaryColor: '' }),
-  updateClient: async () => ({ id: '', name: '', description: '', primaryColor: '', secondaryColor: '' }),
+  createClient: async () => {
+    throw new Error('ClientContext not initialized');
+  },
+  updateClient: async () => {
+    throw new Error('ClientContext not initialized');
+  },
   deleteClient: async () => {},
 });
 
@@ -118,13 +114,17 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, [isAuthenticated]);
 
   // Update active client
-  const handleSetActiveClient = (client: Client) => {
+  const handleSetActiveClient = (client: Client | null) => {
     setActiveClient(client);
-    localStorage.setItem('airwave_active_client', JSON.stringify(client));
+    if (client) {
+      localStorage.setItem('airwave_active_client', JSON.stringify(client));
+    } else {
+      localStorage.removeItem('airwave_active_client');
+    }
   };
 
   // Create a new client via API
-  const createClient = async (clientData: Omit<Client, "id">): Promise<Client> => {
+  const createClient = async (clientData: Partial<Client>): Promise<Client> => {
     const storedUser = localStorage.getItem("airwave_user");
     if (!storedUser) {
       throw new Error("User not authenticated");
@@ -163,31 +163,33 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       } else {
         throw new Error("Invalid response from server");
       }
-      
-      // Fallback to local generation if API fails
-      const newClient: Client = {
-        ...clientData,
-        id: 'client_' + Math.random().toString(36).substring(2, 9),
-      };
-
-      // Add to clients list
-      const updatedClients = [...clients, newClient];
-      setClients(updatedClients);
-      localStorage.setItem('airwave_clients', JSON.stringify(updatedClients));
-
-      // Set as active client if it's the first one
-      if (updatedClients.length === 1) {
-        handleSetActiveClient(newClient);
-      }
-
-      return newClient;
     } catch (error) {
       console.error('Error creating client:', error);
       
       // Fallback to local creation
       const newClient: Client = {
-        ...clientData,
         id: 'client_' + Math.random().toString(36).substring(2, 9),
+        name: clientData.name || 'New Client',
+        industry: clientData.industry || 'Other',
+        logo: clientData.logo || '',
+        primaryColor: clientData.primaryColor || '#2196F3',
+        secondaryColor: clientData.secondaryColor || '#FF9800',
+        description: clientData.description || '',
+        website: clientData.website || '',
+        socialMedia: clientData.socialMedia || {},
+        contacts: clientData.contacts || [],
+        brandGuidelines: clientData.brandGuidelines || {
+          voiceTone: '',
+          targetAudience: '',
+          keyMessages: [],
+        },
+        tenantId: 'tenant-1',
+        isActive: true,
+        dateCreated: new Date().toISOString(),
+        lastModified: new Date().toISOString(),
+        createdBy: user?.id || 'user-1',
+        version: 1,
+        metadata: {},
       };
 
       const updatedClients = [...clients, newClient];
@@ -203,7 +205,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   // Update an existing client via API
-  const updateClient = async (id: string, clientData: Partial<Omit<Client, "id">>): Promise<Client> => {
+  const updateClient = async (id: string, clientData: Partial<Client>): Promise<Client> => {
     const storedUser = localStorage.getItem("airwave_user");
     if (!storedUser) {
       throw new Error("User not authenticated");
@@ -242,33 +244,6 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       } else {
         throw new Error("Invalid response from server");
       }
-      
-      // Fallback to local update if API fails
-      const clientIndex = clients.findIndex(c => c.id === id);
-      if (clientIndex === -1) {
-        throw new Error('Client not found');
-      }
-
-      // Update client data with explicit typing
-      const existingClient = clients[clientIndex];
-      const updatedClient: Client = {
-        ...existingClient,
-        ...Object.fromEntries(
-          Object.entries(clientData).filter(([_, value]) => value !== undefined)
-        )
-      } as Client;
-      const updatedClients = [...clients];
-      updatedClients[clientIndex] = updatedClient;
-
-      setClients(updatedClients);
-      localStorage.setItem('airwave_clients', JSON.stringify(updatedClients));
-
-      // Update active client if it's the one being updated
-      if (activeClient?.id === id) {
-        handleSetActiveClient(updatedClient);
-      }
-
-      return updatedClient;
     } catch (error) {
       console.error('Error updating client:', error);
       
@@ -282,10 +257,11 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       const existingClient = clients[clientIndex];
       const updatedClient: Client = {
         ...existingClient,
-        ...Object.fromEntries(
-          Object.entries(clientData).filter(([_, value]) => value !== undefined)
-        )
-      } as Client;
+        ...clientData,
+        lastModified: new Date().toISOString(),
+        version: existingClient.version + 1,
+      };
+      
       const updatedClients = [...clients];
       updatedClients[clientIndex] = updatedClient;
 
@@ -335,8 +311,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           if (updatedClients.length > 0 && updatedClients[0]) {
             handleSetActiveClient(updatedClients[0]);
           } else {
-            setActiveClient(null);
-            localStorage.removeItem('airwave_active_client');
+            handleSetActiveClient(null);
           }
         }
       }
@@ -352,8 +327,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         if (updatedClients.length > 0 && updatedClients[0]) {
           handleSetActiveClient(updatedClients[0]);
         } else {
-          setActiveClient(null);
-          localStorage.removeItem('airwave_active_client');
+          handleSetActiveClient(null);
         }
       }
     }
