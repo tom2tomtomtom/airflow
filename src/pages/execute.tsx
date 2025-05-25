@@ -5,10 +5,8 @@ import {
   Grid,
   Card,
   CardContent,
-  CardActions,
   Button,
   Chip,
-  IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -30,6 +28,7 @@ import {
   List,
   ListItem,
   ListItemIcon,
+  ListItemText,
   Avatar,
   Divider,
   Paper,
@@ -51,16 +50,9 @@ import {
   CheckCircle as CheckIcon,
   Cancel as CancelIcon,
   Pending as PendingIcon,
-  ContentCopy as CopyIcon,
-  InsertDriveFile as FileIcon,
-  Image as ImageIcon,
-  VideoFile as VideoIcon,
   CalendarMonth as CalendarIcon,
-  Group as GroupIcon,
   AttachMoney as BudgetIcon,
-  Analytics as AnalyticsIcon,
 } from '@mui/icons-material';
-import { useRouter } from 'next/router';
 import Head from 'next/head';
 import DashboardLayout from '@/components/DashboardLayout';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
@@ -105,7 +97,6 @@ interface ExecutionTask {
 }
 
 const ExecutePage: React.FC = () => {
-  const router = useRouter();
   const { activeClient } = useClient();
   const { showNotification } = useNotification();
   const { data: campaigns, isLoading: campaignsLoading } = useCampaigns(activeClient?.id);
@@ -120,7 +111,6 @@ const ExecutePage: React.FC = () => {
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [selectedExportFormat, setSelectedExportFormat] = useState('zip');
   const [executionTasks, setExecutionTasks] = useState<ExecutionTask[]>([]);
-  const [executingTask, setExecutingTask] = useState<string | null>(null);
 
   const isLoading = campaignsLoading || matricesLoading || assetsLoading;
 
@@ -213,9 +203,9 @@ const ExecutePage: React.FC = () => {
     }, 2000);
   };
 
-  const activeCampaigns = campaigns?.filter(c => c.status === 'active') || [];
-  const readyCampaigns = campaigns?.filter(c => 
-    matrices?.some(m => m.clientId === c.clientId && m.status === 'approved')
+  const activeCampaigns = campaigns?.filter((c: Campaign) => c.status === 'active') || [];
+  const readyCampaigns = campaigns?.filter((c: Campaign) => 
+    matrices?.some((m: any) => m.clientId === c.clientId && m.status === 'approved')
   ) || [];
 
   if (!activeClient) {
@@ -351,7 +341,7 @@ const ExecutePage: React.FC = () => {
                   <StepLabel>Select Campaign</StepLabel>
                   <StepContent>
                     <Grid container spacing={2}>
-                      {readyCampaigns.map(campaign => (
+                      {readyCampaigns.map((campaign: Campaign) => (
                         <Grid item xs={12} md={6} key={campaign.id}>
                           <Card
                             sx={{
