@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { User, AuthTokens } from '@/types/auth';
+import { User } from '@/types/auth';
 import axios, { AxiosError } from 'axios';
 
 // API base configuration
@@ -174,7 +174,7 @@ export async function requestPasswordReset(email: string): Promise<void> {
 }
 
 // Reset password with token
-export async function resetPassword(token: string, newPassword: string): Promise<void> {
+export async function resetPassword(_token: string, newPassword: string): Promise<void> {
   try {
     const { error } = await supabase.auth.updateUser({ 
       password: newPassword 

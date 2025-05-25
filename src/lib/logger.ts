@@ -63,7 +63,7 @@ class Logger {
     }
   }
 
-  private sendToLoggingService(level: LogLevel, message: string, context?: LogContext) {
+  private sendToLoggingService(_level: LogLevel, _message: string, _context?: LogContext) {
     // TODO: Implement integration with logging service (e.g., Sentry, LogDNA)
     // Example:
     // if (window.Sentry) {

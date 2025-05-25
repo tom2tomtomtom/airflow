@@ -12,7 +12,7 @@ const createMockSupabaseClient = () => {
       getSession: async () => ({ data: { session: null }, error: null }),
       onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
     },
-    from: (table: string) => ({
+    from: () => ({
       select: () => ({
         eq: () => ({
           single: async () => ({ data: null, error: { message: 'Demo mode - database not available' } }),
@@ -24,7 +24,7 @@ const createMockSupabaseClient = () => {
       delete: async () => ({ data: null, error: { message: 'Demo mode - database not available' } }),
     }),
     storage: {
-      from: (bucket: string) => ({
+      from: () => ({
         upload: async () => ({ data: null, error: { message: 'Demo mode - storage not available' } }),
         download: async () => ({ data: null, error: { message: 'Demo mode - storage not available' } }),
         remove: async () => ({ data: null, error: { message: 'Demo mode - storage not available' } }),
@@ -61,14 +61,14 @@ export const getServiceSupabase = () => {
     return createMockSupabaseClient();
   }
   
-  if (!env.SUPABASE_SERVICE_KEY) {
+  if (!env.SUPABASE_SERVICE_ROLE_KEY) {
     console.warn('Service role key not configured. Using mock client.');
     return createMockSupabaseClient();
   }
   
   return createClient(
     env.NEXT_PUBLIC_SUPABASE_URL || 'https://demo.supabase.co',
-    env.SUPABASE_SERVICE_KEY,
+    env.SUPABASE_SERVICE_ROLE_KEY,
     {
       auth: {
         autoRefreshToken: false,
