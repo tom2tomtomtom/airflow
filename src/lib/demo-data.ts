@@ -6,7 +6,7 @@ export const demoClients: Client[] = [
     id: 'client-1',
     name: 'TechCorp Solutions',
     industry: 'Technology',
-    logo: '/demo/logos/techcorp.png',
+    logo: 'https://ui-avatars.com/api/?name=TechCorp&background=2196F3&color=fff&size=200',
     primaryColor: '#2196F3',
     secondaryColor: '#FF9800',
     description: 'Leading technology solutions provider specializing in cloud infrastructure and AI.',
@@ -58,7 +58,7 @@ export const demoClients: Client[] = [
     id: 'client-2',
     name: 'Eco Green Foods',
     industry: 'Food & Beverage',
-    logo: '/demo/logos/ecogreen.png',
+    logo: 'https://ui-avatars.com/api/?name=Eco+Green&background=4CAF50&color=fff&size=200',
     primaryColor: '#4CAF50',
     secondaryColor: '#8BC34A',
     description: 'Sustainable organic food products for health-conscious consumers.',
@@ -107,14 +107,14 @@ export const demoClients: Client[] = [
   },
 ];
 
-// Demo Assets
+// Demo Assets with working placeholder images
 export const demoAssets: Asset[] = [
   {
     id: 'asset-1',
     name: 'Product Hero Image',
     type: 'image',
-    url: '/demo/assets/product-hero.jpg',
-    thumbnail: '/demo/assets/product-hero-thumb.jpg',
+    url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop',
+    thumbnail: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop',
     clientId: 'client-1',
     tags: ['hero', 'product', 'homepage'],
     status: 'active',
@@ -141,8 +141,8 @@ export const demoAssets: Asset[] = [
     id: 'asset-2',
     name: 'AI Generated Office Space',
     type: 'image',
-    url: '/demo/assets/ai-office.jpg',
-    thumbnail: '/demo/assets/ai-office-thumb.jpg',
+    url: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=800&h=800&fit=crop',
+    thumbnail: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=400&h=400&fit=crop',
     clientId: 'client-1',
     tags: ['office', 'workspace', 'ai-generated'],
     status: 'active',
@@ -170,8 +170,8 @@ export const demoAssets: Asset[] = [
     id: 'asset-3',
     name: 'Organic Salad Bowl',
     type: 'image',
-    url: '/demo/assets/salad-bowl.jpg',
-    thumbnail: '/demo/assets/salad-bowl-thumb.jpg',
+    url: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&h=600&fit=crop',
+    thumbnail: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400&h=300&fit=crop',
     clientId: 'client-2',
     tags: ['food', 'organic', 'healthy'],
     status: 'active',
@@ -196,7 +196,7 @@ export const demoAssets: Asset[] = [
   },
 ];
 
-// Demo Templates
+// Demo Templates with working placeholder images
 export const demoTemplates: Template[] = [
   {
     id: 'template-1',
@@ -204,7 +204,7 @@ export const demoTemplates: Template[] = [
     platform: 'Instagram',
     aspectRatio: '1:1',
     description: 'Eye-catching product feature post for Instagram feed',
-    thumbnail: '/demo/templates/ig-product.jpg',
+    thumbnail: 'https://via.placeholder.com/400x400/2196F3/FFFFFF?text=Instagram+Template',
     category: 'Social Media',
     industry: 'Technology',
     contentType: 'Product',
@@ -251,7 +251,7 @@ export const demoTemplates: Template[] = [
     platform: 'Facebook',
     aspectRatio: '16:9',
     description: 'Multi-product carousel ad for Facebook',
-    thumbnail: '/demo/templates/fb-carousel.jpg',
+    thumbnail: 'https://via.placeholder.com/600x315/4CAF50/FFFFFF?text=Facebook+Carousel',
     category: 'Social Media',
     industry: 'E-commerce',
     contentType: 'Advertisement',
