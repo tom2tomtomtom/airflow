@@ -18,6 +18,7 @@ import {
   Add as AddIcon,
 } from '@mui/icons-material';
 import { AIImageGenerator } from '@/components/AIImageGenerator';
+import AssetUploadModal from '@/components/AssetUploadModal';
 import DashboardLayout from '@/components/DashboardLayout';
 import ClientSelector from '@/components/ClientSelector';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
@@ -46,6 +47,7 @@ export default function EnhancedAssetsPage() {
   const { activeClient } = useClient();
   const [tabValue, setTabValue] = useState(router.query.tab === 'ai' ? 1 : 0);
   const [showAIGenerator, setShowAIGenerator] = useState(router.query.tab === 'ai');
+  const [showUploadModal, setShowUploadModal] = useState(false);
   const { data: assets, isLoading, error, refetch } = useAssets(activeClient?.id);
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -59,7 +61,7 @@ export default function EnhancedAssetsPage() {
     {
       icon: <Upload />, 
       name: 'Upload Files', 
-      action: () => { console.log('Open upload modal'); }
+      action: () => setShowUploadModal(true)
     },
     {
       icon: <AutoAwesome />, 
@@ -86,6 +88,10 @@ export default function EnhancedAssetsPage() {
   ];
 
   const handleImageGenerated = (newAsset: any) => {
+    refetch();
+  };
+
+  const handleUploadComplete = () => {
     refetch();
   };
 
@@ -232,11 +238,60 @@ export default function EnhancedAssetsPage() {
         </TabPanel>
 
         <TabPanel value={tabValue} index={2}>
-          <Typography>Uploaded assets view</Typography>
+          <Grid container spacing={3}>
+            {assets?.filter((asset) => asset.tags?.includes('uploaded')).map((asset) => (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={asset.id}>
+                <Box 
+                  sx={{ 
+                    height: 200, 
+                    bgcolor: 'grey.200', 
+                    borderRadius: 2, 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    overflow: 'hidden',
+                    position: 'relative',
+                    cursor: 'pointer',
+                    '&:hover': { opacity: 0.8 },
+                  }}
+                >
+                  {asset.type === 'image' && asset.url ? (
+                    <img 
+                      src={asset.url} 
+                      alt={asset.name}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  ) : (
+                    <Typography>{asset.name}</Typography>
+                  )}
+                </Box>
+                <Typography variant="caption" sx={{ mt: 1, display: 'block' }} noWrap>
+                  {asset.name}
+                </Typography>
+              </Grid>
+            ))}
+            {(!assets || assets.filter(a => a.tags?.includes('uploaded')).length === 0) && (
+              <Grid item xs={12}>
+                <Box textAlign="center" py={5}>
+                  <Typography variant="h6" color="text.secondary" gutterBottom>
+                    No uploaded assets yet
+                  </Typography>
+                  <Button 
+                    variant="contained" 
+                    startIcon={<Upload />} 
+                    onClick={() => setShowUploadModal(true)}
+                    sx={{ mt: 2 }}
+                  >
+                    Upload Files
+                  </Button>
+                </Box>
+              </Grid>
+            )}
+          </Grid>
         </TabPanel>
         
         <TabPanel value={tabValue} index={3}>
-          <Typography>Templates view</Typography>
+          <Typography>Templates view - Coming soon</Typography>
         </TabPanel>
 
         <SpeedDial 
@@ -253,6 +308,12 @@ export default function EnhancedAssetsPage() {
             />
           ))}
         </SpeedDial>
+
+        <AssetUploadModal
+          open={showUploadModal}
+          onClose={() => setShowUploadModal(false)}
+          onUploadComplete={handleUploadComplete}
+        />
       </Box>
     </DashboardLayout>
   );
