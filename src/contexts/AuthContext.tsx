@@ -76,7 +76,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (data.success && data.user) {
         localStorage.setItem('airwave_user', JSON.stringify(data.user));
         setUser(data.user);
-        router.push('/dashboard');
+        
+        // Redirect to assets page instead of dashboard
+        const from = router.query.from as string;
+        router.push(from || '/assets');
       } else {
         throw new Error('Invalid response from server');
       }
@@ -110,7 +113,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (data.success && data.user) {
         localStorage.setItem('airwave_user', JSON.stringify(data.user));
         setUser(data.user);
-        router.push('/dashboard');
+        
+        // Redirect to assets page after signup
+        router.push('/assets');
       } else {
         throw new Error('Invalid response from server');
       }
@@ -126,6 +131,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     localStorage.removeItem('airwave_user');
     localStorage.removeItem('airwave_active_client');
+    localStorage.removeItem('airwave_clients');
     setUser(null);
     router.push('/login');
   };
