@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { getTargeting, getSchedule, getBudgetTotal, getBudgetSpent } from '@/utils/campaign-helpers';
+import { getBudgetTotal } from '@/utils/campaign-helpers';
 import { useRouter } from 'next/router';
 import { GetServerSideProps } from 'next';
 import {
@@ -102,7 +102,7 @@ export default function CampaignDetail() {
   
   const { data: campaign, loading, error } = useData('campaigns', id as string);
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
@@ -181,9 +181,9 @@ export default function CampaignDetail() {
               </Typography>
               <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                 <Chip
-                  icon={statusIcons[campaign.status]}
+                  {...(statusIcons[campaign.status] && { icon: statusIcons[campaign.status] })}
                   label={campaign.status.charAt(0).toUpperCase() + campaign.status.slice(1)}
-                  color={statusColors[campaign.status]}
+                  color={statusColors[campaign.status] || 'default'}
                   size="small"
                 />
                 <Typography variant="body2" color="text.secondary">
@@ -245,7 +245,7 @@ export default function CampaignDetail() {
                       {((campaign as any).targeting)?.platforms?.map((platform: string) => (
                         <Chip
                           key={platform}
-                          icon={platformIcons[platform.toLowerCase()]}
+                          {...(platformIcons[platform.toLowerCase()] && { icon: platformIcons[platform.toLowerCase()] })}
                           label={platform}
                           variant="outlined"
                         />
@@ -347,7 +347,7 @@ export default function CampaignDetail() {
                       <Typography variant="h6">Budget</Typography>
                     </Box>
                     <Typography variant="h4" gutterBottom>
-                      ${(campaign.budget?.total || 0).toLocaleString()}
+                      ${(typeof campaign.budget === 'object' && campaign.budget !== null ? campaign.budget.total : campaign.budget || 0).toLocaleString()}
                     </Typography>
                     <Box sx={{ mb: 1 }}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
@@ -408,7 +408,7 @@ export default function CampaignDetail() {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async (_) => {
   // In a real app, you might fetch the campaign data here
   // For now, we'll rely on client-side data fetching
   return {
