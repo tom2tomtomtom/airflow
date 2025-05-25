@@ -1,5 +1,6 @@
 import type { AppProps } from 'next/app';
 import { useEffect } from 'react';
+import Head from 'next/head';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -132,6 +133,12 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <ErrorBoundary>
+      <Head>
+        <title>AIrWAVE - AI-Powered Campaign Management</title>
+        <meta name="description" content="AI-powered campaign management platform for creating and managing digital marketing assets" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterDateFns}>

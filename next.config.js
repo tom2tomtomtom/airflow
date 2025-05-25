@@ -10,6 +10,29 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   
+  // Redirects for old or incorrect URLs
+  async redirects() {
+    return [
+      {
+        source: '/templates-new',
+        destination: '/templates',
+        permanent: true,
+      },
+      {
+        source: '/create-client',
+        has: [
+          {
+            type: 'query',
+            key: 'first',
+            value: 'true',
+          },
+        ],
+        destination: '/create-client',
+        permanent: true,
+      },
+    ];
+  },
+  
   // Security headers
   async headers() {
     return [
