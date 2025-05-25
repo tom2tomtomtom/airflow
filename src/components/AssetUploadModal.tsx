@@ -23,7 +23,7 @@ import {
 import { useDropzone } from 'react-dropzone';
 import { useFileUpload, useCreateAsset } from '@/hooks/useData';
 import { useClient } from '@/contexts/ClientContext';
-import { toast } from 'react-hot-toast';
+import { useNotification } from '@/contexts/NotificationContext';
 
 interface AssetUploadModalProps {
   open: boolean;
@@ -52,6 +52,7 @@ export const AssetUploadModal: React.FC<AssetUploadModalProps> = ({
   const { activeClient } = useClient();
   const { uploadFile, isUploading, uploadProgress } = useFileUpload();
   const { createAsset } = useCreateAsset();
+  const { showNotification } = useNotification();
   const [files, setFiles] = useState<FilePreview[]>([]);
   const [uploading, setUploading] = useState(false);
 
@@ -92,7 +93,7 @@ export const AssetUploadModal: React.FC<AssetUploadModalProps> = ({
         const { url, path, error } = await uploadFile(file, activeClient.id);
         
         if (error) {
-          toast.error(`Failed to upload ${file.name}: ${error.message}`);
+          showNotification(`Failed to upload ${file.name}: ${error.message}`, 'error');
           continue;
         }
 
@@ -122,7 +123,7 @@ export const AssetUploadModal: React.FC<AssetUploadModalProps> = ({
         });
 
         if (assetError) {
-          toast.error(`Failed to create asset record for ${file.name}`);
+          showNotification(`Failed to create asset record for ${file.name}`, 'error');
           continue;
         }
 
@@ -130,7 +131,10 @@ export const AssetUploadModal: React.FC<AssetUploadModalProps> = ({
       }
 
       if (successCount > 0) {
-        toast.success(`Successfully uploaded ${successCount} file${successCount > 1 ? 's' : ''}`);
+        showNotification(
+          `Successfully uploaded ${successCount} file${successCount > 1 ? 's' : ''}`,
+          'success'
+        );
         onUploadComplete?.();
         handleClose();
       }
