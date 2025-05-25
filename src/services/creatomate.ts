@@ -167,7 +167,7 @@ class CreatomateService {
    * Create AI-powered video variations
    */
   async generateVideoVariations(
-    templateId: string,
+    _templateId: string,
     baseModifications: CreatomateModification,
     variationCount: number = 3
   ): Promise<CreatomateModification[]> {
@@ -264,7 +264,7 @@ class CreatomateService {
   /**
    * Mock render video for demo mode
    */
-  private async mockRenderVideo(options: CreatomateRenderOptions): Promise<CreatomateRenderResponse> {
+  private async mockRenderVideo(_options: CreatomateRenderOptions): Promise<CreatomateRenderResponse> {
     // Simulate async render initiation
     await new Promise(resolve => setTimeout(resolve, 500));
     
@@ -280,7 +280,7 @@ class CreatomateService {
    */
   private async mockGetRenderStatus(renderId: string): Promise<CreatomateRenderResponse> {
     // Simulate different stages based on time
-    const createdAt = parseInt(renderId.split('-')[1]);
+    const createdAt = parseInt(renderId.split('-')[1] || '0');
     const elapsed = Date.now() - createdAt;
     
     if (elapsed < 5000) {
@@ -314,7 +314,7 @@ class CreatomateService {
       `NEW: ${baseText}`,
     ];
     
-    return variations[index % variations.length];
+    return variations[index % variations.length]!;
   }
 
   /**
@@ -329,7 +329,7 @@ class CreatomateService {
       '#F7DC6F', // Yellow
     ];
     
-    return variations[index % variations.length];
+    return variations[index % variations.length]!;
   }
 }
 
@@ -392,11 +392,14 @@ export const useCreatomateRender = () => {
             clearInterval(pollInterval);
             setError(status.error || 'Render failed');
             setRendering(false);
+            return;
           }
+          return;
         } catch (err) {
           clearInterval(pollInterval);
           setError(err instanceof Error ? err.message : 'Failed to check render status');
           setRendering(false);
+          return;
         }
       }, 2000);
 
