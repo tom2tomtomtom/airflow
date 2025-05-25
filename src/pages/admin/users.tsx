@@ -30,7 +30,6 @@ import {
   Menu,
   ListItemIcon,
   ListItemText,
-  Tooltip,
   Switch,
   FormControlLabel,
   Tabs,
@@ -50,10 +49,6 @@ import {
   Group as GroupIcon,
   Security as SecurityIcon,
   Settings as SettingsIcon,
-  Email as EmailIcon,
-  Phone as PhoneIcon,
-  Business as BusinessIcon,
-  AdminPanelSettings as AdminIcon,
   Block as BlockIcon,
   CheckCircle as ActiveIcon,
   History as HistoryIcon,
@@ -450,7 +445,7 @@ const UserManagementPage: React.FC = () => {
 
         {/* Tabs */}
         <Paper sx={{ mb: 3 }}>
-          <Tabs value={activeTab} onChange={(e, v) => setActiveTab(v)}>
+          <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)}>
             <Tab label="Users" icon={<PersonIcon />} iconPosition="start" />
             <Tab label="Roles & Permissions" icon={<SecurityIcon />} iconPosition="start" />
             <Tab label="Audit Log" icon={<HistoryIcon />} iconPosition="start" />
@@ -582,7 +577,7 @@ const UserManagementPage: React.FC = () => {
               count={filteredUsers.length}
               rowsPerPage={rowsPerPage}
               page={page}
-              onPageChange={(e, newPage) => setPage(newPage)}
+              onPageChange={(_, newPage) => setPage(newPage)}
               onRowsPerPageChange={(e) => {
                 setRowsPerPage(parseInt(e.target.value, 10));
                 setPage(0);
