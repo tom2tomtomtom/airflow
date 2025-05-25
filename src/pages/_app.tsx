@@ -10,6 +10,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ClientProvider } from '@/contexts/ClientContext';
+import { NotificationProvider } from '@/contexts/NotificationContext';
 import '@/styles/globals.css';
 
 // Create a client
@@ -107,6 +108,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     console.log('AIrWAVE App initialized', {
       version: process.env.NEXT_PUBLIC_APP_VERSION || '0.1.0',
       environment: process.env.NODE_ENV,
+      demoMode: process.env.NEXT_PUBLIC_DEMO_MODE === 'true',
     });
   }, []);
 
@@ -144,11 +146,13 @@ function MyApp({ Component, pageProps }: AppProps) {
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <AuthProvider>
               <ClientProvider>
-                <CssBaseline />
-                <Component {...pageProps} />
-                {process.env.NODE_ENV === 'development' && (
-                  <ReactQueryDevtools initialIsOpen={false} />
-                )}
+                <NotificationProvider>
+                  <CssBaseline />
+                  <Component {...pageProps} />
+                  {process.env.NODE_ENV === 'development' && (
+                    <ReactQueryDevtools initialIsOpen={false} />
+                  )}
+                </NotificationProvider>
               </ClientProvider>
             </AuthProvider>
           </LocalizationProvider>
