@@ -27,7 +27,7 @@ import {
   Add,
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
-import ActivityFeed from '@/components/ActivityFeed';
+import { ActivityFeed } from '@/components/ActivityFeed';
 import { useAuth } from '@/contexts/AuthContext';
 import { useClient } from '@/contexts/ClientContext';
 
@@ -115,34 +115,6 @@ const DashboardPage = () => {
       icon: <DescriptionIcon />,
     },
   ];
-
-  // Handle activity click
-  const handleActivityClick = (activity: any) => {
-    // Navigate based on activity type
-    switch (activity.type) {
-      case 'campaign_created':
-      case 'campaign_updated':
-      case 'campaign_launched':
-        router.push('/campaigns');
-        break;
-      case 'asset_uploaded':
-      case 'asset_generated':
-        router.push('/assets');
-        break;
-      case 'matrix_created':
-      case 'matrix_approved':
-        router.push('/matrix');
-        break;
-      case 'approval_requested':
-        router.push('/sign-off');
-        break;
-      case 'performance_alert':
-        router.push('/analytics');
-        break;
-      default:
-        break;
-    }
-  };
 
   return (
     <DashboardLayout>
@@ -274,15 +246,20 @@ const DashboardPage = () => {
 
         {/* Activity Feed and Getting Started */}
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <ActivityFeed
-              compact
-              maxItems={5}
-              onActivityClick={handleActivityClick}
-            />
+          <Grid item xs={12} md={7}>
+            <Paper sx={{ p: 2, height: '100%' }}>
+              <Typography variant="h6" gutterBottom>
+                Recent Activity
+              </Typography>
+              <ActivityFeed
+                maxHeight={400}
+                showHeader={false}
+                realtime={true}
+              />
+            </Paper>
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={5}>
             <Paper sx={{ p: 3, height: '100%' }}>
               <Typography variant="h6" gutterBottom>
                 Getting Started
@@ -319,16 +296,41 @@ const DashboardPage = () => {
                   </Box>
                   <Box component="li" sx={{ mb: 1 }}>
                     <Typography variant="body2">
-                      Get real-time updates with the activity feed
+                      Collaborate with real-time activity updates
                     </Typography>
                   </Box>
                 </Box>
               </Box>
+              
+              <Box sx={{ mt: 3 }}>
+                <Typography variant="subtitle2" gutterBottom>
+                  Quick Tips
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  <Chip 
+                    label="Press Ctrl+K for quick search" 
+                    size="small" 
+                    variant="outlined" 
+                  />
+                  <Chip 
+                    label="Use templates to speed up creation" 
+                    size="small" 
+                    variant="outlined" 
+                  />
+                  <Chip 
+                    label="Check analytics daily for insights" 
+                    size="small" 
+                    variant="outlined" 
+                  />
+                </Box>
+              </Box>
+
               <Button
                 variant="contained"
                 fullWidth
                 startIcon={<Add />}
                 onClick={() => router.push('/assets?tab=ai')}
+                sx={{ mt: 3 }}
               >
                 Start Creating
               </Button>
