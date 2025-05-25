@@ -64,6 +64,10 @@ interface CampaignFormData {
   endDate: Date | null;
 }
 
+interface ErrorsType extends Partial<Record<keyof CampaignFormData, string>> {
+  platforms?: string;
+}
+
 export default function NewCampaign() {
   const router = useRouter();
   const { showNotification } = useNotification();
@@ -78,10 +82,10 @@ export default function NewCampaign() {
     startDate: new Date(),
     endDate: addDays(new Date(), 30),
   });
-  const [errors, setErrors] = useState<Partial<CampaignFormData>>({});
+  const [errors, setErrors] = useState<ErrorsType>({});
 
   const validateStep = (step: number): boolean => {
-    const newErrors: Partial<CampaignFormData> = {};
+    const newErrors: ErrorsType = {};
 
     switch (step) {
       case 0:
@@ -311,14 +315,13 @@ export default function NewCampaign() {
                               onChange={(newValue) =>
                                 setFormData({ ...formData, startDate: newValue })
                               }
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  fullWidth
-                                  error={!!errors.startDate}
-                                  helperText={errors.startDate}
-                                />
-                              )}
+                              slotProps={{
+                                textField: {
+                                  fullWidth: true,
+                                  error: !!errors.startDate,
+                                  helperText: errors.startDate,
+                                },
+                              }}
                             />
                           </Grid>
                           <Grid item xs={12} sm={6}>
@@ -328,14 +331,13 @@ export default function NewCampaign() {
                               onChange={(newValue) =>
                                 setFormData({ ...formData, endDate: newValue })
                               }
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  fullWidth
-                                  error={!!errors.endDate}
-                                  helperText={errors.endDate}
-                                />
-                              )}
+                              slotProps={{
+                                textField: {
+                                  fullWidth: true,
+                                  error: !!errors.endDate,
+                                  helperText: errors.endDate,
+                                },
+                              }}
                             />
                           </Grid>
                         </Grid>
