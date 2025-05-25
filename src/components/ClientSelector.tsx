@@ -24,11 +24,12 @@ import {
 import { useRouter } from 'next/router';
 import { useClient } from '@/contexts/ClientContext';
 import { useClients } from '@/hooks/useData';
+import type { Client } from '@/types/models';
 
 interface ClientSelectorProps {
   variant?: 'button' | 'chip' | 'compact';
   showAddOption?: boolean;
-  onClientChange?: (client: any) => void;
+  onClientChange?: (client: Client) => void;
 }
 
 const ClientSelector: React.FC<ClientSelectorProps> = ({
@@ -51,7 +52,7 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
     setSearchTerm('');
   };
 
-  const handleSelectClient = (client: any) => {
+  const handleSelectClient = (client: Client) => {
     setActiveClient(client);
     if (onClientChange) {
       onClientChange(client);
@@ -64,7 +65,7 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
     router.push('/create-client');
   };
 
-  const filteredClients = clients?.filter(client =>
+  const filteredClients = (clients as Client[])?.filter(client =>
     client.name.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
