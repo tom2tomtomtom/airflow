@@ -30,8 +30,6 @@ import {
   List,
   ListItem,
   ListItemIcon,
-  ListItemText,
-  ListItemSecondary,
   Avatar,
   Divider,
   Paper,
@@ -238,7 +236,7 @@ const ExecutePage: React.FC = () => {
         <Grid container spacing={3}>
           {[1, 2, 3, 4].map(i => (
             <Grid item xs={12} md={6} key={i}>
-              <LoadingSkeleton variant="card" height={200} />
+              <LoadingSkeleton variant="card" />
             </Grid>
           ))}
         </Grid>

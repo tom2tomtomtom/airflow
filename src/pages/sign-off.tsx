@@ -199,7 +199,7 @@ const SignOffPage: React.FC = () => {
       comments: [],
     })),
     // Add some demo AI-generated assets for approval
-    ...(assets || []).filter(asset => asset.tags?.includes('ai-generated')).slice(0, 2).map((asset, index) => ({
+    ...(assets || []).filter(asset => asset.tags?.includes('ai-generated')).slice(0, 2).map((asset: any, index: any) => ({
       id: `asset-${asset.id}`,
       title: asset.name,
       type: 'asset' as const,
@@ -321,7 +321,7 @@ const SignOffPage: React.FC = () => {
   if (isLoading) {
     return (
       <DashboardLayout title="Sign Off">
-        <LoadingSkeleton variant="table" rows={5} />
+        <LoadingSkeleton variant="table" />
       </DashboardLayout>
     );
   }
@@ -590,7 +590,7 @@ const SignOffPage: React.FC = () => {
                   <TextField
                     fullWidth
                     multiline
-                    rows={2}
+                   
                     placeholder="Add a comment..."
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}

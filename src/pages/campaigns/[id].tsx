@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import { getTargeting, getSchedule, getBudgetTotal, getBudgetSpent } from '@/utils/campaign-helpers';
 import { useRouter } from 'next/router';
 import { GetServerSideProps } from 'next';
 import {
   Box,
-  Container,
+  Container, Alert,
   Typography,
   Paper,
   Grid,
@@ -158,8 +159,8 @@ export default function CampaignDetail() {
     );
   }
 
-  const budgetSpent = campaign?.budget?.spent || (campaign?.budget?.total || 0) * 0.65;
-  const budgetPercentage = campaign?.budget?.total ? (budgetSpent / campaign.budget.total) * 100 : 0;
+  const budgetSpent = (typeof campaign?.budget === 'object' ? campaign.budget.spent : 0) || ((typeof campaign?.budget === 'object' ? (typeof campaign.budget === 'object' ? getBudgetTotal(campaign.budget) : campaign.budget || 0) : campaign?.budget || 0) || 0) * 0.65;
+  const budgetPercentage = (typeof campaign?.budget === 'object' ? (typeof campaign.budget === 'object' ? getBudgetTotal(campaign.budget) : campaign.budget || 0) : campaign?.budget || 0) ? (budgetSpent / (typeof campaign.budget === 'object' ? getBudgetTotal(campaign.budget) : campaign.budget || 0)) * 100 : 0;
 
   return (
     <DashboardLayout>
@@ -241,7 +242,7 @@ export default function CampaignDetail() {
                       Target Platforms
                     </Typography>
                     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                      {campaign.targeting?.platforms?.map((platform: string) => (
+                      {((campaign as any).targeting)?.platforms?.map((platform: string) => (
                         <Chip
                           key={platform}
                           icon={platformIcons[platform.toLowerCase()]}
@@ -326,13 +327,13 @@ export default function CampaignDetail() {
                       Start Date
                     </Typography>
                     <Typography variant="body1" gutterBottom>
-                      {campaign.schedule?.startDate ? format(new Date(campaign.schedule.startDate), 'MMMM d, yyyy') : 'Not set'}
+                      {((campaign as any).schedule)?.startDate ? format(new Date(((campaign as any).schedule).startDate), 'MMMM d, yyyy') : 'Not set'}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" gutterBottom sx={{ mt: 2 }}>
                       End Date
                     </Typography>
                     <Typography variant="body1">
-                      {campaign.schedule?.endDate ? format(new Date(campaign.schedule.endDate), 'MMMM d, yyyy') : 'Not set'}
+                      {((campaign as any).schedule)?.endDate ? format(new Date(((campaign as any).schedule).endDate), 'MMMM d, yyyy') : 'Not set'}
                     </Typography>
                   </CardContent>
                 </Card>

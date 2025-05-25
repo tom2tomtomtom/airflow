@@ -48,6 +48,7 @@ describe('ErrorBoundary', () => {
   it('should show error details in development mode', () => {
     const originalEnv = process.env.NODE_ENV;
     // @ts-expect-error - process.env is readonly in TypeScript but we need to mock it for testing
+    // @ts-expect-error - process.env is readonly in TypeScript but we need to mock it for testing
     process.env.NODE_ENV = 'development';
 
     render(
@@ -59,12 +60,14 @@ describe('ErrorBoundary', () => {
     expect(screen.getByText(/Error: Test error/)).toBeInTheDocument();
 
     // @ts-expect-error - process.env is readonly in TypeScript but we need to mock it for testing
+    // @ts-expect-error - process.env is readonly in TypeScript but we need to mock it for testing
     process.env.NODE_ENV = originalEnv;
   });
 
   it('should not show error details in production mode', () => {
     const originalEnv = process.env.NODE_ENV;
     // @ts-expect-error - process.env is readonly in TypeScript but we need to mock it for testing
+    // @ts-expect-error - process.env is readonly in TypeScript but we need to mock it for testing  
     process.env.NODE_ENV = 'production';
 
     render(
@@ -75,6 +78,7 @@ describe('ErrorBoundary', () => {
 
     expect(screen.queryByText(/Error: Test error/)).not.toBeInTheDocument();
 
+    // @ts-expect-error - process.env is readonly in TypeScript but we need to mock it for testing
     // @ts-expect-error - process.env is readonly in TypeScript but we need to mock it for testing
     process.env.NODE_ENV = originalEnv;
   });

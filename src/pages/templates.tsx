@@ -205,7 +205,7 @@ const Templates: React.FC = () => {
   const [currentTemplate, setCurrentTemplate] = useState<Template | null>(null);
 
   // Filtering logic
-  const filteredTemplates = (templates ?? []).filter((template) => {
+  const filteredTemplates = (templates ?? []).filter((template: any) => {
     if (platformFilter !== 'All' && template.platform !== platformFilter) return false;
     if (searchQuery && !template.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
@@ -255,7 +255,7 @@ const Templates: React.FC = () => {
         <Grid container spacing={3}>
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <Grid item xs={12} sm={6} md={4} key={i}>
-              <LoadingSkeleton variant="card" height={400} />
+              <LoadingSkeleton variant="card" />
             </Grid>
           ))}
         </Grid>
@@ -334,7 +334,7 @@ const Templates: React.FC = () => {
         {/* Templates Grid */}
         <Grid container spacing={3}>
           {filteredTemplates.length > 0 ? (
-            filteredTemplates.map((template) => (
+            filteredTemplates.map((template: any) => (
               <Grid item key={template.id} xs={12} sm={6} md={4}>
                 <TemplateCard
                   template={template}

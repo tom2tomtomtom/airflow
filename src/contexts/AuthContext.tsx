@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 interface User {
   id: string;
   email: string;
+  role?: string;
   name: string;
   token?: string;
 }

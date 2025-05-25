@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getTargeting, getSchedule, getBudgetTotal, getBudgetSpent } from '@/utils/campaign-helpers';
 import { useRouter } from 'next/router';
 import { GetServerSideProps } from 'next';
 import {
@@ -102,10 +103,10 @@ export default function EditCampaign() {
         name: campaign.name || '',
         description: campaign.description || '',
         status: campaign.status || 'draft',
-        platforms: campaign.targeting?.platforms || [],
+        platforms: getTargeting(campaign)?.platforms || [],
         budget: campaign.budget?.total?.toString() || '',
-        startDate: campaign.schedule?.startDate ? new Date(campaign.schedule.startDate) : null,
-        endDate: campaign.schedule?.endDate ? new Date(campaign.schedule.endDate) : null,
+        startDate: campaign.schedule?.startDate ? new Date(getSchedule(campaign)?.startDate) : null,
+        endDate: campaign.schedule?.endDate ? new Date(getSchedule(campaign)?.endDate) : null,
       });
     }
   }, [campaign]);
@@ -178,10 +179,10 @@ export default function EditCampaign() {
         name: campaign.name || '',
         description: campaign.description || '',
         status: campaign.status || 'draft',
-        platforms: campaign.targeting?.platforms || [],
+        platforms: getTargeting(campaign)?.platforms || [],
         budget: campaign.budget?.total?.toString() || '',
-        startDate: campaign.schedule?.startDate ? new Date(campaign.schedule.startDate) : null,
-        endDate: campaign.schedule?.endDate ? new Date(campaign.schedule.endDate) : null,
+        startDate: campaign.schedule?.startDate ? new Date(getSchedule(campaign)?.startDate) : null,
+        endDate: campaign.schedule?.endDate ? new Date(getSchedule(campaign)?.endDate) : null,
       });
       setHasChanges(false);
       setErrors({});

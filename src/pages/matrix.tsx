@@ -404,10 +404,10 @@ const MatrixPage: React.FC = () => {
               </Typography>
               
               {isLoading ? (
-                <LoadingSkeleton variant="list" rows={3} />
+                <LoadingSkeleton variant="list" />
               ) : (
                 <Box sx={{ maxHeight: 600, overflowY: 'auto' }}>
-                  {filteredTemplates.map((template) => (
+                  {filteredTemplates.map((template: any) => (
                     <Card
                       key={template.id}
                       sx={{
@@ -504,7 +504,7 @@ const MatrixPage: React.FC = () => {
                     value={matrixDescription}
                     onChange={(e) => setMatrixDescription(e.target.value)}
                     multiline
-                    rows={2}
+                   
                     sx={{ mt: 2 }}
                   />
                 </Box>
