@@ -14,9 +14,7 @@ import {
   IconButton,
   Avatar,
   Chip,
-  Divider,
   Card,
-  CardContent,
   List,
   ListItem,
   ListItemText,
@@ -25,10 +23,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
@@ -39,7 +33,6 @@ import {
   Delete as DeleteIcon,
   Business as BusinessIcon,
   ColorLens as ColorIcon,
-  Person as PersonIcon,
   Email as EmailIcon,
   Phone as PhoneIcon,
   Language as WebIcon,
@@ -134,7 +127,7 @@ const ClientDetailPage: React.FC = () => {
   };
 
   const handleCancel = () => {
-    setEditedClient(client);
+    setEditedClient(client || null);
     setIsEditing(false);
   };
 
@@ -280,7 +273,7 @@ const ClientDetailPage: React.FC = () => {
 
         {/* Tabs */}
         <Paper>
-          <Tabs value={tabValue} onChange={(e, v) => setTabValue(v)}>
+          <Tabs value={tabValue} onChange={(_, v) => setTabValue(v)}>
             <Tab label="General Info" />
             <Tab label="Brand Guidelines" />
             <Tab label="Contacts" />
@@ -406,14 +399,16 @@ const ClientDetailPage: React.FC = () => {
                     key={index}
                     label={message}
                     sx={{ mr: 1, mb: 1 }}
-                    onDelete={isEditing ? () => {
-                      const messages = [...(editedClient.brandGuidelines?.keyMessages || [])];
-                      messages.splice(index, 1);
-                      handleFieldChange('brandGuidelines', {
-                        ...editedClient.brandGuidelines,
-                        keyMessages: messages
-                      });
-                    } : undefined}
+                    {...(isEditing ? {
+                      onDelete: () => {
+                        const messages = [...(editedClient.brandGuidelines?.keyMessages || [])];
+                        messages.splice(index, 1);
+                        handleFieldChange('brandGuidelines', {
+                          ...editedClient.brandGuidelines,
+                          keyMessages: messages
+                        });
+                      }
+                    } : {})}
                   />
                 ))}
               </Grid>
