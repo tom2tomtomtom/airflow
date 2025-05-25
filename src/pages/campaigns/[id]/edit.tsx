@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { getTargeting, getSchedule, getBudgetTotal, getBudgetSpent } from '@/utils/campaign-helpers';
+import { isCampaign } from '@/utils/campaign-helpers';
 import { useRouter } from 'next/router';
 import { GetServerSideProps } from 'next';
+import type { Campaign } from '@/types/models';
+import type { UICampaign } from '@/lib/demo-data';
 import {
   Box,
   Container,
@@ -11,17 +13,13 @@ import {
   TextField,
   Button,
   FormControl,
-  FormLabel,
   FormGroup,
   FormControlLabel,
   Checkbox,
   InputAdornment,
   Card,
   CardContent,
-  IconButton,
-  Tooltip,
   Alert,
-  Chip,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -99,14 +97,47 @@ export default function EditCampaign() {
 
   useEffect(() => {
     if (campaign && !Array.isArray(campaign)) {
+      const campaignData = campaign as Campaign | UICampaign;
+      
+      // Extract budget value properly
+      let budgetValue = '';
+      if (isCampaign(campaignData)) {
+        budgetValue = campaignData.budget?.total?.toString() || '';
+      } else {
+        // UICampaign has budget as a number
+        budgetValue = campaignData.budget?.toString() || '';
+      }
+      
+      // Extract dates properly
+      let startDate: Date | null = null;
+      let endDate: Date | null = null;
+      
+      if (isCampaign(campaignData)) {
+        startDate = campaignData.schedule?.startDate ? new Date(campaignData.schedule.startDate) : null;
+        endDate = campaignData.schedule?.endDate ? new Date(campaignData.schedule.endDate) : null;
+      } else {
+        // UICampaign has startDate/endDate as direct properties
+        startDate = campaignData.startDate ? new Date(campaignData.startDate) : null;
+        endDate = campaignData.endDate ? new Date(campaignData.endDate) : null;
+      }
+      
+      // Extract platforms
+      let platforms: string[] = [];
+      if (isCampaign(campaignData)) {
+        platforms = campaignData.targeting?.platforms || [];
+      } else {
+        // UICampaign has platforms as direct property
+        platforms = campaignData.platforms || [];
+      }
+      
       setFormData({
-        name: campaign.name || '',
-        description: campaign.description || '',
-        status: campaign.status || 'draft',
-        platforms: getTargeting(campaign)?.platforms || [],
-        budget: campaign.budget?.total?.toString() || '',
-        startDate: campaign.schedule?.startDate ? new Date(getSchedule(campaign)?.startDate) : null,
-        endDate: campaign.schedule?.endDate ? new Date(getSchedule(campaign)?.endDate) : null,
+        name: campaignData.name || '',
+        description: campaignData.description || '',
+        status: campaignData.status || 'draft',
+        platforms,
+        budget: budgetValue,
+        startDate,
+        endDate,
       });
     }
   }, [campaign]);
@@ -175,14 +206,47 @@ export default function EditCampaign() {
 
   const handleReset = () => {
     if (campaign && !Array.isArray(campaign)) {
+      const campaignData = campaign as Campaign | UICampaign;
+      
+      // Extract budget value properly
+      let budgetValue = '';
+      if (isCampaign(campaignData)) {
+        budgetValue = campaignData.budget?.total?.toString() || '';
+      } else {
+        // UICampaign has budget as a number
+        budgetValue = campaignData.budget?.toString() || '';
+      }
+      
+      // Extract dates properly
+      let startDate: Date | null = null;
+      let endDate: Date | null = null;
+      
+      if (isCampaign(campaignData)) {
+        startDate = campaignData.schedule?.startDate ? new Date(campaignData.schedule.startDate) : null;
+        endDate = campaignData.schedule?.endDate ? new Date(campaignData.schedule.endDate) : null;
+      } else {
+        // UICampaign has startDate/endDate as direct properties
+        startDate = campaignData.startDate ? new Date(campaignData.startDate) : null;
+        endDate = campaignData.endDate ? new Date(campaignData.endDate) : null;
+      }
+      
+      // Extract platforms
+      let platforms: string[] = [];
+      if (isCampaign(campaignData)) {
+        platforms = campaignData.targeting?.platforms || [];
+      } else {
+        // UICampaign has platforms as direct property
+        platforms = campaignData.platforms || [];
+      }
+      
       setFormData({
-        name: campaign.name || '',
-        description: campaign.description || '',
-        status: campaign.status || 'draft',
-        platforms: getTargeting(campaign)?.platforms || [],
-        budget: campaign.budget?.total?.toString() || '',
-        startDate: campaign.schedule?.startDate ? new Date(getSchedule(campaign)?.startDate) : null,
-        endDate: campaign.schedule?.endDate ? new Date(getSchedule(campaign)?.endDate) : null,
+        name: campaignData.name || '',
+        description: campaignData.description || '',
+        status: campaignData.status || 'draft',
+        platforms,
+        budget: budgetValue,
+        startDate,
+        endDate,
       });
       setHasChanges(false);
       setErrors({});
@@ -500,7 +564,7 @@ export default function EditCampaign() {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async (_context) => {
   // In a real app, you might fetch the campaign data here
   // For now, we'll rely on client-side data fetching
   return {

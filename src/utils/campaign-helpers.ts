@@ -1,12 +1,12 @@
-import React from 'react';
-import { Campaign as CampaignType, UICampaign } from '../../types';
+import type { Campaign } from '@/types/models';
+import type { UICampaign } from '@/lib/demo-data';
 
 // Type guards and helpers for Campaign/UICampaign compatibility
-export function isCampaign(campaign: CampaignType | UICampaign): campaign is CampaignType {
+export function isCampaign(campaign: Campaign | UICampaign): campaign is Campaign {
   return 'targeting' in campaign && 'schedule' in campaign;
 }
 
-export function getTargeting(campaign: CampaignType | UICampaign) {
+export function getTargeting(campaign: Campaign | UICampaign) {
   if (isCampaign(campaign)) {
     return campaign.targeting;
   }
@@ -14,7 +14,7 @@ export function getTargeting(campaign: CampaignType | UICampaign) {
   return undefined;
 }
 
-export function getSchedule(campaign: CampaignType | UICampaign) {
+export function getSchedule(campaign: Campaign | UICampaign) {
   if (isCampaign(campaign)) {
     return campaign.schedule;
   }
