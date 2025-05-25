@@ -20,6 +20,7 @@ import {
   Menu as MenuIcon,
   Dashboard as DashboardIcon,
   Business as ClientsIcon,
+  Campaign as CampaignIcon,
   Image as AssetsIcon,
   ViewModule as MatrixIcon,
   Description as TemplatesIcon,
@@ -37,6 +38,7 @@ const drawerWidth = 240;
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: DashboardIcon },
   { name: 'Clients', href: '/clients', icon: ClientsIcon },
+  { name: 'Campaigns', href: '/campaigns', icon: CampaignIcon },
   { divider: true },
   { name: 'Assets', href: '/assets', icon: AssetsIcon },
   { name: 'Matrix', href: '/matrix', icon: MatrixIcon },
@@ -88,16 +90,17 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
             return <Divider key={`divider-${index}`} sx={{ my: 1 }} />;
           }
           
-          const Icon = item.icon;
+          const Icon = item.icon!;
           const isActive = router.pathname === item.href || 
-                          (item.href === '/clients' && router.pathname.startsWith('/clients'));
+                          (item.href === '/clients' && router.pathname.startsWith('/clients')) ||
+                          (item.href === '/campaigns' && router.pathname.startsWith('/campaigns'));
           
           return (
             <ListItem key={item.name} disablePadding>
               <ListItemButton
                 selected={isActive}
                 onClick={() => {
-                  router.push(item.href);
+                  router.push(item.href!);
                   if (isMobile) {
                     setMobileOpen(false);
                   }
