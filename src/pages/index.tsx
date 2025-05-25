@@ -8,9 +8,9 @@ const HomePage = () => {
   const { isAuthenticated, loading } = useAuth();
 
   useEffect(() => {
-    // Only redirect if authenticated
+    // Redirect authenticated users to dashboard
     if (!loading && isAuthenticated) {
-      router.push('/assets');
+      router.push('/dashboard');
     }
   }, [router, isAuthenticated, loading]);
 
