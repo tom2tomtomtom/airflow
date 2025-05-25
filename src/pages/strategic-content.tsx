@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useRouter } from 'next/router';
 import Head from 'next/head';
 import {
   Box,
@@ -16,13 +15,11 @@ import {
   FormControl,
   InputLabel,
   Select,
-  SelectChangeEvent,
   Avatar,
   IconButton,
   Card,
   CardContent,
   Chip,
-  Divider,
   Tabs,
   Tab,
   LinearProgress,
@@ -31,8 +28,6 @@ import {
   AccordionDetails,
   Stack,
   Alert,
-  FormControlLabel,
-  Switch,
   Stepper,
   Step,
   StepLabel,
@@ -42,8 +37,6 @@ import {
 import {
   Add as AddIcon,
   Delete as DeleteIcon,
-  Edit as EditIcon,
-  ContentCopy as DuplicateIcon,
   ExpandMore as ExpandMoreIcon,
   Psychology as AIIcon,
   Lightbulb as IdeaIcon,
@@ -54,11 +47,9 @@ import {
   AutoAwesome as MagicIcon,
   Refresh as RefreshIcon,
   Send as SendIcon,
-  History as HistoryIcon,
   Article as BriefIcon,
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
-import LoadingSkeleton from '@/components/LoadingSkeleton';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
 import { useCampaigns } from '@/hooks/useData';
@@ -126,9 +117,7 @@ const StrategicContent: React.FC = () => {
   const [briefs, setBriefs] = useState<Brief[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('All');
-  const [openDialog, setOpenDialog] = useState(false);
   const [openBriefDialog, setOpenBriefDialog] = useState(false);
-  const [currentContent, setCurrentContent] = useState<StrategicContentItem | null>(null);
   const [currentBrief, setCurrentBrief] = useState<Brief | null>(null);
   const [tabValue, setTabValue] = useState(0);
   const [generating, setGenerating] = useState(false);
@@ -137,7 +126,7 @@ const StrategicContent: React.FC = () => {
   // Brief form state
   const [briefForm, setBriefForm] = useState({
     title: '',
-    type: 'campaign' as const,
+    type: 'campaign' as Brief['type'],
     campaignId: '',
     objective: '',
     targetAudience: '',
@@ -149,7 +138,7 @@ const StrategicContent: React.FC = () => {
     additionalNotes: '',
   });
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
@@ -596,7 +585,7 @@ const StrategicContent: React.FC = () => {
                               onChange={(e) => setBriefForm({ ...briefForm, campaignId: e.target.value })}
                             >
                               <MenuItem value="">None</MenuItem>
-                              {campaigns.map(campaign => (
+                              {campaigns.map((campaign: any) => (
                                 <MenuItem key={campaign.id} value={campaign.id}>
                                   {campaign.name}
                                 </MenuItem>
