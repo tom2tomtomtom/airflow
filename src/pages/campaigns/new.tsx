@@ -20,8 +20,6 @@ import {
   StepContent,
   Card,
   CardContent,
-  IconButton,
-  Tooltip,
   Alert,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -35,16 +33,12 @@ import {
   YouTube,
   LinkedIn,
   Info,
-  AttachMoney,
-  CalendarToday,
   CheckCircle,
 } from '@mui/icons-material';
 import { addDays } from 'date-fns';
 import DashboardLayout from '../../components/DashboardLayout';
 import { useNotification } from '../../contexts/NotificationContext';
 import { useData } from '../../hooks/useData';
-
-const steps = ['Basic Information', 'Target Platforms', 'Budget & Timeline', 'Review & Create'];
 
 const platformOptions = [
   { name: 'Facebook', icon: <Facebook />, value: 'facebook' },
@@ -332,13 +326,14 @@ export default function NewCampaign() {
                               onChange={(newValue) =>
                                 setFormData({ ...formData, endDate: newValue as Date | null })
                               }
-                              slotProps={{
-                                textField: {
-                                  fullWidth: true,
-                                  error: !!errors.endDate,
-                                  helperText: errors.endDate,
-                                },
-                              }}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  fullWidth
+                                  error={!!errors.endDate}
+                                  helperText={errors.endDate}
+                                />
+                              )}
                             />
                           </Grid>
                         </Grid>
