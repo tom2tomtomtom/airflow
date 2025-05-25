@@ -24,40 +24,29 @@ import {
   InputLabel,
   Select,
   SelectChangeEvent,
-  CircularProgress,
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import AspectRatioIcon from '@mui/icons-material/AspectRatio';
-import InstagramIcon from '@mui/icons-material/Instagram';
-import FacebookIcon from '@mui/icons-material/Facebook';
-import TwitterIcon from '@mui/icons-material/Twitter';
-import YouTubeIcon from '@mui/icons-material/YouTube';
-import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import PinterestIcon from '@mui/icons-material/Pinterest';
-import TikTokIcon from '@mui/icons-material/MusicNote';
-import EditIcon from '@mui/icons-material/Edit';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import DeleteIcon from '@mui/icons-material/Delete';
-
-let DashboardLayout: React.FC<{ title: string; children: React.ReactNode }>;
-try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  DashboardLayout = require('@/components/DashboardLayout').default;
-} catch {
-  DashboardLayout = ({ children }) => <div>{children}</div>;
-}
-
-import { useQuery } from '@tanstack/react-query';
-import type { Database } from '../lib/supabase';
-type TemplateRow = Database['public']['Tables']['templates']['Row'];
-
-// Fetch templates from API
-const fetchTemplates = async (): Promise<TemplateRow[]> => {
-  const res = await fetch('/api/templates');
-  if (!res.ok) throw new Error('Failed to fetch templates');
-  return res.json();
-};
+import {
+  Add as AddIcon,
+  MoreVert as MoreVertIcon,
+  AspectRatio as AspectRatioIcon,
+  Instagram as InstagramIcon,
+  Facebook as FacebookIcon,
+  Twitter as TwitterIcon,
+  YouTube as YouTubeIcon,
+  LinkedIn as LinkedInIcon,
+  Pinterest as PinterestIcon,
+  MusicNote as TikTokIcon,
+  Edit as EditIcon,
+  ContentCopy as ContentCopyIcon,
+  Delete as DeleteIcon,
+} from '@mui/icons-material';
+import { useRouter } from 'next/router';
+import DashboardLayout from '@/components/DashboardLayout';
+import LoadingSkeleton from '@/components/LoadingSkeleton';
+import ErrorMessage from '@/components/ErrorMessage';
+import { useTemplates } from '@/hooks/useData';
+import { useNotification } from '@/contexts/NotificationContext';
+import type { Template } from '@/types/models';
 
 // Platform icons mapping
 const platformIcons: Record<string, React.ReactNode> = {
@@ -67,15 +56,15 @@ const platformIcons: Record<string, React.ReactNode> = {
   YouTube: <YouTubeIcon sx={{ color: '#FF0000' }} />,
   LinkedIn: <LinkedInIcon sx={{ color: '#0A66C2' }} />,
   Pinterest: <PinterestIcon sx={{ color: '#E60023' }} />,
-  TikTok: <TikTokIcon sx={{ color: '#000000' }} />, // Using TikTokIcon
+  TikTok: <TikTokIcon sx={{ color: '#000000' }} />,
 };
 
 // Template card component
 const TemplateCard: React.FC<{
-  template: TemplateRow;
-  onEdit: (template: TemplateRow) => void;
+  template: Template;
+  onEdit: (template: Template) => void;
   onDelete: (templateId: string) => void;
-  onDuplicate: (template: TemplateRow) => void;
+  onDuplicate: (template: Template) => void;
   onCreateMatrix: (templateId: string) => void;
 }> = ({ template, onEdit, onDelete, onDuplicate, onCreateMatrix }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -99,9 +88,14 @@ const TemplateCard: React.FC<{
           alignItems: 'center',
           justifyContent: 'center',
           position: 'relative',
+          backgroundImage: template.thumbnail ? `url(${template.thumbnail})` : 'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
         }}
       >
-        {platformIcons[template.platform] || <AspectRatioIcon sx={{ fontSize: 48, color: 'grey.400' }} />}
+        {!template.thumbnail && (
+          platformIcons[template.platform] || <AspectRatioIcon sx={{ fontSize: 48, color: 'grey.400' }} />
+        )}
         <Box
           sx={{
             position: 'absolute',
@@ -117,6 +111,7 @@ const TemplateCard: React.FC<{
             aria-haspopup="true"
             onClick={handleClick}
             size="small"
+            sx={{ bgcolor: 'background.paper', '&:hover': { bgcolor: 'background.paper' } }}
           >
             <MoreVertIcon />
           </IconButton>
@@ -163,80 +158,56 @@ const TemplateCard: React.FC<{
           <Chip
             size="small"
             icon={<AspectRatioIcon />}
-            label={template.aspect_ratio}
+            label={template.aspectRatio}
           />
         </Stack>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           {template.description}
         </Typography>
-        <Grid container spacing={1}>
-          <Grid item xs={12}>
-            <Button
-              variant="contained"
-              color="primary"
-              fullWidth
-              size="large"
-              onClick={() => onCreateMatrix(template.id)}
-              sx={{
-                mb: 1,
-                fontWeight: 'bold',
-                py: 1
-              }}
-            >
-              SELECT
-            </Button>
-          </Grid>
-          <Grid item xs={6}>
-            <Button
-              variant="outlined"
-              fullWidth
-              onClick={() => onCreateMatrix(template.id)}
-            >
-              Use Template
-            </Button>
-          </Grid>
-          <Grid item xs={6}>
-            <Button
-              variant="outlined"
-              fullWidth
-              onClick={() => {
-                // Use window.open for client-side navigation to a new tab
-                window.open(`/preview?templateId=${template.id}`, '_blank');
-              }}
-            >
-              Preview
-            </Button>
-          </Grid>
-        </Grid>
+        {template.performance && (
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="caption" color="text.secondary">
+              Performance Score: {template.performance.score}/10
+            </Typography>
+          </Box>
+        )}
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          size="large"
+          onClick={() => onCreateMatrix(template.id)}
+          sx={{
+            fontWeight: 'bold',
+            py: 1
+          }}
+        >
+          USE TEMPLATE
+        </Button>
       </CardContent>
       <Box sx={{ p: 2, pt: 0 }}>
         <Typography variant="caption" color="text.secondary">
-          Last modified: {template.updated_at ?? ''}
+          {template.category} • {template.contentType}
         </Typography>
       </Box>
     </Card>
   );
 };
 
-const TemplatesNew: React.FC = () => {
-  const { data: templates, isLoading, error } = useQuery({
-    queryKey: ['templates'],
-    queryFn: fetchTemplates,
-  });
+const Templates: React.FC = () => {
+  const router = useRouter();
+  const { data: templates, isLoading, error, refetch } = useTemplates();
+  const { showNotification } = useNotification();
 
-  // Example filter state (you may already have these)
   const [platformFilter, setPlatformFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
-  const [currentTemplate, setCurrentTemplate] = useState<TemplateRow | null>(null);
+  const [currentTemplate, setCurrentTemplate] = useState<Template | null>(null);
 
   // Filtering logic
-  const filteredTemplates = (templates ?? []).filter((template: TemplateRow) => {
-    // Platform filter
+  const filteredTemplates = (templates ?? []).filter((template) => {
     if (platformFilter !== 'All' && template.platform !== platformFilter) return false;
-    // Search filter
     if (searchQuery && !template.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-    // Add more filters as needed
     return true;
   });
   
@@ -254,39 +225,49 @@ const TemplatesNew: React.FC = () => {
     setCurrentTemplate(null);
   };
 
-  const handleDuplicateTemplate = (template: TemplateRow) => {
-    // Implement duplication logic using API if needed
-    // For now, just log
-    console.log('Duplicate template', template);
+  const handleDuplicateTemplate = (template: Template) => {
+    showNotification('Template duplication coming soon', 'info');
   };
 
-  const handleEditTemplate = (template: TemplateRow) => {
-    // Implement edit logic
-    console.log('Edit template', template);
+  const handleEditTemplate = (template: Template) => {
+    setCurrentTemplate(template);
+    setOpenDialog(true);
   };
 
   const handleDeleteTemplate = async (templateId: string) => {
-    // Implement delete logic using API
-    console.log('Delete template', templateId);
+    if (confirm('Are you sure you want to delete this template?')) {
+      showNotification('Template deletion coming soon', 'info');
+    }
   };
 
   const handleCreateMatrix = (templateId: string) => {
-    // Implement navigation logic
-    console.log('Create matrix for', templateId);
+    router.push(`/matrix?templateId=${templateId}`);
+  };
+
+  const handleSaveTemplate = () => {
+    showNotification('Template saving coming soon', 'info');
+    handleCloseDialog();
   };
 
   if (isLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <CircularProgress />
-      </Box>
+      <DashboardLayout title="Templates">
+        <Grid container spacing={3}>
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <Grid item xs={12} sm={6} md={4} key={i}>
+              <LoadingSkeleton variant="card" height={400} />
+            </Grid>
+          ))}
+        </Grid>
+      </DashboardLayout>
     );
   }
+
   if (error) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <Typography color="error">Failed to load templates</Typography>
-      </Box>
+      <DashboardLayout title="Templates">
+        <ErrorMessage error={error} onRetry={refetch} />
+      </DashboardLayout>
     );
   }
 
@@ -304,6 +285,7 @@ const TemplatesNew: React.FC = () => {
             Create and manage templates for different platforms and formats
           </Typography>
         </Box>
+        
         {/* Filters and Actions */}
         <Paper sx={{ p: 2, mb: 4 }}>
           <Grid container spacing={2} alignItems="center">
@@ -348,10 +330,11 @@ const TemplatesNew: React.FC = () => {
             </Grid>
           </Grid>
         </Paper>
+        
         {/* Templates Grid */}
         <Grid container spacing={3}>
           {filteredTemplates.length > 0 ? (
-            filteredTemplates.map((template: TemplateRow) => (
+            filteredTemplates.map((template) => (
               <Grid item key={template.id} xs={12} sm={6} md={4}>
                 <TemplateCard
                   template={template}
@@ -364,9 +347,23 @@ const TemplatesNew: React.FC = () => {
             ))
           ) : (
             <Grid item xs={12}>
-              <Typography variant="body1" color="text.secondary" align="center">
-                No templates found
-              </Typography>
+              <Box textAlign="center" py={8}>
+                <Typography variant="h6" color="text.secondary" gutterBottom>
+                  No templates found
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                  {searchQuery || platformFilter !== 'All' 
+                    ? 'Try adjusting your filters'
+                    : 'Create your first template to get started'}
+                </Typography>
+                <Button
+                  variant="contained"
+                  startIcon={<AddIcon />}
+                  onClick={handleAddTemplate}
+                >
+                  Create Template
+                </Button>
+              </Box>
             </Grid>
           )}
         </Grid>
@@ -410,7 +407,7 @@ const TemplatesNew: React.FC = () => {
                 <Select
                   labelId="aspect-ratio-label"
                   id="aspect-ratio"
-                  defaultValue={currentTemplate?.aspect_ratio || '1:1'}
+                  defaultValue={currentTemplate?.aspectRatio || '1:1'}
                   label="Aspect Ratio"
                 >
                   <MenuItem value="1:1">1:1 (Square)</MenuItem>
@@ -435,7 +432,7 @@ const TemplatesNew: React.FC = () => {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDialog}>Cancel</Button>
-            <Button variant="contained">
+            <Button variant="contained" onClick={handleSaveTemplate}>
               {currentTemplate ? 'Update' : 'Create'}
             </Button>
           </DialogActions>
@@ -445,4 +442,4 @@ const TemplatesNew: React.FC = () => {
   );
 };
 
-export default TemplatesNew;
+export default Templates;
