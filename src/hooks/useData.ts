@@ -11,6 +11,94 @@ import {
 } from '@/lib/demo-data';
 import type { Client, Asset, Template, Campaign, Matrix } from '@/types/models';
 
+// Type mapping for entity types
+type EntityTypes = {
+  clients: Client;
+  assets: Asset;
+  templates: Template;
+  campaigns: Campaign;
+  matrices: Matrix;
+};
+
+// Generic useData hook
+export function useData<T extends keyof EntityTypes>(
+  entityType: T,
+  id?: string
+): {
+  data: EntityTypes[T] | EntityTypes[T][] | null;
+  loading: boolean;
+  error: Error | null;
+} {
+  const [data, setData] = useState<EntityTypes[T] | EntityTypes[T][] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        let result: any = null;
+
+        if (isDemoMode()) {
+          // Demo mode data fetching
+          switch (entityType) {
+            case 'clients':
+              const clients = getDemoClients();
+              result = id ? clients.find(c => c.id === id) : clients;
+              break;
+            case 'campaigns':
+              const campaigns = getDemoCampaigns();
+              result = id ? campaigns.find(c => c.id === id) : campaigns;
+              break;
+            case 'assets':
+              const assets = getDemoAssets();
+              result = id ? assets.find(a => a.id === id) : assets;
+              break;
+            case 'templates':
+              const templates = getDemoTemplates();
+              result = id ? templates.find(t => t.id === id) : templates;
+              break;
+            case 'matrices':
+              const matrices = getDemoMatrices();
+              result = id ? matrices.find(m => m.id === id) : matrices;
+              break;
+          }
+        } else {
+          // Supabase data fetching
+          if (id) {
+            const { data, error } = await supabase
+              .from(entityType)
+              .select('*')
+              .eq('id', id)
+              .single();
+            
+            if (error) throw error;
+            result = data;
+          } else {
+            const { data, error } = await supabase
+              .from(entityType)
+              .select('*')
+              .order('created_at', { ascending: false });
+            
+            if (error) throw error;
+            result = data || [];
+          }
+        }
+
+        setData(result);
+      } catch (err) {
+        setError(err as Error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [entityType, id]);
+
+  return { data, loading, error };
+}
+
 // Custom hook for fetching clients
 export const useClients = () => {
   return useQuery({
