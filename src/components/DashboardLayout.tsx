@@ -14,9 +14,12 @@ import {
   Typography,
   useTheme,
   useMediaQuery,
+  Divider,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
+  Dashboard as DashboardIcon,
+  Business as ClientsIcon,
   Image as AssetsIcon,
   ViewModule as MatrixIcon,
   Description as TemplatesIcon,
@@ -31,10 +34,14 @@ import { useRouter } from 'next/router';
 const drawerWidth = 240;
 
 const navigation = [
+  { name: 'Dashboard', href: '/dashboard', icon: DashboardIcon },
+  { name: 'Clients', href: '/clients', icon: ClientsIcon },
+  { divider: true },
   { name: 'Assets', href: '/assets', icon: AssetsIcon },
   { name: 'Matrix', href: '/matrix', icon: MatrixIcon },
   { name: 'Templates', href: '/templates', icon: TemplatesIcon },
   { name: 'Strategic Content', href: '/strategic-content', icon: StrategicIcon },
+  { divider: true },
   { name: 'Generate', href: '/generate-enhanced', icon: GenerateIcon },
   { name: 'Execute', href: '/execute', icon: ExecuteIcon },
   { name: 'Preview', href: '/preview', icon: PreviewIcon },
@@ -59,14 +66,30 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
   const drawer = (
     <div>
       <Toolbar>
-        <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 700, color: 'primary.main' }}>
+        <Typography 
+          variant="h6" 
+          noWrap 
+          component="div" 
+          sx={{ 
+            fontWeight: 700, 
+            color: 'primary.main',
+            cursor: 'pointer',
+          }}
+          onClick={() => router.push('/dashboard')}
+        >
           AIrWAVE
         </Typography>
       </Toolbar>
+      <Divider />
       <List>
-        {navigation.map((item) => {
+        {navigation.map((item, index) => {
+          if (item.divider) {
+            return <Divider key={`divider-${index}`} sx={{ my: 1 }} />;
+          }
+          
           const Icon = item.icon;
-          const isActive = router.pathname === item.href;
+          const isActive = router.pathname === item.href || 
+                          (item.href === '/clients' && router.pathname.startsWith('/clients'));
           
           return (
             <ListItem key={item.name} disablePadding>
