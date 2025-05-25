@@ -24,7 +24,6 @@ import {
   Avatar, 
   Badge, 
   Alert, 
-  LinearProgress,
   IconButton,
   Stack,
   List,
@@ -38,24 +37,18 @@ import {
   Close as CloseIcon, 
   Edit as EditIcon, 
   Visibility as VisibilityIcon, 
-  Comment as CommentIcon, 
   Send as SendIcon, 
   ThumbUp as ApproveIcon, 
   ThumbDown as RejectIcon, 
-  History as HistoryIcon, 
-  CalendarToday as CalendarIcon, 
   Person as PersonIcon, 
-  Email as EmailIcon, 
-  AttachFile as AttachmentIcon,
 } from '@mui/icons-material';
-import { useRouter } from 'next/router';
 import Head from 'next/head';
 import DashboardLayout from '@/components/DashboardLayout';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
-import ErrorMessage from '@/components/ErrorMessage';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
 import { useCampaigns, useAssets, useMatrices } from '@/hooks/useData';
+import type { Campaign, Asset, Matrix } from '@/types/models';
 
 // Interface for approval item
 interface ApprovalItem {
@@ -103,7 +96,6 @@ interface ApprovalItem {
 
 // Sign Off Page Component
 const SignOffPage: React.FC = () => {
-  const router = useRouter();
   const { activeClient } = useClient();
   const { showNotification } = useNotification();
   const { data: campaigns, isLoading: campaignsLoading } = useCampaigns(activeClient?.id);
@@ -121,7 +113,7 @@ const SignOffPage: React.FC = () => {
   // Transform actual data into approval items
   const approvalItems: ApprovalItem[] = [
     // Transform campaigns
-    ...(campaigns || []).map(campaign => ({
+    ...(campaigns || []).map((campaign: Campaign) => ({
       id: `campaign-${campaign.id}`,
       title: campaign.name,
       type: 'campaign' as const,
@@ -158,7 +150,7 @@ const SignOffPage: React.FC = () => {
       comments: [],
     })),
     // Transform matrices that need approval
-    ...(matrices || []).filter(matrix => matrix.status !== 'approved').map(matrix => ({
+    ...(matrices || []).filter((matrix: Matrix) => matrix.status !== 'approved').map((matrix: Matrix) => ({
       id: `matrix-${matrix.id}`,
       title: matrix.name,
       type: 'matrix' as const,
@@ -199,7 +191,7 @@ const SignOffPage: React.FC = () => {
       comments: [],
     })),
     // Add some demo AI-generated assets for approval
-    ...(assets || []).filter(asset => asset.tags?.includes('ai-generated')).slice(0, 2).map((asset: any, index: any) => ({
+    ...(assets || []).filter((asset: Asset) => asset.tags?.includes('ai-generated')).slice(0, 2).map((asset: Asset, index: number) => ({
       id: `asset-${asset.id}`,
       title: asset.name,
       type: 'asset' as const,
@@ -239,7 +231,7 @@ const SignOffPage: React.FC = () => {
     })),
   ];
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
 
