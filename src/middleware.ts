@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 
 // Get JWT_SECRET directly for Edge Runtime compatibility
-const JWT_SECRET = process.env.JWT_SECRET || '';
+const JWT_SECRET = process.env.JWT_SECRET || 'demo-jwt-secret-that-is-at-least-32-characters-long';
+const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
 
 // Define public routes that don't require authentication
 const publicRoutes = [
-  '/',  // Add root path as public
+  '/',  // Root path
   '/login',
   '/signup',
   '/forgot-password',
@@ -24,7 +25,24 @@ const publicRoutes = [
   '/api/auth/change-password',
   // Health check endpoints
   '/api/health',
-  '/api/status'
+  '/api/status',
+  // API endpoints that should work in demo mode
+  '/api/clients',
+  '/api/templates',
+  '/api/assets',
+];
+
+// Define routes that are allowed in demo mode
+const demoAllowedRoutes = [
+  '/assets',
+  '/templates',
+  '/matrix',
+  '/preview',
+  '/generate-enhanced',
+  '/strategic-content',
+  '/sign-off',
+  '/execute',
+  '/dashboard',
 ];
 
 // Define routes that require specific roles
@@ -112,9 +130,34 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // In demo mode, allow most routes without authentication
+  if (isDemoMode) {
+    // Check if it's a protected route that should work in demo
+    if (demoAllowedRoutes.some(route => pathname.startsWith(route))) {
+      return response;
+    }
+    
+    // Check if it's an API route that should work in demo
+    if (pathname.startsWith('/api/') && !pathname.startsWith('/api/auth/')) {
+      // Add demo headers for API routes
+      const requestHeaders = new Headers(request.headers);
+      requestHeaders.set('x-demo-mode', 'true');
+      requestHeaders.set('x-user-id', 'demo-user');
+      requestHeaders.set('x-user-role', 'user');
+      
+      response = NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      });
+      
+      return addSecurityHeaders(response);
+    }
+  }
+
   // Allow public routes and static assets
   if (
-    publicRoutes.some(route => pathname.startsWith(route)) ||
+    publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/')) ||
     pathname.startsWith('/_next') ||
     pathname.startsWith('/favicon') ||
     pathname.includes('.') // Static files
@@ -126,6 +169,19 @@ export async function middleware(request: NextRequest) {
   const tokenFromCookie = request.cookies.get('auth_token')?.value;
   const tokenFromHeader = request.headers.get('authorization')?.replace('Bearer ', '');
   const token = tokenFromCookie || tokenFromHeader;
+
+  // In demo mode, create a fake token if none exists
+  if (!token && isDemoMode) {
+    const demoToken = 'demo-token';
+    response.cookies.set('auth_token', demoToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+    });
+    
+    return response;
+  }
 
   if (!token) {
     // For API routes, return 401
@@ -140,7 +196,29 @@ export async function middleware(request: NextRequest) {
   }
 
   try {
-    // Verify the token
+    // In demo mode, skip token verification
+    if (isDemoMode && (token === 'demo-token' || token.startsWith('demo-'))) {
+      // Add demo user info to headers for API routes
+      if (pathname.startsWith('/api')) {
+        const requestHeaders = new Headers(request.headers);
+        requestHeaders.set('x-user-id', 'demo-user');
+        requestHeaders.set('x-user-role', 'user');
+        requestHeaders.set('x-user-email', 'demo@airwave.app');
+        requestHeaders.set('x-demo-mode', 'true');
+
+        response = NextResponse.next({
+          request: {
+            headers: requestHeaders,
+          },
+        });
+        
+        return addSecurityHeaders(response);
+      }
+      
+      return response;
+    }
+
+    // Verify the token for non-demo mode
     const secret = new TextEncoder().encode(JWT_SECRET);
     const { payload } = await jwtVerify(token, secret, {
       algorithms: ['HS256']
@@ -167,8 +245,8 @@ export async function middleware(request: NextRequest) {
             { status: 403 }
           );
         }
-        // For pages, redirect to dashboard
-        return NextResponse.redirect(new URL('/dashboard', request.url));
+        // For pages, redirect to assets page
+        return NextResponse.redirect(new URL('/assets', request.url));
       }
     }
 
