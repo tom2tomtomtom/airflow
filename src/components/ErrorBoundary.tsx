@@ -1,129 +1,125 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { Box, Typography, Button, Paper } from '@mui/material';
+import { Box, Typography, Button, Container, Paper } from '@mui/material';
 import { ErrorOutline } from '@mui/icons-material';
 
-interface Props {
+interface ErrorBoundaryProps {
   children: ReactNode;
-  fallback?: ReactNode;
 }
 
-interface State {
+interface ErrorBoundaryState {
   hasError: boolean;
   error: Error | null;
   errorInfo: ErrorInfo | null;
 }
 
-class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
     super(props);
-    this.state = { hasError: false, error: null, errorInfo: null };
+    this.state = {
+      hasError: false,
+      error: null,
+      errorInfo: null,
+    };
   }
 
-  static getDerivedStateFromError(error: Error): State {
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     // Update state so the next render will show the fallback UI
-    return { hasError: true, error, errorInfo: null };
+    return {
+      hasError: true,
+      error,
+      errorInfo: null,
+    };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // Log error to console in development
-    if (process.env.NODE_ENV === 'development') {
-      console.error('ErrorBoundary caught an error:', error, errorInfo);
-    }
-
+    // Log error to error reporting service
+    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    
     // Update state with error details
     this.setState({
       error,
-      errorInfo
+      errorInfo,
     });
-
-    // TODO: Log to error reporting service (e.g., Sentry)
-    // logErrorToService(error, errorInfo);
+    
+    // In production, you would send this to an error tracking service like Sentry
+    if (process.env.NODE_ENV === 'production') {
+      // TODO: Send to error tracking service
+    }
   }
 
   handleReset = () => {
-    this.setState({ hasError: false, error: null, errorInfo: null });
+    this.setState({
+      hasError: false,
+      error: null,
+      errorInfo: null,
+    });
+    
+    // Optionally reload the page
+    window.location.reload();
   };
 
   render() {
     if (this.state.hasError) {
-      // Custom fallback UI if provided
-      if (this.props.fallback) {
-        return <>{this.props.fallback}</>;
-      }
-
-      // Default error UI
       return (
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
-          minHeight="400px"
-          padding={3}
-        >
-          <Paper
-            elevation={3}
-            sx={{
-              padding: 4,
-              maxWidth: 600,
-              width: '100%',
-              textAlign: 'center',
-              backgroundColor: 'background.paper'
-            }}
-          >
-            <ErrorOutline
-              sx={{
-                fontSize: 64,
-                color: 'error.main',
-                marginBottom: 2
-              }}
-            />
+        <Container maxWidth="sm" sx={{ mt: 8 }}>
+          <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
+            <Box sx={{ mb: 3 }}>
+              <ErrorOutline sx={{ fontSize: 64, color: 'error.main' }} />
+            </Box>
             
-            <Typography variant="h5" gutterBottom color="error">
+            <Typography variant="h4" gutterBottom>
               Oops! Something went wrong
             </Typography>
             
             <Typography variant="body1" color="text.secondary" paragraph>
-              We&apos;re sorry for the inconvenience. An unexpected error occurred.
+              We're sorry for the inconvenience. An unexpected error has occurred.
             </Typography>
-
-            {/* Show error details in development */}
+            
             {process.env.NODE_ENV === 'development' && this.state.error && (
               <Box
                 sx={{
-                  marginTop: 2,
-                  padding: 2,
-                  backgroundColor: 'grey.100',
+                  mt: 3,
+                  p: 2,
+                  bgcolor: 'grey.100',
                   borderRadius: 1,
-                  textAlign: 'left'
+                  textAlign: 'left',
                 }}
               >
-                <Typography variant="caption" component="pre" sx={{ whiteSpace: 'pre-wrap' }}>
+                <Typography variant="subtitle2" gutterBottom>
+                  Error Details (Development Only):
+                </Typography>
+                <Typography
+                  variant="body2"
+                  component="pre"
+                  sx={{
+                    overflow: 'auto',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
+                  }}
+                >
                   {this.state.error.toString()}
                   {this.state.errorInfo && this.state.errorInfo.componentStack}
                 </Typography>
               </Box>
             )}
-
-            <Box marginTop={3}>
+            
+            <Box sx={{ mt: 4, display: 'flex', gap: 2, justifyContent: 'center' }}>
               <Button
                 variant="contained"
+                onClick={this.handleReset}
                 color="primary"
-                onClick={() => window.location.reload()}
-                sx={{ marginRight: 2 }}
               >
                 Reload Page
               </Button>
-              
               <Button
                 variant="outlined"
-                onClick={this.handleReset}
+                onClick={() => window.history.back()}
               >
-                Try Again
+                Go Back
               </Button>
             </Box>
           </Paper>
-        </Box>
+        </Container>
       );
     }
 
@@ -132,26 +128,3 @@ class ErrorBoundary extends Component<Props, State> {
 }
 
 export default ErrorBoundary;
-
-// Hook for functional components to trigger error boundaries
-export function useErrorHandler() {
-  return (error: Error) => {
-    throw error;
-  };
-}
-
-// HOC to wrap components with error boundary
-export function withErrorBoundary<P extends object>(
-  Component: React.ComponentType<P>,
-  fallback?: ReactNode
-) {
-  const WrappedComponent = (props: P) => (
-    <ErrorBoundary fallback={fallback}>
-      <Component {...props} />
-    </ErrorBoundary>
-  );
-  
-  WrappedComponent.displayName = `withErrorBoundary(${Component.displayName || Component.name || 'Component'})`;
-  
-  return WrappedComponent;
-}
