@@ -16,7 +16,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  CircularProgress,
   Table,
   TableBody,
   TableCell,
@@ -25,6 +24,28 @@ import {
   TableRow,
   Chip,
   InputAdornment,
+  Tabs,
+  Tab,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Alert,
+  SpeedDial,
+  SpeedDialAction,
+  SpeedDialIcon,
+  Checkbox,
+  FormControlLabel,
+  Stack,
+  Tooltip,
+  Badge,
+  Avatar,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  List,
+  Switch,
+  Slider,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -39,342 +60,330 @@ import {
   ColorLens as ColorLensIcon,
   Link as LinkIcon,
   Search as SearchIcon,
+  ContentCopy as DuplicateIcon,
+  Delete as DeleteIcon,
+  Preview as PreviewIcon,
+  AutoAwesome as MagicIcon,
+  Compare as CompareIcon,
+  Timeline as TimelineIcon,
+  Shuffle as ShuffleIcon,
+  CheckCircle as ApproveIcon,
+  Send as SendIcon,
 } from '@mui/icons-material';
-import { useAuth } from '@/contexts/AuthContext';
-import { useClient } from '@/contexts/ClientContext';
 import DashboardLayout from '@/components/DashboardLayout';
+import LoadingSkeleton from '@/components/LoadingSkeleton';
+import { useClient } from '@/contexts/ClientContext';
+import { useNotification } from '@/contexts/NotificationContext';
+import { useTemplates, useAssets, useCreateMatrix, useCampaigns } from '@/hooks/useData';
+import type { Template, Asset, Matrix, Campaign } from '@/types/models';
 
-// Define types
-interface DynamicField {
+// Variation interface
+interface Variation {
   id: string;
   name: string;
-  type: 'text' | 'image' | 'video' | 'audio' | 'color' | 'link';
-  required: boolean;
-  description: string;
-}
-
-interface Template {
-  id: string;
-  name: string;
-  platform: string;
-  aspectRatio: string;
-  description: string;
-  thumbnail: string;
-  dateCreated: string;
-  lastModified: string;
-  category: string;
-  industry: string;
-  contentType: string;
-  dimensions: string;
-  recommendedUsage: string;
-  usageCount: number;
+  isActive: boolean;
+  isDefault: boolean;
   performance?: {
     views: number;
-    engagement: number;
-    conversion: number;
-    score: number;
-  };
-  dynamicFields: DynamicField[];
-  isCreatomate: boolean;
-  creatomateId: string;
-}
-
-interface Asset {
-  id: string;
-  name: string;
-  type: 'image' | 'video' | 'audio' | 'document' | 'other';
-  url: string;
-  description: string;
-  tags: string[];
-  categories: string[];
-  dateAdded: string;
-  dateModified: string;
-  isFavorite: boolean;
-  metadata: {
-    fileSize: string;
-    dimensions?: string;
-    duration?: string;
-    format: string;
-    creator: string;
-    source: string;
-    license: string;
-    usageRights: string;
-    expirationDate?: string;
-  };
-  performance?: {
-    views: number;
-    engagement: number;
-    conversion: number;
+    clicks: number;
+    conversions: number;
     score: number;
   };
 }
 
-interface FieldAssignment {
+// Field value interface
+interface FieldValue {
   fieldId: string;
-  assetId?: string;
+  variationId: string;
   value?: string;
-  status: 'empty' | 'in-progress' | 'completed';
+  assetId?: string;
+  asset?: Asset;
 }
 
-// Mock data for templates
-const mockTemplates: Template[] = [
-  {
-    id: 't1',
-    name: 'Instagram Story',
-    platform: 'Instagram',
-    aspectRatio: '9:16',
-    description: 'Vertical template optimized for Instagram Stories with dynamic text and image placement',
-    thumbnail: '/instagram-story.jpg',
-    dateCreated: '2023-04-15',
-    lastModified: '2023-05-01',
-    category: 'Social Media',
-    industry: 'Health & Fitness',
-    contentType: 'Story',
-    dimensions: '1080x1920',
-    recommendedUsage: 'Brand awareness, product showcases, behind-the-scenes content',
-    usageCount: 245,
-    performance: {
-      views: 12500,
-      engagement: 8.7,
-      conversion: 3.2,
-      score: 85
-    },
-    dynamicFields: [
-      {
-        id: 'df1',
-        name: 'Headline',
-        type: 'text',
-        required: true,
-        description: 'Main headline text (max 40 characters)'
-      },
-      {
-        id: 'df2',
-        name: 'Background Image',
-        type: 'image',
-        required: true,
-        description: 'Full screen background image (1080x1920)'
-      },
-      {
-        id: 'df3',
-        name: 'Call to Action',
-        type: 'text',
-        required: false,
-        description: 'Optional call to action text'
-      }
-    ],
-    isCreatomate: true,
-    creatomateId: 'crt-123456'
-  },
-  {
-    id: 't2',
-    name: 'Facebook Post',
-    platform: 'Facebook',
-    aspectRatio: '1:1',
-    description: 'Square template for Facebook feed posts with text overlay and product image',
-    thumbnail: '/facebook-post.jpg',
-    dateCreated: '2023-04-10',
-    lastModified: '2023-04-28',
-    category: 'Social Media',
-    industry: 'E-commerce',
-    contentType: 'Post',
-    dimensions: '1080x1080',
-    recommendedUsage: 'Product promotions, announcements, engagement posts',
-    usageCount: 189,
-    performance: {
-      views: 8700,
-      engagement: 5.2,
-      conversion: 2.1,
-      score: 72
-    },
-    dynamicFields: [
-      {
-        id: 'df1',
-        name: 'Product Image',
-        type: 'image',
-        required: true,
-        description: 'Main product image (1:1 ratio recommended)'
-      },
-      {
-        id: 'df2',
-        name: 'Headline',
-        type: 'text',
-        required: true,
-        description: 'Main headline text (max 60 characters)'
-      },
-      {
-        id: 'df3',
-        name: 'Description',
-        type: 'text',
-        required: true,
-        description: 'Product description (max 120 characters)'
-      },
-      {
-        id: 'df4',
-        name: 'Price',
-        type: 'text',
-        required: false,
-        description: 'Product price'
-      },
-      {
-        id: 'df5',
-        name: 'Background Color',
-        type: 'color',
-        required: false,
-        description: 'Background color for the post'
-      }
-    ],
-    isCreatomate: true,
-    creatomateId: 'crt-234567'
-  },
-  {
-    id: 't3',
-    name: 'YouTube Thumbnail',
-    platform: 'YouTube',
-    aspectRatio: '16:9',
-    description: 'Thumbnail template for YouTube videos with text overlay and background image',
-    thumbnail: '/youtube-thumbnail.jpg',
-    dateCreated: '2023-04-05',
-    lastModified: '2023-04-20',
-    category: 'Video',
-    industry: 'Education',
-    contentType: 'Thumbnail',
-    dimensions: '1280x720',
-    recommendedUsage: 'Video thumbnails, course previews',
-    usageCount: 156,
-    performance: {
-      views: 9500,
-      engagement: 6.8,
-      conversion: 3.5,
-      score: 80
-    },
-    dynamicFields: [
-      {
-        id: 'df1',
-        name: 'Background Image',
-        type: 'image',
-        required: true,
-        description: 'Background image (16:9 ratio)'
-      },
-      {
-        id: 'df2',
-        name: 'Title Text',
-        type: 'text',
-        required: true,
-        description: 'Main title text (max 50 characters)'
-      },
-      {
-        id: 'df3',
-        name: 'Subtitle',
-        type: 'text',
-        required: false,
-        description: 'Subtitle or additional text'
-      },
-      {
-        id: 'df4',
-        name: 'Logo',
-        type: 'image',
-        required: false,
-        description: 'Channel or brand logo'
-      }
-    ],
-    isCreatomate: true,
-    creatomateId: 'crt-345678'
-  }
-];
+// Combination interface
+interface Combination {
+  id: string;
+  name: string;
+  variationIds: string[];
+  isSelected: boolean;
+  performanceScore?: number;
+}
 
-// Matrix Page Component
 const MatrixPage: React.FC = () => {
   const router = useRouter();
-  const { user } = useAuth();
-  const { activeClient: selectedClient } = useClient();
+  const { activeClient } = useClient();
+  const { showNotification } = useNotification();
+  const { data: templates, isLoading: templatesLoading } = useTemplates();
+  const { data: assets, isLoading: assetsLoading } = useAssets(activeClient?.id);
+  const { data: campaigns } = useCampaigns(activeClient?.id);
+  const { createMatrix, updateMatrix, isLoading: savingMatrix } = useCreateMatrix();
+
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
-  const [fieldAssignments, setFieldAssignments] = useState<Record<string, FieldAssignment>>({});
-  const [loading, setLoading] = useState(false);
+  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
+  const [variations, setVariations] = useState<Variation[]>([
+    { id: 'var-1', name: 'Version A', isActive: true, isDefault: true },
+  ]);
+  const [fieldValues, setFieldValues] = useState<FieldValue[]>([]);
+  const [combinations, setCombinations] = useState<Combination[]>([]);
+  const [activeTab, setActiveTab] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
+  const [assetDialogOpen, setAssetDialogOpen] = useState(false);
+  const [selectedField, setSelectedField] = useState<string | null>(null);
+  const [selectedVariation, setSelectedVariation] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [matrixName, setMatrixName] = useState('');
+  const [matrixDescription, setMatrixDescription] = useState('');
+
+  const isLoading = templatesLoading || assetsLoading;
 
   useEffect(() => {
-    // Initialize field assignments when template is selected
-    if (selectedTemplate) {
-      const initialAssignments: Record<string, FieldAssignment> = {};
-      selectedTemplate.dynamicFields.forEach(field => {
-        initialAssignments[field.id] = {
-          fieldId: field.id,
-          status: 'empty'
-        };
-      });
-      setFieldAssignments(initialAssignments);
+    // Load template from query params if provided
+    const templateId = router.query.templateId as string;
+    if (templateId && templates) {
+      const template = templates.find(t => t.id === templateId);
+      if (template) {
+        setSelectedTemplate(template);
+      }
     }
-  }, [selectedTemplate]);
+  }, [router.query.templateId, templates]);
 
-  const handleTemplateSelect = (template: Template) => {
-    setSelectedTemplate(template);
+  useEffect(() => {
+    // Initialize field values when template is selected
+    if (selectedTemplate && variations.length > 0) {
+      const initialValues: FieldValue[] = [];
+      selectedTemplate.dynamicFields.forEach(field => {
+        variations.forEach(variation => {
+          initialValues.push({
+            fieldId: field.id,
+            variationId: variation.id,
+            value: field.defaultValue,
+          });
+        });
+      });
+      setFieldValues(initialValues);
+    }
+  }, [selectedTemplate, variations]);
+
+  const handleAddVariation = () => {
+    const newVariation: Variation = {
+      id: `var-${Date.now()}`,
+      name: `Version ${String.fromCharCode(65 + variations.length)}`,
+      isActive: true,
+      isDefault: false,
+    };
+    setVariations([...variations, newVariation]);
+    
+    // Add field values for new variation
+    if (selectedTemplate) {
+      const newFieldValues: FieldValue[] = [];
+      selectedTemplate.dynamicFields.forEach(field => {
+        newFieldValues.push({
+          fieldId: field.id,
+          variationId: newVariation.id,
+          value: field.defaultValue,
+        });
+      });
+      setFieldValues([...fieldValues, ...newFieldValues]);
+    }
   };
 
-  const handleFieldUpdate = (fieldId: string, value: string | undefined, assetId?: string) => {
-    setFieldAssignments(prev => ({
-      ...prev,
-      [fieldId]: {
-        ...prev[fieldId],
-        value,
-        assetId,
-        status: value || assetId ? 'completed' : 'empty'
-      }
+  const handleDuplicateVariation = (variationId: string) => {
+    const sourcevVariation = variations.find(v => v.id === variationId);
+    if (!sourcevVariation) return;
+
+    const newVariation: Variation = {
+      id: `var-${Date.now()}`,
+      name: `${sourcevVariation.name} (Copy)`,
+      isActive: true,
+      isDefault: false,
+    };
+    setVariations([...variations, newVariation]);
+
+    // Copy field values
+    const sourceValues = fieldValues.filter(fv => fv.variationId === variationId);
+    const newFieldValues = sourceValues.map(sv => ({
+      ...sv,
+      variationId: newVariation.id,
     }));
+    setFieldValues([...fieldValues, ...newFieldValues]);
+
+    showNotification('Variation duplicated successfully', 'success');
+  };
+
+  const handleDeleteVariation = (variationId: string) => {
+    if (variations.length === 1) {
+      showNotification('Cannot delete the last variation', 'error');
+      return;
+    }
+
+    setVariations(variations.filter(v => v.id !== variationId));
+    setFieldValues(fieldValues.filter(fv => fv.variationId !== variationId));
+    showNotification('Variation deleted', 'info');
+  };
+
+  const handleFieldUpdate = (fieldId: string, variationId: string, value?: string, assetId?: string, asset?: Asset) => {
+    setFieldValues(prev => {
+      const existing = prev.find(fv => fv.fieldId === fieldId && fv.variationId === variationId);
+      if (existing) {
+        return prev.map(fv =>
+          fv.fieldId === fieldId && fv.variationId === variationId
+            ? { ...fv, value, assetId, asset }
+            : fv
+        );
+      } else {
+        return [...prev, { fieldId, variationId, value, assetId, asset }];
+      }
+    });
+  };
+
+  const handleAssetSelect = (asset: Asset) => {
+    if (selectedField && selectedVariation) {
+      handleFieldUpdate(selectedField, selectedVariation, undefined, asset.id, asset);
+      setAssetDialogOpen(false);
+      setSelectedField(null);
+      setSelectedVariation(null);
+    }
+  };
+
+  const handleGenerateCombinations = () => {
+    // Generate all possible combinations of active variations
+    const activeVariations = variations.filter(v => v.isActive);
+    const newCombinations: Combination[] = [];
+    
+    // For demo, just create a few meaningful combinations
+    if (activeVariations.length >= 1) {
+      newCombinations.push({
+        id: `combo-${Date.now()}-1`,
+        name: 'Primary Combination',
+        variationIds: [activeVariations[0].id],
+        isSelected: true,
+        performanceScore: 85,
+      });
+    }
+    
+    if (activeVariations.length >= 2) {
+      newCombinations.push({
+        id: `combo-${Date.now()}-2`,
+        name: 'A/B Test Combination',
+        variationIds: activeVariations.slice(0, 2).map(v => v.id),
+        isSelected: true,
+        performanceScore: 72,
+      });
+    }
+    
+    if (activeVariations.length >= 3) {
+      newCombinations.push({
+        id: `combo-${Date.now()}-3`,
+        name: 'Full Test Suite',
+        variationIds: activeVariations.map(v => v.id),
+        isSelected: false,
+        performanceScore: 68,
+      });
+    }
+
+    setCombinations(newCombinations);
+    showNotification(`Generated ${newCombinations.length} combinations`, 'success');
   };
 
   const handleSaveMatrix = async () => {
-    setLoading(true);
-    try {
-      // Save matrix logic here
-      console.log('Saving matrix:', { selectedTemplate, fieldAssignments });
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-    } catch (error) {
-      console.error('Error saving matrix:', error);
-    } finally {
-      setLoading(false);
+    if (!selectedTemplate || !matrixName) {
+      showNotification('Please fill in all required fields', 'error');
+      return;
     }
+
+    const matrixData: Partial<Matrix> = {
+      name: matrixName,
+      description: matrixDescription,
+      clientId: activeClient?.id || '',
+      templateId: selectedTemplate.id,
+      status: 'draft',
+      variations,
+      combinations,
+      fieldAssignments: selectedTemplate.dynamicFields.reduce((acc, field) => {
+        acc[field.id] = {
+          status: 'completed',
+          content: variations.map(v => {
+            const fv = fieldValues.find(val => val.fieldId === field.id && val.variationId === v.id);
+            return {
+              id: `content-${field.id}-${v.id}`,
+              variationId: v.id,
+              content: fv?.value || '',
+            };
+          }),
+          assets: variations
+            .map(v => {
+              const fv = fieldValues.find(val => val.fieldId === field.id && val.variationId === v.id);
+              return fv?.assetId ? { variationId: v.id, assetId: fv.assetId } : null;
+            })
+            .filter(Boolean) as any[],
+        };
+        return acc;
+      }, {} as any),
+    };
+
+    const { data, error } = await createMatrix(matrixData);
+    if (error) {
+      showNotification('Failed to save matrix', 'error');
+    } else {
+      showNotification('Matrix saved successfully!', 'success');
+      router.push('/campaigns');
+    }
+  };
+
+  const handleSubmitForApproval = () => {
+    handleSaveMatrix();
+    showNotification('Matrix submitted for approval', 'success');
+    router.push('/sign-off');
   };
 
   const getFieldIcon = (type: string) => {
     switch (type) {
-      case 'text':
-        return <TextFieldsIcon />;
-      case 'image':
-        return <ImageIcon />;
-      case 'video':
-        return <VideoIcon />;
-      case 'audio':
-        return <AudiotrackIcon />;
-      case 'color':
-        return <ColorLensIcon />;
-      case 'link':
-        return <LinkIcon />;
-      default:
-        return <TextFieldsIcon />;
+      case 'text': return <TextFieldsIcon />;
+      case 'image': return <ImageIcon />;
+      case 'video': return <VideoIcon />;
+      case 'audio': return <AudiotrackIcon />;
+      case 'color': return <ColorLensIcon />;
+      case 'link': return <LinkIcon />;
+      default: return <TextFieldsIcon />;
     }
   };
 
-  const filteredTemplates = mockTemplates.filter(template =>
+  const getFieldValue = (fieldId: string, variationId: string) => {
+    return fieldValues.find(fv => fv.fieldId === fieldId && fv.variationId === variationId);
+  };
+
+  const filteredTemplates = templates?.filter(template =>
     template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    template.platform.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    template.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    template.platform.toLowerCase().includes(searchTerm.toLowerCase())
+  ) || [];
+
+  if (!activeClient) {
+    return (
+      <DashboardLayout title="Matrix Editor">
+        <Box textAlign="center" py={8}>
+          <Typography variant="h6" color="text.secondary" gutterBottom>
+            Select a client to create matrices
+          </Typography>
+        </Box>
+      </DashboardLayout>
+    );
+  }
 
   return (
-    <DashboardLayout>
+    <DashboardLayout title="Matrix Editor">
       <Head>
-        <title>Matrix Editor - Airwave</title>
+        <title>Matrix Editor | AIrWAVE</title>
       </Head>
 
-      <Box sx={{ p: 3 }}>
+      <Box>
         <Typography variant="h4" gutterBottom>
-          Matrix Editor
+          Campaign Matrix System
         </Typography>
 
         <Grid container spacing={3}>
           {/* Template Selection */}
-          <Grid item xs={12} md={4}>
-            <Paper sx={{ p: 2, mb: 2 }}>
+          <Grid item xs={12} md={3}>
+            <Paper sx={{ p: 2, height: '100%' }}>
               <TextField
                 fullWidth
                 placeholder="Search templates..."
@@ -394,156 +403,491 @@ const MatrixPage: React.FC = () => {
                 Select Template
               </Typography>
               
-              <Box sx={{ maxHeight: 600, overflowY: 'auto' }}>
-                {filteredTemplates.map((template) => (
-                  <Card
-                    key={template.id}
-                    sx={{
-                      mb: 2,
-                      cursor: 'pointer',
-                      border: selectedTemplate?.id === template.id ? 2 : 0,
-                      borderColor: 'primary.main',
-                    }}
-                    onClick={() => handleTemplateSelect(template)}
-                  >
-                    <CardContent>
-                      <Typography variant="subtitle1">
-                        {template.name}
-                      </Typography>
-                      <Box display="flex" gap={1} mt={1}>
-                        <Chip label={template.platform} size="small" />
-                        <Chip label={template.aspectRatio} size="small" variant="outlined" />
-                      </Box>
-                      <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                        {template.description}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                ))}
-              </Box>
+              {isLoading ? (
+                <LoadingSkeleton variant="list" rows={3} />
+              ) : (
+                <Box sx={{ maxHeight: 600, overflowY: 'auto' }}>
+                  {filteredTemplates.map((template) => (
+                    <Card
+                      key={template.id}
+                      sx={{
+                        mb: 2,
+                        cursor: 'pointer',
+                        border: selectedTemplate?.id === template.id ? 2 : 0,
+                        borderColor: 'primary.main',
+                      }}
+                      onClick={() => setSelectedTemplate(template)}
+                    >
+                      <CardContent>
+                        <Typography variant="subtitle1">
+                          {template.name}
+                        </Typography>
+                        <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
+                          <Chip label={template.platform} size="small" />
+                          <Chip label={template.aspectRatio} size="small" variant="outlined" />
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </Box>
+              )}
             </Paper>
           </Grid>
 
-          {/* Field Assignment */}
-          <Grid item xs={12} md={8}>
+          {/* Matrix Editor */}
+          <Grid item xs={12} md={9}>
             {selectedTemplate ? (
               <Paper sx={{ p: 3 }}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-                  <Box>
-                    <Typography variant="h5">
-                      {selectedTemplate.name}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {selectedTemplate.platform} • {selectedTemplate.dimensions}
-                    </Typography>
-                  </Box>
-                  <Button
-                    variant="contained"
-                    startIcon={<SaveIcon />}
-                    onClick={handleSaveMatrix}
-                    disabled={loading}
-                  >
-                    Save Matrix
-                  </Button>
+                {/* Matrix Header */}
+                <Box sx={{ mb: 3 }}>
+                  <Grid container spacing={2} alignItems="center">
+                    <Grid item xs={12} md={4}>
+                      <TextField
+                        fullWidth
+                        label="Matrix Name"
+                        value={matrixName}
+                        onChange={(e) => setMatrixName(e.target.value)}
+                        required
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <FormControl fullWidth>
+                        <InputLabel>Link to Campaign</InputLabel>
+                        <Select
+                          value={selectedCampaign?.id || ''}
+                          label="Link to Campaign"
+                          onChange={(e) => {
+                            const campaign = campaigns?.find(c => c.id === e.target.value);
+                            setSelectedCampaign(campaign || null);
+                          }}
+                        >
+                          <MenuItem value="">None</MenuItem>
+                          {campaigns?.map(campaign => (
+                            <MenuItem key={campaign.id} value={campaign.id}>
+                              {campaign.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                      <Stack direction="row" spacing={1}>
+                        <Button
+                          variant="contained"
+                          startIcon={<SaveIcon />}
+                          onClick={handleSaveMatrix}
+                          disabled={savingMatrix || !matrixName}
+                        >
+                          Save
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          startIcon={<PreviewIcon />}
+                          onClick={() => setPreviewOpen(true)}
+                        >
+                          Preview
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="success"
+                          startIcon={<SendIcon />}
+                          onClick={handleSubmitForApproval}
+                        >
+                          Submit
+                        </Button>
+                      </Stack>
+                    </Grid>
+                  </Grid>
+                  <TextField
+                    fullWidth
+                    label="Description"
+                    value={matrixDescription}
+                    onChange={(e) => setMatrixDescription(e.target.value)}
+                    multiline
+                    rows={2}
+                    sx={{ mt: 2 }}
+                  />
                 </Box>
 
                 <Divider sx={{ mb: 3 }} />
 
-                <Typography variant="h6" gutterBottom>
-                  Dynamic Fields
-                </Typography>
+                {/* Tabs */}
+                <Tabs value={activeTab} onChange={(e, v) => setActiveTab(v)} sx={{ mb: 3 }}>
+                  <Tab label={`Variations (${variations.length})`} />
+                  <Tab label={`Combinations (${combinations.length})`} />
+                  <Tab label="Performance" />
+                </Tabs>
 
-                <TableContainer>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Field</TableCell>
-                        <TableCell>Type</TableCell>
-                        <TableCell>Required</TableCell>
-                        <TableCell>Value/Asset</TableCell>
-                        <TableCell>Status</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {selectedTemplate.dynamicFields.map((field) => (
-                        <TableRow key={field.id}>
-                          <TableCell>
-                            <Box display="flex" alignItems="center" gap={1}>
-                              {getFieldIcon(field.type)}
-                              <Box>
-                                <Typography variant="body1">
-                                  {field.name}
+                {/* Variations Tab */}
+                {activeTab === 0 && (
+                  <Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                      <Typography variant="h6">Variations</Typography>
+                      <Button
+                        startIcon={<AddIcon />}
+                        onClick={handleAddVariation}
+                        variant="outlined"
+                      >
+                        Add Variation
+                      </Button>
+                    </Box>
+
+                    <TableContainer>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Field</TableCell>
+                            {variations.map(variation => (
+                              <TableCell key={variation.id} align="center">
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                  <TextField
+                                    size="small"
+                                    value={variation.name}
+                                    onChange={(e) => {
+                                      setVariations(variations.map(v =>
+                                        v.id === variation.id ? { ...v, name: e.target.value } : v
+                                      ));
+                                    }}
+                                  />
+                                  <IconButton
+                                    size="small"
+                                    onClick={() => handleDuplicateVariation(variation.id)}
+                                  >
+                                    <DuplicateIcon fontSize="small" />
+                                  </IconButton>
+                                  <IconButton
+                                    size="small"
+                                    onClick={() => handleDeleteVariation(variation.id)}
+                                    disabled={variations.length === 1}
+                                  >
+                                    <DeleteIcon fontSize="small" />
+                                  </IconButton>
+                                </Box>
+                                <FormControlLabel
+                                  control={
+                                    <Switch
+                                      size="small"
+                                      checked={variation.isActive}
+                                      onChange={(e) => {
+                                        setVariations(variations.map(v =>
+                                          v.id === variation.id ? { ...v, isActive: e.target.checked } : v
+                                        ));
+                                      }}
+                                    />
+                                  }
+                                  label="Active"
+                                />
+                              </TableCell>
+                            ))}
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {selectedTemplate.dynamicFields.map((field) => (
+                            <TableRow key={field.id}>
+                              <TableCell>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                  {getFieldIcon(field.type)}
+                                  <Box>
+                                    <Typography variant="body2">
+                                      {field.name}
+                                      {field.required && <Chip label="Required" size="small" sx={{ ml: 1 }} />}
+                                    </Typography>
+                                    <Typography variant="caption" color="text.secondary">
+                                      {field.description}
+                                    </Typography>
+                                  </Box>
+                                </Box>
+                              </TableCell>
+                              {variations.map(variation => {
+                                const fieldValue = getFieldValue(field.id, variation.id);
+                                return (
+                                  <TableCell key={variation.id} align="center">
+                                    {field.type === 'text' ? (
+                                      <TextField
+                                        size="small"
+                                        fullWidth
+                                        multiline={field.constraints?.maxLength && field.constraints.maxLength > 50}
+                                        rows={field.constraints?.maxLength && field.constraints.maxLength > 50 ? 2 : 1}
+                                        value={fieldValue?.value || ''}
+                                        onChange={(e) => handleFieldUpdate(field.id, variation.id, e.target.value)}
+                                        placeholder={field.defaultValue || 'Enter text...'}
+                                      />
+                                    ) : field.type === 'color' ? (
+                                      <TextField
+                                        size="small"
+                                        type="color"
+                                        value={fieldValue?.value || '#000000'}
+                                        onChange={(e) => handleFieldUpdate(field.id, variation.id, e.target.value)}
+                                      />
+                                    ) : fieldValue?.asset ? (
+                                      <Box>
+                                        {field.type === 'image' && (
+                                          <img
+                                            src={fieldValue.asset.url}
+                                            alt={fieldValue.asset.name}
+                                            style={{ width: 100, height: 60, objectFit: 'cover' }}
+                                          />
+                                        )}
+                                        <Typography variant="caption" display="block">
+                                          {fieldValue.asset.name}
+                                        </Typography>
+                                        <Button
+                                          size="small"
+                                          onClick={() => {
+                                            setSelectedField(field.id);
+                                            setSelectedVariation(variation.id);
+                                            setAssetDialogOpen(true);
+                                          }}
+                                        >
+                                          Change
+                                        </Button>
+                                      </Box>
+                                    ) : (
+                                      <Button
+                                        size="small"
+                                        startIcon={<AddIcon />}
+                                        onClick={() => {
+                                          setSelectedField(field.id);
+                                          setSelectedVariation(variation.id);
+                                          setAssetDialogOpen(true);
+                                        }}
+                                      >
+                                        Select {field.type}
+                                      </Button>
+                                    )}
+                                  </TableCell>
+                                );
+                              })}
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </Box>
+                )}
+
+                {/* Combinations Tab */}
+                {activeTab === 1 && (
+                  <Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                      <Typography variant="h6">Combinations</Typography>
+                      <Button
+                        startIcon={<MagicIcon />}
+                        onClick={handleGenerateCombinations}
+                        variant="contained"
+                        color="secondary"
+                      >
+                        Generate Combinations
+                      </Button>
+                    </Box>
+
+                    {combinations.length === 0 ? (
+                      <Alert severity="info">
+                        No combinations generated yet. Click "Generate Combinations" to create optimized variation sets.
+                      </Alert>
+                    ) : (
+                      <Grid container spacing={2}>
+                        {combinations.map(combo => (
+                          <Grid item xs={12} md={6} key={combo.id}>
+                            <Card sx={{ position: 'relative' }}>
+                              <CardContent>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                                  <Typography variant="h6">{combo.name}</Typography>
+                                  <FormControlLabel
+                                    control={
+                                      <Checkbox
+                                        checked={combo.isSelected}
+                                        onChange={(e) => {
+                                          setCombinations(combinations.map(c =>
+                                            c.id === combo.id ? { ...c, isSelected: e.target.checked } : c
+                                          ));
+                                        }}
+                                      />
+                                    }
+                                    label="Active"
+                                  />
+                                </Box>
+                                <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+                                  {combo.variationIds.map(varId => {
+                                    const variation = variations.find(v => v.id === varId);
+                                    return variation ? (
+                                      <Chip key={varId} label={variation.name} size="small" />
+                                    ) : null;
+                                  })}
+                                </Stack>
+                                {combo.performanceScore && (
+                                  <Box>
+                                    <Typography variant="body2" color="text.secondary">
+                                      Performance Score
+                                    </Typography>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                      <Slider
+                                        value={combo.performanceScore}
+                                        disabled
+                                        sx={{ flex: 1 }}
+                                      />
+                                      <Typography variant="body2">
+                                        {combo.performanceScore}%
+                                      </Typography>
+                                    </Box>
+                                  </Box>
+                                )}
+                              </CardContent>
+                            </Card>
+                          </Grid>
+                        ))}
+                      </Grid>
+                    )}
+                  </Box>
+                )}
+
+                {/* Performance Tab */}
+                {activeTab === 2 && (
+                  <Box>
+                    <Typography variant="h6" gutterBottom>
+                      Performance Predictions
+                    </Typography>
+                    <Alert severity="info" sx={{ mb: 2 }}>
+                      Performance predictions will be available after the matrix is executed and receives initial engagement data.
+                    </Alert>
+                    <Grid container spacing={2}>
+                      {variations.map(variation => (
+                        <Grid item xs={12} md={4} key={variation.id}>
+                          <Card>
+                            <CardContent>
+                              <Typography variant="h6" gutterBottom>
+                                {variation.name}
+                              </Typography>
+                              <Box sx={{ mt: 2 }}>
+                                <Typography variant="body2" color="text.secondary">
+                                  Predicted Engagement
                                 </Typography>
-                                <Typography variant="caption" color="text.secondary">
-                                  {field.description}
+                                <Slider value={75} disabled />
+                                <Typography variant="body2" color="text.secondary">
+                                  Predicted Conversion
                                 </Typography>
+                                <Slider value={60} disabled />
                               </Box>
-                            </Box>
-                          </TableCell>
-                          <TableCell>
-                            <Chip label={field.type} size="small" />
-                          </TableCell>
-                          <TableCell>
-                            {field.required ? (
-                              <Chip label="Required" size="small" color="error" />
-                            ) : (
-                              <Chip label="Optional" size="small" variant="outlined" />
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            {field.type === 'text' ? (
-                              <TextField
-                                size="small"
-                                fullWidth
-                                value={fieldAssignments[field.id]?.value || ''}
-                                onChange={(e) => handleFieldUpdate(field.id, e.target.value)}
-                                placeholder="Enter text..."
-                              />
-                            ) : field.type === 'color' ? (
-                              <TextField
-                                size="small"
-                                type="color"
-                                value={fieldAssignments[field.id]?.value || '#000000'}
-                                onChange={(e) => handleFieldUpdate(field.id, e.target.value)}
-                              />
-                            ) : (
-                              <Button
-                                size="small"
-                                startIcon={<AddIcon />}
-                                onClick={() => {/* Open asset picker */}}
-                              >
-                                Select {field.type}
-                              </Button>
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            <Chip
-                              label={fieldAssignments[field.id]?.status || 'empty'}
-                              size="small"
-                              color={
-                                fieldAssignments[field.id]?.status === 'completed'
-                                  ? 'success'
-                                  : fieldAssignments[field.id]?.status === 'in-progress'
-                                  ? 'warning'
-                                  : 'default'
-                              }
-                            />
-                          </TableCell>
-                        </TableRow>
+                            </CardContent>
+                          </Card>
+                        </Grid>
                       ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
+                    </Grid>
+                  </Box>
+                )}
               </Paper>
             ) : (
-              <Paper sx={{ p: 3, textAlign: 'center' }}>
-                <Typography variant="h6" color="text.secondary">
+              <Paper sx={{ p: 4, textAlign: 'center' }}>
+                <Typography variant="h6" color="text.secondary" gutterBottom>
                   Select a template to begin creating your matrix
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Choose from the templates on the left to start building your campaign variations
                 </Typography>
               </Paper>
             )}
           </Grid>
         </Grid>
+
+        {/* Asset Selection Dialog */}
+        <Dialog
+          open={assetDialogOpen}
+          onClose={() => setAssetDialogOpen(false)}
+          maxWidth="md"
+          fullWidth
+        >
+          <DialogTitle>Select Asset</DialogTitle>
+          <DialogContent>
+            <Box sx={{ pt: 2 }}>
+              <TextField
+                fullWidth
+                placeholder="Search assets..."
+                sx={{ mb: 2 }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <List>
+                {assets?.filter(asset => {
+                  const field = selectedField ? selectedTemplate?.dynamicFields.find(f => f.id === selectedField) : null;
+                  return !field || asset.type === field.type;
+                }).map(asset => (
+                  <ListItem
+                    key={asset.id}
+                    button
+                    onClick={() => handleAssetSelect(asset)}
+                  >
+                    <ListItemAvatar>
+                      {asset.type === 'image' && asset.thumbnail ? (
+                        <Avatar src={asset.thumbnail} variant="rounded" />
+                      ) : (
+                        <Avatar variant="rounded">
+                          {getFieldIcon(asset.type)}
+                        </Avatar>
+                      )}
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={asset.name}
+                      secondary={asset.tags?.join(', ')}
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setAssetDialogOpen(false)}>Cancel</Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Preview Dialog */}
+        <Dialog
+          open={previewOpen}
+          onClose={() => setPreviewOpen(false)}
+          maxWidth="lg"
+          fullWidth
+        >
+          <DialogTitle>Matrix Preview</DialogTitle>
+          <DialogContent>
+            <Alert severity="info" sx={{ mb: 2 }}>
+              Preview functionality will display rendered variations once integrated with Creatomate
+            </Alert>
+            <Grid container spacing={2}>
+              {variations.filter(v => v.isActive).map(variation => (
+                <Grid item xs={12} md={4} key={variation.id}>
+                  <Card>
+                    <Box
+                      sx={{
+                        height: 300,
+                        bgcolor: 'grey.200',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Typography color="text.secondary">
+                        {variation.name} Preview
+                      </Typography>
+                    </Box>
+                    <CardContent>
+                      <Typography variant="h6">{variation.name}</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {selectedTemplate?.name} - {selectedTemplate?.platform}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setPreviewOpen(false)}>Close</Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </DashboardLayout>
   );
