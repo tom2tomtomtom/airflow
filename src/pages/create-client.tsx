@@ -17,22 +17,36 @@ import {
   Email as EmailIcon,
   ColorLens as ColorIcon,
   Description as DescriptionIcon,
+  Person as PersonIcon,
+  Phone as PhoneIcon,
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
+import { useNotification } from '@/contexts/NotificationContext';
+import { isDemoMode } from '@/lib/demo-data';
+import { supabase } from '@/lib/supabase';
 
 export default function CreateClient() {
   const router = useRouter();
+  const { showNotification } = useNotification();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
-    company: '',
     industry: '',
+    description: '',
     website: '',
-    primary_color: '#1976d2',
-    secondary_color: '#dc004e',
-    brand_guidelines: '',
+    primaryColor: '#1976d2',
+    secondaryColor: '#dc004e',
+    logo: '',
+    // Contact
+    contactName: '',
+    contactEmail: '',
+    contactRole: '',
+    contactPhone: '',
+    // Brand Guidelines
+    voiceTone: '',
+    targetAudience: '',
+    keyMessages: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -41,23 +55,57 @@ export default function CreateClient() {
     setError('');
 
     try {
-      // TODO: Implement actual client creation API call
-      console.log('Creating client:', formData);
-      
-      // For demo mode, just show success and redirect
-      if (process.env.NEXT_PUBLIC_DEMO_MODE === 'true') {
+      const clientData = {
+        name: formData.name,
+        industry: formData.industry,
+        description: formData.description,
+        website: formData.website,
+        primaryColor: formData.primaryColor,
+        secondaryColor: formData.secondaryColor,
+        logo: formData.logo,
+        socialMedia: {},
+        contacts: formData.contactName ? [{
+          id: `contact-${Date.now()}`,
+          name: formData.contactName,
+          email: formData.contactEmail,
+          role: formData.contactRole,
+          phone: formData.contactPhone,
+          isActive: true,
+        }] : [],
+        brandGuidelines: {
+          voiceTone: formData.voiceTone,
+          targetAudience: formData.targetAudience,
+          keyMessages: formData.keyMessages.split(',').map(m => m.trim()).filter(Boolean),
+        },
+        tenantId: 'tenant-1',
+        isActive: true,
+      };
+
+      if (isDemoMode()) {
+        // In demo mode, just show success and redirect
+        showNotification('Client created successfully! (Demo Mode)', 'success');
         setTimeout(() => {
-          router.push('/dashboard');
+          router.push('/clients');
         }, 1000);
         return;
       }
 
-      // When implemented, this will call the API
-      // const newClient = await clientAPI.create(formData);
-      // router.push(`/dashboard?client=${newClient.id}`);
+      // Create client in Supabase
+      const { data, error: supabaseError } = await supabase
+        .from('clients')
+        .insert([clientData])
+        .select()
+        .single();
+
+      if (supabaseError) throw supabaseError;
+
+      showNotification('Client created successfully!', 'success');
+      router.push(`/clients/${data.id}`);
       
     } catch (err: any) {
+      console.error('Error creating client:', err);
       setError(err.message || 'Failed to create client. Please try again.');
+      showNotification('Failed to create client', 'error');
     } finally {
       setLoading(false);
     }
@@ -82,14 +130,14 @@ export default function CreateClient() {
             Create New Client
           </Typography>
           
-          {process.env.NEXT_PUBLIC_DEMO_MODE === 'true' && (
+          {isDemoMode() && (
             <Alert severity="info" sx={{ mb: 3 }}>
               You're in demo mode. Client data won't be permanently saved.
             </Alert>
           )}
           
           {error && (
-            <Alert severity="error" sx={{ mb: 3 }}>
+            <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError('')}>
               {error}
             </Alert>
           )}
@@ -124,45 +172,29 @@ export default function CreateClient() {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Contact Email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <EmailIcon />
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </Grid>
-              
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Company"
-                  name="company"
-                  value={formData.company}
-                  onChange={handleChange}
-                  required
-                />
-              </Grid>
-              
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
                   label="Industry"
                   name="industry"
                   value={formData.industry}
                   onChange={handleChange}
+                  required
                   placeholder="e.g., Technology, Healthcare, Retail"
                 />
               </Grid>
               
               <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={2}
+                  label="Description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  placeholder="Brief description of the client and their business"
+                />
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
                   label="Website"
@@ -171,6 +203,17 @@ export default function CreateClient() {
                   value={formData.website}
                   onChange={handleChange}
                   placeholder="https://example.com"
+                />
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Logo URL"
+                  name="logo"
+                  value={formData.logo}
+                  onChange={handleChange}
+                  placeholder="https://example.com/logo.png"
                 />
               </Grid>
 
@@ -185,9 +228,9 @@ export default function CreateClient() {
                 <TextField
                   fullWidth
                   label="Primary Color"
-                  name="primary_color"
+                  name="primaryColor"
                   type="color"
-                  value={formData.primary_color}
+                  value={formData.primaryColor}
                   onChange={handleChange}
                   InputProps={{
                     startAdornment: (
@@ -203,14 +246,84 @@ export default function CreateClient() {
                 <TextField
                   fullWidth
                   label="Secondary Color"
-                  name="secondary_color"
+                  name="secondaryColor"
                   type="color"
-                  value={formData.secondary_color}
+                  value={formData.secondaryColor}
                   onChange={handleChange}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
                         <ColorIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+
+              {/* Primary Contact */}
+              <Grid item xs={12}>
+                <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
+                  Primary Contact (Optional)
+                </Typography>
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Contact Name"
+                  name="contactName"
+                  value={formData.contactName}
+                  onChange={handleChange}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <PersonIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Contact Role"
+                  name="contactRole"
+                  value={formData.contactRole}
+                  onChange={handleChange}
+                  placeholder="e.g., Marketing Director"
+                />
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Contact Email"
+                  name="contactEmail"
+                  type="email"
+                  value={formData.contactEmail}
+                  onChange={handleChange}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <EmailIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Contact Phone"
+                  name="contactPhone"
+                  value={formData.contactPhone}
+                  onChange={handleChange}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <PhoneIcon />
                       </InputAdornment>
                     ),
                   }}
@@ -228,19 +341,37 @@ export default function CreateClient() {
                 <TextField
                   fullWidth
                   multiline
-                  rows={4}
-                  label="Brand Guidelines & Notes"
-                  name="brand_guidelines"
-                  value={formData.brand_guidelines}
+                  rows={2}
+                  label="Voice & Tone"
+                  name="voiceTone"
+                  value={formData.voiceTone}
                   onChange={handleChange}
-                  placeholder="Enter any specific brand guidelines, tone of voice, key messages, or other important notes..."
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <DescriptionIcon />
-                      </InputAdornment>
-                    ),
-                  }}
+                  placeholder="e.g., Professional, friendly, innovative"
+                />
+              </Grid>
+              
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={2}
+                  label="Target Audience"
+                  name="targetAudience"
+                  value={formData.targetAudience}
+                  onChange={handleChange}
+                  placeholder="Describe your target audience demographics and characteristics"
+                />
+              </Grid>
+              
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Key Messages"
+                  name="keyMessages"
+                  value={formData.keyMessages}
+                  onChange={handleChange}
+                  placeholder="Enter key messages separated by commas"
+                  helperText="Separate multiple messages with commas"
                 />
               </Grid>
 
@@ -249,7 +380,7 @@ export default function CreateClient() {
                 <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 2 }}>
                   <Button
                     variant="outlined"
-                    onClick={() => router.push('/dashboard')}
+                    onClick={() => router.push('/clients')}
                     disabled={loading}
                   >
                     Cancel
@@ -257,7 +388,7 @@ export default function CreateClient() {
                   <Button
                     type="submit"
                     variant="contained"
-                    disabled={loading || !formData.name || !formData.email || !formData.company}
+                    disabled={loading || !formData.name || !formData.industry}
                   >
                     {loading ? 'Creating...' : 'Create Client'}
                   </Button>
@@ -266,16 +397,6 @@ export default function CreateClient() {
             </Grid>
           </form>
         </Paper>
-
-        {/* Help Text */}
-        <Box sx={{ mt: 3, textAlign: 'center' }}>
-          <Typography variant="body2" color="text.secondary">
-            Need help? Check out our{' '}
-            <Button variant="text" size="small">
-              client setup guide
-            </Button>
-          </Typography>
-        </Box>
       </Box>
     </DashboardLayout>
   );
