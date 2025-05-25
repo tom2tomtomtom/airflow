@@ -2,6 +2,7 @@
 // This service handles video generation using the Creatomate API
 
 import axios from 'axios';
+import React from 'react';
 
 export interface CreatomateTemplate {
   id: string;

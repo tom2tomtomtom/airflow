@@ -398,7 +398,7 @@ export const useFileUpload = () => {
       const { data, error } = await supabase.storage
         .from('assets')
         .upload(filePath, file, {
-          onUploadProgress: (progress) => {
+          onUploadProgress: (progress: { loaded: number; total: number }) => {
             const percentComplete = (progress.loaded / progress.total) * 100;
             setUploadProgress(Math.round(percentComplete));
           },

@@ -140,7 +140,7 @@ export default function EnhancedAssetsPage() {
 
           {!isLoading && !error && (
             <Grid container spacing={3}>
-              {assets?.map((asset) => (
+              {assets?.map((asset: any) => (
                 <Grid item xs={12} sm={6} md={4} lg={3} key={asset.id}>
                   <Box 
                     sx={{ 
@@ -216,7 +216,7 @@ export default function EnhancedAssetsPage() {
           )}
           
           <Grid container spacing={3} sx={{ mt: 3 }}>
-            {assets?.filter((asset) => asset.tags?.includes('ai-generated')).map((asset) => (
+            {assets?.filter((asset: any) => asset.tags?.includes('ai-generated')).map((asset: any) => (
               <Grid item xs={12} sm={6} md={4} lg={3} key={asset.id}>
                 <Box 
                   component="img" 
@@ -239,7 +239,7 @@ export default function EnhancedAssetsPage() {
 
         <TabPanel value={tabValue} index={2}>
           <Grid container spacing={3}>
-            {assets?.filter((asset) => asset.tags?.includes('uploaded')).map((asset) => (
+            {assets?.filter((asset: any) => asset.tags?.includes('uploaded')).map((asset: any) => (
               <Grid item xs={12} sm={6} md={4} lg={3} key={asset.id}>
                 <Box 
                   sx={{ 
@@ -270,7 +270,7 @@ export default function EnhancedAssetsPage() {
                 </Typography>
               </Grid>
             ))}
-            {(!assets || assets.filter(a => a.tags?.includes('uploaded')).length === 0) && (
+            {(!assets || assets.filter((a: any) => a.tags?.includes('uploaded')).length === 0) && (
               <Grid item xs={12}>
                 <Box textAlign="center" py={5}>
                   <Typography variant="h6" color="text.secondary" gutterBottom>

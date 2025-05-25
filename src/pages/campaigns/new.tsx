@@ -211,7 +211,7 @@ export default function NewCampaign() {
                           helperText={errors.client}
                         >
                           <option value="">Select a client</option>
-                          {clients?.map((client: any) => (
+                          {Array.isArray(clients) && clients.map((client: any) => (
                             <option key={client.id} value={client.id}>
                               {client.name}
                             </option>
@@ -313,15 +313,16 @@ export default function NewCampaign() {
                               label="Start Date"
                               value={formData.startDate}
                               onChange={(newValue) =>
-                                setFormData({ ...formData, startDate: newValue })
+                                setFormData({ ...formData, startDate: newValue as Date | null })
                               }
-                              slotProps={{
-                                textField: {
-                                  fullWidth: true,
-                                  error: !!errors.startDate,
-                                  helperText: errors.startDate,
-                                },
-                              }}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  fullWidth
+                                  error={!!errors.startDate}
+                                  helperText={errors.startDate}
+                                />
+                              )}
                             />
                           </Grid>
                           <Grid item xs={12} sm={6}>
@@ -329,7 +330,7 @@ export default function NewCampaign() {
                               label="End Date"
                               value={formData.endDate}
                               onChange={(newValue) =>
-                                setFormData({ ...formData, endDate: newValue })
+                                setFormData({ ...formData, endDate: newValue as Date | null })
                               }
                               slotProps={{
                                 textField: {

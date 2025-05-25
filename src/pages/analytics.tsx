@@ -256,7 +256,7 @@ const AnalyticsPage: React.FC = () => {
         <Grid container spacing={3}>
           {[1, 2, 3, 4].map(i => (
             <Grid item xs={12} sm={6} md={3} key={i}>
-              <LoadingSkeleton variant="card" height={140} />
+              <LoadingSkeleton variant="card" />
             </Grid>
           ))}
         </Grid>
@@ -307,7 +307,7 @@ const AnalyticsPage: React.FC = () => {
                   onChange={(e) => setSelectedCampaign(e.target.value)}
                 >
                   <MenuItem value="all">All Campaigns</MenuItem>
-                  {campaigns?.map(campaign => (
+                  {campaigns?.map((campaign: any) => (
                     <MenuItem key={campaign.id} value={campaign.id}>
                       {campaign.name}
                     </MenuItem>
@@ -679,7 +679,7 @@ const AnalyticsPage: React.FC = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {campaigns?.slice(0, 5).map((campaign) => {
+                      {campaigns?.slice(0, 5).map((campaign: any) => {
                         const spent = Math.floor(Math.random() * 5000) + 1000;
                         const revenue = Math.floor(spent * (Math.random() * 3 + 1));
                         const roi = ((revenue - spent) / spent * 100).toFixed(0);

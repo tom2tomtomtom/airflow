@@ -97,15 +97,15 @@ export default function EditCampaign() {
   const [errors, setErrors] = useState<ErrorsType>({});
 
   useEffect(() => {
-    if (campaign) {
+    if (campaign && !Array.isArray(campaign)) {
       setFormData({
         name: campaign.name || '',
         description: campaign.description || '',
         status: campaign.status || 'draft',
-        platforms: campaign.platforms || [],
-        budget: campaign.budget?.toString() || '',
-        startDate: campaign.startDate ? new Date(campaign.startDate) : null,
-        endDate: campaign.endDate ? new Date(campaign.endDate) : null,
+        platforms: campaign.targeting?.platforms || [],
+        budget: campaign.budget?.total?.toString() || '',
+        startDate: campaign.schedule?.startDate ? new Date(campaign.schedule.startDate) : null,
+        endDate: campaign.schedule?.endDate ? new Date(campaign.schedule.endDate) : null,
       });
     }
   }, [campaign]);
@@ -173,15 +173,15 @@ export default function EditCampaign() {
   };
 
   const handleReset = () => {
-    if (campaign) {
+    if (campaign && !Array.isArray(campaign)) {
       setFormData({
         name: campaign.name || '',
         description: campaign.description || '',
         status: campaign.status || 'draft',
-        platforms: campaign.platforms || [],
-        budget: campaign.budget?.toString() || '',
-        startDate: campaign.startDate ? new Date(campaign.startDate) : null,
-        endDate: campaign.endDate ? new Date(campaign.endDate) : null,
+        platforms: campaign.targeting?.platforms || [],
+        budget: campaign.budget?.total?.toString() || '',
+        startDate: campaign.schedule?.startDate ? new Date(campaign.schedule.startDate) : null,
+        endDate: campaign.schedule?.endDate ? new Date(campaign.schedule.endDate) : null,
       });
       setHasChanges(false);
       setErrors({});
@@ -204,6 +204,17 @@ export default function EditCampaign() {
       <DashboardLayout>
         <Container maxWidth="lg">
           <ErrorMessage message="Failed to load campaign. Please try again." />
+        </Container>
+      </DashboardLayout>
+    );
+  }
+
+  // Type guard to ensure campaign is a single object
+  if (Array.isArray(campaign)) {
+    return (
+      <DashboardLayout>
+        <Container maxWidth="lg">
+          <ErrorMessage message="Invalid campaign data format." />
         </Container>
       </DashboardLayout>
     );
@@ -362,13 +373,14 @@ export default function EditCampaign() {
                         label="Start Date"
                         value={formData.startDate}
                         onChange={(newValue) => handleFieldChange('startDate', newValue)}
-                        slotProps={{
-                          textField: {
-                            fullWidth: true,
-                            error: !!errors.startDate,
-                            helperText: errors.startDate,
-                          },
-                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            fullWidth
+                            error={!!errors.startDate}
+                            helperText={errors.startDate}
+                          />
+                        )}
                       />
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -376,13 +388,14 @@ export default function EditCampaign() {
                         label="End Date"
                         value={formData.endDate}
                         onChange={(newValue) => handleFieldChange('endDate', newValue)}
-                        slotProps={{
-                          textField: {
-                            fullWidth: true,
-                            error: !!errors.endDate,
-                            helperText: errors.endDate,
-                          },
-                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            fullWidth
+                            error={!!errors.endDate}
+                            helperText={errors.endDate}
+                          />
+                        )}
                       />
                     </Grid>
                   </Grid>
@@ -425,7 +438,7 @@ export default function EditCampaign() {
                     Created
                   </Typography>
                   <Typography variant="body1">
-                    {new Date(campaign.createdAt).toLocaleDateString()}
+                    {new Date(campaign.dateCreated).toLocaleDateString()}
                   </Typography>
                 </Box>
                 <Box sx={{ mb: 2 }}>
@@ -433,7 +446,7 @@ export default function EditCampaign() {
                     Last Modified
                   </Typography>
                   <Typography variant="body1">
-                    {new Date(campaign.updatedAt || campaign.createdAt).toLocaleDateString()}
+                    {new Date(campaign.lastModified || campaign.dateCreated).toLocaleDateString()}
                   </Typography>
                 </Box>
                 <Box>

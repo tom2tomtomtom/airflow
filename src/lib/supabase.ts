@@ -184,7 +184,7 @@ export async function getUserClients(userId: string) {
       throw new Error(`Failed to get user clients: ${error.message}`);
     }
     
-    return data?.map(uc => uc.client_id) || [];
+    return data?.map((uc: { client_id: string }) => uc.client_id) || [];
   } catch (error) {
     console.error('Error getting user clients:', error);
     throw error;

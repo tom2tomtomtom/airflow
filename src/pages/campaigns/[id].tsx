@@ -147,8 +147,19 @@ export default function CampaignDetail() {
     );
   }
 
-  const budgetSpent = campaign.budgetSpent || campaign.budget * 0.65;
-  const budgetPercentage = (budgetSpent / campaign.budget) * 100;
+  // Type guard to ensure campaign is a single object
+  if (Array.isArray(campaign)) {
+    return (
+      <DashboardLayout>
+        <Container maxWidth="lg">
+          <Alert severity="error">Invalid campaign data format</Alert>
+        </Container>
+      </DashboardLayout>
+    );
+  }
+
+  const budgetSpent = campaign?.budget?.spent || (campaign?.budget?.total || 0) * 0.65;
+  const budgetPercentage = campaign?.budget?.total ? (budgetSpent / campaign.budget.total) * 100 : 0;
 
   return (
     <DashboardLayout>
@@ -175,7 +186,7 @@ export default function CampaignDetail() {
                   size="small"
                 />
                 <Typography variant="body2" color="text.secondary">
-                  Created {format(new Date(campaign.createdAt), 'MMM d, yyyy')}
+                  Created {format(new Date(campaign.dateCreated), 'MMM d, yyyy')}
                 </Typography>
               </Box>
             </Box>
@@ -230,7 +241,7 @@ export default function CampaignDetail() {
                       Target Platforms
                     </Typography>
                     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                      {campaign.platforms.map((platform) => (
+                      {campaign.targeting?.platforms?.map((platform: string) => (
                         <Chip
                           key={platform}
                           icon={platformIcons[platform.toLowerCase()]}
@@ -315,13 +326,13 @@ export default function CampaignDetail() {
                       Start Date
                     </Typography>
                     <Typography variant="body1" gutterBottom>
-                      {format(new Date(campaign.startDate), 'MMMM d, yyyy')}
+                      {campaign.schedule?.startDate ? format(new Date(campaign.schedule.startDate), 'MMMM d, yyyy') : 'Not set'}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" gutterBottom sx={{ mt: 2 }}>
                       End Date
                     </Typography>
                     <Typography variant="body1">
-                      {format(new Date(campaign.endDate), 'MMMM d, yyyy')}
+                      {campaign.schedule?.endDate ? format(new Date(campaign.schedule.endDate), 'MMMM d, yyyy') : 'Not set'}
                     </Typography>
                   </CardContent>
                 </Card>
@@ -335,7 +346,7 @@ export default function CampaignDetail() {
                       <Typography variant="h6">Budget</Typography>
                     </Box>
                     <Typography variant="h4" gutterBottom>
-                      ${campaign.budget.toLocaleString()}
+                      ${(campaign.budget?.total || 0).toLocaleString()}
                     </Typography>
                     <Box sx={{ mb: 1 }}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>

@@ -86,7 +86,7 @@ export function withAuth(handler: AuthenticatedHandler) {
           email: user.email || '',
           role: (profile.role as UserRole) || UserRole.VIEWER,
           permissions: profile.permissions || [],
-          clientIds: userClients?.map(uc => uc.client_id) || [],
+          clientIds: userClients?.map((uc: { client_id: string }) => uc.client_id) || [],
           tenantId: profile.tenant_id || ''
         };
 

@@ -98,11 +98,11 @@ const CampaignsPage: React.FC = () => {
       case 'archived':
         return <ArchiveIcon sx={{ fontSize: 16 }} />;
       default:
-        return null;
+        return <></>;
     }
   };
 
-  const filteredCampaigns = campaigns?.filter(campaign =>
+  const filteredCampaigns = campaigns?.filter((campaign: any) =>
     campaign.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     campaign.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     campaign.objective?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -202,7 +202,7 @@ const CampaignsPage: React.FC = () => {
 
         {activeClient && (
           <Grid container spacing={3}>
-            {filteredCampaigns.map((campaign) => (
+            {filteredCampaigns.map((campaign: any) => (
               <Grid item xs={12} sm={6} md={4} key={campaign.id}>
                 <Card
                   sx={{
