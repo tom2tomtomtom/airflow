@@ -13,10 +13,12 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    // "noUncheckedIndexedAccess": true,
-    // "exactOptionalPropertyTypes": true,
-    // "noImplicitReturns": true,
-    // "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "plugins": [
       {
         "name": "next"

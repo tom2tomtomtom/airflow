@@ -1,6 +1,6 @@
 import { supabase } from './supabase';
 import { User, AuthTokens } from '@/types/auth';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 // API base configuration
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
@@ -11,15 +11,32 @@ const authAxios = axios.create({
   timeout: 10000,
 });
 
+// Response types
+interface AuthResponse {
+  success: boolean;
+  message?: string;
+  user?: User;
+  token?: string;
+}
+
+interface SignUpResponse extends AuthResponse {
+  emailConfirmationRequired?: boolean;
+}
+
+interface ApiError {
+  message?: string;
+  success?: boolean;
+}
+
 // Sign in with email and password
 export async function signIn(email: string, password: string): Promise<{ user: User; token: string }> {
   try {
-    const response = await authAxios.post('/api/auth/login', { 
+    const response = await authAxios.post<AuthResponse>('/api/auth/login', { 
       email, 
       password 
     });
 
-    if (!response.data.success) {
+    if (!response.data.success || !response.data.user || !response.data.token) {
       throw new Error(response.data.message || 'Login failed');
     }
 
@@ -31,9 +48,10 @@ export async function signIn(email: string, password: string): Promise<{ user: U
     }
 
     return { user, token };
-  } catch (error: any) {
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiError>;
     console.error('Sign in error:', error);
-    throw new Error(error.response?.data?.message || error.message || 'Login failed');
+    throw new Error(axiosError.response?.data?.message || axiosError.message || 'Login failed');
   }
 }
 
@@ -45,14 +63,14 @@ export async function signUp(
   lastName?: string
 ): Promise<{ user: User; token?: string; emailConfirmationRequired?: boolean }> {
   try {
-    const response = await authAxios.post('/api/auth/signup', {
+    const response = await authAxios.post<SignUpResponse>('/api/auth/signup', {
       email,
       password,
       firstName,
       lastName,
     });
 
-    if (!response.data.success) {
+    if (!response.data.success || !response.data.user) {
       throw new Error(response.data.message || 'Sign up failed');
     }
 
@@ -66,11 +84,12 @@ export async function signUp(
     return { 
       user, 
       token,
-      emailConfirmationRequired: !user.emailConfirmed 
+      emailConfirmationRequired: response.data.emailConfirmationRequired 
     };
-  } catch (error: any) {
+  } catch (error) {
+    const axiosError = error as AxiosError<ApiError>;
     console.error('Sign up error:', error);
-    throw new Error(error.response?.data?.message || error.message || 'Sign up failed');
+    throw new Error(axiosError.response?.data?.message || axiosError.message || 'Sign up failed');
   }
 }
 
@@ -129,7 +148,7 @@ export async function refreshToken(): Promise<boolean> {
   try {
     // With httpOnly cookies, token refresh is handled automatically by the browser
     // We can make a request to a protected endpoint to verify if the token is still valid
-    const response = await authAxios.get('/api/auth/me');
+    const response = await authAxios.get<{ success: boolean }>('/api/auth/me');
     return response.data.success;
   } catch (error) {
     console.error('Token refresh check failed:', error);
@@ -147,9 +166,10 @@ export async function requestPasswordReset(email: string): Promise<void> {
     if (error) {
       throw error;
     }
-  } catch (error: any) {
+  } catch (error) {
+    const authError = error as { message?: string };
     console.error('Password reset request error:', error);
-    throw new Error(error.message || 'Failed to send password reset email');
+    throw new Error(authError.message || 'Failed to send password reset email');
   }
 }
 
@@ -163,9 +183,10 @@ export async function resetPassword(token: string, newPassword: string): Promise
     if (error) {
       throw error;
     }
-  } catch (error: any) {
+  } catch (error) {
+    const authError = error as { message?: string };
     console.error('Password reset error:', error);
-    throw new Error(error.message || 'Failed to reset password');
+    throw new Error(authError.message || 'Failed to reset password');
   }
 }
 
@@ -184,7 +205,7 @@ export const createAuthenticatedAxios = () => {
         ? localStorage.getItem('csrf_token') 
         : null;
       
-      if (csrfToken) {
+      if (csrfToken && config.headers) {
         config.headers['X-CSRF-Token'] = csrfToken;
       }
 
@@ -196,7 +217,7 @@ export const createAuthenticatedAxios = () => {
   // Response interceptor to handle auth errors
   instance.interceptors.response.use(
     (response) => response,
-    async (error) => {
+    async (error: AxiosError) => {
       if (error.response?.status === 401) {
         // Token expired or invalid, sign out user
         await signOut();

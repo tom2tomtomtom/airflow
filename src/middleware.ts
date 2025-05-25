@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
+import type { JwtPayload } from '@/types/auth';
 
 // Security: Ensure JWT_SECRET is properly set
 const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
@@ -61,8 +62,14 @@ const roleBasedRoutes: Record<string, string[]> = {
   '/admin/settings': ['admin'],
 };
 
+// Type for rate limit record
+interface RateLimitRecord {
+  count: number;
+  resetTime: number;
+}
+
 // Rate limiting map (simple in-memory implementation)
-const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const rateLimitMap = new Map<string, RateLimitRecord>();
 
 // Simple rate limiter
 function checkRateLimit(identifier: string, limit: number = 10, windowMs: number = 60000): boolean {
@@ -137,7 +144,7 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
   return response;
 }
 
-export async function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
   
   // Create response object
@@ -261,7 +268,7 @@ export async function middleware(request: NextRequest) {
     const secret = new TextEncoder().encode(JWT_SECRET);
     const { payload } = await jwtVerify(token, secret, {
       algorithms: ['HS256']
-    });
+    }) as { payload: JwtPayload };
 
     // Validate payload structure
     if (!payload.sub || !payload.role || !payload.exp) {
@@ -270,7 +277,7 @@ export async function middleware(request: NextRequest) {
 
     // Check role-based access for protected routes
     for (const [route, roles] of Object.entries(roleBasedRoutes)) {
-      if (pathname.startsWith(route) && !roles.includes(payload.role as string)) {
+      if (pathname.startsWith(route) && !roles.includes(payload.role)) {
         // For API routes, return 403
         if (pathname.startsWith('/api')) {
           return NextResponse.json(
@@ -286,9 +293,9 @@ export async function middleware(request: NextRequest) {
     // Add user info to headers for API routes
     if (pathname.startsWith('/api')) {
       const requestHeaders = new Headers(request.headers);
-      requestHeaders.set('x-user-id', payload.sub as string);
-      requestHeaders.set('x-user-role', payload.role as string);
-      requestHeaders.set('x-user-email', payload.email as string || '');
+      requestHeaders.set('x-user-id', payload.sub);
+      requestHeaders.set('x-user-role', payload.role);
+      requestHeaders.set('x-user-email', payload.email || '');
 
       response = NextResponse.next({
         request: {
@@ -320,7 +327,7 @@ export async function middleware(request: NextRequest) {
   }
 }
 
-function redirectToLogin(request: NextRequest) {
+function redirectToLogin(request: NextRequest): NextResponse {
   const url = request.nextUrl.clone();
   url.pathname = '/login';
   
