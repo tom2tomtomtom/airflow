@@ -1,5 +1,30 @@
 import type { Client, Asset, Template, Campaign, Matrix } from '@/types/models';
 
+// Extended Campaign interface for UI compatibility
+export interface UICampaign extends Omit<Campaign, 'budget' | 'schedule' | 'targeting'> {
+  budget: number;
+  budgetSpent?: number;
+  startDate: string;
+  endDate: string;
+  platforms: string[];
+  createdAt: string;
+  updatedAt?: string;
+}
+
+// Helper function to convert Campaign to UICampaign
+export const campaignToUICampaign = (campaign: Campaign): UICampaign => {
+  return {
+    ...campaign,
+    budget: campaign.budget?.total || 0,
+    budgetSpent: campaign.budget?.spent || 0,
+    startDate: campaign.schedule?.startDate || new Date().toISOString(),
+    endDate: campaign.schedule?.endDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+    platforms: campaign.targeting?.platforms || [],
+    createdAt: campaign.dateCreated,
+    updatedAt: campaign.lastModified,
+  };
+};
+
 // Demo Clients
 export const demoClients: Client[] = [
   {
@@ -308,7 +333,7 @@ export const demoCampaigns: Campaign[] = [
       currency: 'USD',
     },
     targeting: {
-      platforms: ['Instagram', 'LinkedIn', 'Facebook'],
+      platforms: ['Facebook', 'Instagram', 'LinkedIn'],
       demographics: {
         ageRanges: ['25-34', '35-44', '45-54'],
         genders: ['all'],
@@ -334,6 +359,17 @@ export const demoCampaigns: Campaign[] = [
     description: 'Content series featuring summer recipes with organic ingredients',
     clientId: 'client-2',
     status: 'draft',
+    schedule: {
+      startDate: '2024-06-01T00:00:00Z',
+      endDate: '2024-08-31T23:59:59Z',
+      timezone: 'America/New_York',
+      frequency: 'weekly',
+    },
+    budget: {
+      total: 25000,
+      spent: 0,
+      currency: 'USD',
+    },
     targeting: {
       platforms: ['Instagram', 'YouTube', 'TikTok'],
       demographics: {
@@ -421,34 +457,35 @@ export const isDemoMode = (): boolean => {
 };
 
 // Demo data getters with simulated async behavior
-export const getDemoClients = async (): Promise<Client[]> => {
-  await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
+export const getDemoClients = (clientId?: string): Client[] => {
+  if (clientId) {
+    const client = demoClients.find(c => c.id === clientId);
+    return client ? [client] : [];
+  }
   return demoClients;
 };
 
-export const getDemoAssets = async (clientId?: string): Promise<Asset[]> => {
-  await new Promise(resolve => setTimeout(resolve, 300));
+export const getDemoAssets = (clientId?: string): Asset[] => {
   if (clientId) {
     return demoAssets.filter(asset => asset.clientId === clientId);
   }
   return demoAssets;
 };
 
-export const getDemoTemplates = async (): Promise<Template[]> => {
-  await new Promise(resolve => setTimeout(resolve, 400));
+export const getDemoTemplates = (): Template[] => {
   return demoTemplates;
 };
 
-export const getDemoCampaigns = async (clientId?: string): Promise<Campaign[]> => {
-  await new Promise(resolve => setTimeout(resolve, 350));
-  if (clientId) {
-    return demoCampaigns.filter(campaign => campaign.clientId === clientId);
-  }
-  return demoCampaigns;
+export const getDemoCampaigns = (clientId?: string): Campaign[] | UICampaign[] => {
+  const campaigns = clientId 
+    ? demoCampaigns.filter(campaign => campaign.clientId === clientId)
+    : demoCampaigns;
+  
+  // Convert to UI format for compatibility
+  return campaigns.map(campaignToUICampaign);
 };
 
-export const getDemoMatrices = async (clientId?: string): Promise<Matrix[]> => {
-  await new Promise(resolve => setTimeout(resolve, 300));
+export const getDemoMatrices = (clientId?: string): Matrix[] => {
   if (clientId) {
     return demoMatrices.filter(matrix => matrix.clientId === clientId);
   }
