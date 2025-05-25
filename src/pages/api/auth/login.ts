@@ -1,14 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
 import jwt from 'jsonwebtoken';
-import { z } from 'zod';
 import { env } from '@/lib/env';
+import { validateRequest, apiSchemas, validateCSRFToken, checkAPIRateLimit } from '@/middleware/validation';
+import { loggers } from '@/lib/logger';
+import { NextRequest } from 'next/server';
 
-// Input validation schema
-const loginSchema = z.object({
-  email: z.string().email('Invalid email format'),
-  password: z.string().min(1, 'Password is required'),
-});
+const logger = loggers.auth.child({ endpoint: 'login' });
 
 type ResponseData = {
   success: boolean;
@@ -21,6 +19,28 @@ type ResponseData = {
   };
   token?: string;
 };
+
+// Convert NextApiRequest to NextRequest for validation
+function createNextRequest(req: NextApiRequest): NextRequest {
+  const url = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
+  const headers = new Headers();
+  
+  Object.entries(req.headers).forEach(([key, value]) => {
+    if (value) {
+      if (Array.isArray(value)) {
+        value.forEach(v => headers.append(key, v));
+      } else {
+        headers.set(key, value);
+      }
+    }
+  });
+
+  return new NextRequest(url, {
+    method: req.method,
+    headers,
+    body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined,
+  });
+}
 
 export default async function handler(
   req: NextApiRequest,
@@ -35,17 +55,96 @@ export default async function handler(
   }
 
   try {
-    // Validate input
-    const validationResult = loginSchema.safeParse(req.body);
+    // Rate limiting check
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+    const rateLimitKey = `login:${ip}`;
     
-    if (!validationResult.success) {
-      return res.status(400).json({
+    if (!checkAPIRateLimit(rateLimitKey, 5, 60000)) { // 5 attempts per minute
+      logger.warn('Login rate limit exceeded', { ip });
+      return res.status(429).json({
         success: false,
-        message: 'Invalid input: ' + validationResult.error.errors.map(e => e.message).join(', ')
+        message: 'Too many login attempts. Please try again later.'
       });
     }
 
-    const { email, password } = validationResult.data;
+    // CSRF validation for production
+    if (env.NODE_ENV === 'production' && !env.NEXT_PUBLIC_DEMO_MODE) {
+      const nextReq = createNextRequest(req);
+      const csrfValid = await validateCSRFToken(nextReq);
+      
+      if (!csrfValid) {
+        logger.warn('CSRF validation failed', { ip });
+        return res.status(403).json({
+          success: false,
+          message: 'Invalid security token'
+        });
+      }
+    }
+
+    // Validate input using our comprehensive validation
+    const nextReq = createNextRequest(req);
+    const { data: validatedData, error: validationError } = await validateRequest(
+      nextReq,
+      apiSchemas.login
+    );
+
+    if (validationError) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation error',
+        ...JSON.parse(await validationError.text()),
+      });
+    }
+
+    const { email, password } = validatedData;
+
+    // Log login attempt (without password)
+    logger.info('Login attempt', { email, ip });
+
+    // Add delay to prevent timing attacks
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    // Check if we're in demo mode
+    if (env.NEXT_PUBLIC_DEMO_MODE === 'true') {
+      logger.info('Demo mode login', { email });
+      
+      // In demo mode, accept any credentials
+      const demoUser = {
+        id: 'demo-user-id',
+        email: email,
+        name: email.split('@')[0],
+        role: 'user',
+      };
+
+      // Create demo token
+      const token = jwt.sign(
+        {
+          sub: demoUser.id,
+          email: demoUser.email,
+          role: demoUser.role,
+          demo: true,
+          iat: Math.floor(Date.now() / 1000),
+          exp: Math.floor(Date.now() / 1000) + 86400, // 24 hours
+        },
+        env.JWT_SECRET || 'demo-secret',
+        { algorithm: 'HS256' }
+      );
+
+      // Set cookie
+      res.setHeader('Set-Cookie', [
+        `auth_token=${token}`,
+        'Path=/',
+        'HttpOnly',
+        'SameSite=Lax',
+        'Max-Age=86400',
+      ].join('; '));
+
+      return res.status(200).json({
+        success: true,
+        user: demoUser,
+        token,
+      });
+    }
 
     // Authenticate with Supabase
     const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
@@ -54,24 +153,33 @@ export default async function handler(
     });
 
     if (authError || !authData.user) {
-      console.error('Supabase authentication error:', authError);
+      logger.warn('Authentication failed', { email, error: authError?.message });
+      
+      // Generic error message to prevent user enumeration
       return res.status(401).json({
         success: false,
-        message: 'Invalid email or password'
+        message: 'Invalid credentials'
       });
     }
 
     // Get user profile from our profiles table
-    let profile;
-    const { data: profileData, error: profileError } = await supabase
+    const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', authData.user.id)
       .single();
 
-    if (profileError) {
-      console.error('Profile fetch error:', profileError);
-      // If profile doesn't exist, create one
+    if (profileError && profileError.code !== 'PGRST116') { // PGRST116 = not found
+      logger.error('Profile fetch error', { error: profileError, userId: authData.user.id });
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to retrieve user profile'
+      });
+    }
+
+    // Create profile if it doesn't exist
+    let userProfile = profile;
+    if (!profile) {
       const { data: newProfile, error: createError } = await supabase
         .from('profiles')
         .insert({
@@ -86,27 +194,25 @@ export default async function handler(
         .single();
 
       if (createError) {
-        console.error('Profile creation error:', createError);
+        logger.error('Profile creation error', { error: createError, userId: authData.user.id });
         return res.status(500).json({
           success: false,
           message: 'Failed to create user profile'
         });
       }
 
-      profile = newProfile;
-    } else {
-      profile = profileData;
+      userProfile = newProfile;
     }
 
-    // Create JWT token with proper expiry from env
+    // Create JWT token with proper expiry
     const tokenPayload = {
       sub: authData.user.id,
       email: authData.user.email,
-      role: profile?.role || 'user',
+      role: userProfile?.role || 'user',
       iat: Math.floor(Date.now() / 1000),
     };
 
-    // Parse expiry duration (e.g., "7d" -> 7 days)
+    // Parse expiry duration
     const expiryMatch = env.JWT_EXPIRY.match(/(\d+)([dhms])/);
     let expirySeconds = 86400; // Default 24 hours
     
@@ -118,12 +224,7 @@ export default async function handler(
         h: 3600,
         d: 86400
       };
-      
-      if (num && unit) {
-        const parsedNum = parseInt(num, 10);
-        const multiplier = multipliers[unit] || 86400;
-        expirySeconds = parsedNum * multiplier;
-      }
+      expirySeconds = parseInt(num, 10) * (multipliers[unit] || 86400);
     }
 
     const token = jwt.sign(
@@ -144,20 +245,23 @@ export default async function handler(
 
     res.setHeader('Set-Cookie', cookieOptions);
 
+    // Log successful login
+    logger.info('Login successful', { userId: authData.user.id, email });
+
     // Return success response
     return res.status(200).json({
       success: true,
       user: {
         id: authData.user.id,
         email: authData.user.email!,
-        name: profile?.full_name || profile?.first_name || email.split('@')[0],
-        role: profile?.role || 'user',
+        name: userProfile?.full_name || userProfile?.first_name || email.split('@')[0],
+        role: userProfile?.role || 'user',
       },
-      token, // Also return token for client-side storage if needed
+      token,
     });
 
   } catch (error) {
-    console.error('Login error:', error);
+    logger.error('Login error', error);
     return res.status(500).json({ 
       success: false, 
       message: 'Internal server error' 
