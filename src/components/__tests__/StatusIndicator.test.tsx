@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import StatusIndicator, { StatusType } from '../StatusIndicator';
+import StatusIndicator from '../StatusIndicator';
 
 describe('StatusIndicator', () => {
   it('renders with completed status', () => {
