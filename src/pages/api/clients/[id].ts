@@ -15,7 +15,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
   // Check for demo mode or missing auth
   const authHeader = req.headers.authorization;
-  const _isDemo = !authHeader || authHeader.includes('demo-token') || authHeader.includes('mock_token');
 
   if (req.method === 'GET') {
     // Get a single client

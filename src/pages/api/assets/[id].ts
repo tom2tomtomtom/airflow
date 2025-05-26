@@ -111,7 +111,7 @@ export default function handler(
 
 // GET - Retrieve a specific asset
 function getAsset(
-  req: NextApiRequest,
+  _req: NextApiRequest,
   res: NextApiResponse<ResponseData>,
   assetIndex: number
 ) {
@@ -173,7 +173,7 @@ function updateAsset(
 
 // DELETE - Remove an asset
 function deleteAsset(
-  req: NextApiRequest,
+  _req: NextApiRequest,
   res: NextApiResponse<ResponseData>,
   assetIndex: number
 ) {

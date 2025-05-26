@@ -44,7 +44,7 @@ function createNextRequest(req: NextApiRequest): NextRequest {
     init.body = JSON.stringify(req.body);
   }
   
-  return new NextRequest(url, init);
+  return new NextRequest(url, init as any);
 }
 
 export default async function handler(
