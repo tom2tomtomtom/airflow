@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (!parseResult.success) {
     return res.status(400).json({ success: false, message: 'Invalid input', errors: parseResult.error.errors });
   }
-  const { campaign_id, user_id, export_type } = parseResult.data;
+  const { campaign_id, user_id: _user_id, export_type } = parseResult.data;
 
   try {
     if (export_type === 'bundle') {

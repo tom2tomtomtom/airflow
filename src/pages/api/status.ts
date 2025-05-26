@@ -6,7 +6,7 @@ interface StatusResponse {
 }
 
 export default function handler(
-  req: NextApiRequest,
+  _req: NextApiRequest,
   res: NextApiResponse<StatusResponse>
 ) {
   // Simple status check - always returns OK if the server is running

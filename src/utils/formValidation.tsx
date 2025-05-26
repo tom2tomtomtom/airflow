@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextField, FormHelperText, Box, Typography } from '@mui/material';
+import { FormHelperText, Box, Typography } from '@mui/material';
 import { Error as ErrorIcon } from '@mui/icons-material';
 
 interface ValidationRule {

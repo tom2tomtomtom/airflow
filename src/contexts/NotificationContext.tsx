@@ -49,7 +49,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
           autoHideDuration={notification.duration}
           onClose={() => handleClose(notification.id)}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-          TransitionComponent={Slide}
+          TransitionComponent={Slide as any}
           sx={{ bottom: { xs: 16, sm: 16 + index * 70 } }}
         >
           <Alert 
