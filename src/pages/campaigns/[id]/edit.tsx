@@ -189,7 +189,7 @@ export default function EditCampaign() {
       // In a real app, this would submit to the API
       showNotification('Campaign updated successfully!', 'success');
       router.push(`/campaigns/${id}`);
-    } catch (_error) {
+    } catch {
       showNotification('Failed to update campaign. Please try again.', 'error');
     }
   };
@@ -199,7 +199,7 @@ export default function EditCampaign() {
       // In a real app, this would delete via API
       showNotification('Campaign deleted successfully', 'success');
       router.push('/campaigns');
-    } catch (_error) {
+    } catch {
       showNotification('Failed to delete campaign. Please try again.', 'error');
     }
   };

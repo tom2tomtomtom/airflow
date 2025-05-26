@@ -141,7 +141,7 @@ export default function NewCampaign() {
       // In a real app, this would submit to the API
       showNotification('Campaign created successfully!', 'success');
       router.push('/campaigns');
-    } catch (_error) {
+    } catch {
       showNotification('Failed to create campaign. Please try again.', 'error');
     }
   };

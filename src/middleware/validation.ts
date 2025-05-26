@@ -154,7 +154,7 @@ export async function validateRequest<T>(
         } else {
           input = {};
         }
-      } catch (_e) {
+      } catch {
         return {
           data: {} as T,
           error: NextResponse.json(
