@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { env, isDemo } from './env';
+import { Database } from '@/types/database';
 
 // Create a mock Supabase client for demo mode
 const createMockSupabaseClient = () => {
@@ -38,7 +39,7 @@ const createMockSupabaseClient = () => {
 // Create Supabase client with validated environment variables
 export const supabase = isDemo 
   ? createMockSupabaseClient()
-  : createClient(
+  : createClient<Database>(
       env.NEXT_PUBLIC_SUPABASE_URL || 'https://demo.supabase.co',
       env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'demo-anon-key',
       {
@@ -66,7 +67,7 @@ export const getServiceSupabase = () => {
     return createMockSupabaseClient();
   }
   
-  return createClient(
+  return createClient<Database>(
     env.NEXT_PUBLIC_SUPABASE_URL || 'https://demo.supabase.co',
     env.SUPABASE_SERVICE_ROLE_KEY,
     {
@@ -207,406 +208,32 @@ export async function userHasClientAccess(userId: string, clientId: string): Pro
   }
 }
 
-// Database types (update these based on your actual database schema)
-export interface Database {
-  public: {
-    Tables: {
-      assets: {
-        Row: {
-          id: string;
-          name: string;
-          updated_at: string | null;
-          created_at: string | null;
-          created_by: string | null;
-          client_id: string | null;
-          tags: string[] | null;
-          metadata: Record<string, any> | null;
-          duration_seconds: number | null;
-          height: number | null;
-          width: number | null;
-          size_bytes: number | null;
-          mime_type: string | null;
-          thumbnail_url: string | null;
-          url: string;
-          type: string;
-        };
-        Insert: {
-          id?: string;
-          name: string;
-          updated_at?: string | null;
-          created_at?: string | null;
-          created_by?: string | null;
-          client_id?: string | null;
-          tags?: string[] | null;
-          metadata?: Record<string, any> | null;
-          duration_seconds?: number | null;
-          height?: number | null;
-          width?: number | null;
-          size_bytes?: number | null;
-          mime_type?: string | null;
-          thumbnail_url?: string | null;
-          url: string;
-          type: string;
-        };
-        Update: {
-          id?: string;
-          name?: string;
-          updated_at?: string | null;
-          created_at?: string | null;
-          created_by?: string | null;
-          client_id?: string | null;
-          tags?: string[] | null;
-          metadata?: Record<string, any> | null;
-          duration_seconds?: number | null;
-          height?: number | null;
-          width?: number | null;
-          size_bytes?: number | null;
-          mime_type?: string | null;
-          thumbnail_url?: string | null;
-          url?: string;
-          type?: string;
-        };
-      };
-      clients: {
-        Row: {
-          id: string;
-          name: string;
-          industry: string | null;
-          description: string | null;
-          logo_url: string | null;
-          created_at: string | null;
-          updated_at: string | null;
-        };
-        Insert: {
-          id?: string;
-          name: string;
-          industry?: string | null;
-          description?: string | null;
-          logo_url?: string | null;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-        Update: {
-          id?: string;
-          name?: string;
-          industry?: string | null;
-          description?: string | null;
-          logo_url?: string | null;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-      };
-      copy_assets: {
-        Row: {
-          id: string;
-          metadata: Record<string, any> | null;
-          client_id: string | null;
-          tags: string[] | null;
-          created_by: string | null;
-          created_at: string | null;
-          updated_at: string | null;
-          content: string | null;
-          type: string | null;
-        };
-        Insert: {
-          id?: string;
-          metadata?: Record<string, any> | null;
-          client_id?: string | null;
-          tags?: string[] | null;
-          created_by?: string | null;
-          created_at?: string | null;
-          updated_at?: string | null;
-          content?: string | null;
-          type?: string | null;
-        };
-        Update: {
-          id?: string;
-          metadata?: Record<string, any> | null;
-          client_id?: string | null;
-          tags?: string[] | null;
-          created_by?: string | null;
-          created_at?: string | null;
-          updated_at?: string | null;
-          content?: string | null;
-          type?: string | null;
-        };
-      };
-      copy_texts: {
-        Row: {
-          id: string;
-          type: string;
-          content: string;
-          metadata: Record<string, any> | null;
-          tags: string[] | null;
-          client_id: string | null;
-          created_by: string | null;
-          created_at: string | null;
-          updated_at: string | null;
-        };
-        Insert: {
-          id?: string;
-          type: string;
-          content: string;
-          metadata?: Record<string, any> | null;
-          tags?: string[] | null;
-          client_id?: string | null;
-          created_by?: string | null;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-        Update: {
-          id?: string;
-          type?: string;
-          content?: string;
-          metadata?: Record<string, any> | null;
-          tags?: string[] | null;
-          client_id?: string | null;
-          created_by?: string | null;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-      };
-      executions: {
-        Row: {
-          id: string;
-          name: string;
-          description: string | null;
-          status: string;
-          matrix_id: string | null;
-          output_url: string | null;
-          metadata: Record<string, any> | null;
-          client_id: string | null;
-          created_by: string | null;
-          approved_at: string | null;
-          approved_by: string | null;
-          created_at: string | null;
-          updated_at: string | null;
-        };
-        Insert: {
-          id?: string;
-          name: string;
-          description?: string | null;
-          status: string;
-          matrix_id?: string | null;
-          output_url?: string | null;
-          metadata?: Record<string, any> | null;
-          client_id?: string | null;
-          created_by?: string | null;
-          approved_at?: string | null;
-          approved_by?: string | null;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-        Update: {
-          id?: string;
-          name?: string;
-          description?: string | null;
-          status?: string;
-          matrix_id?: string | null;
-          output_url?: string | null;
-          metadata?: Record<string, any> | null;
-          client_id?: string | null;
-          created_by?: string | null;
-          approved_at?: string | null;
-          approved_by?: string | null;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-      };
-      matrices: {
-        Row: {
-          id: string;
-          name: string;
-          description: string | null;
-          structure: Record<string, any>;
-          template_id: string | null;
-          client_id: string | null;
-          created_by: string | null;
-          created_at: string | null;
-          updated_at: string | null;
-        };
-        Insert: {
-          id?: string;
-          name: string;
-          description?: string | null;
-          structure: Record<string, any>;
-          template_id?: string | null;
-          client_id?: string | null;
-          created_by?: string | null;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-        Update: {
-          id?: string;
-          name?: string;
-          description?: string | null;
-          structure?: Record<string, any>;
-          template_id?: string | null;
-          client_id?: string | null;
-          created_by?: string | null;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-      };
-      profiles: {
-        Row: {
-          id: string;
-          first_name: string | null;
-          last_name: string | null;
-          avatar_url: string | null;
-          role: string;
-          permissions: Record<string, any> | null;
-          preferences: Record<string, any> | null;
-          metadata: Record<string, any> | null;
-          tenant_id: string | null;
-          created_at: string | null;
-          updated_at: string | null;
-        };
-        Insert: {
-          id?: string;
-          first_name?: string | null;
-          last_name?: string | null;
-          avatar_url?: string | null;
-          role: string;
-          permissions?: Record<string, any> | null;
-          preferences?: Record<string, any> | null;
-          metadata?: Record<string, any> | null;
-          tenant_id?: string | null;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-        Update: {
-          id?: string;
-          first_name?: string | null;
-          last_name?: string | null;
-          avatar_url?: string | null;
-          role?: string;
-          permissions?: Record<string, any> | null;
-          preferences?: Record<string, any> | null;
-          metadata?: Record<string, any> | null;
-          tenant_id?: string | null;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-      };
-      strategies: {
-        Row: {
-          id: string;
-          name: string;
-          description: string | null;
-          target_audience: string | null;
-          goals: Record<string, any> | null;
-          key_messages: Record<string, any> | null;
-          created_by: string | null;
-          client_id: string | null;
-          created_at: string | null;
-          updated_at: string | null;
-        };
-        Insert: {
-          id?: string;
-          name: string;
-          description?: string | null;
-          target_audience?: string | null;
-          goals?: Record<string, any> | null;
-          key_messages?: Record<string, any> | null;
-          created_by?: string | null;
-          client_id?: string | null;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-        Update: {
-          id?: string;
-          name?: string;
-          description?: string | null;
-          target_audience?: string | null;
-          goals?: Record<string, any> | null;
-          key_messages?: Record<string, any> | null;
-          created_by?: string | null;
-          client_id?: string | null;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-      };
-      templates: {
-        Row: {
-          id: string;
-          name: string;
-          aspect_ratio: string;
-          platform: string;
-          description: string | null;
-          height: number;
-          width: number;
-          structure: Record<string, any>;
-          thumbnail_url: string | null;
-          created_by: string | null;
-          client_id: string | null;
-          created_at: string | null;
-          updated_at: string | null;
-        };
-        Insert: {
-          id?: string;
-          name: string;
-          aspect_ratio: string;
-          platform: string;
-          description?: string | null;
-          height: number;
-          width: number;
-          structure: Record<string, any>;
-          thumbnail_url?: string | null;
-          created_by?: string | null;
-          client_id?: string | null;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-        Update: {
-          id?: string;
-          name?: string;
-          aspect_ratio?: string;
-          platform?: string;
-          description?: string | null;
-          height?: number;
-          width?: number;
-          structure?: Record<string, any>;
-          thumbnail_url?: string | null;
-          created_by?: string | null;
-          client_id?: string | null;
-          created_at?: string | null;
-          updated_at?: string | null;
-        };
-      };
-      user_clients: {
-        Row: {
-          id: string;
-          user_id: string;
-          client_id: string;
-          created_at: string | null;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          client_id: string;
-          created_at?: string | null;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          client_id?: string;
-          created_at?: string | null;
-        };
-      };
-    };
-    Views: {
-      [_ in never]: never;
-    };
-    Functions: {
-      [_ in never]: never;
-    };
-    Enums: {
-      [_ in never]: never;
-    };
-  };
-}
-
-export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row'];
-export type Inserts<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Insert'];
-export type Updates<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update'];
+// Re-export types from database.ts
+export type { Database } from '@/types/database';
+export type {
+  Analytics,
+  ApprovalComment,
+  ApprovalWorkflow,
+  Approval,
+  Asset,
+  Brief,
+  CampaignAnalytics,
+  Client,
+  ContentVariation,
+  CopyAsset,
+  CopyText,
+  Execution,
+  GeneratedContent,
+  Matrix,
+  Motivation,
+  PlatformIntegration,
+  Profile,
+  SelectedMotivation,
+  Strategy,
+  StrategyMotivation,
+  Template,
+  UserClient,
+  Tables,
+  Inserts,
+  Updates,
+} from '@/types/database';
