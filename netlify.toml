@@ -8,7 +8,7 @@
 [build.environment]
   NODE_VERSION = "18"
   NPM_VERSION = "10"
-  NEXT_PUBLIC_DEMO_MODE = "true"
+  NEXT_PUBLIC_DEMO_MODE = "false"
 
 [[headers]]
   for = "/api/*"
