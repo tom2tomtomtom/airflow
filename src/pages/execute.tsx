@@ -472,6 +472,7 @@ const ExecutePage: React.FC = () => {
                         variant="contained"
                         startIcon={<PublishIcon />}
                         onClick={handleExecuteCampaign}
+                        disabled={!!executingTask}
                       >
                         {scheduleType === 'immediate' ? 'Execute Now' : 'Schedule Execution'}
                       </Button>

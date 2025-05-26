@@ -13,8 +13,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     return;
   }
 
-  // Check for demo mode or missing auth
-  const authHeader = req.headers.authorization;
+  // Demo mode - no auth check required for now
 
   if (req.method === 'GET') {
     // Get a single client

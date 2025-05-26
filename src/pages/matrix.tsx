@@ -213,13 +213,36 @@ const MatrixPage: React.FC = () => {
     setFieldValues(prev => {
       const existing = prev.find(fv => fv.fieldId === fieldId && fv.variationId === variationId);
       if (existing) {
-        return prev.map(fv =>
-          fv.fieldId === fieldId && fv.variationId === variationId
-            ? { ...fv, value: value || '', assetId, asset }
-            : fv
-        );
+        return prev.map(fv => {
+          if (fv.fieldId === fieldId && fv.variationId === variationId) {
+            const updatedValue: FieldValue = { ...fv, value: value || '' };
+            if (assetId !== undefined) {
+              updatedValue.assetId = assetId;
+            } else {
+              delete updatedValue.assetId;
+            }
+            if (asset !== undefined) {
+              updatedValue.asset = asset;
+            } else {
+              delete updatedValue.asset;
+            }
+            return updatedValue;
+          }
+          return fv;
+        });
       } else {
-        return [...prev, { fieldId, variationId, value: value || '', assetId, asset }];
+        const newFieldValue: FieldValue = { 
+          fieldId, 
+          variationId, 
+          value: value || ''
+        };
+        if (assetId !== undefined) {
+          newFieldValue.assetId = assetId;
+        }
+        if (asset !== undefined) {
+          newFieldValue.asset = asset;
+        }
+        return [...prev, newFieldValue];
       }
     });
   };
