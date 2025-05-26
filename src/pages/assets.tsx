@@ -50,7 +50,7 @@ export default function EnhancedAssetsPage() {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const { data: assets, isLoading, error, refetch } = useAssets(activeClient?.id);
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
     if (newValue === 1) {
       setShowAIGenerator(true);
@@ -87,7 +87,7 @@ export default function EnhancedAssetsPage() {
     },
   ];
 
-  const handleImageGenerated = (newAsset: any) => {
+  const handleImageGenerated = (_newAsset: any) => {
     refetch();
   };
 

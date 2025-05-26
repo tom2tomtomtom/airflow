@@ -225,7 +225,7 @@ const Templates: React.FC = () => {
     setCurrentTemplate(null);
   };
 
-  const handleDuplicateTemplate = (template: Template) => {
+  const handleDuplicateTemplate = (_template: Template) => {
     showNotification('Template duplication coming soon', 'info');
   };
 
@@ -234,7 +234,7 @@ const Templates: React.FC = () => {
     setOpenDialog(true);
   };
 
-  const handleDeleteTemplate = async (templateId: string) => {
+  const handleDeleteTemplate = async (_templateId: string) => {
     if (confirm('Are you sure you want to delete this template?')) {
       showNotification('Template deletion coming soon', 'info');
     }

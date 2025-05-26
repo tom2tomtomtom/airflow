@@ -9,14 +9,12 @@ import {
   Button,
   Grid,
   Alert,
-  Chip,
   InputAdornment,
 } from '@mui/material';
 import {
   Business as BusinessIcon,
   Email as EmailIcon,
   ColorLens as ColorIcon,
-  Description as DescriptionIcon,
   Person as PersonIcon,
   Phone as PhoneIcon,
 } from '@mui/icons-material';

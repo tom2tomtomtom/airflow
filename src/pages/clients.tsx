@@ -39,6 +39,7 @@ import ErrorMessage from '@/components/ErrorMessage';
 import { useClients } from '@/hooks/useData';
 import { useClient } from '@/contexts/ClientContext';
 import { isDemoMode } from '@/lib/demo-data';
+import type { Client } from '@/types/models';
 
 const ClientsPage: React.FC = () => {
   const router = useRouter();
@@ -46,7 +47,7 @@ const ClientsPage: React.FC = () => {
   const { activeClient, setActiveClient } = useClient();
   const [searchTerm, setSearchTerm] = useState('');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selectedClient, setSelectedClient] = useState<any>(null);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, client: any) => {
@@ -90,7 +91,7 @@ const ClientsPage: React.FC = () => {
     handleMenuClose();
   };
 
-  const filteredClients = clients?.filter(client =>
+  const filteredClients = clients?.filter((client: Client) =>
     client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     client.industry.toLowerCase().includes(searchTerm.toLowerCase()) ||
     client.description?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -175,7 +176,7 @@ const ClientsPage: React.FC = () => {
         )}
 
         <Grid container spacing={3}>
-          {filteredClients.map((client) => (
+          {filteredClients.map((client: Client) => (
             <Grid item xs={12} sm={6} md={4} key={client.id}>
               <Card
                 sx={{
