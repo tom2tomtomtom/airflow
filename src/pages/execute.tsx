@@ -101,7 +101,7 @@ const ExecutePage: React.FC = () => {
   const { showNotification } = useNotification();
   const { data: campaigns, isLoading: campaignsLoading } = useCampaigns(activeClient?.id);
   const { data: matrices, isLoading: matricesLoading } = useMatrices(activeClient?.id);
-  const { data: assets, isLoading: assetsLoading } = useAssets(activeClient?.id);
+  const { isLoading: assetsLoading } = useAssets(activeClient?.id);
   
   const [activeStep, setActiveStep] = useState(0);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
@@ -111,6 +111,7 @@ const ExecutePage: React.FC = () => {
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [selectedExportFormat, setSelectedExportFormat] = useState('zip');
   const [executionTasks, setExecutionTasks] = useState<ExecutionTask[]>([]);
+  const [executingTask, setExecutingTask] = useState<string | null>(null);
 
   const isLoading = campaignsLoading || matricesLoading || assetsLoading;
 
@@ -133,7 +134,7 @@ const ExecutePage: React.FC = () => {
       campaignId: selectedCampaign.id,
       campaignName: selectedCampaign.name,
       platforms: selectedPlatforms,
-      scheduledDate: scheduleType === 'scheduled' ? scheduledDate : undefined,
+      ...(scheduleType === 'scheduled' && { scheduledDate }),
       status: 'pending',
       progress: 0,
       assets: selectedPlatforms.map(platform => ({
@@ -203,7 +204,6 @@ const ExecutePage: React.FC = () => {
     }, 2000);
   };
 
-  const activeCampaigns = campaigns?.filter((c: Campaign) => c.status === 'active') || [];
   const readyCampaigns = campaigns?.filter((c: Campaign) => 
     matrices?.some((m: any) => m.clientId === c.clientId && m.status === 'approved')
   ) || [];
