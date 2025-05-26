@@ -58,7 +58,7 @@ export default function handler(
 
 // GET - Retrieve all clients for a user
 function getClients(
-  req: NextApiRequest,
+  _req: NextApiRequest,
   res: NextApiResponse<ResponseData>,
   userId: string
 ) {

@@ -112,7 +112,7 @@ export default function handler(
 
 // GET - Retrieve assets for a user, optionally filtered by client
 function getAssets(
-  req: NextApiRequest,
+  _req: NextApiRequest,
   res: NextApiResponse<ResponseData>,
   userId: string,
   clientId?: string
