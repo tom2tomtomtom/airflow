@@ -45,12 +45,12 @@ const mockGenerateImage = (prompt: string): string => {
   return `https://via.placeholder.com/${width}x${height}?text=${encodeURIComponent(prompt)}`;
 };
 
-const mockGenerateVideo = (prompt: string): string => {
+const mockGenerateVideo = (_prompt: string): string => {
   // In a real app, this would call a video generation API
   return 'https://example.com/generated-videos/sample-video.mp4';
 };
 
-const mockGenerateVoice = (prompt: string): string => {
+const mockGenerateVoice = (_prompt: string): string => {
   // In a real app, this would call a voice generation API
   return 'https://example.com/generated-audio/sample-audio.mp3';
 };
@@ -69,7 +69,7 @@ export default function handler(
     const userId = req.headers.authorization?.split(' ')[1] || 'user_123';
     
     // Extract generation prompt from request body
-    const { prompt, type, parameters, clientId }: GenerationPrompt = req.body;
+    const { prompt, type, parameters: _parameters, clientId }: GenerationPrompt = req.body;
     
     // Basic validation
     if (!prompt || !type || !clientId) {

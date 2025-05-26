@@ -3,7 +3,6 @@ import { supabase } from '@/lib/supabase';
 import { env } from '@/lib/env';
 import formidable from 'formidable';
 import fs from 'fs/promises';
-import path from 'path';
 import { z } from 'zod';
 import mammoth from 'mammoth';
 // @ts-ignore - pdf.js-extract types are incomplete
@@ -125,7 +124,7 @@ export default async function handler(
 
     // Upload file to Supabase storage
     const fileName = `${Date.now()}-${uploadedFile.originalFilename}`;
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { data: _uploadData, error: uploadError } = await supabase.storage
       .from('briefs')
       .upload(`${client_id}/${fileName}`, fileContent, {
         contentType: uploadedFile.mimetype || 'application/octet-stream',

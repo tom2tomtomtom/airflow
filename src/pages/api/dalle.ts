@@ -103,8 +103,8 @@ export default async function handler(
         url: `https://via.placeholder.com/${size.replace('x', 'x')}?text=AI+Generated+Demo`,
         thumbnail_url: `https://via.placeholder.com/256x256?text=AI+Demo`,
         mime_type: 'image/png',
-        width: parseInt(size.split('x')[0]),
-        height: parseInt(size.split('x')[1]),
+        width: parseInt(size.split('x')[0] || '1024'),
+        height: parseInt(size.split('x')[1] || '1024'),
         client_id,
         tags: [...tags, 'ai-generated', 'demo', model, purpose].filter(Boolean),
         metadata: {
@@ -216,7 +216,7 @@ export default async function handler(
     const filename = `dalle-${purpose || 'image'}-${timestamp}.png`;
     
     // Upload to Supabase storage
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { data: _uploadData, error: uploadError } = await supabase.storage
       .from('assets')
       .upload(`${client_id}/ai-generated/${filename}`, buffer, {
         contentType: 'image/png',
