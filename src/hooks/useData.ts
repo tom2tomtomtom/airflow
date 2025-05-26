@@ -395,7 +395,7 @@ export const useFileUpload = () => {
       const fileName = `${Date.now()}-${file.name}`;
       const filePath = path ? `${path}/${fileName}` : `${clientId}/${fileName}`;
 
-      const { data, error } = await supabase.storage
+      const { data: _data, error } = await supabase.storage
         .from('assets')
         .upload(filePath, file, {
           onUploadProgress: (progress: { loaded: number; total: number }) => {

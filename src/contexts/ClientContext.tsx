@@ -32,7 +32,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [clients, setClients] = useState<Client[]>([]);
   const [activeClient, setActiveClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
-  const { user, isAuthenticated } = useAuth();
+  const { user: _user, isAuthenticated } = useAuth();
 
   // Load clients from API on initial load
   useEffect(() => {
@@ -255,9 +255,13 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
       // Update client data with explicit typing
       const existingClient = clients[clientIndex];
+      if (!existingClient) {
+        throw new Error('Client not found');
+      }
       const updatedClient: Client = {
         ...existingClient,
         ...clientData,
+        name: clientData.name || existingClient.name, // Ensure name is always defined
         lastModified: new Date().toISOString(),
         version: existingClient.version + 1,
       };

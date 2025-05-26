@@ -35,11 +35,16 @@ function createNextRequest(req: NextApiRequest): NextRequest {
     }
   });
 
-  return new NextRequest(url, {
+  const init: RequestInit = {
     method: req.method || 'GET',
     headers,
-    body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined,
-  });
+  };
+  
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    init.body = JSON.stringify(req.body);
+  }
+  
+  return new NextRequest(url, init);
 }
 
 export default async function handler(
@@ -218,7 +223,7 @@ export default async function handler(
     const expiryMatch = env.JWT_EXPIRY.match(/(\d+)([dhms])/);
     let expirySeconds = 86400; // Default 24 hours
     
-    if (expiryMatch) {
+    if (expiryMatch && expiryMatch[1] && expiryMatch[2]) {
       const [, num, unit] = expiryMatch;
       const multipliers: Record<string, number> = {
         s: 1,

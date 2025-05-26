@@ -108,7 +108,6 @@ interface StrategicContentItem {
 }
 
 const StrategicContent: React.FC = () => {
-  const router = useRouter();
   const { activeClient } = useClient();
   const { showNotification } = useNotification();
   const { data: campaigns } = useCampaigns(activeClient?.id);

@@ -81,11 +81,21 @@ export async function signUp(
       localStorage.setItem('airwave_user', JSON.stringify(user));
     }
 
-    return { 
-      user, 
-      token,
-      emailConfirmationRequired: response.data.emailConfirmationRequired 
-    };
+    const result: { 
+      user: User; 
+      token?: string;
+      emailConfirmationRequired?: boolean;
+    } = { user };
+    
+    if (token !== undefined) {
+      result.token = token;
+    }
+    
+    if (response.data.emailConfirmationRequired !== undefined) {
+      result.emailConfirmationRequired = response.data.emailConfirmationRequired;
+    }
+    
+    return result;
   } catch (error) {
     const axiosError = error as AxiosError<ApiError>;
     console.error('Sign up error:', error);

@@ -46,7 +46,7 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
         <Snackbar
           key={notification.id}
           open={true}
-          autoHideDuration={notification.duration}
+          autoHideDuration={notification.duration ?? null}
           onClose={() => handleClose(notification.id)}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
           TransitionComponent={Slide as any}
