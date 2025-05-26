@@ -144,7 +144,7 @@ const MatrixPage: React.FC = () => {
           initialValues.push({
             fieldId: field.id,
             variationId: variation.id,
-            value: field.defaultValue,
+            value: field.defaultValue || '',
           });
         });
       });
@@ -168,7 +168,7 @@ const MatrixPage: React.FC = () => {
         newFieldValues.push({
           fieldId: field.id,
           variationId: newVariation.id,
-          value: field.defaultValue,
+          value: field.defaultValue || '',
         });
       });
       setFieldValues([...fieldValues, ...newFieldValues]);
@@ -215,11 +215,11 @@ const MatrixPage: React.FC = () => {
       if (existing) {
         return prev.map(fv =>
           fv.fieldId === fieldId && fv.variationId === variationId
-            ? { ...fv, value, assetId, asset }
+            ? { ...fv, value: value || '', assetId, asset }
             : fv
         );
       } else {
-        return [...prev, { fieldId, variationId, value, assetId, asset }];
+        return [...prev, { fieldId, variationId, value: value || '', assetId, asset }];
       }
     });
   };
@@ -239,7 +239,7 @@ const MatrixPage: React.FC = () => {
     const newCombinations: Combination[] = [];
     
     // For demo, just create a few meaningful combinations
-    if (activeVariations.length >= 1) {
+    if (activeVariations.length >= 1 && activeVariations[0]) {
       newCombinations.push({
         id: `combo-${Date.now()}-1`,
         name: 'Primary Combination',
@@ -445,12 +445,12 @@ const MatrixPage: React.FC = () => {
                           value={selectedCampaign?.id || ''}
                           label="Link to Campaign"
                           onChange={(e) => {
-                            const campaign = campaigns?.find(c => c.id === e.target.value);
+                            const campaign = campaigns?.find((c: Campaign) => c.id === e.target.value);
                             setSelectedCampaign(campaign || null);
                           }}
                         >
                           <MenuItem value="">None</MenuItem>
-                          {campaigns?.map(campaign => (
+                          {campaigns?.map((campaign: Campaign) => (
                             <MenuItem key={campaign.id} value={campaign.id}>
                               {campaign.name}
                             </MenuItem>
@@ -594,7 +594,7 @@ const MatrixPage: React.FC = () => {
                                       <TextField
                                         size="small"
                                         fullWidth
-                                        multiline={field.constraints?.maxLength && field.constraints.maxLength > 50}
+                                        multiline={!!(field.constraints?.maxLength && field.constraints.maxLength > 50)}
                                         rows={field.constraints?.maxLength && field.constraints.maxLength > 50 ? 2 : 1}
                                         value={fieldValue?.value || ''}
                                         onChange={(e) => handleFieldUpdate(field.id, variation.id, e.target.value)}
