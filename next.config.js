@@ -156,13 +156,6 @@ const nextConfig = {
     // Enable SWC plugins
     swcPlugins: [],
   },
-  
-  // Sentry configuration (if using Sentry)
-  sentry: {
-    hideSourceMaps: true,
-    disableServerWebpackPlugin: process.env.NODE_ENV !== 'production',
-    disableClientWebpackPlugin: process.env.NODE_ENV !== 'production',
-  },
 };
 
 module.exports = nextConfig;
