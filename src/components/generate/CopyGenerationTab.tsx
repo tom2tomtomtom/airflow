@@ -311,7 +311,7 @@ const CopyGenerationTab: React.FC<CopyGenerationTabProps> = ({
                   No copy generated yet
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  Configure your settings and click "Generate Copy" to create AI-generated copy
+                  Configure your settings and click &quot;Generate Copy&quot; to create AI-generated copy
                 </Typography>
               </Box>
             )}

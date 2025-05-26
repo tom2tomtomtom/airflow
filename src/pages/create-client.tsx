@@ -130,7 +130,7 @@ export default function CreateClient() {
           
           {isDemoMode() && (
             <Alert severity="info" sx={{ mb: 3 }}>
-              You're in demo mode. Client data won't be permanently saved.
+              You&apos;re in demo mode. Client data won&apos;t be permanently saved.
             </Alert>
           )}
           

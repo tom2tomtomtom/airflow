@@ -5,7 +5,7 @@ import formidable from 'formidable';
 import fs from 'fs/promises';
 import { z } from 'zod';
 import mammoth from 'mammoth';
-// @ts-ignore - pdf.js-extract types are incomplete
+// @ts-expect-error - pdf.js-extract types are incomplete
 import { PDFExtract } from 'pdf.js-extract';
 
 export const config = {
@@ -98,12 +98,13 @@ export default async function handler(
         extractedText = fileContent.toString('utf-8');
         break;
         
-      case 'docx':
+      case 'docx': {
         const docxResult = await mammoth.extractRawText({ buffer: fileContent });
         extractedText = docxResult.value;
         break;
+      }
         
-      case 'pdf':
+      case 'pdf': {
         const pdfExtract = new PDFExtract();
         const pdfData = await new Promise<any>((resolve, reject) => {
           pdfExtract.extract(uploadedFile.filepath, {}, (err: any, data: any) => {
@@ -120,6 +121,7 @@ export default async function handler(
           )
           .join('\n');
         break;
+      }
     }
 
     // Upload file to Supabase storage

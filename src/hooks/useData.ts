@@ -46,26 +46,31 @@ export function useData<T extends keyof EntityTypes>(
           await new Promise(resolve => setTimeout(resolve, 300)); // Simulate network delay
           
           switch (entityType) {
-            case 'clients':
+            case 'clients': {
               const clients = getDemoClients();
               result = id ? clients.find(c => c.id === id) : clients;
               break;
-            case 'campaigns':
+            }
+            case 'campaigns': {
               const campaigns = getDemoCampaigns() as UICampaign[];
               result = id ? campaigns.find(c => c.id === id) : campaigns;
               break;
-            case 'assets':
+            }
+            case 'assets': {
               const assets = getDemoAssets();
               result = id ? assets.find(a => a.id === id) : assets;
               break;
-            case 'templates':
+            }
+            case 'templates': {
               const templates = getDemoTemplates();
               result = id ? templates.find(t => t.id === id) : templates;
               break;
-            case 'matrices':
+            }
+            case 'matrices': {
               const matrices = getDemoMatrices();
               result = id ? matrices.find(m => m.id === id) : matrices;
               break;
+            }
           }
         } else {
           // Supabase data fetching

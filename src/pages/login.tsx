@@ -222,7 +222,7 @@ const LoginPage: React.FC = () => {
 
           <Box sx={{ textAlign: 'center' }}>
             <Typography variant="body2" color="text.secondary">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link
                 href="#"
                 onClick={(e) => {
@@ -238,7 +238,7 @@ const LoginPage: React.FC = () => {
 
           <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
             <Typography variant="caption" color="text.secondary" align="center" display="block">
-              <strong>Demo Note:</strong> Click "Continue with Demo" to explore the application with sample data.
+              <strong>Demo Note:</strong> Click &quot;Continue with Demo&quot; to explore the application with sample data.
             </Typography>
           </Box>
         </Paper>

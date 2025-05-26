@@ -189,7 +189,7 @@ export default function EditCampaign() {
       // In a real app, this would submit to the API
       showNotification('Campaign updated successfully!', 'success');
       router.push(`/campaigns/${id}`);
-    } catch (error) {
+    } catch (_error) {
       showNotification('Failed to update campaign. Please try again.', 'error');
     }
   };
@@ -199,7 +199,7 @@ export default function EditCampaign() {
       // In a real app, this would delete via API
       showNotification('Campaign deleted successfully', 'success');
       router.push('/campaigns');
-    } catch (error) {
+    } catch (_error) {
       showNotification('Failed to delete campaign. Please try again.', 'error');
     }
   };
@@ -548,7 +548,7 @@ export default function EditCampaign() {
           </DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Are you sure you want to delete "{campaign.name}"? This action cannot be undone and
+              Are you sure you want to delete &quot;{campaign.name}&quot;? This action cannot be undone and
               will permanently remove all campaign data and analytics.
             </DialogContentText>
           </DialogContent>

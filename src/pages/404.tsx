@@ -55,7 +55,7 @@ export default function Custom404() {
             </Typography>
             
             <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-              The page you're looking for doesn't exist. It might have been moved or deleted.
+              The page you&apos;re looking for doesn&apos;t exist. It might have been moved or deleted.
             </Typography>
             
             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>

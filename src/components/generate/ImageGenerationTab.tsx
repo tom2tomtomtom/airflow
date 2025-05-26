@@ -272,7 +272,7 @@ const ImageGenerationTab: React.FC<ImageGenerationTabProps> = ({
                   No images generated yet
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  Configure your settings and click "Generate Images" to create AI-generated images
+                  Configure your settings and click &quot;Generate Images&quot; to create AI-generated images
                 </Typography>
               </Box>
             )}

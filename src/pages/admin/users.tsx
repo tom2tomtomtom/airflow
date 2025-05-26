@@ -347,7 +347,7 @@ const UserManagementPage: React.FC = () => {
       <DashboardLayout title="User Management">
         <Box textAlign="center" py={8}>
           <Alert severity="error" sx={{ display: 'inline-flex' }}>
-            You don't have permission to access this page
+            You don&apos;t have permission to access this page
           </Alert>
         </Box>
       </DashboardLayout>

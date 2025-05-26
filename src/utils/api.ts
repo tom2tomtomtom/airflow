@@ -254,9 +254,11 @@ export const aiApi = {
   },
 };
 
-export default {
+const api = {
   auth: authApi,
   client: clientApi,
   asset: assetApi,
   ai: aiApi,
 };
+
+export default api;

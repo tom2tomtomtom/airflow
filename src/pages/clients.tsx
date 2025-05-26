@@ -329,7 +329,7 @@ const ClientsPage: React.FC = () => {
           <DialogTitle>Delete Client</DialogTitle>
           <DialogContent>
             <Typography>
-              Are you sure you want to delete "{selectedClient?.name}"? This action cannot be undone.
+              Are you sure you want to delete &quot;{selectedClient?.name}&quot;? This action cannot be undone.
             </Typography>
           </DialogContent>
           <DialogActions>

@@ -694,7 +694,7 @@ const MatrixPage: React.FC = () => {
 
                     {combinations.length === 0 ? (
                       <Alert severity="info">
-                        No combinations generated yet. Click "Generate Combinations" to create optimized variation sets.
+                        No combinations generated yet. Click &quot;Generate Combinations&quot; to create optimized variation sets.
                       </Alert>
                     ) : (
                       <Grid container spacing={2}>
