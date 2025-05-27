@@ -102,7 +102,13 @@ export default function EditCampaign() {
       // Extract budget value properly
       let budgetValue = '';
       if (isCampaign(campaignData)) {
-        budgetValue = campaignData.budget?.total?.toString() || '';
+        // Check if budget is an object with total property
+        const budget = campaignData.budget;
+        if (budget && typeof budget === 'object' && 'total' in budget) {
+          budgetValue = budget.total.toString();
+        } else if (typeof budget === 'number') {
+          budgetValue = budget.toString();
+        }
       } else {
         // UICampaign has budget as a number
         budgetValue = campaignData.budget?.toString() || '';
@@ -112,10 +118,10 @@ export default function EditCampaign() {
       let startDate: Date | null = null;
       let endDate: Date | null = null;
       
-      if (isCampaign(campaignData)) {
-        startDate = campaignData.schedule?.startDate ? new Date(campaignData.schedule.startDate) : null;
-        endDate = campaignData.schedule?.endDate ? new Date(campaignData.schedule.endDate) : null;
-      } else {
+      if (isCampaign(campaignData) && 'schedule' in campaignData && campaignData.schedule) {
+        startDate = campaignData.schedule.startDate ? new Date(campaignData.schedule.startDate) : null;
+        endDate = campaignData.schedule.endDate ? new Date(campaignData.schedule.endDate) : null;
+      } else if ('startDate' in campaignData && 'endDate' in campaignData) {
         // UICampaign has startDate/endDate as direct properties
         startDate = campaignData.startDate ? new Date(campaignData.startDate) : null;
         endDate = campaignData.endDate ? new Date(campaignData.endDate) : null;
@@ -211,7 +217,13 @@ export default function EditCampaign() {
       // Extract budget value properly
       let budgetValue = '';
       if (isCampaign(campaignData)) {
-        budgetValue = campaignData.budget?.total?.toString() || '';
+        // Check if budget is an object with total property
+        const budget = campaignData.budget;
+        if (budget && typeof budget === 'object' && 'total' in budget) {
+          budgetValue = budget.total.toString();
+        } else if (typeof budget === 'number') {
+          budgetValue = budget.toString();
+        }
       } else {
         // UICampaign has budget as a number
         budgetValue = campaignData.budget?.toString() || '';
@@ -221,10 +233,10 @@ export default function EditCampaign() {
       let startDate: Date | null = null;
       let endDate: Date | null = null;
       
-      if (isCampaign(campaignData)) {
-        startDate = campaignData.schedule?.startDate ? new Date(campaignData.schedule.startDate) : null;
-        endDate = campaignData.schedule?.endDate ? new Date(campaignData.schedule.endDate) : null;
-      } else {
+      if (isCampaign(campaignData) && 'schedule' in campaignData && campaignData.schedule) {
+        startDate = campaignData.schedule.startDate ? new Date(campaignData.schedule.startDate) : null;
+        endDate = campaignData.schedule.endDate ? new Date(campaignData.schedule.endDate) : null;
+      } else if ('startDate' in campaignData && 'endDate' in campaignData) {
         // UICampaign has startDate/endDate as direct properties
         startDate = campaignData.startDate ? new Date(campaignData.startDate) : null;
         endDate = campaignData.endDate ? new Date(campaignData.endDate) : null;
@@ -564,7 +576,7 @@ export default function EditCampaign() {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (_context) => {
+export const getServerSideProps: GetServerSideProps = async () => {
   // In a real app, you might fetch the campaign data here
   // For now, we'll rely on client-side data fetching
   return {
