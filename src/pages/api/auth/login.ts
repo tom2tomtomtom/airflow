@@ -35,12 +35,13 @@ function createNextRequest(req: NextApiRequest): NextRequest {
     }
   });
 
+  const method = req.method || 'GET';
   const init: RequestInit = {
-    method: req.method || 'GET',
+    method,
     headers,
   };
   
-  if (req.method !== 'GET' && req.method !== 'HEAD') {
+  if (method !== 'GET' && method !== 'HEAD' && req.body) {
     init.body = JSON.stringify(req.body);
   }
   
@@ -61,13 +62,14 @@ export default async function handler(
 
   try {
     // Rate limiting check
-    const ip = (Array.isArray(req.headers['x-forwarded-for']) 
-      ? req.headers['x-forwarded-for'][0] 
-      : req.headers['x-forwarded-for']) || req.socket.remoteAddress || 'unknown';
+    const forwardedFor = req.headers['x-forwarded-for'];
+    const ip = (Array.isArray(forwardedFor) 
+      ? forwardedFor[0] 
+      : forwardedFor) || req.socket.remoteAddress || 'unknown';
     const rateLimitKey = `login:${ip}`;
     
     if (!checkAPIRateLimit(rateLimitKey, 5, 60000)) { // 5 attempts per minute
-      logger.warn('Login rate limit exceeded', { ip });
+      logger.warn('Login rate limit exceeded', { ip: String(ip) });
       return res.status(429).json({
         success: false,
         message: 'Too many login attempts. Please try again later.'
@@ -80,7 +82,7 @@ export default async function handler(
       const csrfValid = await validateCSRFToken(nextReq);
       
       if (!csrfValid) {
-        logger.warn('CSRF validation failed', { ip });
+        logger.warn('CSRF validation failed', { ip: String(ip) });
         return res.status(403).json({
           success: false,
           message: 'Invalid security token'
@@ -106,7 +108,7 @@ export default async function handler(
     const { email, password } = validatedData;
 
     // Log login attempt (without password)
-    logger.info('Login attempt', { email, ip });
+    logger.info('Login attempt', { email, ip: String(ip) });
 
     // Add delay to prevent timing attacks
     await new Promise(resolve => setTimeout(resolve, 100));
@@ -224,7 +226,8 @@ export default async function handler(
     let expirySeconds = 86400; // Default 24 hours
     
     if (expiryMatch && expiryMatch[1] && expiryMatch[2]) {
-      const [, num, unit] = expiryMatch;
+      const num = expiryMatch[1];
+      const unit = expiryMatch[2];
       const multipliers: Record<string, number> = {
         s: 1,
         m: 60,
@@ -263,13 +266,19 @@ export default async function handler(
     // Log successful login
     logger.info('Login successful', { userId: authData.user.id, email });
 
+    // Determine user name
+    const userName = userProfile?.full_name || 
+                    userProfile?.first_name || 
+                    email.split('@')[0] || 
+                    'User';
+
     // Return success response
     return res.status(200).json({
       success: true,
       user: {
         id: authData.user.id,
         email: authData.user.email!,
-        name: userProfile?.full_name || userProfile?.first_name || email.split('@')[0],
+        name: userName,
         role: userProfile?.role || 'user',
       },
       token,
