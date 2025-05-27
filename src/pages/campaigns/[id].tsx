@@ -46,6 +46,7 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 import ErrorMessage from '../../components/ErrorMessage';
 import { useData } from '../../hooks/useData';
 import { useNotification } from '../../contexts/NotificationContext';
+import type { Campaign } from '@/types/models';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -102,7 +103,7 @@ export default function CampaignDetail() {
   
   const { data: campaign, loading, error } = useData('campaigns', id as string);
 
-  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
@@ -159,8 +160,23 @@ export default function CampaignDetail() {
     );
   }
 
-  const budgetSpent = (typeof campaign?.budget === 'object' ? campaign.budget.spent : 0) || ((typeof campaign?.budget === 'object' ? (typeof campaign.budget === 'object' ? getBudgetTotal(campaign.budget) : campaign.budget || 0) : campaign?.budget || 0) || 0) * 0.65;
-  const budgetPercentage = (typeof campaign?.budget === 'object' ? (typeof campaign.budget === 'object' ? getBudgetTotal(campaign.budget) : campaign.budget || 0) : campaign?.budget || 0) ? (budgetSpent / (typeof campaign.budget === 'object' ? getBudgetTotal(campaign.budget) : campaign.budget || 0)) * 100 : 0;
+  const campaignData = campaign as Campaign;
+  
+  // Calculate budget values
+  let budgetTotal = 0;
+  let budgetSpent = 0;
+  
+  if (campaignData.budget) {
+    if (typeof campaignData.budget === 'object' && 'total' in campaignData.budget) {
+      budgetTotal = campaignData.budget.total;
+      budgetSpent = campaignData.budget.spent || 0;
+    } else if (typeof campaignData.budget === 'number') {
+      budgetTotal = campaignData.budget;
+      budgetSpent = budgetTotal * 0.65; // Mock spent amount
+    }
+  }
+  
+  const budgetPercentage = budgetTotal > 0 ? (budgetSpent / budgetTotal) * 100 : 0;
 
   return (
     <DashboardLayout>
@@ -177,17 +193,17 @@ export default function CampaignDetail() {
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
             <Box>
               <Typography variant="h4" component="h1" gutterBottom>
-                {campaign.name}
+                {campaignData.name}
               </Typography>
               <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                 <Chip
-                  {...(statusIcons[campaign.status] && { icon: statusIcons[campaign.status] })}
-                  label={campaign.status.charAt(0).toUpperCase() + campaign.status.slice(1)}
-                  color={statusColors[campaign.status] || 'default'}
+                  {...(statusIcons[campaignData.status] && { icon: statusIcons[campaignData.status] })}
+                  label={campaignData.status.charAt(0).toUpperCase() + campaignData.status.slice(1)}
+                  color={statusColors[campaignData.status] || 'default'}
                   size="small"
                 />
                 <Typography variant="body2" color="text.secondary">
-                  Created {format(new Date(campaign.dateCreated), 'MMM d, yyyy')}
+                  Created {format(new Date(campaignData.dateCreated), 'MMM d, yyyy')}
                 </Typography>
               </Box>
             </Box>
@@ -233,7 +249,7 @@ export default function CampaignDetail() {
                       Campaign Details
                     </Typography>
                     <Typography variant="body1" paragraph>
-                      {campaign.description || 'No description provided.'}
+                      {campaignData.description || 'No description provided.'}
                     </Typography>
                   </Grid>
 
@@ -242,7 +258,7 @@ export default function CampaignDetail() {
                       Target Platforms
                     </Typography>
                     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                      {((campaign as any).targeting)?.platforms?.map((platform: string) => (
+                      {campaignData.targeting?.platforms?.map((platform: string) => (
                         <Chip
                           key={platform}
                           {...(platformIcons[platform.toLowerCase()] && { icon: platformIcons[platform.toLowerCase()] })}
@@ -327,13 +343,13 @@ export default function CampaignDetail() {
                       Start Date
                     </Typography>
                     <Typography variant="body1" gutterBottom>
-                      {((campaign as any).schedule)?.startDate ? format(new Date(((campaign as any).schedule).startDate), 'MMMM d, yyyy') : 'Not set'}
+                      {campaignData.schedule?.startDate ? format(new Date(campaignData.schedule.startDate), 'MMMM d, yyyy') : 'Not set'}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" gutterBottom sx={{ mt: 2 }}>
                       End Date
                     </Typography>
                     <Typography variant="body1">
-                      {((campaign as any).schedule)?.endDate ? format(new Date(((campaign as any).schedule).endDate), 'MMMM d, yyyy') : 'Not set'}
+                      {campaignData.schedule?.endDate ? format(new Date(campaignData.schedule.endDate), 'MMMM d, yyyy') : 'Not set'}
                     </Typography>
                   </CardContent>
                 </Card>
@@ -347,7 +363,7 @@ export default function CampaignDetail() {
                       <Typography variant="h6">Budget</Typography>
                     </Box>
                     <Typography variant="h4" gutterBottom>
-                      ${(typeof campaign.budget === 'object' && campaign.budget !== null ? campaign.budget.total : campaign.budget || 0).toLocaleString()}
+                      ${budgetTotal.toLocaleString()}
                     </Typography>
                     <Box sx={{ mb: 1 }}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
@@ -408,7 +424,7 @@ export default function CampaignDetail() {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (_) => {
+export const getServerSideProps: GetServerSideProps = async () => {
   // In a real app, you might fetch the campaign data here
   // For now, we'll rely on client-side data fetching
   return {
