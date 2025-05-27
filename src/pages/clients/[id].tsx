@@ -127,7 +127,9 @@ const ClientDetailPage: React.FC = () => {
   };
 
   const handleCancel = () => {
-    setEditedClient(client || null);
+    if (client) {
+      setEditedClient(client);
+    }
     setIsEditing(false);
   };
 
