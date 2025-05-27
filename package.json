@@ -18,6 +18,7 @@
     "migrate": "tsx scripts/migrate.ts",
     "seed": "tsx scripts/seed.ts",
     "fix:typescript": "tsx scripts/fix-typescript-errors.ts",
+    "fix:typescript:all": "tsx scripts/fix-all-typescript-errors.ts",
     "count:errors": "tsx scripts/count-errors.ts"
   },
   "dependencies": {
