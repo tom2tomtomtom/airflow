@@ -280,7 +280,8 @@ class CreatomateService {
    */
   private async mockGetRenderStatus(renderId: string): Promise<CreatomateRenderResponse> {
     // Simulate different stages based on time
-    const createdAt = parseInt(renderId.split('-')[1] || '0');
+    const renderIdParts = renderId.split('-');
+    const createdAt = renderIdParts.length > 1 ? parseInt(renderIdParts[1] || '0') : 0;
     const elapsed = Date.now() - createdAt;
     
     if (elapsed < 5000) {
@@ -314,7 +315,7 @@ class CreatomateService {
       `NEW: ${baseText}`,
     ];
     
-    return variations[index % variations.length]!;
+    return variations[index % variations.length] || baseText;
   }
 
   /**
@@ -329,7 +330,7 @@ class CreatomateService {
       '#F7DC6F', // Yellow
     ];
     
-    return variations[index % variations.length]!;
+    return variations[index % variations.length] || baseColor;
   }
 }
 
@@ -366,7 +367,7 @@ export const useCreatomateRender = () => {
   const [progress, setProgress] = React.useState(0);
   const [error, setError] = React.useState<string | null>(null);
 
-  const renderVideo = async (options: CreatomateRenderOptions) => {
+  const renderVideo = async (options: CreatomateRenderOptions): Promise<CreatomateRenderResponse> => {
     try {
       setRendering(true);
       setError(null);
@@ -376,38 +377,40 @@ export const useCreatomateRender = () => {
       const render = await creatomateService.renderVideo(options);
 
       // Poll for status
-      const pollInterval = setInterval(async () => {
-        try {
-          const status = await creatomateService.getRenderStatus(render.id);
-          
-          if (status.progress) {
-            setProgress(status.progress);
-          }
+      return new Promise((resolve, reject) => {
+        const pollInterval = setInterval(async () => {
+          try {
+            const status = await creatomateService.getRenderStatus(render.id);
+            
+            if (status.progress) {
+              setProgress(status.progress);
+            }
 
-          if (status.status === 'completed') {
+            if (status.status === 'completed') {
+              clearInterval(pollInterval);
+              setRendering(false);
+              resolve(status);
+            } else if (status.status === 'failed') {
+              clearInterval(pollInterval);
+              const errorMessage = status.error || 'Render failed';
+              setError(errorMessage);
+              setRendering(false);
+              reject(new Error(errorMessage));
+            }
+          } catch (err) {
             clearInterval(pollInterval);
+            const errorMessage = err instanceof Error ? err.message : 'Failed to check render status';
+            setError(errorMessage);
             setRendering(false);
-            return status;
-          } else if (status.status === 'failed') {
-            clearInterval(pollInterval);
-            setError(status.error || 'Render failed');
-            setRendering(false);
-            return;
+            reject(new Error(errorMessage));
           }
-          return;
-        } catch (err) {
-          clearInterval(pollInterval);
-          setError(err instanceof Error ? err.message : 'Failed to check render status');
-          setRendering(false);
-          return;
-        }
-      }, 2000);
-
-      return render;
+        }, 2000);
+      });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to start render');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to start render';
+      setError(errorMessage);
       setRendering(false);
-      throw err;
+      throw new Error(errorMessage);
     }
   };
 
