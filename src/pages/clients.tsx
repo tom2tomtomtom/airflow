@@ -50,7 +50,7 @@ const ClientsPage: React.FC = () => {
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, client: any) => {
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, client: Client) => {
     setAnchorEl(event.currentTarget);
     setSelectedClient(client);
   };
@@ -72,7 +72,7 @@ const ClientsPage: React.FC = () => {
     router.push(`/clients/${clientId}`);
   };
 
-  const handleSelectClient = (client: any) => {
+  const handleSelectClient = (client: Client) => {
     setActiveClient(client);
     router.push('/dashboard');
   };
