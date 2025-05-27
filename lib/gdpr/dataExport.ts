@@ -1,6 +1,4 @@
 import { createClient } from '@supabase/supabase-js';
-import JSZip from 'jszip';
-import { format } from 'date-fns';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -18,8 +16,9 @@ export interface ExportData {
 
 /**
  * Export all user data for GDPR compliance
+ * Returns a JSON string instead of a ZIP file to avoid dependencies
  */
-export async function exportUserData(userId: string): Promise<Blob> {
+export async function exportUserData(userId: string): Promise<string> {
   try {
     // Fetch all user data
     const data: ExportData = {
@@ -31,25 +30,19 @@ export async function exportUserData(userId: string): Promise<Blob> {
       activity_log: await getUserActivityLog(userId),
     };
     
-    // Create ZIP file
-    const zip = new JSZip();
-    const timestamp = format(new Date(), 'yyyy-MM-dd-HHmmss');
+    // Create export object with metadata
+    const exportData = {
+      export_metadata: {
+        user_id: userId,
+        export_date: new Date().toISOString(),
+        export_version: '1.0',
+        platform: 'AIrWAVE',
+      },
+      user_data: data,
+    };
     
-    // Add JSON files
-    zip.file('profile.json', JSON.stringify(data.profile, null, 2));
-    zip.file('assets.json', JSON.stringify(data.assets, null, 2));
-    zip.file('campaigns.json', JSON.stringify(data.campaigns, null, 2));
-    zip.file('briefs.json', JSON.stringify(data.briefs, null, 2));
-    zip.file('analytics.json', JSON.stringify(data.analytics, null, 2));
-    zip.file('activity_log.json', JSON.stringify(data.activity_log, null, 2));
-    
-    // Add README
-    zip.file('README.txt', generateReadme(userId, timestamp));
-    
-    // Generate ZIP
-    const blob = await zip.generateAsync({ type: 'blob' });
-    
-    return blob;
+    // Return formatted JSON
+    return JSON.stringify(exportData, null, 2);
   } catch (error) {
     console.error('Error exporting user data:', error);
     throw error;
@@ -113,37 +106,6 @@ async function getUserAnalytics(userId: string) {
 async function getUserActivityLog(userId: string) {
   // This would fetch from an activity log table if implemented
   return [];
-}
-
-function generateReadme(userId: string, timestamp: string): string {
-  return `AIrWAVE User Data Export
-========================
-
-User ID: ${userId}
-Export Date: ${timestamp}
-
-This archive contains all your personal data stored in AIrWAVE.
-
-Contents:
----------
-- profile.json: Your user profile information
-- assets.json: All assets you've uploaded
-- campaigns.json: Your campaign and execution data
-- briefs.json: Campaign briefs you've created
-- analytics.json: Analytics events associated with your account
-- activity_log.json: Your activity history
-
-Data Format:
-------------
-All data is exported in JSON format for easy reading and processing.
-
-Questions?
-----------
-If you have any questions about this data export, please contact:
-privacy@airwave.com
-
-Thank you for using AIrWAVE!
-`;
 }
 
 /**

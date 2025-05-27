@@ -17,21 +17,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   
   try {
     // Generate data export
-    const exportBlob = await exportUserData(userId);
+    const exportJson = await exportUserData(userId);
     
-    // Convert blob to buffer for response
-    const buffer = Buffer.from(await exportBlob.arrayBuffer());
-    
-    // Set headers for file download
-    res.setHeader('Content-Type', 'application/zip');
+    // Set headers for JSON download
+    res.setHeader('Content-Type', 'application/json');
     res.setHeader(
       'Content-Disposition',
-      `attachment; filename="airwave-data-export-${userId}-${Date.now()}.zip"`
+      `attachment; filename="airwave-data-export-${userId}-${Date.now()}.json"`
     );
-    res.setHeader('Content-Length', buffer.length.toString());
     
-    // Send the file
-    res.status(200).send(buffer);
+    // Send the JSON file
+    res.status(200).send(exportJson);
   } catch (error) {
     console.error('Data export failed:', error);
     throw error;
