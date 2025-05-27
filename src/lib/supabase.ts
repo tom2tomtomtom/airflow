@@ -13,7 +13,7 @@ const createMockSupabaseClient = () => {
       getSession: async () => ({ data: { session: null }, error: null }),
       onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
     },
-    from: () => ({
+    from: (table: string) => ({
       select: () => ({
         eq: () => ({
           single: async () => ({ data: null, error: { message: 'Demo mode - database not available' } }),
@@ -25,7 +25,7 @@ const createMockSupabaseClient = () => {
       delete: async () => ({ data: null, error: { message: 'Demo mode - database not available' } }),
     }),
     storage: {
-      from: () => ({
+      from: (bucket: string) => ({
         upload: async () => ({ data: null, error: { message: 'Demo mode - storage not available' } }),
         download: async () => ({ data: null, error: { message: 'Demo mode - storage not available' } }),
         remove: async () => ({ data: null, error: { message: 'Demo mode - storage not available' } }),
