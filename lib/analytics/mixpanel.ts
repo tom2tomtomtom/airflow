@@ -1,5 +1,9 @@
 import mixpanel, { Dict, Query } from 'mixpanel-browser';
-import { v4 as uuidv4 } from 'uuid';
+
+// Generate a simple session ID without external dependencies
+function generateSessionId(): string {
+  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+}
 
 // Initialize Mixpanel only in production or if explicitly enabled
 const MIXPANEL_TOKEN = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN;
@@ -103,7 +107,7 @@ class Analytics {
   private isEnabled: boolean;
   
   constructor() {
-    this.sessionId = uuidv4();
+    this.sessionId = generateSessionId();
     this.isEnabled = isEnabled;
   }
   
@@ -220,7 +224,7 @@ class Analytics {
     
     try {
       mixpanel.reset();
-      this.sessionId = uuidv4();
+      this.sessionId = generateSessionId();
     } catch (error) {
       console.error('Analytics reset error:', error);
     }

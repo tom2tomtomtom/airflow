@@ -5,6 +5,46 @@ import { addAnalyticsJob } from '@/lib/queue/bullQueue';
 // Unified tracking interface
 export class Tracking {
   /**
+   * Track any event
+   */
+  static track(event: string, properties?: Record<string, any>) {
+    analytics.track(event, properties);
+  }
+  
+  /**
+   * Track page view
+   */
+  static trackPageView(pageName?: string) {
+    analytics.trackPageView(pageName);
+    if (pageName) {
+      ga.trackPageView(pageName);
+    }
+  }
+  
+  /**
+   * Track click
+   */
+  static trackClick(element: string, properties?: Record<string, any>) {
+    analytics.trackClick(element, properties);
+    ga.trackEvent('click', 'interaction', element);
+  }
+  
+  /**
+   * Track form submit
+   */
+  static trackFormSubmit(formName: string, properties?: Record<string, any>) {
+    analytics.trackFormSubmit(formName, properties);
+    ga.trackEvent('form_submit', 'interaction', formName);
+  }
+  
+  /**
+   * Track performance
+   */
+  static trackPerformance(metric: string, duration: number, properties?: Record<string, any>) {
+    analytics.trackPerformance(metric, duration, properties);
+  }
+  
+  /**
    * Track user signup
    */
   static async trackSignup(userId: string, email: string, properties?: Record<string, any>) {
