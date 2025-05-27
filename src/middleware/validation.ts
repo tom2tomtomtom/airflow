@@ -200,7 +200,14 @@ const fileMaxSizes = {
   document: 20 * 1024 * 1024, // 20MB
 };
 
-export const fileValidation = {
+// Define file validation object separately to avoid self-referential issues
+interface FileValidation {
+  allowedTypes: typeof fileAllowedTypes;
+  maxSizes: typeof fileMaxSizes;
+  validate(file: { type: string; size: number; name: string }, category: keyof typeof fileAllowedTypes): boolean;
+}
+
+export const fileValidation: FileValidation = {
   // Allowed file types by category
   allowedTypes: fileAllowedTypes,
   
@@ -213,7 +220,7 @@ export const fileValidation = {
     const maxSize = fileMaxSizes[category];
     
     if (!allowedTypes.includes(file.type)) {
-      throw new Error(`File type ${file.type} is not allowed for ${String(category)}`);
+      throw new Error(`File type ${file.type} is not allowed for ${category}`);
     }
     
     if (file.size > maxSize) {
@@ -292,7 +299,8 @@ export const apiSchemas = {
   signup: z.object({
     email: commonSchemas.email,
     password: commonSchemas.password,
-    name: z.string().min(2, 'Name must be at least 2 characters')
+    name: z.string()
+      .min(2, 'Name must be at least 2 characters')
       .transform(str => str.trim())
       .refine(str => !/<[^>]*>/.test(str), 'HTML tags are not allowed')
       .refine(str => !/[<>'"`;]/.test(str), 'Special characters not allowed'),
@@ -300,7 +308,8 @@ export const apiSchemas = {
   
   // Client schemas
   createClient: z.object({
-    name: z.string().min(2, 'Client name is required')
+    name: z.string()
+      .min(2, 'Client name is required')
       .transform(str => str.trim())
       .refine(str => !/<[^>]*>/.test(str), 'HTML tags are not allowed')
       .refine(str => !/[<>'"`;]/.test(str), 'Special characters not allowed'),
@@ -319,7 +328,8 @@ export const apiSchemas = {
   // Brief schemas
   createBrief: z.object({
     clientId: commonSchemas.uuid,
-    title: z.string().min(3, 'Title must be at least 3 characters')
+    title: z.string()
+      .min(3, 'Title must be at least 3 characters')
       .transform(str => str.trim())
       .refine(str => !/<[^>]*>/.test(str), 'HTML tags are not allowed')
       .refine(str => !/[<>'"`;]/.test(str), 'Special characters not allowed'),
