@@ -111,13 +111,18 @@ export async function sendEmail(options: EmailOptions) {
       html: getTemplate(template, data),
     });
     
-    if (result.error) {
+    // Check if result has data property (success) or error property
+    if ('error' in result && result.error) {
       console.error('Resend error:', result.error);
       throw new Error(`Failed to send email: ${result.error.message}`);
     }
     
-    console.log('Email sent successfully:', result.data?.id);
-    return result.data;
+    if ('data' in result && result.data) {
+      console.log('Email sent successfully:', result.data.id);
+      return result.data;
+    }
+    
+    throw new Error('Unexpected response from Resend API');
   } catch (error) {
     console.error('Email send failed:', error);
     throw error;
