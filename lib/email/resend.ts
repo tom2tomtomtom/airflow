@@ -1,9 +1,4 @@
 import { Resend } from 'resend';
-import { ClientApprovalEmail } from '@/emails/templates/ClientApproval';
-import { RenderCompleteEmail } from '@/emails/templates/RenderComplete';
-import { WelcomeEmail } from '@/emails/templates/Welcome';
-import { PasswordResetEmail } from '@/emails/templates/PasswordReset';
-import { SystemAlertEmail } from '@/emails/templates/SystemAlert';
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
 
@@ -56,18 +51,50 @@ export interface SystemAlertData {
   timestamp: string;
 }
 
-function getTemplate(template: EmailTemplate, data: Record<string, any>) {
+function getTemplate(template: EmailTemplate, data: Record<string, any>): string {
   switch (template) {
     case 'client-approval':
-      return ClientApprovalEmail(data as ClientApprovalData);
+      const approval = data as ClientApprovalData;
+      return `
+        <h1>AIrWAVE - Campaign Approval Needed</h1>
+        <p>Hello,</p>
+        <p>A new campaign "${approval.campaignName}" for ${approval.clientName} is ready for your approval.</p>
+        <p>Submitted by: ${approval.submitterName}</p>
+        <p>Assets: ${approval.assetCount}</p>
+        ${approval.message ? `<p>Message: ${approval.message}</p>` : ''}
+        <a href="${approval.approvalUrl}" style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Review Campaign</a>
+      `;
     case 'render-complete':
-      return RenderCompleteEmail(data as RenderCompleteData);
+      const render = data as RenderCompleteData;
+      return `
+        <h1>AIrWAVE - Render Complete</h1>
+        <p>Your campaign "${render.campaignName}" has finished rendering.</p>
+        <p>Results: ${render.successCount} successful, ${render.failedCount} failed out of ${render.renderCount} total.</p>
+        <a href="${render.downloadUrl}" style="background: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Download Results</a>
+      `;
     case 'welcome':
-      return WelcomeEmail(data as WelcomeData);
+      const welcome = data as WelcomeData;
+      return `
+        <h1>Welcome to AIrWAVE, ${welcome.firstName}!</h1>
+        <p>Thank you for joining AIrWAVE. We're excited to help you create amazing content.</p>
+        ${welcome.verificationUrl ? `<a href="${welcome.verificationUrl}" style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a>` : ''}
+      `;
     case 'password-reset':
-      return PasswordResetEmail(data as PasswordResetData);
+      const reset = data as PasswordResetData;
+      return `
+        <h1>AIrWAVE - Password Reset</h1>
+        <p>You requested a password reset. Click the link below to reset your password.</p>
+        <p>This link expires in ${reset.expiresIn}.</p>
+        <a href="${reset.resetUrl}" style="background: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Reset Password</a>
+      `;
     case 'system-alert':
-      return SystemAlertEmail(data as SystemAlertData);
+      const alert = data as SystemAlertData;
+      return `
+        <h1>AIrWAVE - System Alert</h1>
+        <p><strong>${alert.alertType.toUpperCase()}:</strong> ${alert.message}</p>
+        ${alert.details ? `<p>Details: ${alert.details}</p>` : ''}
+        <p>Time: ${alert.timestamp}</p>
+      `;
     default:
       throw new Error(`Unknown email template: ${template}`);
   }
@@ -81,7 +108,7 @@ export async function sendEmail(options: EmailOptions) {
       from: 'AIrWAVE <notifications@airwave.app>',
       to: Array.isArray(to) ? to : [to],
       subject,
-      react: getTemplate(template, data),
+      html: getTemplate(template, data),
     });
     
     if (result.error) {

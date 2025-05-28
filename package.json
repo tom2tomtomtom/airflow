@@ -26,8 +26,6 @@
     "@aws-sdk/lib-storage": "^3.0.0",
     "@aws-sdk/s3-request-presigner": "^3.0.0",
     "@faker-js/faker": "^8.3.1",
-    "@react-email/components": "0.0.15",
-    "@react-email/render": "0.0.12",
     "@sentry/nextjs": "^7.0.0",
     "@supabase/supabase-js": "^2.0.0",
     "@types/node": "20.4.5",
@@ -61,5 +59,13 @@
     "postcss": "^8.4.27",
     "tailwindcss": "^3.3.3",
     "tsx": "^3.12.7"
+  },
+  "overrides": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "peerDependencies": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
   }
 }
