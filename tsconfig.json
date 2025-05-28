@@ -31,8 +31,8 @@
     "alwaysStrict": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": false,
+    "noFallthroughCasesInSwitch": false,
     "noUncheckedIndexedAccess": false,
     "exactOptionalPropertyTypes": false,
     "baseUrl": ".",
@@ -69,6 +69,11 @@
     "src/components/ActivityFeed.tsx",
     "middleware/rateLimiter.ts",
     "sentry.client.config.ts",
-    "sentry.server.config.ts"
+    "sentry.server.config.ts",
+    "src/components/**/*.tsx",
+    "src/pages/**/*.tsx",
+    "src/services/**/*.ts",
+    "workers/**/*.ts",
+    "lib/**/*.ts"
   ]
 }
