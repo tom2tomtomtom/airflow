@@ -7,10 +7,10 @@ export * from './supabase';
 // Export from api types
 export * from './api';
 
-// Re-export from src/types if they exist
-export * from '../src/types/models';
-export * from '../src/types/database';
-export * from '../src/types/auth';
+// Re-export from src/types if they exist (selective to avoid conflicts)
+// export * from '../src/types/models';
+// export * from '../src/types/database';
+// export * from '../src/types/auth';
 
 // Common types that might be needed
 export interface Campaign {
