@@ -5,7 +5,6 @@ import formidable from 'formidable';
 import fs from 'fs/promises';
 import { z } from 'zod';
 import mammoth from 'mammoth';
-// @ts-expect-error - pdf.js-extract types are incomplete
 import { PDFExtract } from 'pdf.js-extract';
 
 export const config = {
