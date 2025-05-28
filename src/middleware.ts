@@ -155,7 +155,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   
   // Apply rate limiting to auth endpoints
   if (pathname.startsWith('/api/auth/')) {
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || request.ip || 'unknown';
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown';
     const rateLimitKey = `auth:${ip}`;
     
     if (!checkRateLimit(rateLimitKey, 20, 60000)) { // 20 requests per minute
