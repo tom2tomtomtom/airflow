@@ -180,7 +180,7 @@ export function withResourceRateLimit(
 ) {
   const limiter = new Ratelimit({
     redis,
-    limiter: Ratelimit.slidingWindow(limitsPerResource, window),
+    limiter: Ratelimit.slidingWindow(limitsPerResource, window as any),
     prefix: 'resource',
   });
   
