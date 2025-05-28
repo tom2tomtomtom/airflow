@@ -1,329 +1,382 @@
+-- AIrWAVE Database Schema Migration
+-- This creates all necessary tables for the AIrWAVE platform
+
 -- Enable necessary extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- Create custom types
-CREATE TYPE user_role AS ENUM ('admin', 'user', 'client');
-CREATE TYPE asset_type AS ENUM ('image', 'video', 'audio', 'document', 'copy');
-CREATE TYPE campaign_status AS ENUM ('draft', 'active', 'paused', 'completed', 'archived');
-CREATE TYPE approval_status AS ENUM ('pending', 'approved', 'rejected');
-
--- Users table (extends Supabase auth)
-CREATE TABLE public.profiles (
-  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  email TEXT UNIQUE NOT NULL,
-  full_name TEXT,
-  avatar_url TEXT,
-  role user_role DEFAULT 'user',
-  company TEXT,
-  phone TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+-- Create clients table
+CREATE TABLE IF NOT EXISTS clients (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+    description TEXT,
+    logo_url TEXT,
+    industry TEXT,
+    created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()),
+    updated_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now())
 );
 
--- Clients table
-CREATE TABLE public.clients (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name TEXT NOT NULL,
-  slug TEXT UNIQUE NOT NULL,
-  industry TEXT,
-  logo_url TEXT,
-  primary_color TEXT DEFAULT '#3a86ff',
-  secondary_color TEXT DEFAULT '#8338ec',
-  description TEXT,
-  website TEXT,
-  social_media JSONB DEFAULT '{}',
-  brand_guidelines JSONB DEFAULT '{
-    "voiceTone": "",
-    "targetAudience": "",
-    "keyMessages": []
-  }',
-  is_active BOOLEAN DEFAULT true,
-  created_by UUID REFERENCES public.profiles(id),
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+-- Create profiles table (extends Supabase auth.users)
+CREATE TABLE IF NOT EXISTS profiles (
+    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    first_name TEXT,
+    last_name TEXT,
+    avatar_url TEXT,
+    role TEXT NOT NULL DEFAULT 'user',
+    permissions JSONB DEFAULT '[]'::jsonb,
+    preferences JSONB DEFAULT '{"theme": "system", "notifications": {"email": true, "inApp": true, "exports": true, "comments": true, "approvals": true}}'::jsonb,
+    metadata JSONB DEFAULT '{}'::jsonb,
+    tenant_id TEXT DEFAULT 'default',
+    created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()),
+    updated_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now())
 );
 
--- Client contacts
-CREATE TABLE public.client_contacts (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  client_id UUID REFERENCES public.clients(id) ON DELETE CASCADE,
-  name TEXT NOT NULL,
-  role TEXT,
-  email TEXT,
-  phone TEXT,
-  is_primary BOOLEAN DEFAULT false,
-  is_active BOOLEAN DEFAULT true,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+-- Create user_clients junction table
+CREATE TABLE IF NOT EXISTS user_clients (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+    client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()),
+    UNIQUE(user_id, client_id)
 );
 
--- Assets table
-CREATE TABLE public.assets (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  client_id UUID REFERENCES public.clients(id) ON DELETE CASCADE,
-  name TEXT NOT NULL,
-  type asset_type NOT NULL,
-  file_url TEXT NOT NULL,
-  thumbnail_url TEXT,
-  file_size BIGINT,
-  mime_type TEXT,
-  dimensions JSONB, -- {width: 1920, height: 1080}
-  duration INTEGER, -- in seconds for video/audio
-  tags TEXT[] DEFAULT '{}',
-  metadata JSONB DEFAULT '{}',
-  ai_generated BOOLEAN DEFAULT false,
-  ai_prompt TEXT,
-  created_by UUID REFERENCES public.profiles(id),
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+-- Create assets table
+CREATE TABLE IF NOT EXISTS assets (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+    created_by UUID REFERENCES profiles(id),
+    name TEXT NOT NULL,
+    type TEXT NOT NULL CHECK (type IN ('image', 'video', 'audio', 'document')),
+    url TEXT NOT NULL,
+    thumbnail_url TEXT,
+    size_bytes INTEGER,
+    mime_type TEXT,
+    width INTEGER,
+    height INTEGER,
+    duration_seconds DOUBLE PRECISION,
+    tags TEXT[] DEFAULT '{}',
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()),
+    updated_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now())
 );
 
--- Templates table
-CREATE TABLE public.templates (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name TEXT NOT NULL,
-  platform TEXT NOT NULL, -- 'instagram', 'facebook', 'twitter', etc.
-  aspect_ratio TEXT NOT NULL, -- '16:9', '1:1', '9:16'
-  dimensions TEXT NOT NULL, -- '1920x1080'
-  description TEXT,
-  thumbnail_url TEXT,
-  category TEXT,
-  content_type TEXT, -- 'post', 'story', 'reel', 'ad'
-  dynamic_fields JSONB DEFAULT '[]',
-  is_creatomate BOOLEAN DEFAULT false,
-  creatomate_id TEXT,
-  usage_count INTEGER DEFAULT 0,
-  performance_score DECIMAL(3,2) DEFAULT 0.00,
-  created_by UUID REFERENCES public.profiles(id),
-  is_public BOOLEAN DEFAULT false,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+-- Create templates table
+CREATE TABLE IF NOT EXISTS templates (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+    created_by UUID REFERENCES profiles(id),
+    name TEXT NOT NULL,
+    description TEXT,
+    platform TEXT NOT NULL CHECK (platform IN ('facebook', 'instagram', 'youtube', 'tiktok', 'linkedin', 'twitter')),
+    aspect_ratio TEXT NOT NULL,
+    width INTEGER NOT NULL,
+    height INTEGER NOT NULL,
+    thumbnail_url TEXT,
+    structure JSONB NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()),
+    updated_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now())
 );
 
--- Campaigns table
-CREATE TABLE public.campaigns (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  client_id UUID REFERENCES public.clients(id) ON DELETE CASCADE,
-  name TEXT NOT NULL,
-  description TEXT,
-  status campaign_status DEFAULT 'draft',
-  start_date DATE,
-  end_date DATE,
-  budget DECIMAL(10,2),
-  spent DECIMAL(10,2) DEFAULT 0.00,
-  objective TEXT,
-  targeting JSONB DEFAULT '{}',
-  tags TEXT[] DEFAULT '{}',
-  approval_status approval_status DEFAULT 'pending',
-  approved_by UUID REFERENCES public.profiles(id),
-  approval_date TIMESTAMPTZ,
-  approval_comments TEXT,
-  created_by UUID REFERENCES public.profiles(id),
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+-- Create briefs table
+CREATE TABLE IF NOT EXISTS briefs (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+    created_by UUID REFERENCES profiles(id),
+    name TEXT NOT NULL,
+    description TEXT,
+    document_url TEXT,
+    document_type TEXT,
+    parsing_status TEXT DEFAULT 'pending' CHECK (parsing_status IN ('pending', 'processing', 'completed', 'failed')),
+    parsed_at TIMESTAMPTZ,
+    raw_content TEXT,
+    platforms TEXT[],
+    target_audience TEXT,
+    budget NUMERIC(10, 2),
+    timeline JSONB,
+    objectives JSONB,
+    key_messaging JSONB,
+    brand_guidelines JSONB,
+    confidence_scores JSONB,
+    created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ DEFAULT now()
 );
 
--- Matrix table
-CREATE TABLE public.matrices (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  campaign_id UUID REFERENCES public.campaigns(id) ON DELETE CASCADE,
-  template_id UUID REFERENCES public.templates(id),
-  name TEXT NOT NULL,
-  description TEXT,
-  variations JSONB DEFAULT '[]',
-  combinations JSONB DEFAULT '[]',
-  field_assignments JSONB DEFAULT '{}',
-  status approval_status DEFAULT 'pending',
-  approved_by UUID REFERENCES public.profiles(id),
-  approval_date TIMESTAMPTZ,
-  created_by UUID REFERENCES public.profiles(id),
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+-- Create strategies table
+CREATE TABLE IF NOT EXISTS strategies (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+    created_by UUID REFERENCES profiles(id),
+    name TEXT NOT NULL,
+    description TEXT,
+    target_audience TEXT,
+    goals JSONB,
+    key_messages JSONB,
+    created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()),
+    updated_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now())
 );
 
--- Generated content
-CREATE TABLE public.executions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  matrix_id UUID REFERENCES public.matrices(id) ON DELETE CASCADE,
-  combination_id TEXT NOT NULL,
-  content_type TEXT NOT NULL,
-  platform TEXT NOT NULL,
-  render_url TEXT,
-  status TEXT DEFAULT 'pending',
-  metadata JSONB DEFAULT '{}',
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+-- Create motivations table
+CREATE TABLE IF NOT EXISTS motivations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+    brief_id UUID REFERENCES briefs(id) ON DELETE CASCADE,
+    created_by UUID REFERENCES profiles(id),
+    title TEXT NOT NULL,
+    description TEXT,
+    category TEXT,
+    relevance_score NUMERIC(3, 2),
+    is_ai_generated BOOLEAN DEFAULT true,
+    generation_context JSONB,
+    created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Create strategy_motivations junction table
+CREATE TABLE IF NOT EXISTS strategy_motivations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    strategy_id UUID REFERENCES strategies(id) ON DELETE CASCADE,
+    motivation_id UUID REFERENCES motivations(id) ON DELETE CASCADE,
+    order_position INTEGER,
+    created_at TIMESTAMPTZ DEFAULT now(),
+    UNIQUE(strategy_id, motivation_id)
+);
+
+-- Create content_variations table
+CREATE TABLE IF NOT EXISTS content_variations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+    brief_id UUID REFERENCES briefs(id) ON DELETE CASCADE,
+    created_by UUID REFERENCES profiles(id),
+    content_type TEXT NOT NULL,
+    content TEXT NOT NULL,
+    motivation_ids UUID[],
+    platform TEXT,
+    tone TEXT,
+    style TEXT,
+    generation_prompt TEXT,
+    performance_score NUMERIC(3, 2),
+    brand_compliance_score NUMERIC(3, 2),
+    compliance_notes JSONB,
+    created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Create matrices table
+CREATE TABLE IF NOT EXISTS matrices (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+    created_by UUID REFERENCES profiles(id),
+    template_id UUID REFERENCES templates(id),
+    name TEXT NOT NULL,
+    description TEXT,
+    structure JSONB NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()),
+    updated_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now())
+);
+
+-- Create executions table
+CREATE TABLE IF NOT EXISTS executions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+    created_by UUID REFERENCES profiles(id),
+    matrix_id UUID REFERENCES matrices(id),
+    name TEXT NOT NULL,
+    description TEXT,
+    status TEXT NOT NULL CHECK (status IN ('draft', 'processing', 'completed', 'failed', 'approved')),
+    output_url TEXT,
+    metadata JSONB DEFAULT '{}',
+    approved_by UUID REFERENCES profiles(id),
+    approved_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()),
+    updated_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now())
+);
+
+-- Create approval_workflows table
+CREATE TABLE IF NOT EXISTS approval_workflows (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+    execution_id UUID REFERENCES executions(id) ON DELETE CASCADE,
+    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'in_review', 'approved', 'rejected')),
+    submitted_by UUID REFERENCES profiles(id),
+    submitted_at TIMESTAMPTZ,
+    reviewed_by UUID REFERENCES profiles(id),
+    reviewed_at TIMESTAMPTZ,
+    approved_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Create approvals table
+CREATE TABLE IF NOT EXISTS approvals (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    execution_id UUID REFERENCES executions(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES profiles(id),
+    action TEXT NOT NULL CHECK (action IN ('approve', 'reject', 'request_changes')),
+    comment TEXT,
+    version INTEGER,
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Create approval_comments table
+CREATE TABLE IF NOT EXISTS approval_comments (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    workflow_id UUID REFERENCES approval_workflows(id) ON DELETE CASCADE,
+    asset_id UUID REFERENCES assets(id),
+    created_by UUID REFERENCES profiles(id),
+    comment TEXT NOT NULL,
+    comment_type TEXT DEFAULT 'general',
+    position_data JSONB,
+    created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Create analytics table
+CREATE TABLE IF NOT EXISTS analytics (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    campaign_id UUID NOT NULL,
+    variation_id UUID,
+    metrics JSONB,
+    insights JSONB,
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Create campaign_analytics table
+CREATE TABLE IF NOT EXISTS campaign_analytics (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    execution_id UUID REFERENCES executions(id) ON DELETE CASCADE,
+    client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+    platform TEXT NOT NULL,
+    date DATE NOT NULL,
+    hour INTEGER,
+    impressions INTEGER DEFAULT 0,
+    clicks INTEGER DEFAULT 0,
+    conversions INTEGER DEFAULT 0,
+    spend NUMERIC(10, 2) DEFAULT 0,
+    ctr NUMERIC(5, 2),
+    cpc NUMERIC(10, 2),
+    cpm NUMERIC(10, 2),
+    roas NUMERIC(10, 2),
+    raw_data JSONB,
+    created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Create platform_integrations table
+CREATE TABLE IF NOT EXISTS platform_integrations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+    created_by UUID REFERENCES profiles(id),
+    platform TEXT NOT NULL,
+    account_id TEXT,
+    account_name TEXT,
+    access_token TEXT,
+    refresh_token TEXT,
+    token_expires_at TIMESTAMPTZ,
+    status TEXT DEFAULT 'active',
+    permissions JSONB,
+    last_sync_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Create copy_assets table
+CREATE TABLE IF NOT EXISTS copy_assets (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+    created_by UUID REFERENCES profiles(id),
+    type TEXT,
+    content TEXT,
+    tags TEXT[],
+    metadata JSONB,
+    created_at TIMESTAMPTZ DEFAULT now(),
+    updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Create copy_texts table (legacy)
+CREATE TABLE IF NOT EXISTS copy_texts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    client_id UUID REFERENCES clients(id) ON DELETE CASCADE,
+    created_by UUID REFERENCES profiles(id),
+    type TEXT NOT NULL,
+    content TEXT NOT NULL,
+    tags TEXT[] DEFAULT '{}',
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now()),
+    updated_at TIMESTAMPTZ DEFAULT timezone('utc'::text, now())
+);
+
+-- Create selected_motivations table
+CREATE TABLE IF NOT EXISTS selected_motivations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    strategy_id UUID REFERENCES strategies(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES profiles(id),
+    selected UUID[],
+    custom TEXT[],
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- Create generated_content table
+CREATE TABLE IF NOT EXISTS generated_content (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    selected_motivation_id UUID REFERENCES selected_motivations(id),
+    user_id UUID REFERENCES profiles(id),
+    content JSONB,
+    content_types TEXT[],
+    tone TEXT,
+    style TEXT,
+    created_at TIMESTAMPTZ DEFAULT now()
 );
 
 -- Create indexes for better performance
-CREATE INDEX idx_clients_created_by ON public.clients(created_by);
-CREATE INDEX idx_clients_slug ON public.clients(slug);
-CREATE INDEX idx_assets_client_id ON public.assets(client_id);
-CREATE INDEX idx_assets_type ON public.assets(type);
-CREATE INDEX idx_assets_tags ON public.assets USING GIN(tags);
-CREATE INDEX idx_campaigns_client_id ON public.campaigns(client_id);
-CREATE INDEX idx_campaigns_status ON public.campaigns(status);
-CREATE INDEX idx_templates_platform ON public.templates(platform);
-CREATE INDEX idx_templates_content_type ON public.templates(content_type);
-CREATE INDEX idx_matrices_campaign_id ON public.matrices(campaign_id);
-CREATE INDEX idx_executions_matrix_id ON public.executions(matrix_id);
+CREATE INDEX idx_assets_client_id ON assets(client_id);
+CREATE INDEX idx_assets_created_by ON assets(created_by);
+CREATE INDEX idx_assets_type ON assets(type);
+CREATE INDEX idx_assets_tags ON assets USING GIN(tags);
 
--- Enable Row Level Security
-ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.client_contacts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.assets ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.templates ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.campaigns ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.matrices ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.executions ENABLE ROW LEVEL SECURITY;
+CREATE INDEX idx_user_clients_user_id ON user_clients(user_id);
+CREATE INDEX idx_user_clients_client_id ON user_clients(client_id);
 
--- RLS Policies for profiles
-CREATE POLICY "Users can view own profile" ON public.profiles
-  FOR SELECT USING (auth.uid() = id);
+CREATE INDEX idx_briefs_client_id ON briefs(client_id);
+CREATE INDEX idx_briefs_parsing_status ON briefs(parsing_status);
 
-CREATE POLICY "Users can update own profile" ON public.profiles
-  FOR UPDATE USING (auth.uid() = id);
+CREATE INDEX idx_executions_client_id ON executions(client_id);
+CREATE INDEX idx_executions_status ON executions(status);
+CREATE INDEX idx_executions_matrix_id ON executions(matrix_id);
 
--- RLS Policies for clients
-CREATE POLICY "Users can view their clients" ON public.clients
-  FOR SELECT USING (auth.uid() = created_by OR is_active = true);
-
-CREATE POLICY "Users can create clients" ON public.clients
-  FOR INSERT WITH CHECK (auth.uid() = created_by);
-
-CREATE POLICY "Users can update their clients" ON public.clients
-  FOR UPDATE USING (auth.uid() = created_by);
-
-CREATE POLICY "Users can delete their clients" ON public.clients
-  FOR DELETE USING (auth.uid() = created_by);
-
--- RLS Policies for client_contacts
-CREATE POLICY "Users can manage contacts of their clients" ON public.client_contacts
-  FOR ALL USING (
-    EXISTS (
-      SELECT 1 FROM public.clients 
-      WHERE clients.id = client_contacts.client_id 
-      AND clients.created_by = auth.uid()
-    )
-  );
-
--- RLS Policies for assets
-CREATE POLICY "Users can manage assets of their clients" ON public.assets
-  FOR ALL USING (
-    EXISTS (
-      SELECT 1 FROM public.clients 
-      WHERE clients.id = assets.client_id 
-      AND clients.created_by = auth.uid()
-    )
-  );
-
--- RLS Policies for templates
-CREATE POLICY "Users can view public templates or their own" ON public.templates
-  FOR SELECT USING (is_public = true OR created_by = auth.uid());
-
-CREATE POLICY "Users can create templates" ON public.templates
-  FOR INSERT WITH CHECK (auth.uid() = created_by);
-
-CREATE POLICY "Users can update their templates" ON public.templates
-  FOR UPDATE USING (auth.uid() = created_by);
-
-CREATE POLICY "Users can delete their templates" ON public.templates
-  FOR DELETE USING (auth.uid() = created_by);
-
--- RLS Policies for campaigns
-CREATE POLICY "Users can manage campaigns of their clients" ON public.campaigns
-  FOR ALL USING (
-    EXISTS (
-      SELECT 1 FROM public.clients 
-      WHERE clients.id = campaigns.client_id 
-      AND clients.created_by = auth.uid()
-    )
-  );
-
--- RLS Policies for matrices
-CREATE POLICY "Users can manage matrices of their campaigns" ON public.matrices
-  FOR ALL USING (
-    EXISTS (
-      SELECT 1 FROM public.campaigns
-      JOIN public.clients ON clients.id = campaigns.client_id
-      WHERE campaigns.id = matrices.campaign_id 
-      AND clients.created_by = auth.uid()
-    )
-  );
-
--- RLS Policies for executions
-CREATE POLICY "Users can manage executions of their matrices" ON public.executions
-  FOR ALL USING (
-    EXISTS (
-      SELECT 1 FROM public.matrices
-      JOIN public.campaigns ON campaigns.id = matrices.campaign_id
-      JOIN public.clients ON clients.id = campaigns.client_id
-      WHERE matrices.id = executions.matrix_id 
-      AND clients.created_by = auth.uid()
-    )
-  );
-
--- Create storage bucket for assets
-INSERT INTO storage.buckets (id, name, public) 
-VALUES ('assets', 'assets', true)
-ON CONFLICT (id) DO NOTHING;
-
--- Storage policies
-CREATE POLICY "Users can upload assets" ON storage.objects
-  FOR INSERT WITH CHECK (
-    bucket_id = 'assets' AND 
-    auth.uid() IS NOT NULL
-  );
-
-CREATE POLICY "Users can view assets" ON storage.objects
-  FOR SELECT USING (
-    bucket_id = 'assets'
-  );
-
-CREATE POLICY "Users can update their assets" ON storage.objects
-  FOR UPDATE USING (
-    bucket_id = 'assets' AND 
-    auth.uid()::text = (storage.foldername(name))[1]
-  );
-
-CREATE POLICY "Users can delete their assets" ON storage.objects
-  FOR DELETE USING (
-    bucket_id = 'assets' AND 
-    auth.uid()::text = (storage.foldername(name))[1]
-  );
+CREATE INDEX idx_campaign_analytics_execution_id ON campaign_analytics(execution_id);
+CREATE INDEX idx_campaign_analytics_date ON campaign_analytics(date);
+CREATE INDEX idx_campaign_analytics_platform ON campaign_analytics(platform);
 
 -- Create updated_at trigger function
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
-    NEW.updated_at = NOW();
+    NEW.updated_at = timezone('utc'::text, now());
     RETURN NEW;
 END;
 $$ language 'plpgsql';
 
--- Create triggers for updated_at
-CREATE TRIGGER update_profiles_updated_at BEFORE UPDATE ON public.profiles
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+-- Apply updated_at triggers to relevant tables
+CREATE TRIGGER update_clients_updated_at BEFORE UPDATE ON clients
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_clients_updated_at BEFORE UPDATE ON public.clients
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_profiles_updated_at BEFORE UPDATE ON profiles
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_client_contacts_updated_at BEFORE UPDATE ON public.client_contacts
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_assets_updated_at BEFORE UPDATE ON assets
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_assets_updated_at BEFORE UPDATE ON public.assets
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_templates_updated_at BEFORE UPDATE ON templates
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_templates_updated_at BEFORE UPDATE ON public.templates
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_briefs_updated_at BEFORE UPDATE ON briefs
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_campaigns_updated_at BEFORE UPDATE ON public.campaigns
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_strategies_updated_at BEFORE UPDATE ON strategies
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_matrices_updated_at BEFORE UPDATE ON public.matrices
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_matrices_updated_at BEFORE UPDATE ON matrices
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_executions_updated_at BEFORE UPDATE ON public.executions
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+CREATE TRIGGER update_executions_updated_at BEFORE UPDATE ON executions
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
