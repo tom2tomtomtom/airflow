@@ -45,7 +45,7 @@
     "jose": "^6.0.11",
     "jsonwebtoken": "^9.0.2",
     "mammoth": "^1.9.0",
-    "next": "13.4.12",
+    "next": "^15.3.2",
     "nodemailer": "^7.0.3",
     "openai": "^4.103.0",
     "pdf.js-extract": "^0.2.1",
