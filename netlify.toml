@@ -1,10 +1,20 @@
 [build]
   command = "npm run build"
 
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
 [build.environment]
   NODE_VERSION = "18"
   NPM_VERSION = "10"
   NEXT_PUBLIC_DEMO_MODE = "false"
+
+[[redirects]]
+  from = "/*"
+  to = "/.netlify/functions/___netlify-handler"
+  status = 200
+  conditions = {Role = ["admin"]}
+  force = false
 
 [[headers]]
   for = "/api/*"
