@@ -121,7 +121,10 @@ export async function sendEmail(options: EmailOptions) {
     }
     
     if ('data' in result && result.data) {
-      console.log('Email sent successfully:', result.data.id);
+      const dataId = typeof result.data === 'object' && result.data && 'id' in result.data 
+        ? (result.data as { id: string }).id 
+        : 'unknown';
+      console.log('Email sent successfully:', dataId);
       return result.data;
     }
     
