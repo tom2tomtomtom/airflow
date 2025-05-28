@@ -3,7 +3,7 @@ import type { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import * as Sentry from '@sentry/nextjs';
-import { AppErrorBoundary } from '@/components/ErrorBoundary';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import { analytics } from '@/lib/analytics/mixpanel';
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -53,8 +53,8 @@ export default function App({ Component, pageProps }: AppProps) {
   }, [pageProps.user]);
   
   return (
-    <AppErrorBoundary>
+    <ErrorBoundary>
       <Component {...pageProps} />
-    </AppErrorBoundary>
+    </ErrorBoundary>
   );
 }

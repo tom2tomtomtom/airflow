@@ -19,11 +19,14 @@ async function processEmailJob(job: Job<EmailJobData>) {
       data,
     });
     
-    console.log(`Email sent successfully: ${result.id}`);
+    const resultId = typeof result === 'object' && result && 'id' in result 
+      ? (result as { id: string }).id 
+      : 'unknown';
+    console.log(`Email sent successfully: ${resultId}`);
     
     return {
       success: true,
-      emailId: result.id,
+      emailId: resultId,
       to,
       template,
     };

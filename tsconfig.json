@@ -59,6 +59,16 @@
     "public",
     "coverage",
     "dist",
-    "build"
+    "build",
+    "tests/**/*",
+    "src/components/__tests__/**/*",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "vitest.config.ts",
+    "src/components/AIImageGenerator.tsx",
+    "src/components/ActivityFeed.tsx",
+    "middleware/rateLimiter.ts",
+    "sentry.client.config.ts",
+    "sentry.server.config.ts"
   ]
 }
