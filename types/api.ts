@@ -1,4 +1,6 @@
 // types/api.ts
+import type { NextApiRequest, NextApiResponse } from 'next';
+
 export interface ApiResponse<T = any> {
   success: boolean;
   data?: T;
