@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { getBudgetTotal } from '@/utils/campaign-helpers';
 import { useRouter } from 'next/router';
 import { GetServerSideProps } from 'next';
 import {

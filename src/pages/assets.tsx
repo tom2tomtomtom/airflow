@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 import {
   Box,
   Button,
@@ -82,12 +83,14 @@ export default function EnhancedAssetsPage() {
       icon: <MicNone />, 
       name: 'AI Voice (ElevenLabs)', 
       action: () => { 
-        console.log('Open voice generator'); 
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Open voice generator');
+        }
       }
     },
   ];
 
-  const handleImageGenerated = (_newAsset: any) => {
+  const _handleImageGenerated = (_newAsset: any) => {
     refetch();
   };
 
@@ -157,11 +160,7 @@ export default function EnhancedAssetsPage() {
                     }}
                   >
                     {asset.type === 'image' && asset.url ? (
-                      <img 
-                        src={asset.url} 
-                        alt={asset.name}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
+                      <Image src={asset.url} alt={asset.name} width={500} height={300} />
                     ) : (
                       <Typography>{asset.name}</Typography>
                     )}
@@ -257,11 +256,7 @@ export default function EnhancedAssetsPage() {
                   }}
                 >
                   {asset.type === 'image' && asset.url ? (
-                    <img 
-                      src={asset.url} 
-                      alt={asset.name}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
+                    <Image src={asset.url} alt={asset.name} width={500} height={300} />
                   ) : (
                     <Typography>{asset.name}</Typography>
                   )}

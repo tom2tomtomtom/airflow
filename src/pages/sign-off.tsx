@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { 
   Box, 
   Typography, 
@@ -524,11 +525,7 @@ const SignOffPage: React.FC = () => {
               <DialogContent>
                 {selectedItem.content.preview && (
                   <Box sx={{ mb: 2 }}>
-                    <img 
-                      src={selectedItem.content.preview} 
-                      alt="Preview" 
-                      style={{ width: '100%', maxHeight: 400, objectFit: 'contain' }}
-                    />
+                    <Image src={selectedItem.content.preview} alt={""} width={500} height={300} />
                   </Box>
                 )}
                 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import {
@@ -633,11 +634,7 @@ const MatrixPage: React.FC = () => {
                                     ) : fieldValue?.asset ? (
                                       <Box>
                                         {field.type === 'image' && (
-                                          <img
-                                            src={fieldValue.asset.url}
-                                            alt={fieldValue.asset.name}
-                                            style={{ width: 100, height: 60, objectFit: 'cover' }}
-                                          />
+                                          <Image src={fieldValue.asset.url} alt={fieldValue.asset.name} width={500} height={300} />
                                         )}
                                         <Typography variant="caption" display="block">
                                           {fieldValue.asset.name}

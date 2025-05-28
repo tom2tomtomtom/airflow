@@ -171,16 +171,24 @@ export function getValidatedEnv(): Env {
 export function logEnvironmentStatus(): void {
   try {
     const env = validateEnv()
-    console.log('✅ Environment validation passed')
+    process.env.NODE_ENV === 'development' && console.log('✅ Environment validation passed');
     
     if (env.NODE_ENV === 'production') {
       const readiness = checkProductionReadiness()
       if (readiness.isReady) {
-        console.log('🚀 Production environment is ready!')
+        process.env.NODE_ENV === 'development' && console.log('🚀 Production environment is ready!');
       } else {
-        console.log('⚠️  Production environment issues:')
-        readiness.missingVars.forEach(v => console.log(`  ❌ Missing: ${v}`))
-        readiness.warnings.forEach(w => console.log(`  ⚠️  ${w}`))
+        process.env.NODE_ENV === 'development' && console.log('⚠️  Production environment issues:');
+        readiness.missingVars.forEach(v => {
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`  ❌ Missing: ${v}`);
+          }
+        });
+        readiness.warnings.forEach(w => {
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`  ⚠️  ${w}`);
+          }
+        });
       }
     }
   } catch (error) {

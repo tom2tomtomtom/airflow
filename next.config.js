@@ -3,7 +3,7 @@ const { withSentryConfig } = require('@sentry/nextjs');
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
+  // swcMinify: true, // Removed - enabled by default in Next.js 13+
   
   // Image optimization
   images: {
@@ -92,8 +92,7 @@ const nextConfig = {
   
   // Experimental features
   experimental: {
-    // Enable instrumentation for better performance tracking
-    instrumentationHook: true,
+    // instrumentationHook: true, // Removed - instrumentation.js is available by default
   },
 };
 

@@ -325,13 +325,21 @@ const CampaignsPage: React.FC = () => {
             Edit
           </MenuItem>
           <MenuItem
-            onClick={() => console.log('Archive campaign:', selectedCampaign)}
+            onClick={() => {
+              if (process.env.NODE_ENV === 'development') {
+                console.log('Archive campaign:', selectedCampaign);
+              }
+            }}
           >
             <ArchiveIcon fontSize="small" sx={{ mr: 1 }} />
             Archive
           </MenuItem>
           <MenuItem
-            onClick={() => console.log('Delete campaign:', selectedCampaign)}
+            onClick={() => {
+              if (process.env.NODE_ENV === 'development') {
+                console.log('Delete campaign:', selectedCampaign);
+              }
+            }}
             sx={{ color: 'error.main' }}
           >
             <DeleteIcon fontSize="small" sx={{ mr: 1 }} />

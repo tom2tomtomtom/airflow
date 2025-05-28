@@ -180,7 +180,9 @@ export default async function handler(
     const safetyPrefix = "Professional, brand-safe, high-quality";
     finalPrompt = `${safetyPrefix} ${finalPrompt}`;
 
-    console.log('Generating image with prompt:', finalPrompt);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Generating image with prompt:', finalPrompt);
+    }
 
     // Generate image with DALL-E
     const imageResponse = await openai.images.generate({
