@@ -17,7 +17,7 @@ import {
   MicNone,
   Add as AddIcon,
 } from '@mui/icons-material';
-import { AIImageGenerator } from '@/components/AIImageGenerator';
+// import { AIImageGenerator } from '@/components/AIImageGenerator';
 import AssetUploadModal from '@/components/AssetUploadModal';
 import DashboardLayout from '@/components/DashboardLayout';
 import ClientSelector from '@/components/ClientSelector';
@@ -194,10 +194,11 @@ export default function EnhancedAssetsPage() {
 
         <TabPanel value={tabValue} index={1}>
           {showAIGenerator ? (
-            <AIImageGenerator 
-              clientId={activeClient.id} 
-              onImageGenerated={handleImageGenerated} 
-            />
+            <Box textAlign="center" py={5}>
+              <Typography variant="h6" color="text.secondary">
+                AI Image Generator temporarily disabled
+              </Typography>
+            </Box>
           ) : (
             <Box textAlign="center" py={5}>
               <AutoAwesome sx={{ fontSize: 60, color: 'grey.400', mb: 2 }} />
