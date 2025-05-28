@@ -45,6 +45,7 @@
     "mammoth": "^1.9.0",
     "next": "13.4.12",
     "nodemailer": "^7.0.3",
+    "openai": "^4.103.0",
     "pdf.js-extract": "^0.2.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
