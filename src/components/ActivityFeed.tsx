@@ -94,7 +94,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
 
   // Simulate real-time activities
   useEffect(() => {
-    if (!realtime || !activeClient) return;
+    if (!realtime || !activeClient) return undefined;
 
     // Initial activities
     const initialActivities: Activity[] = [
