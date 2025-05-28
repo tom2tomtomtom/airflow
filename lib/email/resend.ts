@@ -114,7 +114,10 @@ export async function sendEmail(options: EmailOptions) {
     // Check if result has data property (success) or error property
     if ('error' in result && result.error) {
       console.error('Resend error:', result.error);
-      throw new Error(`Failed to send email: ${result.error.message}`);
+      const errorMessage = typeof result.error === 'object' && result.error && 'message' in result.error 
+        ? (result.error as { message: string }).message 
+        : 'Unknown email error';
+      throw new Error(`Failed to send email: ${errorMessage}`);
     }
     
     if ('data' in result && result.data) {
