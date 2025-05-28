@@ -1,5 +1,6 @@
 import { NextPageContext } from 'next';
 import NextErrorComponent from 'next/error';
+import Link from 'next/link';
 import * as Sentry from '@sentry/nextjs';
 
 interface ErrorPageProps {
@@ -27,12 +28,12 @@ const ErrorPage = ({ statusCode, hasGetInitialPropsRun, err }: ErrorPageProps) =
               : 'An error occurred on the server.'}
           </p>
           <div className="mt-6">
-            <a
+            <Link
               href="/"
               className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
             >
               Go back home
-            </a>
+            </Link>
           </div>
         </div>
       </div>
