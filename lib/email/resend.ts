@@ -77,20 +77,20 @@ export async function sendEmail(options: EmailOptions) {
   const { to, subject, template, data } = options;
   
   try {
-    const { data: result, error } = await resend.emails.send({
+    const result = await resend.emails.send({
       from: 'AIrWAVE <notifications@airwave.app>',
       to: Array.isArray(to) ? to : [to],
       subject,
       react: getTemplate(template, data),
     });
     
-    if (error) {
-      console.error('Resend error:', error);
-      throw new Error(`Failed to send email: ${error.message}`);
+    if (result.error) {
+      console.error('Resend error:', result.error);
+      throw new Error(`Failed to send email: ${result.error.message}`);
     }
     
-    console.log('Email sent successfully:', result?.id);
-    return result;
+    console.log('Email sent successfully:', result.data?.id);
+    return result.data;
   } catch (error) {
     console.error('Email send failed:', error);
     throw error;
