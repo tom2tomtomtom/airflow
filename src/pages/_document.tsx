@@ -13,7 +13,11 @@ import theme from '@/styles/theme';
 import createEmotionCache from '@/lib/createEmotionCache';
 import { MyAppProps } from './_app';
 
-export default class MyDocument extends Document {
+interface MyDocumentProps extends DocumentInitialProps {
+  emotionStyleTags: JSX.Element[];
+}
+
+export default class MyDocument extends Document<MyDocumentProps> {
   render() {
     return (
       <Html lang="en">
@@ -30,6 +34,8 @@ export default class MyDocument extends Document {
             href="https://fonts.googleapis.com/icon?family=Material+Icons"
           />
           <meta name="emotion-insertion-point" content="" />
+          {/* Inject MUI styles - THIS WAS MISSING! */}
+          {this.props.emotionStyleTags}
         </Head>
         <body>
           <Main />
@@ -44,7 +50,7 @@ export default class MyDocument extends Document {
 // it's compatible with static-site generation (SSG).
 MyDocument.getInitialProps = async (
   ctx: DocumentContext,
-): Promise<DocumentInitialProps> => {
+): Promise<MyDocumentProps> => {
   const originalRenderPage = ctx.renderPage;
 
   // You can consider sharing the same Emotion cache between all the SSR requests to speed up performance.
