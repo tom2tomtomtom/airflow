@@ -14,6 +14,8 @@ import { ClientProvider } from '@/contexts/ClientContext';
 import { NotificationProvider } from '@/contexts/NotificationContext';
 import createEmotionCache from '@/lib/createEmotionCache';
 import theme from '@/styles/theme';
+
+// Import CSS files in the correct order
 import '@/styles/globals.css';
 
 // Client-side cache, shared for the whole session of the user in the browser.
@@ -91,16 +93,13 @@ function MyApp(props: MyAppProps) {
       </Head>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider theme={theme}>
+          <CssBaseline />
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <ErrorBoundary>
               <AuthProvider>
                 <ClientProvider>
                   <NotificationProvider>
-                    {/* Add wrapper div for Tailwind important selector */}
-                    <div id="__next">
-                      <CssBaseline />
-                      <Component {...pageProps} />
-                    </div>
+                    <Component {...pageProps} />
                     {process.env.NODE_ENV === 'development' && (
                       <ReactQueryDevtools initialIsOpen={false} />
                     )}
