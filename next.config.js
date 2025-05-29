@@ -126,7 +126,7 @@ const nextConfig = {
   
   // Experimental features
   experimental: {
-    // optimizeCss: true, // Enable CSS optimization
+    optimizeCss: true, // Enable CSS optimization
     // instrumentationHook: true, // Removed - instrumentation.js is available by default
   },
 };
