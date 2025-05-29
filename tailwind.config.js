@@ -4,7 +4,16 @@ module.exports = {
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    // Include node_modules to prevent MUI styles from being purged
+    './node_modules/@mui/material/**/*.js',
+    './node_modules/@mui/icons-material/**/*.js',
   ],
+  // Important: Disable preflight to prevent conflicts with Material-UI
+  corePlugins: {
+    preflight: false,
+  },
+  // Use 'important' selector to ensure Tailwind utilities can override MUI when needed
+  important: '#__next',
   theme: {
     extend: {
       colors: {
