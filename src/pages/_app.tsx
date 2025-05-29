@@ -96,8 +96,11 @@ function MyApp(props: MyAppProps) {
               <AuthProvider>
                 <ClientProvider>
                   <NotificationProvider>
-                    <CssBaseline />
-                    <Component {...pageProps} />
+                    {/* Add wrapper div for Tailwind important selector */}
+                    <div id="__next">
+                      <CssBaseline />
+                      <Component {...pageProps} />
+                    </div>
                     {process.env.NODE_ENV === 'development' && (
                       <ReactQueryDevtools initialIsOpen={false} />
                     )}
