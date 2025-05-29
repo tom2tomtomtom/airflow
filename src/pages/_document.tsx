@@ -36,10 +36,22 @@ export default class MyDocument extends Document<MyDocumentProps> {
             href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
           />
           
-          {/* Material Icons - CRITICAL FOR ICON SIZE */}
+          {/* Material Icons - Using different CDN approach */}
           <link
+            href="https://fonts.googleapis.com/icon?family=Material+Icons"
             rel="stylesheet"
-            href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block"
+          />
+          
+          {/* Alternative Material Icons CDN */}
+          <link
+            href="https://fonts.googleapis.com/css2?family=Material+Icons"
+            rel="stylesheet"
+          />
+          
+          {/* Material Icons Outlined */}
+          <link
+            href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined"
+            rel="stylesheet"
           />
           
           {/* Emotion insertion point */}
@@ -47,20 +59,6 @@ export default class MyDocument extends Document<MyDocumentProps> {
           
           {/* Inject MUI styles */}
           {this.props.emotionStyleTags}
-          
-          {/* Fallback styles for icons */}
-          <style>{`
-            .MuiSvgIcon-root {
-              font-size: 1.5rem !important;
-              width: 1.5em !important;
-              height: 1.5em !important;
-            }
-            .MuiInputAdornment-root .MuiSvgIcon-root {
-              font-size: 1.25rem !important;
-              width: 1.25em !important;
-              height: 1.25em !important;
-            }
-          `}</style>
         </Head>
         <body>
           <Main />
