@@ -25,17 +25,42 @@ export default class MyDocument extends Document<MyDocumentProps> {
           {/* PWA primary color */}
           <meta name="theme-color" content={theme.palette.primary.main} />
           <link rel="shortcut icon" href="/favicon.ico" />
+          
+          {/* Preconnect to Google Fonts */}
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+          
+          {/* Material UI Fonts */}
           <link
             rel="stylesheet"
-            href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
           />
+          
+          {/* Material Icons - CRITICAL FOR ICON SIZE */}
           <link
             rel="stylesheet"
-            href="https://fonts.googleapis.com/icon?family=Material+Icons"
+            href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block"
           />
+          
+          {/* Emotion insertion point */}
           <meta name="emotion-insertion-point" content="" />
-          {/* Inject MUI styles - THIS WAS MISSING! */}
+          
+          {/* Inject MUI styles */}
           {this.props.emotionStyleTags}
+          
+          {/* Fallback styles for icons */}
+          <style>{`
+            .MuiSvgIcon-root {
+              font-size: 1.5rem !important;
+              width: 1.5em !important;
+              height: 1.5em !important;
+            }
+            .MuiInputAdornment-root .MuiSvgIcon-root {
+              font-size: 1.25rem !important;
+              width: 1.25em !important;
+              height: 1.25em !important;
+            }
+          `}</style>
         </Head>
         <body>
           <Main />
