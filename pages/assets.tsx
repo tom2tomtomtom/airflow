@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import Head from 'next/head';
 import {
   Box,
@@ -20,6 +21,7 @@ import {
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
 import AssetUploadModal from '@/components/AssetUploadModal';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -39,6 +41,33 @@ function TabPanel(props: TabPanelProps) {
 const AssetsPage = () => {
   const [tabValue, setTabValue] = useState(0);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const router = useRouter();
+  const { loading, isAuthenticated } = useAuth();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      router.push('/login');
+    }
+  }, [loading, isAuthenticated, router]);
+
+  // Show loading or redirect if not authenticated
+  if (loading) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="100vh"
+      >
+        <Typography>Loading...</Typography>
+      </Box>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null; // Will redirect via useEffect
+  }
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
@@ -95,7 +124,7 @@ const AssetsPage = () => {
           <Grid container spacing={3}>
             {mockAssets.map((asset) => (
               <Grid item xs={12} sm={6} md={4} lg={3} key={asset.id}>
-                <Card sx={{ height: '100%' }}>
+                <Card sx={{ height: '100%' }} data-testid="asset-card">
                   <Box
                     sx={{
                       height: 200,

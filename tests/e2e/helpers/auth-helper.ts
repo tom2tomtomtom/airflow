@@ -46,14 +46,24 @@ export class AuthHelper {
   }
 
   async logout() {
-    // Open user menu (force click to bypass any overlays)
-    await this.page.click('[data-testid="user-menu"]', { force: true });
+    // Use dispatchEvent to bypass nextjs portal interception
+    await this.page.evaluate(() => {
+      const userMenuButton = document.querySelector('[data-testid="user-menu"]');
+      if (userMenuButton) {
+        userMenuButton.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+      }
+    });
     
     // Wait for menu to be fully visible
     await this.page.waitForSelector('[data-testid="logout-button"]', { state: 'visible' });
     
-    // Use force click to bypass any interceptors
-    await this.page.click('[data-testid="logout-button"]', { force: true });
+    // Use dispatchEvent for logout button as well
+    await this.page.evaluate(() => {
+      const logoutButton = document.querySelector('[data-testid="logout-button"]');
+      if (logoutButton) {
+        logoutButton.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+      }
+    });
     
     // Wait for redirect to login page with longer timeout
     await this.page.waitForURL('**/login', { timeout: 20000 });
@@ -75,14 +85,28 @@ export class AuthHelper {
     // Wait for client selector to be available
     await this.page.waitForSelector('[data-testid="client-selector"]', { timeout: 10000 });
     
-    // Click client selector
-    await this.page.click('[data-testid="client-selector"]');
+    // Use dispatchEvent to bypass nextjs portal interception
+    await this.page.evaluate(() => {
+      const clientSelector = document.querySelector('[data-testid="client-selector"]');
+      if (clientSelector) {
+        clientSelector.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+      }
+    });
     
     // Wait for dropdown to open
     await this.page.waitForSelector('[data-testid="client-option"]', { timeout: 5000 });
     
-    // Select the specified client
-    await this.page.click(`[data-testid="client-option"]:has-text("${clientName}")`);
+    // Select the specified client using dispatchEvent
+    await this.page.evaluate((name) => {
+      const options = document.querySelectorAll('[data-testid="client-option"]');
+      for (const option of options) {
+        const primaryText = option.querySelector('.MuiListItemText-primary');
+        if (primaryText?.textContent?.includes(name)) {
+          option.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+          break;
+        }
+      }
+    }, clientName);
     
     // Wait for client to be selected
     await expect(this.page.locator('[data-testid="selected-client"]')).toContainText(clientName);
