@@ -1,0 +1,1287 @@
+{
+  "config": {
+    "configFile": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/playwright.config.ts",
+    "rootDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/global-setup.ts",
+    "globalTeardown": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/global-teardown.ts",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/test-results.json"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "test-results/junit.xml"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 240000
+      },
+      {
+        "outputDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 240000
+      },
+      {
+        "outputDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 240000
+      },
+      {
+        "outputDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "Mobile Chrome",
+        "name": "Mobile Chrome",
+        "testDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 240000
+      },
+      {
+        "outputDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "Mobile Safari",
+        "name": "Mobile Safari",
+        "testDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 240000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.52.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "production-integration-test.spec.ts",
+      "file": "production-integration-test.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Production AIrWAVE Integration Tests with Demo Auth",
+          "file": "production-integration-test.spec.ts",
+          "line": 26,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Complete Platform Integration Test",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 16161,
+                      "error": {
+                        "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('main, [role=\"main\"], .dashboard')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - expect.toBeVisible with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('main, [role=\"main\"], .dashboard')\u001b[22m\n",
+                        "stack": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('main, [role=\"main\"], .dashboard')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - expect.toBeVisible with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('main, [role=\"main\"], .dashboard')\u001b[22m\n\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts:39:36",
+                        "location": {
+                          "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts",
+                          "column": 36,
+                          "line": 39
+                        },
+                        "snippet": "  37 |     // Verify dashboard access\n  38 |     const dashboardContent = page.locator('main, [role=\"main\"], .dashboard');\n> 39 |     await expect(dashboardContent).toBeVisible({ timeout: 10000 });\n     |                                    ^\n  40 |     console.log('✅ Dashboard accessible');\n  41 |     \n  42 |     // Test 2: OpenAI Integration"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts",
+                            "column": 36,
+                            "line": 39
+                          },
+                          "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('main, [role=\"main\"], .dashboard')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - expect.toBeVisible with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('main, [role=\"main\"], .dashboard')\u001b[22m\n\n\n  37 |     // Verify dashboard access\n  38 |     const dashboardContent = page.locator('main, [role=\"main\"], .dashboard');\n> 39 |     await expect(dashboardContent).toBeVisible({ timeout: 10000 });\n     |                                    ^\n  40 |     console.log('✅ Dashboard accessible');\n  41 |     \n  42 |     // Test 2: OpenAI Integration\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts:39:36"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "🚀 Testing complete AIrWAVE platform integration...\n"
+                        },
+                        {
+                          "text": "🎯 Using demo authentication...\n"
+                        },
+                        {
+                          "text": "✅ Demo authentication completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-05-30T10:37:55.913Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-801c4-e-Platform-Integration-Test-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-801c4-e-Platform-Integration-Test-chromium/video.webm"
+                        },
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-801c4-e-Platform-Integration-Test-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts",
+                        "column": 36,
+                        "line": 39
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "3a599091f2e90a06babb-8c56be4bd2a6c6c55de5",
+              "file": "production-integration-test.spec.ts",
+              "line": 31,
+              "column": 7
+            },
+            {
+              "title": "Performance and Load Test",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 22807,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "⚡ Testing performance and load times...\n"
+                        },
+                        {
+                          "text": "Landing page load time: 1384ms\n"
+                        },
+                        {
+                          "text": "🎯 Using demo authentication...\n"
+                        },
+                        {
+                          "text": "✅ Demo authentication completed\n"
+                        },
+                        {
+                          "text": "Authentication flow time: 4438ms\n"
+                        },
+                        {
+                          "text": "OpenAI Test response time: 1957ms ✅\n"
+                        },
+                        {
+                          "text": "Creatomate Test response time: 771ms ✅\n"
+                        },
+                        {
+                          "text": "Health Check response time: 11692ms ✅\n"
+                        },
+                        {
+                          "text": "/dashboard navigation time: 732ms\n"
+                        },
+                        {
+                          "text": "/assets navigation time: 673ms\n"
+                        },
+                        {
+                          "text": "/generate-enhanced navigation time: 675ms\n"
+                        },
+                        {
+                          "text": "⚡ Performance testing completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-05-30T10:38:13.366Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-eb1bf-h-Performance-and-Load-Test-chromium/test-finished-1.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3a599091f2e90a06babb-f20103d97188e27ca13f",
+              "file": "production-integration-test.spec.ts",
+              "line": 197,
+              "column": 7
+            },
+            {
+              "title": "Error Handling and Edge Cases",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6649,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "🛡️ Testing error handling and edge cases...\n"
+                        },
+                        {
+                          "text": "🎯 Using demo authentication...\n"
+                        },
+                        {
+                          "text": "✅ Demo authentication completed\n"
+                        },
+                        {
+                          "text": "Invalid Video Status: ✅ PROPERLY REJECTED\n"
+                        },
+                        {
+                          "text": "Invalid AI Generation: ✅ PROPERLY REJECTED\n"
+                        },
+                        {
+                          "text": "📡 Testing offline behavior...\n"
+                        },
+                        {
+                          "text": "Offline handling: ⚠️ NO SPECIFIC HANDLING\n"
+                        },
+                        {
+                          "text": "🛡️ Error handling testing completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-05-30T10:38:36.568Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-48bdd-ror-Handling-and-Edge-Cases-chromium/test-finished-1.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3a599091f2e90a06babb-2bf5fa0957d7a11b418e",
+              "file": "production-integration-test.spec.ts",
+              "line": 248,
+              "column": 7
+            },
+            {
+              "title": "Complete Platform Integration Test",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 16113,
+                      "error": {
+                        "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('main, [role=\"main\"], .dashboard')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - expect.toBeVisible with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('main, [role=\"main\"], .dashboard')\u001b[22m\n",
+                        "stack": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('main, [role=\"main\"], .dashboard')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - expect.toBeVisible with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('main, [role=\"main\"], .dashboard')\u001b[22m\n\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts:39:36",
+                        "location": {
+                          "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts",
+                          "column": 36,
+                          "line": 39
+                        },
+                        "snippet": "  37 |     // Verify dashboard access\n  38 |     const dashboardContent = page.locator('main, [role=\"main\"], .dashboard');\n> 39 |     await expect(dashboardContent).toBeVisible({ timeout: 10000 });\n     |                                    ^\n  40 |     console.log('✅ Dashboard accessible');\n  41 |     \n  42 |     // Test 2: OpenAI Integration"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts",
+                            "column": 36,
+                            "line": 39
+                          },
+                          "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('main, [role=\"main\"], .dashboard')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - expect.toBeVisible with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('main, [role=\"main\"], .dashboard')\u001b[22m\n\n\n  37 |     // Verify dashboard access\n  38 |     const dashboardContent = page.locator('main, [role=\"main\"], .dashboard');\n> 39 |     await expect(dashboardContent).toBeVisible({ timeout: 10000 });\n     |                                    ^\n  40 |     console.log('✅ Dashboard accessible');\n  41 |     \n  42 |     // Test 2: OpenAI Integration\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts:39:36"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "🚀 Testing complete AIrWAVE platform integration...\n"
+                        },
+                        {
+                          "text": "🎯 Using demo authentication...\n"
+                        },
+                        {
+                          "text": "✅ Demo authentication completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-05-30T10:38:43.640Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-801c4-e-Platform-Integration-Test-firefox/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-801c4-e-Platform-Integration-Test-firefox/video.webm"
+                        },
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-801c4-e-Platform-Integration-Test-firefox/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts",
+                        "column": 36,
+                        "line": 39
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "3a599091f2e90a06babb-8a19baef9bea14a1c2cd",
+              "file": "production-integration-test.spec.ts",
+              "line": 31,
+              "column": 7
+            },
+            {
+              "title": "Performance and Load Test",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 20353,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "⚡ Testing performance and load times...\n"
+                        },
+                        {
+                          "text": "Landing page load time: 848ms\n"
+                        },
+                        {
+                          "text": "🎯 Using demo authentication...\n"
+                        },
+                        {
+                          "text": "✅ Demo authentication completed\n"
+                        },
+                        {
+                          "text": "Authentication flow time: 4348ms\n"
+                        },
+                        {
+                          "text": "OpenAI Test response time: 964ms ✅\n"
+                        },
+                        {
+                          "text": "Creatomate Test response time: 532ms ✅\n"
+                        },
+                        {
+                          "text": "Health Check response time: 10878ms ✅\n"
+                        },
+                        {
+                          "text": "/dashboard navigation time: 745ms\n"
+                        },
+                        {
+                          "text": "/assets navigation time: 688ms\n"
+                        },
+                        {
+                          "text": "/generate-enhanced navigation time: 723ms\n"
+                        },
+                        {
+                          "text": "⚡ Performance testing completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-05-30T10:39:01.099Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-eb1bf-h-Performance-and-Load-Test-firefox/test-finished-1.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3a599091f2e90a06babb-3daedf29e5bb082da285",
+              "file": "production-integration-test.spec.ts",
+              "line": 197,
+              "column": 7
+            },
+            {
+              "title": "Error Handling and Edge Cases",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "firefox",
+                  "projectName": "firefox",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 8854,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "🛡️ Testing error handling and edge cases...\n"
+                        },
+                        {
+                          "text": "🎯 Using demo authentication...\n"
+                        },
+                        {
+                          "text": "✅ Demo authentication completed\n"
+                        },
+                        {
+                          "text": "Invalid Video Status: ✅ PROPERLY REJECTED\n"
+                        },
+                        {
+                          "text": "Invalid AI Generation: ✅ PROPERLY REJECTED\n"
+                        },
+                        {
+                          "text": "📡 Testing offline behavior...\n"
+                        },
+                        {
+                          "text": "Offline handling: ⚠️ BASIC\n"
+                        },
+                        {
+                          "text": "🛡️ Error handling testing completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-05-30T10:39:21.854Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-48bdd-ror-Handling-and-Edge-Cases-firefox/test-finished-1.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3a599091f2e90a06babb-1bf05556ddf6f79e1f42",
+              "file": "production-integration-test.spec.ts",
+              "line": 248,
+              "column": 7
+            },
+            {
+              "title": "Complete Platform Integration Test",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 15375,
+                      "error": {
+                        "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('main, [role=\"main\"], .dashboard')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - expect.toBeVisible with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('main, [role=\"main\"], .dashboard')\u001b[22m\n",
+                        "stack": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('main, [role=\"main\"], .dashboard')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - expect.toBeVisible with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('main, [role=\"main\"], .dashboard')\u001b[22m\n\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts:39:36",
+                        "location": {
+                          "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts",
+                          "column": 36,
+                          "line": 39
+                        },
+                        "snippet": "  37 |     // Verify dashboard access\n  38 |     const dashboardContent = page.locator('main, [role=\"main\"], .dashboard');\n> 39 |     await expect(dashboardContent).toBeVisible({ timeout: 10000 });\n     |                                    ^\n  40 |     console.log('✅ Dashboard accessible');\n  41 |     \n  42 |     // Test 2: OpenAI Integration"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts",
+                            "column": 36,
+                            "line": 39
+                          },
+                          "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('main, [role=\"main\"], .dashboard')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - expect.toBeVisible with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('main, [role=\"main\"], .dashboard')\u001b[22m\n\n\n  37 |     // Verify dashboard access\n  38 |     const dashboardContent = page.locator('main, [role=\"main\"], .dashboard');\n> 39 |     await expect(dashboardContent).toBeVisible({ timeout: 10000 });\n     |                                    ^\n  40 |     console.log('✅ Dashboard accessible');\n  41 |     \n  42 |     // Test 2: OpenAI Integration\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts:39:36"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "🚀 Testing complete AIrWAVE platform integration...\n"
+                        },
+                        {
+                          "text": "🎯 Using demo authentication...\n"
+                        },
+                        {
+                          "text": "✅ Demo authentication completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-05-30T10:39:31.290Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-801c4-e-Platform-Integration-Test-webkit/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-801c4-e-Platform-Integration-Test-webkit/video.webm"
+                        },
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-801c4-e-Platform-Integration-Test-webkit/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts",
+                        "column": 36,
+                        "line": 39
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "3a599091f2e90a06babb-b827f352e94de5a92181",
+              "file": "production-integration-test.spec.ts",
+              "line": 31,
+              "column": 7
+            },
+            {
+              "title": "Performance and Load Test",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 20403,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "⚡ Testing performance and load times...\n"
+                        },
+                        {
+                          "text": "Landing page load time: 492ms\n"
+                        },
+                        {
+                          "text": "🎯 Using demo authentication...\n"
+                        },
+                        {
+                          "text": "✅ Demo authentication completed\n"
+                        },
+                        {
+                          "text": "Authentication flow time: 4457ms\n"
+                        },
+                        {
+                          "text": "OpenAI Test response time: 1775ms ✅\n"
+                        },
+                        {
+                          "text": "Creatomate Test response time: 531ms ✅\n"
+                        },
+                        {
+                          "text": "Health Check response time: 10818ms ✅\n"
+                        },
+                        {
+                          "text": "/dashboard navigation time: 687ms\n"
+                        },
+                        {
+                          "text": "/assets navigation time: 729ms\n"
+                        },
+                        {
+                          "text": "/generate-enhanced navigation time: 665ms\n"
+                        },
+                        {
+                          "text": "⚡ Performance testing completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-05-30T10:39:47.502Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-eb1bf-h-Performance-and-Load-Test-webkit/test-finished-1.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3a599091f2e90a06babb-507673e1418fa7dc6587",
+              "file": "production-integration-test.spec.ts",
+              "line": 197,
+              "column": 7
+            },
+            {
+              "title": "Error Handling and Edge Cases",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "webkit",
+                  "projectName": "webkit",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5488,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "🛡️ Testing error handling and edge cases...\n"
+                        },
+                        {
+                          "text": "🎯 Using demo authentication...\n"
+                        },
+                        {
+                          "text": "✅ Demo authentication completed\n"
+                        },
+                        {
+                          "text": "Invalid Video Status: ✅ PROPERLY REJECTED\n"
+                        },
+                        {
+                          "text": "Invalid AI Generation: ✅ PROPERLY REJECTED\n"
+                        },
+                        {
+                          "text": "📡 Testing offline behavior...\n"
+                        },
+                        {
+                          "text": "Offline handling: ⚠️ NO SPECIFIC HANDLING\n"
+                        },
+                        {
+                          "text": "🛡️ Error handling testing completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-05-30T10:40:08.024Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-48bdd-ror-Handling-and-Edge-Cases-webkit/test-finished-1.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3a599091f2e90a06babb-e685c8385f9b2b3a325b",
+              "file": "production-integration-test.spec.ts",
+              "line": 248,
+              "column": 7
+            },
+            {
+              "title": "Complete Platform Integration Test",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 16390,
+                      "error": {
+                        "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('main, [role=\"main\"], .dashboard')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - expect.toBeVisible with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('main, [role=\"main\"], .dashboard')\u001b[22m\n",
+                        "stack": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('main, [role=\"main\"], .dashboard')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - expect.toBeVisible with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('main, [role=\"main\"], .dashboard')\u001b[22m\n\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts:39:36",
+                        "location": {
+                          "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts",
+                          "column": 36,
+                          "line": 39
+                        },
+                        "snippet": "  37 |     // Verify dashboard access\n  38 |     const dashboardContent = page.locator('main, [role=\"main\"], .dashboard');\n> 39 |     await expect(dashboardContent).toBeVisible({ timeout: 10000 });\n     |                                    ^\n  40 |     console.log('✅ Dashboard accessible');\n  41 |     \n  42 |     // Test 2: OpenAI Integration"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts",
+                            "column": 36,
+                            "line": 39
+                          },
+                          "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('main, [role=\"main\"], .dashboard')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - expect.toBeVisible with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('main, [role=\"main\"], .dashboard')\u001b[22m\n\n\n  37 |     // Verify dashboard access\n  38 |     const dashboardContent = page.locator('main, [role=\"main\"], .dashboard');\n> 39 |     await expect(dashboardContent).toBeVisible({ timeout: 10000 });\n     |                                    ^\n  40 |     console.log('✅ Dashboard accessible');\n  41 |     \n  42 |     // Test 2: OpenAI Integration\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts:39:36"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "🚀 Testing complete AIrWAVE platform integration...\n"
+                        },
+                        {
+                          "text": "🎯 Using demo authentication...\n"
+                        },
+                        {
+                          "text": "✅ Demo authentication completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-05-30T10:40:13.867Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-801c4-e-Platform-Integration-Test-Mobile-Chrome/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-801c4-e-Platform-Integration-Test-Mobile-Chrome/video.webm"
+                        },
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-801c4-e-Platform-Integration-Test-Mobile-Chrome/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts",
+                        "column": 36,
+                        "line": 39
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "3a599091f2e90a06babb-f671ac3e939f778e950b",
+              "file": "production-integration-test.spec.ts",
+              "line": 31,
+              "column": 7
+            },
+            {
+              "title": "Performance and Load Test",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 21369,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "⚡ Testing performance and load times...\n"
+                        },
+                        {
+                          "text": "Landing page load time: 1525ms\n"
+                        },
+                        {
+                          "text": "🎯 Using demo authentication...\n"
+                        },
+                        {
+                          "text": "✅ Demo authentication completed\n"
+                        },
+                        {
+                          "text": "Authentication flow time: 4770ms\n"
+                        },
+                        {
+                          "text": "OpenAI Test response time: 970ms ✅\n"
+                        },
+                        {
+                          "text": "Creatomate Test response time: 561ms ✅\n"
+                        },
+                        {
+                          "text": "Health Check response time: 10830ms ✅\n"
+                        },
+                        {
+                          "text": "/dashboard navigation time: 693ms\n"
+                        },
+                        {
+                          "text": "/assets navigation time: 665ms\n"
+                        },
+                        {
+                          "text": "/generate-enhanced navigation time: 1066ms\n"
+                        },
+                        {
+                          "text": "⚡ Performance testing completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-05-30T10:40:31.271Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-eb1bf-h-Performance-and-Load-Test-Mobile-Chrome/test-finished-1.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3a599091f2e90a06babb-8ef1059c4efa4e1ab04f",
+              "file": "production-integration-test.spec.ts",
+              "line": 197,
+              "column": 7
+            },
+            {
+              "title": "Error Handling and Edge Cases",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Chrome",
+                  "projectName": "Mobile Chrome",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6876,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "🛡️ Testing error handling and edge cases...\n"
+                        },
+                        {
+                          "text": "🎯 Using demo authentication...\n"
+                        },
+                        {
+                          "text": "✅ Demo authentication completed\n"
+                        },
+                        {
+                          "text": "Invalid Video Status: ✅ PROPERLY REJECTED\n"
+                        },
+                        {
+                          "text": "Invalid AI Generation: ✅ PROPERLY REJECTED\n"
+                        },
+                        {
+                          "text": "📡 Testing offline behavior...\n"
+                        },
+                        {
+                          "text": "Offline handling: ⚠️ NO SPECIFIC HANDLING\n"
+                        },
+                        {
+                          "text": "🛡️ Error handling testing completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-05-30T10:40:52.838Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-48bdd-ror-Handling-and-Edge-Cases-Mobile-Chrome/test-finished-1.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3a599091f2e90a06babb-0170ba7513c676fc80dc",
+              "file": "production-integration-test.spec.ts",
+              "line": 248,
+              "column": 7
+            },
+            {
+              "title": "Complete Platform Integration Test",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 15608,
+                      "error": {
+                        "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('main, [role=\"main\"], .dashboard')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - expect.toBeVisible with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('main, [role=\"main\"], .dashboard')\u001b[22m\n",
+                        "stack": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('main, [role=\"main\"], .dashboard')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - expect.toBeVisible with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('main, [role=\"main\"], .dashboard')\u001b[22m\n\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts:39:36",
+                        "location": {
+                          "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts",
+                          "column": 36,
+                          "line": 39
+                        },
+                        "snippet": "  37 |     // Verify dashboard access\n  38 |     const dashboardContent = page.locator('main, [role=\"main\"], .dashboard');\n> 39 |     await expect(dashboardContent).toBeVisible({ timeout: 10000 });\n     |                                    ^\n  40 |     console.log('✅ Dashboard accessible');\n  41 |     \n  42 |     // Test 2: OpenAI Integration"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts",
+                            "column": 36,
+                            "line": 39
+                          },
+                          "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('main, [role=\"main\"], .dashboard')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - expect.toBeVisible with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('main, [role=\"main\"], .dashboard')\u001b[22m\n\n\n  37 |     // Verify dashboard access\n  38 |     const dashboardContent = page.locator('main, [role=\"main\"], .dashboard');\n> 39 |     await expect(dashboardContent).toBeVisible({ timeout: 10000 });\n     |                                    ^\n  40 |     console.log('✅ Dashboard accessible');\n  41 |     \n  42 |     // Test 2: OpenAI Integration\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts:39:36"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "🚀 Testing complete AIrWAVE platform integration...\n"
+                        },
+                        {
+                          "text": "🎯 Using demo authentication...\n"
+                        },
+                        {
+                          "text": "✅ Demo authentication completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-05-30T10:41:00.133Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-801c4-e-Platform-Integration-Test-Mobile-Safari/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-801c4-e-Platform-Integration-Test-Mobile-Safari/video.webm"
+                        },
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-801c4-e-Platform-Integration-Test-Mobile-Safari/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/production-integration-test.spec.ts",
+                        "column": 36,
+                        "line": 39
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "3a599091f2e90a06babb-f95237f8f4399566c58e",
+              "file": "production-integration-test.spec.ts",
+              "line": 31,
+              "column": 7
+            },
+            {
+              "title": "Performance and Load Test",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [
+                    {
+                      "workerIndex": 9,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 20777,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "⚡ Testing performance and load times...\n"
+                        },
+                        {
+                          "text": "Landing page load time: 597ms\n"
+                        },
+                        {
+                          "text": "🎯 Using demo authentication...\n"
+                        },
+                        {
+                          "text": "✅ Demo authentication completed\n"
+                        },
+                        {
+                          "text": "Authentication flow time: 4482ms\n"
+                        },
+                        {
+                          "text": "OpenAI Test response time: 1833ms ✅\n"
+                        },
+                        {
+                          "text": "Creatomate Test response time: 689ms ✅\n"
+                        },
+                        {
+                          "text": "Health Check response time: 10856ms ✅\n"
+                        },
+                        {
+                          "text": "/dashboard navigation time: 713ms\n"
+                        },
+                        {
+                          "text": "/assets navigation time: 664ms\n"
+                        },
+                        {
+                          "text": "/generate-enhanced navigation time: 682ms\n"
+                        },
+                        {
+                          "text": "⚡ Performance testing completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-05-30T10:41:16.495Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-eb1bf-h-Performance-and-Load-Test-Mobile-Safari/test-finished-1.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3a599091f2e90a06babb-c89b49a1200df3ee4b06",
+              "file": "production-integration-test.spec.ts",
+              "line": 197,
+              "column": 7
+            },
+            {
+              "title": "Error Handling and Edge Cases",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "Mobile Safari",
+                  "projectName": "Mobile Safari",
+                  "results": [
+                    {
+                      "workerIndex": 9,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6215,
+                      "errors": [],
+                      "stdout": [
+                        {
+                          "text": "🛡️ Testing error handling and edge cases...\n"
+                        },
+                        {
+                          "text": "🎯 Using demo authentication...\n"
+                        },
+                        {
+                          "text": "✅ Demo authentication completed\n"
+                        },
+                        {
+                          "text": "Invalid Video Status: ✅ PROPERLY REJECTED\n"
+                        },
+                        {
+                          "text": "Invalid AI Generation: ✅ PROPERLY REJECTED\n"
+                        },
+                        {
+                          "text": "📡 Testing offline behavior...\n"
+                        },
+                        {
+                          "text": "Offline handling: ⚠️ NO SPECIFIC HANDLING\n"
+                        },
+                        {
+                          "text": "🛡️ Error handling testing completed\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-05-30T10:41:37.393Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/production-integration-tes-48bdd-ror-Handling-and-Edge-Cases-Mobile-Safari/test-finished-1.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3a599091f2e90a06babb-b79a347b46e562c7b184",
+              "file": "production-integration-test.spec.ts",
+              "line": 248,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-05-30T10:37:53.428Z",
+    "duration": 230201.33000000002,
+    "expected": 10,
+    "skipped": 0,
+    "unexpected": 5,
+    "flaky": 0
+  }
+}
