@@ -46,6 +46,7 @@ import {
 } from '@mui/icons-material';
 import { useNotification } from '@/contexts/NotificationContext';
 import { useClient } from '@/contexts/ClientContext';
+import { useExecutionEvents } from '@/hooks/useRealtime';
 
 interface Execution {
   id: string;
@@ -98,6 +99,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
 }) => {
   const { activeClient } = useClient();
   const { showNotification } = useNotification();
+  const { executionEvents, connectionStatus } = useExecutionEvents();
   const [executions, setExecutions] = useState<Execution[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<ExecutionFilters>({});
@@ -300,8 +302,8 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
             {realtime && (
               <Chip 
                 size="small" 
-                color="primary" 
-                label="Live" 
+                color={connectionStatus === 'connected' ? 'success' : 'warning'} 
+                label={connectionStatus === 'connected' ? 'Live' : 'Offline'} 
                 sx={{ ml: 1 }}
               />
             )}

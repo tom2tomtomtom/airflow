@@ -35,6 +35,7 @@ import {
 import { useRouter } from 'next/router';
 import ClientSelector from './ClientSelector';
 import UserMenu from './UserMenu';
+import NotificationCenter from './NotificationCenter';
 
 const drawerWidth = 240;
 
@@ -168,6 +169,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
           </Typography>
           <Box sx={{ ml: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
             <ClientSelector variant="chip" />
+            <NotificationCenter />
             <UserMenu />
           </Box>
         </Toolbar>
