@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 1
+      "actualWorkers": 4
     },
     "preserveOutput": "always",
     "reporter": [
@@ -43,7 +43,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 4
         },
         "id": "chromium",
         "name": "chromium",
@@ -59,7 +59,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 4
         },
         "id": "firefox",
         "name": "firefox",
@@ -75,7 +75,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 4
         },
         "id": "webkit",
         "name": "webkit",
@@ -91,7 +91,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 4
         },
         "id": "Mobile Chrome",
         "name": "Mobile Chrome",
@@ -107,7 +107,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 4
         },
         "id": "Mobile Safari",
         "name": "Mobile Safari",
@@ -133,91 +133,706 @@
   },
   "suites": [
     {
-      "title": "asset-upload.test.ts",
-      "file": "asset-upload.test.ts",
+      "title": "auth.test.ts",
+      "file": "auth.test.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Asset Upload Flow",
-          "file": "asset-upload.test.ts",
-          "line": 4,
+          "title": "Authentication & Client Context",
+          "file": "auth.test.ts",
+          "line": 3,
           "column": 6,
-          "specs": [
+          "specs": [],
+          "suites": [
             {
-              "title": "should upload image assets successfully",
-              "ok": false,
-              "tags": [],
-              "tests": [
+              "title": "Demo Mode",
+              "file": "auth.test.ts",
+              "line": 4,
+              "column": 8,
+              "specs": [
                 {
-                  "timeout": 60000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
+                  "title": "should load homepage without authentication in demo mode",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
                     {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 35379,
-                      "error": {
-                        "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"speed-dial\"]')\u001b[22m\n\u001b[2m    - locator resolved to <div role=\"presentation\" data-testid=\"speed-dial\" class=\"MuiSpeedDial-root MuiSpeedDial-directionUp css-myd0-MuiSpeedDial-root\">…</div>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    58 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n",
-                        "stack": "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"speed-dial\"]')\u001b[22m\n\u001b[2m    - locator resolved to <div role=\"presentation\" data-testid=\"speed-dial\" class=\"MuiSpeedDial-root MuiSpeedDial-directionUp css-myd0-MuiSpeedDial-root\">…</div>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    58 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/asset-upload.test.ts:25:23",
-                        "location": {
-                          "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/asset-upload.test.ts",
-                          "column": 23,
-                          "line": 25
-                        },
-                        "snippet": "  23 |       uploadTriggered = true;\n  24 |     } else if (await speedDial.isVisible()) {\n> 25 |       await speedDial.click();\n     |                       ^\n  26 |       // Look for upload action in speed dial\n  27 |       const uploadAction = authenticatedPage.locator('[data-testid=\"upload-action\"]');\n  28 |       if (await uploadAction.isVisible()) {"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/asset-upload.test.ts",
-                            "column": 23,
-                            "line": 25
-                          },
-                          "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"speed-dial\"]')\u001b[22m\n\u001b[2m    - locator resolved to <div role=\"presentation\" data-testid=\"speed-dial\" class=\"MuiSpeedDial-root MuiSpeedDial-directionUp css-myd0-MuiSpeedDial-root\">…</div>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    58 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n\n  23 |       uploadTriggered = true;\n  24 |     } else if (await speedDial.isVisible()) {\n> 25 |       await speedDial.click();\n     |                       ^\n  26 |       // Look for upload action in speed dial\n  27 |       const uploadAction = authenticatedPage.locator('[data-testid=\"upload-action\"]');\n  28 |       if (await uploadAction.isVisible()) {\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/asset-upload.test.ts:25:23"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-05-30T01:51:22.047Z",
+                      "timeout": 60000,
                       "annotations": [],
-                      "attachments": [
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
                         {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/asset-upload-Asset-Upload--135c6-d-image-assets-successfully-chromium/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/asset-upload-Asset-Upload--135c6-d-image-assets-successfully-chromium/video.webm"
-                        },
-                        {
-                          "name": "_error-context-0",
-                          "contentType": "text/markdown",
-                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/asset-upload-Asset-Upload--135c6-d-image-assets-successfully-chromium/error-context.md"
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 1354,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T01:58:54.834Z",
+                          "annotations": [],
+                          "attachments": []
                         }
                       ],
-                      "errorLocation": {
-                        "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/asset-upload.test.ts",
-                        "column": 23,
-                        "line": 25
-                      }
+                      "status": "expected"
                     }
                   ],
-                  "status": "unexpected"
+                  "id": "f0c50cfc8142f74e2e08-dbf05830311bbee9c29c",
+                  "file": "auth.test.ts",
+                  "line": 5,
+                  "column": 9
+                },
+                {
+                  "title": "should navigate through app without authentication in demo mode",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [
+                        {
+                          "type": "skip"
+                        }
+                      ],
+                      "expectedStatus": "skipped",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 1,
+                          "parallelIndex": 1,
+                          "status": "skipped",
+                          "duration": 276,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T01:58:54.825Z",
+                          "annotations": [
+                            {
+                              "type": "skip"
+                            }
+                          ],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "f0c50cfc8142f74e2e08-1ab9631cfe77f8956ea5",
+                  "file": "auth.test.ts",
+                  "line": 27,
+                  "column": 9
                 }
-              ],
-              "id": "84ffcb05990751bc1330-52a1e3038c1d03834eaa",
-              "file": "asset-upload.test.ts",
-              "line": 5,
-              "column": 7
+              ]
+            },
+            {
+              "title": "Authentication Flow",
+              "file": "auth.test.ts",
+              "line": 53,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should show login page for unauthenticated users",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 1605,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T01:58:54.820Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "f0c50cfc8142f74e2e08-18606450af3204fff6b5",
+                  "file": "auth.test.ts",
+                  "line": 54,
+                  "column": 9
+                },
+                {
+                  "title": "should handle login with valid credentials",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 2126,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T01:58:54.841Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "f0c50cfc8142f74e2e08-74f699719cc3655e93e0",
+                  "file": "auth.test.ts",
+                  "line": 75,
+                  "column": 9
+                },
+                {
+                  "title": "should handle login with invalid credentials",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 1,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 1502,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T01:58:55.222Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "f0c50cfc8142f74e2e08-ca3d382284b874a5dc92",
+                  "file": "auth.test.ts",
+                  "line": 96,
+                  "column": 9
+                },
+                {
+                  "title": "should handle logout",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 21473,
+                          "error": {
+                            "message": "TimeoutError: page.waitForURL: Timeout 20000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation to \"**/login\" until \"load\"\n============================================================",
+                            "stack": "TimeoutError: page.waitForURL: Timeout 20000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation to \"**/login\" until \"load\"\n============================================================\n    at AuthHelper.logout (/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/helpers/auth-helper.ts:59:21)\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/auth.test.ts:129:9",
+                            "location": {
+                              "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/helpers/auth-helper.ts",
+                              "column": 21,
+                              "line": 59
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39mhelpers/auth-helper.ts:59\n\n  57 |     \n  58 |     // Wait for redirect to login page with longer timeout\n> 59 |     await this.page.waitForURL('**/login', { timeout: 20000 });\n     |                     ^\n  60 |   }\n  61 |\n  62 |   async ensureLoggedIn(email?: string, password?: string) {"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/helpers/auth-helper.ts",
+                                "column": 21,
+                                "line": 59
+                              },
+                              "message": "TimeoutError: page.waitForURL: Timeout 20000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation to \"**/login\" until \"load\"\n============================================================\n\n   at helpers/auth-helper.ts:59\n\n  57 |     \n  58 |     // Wait for redirect to login page with longer timeout\n> 59 |     await this.page.waitForURL('**/login', { timeout: 20000 });\n     |                     ^\n  60 |   }\n  61 |\n  62 |   async ensureLoggedIn(email?: string, password?: string) {\n    at AuthHelper.logout (/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/helpers/auth-helper.ts:59:21)\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/auth.test.ts:129:9"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T01:58:56.289Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/auth-Authentication-Client-329ea-n-Flow-should-handle-logout-chromium/test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/auth-Authentication-Client-329ea-n-Flow-should-handle-logout-chromium/video.webm"
+                            },
+                            {
+                              "name": "_error-context-0",
+                              "contentType": "text/markdown",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/auth-Authentication-Client-329ea-n-Flow-should-handle-logout-chromium/error-context.md"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/helpers/auth-helper.ts",
+                            "column": 21,
+                            "line": 59
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "f0c50cfc8142f74e2e08-9ac5744fe0d4172c6036",
+                  "file": "auth.test.ts",
+                  "line": 121,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Client Context Management",
+              "file": "auth.test.ts",
+              "line": 144,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should display client selector after authentication",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 2,
+                          "status": "failed",
+                          "duration": 13408,
+                          "error": {
+                            "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('[data-testid=\"selected-client\"]')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - expect.toBeVisible with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-testid=\"selected-client\"]')\u001b[22m\n",
+                            "stack": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('[data-testid=\"selected-client\"]')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - expect.toBeVisible with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-testid=\"selected-client\"]')\u001b[22m\n\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/auth.test.ts:150:82",
+                            "location": {
+                              "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/auth.test.ts",
+                              "column": 82,
+                              "line": 150
+                            },
+                            "snippet": "  148 |       \n  149 |       // Should show selected client name\n> 150 |       await expect(authenticatedPage.locator('[data-testid=\"selected-client\"]')).toBeVisible();\n      |                                                                                  ^\n  151 |       \n  152 |       await authenticatedPage.screenshot({ path: 'test-results/client-selector.png' });\n  153 |     });"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/auth.test.ts",
+                                "column": 82,
+                                "line": 150
+                              },
+                              "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('[data-testid=\"selected-client\"]')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - expect.toBeVisible with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-testid=\"selected-client\"]')\u001b[22m\n\n\n  148 |       \n  149 |       // Should show selected client name\n> 150 |       await expect(authenticatedPage.locator('[data-testid=\"selected-client\"]')).toBeVisible();\n      |                                                                                  ^\n  151 |       \n  152 |       await authenticatedPage.screenshot({ path: 'test-results/client-selector.png' });\n  153 |     });\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/auth.test.ts:150:82"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T01:58:56.535Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/auth-Authentication-Client-1c2da-lector-after-authentication-chromium/test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/auth-Authentication-Client-1c2da-lector-after-authentication-chromium/video.webm"
+                            },
+                            {
+                              "name": "_error-context-0",
+                              "contentType": "text/markdown",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/auth-Authentication-Client-1c2da-lector-after-authentication-chromium/error-context.md"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/auth.test.ts",
+                            "column": 82,
+                            "line": 150
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "f0c50cfc8142f74e2e08-67678b6b57b0d48fc378",
+                  "file": "auth.test.ts",
+                  "line": 145,
+                  "column": 9
+                },
+                {
+                  "title": "should allow client switching",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 1,
+                          "parallelIndex": 1,
+                          "status": "failed",
+                          "duration": 33549,
+                          "error": {
+                            "message": "TimeoutError: page.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"client-selector\"]')\u001b[22m\n\u001b[2m    - locator resolved to <div tabindex=\"0\" role=\"button\" data-testid=\"client-selector\" class=\"MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeMedium MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-deletable MuiChip-deletableColorDefault MuiChip-outlinedDefault css-d01nni-MuiButtonBase-root-MuiChip-root\">…</div>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    58 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n",
+                            "stack": "TimeoutError: page.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"client-selector\"]')\u001b[22m\n\u001b[2m    - locator resolved to <div tabindex=\"0\" role=\"button\" data-testid=\"client-selector\" class=\"MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeMedium MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-deletable MuiChip-deletableColorDefault MuiChip-outlinedDefault css-d01nni-MuiButtonBase-root-MuiChip-root\">…</div>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    58 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/auth.test.ts:157:31",
+                            "location": {
+                              "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/auth.test.ts",
+                              "column": 31,
+                              "line": 157
+                            },
+                            "snippet": "  155 |     test('should allow client switching', async ({ authenticatedPage, authHelper }) => {\n  156 |       // Open client selector dropdown\n> 157 |       await authenticatedPage.click('[data-testid=\"client-selector\"]');\n      |                               ^\n  158 |       \n  159 |       // Should show client options\n  160 |       await expect(authenticatedPage.locator('[data-testid=\"client-option\"]')).toHaveCount.greaterThan(0);"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/auth.test.ts",
+                                "column": 31,
+                                "line": 157
+                              },
+                              "message": "TimeoutError: page.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"client-selector\"]')\u001b[22m\n\u001b[2m    - locator resolved to <div tabindex=\"0\" role=\"button\" data-testid=\"client-selector\" class=\"MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeMedium MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-deletable MuiChip-deletableColorDefault MuiChip-outlinedDefault css-d01nni-MuiButtonBase-root-MuiChip-root\">…</div>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    58 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n\n  155 |     test('should allow client switching', async ({ authenticatedPage, authHelper }) => {\n  156 |       // Open client selector dropdown\n> 157 |       await authenticatedPage.click('[data-testid=\"client-selector\"]');\n      |                               ^\n  158 |       \n  159 |       // Should show client options\n  160 |       await expect(authenticatedPage.locator('[data-testid=\"client-option\"]')).toHaveCount.greaterThan(0);\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/auth.test.ts:157:31"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T01:58:56.727Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/auth-Authentication-Client-bb708-ould-allow-client-switching-chromium/test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/auth-Authentication-Client-bb708-ould-allow-client-switching-chromium/video.webm"
+                            },
+                            {
+                              "name": "_error-context-0",
+                              "contentType": "text/markdown",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/auth-Authentication-Client-bb708-ould-allow-client-switching-chromium/error-context.md"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/auth.test.ts",
+                            "column": 31,
+                            "line": 157
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "f0c50cfc8142f74e2e08-cd9a691bea5e61c54809",
+                  "file": "auth.test.ts",
+                  "line": 155,
+                  "column": 9
+                },
+                {
+                  "title": "should persist client selection across page navigation",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 3,
+                          "status": "failed",
+                          "duration": 33793,
+                          "error": {
+                            "message": "TimeoutError: page.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"client-selector\"]')\u001b[22m\n\u001b[2m    - locator resolved to <div tabindex=\"0\" role=\"button\" data-testid=\"client-selector\" class=\"MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeMedium MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-deletable MuiChip-deletableColorDefault MuiChip-outlinedDefault css-d01nni-MuiButtonBase-root-MuiChip-root\">…</div>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    58 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n",
+                            "stack": "TimeoutError: page.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"client-selector\"]')\u001b[22m\n\u001b[2m    - locator resolved to <div tabindex=\"0\" role=\"button\" data-testid=\"client-selector\" class=\"MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeMedium MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-deletable MuiChip-deletableColorDefault MuiChip-outlinedDefault css-d01nni-MuiButtonBase-root-MuiChip-root\">…</div>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    58 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at AuthHelper.selectClient (/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/helpers/auth-helper.ts:79:21)\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/auth.test.ts:183:7",
+                            "location": {
+                              "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/helpers/auth-helper.ts",
+                              "column": 21,
+                              "line": 79
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39mhelpers/auth-helper.ts:79\n\n  77 |     \n  78 |     // Click client selector\n> 79 |     await this.page.click('[data-testid=\"client-selector\"]');\n     |                     ^\n  80 |     \n  81 |     // Wait for dropdown to open\n  82 |     await this.page.waitForSelector('[data-testid=\"client-option\"]', { timeout: 5000 });"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/helpers/auth-helper.ts",
+                                "column": 21,
+                                "line": 79
+                              },
+                              "message": "TimeoutError: page.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"client-selector\"]')\u001b[22m\n\u001b[2m    - locator resolved to <div tabindex=\"0\" role=\"button\" data-testid=\"client-selector\" class=\"MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeMedium MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-deletable MuiChip-deletableColorDefault MuiChip-outlinedDefault css-d01nni-MuiButtonBase-root-MuiChip-root\">…</div>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    58 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n\n   at helpers/auth-helper.ts:79\n\n  77 |     \n  78 |     // Click client selector\n> 79 |     await this.page.click('[data-testid=\"client-selector\"]');\n     |                     ^\n  80 |     \n  81 |     // Wait for dropdown to open\n  82 |     await this.page.waitForSelector('[data-testid=\"client-option\"]', { timeout: 5000 });\n    at AuthHelper.selectClient (/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/helpers/auth-helper.ts:79:21)\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/auth.test.ts:183:7"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T01:58:57.068Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/auth-Authentication-Client-78b6d-tion-across-page-navigation-chromium/test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/auth-Authentication-Client-78b6d-tion-across-page-navigation-chromium/video.webm"
+                            },
+                            {
+                              "name": "_error-context-0",
+                              "contentType": "text/markdown",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/auth-Authentication-Client-78b6d-tion-across-page-navigation-chromium/error-context.md"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/helpers/auth-helper.ts",
+                            "column": 21,
+                            "line": 79
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "f0c50cfc8142f74e2e08-1d4340f50b05da98c590",
+                  "file": "auth.test.ts",
+                  "line": 181,
+                  "column": 9
+                },
+                {
+                  "title": "should show client-specific data isolation",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 2,
+                          "status": "failed",
+                          "duration": 32334,
+                          "error": {
+                            "message": "TimeoutError: page.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"client-selector\"]')\u001b[22m\n\u001b[2m    - locator resolved to <div tabindex=\"0\" role=\"button\" data-testid=\"client-selector\" class=\"MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeMedium MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-deletable MuiChip-deletableColorDefault MuiChip-outlinedDefault css-d01nni-MuiButtonBase-root-MuiChip-root\">…</div>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    58 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n",
+                            "stack": "TimeoutError: page.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"client-selector\"]')\u001b[22m\n\u001b[2m    - locator resolved to <div tabindex=\"0\" role=\"button\" data-testid=\"client-selector\" class=\"MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeMedium MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-deletable MuiChip-deletableColorDefault MuiChip-outlinedDefault css-d01nni-MuiButtonBase-root-MuiChip-root\">…</div>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    58 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at AuthHelper.selectClient (/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/helpers/auth-helper.ts:79:21)\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/auth.test.ts:206:7",
+                            "location": {
+                              "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/helpers/auth-helper.ts",
+                              "column": 21,
+                              "line": 79
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39mhelpers/auth-helper.ts:79\n\n  77 |     \n  78 |     // Click client selector\n> 79 |     await this.page.click('[data-testid=\"client-selector\"]');\n     |                     ^\n  80 |     \n  81 |     // Wait for dropdown to open\n  82 |     await this.page.waitForSelector('[data-testid=\"client-option\"]', { timeout: 5000 });"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/helpers/auth-helper.ts",
+                                "column": 21,
+                                "line": 79
+                              },
+                              "message": "TimeoutError: page.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-testid=\"client-selector\"]')\u001b[22m\n\u001b[2m    - locator resolved to <div tabindex=\"0\" role=\"button\" data-testid=\"client-selector\" class=\"MuiButtonBase-root MuiChip-root MuiChip-outlined MuiChip-sizeMedium MuiChip-colorDefault MuiChip-clickable MuiChip-clickableColorDefault MuiChip-deletable MuiChip-deletableColorDefault MuiChip-outlinedDefault css-d01nni-MuiButtonBase-root-MuiChip-root\">…</div>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    58 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <nextjs-portal></nextjs-portal> intercepts pointer events\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n\n   at helpers/auth-helper.ts:79\n\n  77 |     \n  78 |     // Click client selector\n> 79 |     await this.page.click('[data-testid=\"client-selector\"]');\n     |                     ^\n  80 |     \n  81 |     // Wait for dropdown to open\n  82 |     await this.page.waitForSelector('[data-testid=\"client-option\"]', { timeout: 5000 });\n    at AuthHelper.selectClient (/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/helpers/auth-helper.ts:79:21)\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/auth.test.ts:206:7"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T01:59:10.356Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/auth-Authentication-Client-92016-ent-specific-data-isolation-chromium/test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/auth-Authentication-Client-92016-ent-specific-data-isolation-chromium/video.webm"
+                            },
+                            {
+                              "name": "_error-context-0",
+                              "contentType": "text/markdown",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/auth-Authentication-Client-92016-ent-specific-data-isolation-chromium/error-context.md"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/helpers/auth-helper.ts",
+                            "column": 21,
+                            "line": 79
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "f0c50cfc8142f74e2e08-da5c92dfb2350f7d9b66",
+                  "file": "auth.test.ts",
+                  "line": 202,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Session Management",
+              "file": "auth.test.ts",
+              "line": 238,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should handle session expiry gracefully",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 0,
+                          "status": "failed",
+                          "duration": 11515,
+                          "error": {
+                            "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nLocator: locator(':root')\nExpected pattern: \u001b[32m/.*\\/login/\u001b[39m\nReceived string:  \u001b[31m\"http://localhost:3000/assets\"\u001b[39m\nCall log:\n\u001b[2m  - expect.toHaveURL with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator(':root')\u001b[22m\n\u001b[2m    14 × locator resolved to <html>…</html>\u001b[22m\n\u001b[2m       - unexpected value \"http://localhost:3000/assets\"\u001b[22m\n",
+                            "stack": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nLocator: locator(':root')\nExpected pattern: \u001b[32m/.*\\/login/\u001b[39m\nReceived string:  \u001b[31m\"http://localhost:3000/assets\"\u001b[39m\nCall log:\n\u001b[2m  - expect.toHaveURL with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator(':root')\u001b[22m\n\u001b[2m    14 × locator resolved to <html>…</html>\u001b[22m\n\u001b[2m       - unexpected value \"http://localhost:3000/assets\"\u001b[22m\n\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/auth.test.ts:256:28",
+                            "location": {
+                              "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/auth.test.ts",
+                              "column": 28,
+                              "line": 256
+                            },
+                            "snippet": "  254 |         \n  255 |         // Should redirect to login\n> 256 |         await expect(page).toHaveURL(/.*\\/login/);\n      |                            ^\n  257 |         \n  258 |         // Should show session expired message (if implemented)\n  259 |         // await expect(page.locator('[data-testid=\"session-expired-message\"]')).toBeVisible();"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/auth.test.ts",
+                                "column": 28,
+                                "line": 256
+                              },
+                              "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nLocator: locator(':root')\nExpected pattern: \u001b[32m/.*\\/login/\u001b[39m\nReceived string:  \u001b[31m\"http://localhost:3000/assets\"\u001b[39m\nCall log:\n\u001b[2m  - expect.toHaveURL with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator(':root')\u001b[22m\n\u001b[2m    14 × locator resolved to <html>…</html>\u001b[22m\n\u001b[2m       - unexpected value \"http://localhost:3000/assets\"\u001b[22m\n\n\n  254 |         \n  255 |         // Should redirect to login\n> 256 |         await expect(page).toHaveURL(/.*\\/login/);\n      |                            ^\n  257 |         \n  258 |         // Should show session expired message (if implemented)\n  259 |         // await expect(page.locator('[data-testid=\"session-expired-message\"]')).toBeVisible();\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/auth.test.ts:256:28"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T01:59:18.095Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/auth-Authentication-Client-aab26-e-session-expiry-gracefully-chromium/test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/auth-Authentication-Client-aab26-e-session-expiry-gracefully-chromium/video.webm"
+                            },
+                            {
+                              "name": "_error-context-0",
+                              "contentType": "text/markdown",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/auth-Authentication-Client-aab26-e-session-expiry-gracefully-chromium/error-context.md"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/auth.test.ts",
+                            "column": 28,
+                            "line": 256
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "f0c50cfc8142f74e2e08-a96d41dbc1369bd0417f",
+                  "file": "auth.test.ts",
+                  "line": 239,
+                  "column": 9
+                },
+                {
+                  "title": "should remember login state after page refresh",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 2237,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T01:59:30.062Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "f0c50cfc8142f74e2e08-68cd34417482430e6355",
+                  "file": "auth.test.ts",
+                  "line": 267,
+                  "column": 9
+                }
+              ]
             }
           ]
         }
@@ -226,11 +841,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-05-30T01:51:19.661Z",
-    "duration": 37881.701,
-    "expected": 0,
-    "skipped": 0,
-    "unexpected": 1,
+    "startTime": "2025-05-30T01:58:52.516Z",
+    "duration": 50304.583,
+    "expected": 5,
+    "skipped": 1,
+    "unexpected": 6,
     "flaky": 0
   }
 }
