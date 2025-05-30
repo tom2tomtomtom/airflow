@@ -53,11 +53,21 @@ export default async function handler(
   }
 
   try {
-    // Check if we're in demo mode
+    // Check if we're in demo mode - allow demo signups but simulate them
     if (process.env.NEXT_PUBLIC_DEMO_MODE === 'true') {
-      return res.status(400).json({
-        success: false,
-        error: 'Signup is disabled in demo mode. Use demo@airwave.com / demo123 to login.'
+      // Simulate successful signup in demo mode
+      const demoUser = {
+        id: 'demo-user-' + Date.now(),
+        email: email,
+        name: name,
+        role: 'user',
+        token: 'demo-token-' + Math.random().toString(36).substring(7),
+      };
+
+      return res.status(200).json({
+        success: true,
+        user: demoUser,
+        message: 'Demo account created successfully! This is a simulated signup for demonstration purposes.'
       });
     }
 

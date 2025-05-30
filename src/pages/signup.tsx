@@ -9,7 +9,6 @@ import {
   TextField,
   Button,
   Link,
-  Divider,
   Alert,
   CircularProgress,
   InputAdornment,
@@ -20,14 +19,18 @@ import {
   VisibilityOff,
   Email as EmailIcon,
   Lock as LockIcon,
+  Person as PersonIcon,
 } from '@mui/icons-material';
 
-const LoginPage: React.FC = () => {
+const SignupPage: React.FC = () => {
   const router = useRouter();
-  const { login } = useAuth();
+  const { signup } = useAuth();
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -37,61 +40,39 @@ const LoginPage: React.FC = () => {
     setError('');
 
     try {
-      if (!email || !password) {
-        setError('Please enter both email and password');
+      // Validation
+      if (!name || !email || !password || !confirmPassword) {
+        setError('Please fill in all fields');
         return;
       }
 
-      // Use the AuthContext login function
-      await login(email, password);
+      if (password !== confirmPassword) {
+        setError('Passwords do not match');
+        return;
+      }
+
+      if (password.length < 8) {
+        setError('Password must be at least 8 characters long');
+        return;
+      }
+
+      // Use the AuthContext signup function
+      await signup(email, password, name);
       
-      // Redirect to dashboard on successful login
+      // Redirect to dashboard on successful signup
       router.push('/dashboard');
-    } catch (err) {
-      setError('Invalid email or password');
+    } catch (err: any) {
+      console.error('Signup error:', err);
+      setError(err.message || 'Failed to create account. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDemoLogin = () => {
-    setLoading(true);
-    
-    // Set demo user data
-    const demoUser = {
-      id: 'demo-user-' + Date.now(),
-      email: 'demo@airwave.app',
-      name: 'Demo User',
-      token: 'demo-token-' + Math.random().toString(36).substring(7)
-    };
-    
-    // Store in localStorage to persist auth state
-    localStorage.setItem('airwave_user', JSON.stringify(demoUser));
-    
-    // Also set a demo client
-    const demoClient = {
-      id: 'demo-client-' + Date.now(),
-      name: 'Demo Company',
-      description: 'Demo client for testing AIrWAVE features',
-      primaryColor: '#1976d2',
-      secondaryColor: '#dc004e',
-      logoUrl: ''
-    };
-    
-    localStorage.setItem('airwave_active_client', JSON.stringify(demoClient));
-    localStorage.setItem('airwave_clients', JSON.stringify([demoClient]));
-    
-    setTimeout(() => {
-      setLoading(false);
-      // Force a page reload to trigger auth context update
-      window.location.href = '/';
-    }, 500);
-  };
-
   return (
     <>
       <Head>
-        <title>Login | AIrWAVE</title>
+        <title>Sign Up | AIrWAVE</title>
       </Head>
       <Box
         sx={{
@@ -129,7 +110,7 @@ const LoginPage: React.FC = () => {
               AIrWAVE
             </Typography>
             <Typography variant="h6" color="text.secondary">
-              AI-Powered Digital Asset Production
+              Create Your Account
             </Typography>
           </Box>
 
@@ -139,7 +120,25 @@ const LoginPage: React.FC = () => {
             </Alert>
           )}
 
-          <form onSubmit={handleSubmit} data-testid="login-form">
+          <form onSubmit={handleSubmit} data-testid="signup-form">
+            <TextField
+              fullWidth
+              label="Full Name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              disabled={loading}
+              sx={{ mb: 2 }}
+              data-testid="name-input"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PersonIcon color="action" />
+                  </InputAdornment>
+                ),
+              }}
+            />
+
             <TextField
               fullWidth
               label="Email"
@@ -165,8 +164,9 @@ const LoginPage: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={loading}
-              sx={{ mb: 3 }}
+              sx={{ mb: 2 }}
               data-testid="password-input"
+              helperText="Must be at least 8 characters long"
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -186,15 +186,43 @@ const LoginPage: React.FC = () => {
               }}
             />
 
+            <TextField
+              fullWidth
+              label="Confirm Password"
+              type={showConfirmPassword ? 'text' : 'password'}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              disabled={loading}
+              sx={{ mb: 3 }}
+              data-testid="confirm-password-input"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <LockIcon color="action" />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      edge="end"
+                    >
+                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+
             <Button
               type="submit"
               fullWidth
               variant="contained"
               size="large"
               disabled={loading}
-              data-testid="sign-in-button"
+              data-testid="sign-up-button"
               sx={{
-                mb: 2,
+                mb: 3,
                 height: 48,
                 backgroundColor: '#FBBF24', // Carbon Black amber
                 color: '#000000',
@@ -204,52 +232,34 @@ const LoginPage: React.FC = () => {
                 },
               }}
             >
-              {loading ? <CircularProgress size={24} color="inherit" /> : 'Sign In'}
+              {loading ? <CircularProgress size={24} color="inherit" /> : 'Create Account'}
             </Button>
           </form>
 
-          <Divider sx={{ my: 3 }}>
-            <Typography variant="body2" color="text.secondary">
-              OR
-            </Typography>
-          </Divider>
-
-          <Button
-            fullWidth
-            variant="outlined"
-            size="large"
-            onClick={handleDemoLogin}
-            disabled={loading}
-            data-testid="demo-login-button"
-            sx={{
-              mb: 3,
-              height: 48,
-              borderColor: '#FBBF24',
-              color: '#FBBF24',
-              '&:hover': {
-                backgroundColor: 'rgba(251, 191, 36, 0.08)',
-                borderColor: '#FBBF24',
-              },
-            }}
-          >
-            Continue with Demo
-          </Button>
-
           <Box sx={{ textAlign: 'center' }}>
             <Typography variant="body2" color="text.secondary">
-              Don&apos;t have an account?{' '}
+              Already have an account?{' '}
               <Link
-                href="/signup"
+                href="/login"
                 sx={{ color: '#FBBF24', textDecoration: 'none' }}
               >
-                Sign up
+                Sign in
               </Link>
             </Typography>
           </Box>
 
           <Box sx={{ mt: 3, p: 2, bgcolor: '#111827', borderRadius: 2, border: '1px solid rgba(251, 191, 36, 0.2)' }}>
             <Typography variant="caption" color="text.secondary" align="center" display="block">
-              <strong>Demo Note:</strong> Click &quot;Continue with Demo&quot; to explore the application with sample data.
+              {process.env.NEXT_PUBLIC_DEMO_MODE === 'true' ? (
+                <>
+                  <strong>Demo Note:</strong> This will create a demo account for testing purposes only. 
+                  Data will not be permanently stored.
+                </>
+              ) : (
+                <>
+                  <strong>Note:</strong> By creating an account, you agree to our Terms of Service and Privacy Policy.
+                </>
+              )}
             </Typography>
           </Box>
         </Paper>
@@ -258,4 +268,4 @@ const LoginPage: React.FC = () => {
   );
 };
 
-export default LoginPage;
+export default SignupPage;
