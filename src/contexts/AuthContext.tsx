@@ -38,14 +38,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // In a real app, validate stored token with the server
-        const storedUser = localStorage.getItem('airwave_user');
-        if (storedUser) {
-          setUser(JSON.parse(storedUser));
+        // Check if demo mode is enabled
+        if (process.env.NEXT_PUBLIC_DEMO_MODE === 'true') {
+          setLoading(false);
+          return;
+        }
+
+        // Only access localStorage in browser environment
+        if (typeof window !== 'undefined') {
+          const storedUser = localStorage.getItem('airwave_user');
+          if (storedUser) {
+            setUser(JSON.parse(storedUser));
+          }
         }
       } catch (error) {
         console.error('Authentication error:', error);
-        localStorage.removeItem('airwave_user');
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('airwave_user');
+        }
         setUser(null);
       } finally {
         setLoading(false);
@@ -75,7 +85,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       
       if (data.success && data.user) {
-        localStorage.setItem('airwave_user', JSON.stringify(data.user));
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('airwave_user', JSON.stringify(data.user));
+        }
         setUser(data.user);
         
         // Redirect to dashboard or the intended page
@@ -112,7 +124,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       
       if (data.success && data.user) {
-        localStorage.setItem('airwave_user', JSON.stringify(data.user));
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('airwave_user', JSON.stringify(data.user));
+        }
         setUser(data.user);
         
         // Redirect to dashboard after signup
@@ -130,9 +144,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Logout function
   const logout = () => {
-    localStorage.removeItem('airwave_user');
-    localStorage.removeItem('airwave_active_client');
-    localStorage.removeItem('airwave_clients');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('airwave_user');
+      localStorage.removeItem('airwave_active_client');
+      localStorage.removeItem('airwave_clients');
+    }
     setUser(null);
     router.push('/login');
   };
