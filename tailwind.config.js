@@ -5,6 +5,10 @@ module.exports = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  // Disable Tailwind's preflight styles to prevent conflicts with Material-UI
+  corePlugins: {
+    preflight: false,
+  },
   theme: {
     extend: {
       colors: {

@@ -10,7 +10,7 @@
   padding: 0;
 }
 
-/* Import Tailwind */
+/* Import Tailwind (preflight disabled in config to avoid conflicts with MUI) */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -53,20 +53,20 @@
   -webkit-font-smoothing: antialiased !important;
 }
 
-/* MUI Icon overrides */
+/* MUI Icon overrides - Fixed sizing */
 .MuiSvgIcon-root {
   width: 1em !important;
   height: 1em !important;
   display: inline-block !important;
-  font-size: 1.5rem !important;
+  font-size: 24px !important; /* Fixed size instead of rem to prevent scaling issues */
   transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms !important;
   flex-shrink: 0 !important;
   user-select: none !important;
 }
 
-/* Input adornment icon sizing */
+/* Small icons for input adornments */
 .MuiInputAdornment-root .MuiSvgIcon-root {
-  font-size: 1.25rem !important;
+  font-size: 20px !important;
 }
 
 /* Icon button sizing */
@@ -75,7 +75,38 @@
 }
 
 .MuiIconButton-root .MuiSvgIcon-root {
-  font-size: 1.5rem !important;
+  font-size: 24px !important;
+}
+
+/* Small icon buttons */
+.MuiIconButton-sizeSmall .MuiSvgIcon-root {
+  font-size: 18px !important;
+}
+
+/* Large icon buttons */
+.MuiIconButton-sizeLarge .MuiSvgIcon-root {
+  font-size: 32px !important;
+}
+
+/* Avatar icons */
+.MuiAvatar-root .MuiSvgIcon-root {
+  font-size: 20px !important;
+}
+
+/* Toolbar icons */
+.MuiToolbar-root .MuiSvgIcon-root {
+  font-size: 24px !important;
+}
+
+/* List item icons */
+.MuiListItemIcon-root .MuiSvgIcon-root {
+  font-size: 24px !important;
+}
+
+/* Prevent icon scaling issues */
+svg.MuiSvgIcon-root {
+  max-width: none !important;
+  max-height: none !important;
 }
 
 /* Base body styles */
