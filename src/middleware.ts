@@ -48,6 +48,9 @@ const publicRoutes = [
   '/api/test/integration-suite',
   // AI generation endpoints for testing
   '/api/ai/generate',
+  '/api/check-video-status',
+  '/api/creatomate/test',
+  '/api/creatomate/templates',
 ];
 
 // Define routes that are allowed in demo mode

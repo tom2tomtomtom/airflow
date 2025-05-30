@@ -1,9 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
-import { env } from '@/lib/env';
-import axios from 'axios';
-
-const RUNWAY_API_URL = 'https://api.runwayml.com/v1';
+import { env, hasCreatomate } from '@/lib/env';
+import { creatomateService } from '@/services/creatomate';
 
 export default async function handler(
   req: NextApiRequest,
@@ -46,18 +44,15 @@ export default async function handler(
       jobId = asset.metadata.generation_job_id;
     }
 
-    // Check job status from RunwayML
-    const response = await axios.get(
-      `${RUNWAY_API_URL}/generations/${jobId}`,
-      {
-        headers: {
-          'Authorization': `Bearer ${env.RUNWAY_API_KEY}`,
-          'X-Runway-Version': '2024-01-01',
-        },
-      }
-    );
+    // Check render status from Creatomate
+    if (!hasCreatomate) {
+      return res.status(503).json({
+        success: false,
+        message: 'Video generation service not available',
+      });
+    }
 
-    const job = response.data;
+    const job = await creatomateService.getRenderStatus(jobId);
     
     // Get asset details if we have asset_id
     let asset = null;
@@ -76,10 +71,9 @@ export default async function handler(
         id: job.id,
         status: job.status,
         progress: job.progress || 0,
-        created_at: job.created_at,
-        completed_at: job.completed_at,
-        estimated_time_remaining: job.estimated_time_remaining,
-        result: job.result,
+        created_at: job.createdAt,
+        completed_at: job.completedAt,
+        url: job.url,
         error: job.error,
       },
       asset,
@@ -89,10 +83,10 @@ export default async function handler(
   } catch (error) {
     console.error('Status check error:', error);
     
-    if (axios.isAxiosError(error) && error.response?.status === 404) {
+    if (error instanceof Error && error.message.includes('not found')) {
       return res.status(404).json({
         success: false,
-        message: 'Job not found',
+        message: 'Render job not found',
       });
     }
     
@@ -106,13 +100,13 @@ export default async function handler(
 
 function getStatusMessage(status: string, progress?: number): string {
   switch (status) {
-    case 'PENDING':
+    case 'pending':
       return 'Your video is queued for generation...';
-    case 'IN_PROGRESS':
+    case 'rendering':
       return `Generating your video... ${progress || 0}% complete`;
-    case 'COMPLETED':
+    case 'completed':
       return 'Your video is ready!';
-    case 'FAILED':
+    case 'failed':
       return 'Video generation failed. Please try again.';
     default:
       return 'Checking status...';
