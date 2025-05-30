@@ -99,7 +99,7 @@ const LoginPage: React.FC = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          backgroundColor: '#030712', // Carbon Black primary background
           padding: 3,
         }}
       >
@@ -119,7 +119,7 @@ const LoginPage: React.FC = () => {
               gutterBottom
               sx={{
                 fontWeight: 700,
-                background: 'linear-gradient(45deg, #667eea, #764ba2)',
+                background: 'linear-gradient(45deg, #FBBF24, #F59E0B)',
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -196,9 +196,11 @@ const LoginPage: React.FC = () => {
               sx={{
                 mb: 2,
                 height: 48,
-                background: 'linear-gradient(45deg, #667eea, #764ba2)',
+                backgroundColor: '#FBBF24', // Carbon Black amber
+                color: '#000000',
                 '&:hover': {
-                  background: 'linear-gradient(45deg, #5a67d8, #6b46c1)',
+                  backgroundColor: '#F59E0B',
+                  boxShadow: '0 0 0 2px rgba(251, 191, 36, 0.3)',
                 },
               }}
             >
@@ -222,10 +224,11 @@ const LoginPage: React.FC = () => {
             sx={{
               mb: 3,
               height: 48,
-              borderColor: 'primary.main',
-              color: 'primary.main',
+              borderColor: '#FBBF24',
+              color: '#FBBF24',
               '&:hover': {
-                backgroundColor: 'primary.light',
+                backgroundColor: 'rgba(251, 191, 36, 0.08)',
+                borderColor: '#FBBF24',
               },
             }}
           >
@@ -241,14 +244,14 @@ const LoginPage: React.FC = () => {
                   e.preventDefault();
                   // TODO: Navigate to signup page
                 }}
-                sx={{ color: 'primary.main', textDecoration: 'none' }}
+                sx={{ color: '#FBBF24', textDecoration: 'none' }}
               >
                 Sign up
               </Link>
             </Typography>
           </Box>
 
-          <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
+          <Box sx={{ mt: 3, p: 2, bgcolor: '#111827', borderRadius: 2, border: '1px solid rgba(251, 191, 36, 0.2)' }}>
             <Typography variant="caption" color="text.secondary" align="center" display="block">
               <strong>Demo Note:</strong> Click &quot;Continue with Demo&quot; to explore the application with sample data.
             </Typography>
