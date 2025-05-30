@@ -1,122 +1,93 @@
-/**
- * AIrWAVE Storage Bucket Setup Script
- * 
- * This script helps you set up the storage bucket in Supabase.
- * Since bucket creation requires Dashboard access, this script
- * provides the exact configuration you need.
- */
+const { createClient } = require('@supabase/supabase-js');
+require('dotenv').config();
 
-const bucketConfig = {
-  name: 'assets',
-  public: true,
-  allowedMimeTypes: [
-    // Images
-    'image/jpeg',
-    'image/jpg',
-    'image/png',
-    'image/gif',
-    'image/webp',
-    'image/svg+xml',
-    'image/bmp',
-    'image/tiff',
-    'image/x-icon',
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
+async function setupStorageBucket() {
+  console.log('🗄️ Setting up AIrWAVE Storage Bucket...');
+  
+  try {
+    // Check if assets bucket exists
+    const { data: buckets, error: listError } = await supabase.storage.listBuckets();
     
-    // Videos
-    'video/mp4',
-    'video/quicktime',
-    'video/x-msvideo',
-    'video/x-ms-wmv',
-    'video/x-flv',
-    'video/webm',
-    'video/x-matroska',
-    'video/x-m4v',
-    
-    // Audio
-    'audio/mpeg',
-    'audio/mp3',
-    'audio/wav',
-    'audio/aac',
-    'audio/ogg',
-    'audio/flac',
-    'audio/x-m4a',
-    
-    // Documents
-    'text/plain',
-    'text/csv',
-    'text/markdown',
-    'application/pdf',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'application/rtf'
-  ],
-  fileSizeLimit: 104857600, // 100MB in bytes
-  corsRules: [
-    {
-      "origin": ["*"],
-      "methods": ["GET", "POST", "PUT", "DELETE", "HEAD"],
-      "headers": ["*"],
-      "maxAge": 3600
+    if (listError) {
+      console.error('❌ Error listing buckets:', listError);
+      return;
     }
-  ]
-};
+    
+    const assetsBucket = buckets.find(bucket => bucket.name === 'assets');
+    
+    if (assetsBucket) {
+      console.log('✅ Assets bucket already exists');
+    } else {
+      // Create assets bucket
+      console.log('📦 Creating assets bucket...');
+      const { data, error } = await supabase.storage.createBucket('assets', {
+        public: true
+      });
+      
+      if (error) {
+        console.error('❌ Error creating bucket:', error);
+        return;
+      }
+      
+      console.log('✅ Assets bucket created successfully');
+    }
+    
+    // Set up storage policies
+    console.log('🔒 Setting up storage policies...');
+    
+    const policies = [
+      {
+        name: 'Allow authenticated uploads',
+        sql: `
+          CREATE POLICY "Allow authenticated uploads" ON storage.objects 
+          FOR INSERT WITH CHECK (
+            bucket_id = 'assets' AND 
+            auth.role() = 'authenticated'
+          );
+        `
+      },
+      {
+        name: 'Allow public downloads',
+        sql: `
+          CREATE POLICY "Allow public downloads" ON storage.objects 
+          FOR SELECT USING (bucket_id = 'assets');
+        `
+      },
+      {
+        name: 'Allow authenticated deletes',
+        sql: `
+          CREATE POLICY "Allow authenticated deletes" ON storage.objects 
+          FOR DELETE USING (
+            bucket_id = 'assets' AND 
+            auth.uid()::text = owner
+          );
+        `
+      }
+    ];
+    
+    for (const policy of policies) {
+      try {
+        const { error } = await supabase.rpc('exec_sql', { sql: policy.sql });
+        if (error && !error.message.includes('already exists')) {
+          console.warn(`⚠️ Policy "${policy.name}":`, error.message);
+        } else {
+          console.log(`✅ Policy "${policy.name}" configured`);
+        }
+      } catch (err) {
+        console.log(`ℹ️ Policy "${policy.name}" may already exist`);
+      }
+    }
+    
+    console.log('🎉 Storage setup complete!');
+    
+  } catch (error) {
+    console.error('❌ Setup failed:', error);
+  }
+}
 
-console.log(`
-========================================
-AIrWAVE Storage Bucket Setup Instructions
-========================================
-
-1. Go to your Supabase Dashboard
-2. Navigate to Storage section
-3. Click "New bucket"
-4. Use these settings:
-
-   Name: ${bucketConfig.name}
-   Public: ${bucketConfig.public ? 'Yes (Enable)' : 'No'}
-   File size limit: ${bucketConfig.fileSizeLimit / 1024 / 1024}MB
-   Allowed MIME types: Custom list (see below)
-
-5. After creating the bucket, click on it and go to "Policies"
-6. Add these RLS policies:
-
-   POLICY: "Allow authenticated users to upload"
-   Operation: INSERT
-   Target roles: authenticated
-   WITH CHECK: true
-
-   POLICY: "Allow authenticated users to update their own uploads"
-   Operation: UPDATE
-   Target roles: authenticated
-   USING: (auth.uid() = owner)
-   WITH CHECK: (auth.uid() = owner)
-
-   POLICY: "Allow public to view"
-   Operation: SELECT
-   Target roles: anon, authenticated
-   USING: true
-
-   POLICY: "Allow users to delete their own uploads"
-   Operation: DELETE
-   Target roles: authenticated
-   USING: (auth.uid() = owner)
-
-7. Configure CORS (in bucket settings):
-`);
-
-console.log('   CORS Configuration (paste this JSON):');
-console.log(JSON.stringify(bucketConfig.corsRules, null, 2));
-
-console.log(`
-8. Allowed MIME types (add these one by one):`);
-bucketConfig.allowedMimeTypes.forEach(type => {
-  console.log(`   - ${type}`);
-});
-
-console.log(`
-========================================
-SQL to verify bucket (run after creation):
-========================================
-
-SELECT * FROM storage.buckets WHERE name = 'assets';
-
-========================================
-`);
+setupStorageBucket();

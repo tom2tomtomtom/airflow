@@ -83,27 +83,54 @@ export const AssetUploadModal: React.FC<AssetUploadModalProps> = ({
     setUploadProgress(0);
 
     try {
-      // Simulate upload progress
-      for (let i = 0; i <= 100; i += 10) {
-        setUploadProgress(i);
-        await new Promise((resolve) => setTimeout(resolve, 100));
-      }
+      // Create FormData for file upload
+      const formData = new FormData();
+      files.forEach((filePreview) => {
+        formData.append('files', filePreview.file);
+      });
 
-      // Simulate success
-      setTimeout(() => {
-        setUploading(false);
-        setUploadProgress(0);
-        setFiles([]);
-        onUploadComplete?.();
-        onClose();
-        
-        // Show success notification (mock)
-        console.log(`Successfully uploaded ${files.length} file(s)`);
-      }, 500);
+      // Upload files with progress tracking
+      const xhr = new XMLHttpRequest();
+      
+      // Track upload progress
+      xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable) {
+          const progress = Math.round((e.loaded / e.total) * 100);
+          setUploadProgress(progress);
+        }
+      });
+
+      // Handle completion
+      const uploadPromise = new Promise((resolve, reject) => {
+        xhr.onload = () => {
+          if (xhr.status === 200) {
+            resolve(JSON.parse(xhr.responseText));
+          } else {
+            reject(new Error(`Upload failed: ${xhr.statusText}`));
+          }
+        };
+        xhr.onerror = () => reject(new Error('Upload failed'));
+      });
+
+      // Start upload
+      xhr.open('POST', '/api/assets/upload');
+      xhr.send(formData);
+
+      const result = await uploadPromise;
+      
+      // Success
+      setUploading(false);
+      setUploadProgress(0);
+      setFiles([]);
+      onUploadComplete?.();
+      onClose();
+      
+      console.log('Successfully uploaded files:', result);
     } catch (error) {
       setUploading(false);
       setUploadProgress(0);
       console.error('Upload failed:', error);
+      alert('Upload failed. Please try again.');
     }
   };
 
