@@ -129,10 +129,10 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
       "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.openai.com https://api.elevenlabs.io https://api.creatomate.com ws://localhost:*"
     );
   } else {
-    // Stricter CSP for production
+    // Production CSP - Allow unsafe-inline for Material-UI emotion styles
     cspBase.push(
       "script-src 'self'",
-      "style-src 'self' https://fonts.googleapis.com",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.openai.com https://api.elevenlabs.io https://api.creatomate.com"
     );
   }
