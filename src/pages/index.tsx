@@ -18,12 +18,17 @@ const HomePage = () => {
   if (loading) {
     return (
       <Box
+        className="loading-container"
         display="flex"
         alignItems="center"
         justifyContent="center"
         minHeight="100vh"
+        sx={{
+          backgroundColor: 'var(--carbon-bg-primary)',
+          color: 'var(--carbon-text-primary)',
+        }}
       >
-        <Typography>Loading...</Typography>
+        <Typography sx={{ color: 'var(--carbon-text-primary)' }}>Loading...</Typography>
       </Box>
     );
   }
@@ -37,7 +42,7 @@ const HomePage = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(45deg, #1976d2 30%, #21CBF3 90%)',
+          backgroundColor: 'var(--carbon-bg-primary)',
         }}
       >
         <Container maxWidth="sm">
@@ -49,7 +54,7 @@ const HomePage = () => {
               borderRadius: 2,
             }}
           >
-            <Typography variant="h2" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+            <Typography variant="h2" gutterBottom sx={{ fontWeight: 'bold', color: 'var(--carbon-amber-main)' }}>
               AIrWAVE
             </Typography>
             <Typography variant="h5" color="textSecondary" paragraph>
@@ -99,12 +104,17 @@ const HomePage = () => {
   // Redirecting if authenticated
   return (
     <Box
+      className="loading-container"
       display="flex"
       alignItems="center"
       justifyContent="center"
       minHeight="100vh"
+      sx={{
+        backgroundColor: 'var(--carbon-bg-primary)',
+        color: 'var(--carbon-text-primary)',
+      }}
     >
-      <Typography>Redirecting to dashboard...</Typography>
+      <Typography sx={{ color: 'var(--carbon-text-primary)' }}>Redirecting to dashboard...</Typography>
     </Box>
   );
 };

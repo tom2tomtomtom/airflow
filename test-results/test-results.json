@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 1
+      "actualWorkers": 4
     },
     "preserveOutput": "always",
     "reporter": [
@@ -43,7 +43,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 4
         },
         "id": "chromium",
         "name": "chromium",
@@ -52,14 +52,14 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 10000
+        "timeout": 60000
       },
       {
         "outputDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 4
         },
         "id": "firefox",
         "name": "firefox",
@@ -68,14 +68,14 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 10000
+        "timeout": 60000
       },
       {
         "outputDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 4
         },
         "id": "webkit",
         "name": "webkit",
@@ -84,14 +84,14 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 10000
+        "timeout": 60000
       },
       {
         "outputDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 4
         },
         "id": "Mobile Chrome",
         "name": "Mobile Chrome",
@@ -100,14 +100,14 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 10000
+        "timeout": 60000
       },
       {
         "outputDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results",
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 1
+          "actualWorkers": 4
         },
         "id": "Mobile Safari",
         "name": "Mobile Safari",
@@ -116,7 +116,7 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 10000
+        "timeout": 60000
       }
     ],
     "shard": null,
@@ -124,41 +124,36 @@
     "updateSourceMethod": "patch",
     "version": "1.52.0",
     "workers": 4,
-    "webServer": {
-      "command": "npm run dev",
-      "url": "http://localhost:3000",
-      "reuseExistingServer": true,
-      "timeout": 120000
-    }
+    "webServer": null
   },
   "suites": [
     {
-      "title": "auth.test.ts",
-      "file": "auth.test.ts",
+      "title": "airwave-ui-verification.test.ts",
+      "file": "airwave-ui-verification.test.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Authentication & Client Context",
-          "file": "auth.test.ts",
-          "line": 3,
+          "title": "AIrWAVE UI Verification Suite",
+          "file": "airwave-ui-verification.test.ts",
+          "line": 51,
           "column": 6,
           "specs": [],
           "suites": [
             {
-              "title": "Demo Mode",
-              "file": "auth.test.ts",
-              "line": 4,
+              "title": "Landing Page Tests",
+              "file": "airwave-ui-verification.test.ts",
+              "line": 53,
               "column": 8,
               "specs": [
                 {
-                  "title": "should load homepage without authentication in demo mode",
-                  "ok": false,
+                  "title": "should load landing page with Carbon Black theme",
+                  "ok": true,
                   "tags": [],
                   "tests": [
                     {
-                      "timeout": 10000,
+                      "timeout": 60000,
                       "annotations": [],
                       "expectedStatus": "passed",
                       "projectId": "chromium",
@@ -167,55 +162,755 @@
                         {
                           "workerIndex": 0,
                           "parallelIndex": 0,
-                          "status": "timedOut",
-                          "duration": 10274,
-                          "error": {
-                            "message": "\u001b[31mTest timeout of 10000ms exceeded.\u001b[39m",
-                            "stack": "\u001b[31mTest timeout of 10000ms exceeded.\u001b[39m"
-                          },
-                          "errors": [
-                            {
-                              "message": "\u001b[31mTest timeout of 10000ms exceeded.\u001b[39m"
-                            },
-                            {
-                              "location": {
-                                "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/auth.test.ts",
-                                "column": 68,
-                                "line": 22
-                              },
-                              "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('[data-testid=\"login-button\"]')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - expect.toBeVisible with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-testid=\"login-button\"]')\u001b[22m\n\n\n  20 |         // Not in demo mode, should show landing page with login buttons\n  21 |         await expect(page).toHaveTitle(/AIrWAVE/);\n> 22 |         await expect(page.locator('[data-testid=\"login-button\"]')).toBeVisible();\n     |                                                                    ^\n  23 |         await expect(page.locator('[data-testid=\"get-started-button\"]')).toBeVisible();\n  24 |       }\n  25 |     });\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/auth.test.ts:22:68"
-                            }
-                          ],
+                          "status": "passed",
+                          "duration": 3986,
+                          "errors": [],
                           "stdout": [],
                           "stderr": [],
                           "retry": 0,
-                          "startTime": "2025-05-30T02:58:29.795Z",
+                          "startTime": "2025-05-30T05:57:26.985Z",
                           "annotations": [],
                           "attachments": [
                             {
                               "name": "screenshot",
                               "contentType": "image/png",
-                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/auth-Authentication-Client-e4d19-authentication-in-demo-mode-chromium/test-failed-1.png"
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/airwave-ui-verification-AI-e407c-age-with-Carbon-Black-theme-chromium/test-finished-1.png"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b031cf0fde6766466086-7ab881243d4523b03133",
+                  "file": "airwave-ui-verification.test.ts",
+                  "line": 54,
+                  "column": 9
+                },
+                {
+                  "title": "should have proper amber accent colors",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 1,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 3981,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Button styles: {\n  backgroundColor: \u001b[32m'rgb(239, 239, 239)'\u001b[39m,\n  color: \u001b[32m'rgb(0, 0, 0)'\u001b[39m,\n  borderColor: \u001b[32m'rgb(0, 0, 0)'\u001b[39m\n}\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T05:57:26.974Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/airwave-ui-verification-AI-f65bc--proper-amber-accent-colors-chromium/test-finished-1.png"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b031cf0fde6766466086-a30a75466c8b529f5511",
+                  "file": "airwave-ui-verification.test.ts",
+                  "line": 84,
+                  "column": 9
+                },
+                {
+                  "title": "should have no JavaScript console errors",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 2,
+                          "parallelIndex": 2,
+                          "status": "failed",
+                          "duration": 6960,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m3\u001b[39m\nReceived:   \u001b[31m9\u001b[39m",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m3\u001b[39m\nReceived:   \u001b[31m9\u001b[39m\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/airwave-ui-verification.test.ts:132:37",
+                            "location": {
+                              "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/airwave-ui-verification.test.ts",
+                              "column": 37,
+                              "line": 132
+                            },
+                            "snippet": "  130 |       }\n  131 |       \n> 132 |       expect(criticalErrors.length).toBeLessThan(3); // Allow for minor non-critical errors\n      |                                     ^\n  133 |     });\n  134 |   });\n  135 |"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/airwave-ui-verification.test.ts",
+                                "column": 37,
+                                "line": 132
+                              },
+                              "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m3\u001b[39m\nReceived:   \u001b[31m9\u001b[39m\n\n  130 |       }\n  131 |       \n> 132 |       expect(criticalErrors.length).toBeLessThan(3); // Allow for minor non-critical errors\n      |                                     ^\n  133 |     });\n  134 |   });\n  135 |\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/airwave-ui-verification.test.ts:132:37"
+                            }
+                          ],
+                          "stdout": [
+                            {
+                              "text": "Console errors found: [\n  \u001b[32m`Refused to apply inline style because it violates the following Content Security Policy directive: \"style-src 'self' https://fonts.googleapis.com\". Either the 'unsafe-inline' keyword, a hash ('sha256-tOPElzmHt4D+UzT84ztRSR0PPvhTZkWzmhdXb7kzh0Q='), or a nonce ('nonce-...') is required to enable inline execution.\\n`\u001b[39m,\n  \u001b[32m`Refused to apply inline style because it violates the following Content Security Policy directive: \"style-src 'self' https://fonts.googleapis.com\". Either the 'unsafe-inline' keyword, a hash ('sha256-LFrzJY/jiacwSQ1hh70gaj305ajHCrcyWcGAjYI6luo='), or a nonce ('nonce-...') is required to enable inline execution.\\n`\u001b[39m,\n  \u001b[32m`Refused to apply inline style because it violates the following Content Security Policy directive: \"style-src 'self' https://fonts.googleapis.com\". Either the 'unsafe-inline' keyword, a hash ('sha256-Azv22mGJV0srfv1oy/d01nGpzAJk3jEo60kEEoUth5A='), or a nonce ('nonce-...') is required to enable inline execution.\\n`\u001b[39m,\n  \u001b[32m`Refused to execute inline event handler because it violates the following Content Security Policy directive: \"script-src 'self'\". Either the 'unsafe-inline' keyword, a hash ('sha256-...'), or a nonce ('nonce-...') is required to enable inline execution. Note that hashes do not apply to event handlers, style attributes and javascript: navigations unless the 'unsafe-hashes' keyword is present.\\n`\u001b[39m,\n  \u001b[32m`Refused to apply inline style because it violates the following Content Security Policy directive: \"style-src 'self' https://fonts.googleapis.com\". Either the 'unsafe-inline' keyword, a hash ('sha256-tOPElzmHt4D+UzT84ztRSR0PPvhTZkWzmhdXb7kzh0Q='), or a nonce ('nonce-...') is required to enable inline execution.\\n`\u001b[39m,\n  \u001b[32m`Refused to apply inline style because it violates the following Content Security Policy directive: \"style-src 'self' https://fonts.googleapis.com\". Either the 'unsafe-inline' keyword, a hash ('sha256-LFrzJY/jiacwSQ1hh70gaj305ajHCrcyWcGAjYI6luo='), or a nonce ('nonce-...') is required to enable inline execution.\\n`\u001b[39m,\n  \u001b[32m`Refused to apply inline style because it violates the following Content Security Policy directive: \"style-src 'self' https://fonts.googleapis.com\". Either the 'unsafe-inline' keyword, a hash ('sha256-LFrzJY/jiacwSQ1hh70gaj305ajHCrcyWcGAjYI6luo='), or a nonce ('nonce-...') is required to enable inline execution.\\n`\u001b[39m,\n  \u001b[32m`Refused to apply inline style because it violates the following Content Security Policy directive: \"style-src 'self' https://fonts.googleapis.com\". Either the 'unsafe-inline' keyword, a hash ('sha256-tOPElzmHt4D+UzT84ztRSR0PPvhTZkWzmhdXb7kzh0Q='), or a nonce ('nonce-...') is required to enable inline execution.\\n`\u001b[39m,\n  \u001b[32m`Refused to apply inline style because it violates the following Content Security Policy directive: \"style-src 'self' https://fonts.googleapis.com\". Either the 'unsafe-inline' keyword, a hash ('sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU='), or a nonce ('nonce-...') is required to enable inline execution.\\n`\u001b[39m\n]\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T05:57:26.991Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/airwave-ui-verification-AI-d6550-o-JavaScript-console-errors-chromium/test-failed-1.png"
                             },
                             {
                               "name": "video",
                               "contentType": "video/webm",
-                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/auth-Authentication-Client-e4d19-authentication-in-demo-mode-chromium/video.webm"
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/airwave-ui-verification-AI-d6550-o-JavaScript-console-errors-chromium/video.webm"
                             },
                             {
-                              "name": "_error-context-1",
+                              "name": "_error-context-0",
                               "contentType": "text/markdown",
-                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/auth-Authentication-Client-e4d19-authentication-in-demo-mode-chromium/error-context.md"
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/airwave-ui-verification-AI-d6550-o-JavaScript-console-errors-chromium/error-context.md"
                             }
-                          ]
+                          ],
+                          "errorLocation": {
+                            "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/airwave-ui-verification.test.ts",
+                            "column": 37,
+                            "line": 132
+                          }
                         }
                       ],
                       "status": "unexpected"
                     }
                   ],
-                  "id": "f0c50cfc8142f74e2e08-dbf05830311bbee9c29c",
-                  "file": "auth.test.ts",
-                  "line": 5,
+                  "id": "b031cf0fde6766466086-7ee2a5a80a74fe133358",
+                  "file": "airwave-ui-verification.test.ts",
+                  "line": 107,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Login Page Tests",
+              "file": "airwave-ui-verification.test.ts",
+              "line": 136,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should navigate to login page with proper styling",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 3,
+                          "parallelIndex": 3,
+                          "status": "failed",
+                          "duration": 6217,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: not \u001b[32m\"rgb(255, 255, 255)\"\u001b[39m",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: not \u001b[32m\"rgb(255, 255, 255)\"\u001b[39m\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/airwave-ui-verification.test.ts:192:51",
+                            "location": {
+                              "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/airwave-ui-verification.test.ts",
+                              "column": 51,
+                              "line": 192
+                            },
+                            "snippet": "  190 |           \n  191 |           // Input should have dark theme styling\n> 192 |           expect(inputStyles.backgroundColor).not.toBe('rgb(255, 255, 255)');\n      |                                                   ^\n  193 |         }\n  194 |       }\n  195 |     });"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/airwave-ui-verification.test.ts",
+                                "column": 51,
+                                "line": 192
+                              },
+                              "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mnot\u001b[2m.\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: not \u001b[32m\"rgb(255, 255, 255)\"\u001b[39m\n\n  190 |           \n  191 |           // Input should have dark theme styling\n> 192 |           expect(inputStyles.backgroundColor).not.toBe('rgb(255, 255, 255)');\n      |                                                   ^\n  193 |         }\n  194 |       }\n  195 |     });\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/airwave-ui-verification.test.ts:192:51"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T05:57:26.990Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/airwave-ui-verification-AI-5e83a-in-page-with-proper-styling-chromium/test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/airwave-ui-verification-AI-5e83a-in-page-with-proper-styling-chromium/video.webm"
+                            },
+                            {
+                              "name": "_error-context-0",
+                              "contentType": "text/markdown",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/airwave-ui-verification-AI-5e83a-in-page-with-proper-styling-chromium/error-context.md"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/airwave-ui-verification.test.ts",
+                            "column": 51,
+                            "line": 192
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "b031cf0fde6766466086-c342aa75b5a46736ed87",
+                  "file": "airwave-ui-verification.test.ts",
+                  "line": 137,
+                  "column": 9
+                },
+                {
+                  "title": "should test demo mode functionality",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 1,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 6186,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T05:57:31.070Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/airwave-ui-verification-AI-5b047-est-demo-mode-functionality-chromium/test-finished-1.png"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b031cf0fde6766466086-465ee13dd7ea9512fefc",
+                  "file": "airwave-ui-verification.test.ts",
+                  "line": 197,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Dashboard Tests",
+              "file": "airwave-ui-verification.test.ts",
+              "line": 229,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should access dashboard and verify navigation",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 6335,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T05:57:31.080Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/airwave-ui-verification-AI-b492f-board-and-verify-navigation-chromium/test-finished-1.png"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b031cf0fde6766466086-20dc4a95a010c185ed66",
+                  "file": "airwave-ui-verification.test.ts",
+                  "line": 230,
+                  "column": 9
+                },
+                {
+                  "title": "should verify cards and interactive elements",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 4375,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T05:57:33.747Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/airwave-ui-verification-AI-3bb8e-ds-and-interactive-elements-chromium/test-finished-1.png"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b031cf0fde6766466086-0b6922d5bece2b4b8d94",
+                  "file": "airwave-ui-verification.test.ts",
+                  "line": 304,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "CSS and Theme Verification",
+              "file": "airwave-ui-verification.test.ts",
+              "line": 355,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should verify CSS custom properties are loaded",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 5,
+                          "parallelIndex": 2,
+                          "status": "failed",
+                          "duration": 3872,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/airwave-ui-verification.test.ts:391:49",
+                            "location": {
+                              "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/airwave-ui-verification.test.ts",
+                              "column": 49,
+                              "line": 391
+                            },
+                            "snippet": "  389 |       \n  390 |       // Should have at least some custom properties defined\n> 391 |       expect(Object.keys(cssProperties).length).toBeGreaterThan(0);\n      |                                                 ^\n  392 |     });\n  393 |\n  394 |     test('should verify no white background with massive icons issue', async ({ page }) => {"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/airwave-ui-verification.test.ts",
+                                "column": 49,
+                                "line": 391
+                              },
+                              "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m0\u001b[39m\nReceived:   \u001b[31m0\u001b[39m\n\n  389 |       \n  390 |       // Should have at least some custom properties defined\n> 391 |       expect(Object.keys(cssProperties).length).toBeGreaterThan(0);\n      |                                                 ^\n  392 |     });\n  393 |\n  394 |     test('should verify no white background with massive icons issue', async ({ page }) => {\n    at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/airwave-ui-verification.test.ts:391:49"
+                            }
+                          ],
+                          "stdout": [
+                            {
+                              "text": "Found CSS custom properties: {}\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T05:57:34.347Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/airwave-ui-verification-AI-705c4-ustom-properties-are-loaded-chromium/test-failed-1.png"
+                            },
+                            {
+                              "name": "video",
+                              "contentType": "video/webm",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/airwave-ui-verification-AI-705c4-ustom-properties-are-loaded-chromium/video.webm"
+                            },
+                            {
+                              "name": "_error-context-0",
+                              "contentType": "text/markdown",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/airwave-ui-verification-AI-705c4-ustom-properties-are-loaded-chromium/error-context.md"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/airwave-ui-verification.test.ts",
+                            "column": 49,
+                            "line": 391
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "b031cf0fde6766466086-ecd4b087fcc9b0e209bd",
+                  "file": "airwave-ui-verification.test.ts",
+                  "line": 356,
+                  "column": 9
+                },
+                {
+                  "title": "should verify no white background with massive icons issue",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 1,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 3821,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T05:57:37.260Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/airwave-ui-verification-AI-5ce1d-nd-with-massive-icons-issue-chromium/test-finished-1.png"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b031cf0fde6766466086-26c1ee76f80e9ae57599",
+                  "file": "airwave-ui-verification.test.ts",
+                  "line": 394,
+                  "column": 9
+                },
+                {
+                  "title": "should check responsive design",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 0,
+                          "parallelIndex": 0,
+                          "status": "passed",
+                          "duration": 7329,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T05:57:37.419Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/airwave-ui-verification-AI-5ae8b-uld-check-responsive-design-chromium/test-finished-1.png"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b031cf0fde6766466086-35a079e90b8888efdae2",
+                  "file": "airwave-ui-verification.test.ts",
+                  "line": 419,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Performance and Accessibility",
+              "file": "airwave-ui-verification.test.ts",
+              "line": 454,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should have reasonable load times",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 3582,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Page load time: 3461ms\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T05:57:38.214Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/airwave-ui-verification-AI-6517b--have-reasonable-load-times-chromium/test-finished-1.png"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b031cf0fde6766466086-004432419ae012c4637f",
+                  "file": "airwave-ui-verification.test.ts",
+                  "line": 455,
+                  "column": 9
+                },
+                {
+                  "title": "should verify fonts load properly",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 3812,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Font info: { fontFamily: \u001b[32m'Times'\u001b[39m, isFallback: \u001b[33mfalse\u001b[39m }\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T05:57:38.606Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/airwave-ui-verification-AI-98b9a--verify-fonts-load-properly-chromium/test-finished-1.png"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b031cf0fde6766466086-fc9ff77656f50ed87d3c",
+                  "file": "airwave-ui-verification.test.ts",
+                  "line": 467,
+                  "column": 9
+                },
+                {
+                  "title": "should check basic accessibility",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 1,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 3845,
+                          "errors": [],
+                          "stdout": [
+                            {
+                              "text": "Accessibility checks: {\n  hasTitle: \u001b[33mtrue\u001b[39m,\n  hasLang: \u001b[33mtrue\u001b[39m,\n  hasImages: \u001b[33m0\u001b[39m,\n  imagesWithAlt: \u001b[33m0\u001b[39m,\n  hasHeadings: \u001b[33m1\u001b[39m,\n  hasSkipLinks: \u001b[33m0\u001b[39m\n}\n"
+                            }
+                          ],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T05:57:41.084Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/airwave-ui-verification-AI-be9dd-d-check-basic-accessibility-chromium/test-finished-1.png"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b031cf0fde6766466086-7efb3cf50d536ab1485a",
+                  "file": "airwave-ui-verification.test.ts",
+                  "line": 494,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Functional Testing",
+              "file": "airwave-ui-verification.test.ts",
+              "line": 526,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should test key navigation flows",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 3,
+                          "status": "passed",
+                          "duration": 3706,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T05:57:41.799Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/airwave-ui-verification-AI-96f04-d-test-key-navigation-flows-chromium/test-finished-1.png"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b031cf0fde6766466086-cdd242398def5dfae9b5",
+                  "file": "airwave-ui-verification.test.ts",
+                  "line": 527,
+                  "column": 9
+                },
+                {
+                  "title": "should verify demo mode works end-to-end",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 60000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 2,
+                          "status": "passed",
+                          "duration": 3672,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2025-05-30T05:57:42.483Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/airwave-ui-verification-AI-82e72--demo-mode-works-end-to-end-chromium/test-finished-1.png"
+                            }
+                          ]
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "b031cf0fde6766466086-8164bded38c2cd6245cd",
+                  "file": "airwave-ui-verification.test.ts",
+                  "line": 564,
                   "column": 9
                 }
               ]
@@ -227,11 +922,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-05-30T02:58:20.908Z",
-    "duration": 19363.520999999997,
-    "expected": 0,
+    "startTime": "2025-05-30T05:57:24.265Z",
+    "duration": 21914.549,
+    "expected": 12,
     "skipped": 0,
-    "unexpected": 1,
+    "unexpected": 3,
     "flaky": 0
   }
 }

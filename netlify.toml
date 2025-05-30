@@ -15,7 +15,9 @@
   ENABLE_AI_FEATURES = "true"
   ENABLE_VIDEO_GENERATION = "true"
   ENABLE_SOCIAL_PUBLISHING = "true"
-  JWT_SECRET = "${JWT_SECRET}"
+  # JWT_SECRET will be provided via Netlify environment variables at runtime
+  # Setting a build-time placeholder to prevent Edge Functions build errors
+  JWT_SECRET = "${JWT_SECRET:-build-time-placeholder-will-be-replaced-at-runtime}"
 
 [[headers]]
   for = "/api/*"

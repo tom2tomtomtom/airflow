@@ -83,7 +83,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     };
 
-    checkAuth();
+    // Add timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      console.warn('Auth check timeout, setting loading to false');
+      setLoading(false);
+    }, 5000); // 5 second timeout
+
+    checkAuth().finally(() => {
+      clearTimeout(timeoutId);
+    });
+
+    // Cleanup timeout on component unmount
+    return () => clearTimeout(timeoutId);
   }, []);
 
   // Login function using API
