@@ -24,6 +24,7 @@ const mockClients: Client[] = [
         email: 'john@demo-agency.com',
         role: 'Account Manager',
         phone: '+1-555-0123',
+        isActive: true,
       },
     ],
     brandGuidelines: {
@@ -59,6 +60,7 @@ const mockClients: Client[] = [
         email: 'jane@techcorp.com',
         role: 'Marketing Director',
         phone: '+1-555-0456',
+        isActive: true,
       },
     ],
     brandGuidelines: {
@@ -94,6 +96,7 @@ const mockClients: Client[] = [
         email: 'mike@retailplus.com',
         role: 'Brand Manager',
         phone: '+1-555-0789',
+        isActive: true,
       },
     ],
     brandGuidelines: {
