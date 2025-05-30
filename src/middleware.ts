@@ -43,6 +43,11 @@ const publicRoutes = [
   // Health check endpoints
   '/api/health',
   '/api/status',
+  // Testing endpoints
+  '/api/test/openai',
+  '/api/test/integration-suite',
+  // AI generation endpoints for testing
+  '/api/ai/generate',
 ];
 
 // Define routes that are allowed in demo mode
