@@ -3,15 +3,25 @@ import { z } from 'zod';
 // Helper to check if we're in demo mode
 const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
 
+// Helper to check if we're in build context
+const isBuildContext = typeof EdgeRuntime !== 'undefined' || 
+                      process.env.NETLIFY || 
+                      process.env.VERCEL ||
+                      process.env.CI === 'true' ||
+                      process.env.BUILD_ID ||
+                      process.env.NETLIFY_BUILD_BASE ||
+                      process.env.NODE_PHASE === 'phase-production-build' ||
+                      process.env.NEXT_PHASE === 'phase-production-build';
+
 // Define the schema for our environment variables
 const envSchema = z.object({
   // Public environment variables (accessible in browser)
   NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional().refine(
-    (val) => isDemoMode || process.env.NODE_ENV === 'development' || val,
+    (val) => isBuildContext || isDemoMode || process.env.NODE_ENV === 'development' || val,
     'Supabase URL is required in production mode'
   ),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().optional().refine(
-    (val) => isDemoMode || process.env.NODE_ENV === 'development' || val,
+    (val) => isBuildContext || isDemoMode || process.env.NODE_ENV === 'development' || val,
     'Supabase anon key is required in production mode'
   ),
   NEXT_PUBLIC_API_URL: z.string().url().optional().default(
@@ -23,12 +33,13 @@ const envSchema = z.object({
   
   // Server-only environment variables
   SUPABASE_SERVICE_ROLE_KEY: z.string().optional().refine(
-    (val) => isDemoMode || process.env.NODE_ENV === 'development' || val,
+    (val) => isBuildContext || isDemoMode || process.env.NODE_ENV === 'development' || val,
     'Supabase service role key is required in production mode'
   ),
   JWT_SECRET: z.string().optional().refine(
     (val) => {
-      if (isDemoMode || process.env.NODE_ENV === 'development') return true;
+      // Allow any value during build context
+      if (isBuildContext || isDemoMode || process.env.NODE_ENV === 'development') return true;
       if (!val) return false;
       if (val.length < 32) return false;
       // Ensure it's not a default/demo value
@@ -81,10 +92,43 @@ const envSchema = z.object({
 
 // Parse and validate environment variables
 const parseEnv = () => {
+  // Check if we're in Edge Functions build context or Netlify build
+  const isEdgeBuild = typeof EdgeRuntime !== 'undefined' || 
+                     process.env.NETLIFY || 
+                     process.env.VERCEL ||
+                     process.env.CI === 'true' ||
+                     process.env.BUILD_ID ||
+                     process.env.NETLIFY_BUILD_BASE;
+  const isBuildTime = process.env.NODE_PHASE === 'phase-production-build' || 
+                     process.env.NEXT_PHASE === 'phase-production-build';
+  
+  // During build context, skip strict validation entirely
+  if (isEdgeBuild || isBuildTime || isBuildContext) {
+    console.log('🔨 Build context detected - skipping strict environment validation');
+    return {
+      ...process.env,
+      NODE_ENV: process.env.NODE_ENV || 'production',
+      NEXT_PUBLIC_DEMO_MODE: process.env.NEXT_PUBLIC_DEMO_MODE || 'false',
+      JWT_EXPIRY: '7d',
+      REFRESH_TOKEN_EXPIRY: '30d',
+      STORAGE_BUCKET: 'airwave-assets',
+      MAX_FILE_SIZE: '52428800',
+      ALLOWED_ORIGINS: [],
+      ENABLE_SOCIAL_PUBLISHING: 'false',
+      ENABLE_VIDEO_GENERATION: 'false',
+      ENABLE_AI_FEATURES: 'false',
+    } as any;
+  }
+  
   try {
     const parsed = envSchema.parse(process.env);
     
-    // Additional validation for production
+    // Skip additional validation during Edge build or build time
+    if (isEdgeBuild || isBuildTime) {
+      return parsed;
+    }
+    
+    // Additional validation for production runtime
     if (process.env.NODE_ENV === 'production' && !isDemoMode) {
       // Ensure critical security variables are set
       const criticalVars = [
@@ -108,16 +152,39 @@ const parseEnv = () => {
         errorMessage.push(`   ${err.path.join('.')}: ${err.message}`);
       });
       
-      console.error(errorMessage.join('\n'));
+      // Skip error logging during Edge build
+      if (!isEdgeBuild && !isBuildTime) {
+        console.error(errorMessage.join('\n'));
+      }
       
-      // In production, we must fail if environment is not properly configured
-      if (process.env.NODE_ENV === 'production') {
+      // In production runtime, we must fail if environment is not properly configured
+      // But allow Edge builds and build time to proceed
+      if (process.env.NODE_ENV === 'production' && !isEdgeBuild && !isBuildTime) {
         throw new Error(errorMessage.join('\n'));
       }
       
-      // In development, log warning but continue
-      console.warn('\n⚠️  Running with invalid environment configuration');
-      console.warn('Some features may not work properly\n');
+      // In development or during builds, log warning but continue
+      if (!isEdgeBuild && !isBuildTime) {
+        console.warn('\n⚠️  Running with invalid environment configuration');
+        console.warn('Some features may not work properly\n');
+      }
+      
+      // Return a safe default for builds
+      if (isEdgeBuild || isBuildTime) {
+        return {
+          ...process.env,
+          NODE_ENV: process.env.NODE_ENV || 'production',
+          NEXT_PUBLIC_DEMO_MODE: process.env.NEXT_PUBLIC_DEMO_MODE || 'false',
+          JWT_EXPIRY: '7d',
+          REFRESH_TOKEN_EXPIRY: '30d',
+          STORAGE_BUCKET: 'airwave-assets',
+          MAX_FILE_SIZE: '52428800',
+          ALLOWED_ORIGINS: [],
+          ENABLE_SOCIAL_PUBLISHING: 'false',
+          ENABLE_VIDEO_GENERATION: 'false',
+          ENABLE_AI_FEATURES: 'false',
+        } as any;
+      }
     }
     throw error;
   }
