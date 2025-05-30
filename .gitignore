@@ -61,3 +61,6 @@ test.php
 
 # Supabase
 .supabase/
+
+# Local Netlify folder
+.netlify
