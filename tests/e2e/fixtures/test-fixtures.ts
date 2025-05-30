@@ -31,18 +31,19 @@ export const test = base.extend<{
 
   // Pre-authenticated page fixture
   authenticatedPage: async ({ page, authHelper }, use) => {
-    // Navigate to the app
-    await page.goto('/');
-    
     // Check if we need to authenticate
+    await page.goto('/');
     const isDemoMode = await authHelper.isInDemoMode();
     
     if (!isDemoMode) {
-      // Login if not in demo mode
-      await authHelper.ensureLoggedIn();
+      // Explicitly login if not in demo mode
+      await authHelper.login('test@airwave.com', 'testpass123');
       
-      // Select default test client
-      await authHelper.selectClient('Demo Agency');
+      // Wait for dashboard to load
+      await page.waitForLoadState('networkidle');
+      
+      // Verify we're authenticated by checking for user menu
+      await page.waitForSelector('[data-testid="user-menu"]', { timeout: 10000 });
     } else {
       // In demo mode, just wait for the app to load
       await page.waitForLoadState('networkidle');

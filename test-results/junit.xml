@@ -1,30 +1,45 @@
-<testsuites id="" name="" tests="1" failures="1" skipped="0" errors="0" time="13.189143">
-<testsuite name="asset-upload.test.ts" timestamp="2025-05-30T01:44:33.207Z" hostname="chromium" tests="1" failures="1" skipped="0" time="10.796" errors="0">
-<testcase name="Asset Upload Flow › should upload image assets successfully" classname="asset-upload.test.ts" time="10.796">
+<testsuites id="" name="" tests="1" failures="1" skipped="0" errors="0" time="37.881701">
+<testsuite name="asset-upload.test.ts" timestamp="2025-05-30T01:51:21.763Z" hostname="chromium" tests="1" failures="1" skipped="0" time="35.379" errors="0">
+<testcase name="Asset Upload Flow › should upload image assets successfully" classname="asset-upload.test.ts" time="35.379">
 <failure message="asset-upload.test.ts:5:7 should upload image assets successfully" type="FAILURE">
 <![CDATA[  [chromium] › asset-upload.test.ts:5:7 › Asset Upload Flow › should upload image assets successfully 
 
-    Error: Timed out 10000ms waiting for expect(locator).toBeVisible()
-
-    Locator: locator('[data-testid="user-menu"]')
-    Expected: visible
-    Received: <element(s) not found>
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
     Call log:
-      - expect.toBeVisible with timeout 10000ms
-      - waiting for locator('[data-testid="user-menu"]')
+      - waiting for locator('[data-testid="speed-dial"]')
+        - locator resolved to <div role="presentation" data-testid="speed-dial" class="MuiSpeedDial-root MuiSpeedDial-directionUp css-myd0-MuiSpeedDial-root">…</div>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <nextjs-portal></nextjs-portal> intercepts pointer events
+        - retrying click action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <nextjs-portal></nextjs-portal> intercepts pointer events
+        - retrying click action
+          - waiting 100ms
+        58 × waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <nextjs-portal></nextjs-portal> intercepts pointer events
+         - retrying click action
+           - waiting 500ms
 
 
-       at helpers/auth-helper.ts:71
-
-      69 |     
-      70 |     // Verify we're on a protected page
-    > 71 |     await expect(this.page.locator('[data-testid="user-menu"]')).toBeVisible();
-         |                                                                  ^
-      72 |   }
-      73 |
-      74 |   async selectClient(clientName: string = 'Demo Agency') {
-        at AuthHelper.ensureLoggedIn (/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/helpers/auth-helper.ts:71:66)
-        at Object.authenticatedPage (/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/fixtures/test-fixtures.ts:42:24)
+      23 |       uploadTriggered = true;
+      24 |     } else if (await speedDial.isVisible()) {
+    > 25 |       await speedDial.click();
+         |                       ^
+      26 |       // Look for upload action in speed dial
+      27 |       const uploadAction = authenticatedPage.locator('[data-testid="upload-action"]');
+      28 |       if (await uploadAction.isVisible()) {
+        at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/asset-upload.test.ts:25:23
 
     attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
     test-results/asset-upload-Asset-Upload--135c6-d-image-assets-successfully-chromium/test-failed-1.png
