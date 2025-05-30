@@ -53,11 +53,15 @@ export default async function handler(
   }
 
   try {
-    // Debug log for troubleshooting
-    console.log('Signup attempt:', { email, name, demoMode: process.env.NEXT_PUBLIC_DEMO_MODE });
+    // Debug logging
+    console.log('Signup attempt for:', email);
+    console.log('Demo mode:', process.env.NEXT_PUBLIC_DEMO_MODE);
+    console.log('Supabase URL exists:', !!process.env.NEXT_PUBLIC_SUPABASE_URL);
+    console.log('Supabase Anon Key exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
     
     // Check if we're in demo mode - allow demo signups but simulate them
     if (process.env.NEXT_PUBLIC_DEMO_MODE === 'true') {
+      console.log('Demo mode signup - creating simulated user');
       // Simulate successful signup in demo mode
       const demoUser = {
         id: 'demo-user-' + Date.now(),
@@ -74,7 +78,17 @@ export default async function handler(
       });
     }
 
+    // Check if Supabase is properly configured
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+      console.error('Supabase environment variables not configured');
+      return res.status(500).json({
+        success: false,
+        error: 'Authentication service not configured. Please contact support.'
+      });
+    }
+
     // Production mode: Use Supabase authentication
+    console.log('Attempting Supabase signup...');
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
@@ -87,73 +101,85 @@ export default async function handler(
 
     if (authError) {
       console.error('Supabase signup error:', authError);
-      // If Supabase is not available, provide demo mode fallback
-      if (authError.message.includes('Invalid API key') || authError.message.includes('network') || authError.message.includes('connection')) {
-        console.log('Supabase unavailable, using demo mode fallback');
-        const demoUser = {
-          id: 'demo-user-' + Date.now(),
-          email: email,
-          name: name,
-          role: 'user',
-          token: 'demo-token-' + Math.random().toString(36).substring(7),
-        };
-
-        return res.status(200).json({
-          success: true,
-          user: demoUser,
-          message: 'Account created successfully! (Demo mode - Supabase connection unavailable)'
-        });
+      
+      // Provide user-friendly error messages
+      let errorMessage = authError.message;
+      
+      if (authError.message.includes('not enabled')) {
+        errorMessage = 'Signups are currently disabled. Please contact the administrator.';
+      } else if (authError.message.includes('already registered')) {
+        errorMessage = 'This email is already registered. Please try logging in instead.';
+      } else if (authError.message.includes('Invalid API key')) {
+        errorMessage = 'Authentication service configuration error. Please try again later.';
+      } else if (authError.message.includes('Failed to fetch')) {
+        errorMessage = 'Network error. Please check your connection and try again.';
       }
       
       return res.status(400).json({ 
         success: false, 
-        error: authError.message 
+        error: errorMessage 
       });
     }
 
     if (!authData.user) {
       return res.status(400).json({
         success: false,
-        error: 'Failed to create user account'
+        error: 'Failed to create user account. Please try again.'
       });
     }
 
+    console.log('Supabase signup successful, user created:', authData.user.id);
+
     // Check if email confirmation is required
     if (!authData.session) {
+      console.log('Email confirmation required');
       return res.status(200).json({
         success: true,
         message: 'Please check your email for a confirmation link before logging in.',
       });
     }
 
-    // If no email confirmation required, create user profile and log them in
-    const { data: userProfile, error: profileError } = await supabase
-      .from('users')
-      .insert({
-        id: authData.user.id,
-        email: authData.user.email || email,
-        name: name,
-        role: 'user',
-        created_at: new Date().toISOString(),
-      })
-      .select()
+    // If no email confirmation required, create user profile
+    console.log('Creating user profile...');
+    
+    // First check if profiles table exists by attempting to query it
+    const { data: existingProfile, error: profileCheckError } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', authData.user.id)
       .single();
 
-    if (profileError) {
-      console.error('Error creating user profile:', profileError);
-      return res.status(500).json({
-        success: false,
-        error: 'Failed to create user profile'
-      });
+    if (profileCheckError && profileCheckError.code !== 'PGRST116') {
+      console.error('Error checking profile:', profileCheckError);
+      // Continue anyway - the user is created in auth
+    }
+
+    if (!existingProfile) {
+      // Try to create profile
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: authData.user.id,
+          first_name: name.split(' ')[0] || name,
+          last_name: name.split(' ').slice(1).join(' ') || '',
+          role: 'user',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        });
+
+      if (profileError) {
+        console.error('Error creating profile:', profileError);
+        // Continue anyway - the auth user is created
+      }
     }
 
     return res.status(200).json({
       success: true,
       user: {
-        id: userProfile.id,
-        email: userProfile.email,
-        name: userProfile.name,
-        role: userProfile.role,
+        id: authData.user.id,
+        email: authData.user.email || email,
+        name: name,
+        role: 'user',
         token: authData.session?.access_token || '',
       },
     });
@@ -162,7 +188,7 @@ export default async function handler(
     console.error('Signup error:', error);
     return res.status(500).json({
       success: false,
-      error: 'Internal server error'
+      error: 'An unexpected error occurred. Please try again later.'
     });
   }
 }
