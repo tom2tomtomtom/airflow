@@ -51,6 +51,8 @@ const publicRoutes = [
   '/api/check-video-status',
   '/api/creatomate/test',
   '/api/creatomate/templates',
+  // Real-time updates
+  '/api/realtime/events',
 ];
 
 // Define routes that are allowed in demo mode

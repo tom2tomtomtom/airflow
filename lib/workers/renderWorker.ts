@@ -6,6 +6,7 @@ import { S3Storage } from '@/lib/storage/s3Storage';
 import { createClient } from '@supabase/supabase-js';
 import { AppError, ExternalServiceError } from '@/lib/errors/errorHandler';
 import * as Sentry from '@sentry/node';
+import { broadcastRenderProgress, broadcastRenderComplete } from '@/pages/api/realtime/events';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -24,8 +25,9 @@ async function processRenderJob(job: Job<RenderJobData>) {
   const { executionId, matrixId, templateId, assets, userId, clientId, isPreview } = job.data;
   
   try {
-    // Update job progress
+    // Update job progress and broadcast
     await job.updateProgress(10);
+    broadcastRenderProgress(executionId, 10, userId);
     
     // 1. Prepare render request for Creatomate
     const renderRequest = {
@@ -38,6 +40,7 @@ async function processRenderJob(job: Job<RenderJobData>) {
     };
     
     await job.updateProgress(20);
+    broadcastRenderProgress(executionId, 20, userId);
     
     // 2. Submit to Creatomate API
     const creatomateResponse = await fetch('https://api.creatomate.com/v1/renders', {
@@ -57,6 +60,7 @@ async function processRenderJob(job: Job<RenderJobData>) {
     const renderData: CreatomateRenderResponse = await creatomateResponse.json();
     
     await job.updateProgress(30);
+    broadcastRenderProgress(executionId, 30, userId);
     
     // 3. Poll for render completion
     let renderStatus = renderData.status;
@@ -86,7 +90,9 @@ async function processRenderJob(job: Job<RenderJobData>) {
       renderUrl = statusData.url;
       
       attempts++;
-      await job.updateProgress(30 + (attempts / maxAttempts) * 40); // Progress from 30% to 70%
+      const currentProgress = 30 + (attempts / maxAttempts) * 40;
+      await job.updateProgress(currentProgress);
+      broadcastRenderProgress(executionId, Math.round(currentProgress), userId);
     }
     
     if (renderStatus === 'failed') {
@@ -98,6 +104,7 @@ async function processRenderJob(job: Job<RenderJobData>) {
     }
     
     await job.updateProgress(70);
+    broadcastRenderProgress(executionId, 70, userId);
     
     // 4. Download and upload to S3
     const response = await fetch(renderUrl);
@@ -120,6 +127,7 @@ async function processRenderJob(job: Job<RenderJobData>) {
     });
     
     await job.updateProgress(85);
+    broadcastRenderProgress(executionId, 85, userId);
     
     // 5. Update database with render result
     const { error: updateError } = await supabase
@@ -142,6 +150,7 @@ async function processRenderJob(job: Job<RenderJobData>) {
     }
     
     await job.updateProgress(95);
+    broadcastRenderProgress(executionId, 95, userId);
     
     // 6. Get user email for notification
     const { data: userData, error: userError } = await supabase
@@ -164,6 +173,10 @@ async function processRenderJob(job: Job<RenderJobData>) {
     }
     
     await job.updateProgress(100);
+    broadcastRenderProgress(executionId, 100, userId);
+    
+    // Broadcast completion
+    broadcastRenderComplete(executionId, renderData.id, renderUrl, userId);
     
     // Return result
     return {

@@ -41,6 +41,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { useClient } from '@/contexts/ClientContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNotification } from '@/contexts/NotificationContext';
+import { useRealTimeUpdates } from '@/hooks/useRealTimeUpdates';
 
 interface Activity {
   id: string;
@@ -92,9 +93,15 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
   const [isConnected, setIsConnected] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(true);
 
-  // Simulate real-time activities
+  // Real-time connection
+  const realTimeUpdates = useRealTimeUpdates({ enabled: realtime });
+
+  // Initialize real-time activities
   useEffect(() => {
     if (!realtime || !activeClient) return undefined;
+
+    // Set connection status based on real-time connection
+    setIsConnected(realTimeUpdates.connected);
 
     // Initial activities
     const initialActivities: Activity[] = [
@@ -156,41 +163,94 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
     setUnreadCount(initialActivities.filter(a => !a.isRead).length);
     setIsConnected(true);
 
-    // Simulate new activities
-    const interval = setInterval(() => {
-      if (!autoRefresh) return;
-
+    // Subscribe to real-time activity updates
+    const unsubscribeActivity = realTimeUpdates.subscribe('activity_update', (data) => {
       const newActivity: Activity = {
-        id: `act-${Date.now()}`,
-        type: ['campaign_created', 'asset_uploaded', 'comment_added', 'content_published'][
-          Math.floor(Math.random() * 4)
-        ] as Activity['type'],
+        id: data.id || `act-${Date.now()}`,
+        type: data.type || 'comment_added',
         user: {
-          id: `u${Math.floor(Math.random() * 5)}`,
-          name: ['Alex Wilson', 'Rachel Green', 'Tom Anderson', 'Lisa Park'][
-            Math.floor(Math.random() * 4)
-          ] || 'Unknown User',
-          isOnline: Math.random() > 0.3,
+          id: data.userId || user?.id || 'unknown',
+          name: data.userName || user?.name || 'Unknown User',
+          isOnline: true,
         },
-        timestamp: new Date(),
+        timestamp: new Date(data.timestamp || Date.now()),
         data: {
-          entityName: 'New Content Item',
-          message: 'performed an action',
+          entityId: data.entityId || '',
+          entityName: data.entityName || '',
+          message: data.message || data.description || '',
         },
-        reactions: { likes: 0, comments: 0 },
+        reactions: { likes: 0, comments: 0, hasLiked: false },
         isRead: false,
       };
-
-      setActivities(prev => [newActivity, ...prev].slice(0, 50)); // Keep last 50
-      setUnreadCount(prev => prev + 1);
       
-      if (realtime) {
-        showNotification(`New activity from ${newActivity.user.name}`, 'info');
-      }
-    }, 30000); // Every 30 seconds
+      setActivities(prev => [newActivity, ...prev].slice(0, 50));
+      setUnreadCount(prev => prev + 1);
+      showNotification('New activity', data.description || 'Activity updated', 'info');
+    });
 
-    return () => clearInterval(interval);
-  }, [activeClient, realtime, autoRefresh, showNotification]);
+    // Subscribe to render progress updates
+    const unsubscribeRender = realTimeUpdates.onRenderProgress((data) => {
+      const renderActivity: Activity = {
+        id: `render-${data.renderId}`,
+        type: 'content_published',
+        user: {
+          id: user?.id || 'system',
+          name: 'Video Generator',
+          isOnline: true,
+        },
+        timestamp: new Date(data.timestamp),
+        data: {
+          entityId: data.renderId,
+          entityName: 'Video Render',
+          message: `render progress: ${data.progress}%`,
+        },
+        reactions: { likes: 0, comments: 0, hasLiked: false },
+        isRead: false,
+      };
+      
+      // Update existing render activity or add new one
+      setActivities(prev => {
+        const existingIndex = prev.findIndex(a => a.id === renderActivity.id);
+        if (existingIndex >= 0) {
+          const updated = [...prev];
+          updated[existingIndex] = renderActivity;
+          return updated;
+        }
+        return [renderActivity, ...prev].slice(0, 50);
+      });
+    });
+
+    // Subscribe to render completion
+    const unsubscribeComplete = realTimeUpdates.onRenderComplete((data) => {
+      const completeActivity: Activity = {
+        id: `complete-${data.renderId}`,
+        type: 'content_published',
+        user: {
+          id: user?.id || 'system',
+          name: 'Video Generator',
+          isOnline: true,
+        },
+        timestamp: new Date(data.timestamp),
+        data: {
+          entityId: data.assetId,
+          entityName: 'Video Render Complete',
+          message: 'video render completed successfully',
+        },
+        reactions: { likes: 0, comments: 0, hasLiked: false },
+        isRead: false,
+      };
+      
+      setActivities(prev => [completeActivity, ...prev].slice(0, 50));
+      setUnreadCount(prev => prev + 1);
+      showNotification('Render Complete', 'Your video is ready!', 'success');
+    });
+
+    return () => {
+      unsubscribeActivity();
+      unsubscribeRender();
+      unsubscribeComplete();
+    };
+  }, [activeClient, realtime, realTimeUpdates, user, showNotification]);
 
   const getActivityIcon = (type: Activity['type']) => {
     switch (type) {
