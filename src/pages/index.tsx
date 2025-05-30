@@ -62,7 +62,14 @@ const HomePage = () => {
               <Button
                 variant="contained"
                 size="large"
-                onClick={() => router.push('/login')}
+                onClick={() => {
+                  // In demo mode, go directly to dashboard
+                  if (process.env.NEXT_PUBLIC_DEMO_MODE === 'true') {
+                    router.push('/dashboard');
+                  } else {
+                    router.push('/login');
+                  }
+                }}
                 sx={{ px: 4 }}
               >
                 Login
@@ -70,7 +77,14 @@ const HomePage = () => {
               <Button
                 variant="outlined"
                 size="large"
-                onClick={() => router.push('/login')}
+                onClick={() => {
+                  // In demo mode, go directly to dashboard
+                  if (process.env.NEXT_PUBLIC_DEMO_MODE === 'true') {
+                    router.push('/dashboard');
+                  } else {
+                    router.push('/login');
+                  }
+                }}
                 sx={{ px: 4 }}
               >
                 Get Started

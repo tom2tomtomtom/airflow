@@ -40,6 +40,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         // Check if demo mode is enabled
         if (process.env.NEXT_PUBLIC_DEMO_MODE === 'true') {
+          // Auto-authenticate with demo user
+          const demoUser: User = {
+            id: 'demo-user-1',
+            email: 'demo@airwave.com',
+            name: 'Demo User',
+            role: 'admin',
+            token: 'demo-token'
+          };
+          setUser(demoUser);
           setLoading(false);
           return;
         }
