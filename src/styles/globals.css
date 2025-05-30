@@ -1,4 +1,4 @@
-/* CSS Reset and Base Styles */
+/* CSS Reset and Base Styles - Carbon Black Edition */
 *,
 *::before,
 *::after {
@@ -10,10 +10,139 @@
   padding: 0;
 }
 
-/* Import Tailwind (preflight disabled in config to avoid conflicts with MUI) */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Reset HTML semantics properly */
+html {
+  line-height: 1.15;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 
+    'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+  color: #FFFFFF;
+  background-color: #030712;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark;
+  forced-color-adjust: auto;
+}
+
+/* Reset semantic elements */
+main, section, article, aside, header, footer, nav {
+  display: block;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+p, blockquote, dl, dd, ol, ul, figure, pre {
+  margin: 0;
+}
+
+ol, ul {
+  list-style: none;
+  padding: 0;
+}
+
+button, input, optgroup, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  margin: 0;
+}
+
+button, [type="button"], [type="reset"], [type="submit"] {
+  -webkit-appearance: button;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  background-color: transparent;
+}
+
+img, svg, video, canvas, audio, iframe, embed, object {
+  display: block;
+  vertical-align: middle;
+  max-width: 100%;
+  height: auto;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* Ensure proper text rendering */
+b, strong {
+  font-weight: bolder;
+}
+
+small {
+  font-size: 80%;
+}
+
+/* Form elements reset */
+fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+legend {
+  padding: 0;
+  display: table;
+  max-width: 100%;
+  white-space: normal;
+  color: inherit;
+}
+
+progress {
+  vertical-align: baseline;
+}
+
+textarea {
+  overflow: auto;
+  resize: vertical;
+}
+
+[type="checkbox"],
+[type="radio"] {
+  box-sizing: border-box;
+  padding: 0;
+}
+
+[type="number"]::-webkit-inner-spin-button,
+[type="number"]::-webkit-outer-spin-button {
+  height: auto;
+}
+
+[type="search"] {
+  -webkit-appearance: textfield;
+  outline-offset: -2px;
+}
+
+[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+::-webkit-file-upload-button {
+  -webkit-appearance: button;
+  font: inherit;
+}
+
+/* Tailwind CSS removed to prevent Material-UI conflicts */
+/* Only Carbon Black design system styles below */
 
 /* Carbon Black Design System Variables */
 :root {
@@ -70,82 +199,124 @@
   -webkit-font-smoothing: antialiased !important;
 }
 
-/* MUI Icon overrides - Fixed sizing */
-.MuiSvgIcon-root {
+/* Force Material-UI Icon Reset - Override ALL conflicting styles */
+.MuiSvgIcon-root,
+svg.MuiSvgIcon-root {
   width: 1em !important;
   height: 1em !important;
   display: inline-block !important;
-  font-size: 24px !important; /* Fixed size instead of rem to prevent scaling issues */
+  font-size: 1.5rem !important; /* Standard MUI size */
   transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms !important;
   flex-shrink: 0 !important;
   user-select: none !important;
+  vertical-align: middle !important;
+  fill: currentColor !important;
+  /* Reset any potential Tailwind overrides */
+  max-width: 1em !important;
+  max-height: 1em !important;
+  min-width: auto !important;
+  min-height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  background: none !important;
+  box-sizing: content-box !important;
 }
 
-/* Small icons for input adornments */
-.MuiInputAdornment-root .MuiSvgIcon-root {
-  font-size: 20px !important;
+/* Force small icon sizing */
+.MuiInputAdornment-root .MuiSvgIcon-root,
+.MuiIconButton-sizeSmall .MuiSvgIcon-root {
+  font-size: 1.25rem !important;
 }
 
-/* Icon button sizing */
+/* Force standard icon button sizing */
 .MuiIconButton-root {
   padding: 8px !important;
+  border-radius: 4px !important;
+  /* Reset any potential Tailwind interference */
+  width: auto !important;
+  height: auto !important;
+  min-width: auto !important;
+  min-height: auto !important;
+  box-sizing: border-box !important;
 }
 
 .MuiIconButton-root .MuiSvgIcon-root {
-  font-size: 24px !important;
+  font-size: 1.5rem !important;
 }
 
-/* Small icon buttons */
-.MuiIconButton-sizeSmall .MuiSvgIcon-root {
-  font-size: 18px !important;
-}
-
-/* Large icon buttons */
+/* Force large icon button sizing */
 .MuiIconButton-sizeLarge .MuiSvgIcon-root {
-  font-size: 32px !important;
+  font-size: 2rem !important;
 }
 
-/* Avatar icons */
+/* Force specific component icon sizes */
 .MuiAvatar-root .MuiSvgIcon-root {
-  font-size: 20px !important;
+  font-size: 1.25rem !important;
 }
 
-/* Toolbar icons */
 .MuiToolbar-root .MuiSvgIcon-root {
-  font-size: 24px !important;
+  font-size: 1.5rem !important;
 }
 
-/* List item icons */
 .MuiListItemIcon-root .MuiSvgIcon-root {
+  font-size: 1.5rem !important;
+}
+
+/* Force Chip icon sizing */
+.MuiChip-root .MuiSvgIcon-root {
+  font-size: 1.125rem !important;
+}
+
+/* Force Menu icon sizing */
+.MuiMenu-list .MuiSvgIcon-root {
+  font-size: 1.25rem !important;
+}
+
+/* Reset any global SVG styles that might interfere */
+svg {
+  max-width: none;
+  height: auto;
+}
+
+/* Ensure Material Icons are properly sized */
+.material-icons,
+.material-icons-outlined,
+.material-icons-round,
+.material-icons-sharp,
+.material-icons-two-tone {
   font-size: 24px !important;
+  line-height: 1 !important;
+  width: 1em !important;
+  height: 1em !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
 }
 
-/* Prevent icon scaling issues */
-svg.MuiSvgIcon-root {
-  max-width: none !important;
-  max-height: none !important;
-}
-
-/* Carbon Black Base Styles */
+/* Carbon Black Enhanced Styles */
 html {
-  font-size: 16px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  scroll-behavior: smooth;
+  font-size: 16px !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  scroll-behavior: smooth !important;
+  /* Force dark theme */
+  color-scheme: dark !important;
 }
 
+/* Override body with Carbon Black styles */
 body {
-  margin: 0;
+  margin: 0 !important;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 
-    'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
-  color: var(--carbon-text-primary);
-  background-color: var(--carbon-bg-primary);
-  line-height: 1.5;
-  font-weight: 400;
-  /* Ensure dark theme appearance */
-  color-scheme: dark;
-  /* High contrast mode support */
-  forced-color-adjust: auto;
+    'SF Pro Display', 'Helvetica Neue', Arial, sans-serif !important;
+  color: var(--carbon-text-primary) !important;
+  background-color: var(--carbon-bg-primary) !important;
+  line-height: 1.5 !important;
+  font-weight: 400 !important;
+  color-scheme: dark !important;
+  forced-color-adjust: auto !important;
+  /* Ensure consistent viewport */
+  min-height: 100vh !important;
+  overflow-x: hidden !important;
 }
 
 /* Links */
@@ -185,13 +356,168 @@ img {
   background: var(--carbon-bg-secondary);
 }
 
-/* Carbon Black Component Overrides */
+/* Carbon Black Component Overrides - Force Material-UI Compliance */
 .MuiPaper-root {
   background-color: var(--carbon-bg-card) !important;
+  border-radius: 4px !important;
 }
 
 .MuiBox-root {
-  box-sizing: border-box;
+  box-sizing: border-box !important;
+}
+
+/* Force Typography to use correct colors */
+.MuiTypography-root {
+  color: inherit !important;
+  margin: 0 !important;
+}
+
+.MuiTypography-h1,
+.MuiTypography-h2,
+.MuiTypography-h3,
+.MuiTypography-h4,
+.MuiTypography-h5,
+.MuiTypography-h6 {
+  color: var(--carbon-text-primary) !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+}
+
+.MuiTypography-body1 {
+  color: var(--carbon-text-primary) !important;
+  line-height: 1.5 !important;
+}
+
+.MuiTypography-body2 {
+  color: var(--carbon-text-secondary) !important;
+  line-height: 1.5 !important;
+}
+
+/* Force Button styles to be consistent */
+.MuiButton-root {
+  text-transform: none !important;
+  border-radius: 4px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.MuiButton-contained {
+  background-color: var(--carbon-amber-main) !important;
+  color: #000000 !important;
+  box-shadow: none !important;
+}
+
+.MuiButton-contained:hover {
+  background-color: var(--carbon-amber-hover) !important;
+  box-shadow: 0 0 0 2px var(--carbon-amber-glow) !important;
+}
+
+.MuiButton-outlined {
+  border-color: var(--carbon-amber-border) !important;
+  color: var(--carbon-amber-main) !important;
+}
+
+.MuiButton-outlined:hover {
+  border-color: var(--carbon-amber-main) !important;
+  background-color: rgba(251, 191, 36, 0.08) !important;
+  box-shadow: 0 0 0 1px var(--carbon-amber-glow) !important;
+}
+
+/* Force Card styles */
+.MuiCard-root {
+  background-color: var(--carbon-bg-card) !important;
+  border-radius: 4px !important;
+  border: 1px solid var(--carbon-amber-border) !important;
+  box-shadow: none !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.MuiCard-root:hover {
+  border-color: var(--carbon-amber-main) !important;
+  box-shadow: 0 0 0 1px var(--carbon-amber-glow) !important;
+}
+
+/* Force AppBar styles */
+.MuiAppBar-root {
+  background-color: var(--carbon-bg-secondary) !important;
+  border-bottom: 1px solid var(--carbon-amber-border) !important;
+  box-shadow: none !important;
+  color: var(--carbon-text-primary) !important;
+}
+
+/* Force Drawer styles */
+.MuiDrawer-paper {
+  background-color: var(--carbon-bg-primary) !important;
+  border-right: 1px solid var(--carbon-amber-border) !important;
+  color: var(--carbon-text-primary) !important;
+}
+
+/* Force List styles */
+.MuiListItemButton-root {
+  border-radius: 4px !important;
+  margin: 2px 8px !important;
+  color: var(--carbon-text-primary) !important;
+}
+
+.MuiListItemButton-root:hover {
+  background-color: rgba(251, 191, 36, 0.08) !important;
+}
+
+.MuiListItemButton-root.Mui-selected {
+  background-color: rgba(251, 191, 36, 0.12) !important;
+}
+
+.MuiListItemButton-root.Mui-selected:hover {
+  background-color: rgba(251, 191, 36, 0.16) !important;
+}
+
+.MuiListItemIcon-root {
+  color: var(--carbon-text-secondary) !important;
+  min-width: 40px !important;
+}
+
+.MuiListItemButton-root.Mui-selected .MuiListItemIcon-root {
+  color: var(--carbon-amber-main) !important;
+}
+
+.MuiListItemText-primary {
+  color: var(--carbon-text-primary) !important;
+  font-weight: 400 !important;
+}
+
+.MuiListItemButton-root.Mui-selected .MuiListItemText-primary {
+  font-weight: 500 !important;
+  color: var(--carbon-amber-main) !important;
+}
+
+/* Force input field styles */
+.MuiOutlinedInput-root {
+  background-color: var(--carbon-bg-secondary) !important;
+  border-radius: 4px !important;
+  color: var(--carbon-text-primary) !important;
+}
+
+.MuiOutlinedInput-notchedOutline {
+  border-color: var(--carbon-amber-border) !important;
+}
+
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: var(--carbon-amber-main) !important;
+}
+
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--carbon-amber-main) !important;
+  border-width: 2px !important;
+  box-shadow: 0 0 0 2px var(--carbon-amber-glow) !important;
+}
+
+.MuiOutlinedInput-input {
+  color: var(--carbon-text-primary) !important;
+}
+
+.MuiOutlinedInput-input::placeholder {
+  color: var(--carbon-text-secondary) !important;
+  opacity: 1 !important;
 }
 
 /* Carbon Black Animations */
