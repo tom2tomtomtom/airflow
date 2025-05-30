@@ -53,11 +53,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return;
         }
 
-        // Only access localStorage in browser environment
+        // Production mode: Check localStorage for existing session
         if (typeof window !== 'undefined') {
           const storedUser = localStorage.getItem('airwave_user');
           if (storedUser) {
-            setUser(JSON.parse(storedUser));
+            try {
+              const parsedUser = JSON.parse(storedUser);
+              // Validate the stored user has required fields
+              if (parsedUser.id && parsedUser.email && parsedUser.name) {
+                setUser(parsedUser);
+              } else {
+                // Invalid stored user, remove it
+                localStorage.removeItem('airwave_user');
+              }
+            } catch (parseError) {
+              console.error('Error parsing stored user:', parseError);
+              localStorage.removeItem('airwave_user');
+            }
           }
         }
       } catch (error) {

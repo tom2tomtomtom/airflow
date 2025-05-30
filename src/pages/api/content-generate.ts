@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
 import { env } from '@/lib/env';
 import { z } from 'zod';
-import axios from 'axios';
+import OpenAI from 'openai';
 
 const ContentGenerateSchema = z.object({
   selected_motivation_id: z.string().uuid(),
@@ -29,7 +29,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     // Compose prompt for AI
     const prompt = `Generate the following campaign content types for a creative campaign, using these motivations and context.\n\nMotivations:\n${selection.selected.map((i: number, idx: number) => `${idx + 1}. ${selection.motivations[i] || ''}`).join('\n')}\n\nCustom motivations:\n${(selection.custom || []).join('\n')}\n\nContent types: ${content_types.join(', ')}\nTone: ${tone || 'default'}\nStyle: ${style || 'default'}\n\nFor each type, provide 3 variations. Return results as a JSON object: { type: string, variations: string[] }[]`;
-    const completion = await axios.post('https://api.openai.com/v1/chat/completions', {
+    // Initialize OpenAI client
+    const openai = new OpenAI({
+      apiKey: env.OPENAI_API_KEY,
+    });
+
+    const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
         { role: 'system', content: 'You are a senior creative copywriter.' },
@@ -37,13 +42,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ],
       temperature: 0.7,
       max_tokens: 1200,
-    }, {
-      headers: {
-        'Authorization': `Bearer ${env.OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
     });
-    const content = completion.data.choices[0].message.content;
+    
+    const content = completion.choices[0]?.message?.content;
     // Save generated content
     const { data: saved, error: saveError } = await supabase.from('generated_content').insert({
       selected_motivation_id,

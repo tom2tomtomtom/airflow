@@ -1,0 +1,50 @@
+<testsuites id="" name="" tests="1" failures="1" skipped="0" errors="0" time="19.363521">
+<testsuite name="auth.test.ts" timestamp="2025-05-30T02:58:29.348Z" hostname="chromium" tests="1" failures="1" skipped="0" time="10.274" errors="0">
+<testcase name="Authentication &amp; Client Context › Demo Mode › should load homepage without authentication in demo mode" classname="auth.test.ts" time="10.274">
+<failure message="auth.test.ts:5:9 should load homepage without authentication in demo mode" type="FAILURE">
+<![CDATA[  [chromium] › auth.test.ts:5:9 › Authentication & Client Context › Demo Mode › should load homepage without authentication in demo mode 
+
+    Test timeout of 10000ms exceeded.
+
+    Error: expect(locator).toBeVisible()
+
+    Locator: locator('[data-testid="login-button"]')
+    Expected: visible
+    Received: <element(s) not found>
+    Call log:
+      - expect.toBeVisible with timeout 10000ms
+      - waiting for locator('[data-testid="login-button"]')
+
+
+      20 |         // Not in demo mode, should show landing page with login buttons
+      21 |         await expect(page).toHaveTitle(/AIrWAVE/);
+    > 22 |         await expect(page.locator('[data-testid="login-button"]')).toBeVisible();
+         |                                                                    ^
+      23 |         await expect(page.locator('[data-testid="get-started-button"]')).toBeVisible();
+      24 |       }
+      25 |     });
+        at /Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/auth.test.ts:22:68
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/auth-Authentication-Client-e4d19-authentication-in-demo-mode-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/auth-Authentication-Client-e4d19-authentication-in-demo-mode-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../test-results/auth-Authentication-Client-e4d19-authentication-in-demo-mode-chromium/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|auth-Authentication-Client-e4d19-authentication-in-demo-mode-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|auth-Authentication-Client-e4d19-authentication-in-demo-mode-chromium/video.webm]]
+
+[[ATTACHMENT|auth-Authentication-Client-e4d19-authentication-in-demo-mode-chromium/error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>

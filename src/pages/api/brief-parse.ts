@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase';
 import { env } from '@/lib/env';
 import { z } from 'zod';
 import axios from 'axios';
+import OpenAI from 'openai';
 
 const BriefParseSchema = z.object({
   brief_id: z.string().uuid(),
@@ -20,9 +21,15 @@ async function extractTextFromFile(fileUrl: string): Promise<string> {
 }
 
 async function aiParseBrief(text: string) {
-  // Call OpenAI/Claude or similar to extract structured info
+  // Initialize OpenAI client
+  const openai = new OpenAI({
+    apiKey: env.OPENAI_API_KEY,
+  });
+
+  // Call OpenAI to extract structured info
   const prompt = `Extract the following from the campaign brief:\n- Campaign objectives\n- Target audience\n- Brand guidelines\n- Key messaging\n- Platforms\nReturn a JSON object with confidence scores for each field.`;
-  const completion = await axios.post('https://api.openai.com/v1/chat/completions', {
+  
+  const completion = await openai.chat.completions.create({
     model: 'gpt-4o',
     messages: [
       { role: 'system', content: 'You are an expert campaign strategist.' },
@@ -30,13 +37,9 @@ async function aiParseBrief(text: string) {
     ],
     temperature: 0.2,
     max_tokens: 800,
-  }, {
-    headers: {
-      'Authorization': `Bearer ${env.OPENAI_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
   });
-  return completion.data.choices[0].message.content;
+  
+  return completion.choices[0]?.message?.content;
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

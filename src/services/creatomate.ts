@@ -47,7 +47,8 @@ class CreatomateService {
   private baseUrl: string;
 
   constructor() {
-    this.apiKey = process.env.NEXT_PUBLIC_CREATOMATE_API_KEY || '';
+    // Use server-side API key (not NEXT_PUBLIC_)
+    this.apiKey = process.env.CREATOMATE_API_KEY || '';
     this.baseUrl = 'https://api.creatomate.com/v1';
   }
 

@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
 import { env } from '@/lib/env';
-import axios from 'axios';
+import OpenAI from 'openai';
 
 const StrategyScoreSchema = z.object({
   motivations: z.array(z.object({
@@ -23,7 +23,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     // Use AI to score motivations for relevance
     const aiPrompt = `Given the following campaign context, score each motivation for relevance (1-10) and provide a brief justification.\n\nContext:\n${brief_context}\n\nMotivations:\n${motivations.map((m, i) => `${i + 1}. ${m.statement}: ${m.description}`).join('\n')}`;
-    const completion = await axios.post('https://api.openai.com/v1/chat/completions', {
+    // Initialize OpenAI client
+    const openai = new OpenAI({
+      apiKey: env.OPENAI_API_KEY,
+    });
+
+    const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
         { role: 'system', content: 'You are an expert campaign strategist.' },
@@ -31,13 +36,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ],
       temperature: 0.2,
       max_tokens: 800,
-    }, {
-      headers: {
-        'Authorization': `Bearer ${env.OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
     });
-    const scored = completion.data.choices[0].message.content;
+    
+    const scored = completion.choices[0]?.message?.content;
     return res.status(200).json({ success: true, scored });
   } catch (err: any) {
     return res.status(500).json({ success: false, message: err.message });

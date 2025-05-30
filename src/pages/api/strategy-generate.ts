@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
 import { env } from '@/lib/env';
 import { z } from 'zod';
-import axios from 'axios';
+import OpenAI from 'openai';
 
 const StrategyGenerateSchema = z.object({
   brief_id: z.string().uuid(),
@@ -23,9 +23,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(404).json({ success: false, message: 'Brief not found or not parsed yet' });
   }
   try {
+    // Initialize OpenAI client
+    const openai = new OpenAI({
+      apiKey: env.OPENAI_API_KEY,
+    });
+
     // Generate strategic motivations
     const aiPrompt = `Given the following extracted campaign brief data, generate 7-10 distinct strategic motivations for a creative campaign. For each, provide:\n- A concise motivation statement\n- A relevance score (1-10)\n- A detailed description\n\nBrief Data:\n${JSON.stringify(brief.extracted_data)}`;
-    const completion = await axios.post('https://api.openai.com/v1/chat/completions', {
+    
+    const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
         { role: 'system', content: 'You are an expert campaign strategist.' },
@@ -33,13 +39,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ],
       temperature: 0.3,
       max_tokens: 1200,
-    }, {
-      headers: {
-        'Authorization': `Bearer ${env.OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
     });
-    const motivations = completion.data.choices[0].message.content;
+    
+    const motivations = completion.choices[0]?.message?.content;
     // Save to DB
     const { data: strategy, error: dbError } = await supabase.from('strategies').insert({ brief_id, motivations }).select().single();
     if (dbError) {

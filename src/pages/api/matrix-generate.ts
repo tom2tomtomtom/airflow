@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
 import { env } from '@/lib/env';
 import { z } from 'zod';
-import axios from 'axios';
+import OpenAI from 'openai';
 
 const MatrixGenerateSchema = z.object({
   template_id: z.string().uuid(),
@@ -38,7 +38,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     // Compose prompt for AI to generate variations
     const prompt = `Given the following template, assets, and campaign content, generate ${variation_count} unique campaign variations.\n\nTemplate:\n${JSON.stringify(template)}\n\nAssets:\n${JSON.stringify(assets)}\n\nContent:\n${JSON.stringify(content.content)}\n\nLock these fields: ${lock_fields.join(', ')}\n\nReturn an array of objects, each describing a variation (asset assignments, content, and any locked fields).`;
-    const completion = await axios.post('https://api.openai.com/v1/chat/completions', {
+    // Initialize OpenAI client
+    const openai = new OpenAI({
+      apiKey: env.OPENAI_API_KEY,
+    });
+
+    const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
         { role: 'system', content: 'You are a creative campaign matrix generator.' },
@@ -46,13 +51,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ],
       temperature: 0.5,
       max_tokens: 1500,
-    }, {
-      headers: {
-        'Authorization': `Bearer ${env.OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
     });
-    const variations = completion.data.choices[0].message.content;
+    
+    const variations = completion.choices[0]?.message?.content;
     // Save matrix
     const { data: matrix, error: saveError } = await supabase.from('matrices').insert({
       template_id,
