@@ -78,12 +78,12 @@
     "typescript": "5.1.6",
     "vitest": "^3.1.4",
     "xlsx": "^0.18.5",
-    "zod": "^3.25.32"
-  },
-  "devDependencies": {
+    "zod": "^3.25.32",
     "@aws-sdk/client-s3": "^3.817.0",
     "@aws-sdk/lib-storage": "^3.817.0",
-    "@aws-sdk/s3-request-presigner": "^3.817.0",
+    "@aws-sdk/s3-request-presigner": "^3.817.0"
+  },
+  "devDependencies": {
     "@faker-js/faker": "^9.8.0",
     "@playwright/test": "^1.52.0",
     "@types/compression": "^1.7.5",
