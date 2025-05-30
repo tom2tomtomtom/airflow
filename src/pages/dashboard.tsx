@@ -25,6 +25,8 @@ import {
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
 import { ActivityFeed } from '@/components/ActivityFeed';
+import ExecutionMonitor from '@/components/ExecutionMonitor';
+import ApprovalWorkflow from '@/components/ApprovalWorkflow';
 import { useAuth } from '@/contexts/AuthContext';
 import { useClient } from '@/contexts/ClientContext';
 
@@ -266,10 +268,33 @@ const DashboardPage = () => {
           ))}
         </Grid>
 
-        {/* Activity Feed and Getting Started */}
+        {/* Enhanced Dashboard Widgets */}
         <Grid container spacing={3}>
-          <Grid item xs={12} md={7}>
-            <Paper sx={{ p: 2, height: '100%' }}>
+          {/* Execution Monitor */}
+          <Grid item xs={12} lg={4}>
+            <Paper sx={{ p: 2, height: 500 }}>
+              <ExecutionMonitor
+                maxHeight={450}
+                showHeader={true}
+                realtime={true}
+              />
+            </Paper>
+          </Grid>
+
+          {/* Approval Workflow */}
+          <Grid item xs={12} lg={4}>
+            <Paper sx={{ p: 2, height: 500 }}>
+              <ApprovalWorkflow
+                maxHeight={450}
+                showHeader={true}
+                showActions={true}
+              />
+            </Paper>
+          </Grid>
+
+          {/* Activity Feed */}
+          <Grid item xs={12} lg={4}>
+            <Paper sx={{ p: 2, height: 500 }}>
               <Typography variant="h6" gutterBottom>
                 Recent Activity
               </Typography>
@@ -280,82 +305,85 @@ const DashboardPage = () => {
               />
             </Paper>
           </Grid>
+        </Grid>
 
-          <Grid item xs={12} md={5}>
-            <Paper sx={{ p: 3, height: '100%' }}>
+        {/* Getting Started Section */}
+        <Grid container spacing={3} sx={{ mt: 2 }}>
+          <Grid item xs={12}>
+            <Paper sx={{ p: 3 }}>
               <Typography variant="h6" gutterBottom>
-                Getting Started
+                Getting Started with AIrWAVE
               </Typography>
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  New to AIrWAVE? Here are some things you can do:
-                </Typography>
-                <Box component="ul" sx={{ pl: 2 }}>
-                  <Box component="li" sx={{ mb: 1 }}>
-                    <Typography variant="body2">
-                      Generate AI images with DALL-E 3
-                    </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="body2" color="text.secondary" paragraph>
+                    New to AIrWAVE? Here's your workflow:
+                  </Typography>
+                  <Box component="ol" sx={{ pl: 2 }}>
+                    <Box component="li" sx={{ mb: 1 }}>
+                      <Typography variant="body2">
+                        <strong>Upload Briefs:</strong> Start with your creative brief or strategy document
+                      </Typography>
+                    </Box>
+                    <Box component="li" sx={{ mb: 1 }}>
+                      <Typography variant="body2">
+                        <strong>Generate Motivations:</strong> AI extracts key motivations and insights
+                      </Typography>
+                    </Box>
+                    <Box component="li" sx={{ mb: 1 }}>
+                      <Typography variant="body2">
+                        <strong>Create Content Matrix:</strong> Plan campaigns across platforms and formats
+                      </Typography>
+                    </Box>
+                    <Box component="li" sx={{ mb: 1 }}>
+                      <Typography variant="body2">
+                        <strong>Execute & Monitor:</strong> Launch campaigns and track real-time progress
+                      </Typography>
+                    </Box>
+                    <Box component="li" sx={{ mb: 1 }}>
+                      <Typography variant="body2">
+                        <strong>Approve & Optimize:</strong> Streamlined approval workflows with analytics
+                      </Typography>
+                    </Box>
                   </Box>
-                  <Box component="li" sx={{ mb: 1 }}>
-                    <Typography variant="body2">
-                      Create content matrices for campaigns
-                    </Typography>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="subtitle2" gutterBottom>
+                    Quick Tips & Shortcuts
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
+                    <Chip 
+                      label="Press Ctrl+K for quick search" 
+                      size="small" 
+                      variant="outlined" 
+                    />
+                    <Chip 
+                      label="Use bulk approvals for efficiency" 
+                      size="small" 
+                      variant="outlined" 
+                    />
+                    <Chip 
+                      label="Monitor executions in real-time" 
+                      size="small" 
+                      variant="outlined" 
+                    />
+                    <Chip 
+                      label="Retry failed executions automatically" 
+                      size="small" 
+                      variant="outlined" 
+                    />
                   </Box>
-                  <Box component="li" sx={{ mb: 1 }}>
-                    <Typography variant="body2">
-                      Use templates for quick content creation
-                    </Typography>
-                  </Box>
-                  <Box component="li" sx={{ mb: 1 }}>
-                    <Typography variant="body2">
-                      Manage and organize your digital assets
-                    </Typography>
-                  </Box>
-                  <Box component="li" sx={{ mb: 1 }}>
-                    <Typography variant="body2">
-                      Track campaign performance with analytics
-                    </Typography>
-                  </Box>
-                  <Box component="li" sx={{ mb: 1 }}>
-                    <Typography variant="body2">
-                      Collaborate with real-time activity updates
-                    </Typography>
-                  </Box>
-                </Box>
-              </Box>
-              
-              <Box sx={{ mt: 3 }}>
-                <Typography variant="subtitle2" gutterBottom>
-                  Quick Tips
-                </Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  <Chip 
-                    label="Press Ctrl+K for quick search" 
-                    size="small" 
-                    variant="outlined" 
-                  />
-                  <Chip 
-                    label="Use templates to speed up creation" 
-                    size="small" 
-                    variant="outlined" 
-                  />
-                  <Chip 
-                    label="Check analytics daily for insights" 
-                    size="small" 
-                    variant="outlined" 
-                  />
-                </Box>
-              </Box>
 
-              <Button
-                variant="contained"
-                fullWidth
-                startIcon={<Add />}
-                onClick={() => router.push('/assets?tab=ai')}
-                sx={{ mt: 3 }}
-              >
-                Start Creating
-              </Button>
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    startIcon={<Add />}
+                    onClick={() => router.push('/assets?tab=ai')}
+                  >
+                    Start Creating Content
+                  </Button>
+                </Grid>
+              </Grid>
             </Paper>
           </Grid>
         </Grid>

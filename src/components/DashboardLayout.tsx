@@ -29,6 +29,8 @@ import {
   Visibility as PreviewIcon,
   CheckCircle as SignOffIcon,
   AutoAwesome as GenerateIcon,
+  Assignment as ApprovalsIcon,
+  Analytics as AnalyticsIcon,
 } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import ClientSelector from './ClientSelector';
@@ -48,6 +50,8 @@ const navigation = [
   { name: 'Matrix', href: '/matrix', icon: MatrixIcon },
   { divider: true },
   { name: 'Execute', href: '/execute', icon: ExecuteIcon },
+  { name: 'Approvals', href: '/approvals', icon: ApprovalsIcon },
+  { name: 'Analytics', href: '/analytics', icon: AnalyticsIcon },
   { name: 'Preview', href: '/preview', icon: PreviewIcon },
   { name: 'Sign Off', href: '/sign-off', icon: SignOffIcon },
 ];

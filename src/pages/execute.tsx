@@ -52,10 +52,12 @@ import {
   Pending as PendingIcon,
   CalendarMonth as CalendarIcon,
   AttachMoney as BudgetIcon,
+  Analytics as AnalyticsIcon,
 } from '@mui/icons-material';
 import Head from 'next/head';
 import DashboardLayout from '@/components/DashboardLayout';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
+import ExecutionMonitor from '@/components/ExecutionMonitor';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
 import { useCampaigns, useMatrices, useAssets } from '@/hooks/useData';
@@ -483,77 +485,13 @@ const ExecutePage: React.FC = () => {
             </Paper>
           </Grid>
 
-          {/* Execution Status */}
+          {/* Real-time Execution Monitor */}
           <Grid item xs={12} md={4}>
-            <Paper sx={{ p: 3 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h6">
-                  Execution Queue
-                </Typography>
-                <Button
-                  startIcon={<DownloadIcon />}
-                  onClick={() => setExportDialogOpen(true)}
-                  disabled={executionTasks.length === 0}
-                >
-                  Export
-                </Button>
-              </Box>
-              
-              {executionTasks.length === 0 ? (
-                <Alert severity="info">
-                  No execution tasks yet. Select a campaign to get started.
-                </Alert>
-              ) : (
-                <List>
-                  {executionTasks.map((task, index) => (
-                    <React.Fragment key={task.id}>
-                      {index > 0 && <Divider />}
-                      <ListItem>
-                        <ListItemIcon>
-                          {task.status === 'completed' ? (
-                            <CheckIcon color="success" />
-                          ) : task.status === 'in_progress' ? (
-                            <Badge badgeContent={`${task.progress}%`} color="primary">
-                              <PlayIcon color="primary" />
-                            </Badge>
-                          ) : task.status === 'failed' ? (
-                            <CancelIcon color="error" />
-                          ) : (
-                            <PendingIcon />
-                          )}
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={task.campaignName}
-                          secondary={
-                            <Box>
-                              <Stack direction="row" spacing={0.5} sx={{ mt: 0.5 }}>
-                                {task.platforms.map(p => {
-                                  const platform = platforms.find(pl => pl.id === p);
-                                  return platform ? (
-                                    <Tooltip key={p} title={platform.name}>
-                                      <Box sx={{ color: platform.color }}>
-                                        {platform.icon}
-                                      </Box>
-                                    </Tooltip>
-                                  ) : null;
-                                })}
-                              </Stack>
-                              {task.status === 'in_progress' && (
-                                <LinearProgress
-                                  variant="determinate"
-                                  value={task.progress}
-                                  sx={{ mt: 1 }}
-                                />
-                              )}
-                            </Box>
-                          }
-                        />
-                      </ListItem>
-                    </React.Fragment>
-                  ))}
-                </List>
-              )}
-            </Paper>
+            <ExecutionMonitor 
+              maxHeight={500}
+              showHeader={true}
+              realtime={true}
+            />
           </Grid>
         </Grid>
 
