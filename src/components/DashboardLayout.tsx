@@ -31,6 +31,7 @@ import {
   AutoAwesome as GenerateIcon,
   Assignment as ApprovalsIcon,
   Analytics as AnalyticsIcon,
+  Webhook as WebhookIcon,
 } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import ClientSelector from './ClientSelector';
@@ -53,6 +54,7 @@ const navigation = [
   { name: 'Execute', href: '/execute', icon: ExecuteIcon },
   { name: 'Approvals', href: '/approvals', icon: ApprovalsIcon },
   { name: 'Analytics', href: '/analytics', icon: AnalyticsIcon },
+  { name: 'Webhooks', href: '/webhooks', icon: WebhookIcon },
   { name: 'Preview', href: '/preview', icon: PreviewIcon },
   { name: 'Sign Off', href: '/sign-off', icon: SignOffIcon },
 ];

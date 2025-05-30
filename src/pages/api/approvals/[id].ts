@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase/client';
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
+import { triggerWebhookEvent, WEBHOOK_EVENTS } from '../webhooks/index';
 import { z } from 'zod';
 
 const ApprovalDecisionSchema = z.object({
@@ -210,6 +211,9 @@ async function handleDecision(req: NextApiRequest, res: NextApiResponse, user: a
 
   // Send notifications
   await triggerApprovalNotification(updatedApproval, `decision_${decision.action}`);
+
+  // Trigger webhooks
+  await triggerApprovalWebhooks(updatedApproval, decision.action, user);
 
   return res.json({ 
     data: updatedApproval,
@@ -557,6 +561,45 @@ async function triggerApprovalNotification(approval: any, action: string): Promi
     console.log(`Approval ${approval.id} ${action} - triggering notifications`);
   } catch (error) {
     console.error('Error triggering approval notification:', error);
+  }
+}
+
+async function triggerApprovalWebhooks(approval: any, action: string, user: any): Promise<void> {
+  try {
+    // Map action to webhook event
+    const eventMapping = {
+      approve: WEBHOOK_EVENTS.APPROVAL_APPROVED,
+      reject: WEBHOOK_EVENTS.APPROVAL_REJECTED,
+      request_changes: WEBHOOK_EVENTS.APPROVAL_CHANGES_REQUESTED,
+    };
+
+    const eventType = eventMapping[action as keyof typeof eventMapping];
+    if (!eventType) return;
+
+    // Prepare webhook payload
+    const webhookData = {
+      approval_id: approval.id,
+      item_type: approval.item_type,
+      item_id: approval.item_id,
+      type: approval.type,
+      status: approval.status,
+      action,
+      decided_by: {
+        id: user.id,
+        name: user.full_name || user.email,
+      },
+      decision_data: approval.decision_data,
+      client: {
+        id: approval.client_id,
+        name: approval.clients?.name,
+      },
+      timestamp: new Date().toISOString(),
+    };
+
+    // Trigger the webhook
+    await triggerWebhookEvent(eventType, webhookData, approval.client_id);
+  } catch (error) {
+    console.error('Error triggering approval webhooks:', error);
   }
 }
 

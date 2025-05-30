@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase/client';
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
+import { triggerWebhookEvent, WEBHOOK_EVENTS } from '../../webhooks/index';
 import { z } from 'zod';
 
 const RetryRequestSchema = z.object({
@@ -153,6 +154,9 @@ async function handleRetry(req: NextApiRequest, res: NextApiResponse, user: any,
 
   // Trigger retry execution
   const triggerResult = await triggerRetryExecution(retryExecution, retryData.delay_seconds);
+
+  // Trigger webhook for execution retry
+  await triggerExecutionRetryWebhook(retryExecution, execution, user, retryData);
 
   return res.json({
     message: 'Execution retry initiated successfully',
@@ -380,6 +384,53 @@ async function logRetryEvent(originalId: string, retryId: string, userId: string
     console.log(`Execution retry: ${originalId} -> ${retryId} by user ${userId}`, { reason });
   } catch (error) {
     console.error('Error logging retry event:', error);
+  }
+}
+
+async function triggerExecutionRetryWebhook(retryExecution: any, originalExecution: any, user: any, retryData: any): Promise<void> {
+  try {
+    // Get client ID from execution
+    const clientId = retryExecution.client_id || originalExecution.client_id;
+    if (!clientId) return;
+
+    // Prepare webhook payload
+    const webhookData = {
+      execution_id: retryExecution.id,
+      original_execution_id: originalExecution.id,
+      campaign: {
+        id: retryExecution.matrices?.campaigns?.id,
+        name: retryExecution.matrices?.campaigns?.name,
+      },
+      matrix: {
+        id: retryExecution.matrix_id,
+        name: retryExecution.matrices?.name,
+      },
+      platform: retryExecution.platform,
+      content_type: retryExecution.content_type,
+      status: retryExecution.status,
+      retry_reason: retryData.retry_reason,
+      retried_by: {
+        id: user.id,
+        name: user.full_name || user.email,
+      },
+      retry_options: {
+        force: retryData.force,
+        priority: retryData.priority,
+        delay_seconds: retryData.delay_seconds,
+        reset_attempts: retryData.reset_attempts,
+      },
+      original_failure: {
+        status: originalExecution.status,
+        error_message: originalExecution.error_message,
+        failed_at: originalExecution.updated_at,
+      },
+      timestamp: new Date().toISOString(),
+    };
+
+    // Trigger the webhook
+    await triggerWebhookEvent(WEBHOOK_EVENTS.EXECUTION_STARTED, webhookData, clientId);
+  } catch (error) {
+    console.error('Error triggering execution retry webhook:', error);
   }
 }
 
