@@ -15,18 +15,35 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Root variables */
+/* Carbon Black Design System Variables */
 :root {
-  --primary-color: #1976d2;
-  --secondary-color: #dc004e;
-  --success-color: #06d6a0;
-  --warning-color: #ffbe0b;
-  --error-color: #ef476f;
-  --text-primary: #212121;
-  --text-secondary: #757575;
-  --background-light: #f5f5f7;
-  --background-white: #ffffff;
-  --border-color: #e0e0e0;
+  /* Primary amber accent */
+  --carbon-amber-main: #FBBF24;
+  --carbon-amber-hover: #F59E0B;
+  --carbon-amber-border: rgba(251, 191, 36, 0.2);
+  --carbon-amber-glow: rgba(251, 191, 36, 0.3);
+  --carbon-amber-focus: rgba(251, 191, 36, 0.4);
+  
+  /* Background hierarchy */
+  --carbon-bg-primary: #030712;
+  --carbon-bg-secondary: #111827;
+  --carbon-bg-card: #1F2937;
+  --carbon-bg-elevated: #374151;
+  
+  /* Text contrast */
+  --carbon-text-primary: #FFFFFF;
+  --carbon-text-secondary: #9CA3AF;
+  --carbon-text-muted: #6B7280;
+  
+  /* Status colors */
+  --carbon-success: #10B981;
+  --carbon-error: #EF4444;
+  --carbon-warning: #F59E0B;
+  
+  /* Shadows and effects */
+  --carbon-shadow-amber: 0 0 0 1px var(--carbon-amber-glow);
+  --carbon-shadow-strong: 0 0 0 2px var(--carbon-amber-glow);
+  --carbon-glow-pulse: 0 0 8px var(--carbon-amber-glow);
 }
 
 /* Force Material Icons font */
@@ -109,21 +126,26 @@ svg.MuiSvgIcon-root {
   max-height: none !important;
 }
 
-/* Base body styles */
+/* Carbon Black Base Styles */
 html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  color: var(--text-primary);
-  background-color: var(--background-light);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 
+    'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+  color: var(--carbon-text-primary);
+  background-color: var(--carbon-bg-primary);
   line-height: 1.5;
+  font-weight: 400;
+  /* Ensure dark theme appearance */
+  color-scheme: dark;
+  /* High contrast mode support */
+  forced-color-adjust: auto;
 }
 
 /* Links */
@@ -138,63 +160,242 @@ img {
   height: auto;
 }
 
-/* Custom scrollbar */
+/* Carbon Black Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--background-light);
-  border-radius: 4px;
+  background: var(--carbon-bg-secondary);
+  border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 4px;
+  background: var(--carbon-amber-border);
+  border-radius: 2px;
+  transition: background 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a1a1a1;
+  background: var(--carbon-amber-main);
 }
 
-/* Fix MUI Paper and Box components */
+::-webkit-scrollbar-corner {
+  background: var(--carbon-bg-secondary);
+}
+
+/* Carbon Black Component Overrides */
 .MuiPaper-root {
-  background-color: #ffffff !important;
+  background-color: var(--carbon-bg-card) !important;
 }
 
 .MuiBox-root {
   box-sizing: border-box;
 }
 
-/* Ensure MUI theme colors work */
-.MuiButton-containedPrimary {
-  background-color: var(--primary-color) !important;
+/* Carbon Black Animations */
+@keyframes amberPulse {
+  0%, 100% { 
+    box-shadow: 0 0 0 0 var(--carbon-amber-glow);
+  }
+  50% { 
+    box-shadow: 0 0 0 4px transparent;
+  }
 }
 
-.MuiButton-containedPrimary:hover {
-  background-color: #1565c0 !important;
+@keyframes amberGlow {
+  0% { 
+    box-shadow: 0 0 0 1px var(--carbon-amber-border);
+  }
+  100% { 
+    box-shadow: 0 0 8px 1px var(--carbon-amber-glow);
+  }
 }
 
-/* Fix text field styling */
-.MuiOutlinedInput-root {
-  background-color: #ffffff;
+@keyframes carbonFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-  border-color: var(--primary-color);
+/* Carbon Black Utility Classes */
+.carbon-glow-hover:hover {
+  box-shadow: var(--carbon-shadow-amber) !important;
+  transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-  border-color: var(--primary-color);
+.carbon-glow-strong {
+  box-shadow: var(--carbon-shadow-strong) !important;
 }
 
-/* Typography fixes */
-.MuiTypography-root {
-  margin: 0;
+.carbon-pulse-loading {
+  animation: amberPulse 2s infinite;
 }
 
-/* Alert styling */
-.MuiAlert-root {
+.carbon-fade-in {
+  animation: carbonFadeIn 0.3s ease-out;
+}
+
+/* Carbon Black Focus Styles */
+.carbon-focus:focus {
+  outline: 2px solid var(--carbon-amber-main);
+  outline-offset: 2px;
+}
+
+/* Carbon Black Loading States */
+.carbon-loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.carbon-loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(251, 191, 36, 0.1),
+    transparent
+  );
+  animation: carbonShimmer 1.5s infinite;
+}
+
+@keyframes carbonShimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* Carbon Black Elevation */
+.carbon-elevation-1 {
+  border: 1px solid var(--carbon-amber-border);
+  background: var(--carbon-bg-card);
+}
+
+.carbon-elevation-2 {
+  border: 1px solid var(--carbon-amber-border);
+  background: var(--carbon-bg-card);
+  box-shadow: var(--carbon-shadow-amber);
+}
+
+.carbon-elevation-3 {
+  border: 1px solid var(--carbon-amber-main);
+  background: var(--carbon-bg-card);
+  box-shadow: var(--carbon-shadow-strong);
+}
+
+/* Carbon Black Status Indicators */
+.carbon-status-success {
+  color: var(--carbon-success);
+  border-color: var(--carbon-success);
+}
+
+.carbon-status-error {
+  color: var(--carbon-error);
+  border-color: var(--carbon-error);
+}
+
+.carbon-status-warning {
+  color: var(--carbon-warning);
+  border-color: var(--carbon-warning);
+}
+
+/* Carbon Black Typography Enhancements */
+.carbon-text-gradient {
+  background: linear-gradient(135deg, var(--carbon-text-primary), var(--carbon-amber-main));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Carbon Black Interactive Elements */
+.carbon-interactive {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.carbon-interactive:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--carbon-shadow-amber);
+}
+
+.carbon-interactive:active {
+  transform: translateY(0);
+}
+
+/* Carbon Black Grid and Layout */
+.carbon-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.carbon-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.carbon-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Carbon Black Form Elements */
+.carbon-form-group {
+  margin-bottom: 24px;
+}
+
+.carbon-form-label {
+  color: var(--carbon-text-primary);
+  font-weight: 500;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.carbon-form-helper {
+  color: var(--carbon-text-secondary);
+  font-size: 0.875rem;
+  margin-top: 4px;
+}
+
+/* Carbon Black Separator */
+.carbon-separator {
+  height: 1px;
+  background: var(--carbon-amber-border);
+  border: none;
+  margin: 24px 0;
+}
+
+/* Carbon Black Code/Technical Elements */
+.carbon-code {
+  background: var(--carbon-bg-secondary);
+  border: 1px solid var(--carbon-amber-border);
   border-radius: 4px;
+  padding: 12px;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  font-size: 0.875rem;
+  color: var(--carbon-text-primary);
+}
+
+/* Carbon Black Selection */
+::selection {
+  background: var(--carbon-amber-glow);
+  color: var(--carbon-bg-primary);
+}
+
+::-moz-selection {
+  background: var(--carbon-amber-glow);
+  color: var(--carbon-bg-primary);
 }

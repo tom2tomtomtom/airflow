@@ -74,10 +74,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
           variant="h6" 
           noWrap 
           component="div" 
+          className="carbon-text-gradient"
           sx={{ 
-            fontWeight: 700, 
-            color: 'primary.main',
+            fontWeight: 600, 
             cursor: 'pointer',
+            fontSize: '1.5rem',
           }}
           onClick={() => router.push('/dashboard')}
         >
