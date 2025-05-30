@@ -160,7 +160,10 @@ const sentryWebpackPluginOptions = {
   widenClientFileUpload: true,
 };
 
-// Export with Sentry wrapper for production
-module.exports = process.env.NODE_ENV === 'production' && process.env.SENTRY_AUTH_TOKEN
+// Export with Sentry wrapper for production only if all required env vars are present
+module.exports = process.env.NODE_ENV === 'production' && 
+                 process.env.SENTRY_AUTH_TOKEN && 
+                 process.env.SENTRY_ORG && 
+                 process.env.SENTRY_PROJECT
   ? withSentryConfig(nextConfig, sentryWebpackPluginOptions)
   : nextConfig;
