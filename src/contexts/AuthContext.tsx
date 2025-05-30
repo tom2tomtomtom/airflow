@@ -40,15 +40,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         // Check if demo mode is enabled
         if (process.env.NEXT_PUBLIC_DEMO_MODE === 'true') {
-          // Auto-authenticate with demo user
-          const demoUser: User = {
-            id: 'demo-user-1',
-            email: 'demo@airwave.com',
-            name: 'Demo User',
-            role: 'admin',
-            token: 'demo-token'
-          };
-          setUser(demoUser);
+          // Don't auto-authenticate in demo mode, let user login
           setLoading(false);
           return;
         }
@@ -113,7 +105,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
+        throw new Error(data.error || data.message || 'Login failed');
       }
       
       if (data.success && data.user) {
@@ -152,7 +144,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.message || 'Signup failed');
+        // Throw the actual error from the API
+        throw new Error(data.error || data.message || 'Signup failed');
+      }
+      
+      // Check if email confirmation is required
+      if (data.message && data.message.includes('check your email')) {
+        // Don't log the user in, just show the message
+        throw new Error(data.message);
       }
       
       if (data.success && data.user) {
@@ -163,6 +162,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         // Redirect to dashboard after signup
         router.push('/dashboard');
+      } else if (data.success && data.message) {
+        // Success but with a message (like email confirmation)
+        throw new Error(data.message);
       } else {
         throw new Error('Invalid response from server');
       }
