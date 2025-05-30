@@ -1,0 +1,236 @@
+{
+  "config": {
+    "configFile": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/playwright.config.ts",
+    "rootDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/global-setup.ts",
+    "globalTeardown": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/global-teardown.ts",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/test-results.json"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "test-results/junit.xml"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "Mobile Chrome",
+        "name": "Mobile Chrome",
+        "testDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "Mobile Safari",
+        "name": "Mobile Safari",
+        "testDir": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.52.0",
+    "workers": 4,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "asset-upload.test.ts",
+      "file": "asset-upload.test.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Asset Upload Flow",
+          "file": "asset-upload.test.ts",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "should upload image assets successfully",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 10796,
+                      "error": {
+                        "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('[data-testid=\"user-menu\"]')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - expect.toBeVisible with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-testid=\"user-menu\"]')\u001b[22m\n",
+                        "stack": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('[data-testid=\"user-menu\"]')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - expect.toBeVisible with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-testid=\"user-menu\"]')\u001b[22m\n\n    at AuthHelper.ensureLoggedIn (/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/helpers/auth-helper.ts:71:66)\n    at Object.authenticatedPage (/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/fixtures/test-fixtures.ts:42:24)",
+                        "location": {
+                          "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/helpers/auth-helper.ts",
+                          "column": 66,
+                          "line": 71
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mhelpers/auth-helper.ts:71\n\n  69 |     \n  70 |     // Verify we're on a protected page\n> 71 |     await expect(this.page.locator('[data-testid=\"user-menu\"]')).toBeVisible();\n     |                                                                  ^\n  72 |   }\n  73 |\n  74 |   async selectClient(clientName: string = 'Demo Agency') {"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/helpers/auth-helper.ts",
+                            "column": 66,
+                            "line": 71
+                          },
+                          "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: locator('[data-testid=\"user-menu\"]')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - expect.toBeVisible with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('[data-testid=\"user-menu\"]')\u001b[22m\n\n\n   at helpers/auth-helper.ts:71\n\n  69 |     \n  70 |     // Verify we're on a protected page\n> 71 |     await expect(this.page.locator('[data-testid=\"user-menu\"]')).toBeVisible();\n     |                                                                  ^\n  72 |   }\n  73 |\n  74 |   async selectClient(clientName: string = 'Demo Agency') {\n    at AuthHelper.ensureLoggedIn (/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/helpers/auth-helper.ts:71:66)\n    at Object.authenticatedPage (/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/fixtures/test-fixtures.ts:42:24)"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-05-30T01:44:33.485Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/asset-upload-Asset-Upload--135c6-d-image-assets-successfully-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/asset-upload-Asset-Upload--135c6-d-image-assets-successfully-chromium/video.webm"
+                        },
+                        {
+                          "name": "_error-context-0",
+                          "contentType": "text/markdown",
+                          "path": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/test-results/asset-upload-Asset-Upload--135c6-d-image-assets-successfully-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/tests/e2e/helpers/auth-helper.ts",
+                        "column": 66,
+                        "line": 71
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "84ffcb05990751bc1330-52a1e3038c1d03834eaa",
+              "file": "asset-upload.test.ts",
+              "line": 5,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-05-30T01:44:31.172Z",
+    "duration": 13189.143,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

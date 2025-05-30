@@ -7,11 +7,11 @@ const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
 const envSchema = z.object({
   // Public environment variables (accessible in browser)
   NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional().refine(
-    (val) => isDemoMode || val,
+    (val) => isDemoMode || process.env.NODE_ENV === 'development' || val,
     'Supabase URL is required in production mode'
   ),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().optional().refine(
-    (val) => isDemoMode || val,
+    (val) => isDemoMode || process.env.NODE_ENV === 'development' || val,
     'Supabase anon key is required in production mode'
   ),
   NEXT_PUBLIC_API_URL: z.string().url().optional().default(
@@ -23,12 +23,12 @@ const envSchema = z.object({
   
   // Server-only environment variables
   SUPABASE_SERVICE_ROLE_KEY: z.string().optional().refine(
-    (val) => isDemoMode || val,
+    (val) => isDemoMode || process.env.NODE_ENV === 'development' || val,
     'Supabase service role key is required in production mode'
   ),
   JWT_SECRET: z.string().optional().refine(
     (val) => {
-      if (isDemoMode) return true;
+      if (isDemoMode || process.env.NODE_ENV === 'development') return true;
       if (!val) return false;
       if (val.length < 32) return false;
       // Ensure it's not a default/demo value

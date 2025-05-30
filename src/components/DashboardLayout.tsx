@@ -32,6 +32,7 @@ import {
 } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import ClientSelector from './ClientSelector';
+import UserMenu from './UserMenu';
 
 const drawerWidth = 240;
 
@@ -160,8 +161,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
           <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 600, flexGrow: 1 }}>
             {title || 'AIrWAVE Dashboard'}
           </Typography>
-          <Box sx={{ ml: 2 }}>
+          <Box sx={{ ml: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
             <ClientSelector variant="chip" />
+            <UserMenu />
           </Box>
         </Toolbar>
       </AppBar>

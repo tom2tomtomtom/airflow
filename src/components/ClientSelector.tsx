@@ -74,6 +74,7 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
       case 'chip':
         return activeClient ? (
           <Chip
+            data-testid="client-selector"
             avatar={
               activeClient.logo ? (
                 <Avatar src={activeClient.logo} />
@@ -83,13 +84,14 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
                 </Avatar>
               )
             }
-            label={activeClient.name}
+            label={<span data-testid="selected-client">{activeClient.name}</span>}
             onClick={handleClick}
             onDelete={handleClick}
             deleteIcon={<ArrowDropDownIcon />}
           />
         ) : (
           <Chip
+            data-testid="client-selector"
             icon={<BusinessIcon />}
             label="Select Client"
             onClick={handleClick}
@@ -199,6 +201,7 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
           filteredClients.map((client) => (
             <MenuItem
               key={client.id}
+              data-testid="client-option"
               onClick={() => handleSelectClient(client)}
               selected={activeClient?.id === client.id}
             >

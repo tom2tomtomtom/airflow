@@ -150,13 +150,14 @@ export const AssetUploadModal: React.FC<AssetUploadModalProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth data-testid="upload-modal">
       <DialogTitle>
         Upload Assets
         <IconButton
           onClick={handleClose}
           disabled={uploading}
           sx={{ position: 'absolute', right: 8, top: 8 }}
+          data-testid="close-upload-modal"
         >
           <Close />
         </IconButton>
@@ -168,6 +169,7 @@ export const AssetUploadModal: React.FC<AssetUploadModalProps> = ({
           <>
             <Box
               {...getRootProps()}
+              data-testid="dropzone"
               sx={{
                 border: '2px dashed',
                 borderColor: isDragActive ? 'primary.main' : 'divider',
@@ -270,6 +272,7 @@ export const AssetUploadModal: React.FC<AssetUploadModalProps> = ({
           variant="contained"
           disabled={uploading || files.length === 0 || !activeClient}
           startIcon={uploading ? null : <CloudUpload />}
+          data-testid="upload-files-button"
         >
           {uploading ? 'Uploading...' : `Upload ${files.length} file${files.length !== 1 ? 's' : ''}`}
         </Button>
