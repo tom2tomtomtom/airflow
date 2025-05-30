@@ -55,6 +55,20 @@ const nextConfig = {
           },
         ],
       },
+      // Add headers for fonts
+      {
+        source: '/_next/static/fonts/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*',
+          },
+        ],
+      },
     ];
   },
   
@@ -76,7 +90,7 @@ const nextConfig = {
   },
   
   // Webpack configuration
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, webpack }) => {
     // Fix for React Email
     if (!isServer) {
       config.resolve.fallback = {
@@ -87,11 +101,32 @@ const nextConfig = {
       };
     }
     
+    // Add rule for font handling
+    config.module.rules.push({
+      test: /\.(woff|woff2|eot|ttf|otf)$/,
+      use: {
+        loader: 'file-loader',
+        options: {
+          name: '[name].[ext]',
+          publicPath: '/_next/static/fonts/',
+          outputPath: 'static/fonts/',
+        },
+      },
+    });
+    
+    // Ensure CSS is handled properly
+    config.plugins.push(
+      new webpack.DefinePlugin({
+        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+      })
+    );
+    
     return config;
   },
   
   // Experimental features
   experimental: {
+    optimizeCss: true, // Enable CSS optimization
     // instrumentationHook: true, // Removed - instrumentation.js is available by default
   },
 };

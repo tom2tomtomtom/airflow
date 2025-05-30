@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import {
@@ -23,6 +24,7 @@ import {
 
 const LoginPage: React.FC = () => {
   const router = useRouter();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -34,16 +36,22 @@ const LoginPage: React.FC = () => {
     setLoading(true);
     setError('');
 
-    // Simulate authentication (replace with real auth logic)
-    setTimeout(() => {
-      setLoading(false);
-      if (email && password) {
-        // Simulate successful login
-        router.push('/');
-      } else {
+    try {
+      if (!email || !password) {
         setError('Please enter both email and password');
+        return;
       }
-    }, 1000);
+
+      // Use the AuthContext login function
+      await login(email, password);
+      
+      // Redirect to dashboard on successful login
+      router.push('/dashboard');
+    } catch (err) {
+      setError('Invalid email or password');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDemoLogin = () => {
@@ -126,12 +134,12 @@ const LoginPage: React.FC = () => {
           </Box>
 
           {error && (
-            <Alert severity="error" sx={{ mb: 3 }}>
+            <Alert severity="error" sx={{ mb: 3 }} data-testid="error-message">
               {error}
             </Alert>
           )}
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} data-testid="login-form">
             <TextField
               fullWidth
               label="Email"
@@ -140,6 +148,7 @@ const LoginPage: React.FC = () => {
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
               sx={{ mb: 2 }}
+              data-testid="email-input"
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -157,6 +166,7 @@ const LoginPage: React.FC = () => {
               onChange={(e) => setPassword(e.target.value)}
               disabled={loading}
               sx={{ mb: 3 }}
+              data-testid="password-input"
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -182,6 +192,7 @@ const LoginPage: React.FC = () => {
               variant="contained"
               size="large"
               disabled={loading}
+              data-testid="sign-in-button"
               sx={{
                 mb: 2,
                 height: 48,
@@ -207,6 +218,7 @@ const LoginPage: React.FC = () => {
             size="large"
             onClick={handleDemoLogin}
             disabled={loading}
+            data-testid="demo-login-button"
             sx={{
               mb: 3,
               height: 48,

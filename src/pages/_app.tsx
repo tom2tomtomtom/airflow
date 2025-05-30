@@ -1,8 +1,9 @@
 import type { AppProps } from 'next/app';
 import { useEffect } from 'react';
 import Head from 'next/head';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { CacheProvider, EmotionCache } from '@emotion/react';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -11,7 +12,18 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ClientProvider } from '@/contexts/ClientContext';
 import { NotificationProvider } from '@/contexts/NotificationContext';
+import createEmotionCache from '@/lib/createEmotionCache';
+import theme from '@/styles/theme';
+
+// Import CSS files in the correct order
 import '@/styles/globals.css';
+
+// Client-side cache, shared for the whole session of the user in the browser.
+const clientSideEmotionCache = createEmotionCache();
+
+export interface MyAppProps extends AppProps {
+  emotionCache?: EmotionCache;
+}
 
 // Create a client
 const queryClient = new QueryClient({
@@ -30,71 +42,9 @@ const queryClient = new QueryClient({
   },
 });
 
-// Create theme
-const theme = createTheme({
-  palette: {
-    mode: 'light',
-    primary: {
-      main: '#1976d2',
-      light: '#bbdefb',
-    },
-    secondary: {
-      main: '#dc004e',
-    },
-    background: {
-      default: '#f5f5f5',
-      paper: '#ffffff',
-    },
-    text: {
-      primary: '#333333',
-      secondary: '#666666',
-    },
-  },
-  typography: {
-    fontFamily: [
-      '-apple-system',
-      'BlinkMacSystemFont',
-      '"Segoe UI"',
-      'Roboto',
-      '"Helvetica Neue"',
-      'Arial',
-      'sans-serif',
-    ].join(','),
-  },
-  components: {
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          textTransform: 'none',
-          borderRadius: 8,
-        },
-      },
-    },
-    MuiTextField: {
-      defaultProps: {
-        variant: 'outlined',
-        size: 'small',
-      },
-    },
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          borderRadius: 12,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-        },
-      },
-    },
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          borderRadius: 12,
-        },
-      },
-    },
-  },
-});
+function MyApp(props: MyAppProps) {
+  const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
 
-function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
     // Remove the server-side injected CSS
     const jssStyles = document.querySelector('#jss-server-side');
@@ -134,7 +84,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   }, []);
 
   return (
-    <ErrorBoundary>
+    <CacheProvider value={emotionCache}>
       <Head>
         <title>AIrWAVE - AI-Powered Campaign Management</title>
         <meta name="description" content="AI-powered campaign management platform for creating and managing digital marketing assets" />
@@ -143,22 +93,24 @@ function MyApp({ Component, pageProps }: AppProps) {
       </Head>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider theme={theme}>
+          <CssBaseline />
           <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <AuthProvider>
-              <ClientProvider>
-                <NotificationProvider>
-                  <CssBaseline />
-                  <Component {...pageProps} />
-                  {process.env.NODE_ENV === 'development' && (
-                    <ReactQueryDevtools initialIsOpen={false} />
-                  )}
-                </NotificationProvider>
-              </ClientProvider>
-            </AuthProvider>
+            <ErrorBoundary>
+              <AuthProvider>
+                <ClientProvider>
+                  <NotificationProvider>
+                    <Component {...pageProps} />
+                    {process.env.NODE_ENV === 'development' && (
+                      <ReactQueryDevtools initialIsOpen={false} />
+                    )}
+                  </NotificationProvider>
+                </ClientProvider>
+              </AuthProvider>
+            </ErrorBoundary>
           </LocalizationProvider>
         </ThemeProvider>
       </QueryClientProvider>
-    </ErrorBoundary>
+    </CacheProvider>
   );
 }
 

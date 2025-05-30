@@ -1,6 +1,24 @@
+/* CSS Reset and Base Styles */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+/* Import Tailwind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Root variables */
 :root {
-  --primary-color: #3a86ff;
-  --secondary-color: #8338ec;
+  --primary-color: #1976d2;
+  --secondary-color: #dc004e;
   --success-color: #06d6a0;
   --warning-color: #ffbe0b;
   --error-color: #ef476f;
@@ -11,28 +29,82 @@
   --border-color: #e0e0e0;
 }
 
-* {
-  box-sizing: border-box;
+/* Force Material Icons font */
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/materialicons/v140/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
+}
+
+.material-icons {
+  font-family: 'Material Icons' !important;
+  font-weight: normal !important;
+  font-style: normal !important;
+  font-size: 24px !important;
+  line-height: 1 !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+  display: inline-block !important;
+  white-space: nowrap !important;
+  word-wrap: normal !important;
+  direction: ltr !important;
+  -webkit-font-feature-settings: 'liga' !important;
+  -webkit-font-smoothing: antialiased !important;
+}
+
+/* MUI Icon overrides */
+.MuiSvgIcon-root {
+  width: 1em !important;
+  height: 1em !important;
+  display: inline-block !important;
+  font-size: 1.5rem !important;
+  transition: fill 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms !important;
+  flex-shrink: 0 !important;
+  user-select: none !important;
+}
+
+/* Input adornment icon sizing */
+.MuiInputAdornment-root .MuiSvgIcon-root {
+  font-size: 1.25rem !important;
+}
+
+/* Icon button sizing */
+.MuiIconButton-root {
+  padding: 8px !important;
+}
+
+.MuiIconButton-root .MuiSvgIcon-root {
+  font-size: 1.5rem !important;
+}
+
+/* Base body styles */
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
   margin: 0;
-  padding: 0;
-}
-
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
-
-body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
   color: var(--text-primary);
-  background: var(--background-light);
+  background-color: var(--background-light);
+  line-height: 1.5;
 }
 
+/* Links */
 a {
   color: inherit;
   text-decoration: none;
+}
+
+/* Make images responsive */
+img {
+  max-width: 100%;
+  height: auto;
 }
 
 /* Custom scrollbar */
@@ -53,4 +125,45 @@ a {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #a1a1a1;
+}
+
+/* Fix MUI Paper and Box components */
+.MuiPaper-root {
+  background-color: #ffffff !important;
+}
+
+.MuiBox-root {
+  box-sizing: border-box;
+}
+
+/* Ensure MUI theme colors work */
+.MuiButton-containedPrimary {
+  background-color: var(--primary-color) !important;
+}
+
+.MuiButton-containedPrimary:hover {
+  background-color: #1565c0 !important;
+}
+
+/* Fix text field styling */
+.MuiOutlinedInput-root {
+  background-color: #ffffff;
+}
+
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: var(--primary-color);
+}
+
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--primary-color);
+}
+
+/* Typography fixes */
+.MuiTypography-root {
+  margin: 0;
+}
+
+/* Alert styling */
+.MuiAlert-root {
+  border-radius: 4px;
 }

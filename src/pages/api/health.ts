@@ -1,132 +1,273 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase';
-import { env } from '@/lib/env';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { createClient } from '@supabase/supabase-js';
+import Redis from 'ioredis';
+import { S3Client, HeadBucketCommand } from '@aws-sdk/client-s3';
 
-interface HealthStatus {
-  status: 'healthy' | 'degraded' | 'unhealthy';
-  timestamp: string;
-  version: string;
-  environment: string;
-  services: {
-    database: {
-      status: 'connected' | 'disconnected' | 'error';
-      latency?: number;
-      error?: string;
-    };
-    storage?: {
-      status: 'available' | 'unavailable' | 'error';
-      error?: string;
-    };
-  };
-  uptime: number;
+// Health check statuses
+type HealthStatus = 'healthy' | 'degraded' | 'unhealthy';
+type ServiceStatus = 'ok' | 'error' | 'timeout';
+
+interface ServiceCheck {
+  status: ServiceStatus;
+  message?: string;
+  latency?: number;
+  details?: any;
 }
 
-// Track app start time
-const appStartTime = Date.now();
-
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<HealthStatus>
-) {
-  // Only allow GET requests
-  if (req.method !== 'GET') {
-    return res.status(405).json({
-      status: 'unhealthy',
-      timestamp: new Date().toISOString(),
-      version: process.env.npm_package_version || '0.1.0',
-      environment: env.NODE_ENV,
-      services: {
-        database: {
-          status: 'error',
-          error: 'Method not allowed',
-        },
-      },
-      uptime: Math.floor((Date.now() - appStartTime) / 1000),
-    });
-  }
-
-  const healthStatus: HealthStatus = {
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    version: process.env.npm_package_version || '0.1.0',
-    environment: env.NODE_ENV,
-    services: {
-      database: {
-        status: 'connected',
-      },
-    },
-    uptime: Math.floor((Date.now() - appStartTime) / 1000),
+interface HealthCheckResponse {
+  status: HealthStatus;
+  timestamp: string;
+  version: string;
+  uptime: number;
+  checks: {
+    database: ServiceCheck;
+    redis: ServiceCheck;
+    storage: ServiceCheck;
+    creatomate: ServiceCheck;
+    email: ServiceCheck;
   };
+}
 
+// Service check functions
+async function checkDatabase(): Promise<ServiceCheck> {
+  const start = Date.now();
+  
   try {
-    // Check database connectivity
-    const startTime = Date.now();
-    const { error: dbError } = await supabase
-      .from('profiles')
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+    
+    // Simple query to check connection
+    const { error } = await supabase
+      .from('clients')
       .select('id')
       .limit(1)
       .single();
-
-    const latency = Date.now() - startTime;
-
-    if (dbError && dbError.code !== 'PGRST116') {
-      // PGRST116 is "no rows returned" which is fine for health check
-      healthStatus.services.database = {
+    
+    const latency = Date.now() - start;
+    
+    if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+      return {
         status: 'error',
-        error: dbError.message,
-        latency,
-      };
-      healthStatus.status = 'unhealthy';
-    } else {
-      healthStatus.services.database = {
-        status: 'connected',
+        message: error.message,
         latency,
       };
     }
-
-    // Check storage if configured
-    if (env.STORAGE_BUCKET) {
-      try {
-        const { error: storageError } = await supabase.storage
-          .from(env.STORAGE_BUCKET)
-          .list('', { limit: 1 });
-
-        if (storageError) {
-          healthStatus.services.storage = {
-            status: 'error',
-            error: storageError.message,
-          };
-          healthStatus.status = healthStatus.status === 'unhealthy' ? 'unhealthy' : 'degraded';
-        } else {
-          healthStatus.services.storage = {
-            status: 'available',
-          };
-        }
-      } catch (error) {
-        healthStatus.services.storage = {
-          status: 'error',
-          error: error instanceof Error ? error.message : 'Unknown storage error',
-        };
-        healthStatus.status = healthStatus.status === 'unhealthy' ? 'unhealthy' : 'degraded';
-      }
-    }
-
-    // Set appropriate status code
-    const statusCode = healthStatus.status === 'healthy' ? 200 : 
-                      healthStatus.status === 'degraded' ? 200 : 503;
-
-    return res.status(statusCode).json(healthStatus);
+    
+    return {
+      status: 'ok',
+      latency,
+    };
   } catch (error) {
-    // Catastrophic failure
-    return res.status(503).json({
-      ...healthStatus,
-      status: 'unhealthy',
-      services: {
-        database: {
-          status: 'error',
-          error: error instanceof Error ? error.message : 'Unknown error',
-        },
-      },
-    });
+    return {
+      status: 'error',
+      message: error instanceof Error ? error.message : 'Unknown error',
+      latency: Date.now() - start,
+    };
   }
+}
+
+async function checkRedis(): Promise<ServiceCheck> {
+  const start = Date.now();
+  
+  try {
+    const redis = new Redis(process.env.REDIS_URL!);
+    await redis.ping();
+    const latency = Date.now() - start;
+    await redis.quit();
+    
+    return {
+      status: 'ok',
+      latency,
+    };
+  } catch (error) {
+    return {
+      status: 'error',
+      message: error instanceof Error ? error.message : 'Unknown error',
+      latency: Date.now() - start,
+    };
+  }
+}
+
+async function checkStorage(): Promise<ServiceCheck> {
+  const start = Date.now();
+  
+  try {
+    // Check S3 if configured
+    if (process.env.AWS_S3_BUCKET && process.env.AWS_ACCESS_KEY_ID) {
+      const s3Client = new S3Client({
+        region: process.env.AWS_REGION || 'us-east-1',
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+        },
+      });
+      
+      const command = new HeadBucketCommand({
+        Bucket: process.env.AWS_S3_BUCKET,
+      });
+      
+      await s3Client.send(command);
+      
+      return {
+        status: 'ok',
+        latency: Date.now() - start,
+        details: { provider: 's3' },
+      };
+    }
+    
+    // Fall back to Supabase storage check
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+    
+    const { error } = await supabase.storage.listBuckets();
+    
+    if (error) {
+      return {
+        status: 'error',
+        message: error.message,
+        latency: Date.now() - start,
+      };
+    }
+    
+    return {
+      status: 'ok',
+      latency: Date.now() - start,
+      details: { provider: 'supabase' },
+    };
+  } catch (error) {
+    return {
+      status: 'error',
+      message: error instanceof Error ? error.message : 'Unknown error',
+      latency: Date.now() - start,
+    };
+  }
+}
+
+async function checkCreatomate(): Promise<ServiceCheck> {
+  const start = Date.now();
+  
+  try {
+    const response = await fetch('https://api.creatomate.com/v1/templates', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${process.env.CREATOMATE_API_KEY}`,
+      },
+      signal: AbortSignal.timeout(5000), // 5 second timeout
+    });
+    
+    const latency = Date.now() - start;
+    
+    if (!response.ok) {
+      return {
+        status: 'error',
+        message: `HTTP ${response.status}`,
+        latency,
+      };
+    }
+    
+    return {
+      status: 'ok',
+      latency,
+    };
+  } catch (error) {
+    return {
+      status: error.name === 'AbortError' ? 'timeout' : 'error',
+      message: error instanceof Error ? error.message : 'Unknown error',
+      latency: Date.now() - start,
+    };
+  }
+}
+
+async function checkEmail(): Promise<ServiceCheck> {
+  const start = Date.now();
+  
+  try {
+    // Check if Resend is configured
+    if (!process.env.RESEND_API_KEY) {
+      return {
+        status: 'error',
+        message: 'Email service not configured',
+        latency: 0,
+      };
+    }
+    
+    // We could make a test API call to Resend here
+    // For now, just check if the key exists
+    return {
+      status: 'ok',
+      latency: Date.now() - start,
+      details: { provider: 'resend' },
+    };
+  } catch (error) {
+    return {
+      status: 'error',
+      message: error instanceof Error ? error.message : 'Unknown error',
+      latency: Date.now() - start,
+    };
+  }
+}
+
+// Main health check handler
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<HealthCheckResponse>
+) {
+  // Only allow GET requests
+  if (req.method !== 'GET') {
+    res.setHeader('Allow', ['GET']);
+    res.status(405).end('Method Not Allowed');
+    return;
+  }
+  
+  // Run all health checks in parallel
+  const [database, redis, storage, creatomate, email] = await Promise.all([
+    checkDatabase(),
+    checkRedis(),
+    checkStorage(),
+    checkCreatomate(),
+    checkEmail(),
+  ]);
+  
+  const checks = {
+    database,
+    redis,
+    storage,
+    creatomate,
+    email,
+  };
+  
+  // Determine overall health status
+  const criticalServices = ['database', 'storage'];
+  const allChecks = Object.entries(checks);
+  const criticalChecks = allChecks.filter(([name]) => criticalServices.includes(name));
+  const nonCriticalChecks = allChecks.filter(([name]) => !criticalServices.includes(name));
+  
+  const criticalFailures = criticalChecks.filter(([_, check]) => check.status === 'error').length;
+  const nonCriticalFailures = nonCriticalChecks.filter(([_, check]) => check.status === 'error').length;
+  
+  let status: HealthStatus = 'healthy';
+  if (criticalFailures > 0) {
+    status = 'unhealthy';
+  } else if (nonCriticalFailures > 0) {
+    status = 'degraded';
+  }
+  
+  const response: HealthCheckResponse = {
+    status,
+    timestamp: new Date().toISOString(),
+    version: process.env.npm_package_version || '1.0.0',
+    uptime: process.uptime(),
+    checks,
+  };
+  
+  // Set appropriate status code
+  const statusCode = status === 'healthy' ? 200 : status === 'degraded' ? 200 : 503;
+  
+  // Cache for 10 seconds to avoid hammering services
+  res.setHeader('Cache-Control', 'public, max-age=10');
+  res.status(statusCode).json(response);
 }

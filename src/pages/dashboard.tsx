@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import {
@@ -46,8 +46,15 @@ interface StatCard {
 
 const DashboardPage = () => {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, loading, isAuthenticated } = useAuth();
   const { activeClient } = useClient();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      router.push('/login');
+    }
+  }, [loading, isAuthenticated, router]);
 
   // Quick actions for easy navigation
   const quickActions: QuickAction[] = [
@@ -112,6 +119,24 @@ const DashboardPage = () => {
       icon: <DescriptionIcon />,
     },
   ];
+
+  // Show loading or redirect if not authenticated
+  if (loading) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="100vh"
+      >
+        <Typography>Loading...</Typography>
+      </Box>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null; // Will redirect via useEffect
+  }
 
   return (
     <DashboardLayout>
