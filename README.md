@@ -4,6 +4,21 @@ A comprehensive digital marketing platform that leverages AI to streamline campa
 
 ## 🚀 Project Status: 85% Complete
 
+## ⚠️ IMPORTANT: Authentication Setup
+
+**If you're experiencing "Demo mode - auth not available" errors:**
+
+1. **Add this to your Netlify environment variables:**
+   ```
+   NEXT_PUBLIC_DEMO_MODE=false
+   ```
+
+2. **Verify your Supabase credentials are set correctly**
+
+3. **Trigger a new deployment in Netlify**
+
+See [ENVIRONMENT_SETUP.md](ENVIRONMENT_SETUP.md) for detailed instructions.
+
 ## ✨ Features
 
 ### ✅ Implemented Features
@@ -112,8 +127,8 @@ This application is deployed on Netlify with all necessary environment variables
 All required API keys and environment variables are already configured in the Netlify deployment:
 
 ```env
-# Core Configuration
-NEXT_PUBLIC_DEMO_MODE=false
+# Core Configuration - CRITICAL FOR AUTHENTICATION
+NEXT_PUBLIC_DEMO_MODE=false  # Must be false for auth to work!
 NEXT_PUBLIC_APP_URL=https://your-app.netlify.app
 
 # Supabase Configuration
@@ -121,27 +136,18 @@ NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
+# Authentication
+JWT_SECRET=your_jwt_secret_at_least_32_chars
+NEXTAUTH_SECRET=your_nextauth_secret
+NEXTAUTH_URL=https://your-app.netlify.app
+
 # OpenAI Configuration
 OPENAI_API_KEY=your_openai_api_key
 
 # Creatomate Configuration (for video generation)
 CREATOMATE_API_KEY=your_creatomate_api_key
 
-# Social Media APIs (for publishing)
-FACEBOOK_APP_ID=your_facebook_app_id
-FACEBOOK_APP_SECRET=your_facebook_app_secret
-INSTAGRAM_ACCESS_TOKEN=your_instagram_token
-TWITTER_API_KEY=your_twitter_key
-TWITTER_API_SECRET=your_twitter_secret
-LINKEDIN_CLIENT_ID=your_linkedin_id
-LINKEDIN_CLIENT_SECRET=your_linkedin_secret
-
-# Analytics & Monitoring
-SENTRY_DSN=your_sentry_dsn
-GOOGLE_ANALYTICS_ID=your_ga_id
-
-# Email Service
-SENDGRID_API_KEY=your_sendgrid_key
+# Other APIs...
 ```
 
 > **Note**: All these environment variables are already configured in the Netlify deployment settings. No additional setup is required for the deployed version.
@@ -164,12 +170,17 @@ npm install
 cp .env.example .env.local
 ```
 
-4. Configure your local environment variables (or use demo mode):
+4. Configure your local environment variables:
 ```env
-# For demo mode (no external services required)
-NEXT_PUBLIC_DEMO_MODE=true
+# IMPORTANT: Set to false to enable authentication
+NEXT_PUBLIC_DEMO_MODE=false
 
-# For full functionality, add your own API keys
+# Add your Supabase credentials
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+# Add other required keys...
 ```
 
 5. Run the development server:
@@ -178,6 +189,13 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to view the application.
+
+### Debug Environment Issues
+
+Add `?debug=true` to your URL to see environment configuration:
+```
+http://localhost:3000?debug=true
+```
 
 ## 🎮 Demo Mode
 
@@ -190,6 +208,8 @@ The application includes a comprehensive demo mode for testing without API keys:
 - Simulated real-time updates
 
 To enable demo mode locally, set `NEXT_PUBLIC_DEMO_MODE=true` in your `.env.local` file.
+
+**⚠️ Warning:** Demo mode disables authentication. Only use for testing!
 
 ## 📚 Project Structure
 
@@ -243,6 +263,7 @@ The following features require backend infrastructure or API integrations:
 ## 📝 Changelog
 
 ### Latest Updates
+- ✅ Fixed authentication issues with demo mode configuration
 - ✅ Asset upload functionality with drag & drop
 - ✅ Complete template management system
 - ✅ Sign-off approval workflow
