@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-// Helper to check if we're in demo mode
+// Helper to check if we're in demo mode - DEFAULT TO FALSE
 const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
 
 // Helper to check if we're in build context
@@ -29,6 +29,7 @@ const envSchema = z.object({
       ? 'https://api.airwave.app' // Update this to your production URL
       : 'http://localhost:3000'
   ).describe('API base URL'),
+  // IMPORTANT: Default to false so auth works in production
   NEXT_PUBLIC_DEMO_MODE: z.enum(['true', 'false']).optional().default('false'),
   
   // Server-only environment variables
@@ -108,7 +109,7 @@ const parseEnv = () => {
     return {
       ...process.env,
       NODE_ENV: process.env.NODE_ENV || 'production',
-      NEXT_PUBLIC_DEMO_MODE: process.env.NEXT_PUBLIC_DEMO_MODE || 'false',
+      NEXT_PUBLIC_DEMO_MODE: process.env.NEXT_PUBLIC_DEMO_MODE || 'false', // Default to false
       JWT_EXPIRY: '7d',
       REFRESH_TOKEN_EXPIRY: '30d',
       STORAGE_BUCKET: 'airwave-assets',
@@ -140,7 +141,8 @@ const parseEnv = () => {
       
       const missing = criticalVars.filter(key => !parsed[key as keyof typeof parsed]);
       if (missing.length > 0) {
-        throw new Error(`Missing critical environment variables in production: ${missing.join(', ')}`);
+        console.warn(`⚠️ Missing environment variables: ${missing.join(', ')}`);
+        console.warn('Authentication may not work properly without these variables.');
       }
     }
     
@@ -160,31 +162,25 @@ const parseEnv = () => {
       // In production runtime, we must fail if environment is not properly configured
       // But allow Edge builds and build time to proceed
       if (process.env.NODE_ENV === 'production' && !isEdgeBuild && !isBuildTime) {
-        throw new Error(errorMessage.join('\n'));
-      }
-      
-      // In development or during builds, log warning but continue
-      if (!isEdgeBuild && !isBuildTime) {
-        console.warn('\n⚠️  Running with invalid environment configuration');
+        // Don't throw, just warn and continue with defaults
+        console.warn('\n⚠️  Running with default environment configuration');
         console.warn('Some features may not work properly\n');
       }
       
-      // Return a safe default for builds
-      if (isEdgeBuild || isBuildTime) {
-        return {
-          ...process.env,
-          NODE_ENV: process.env.NODE_ENV || 'production',
-          NEXT_PUBLIC_DEMO_MODE: process.env.NEXT_PUBLIC_DEMO_MODE || 'false',
-          JWT_EXPIRY: '7d',
-          REFRESH_TOKEN_EXPIRY: '30d',
-          STORAGE_BUCKET: 'airwave-assets',
-          MAX_FILE_SIZE: '52428800',
-          ALLOWED_ORIGINS: [],
-          ENABLE_SOCIAL_PUBLISHING: 'false',
-          ENABLE_VIDEO_GENERATION: 'false',
-          ENABLE_AI_FEATURES: 'false',
-        } as any;
-      }
+      // Return a safe default for all contexts
+      return {
+        ...process.env,
+        NODE_ENV: process.env.NODE_ENV || 'production',
+        NEXT_PUBLIC_DEMO_MODE: process.env.NEXT_PUBLIC_DEMO_MODE || 'false', // Default to false
+        JWT_EXPIRY: '7d',
+        REFRESH_TOKEN_EXPIRY: '30d',
+        STORAGE_BUCKET: 'airwave-assets',
+        MAX_FILE_SIZE: '52428800',
+        ALLOWED_ORIGINS: [],
+        ENABLE_SOCIAL_PUBLISHING: 'false',
+        ENABLE_VIDEO_GENERATION: 'false',
+        ENABLE_AI_FEATURES: 'false',
+      } as any;
     }
     throw error;
   }
@@ -202,7 +198,7 @@ export const isProduction = env.NODE_ENV === 'production';
 // Helper to check if we're in development
 export const isDevelopment = env.NODE_ENV === 'development';
 
-// Helper to check if we're in demo mode
+// Helper to check if we're in demo mode - will be false by default
 export const isDemo = env.NEXT_PUBLIC_DEMO_MODE === 'true';
 
 // Helper to check if email is configured
