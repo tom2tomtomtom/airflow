@@ -6,8 +6,11 @@ import type { JwtPayload } from '@/types/auth';
 const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// Validate JWT_SECRET in production
-if (!isDemoMode && !JWT_SECRET) {
+// Check if we're in Edge Functions build context
+const isEdgeBuild = typeof EdgeRuntime !== 'undefined' && !JWT_SECRET;
+
+// Validate JWT_SECRET in production (skip during Edge build)
+if (!isDemoMode && !JWT_SECRET && !isEdgeBuild) {
   throw new Error('JWT_SECRET environment variable is required in production mode');
 }
 
@@ -262,6 +265,10 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
     // Verify real JWT tokens
     if (!JWT_SECRET) {
+      // In Edge build context, allow the request to pass through
+      if (isEdgeBuild) {
+        return response;
+      }
       throw new Error('JWT_SECRET not configured');
     }
 

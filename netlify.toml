@@ -15,6 +15,7 @@
   ENABLE_AI_FEATURES = "true"
   ENABLE_VIDEO_GENERATION = "true"
   ENABLE_SOCIAL_PUBLISHING = "true"
+  JWT_SECRET = "${JWT_SECRET}"
 
 [[headers]]
   for = "/api/*"

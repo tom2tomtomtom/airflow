@@ -1,3 +1,29 @@
+/* CRITICAL: Force Carbon Black Theme - Override ALL External Styles */
+html, body, #__next {
+  background-color: #030712 !important;
+  color: #FFFFFF !important;
+  color-scheme: dark !important;
+}
+
+/* Force all Material-UI components to use our theme */
+.MuiThemeProvider-root {
+  background-color: #030712 !important;
+  color: #FFFFFF !important;
+}
+
+/* Force ThemeProvider styles */
+[data-mui-color-scheme="dark"] {
+  background-color: #030712 !important;
+  color: #FFFFFF !important;
+}
+
+/* Emergency icon size reset */
+svg, .MuiSvgIcon-root {
+  width: 24px !important;
+  height: 24px !important;
+  font-size: 1.5rem !important;
+}
+
 /* CSS Reset and Base Styles - Carbon Black Edition */
 *,
 *::before,
@@ -201,7 +227,9 @@ textarea {
 
 /* Force Material-UI Icon Reset - Override ALL conflicting styles */
 .MuiSvgIcon-root,
-svg.MuiSvgIcon-root {
+svg.MuiSvgIcon-root,
+.MuiSvgIcon-root *,
+svg.MuiSvgIcon-root * {
   width: 1em !important;
   height: 1em !important;
   display: inline-block !important;
@@ -221,6 +249,10 @@ svg.MuiSvgIcon-root {
   border: none !important;
   background: none !important;
   box-sizing: content-box !important;
+  /* Force override any external styles */
+  position: relative !important;
+  transform: none !important;
+  overflow: visible !important;
 }
 
 /* Force small icon sizing */
