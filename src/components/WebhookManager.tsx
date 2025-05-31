@@ -51,6 +51,7 @@ import {
   ExpandMore as ExpandMoreIcon,
   ContentCopy as CopyIcon,
   Visibility as ViewIcon,
+  VisibilityOff,
 } from '@mui/icons-material';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
