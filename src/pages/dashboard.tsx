@@ -284,26 +284,27 @@ const DashboardPage = () => {
                             {stat.change}
                           </Typography>
                         </Box>
+                      </Box>
+                      <Box
+                        sx={{
+                          backgroundColor: 'primary.light',
+                          borderRadius: 2,
+                          p: 1,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        {React.cloneElement(stat.icon as React.ReactElement, {
+                          sx: { color: 'primary.main' },
+                        })}
+                      </Box>
                     </Box>
-                    <Box
-                      sx={{
-                        backgroundColor: 'primary.light',
-                        borderRadius: 2,
-                        p: 1,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      {React.cloneElement(stat.icon as React.ReactElement, {
-                        sx: { color: 'primary.main' },
-                      })}
-                    </Box>
-                  </Box>
                 </CardContent>
               </Card>
             </Grid>
-          ))}
+          ))
+          )}
         </Grid>
 
         {/* Quick Actions */}

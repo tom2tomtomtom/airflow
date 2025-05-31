@@ -70,6 +70,7 @@
     "jsonwebtoken": "^9.0.2",
     "mammoth": "^1.9.0",
     "mixpanel-browser": "^2.65.0",
+    "mui-color-input": "^7.0.0",
     "next": "^15.3.2",
     "nodemailer": "^7.0.3",
     "openai": "^4.103.0",
