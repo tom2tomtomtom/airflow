@@ -1,8 +1,9 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { z } from 'zod';
 
-// Helper to check if we're in build context
+// Helper to check if we're in build context or client-side
 const isBuildContext = typeof EdgeRuntime !== 'undefined' || 
+                      typeof window !== 'undefined' || // Client-side
                       process.env.NETLIFY || 
                       process.env.VERCEL ||
                       process.env.CI === 'true' ||
@@ -98,10 +99,13 @@ const parseEnv = () => {
                      process.env.NETLIFY_BUILD_BASE;
   const isBuildTime = process.env.NODE_PHASE === 'phase-production-build' || 
                      process.env.NEXT_PHASE === 'phase-production-build';
+  const isClientSide = typeof window !== 'undefined';
   
-  // During build context, skip strict validation entirely
-  if (isEdgeBuild || isBuildTime || isBuildContext) {
-    console.log('🔨 Build context detected - skipping strict environment validation');
+  // During build context or client-side, skip strict validation entirely
+  if (isEdgeBuild || isBuildTime || isBuildContext || isClientSide) {
+    if (!isClientSide) {
+      console.log('🔨 Build context detected - skipping strict environment validation');
+    }
     return {
       ...process.env,
       NODE_ENV: process.env.NODE_ENV || 'production',
@@ -113,6 +117,9 @@ const parseEnv = () => {
       ENABLE_SOCIAL_PUBLISHING: 'false',
       ENABLE_VIDEO_GENERATION: 'false',
       ENABLE_AI_FEATURES: 'false',
+      // Add client-safe defaults
+      NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
     } as any;
   }
   

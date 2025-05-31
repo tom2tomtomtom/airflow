@@ -57,33 +57,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
   } = req.query;
 
   try {
-    // Get all clients the user has access to
-    const { data: userClients, error: userError } = await supabase
-      .from('user_clients')
-      .select('client_id')
-      .eq('user_id', user.id);
-
-    if (userError) {
-      console.error('Error fetching user clients:', userError);
-      throw userError;
-    }
-
-    if (!userClients || userClients.length === 0) {
-      return res.json({
-        success: true,
-        clients: [],
-        pagination: {
-          total: 0,
-          limit: parseInt(limit as string),
-          offset: parseInt(offset as string),
-          hasMore: false
-        }
-      });
-    }
-
-    const clientIds = userClients.map(uc => uc.client_id);
-
-    // Build query for clients
+    // Get all clients the user created (based on schema using created_by)
     let query = supabase
       .from('clients')
       .select(`
@@ -94,7 +68,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
           matrices(count)
         ` : ''}
       `)
-      .in('id', clientIds);
+      .eq('created_by', user.id);
 
     // Apply search filter
     if (search && typeof search === 'string') {
@@ -128,16 +102,15 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
     const transformedClients = clients?.map(client => ({
       id: client.id,
       name: client.name,
+      slug: client.slug,
       industry: client.industry,
       description: client.description,
       website: client.website,
-      logo: client.logo,
-      primaryColor: client.primary_color || client.primaryColor,
-      secondaryColor: client.secondary_color || client.secondaryColor,
+      logo: client.logo_url,
+      primaryColor: client.primary_color,
+      secondaryColor: client.secondary_color,
       socialMedia: client.social_media || {},
-      contacts: client.contacts || [],
       brandGuidelines: client.brand_guidelines || {},
-      tenantId: client.tenant_id,
       isActive: client.is_active !== false,
       dateCreated: client.created_at,
       lastModified: client.updated_at,
@@ -180,7 +153,6 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
       primaryColor,
       secondaryColor,
       socialMedia,
-      contacts,
       brandGuidelines
     } = req.body;
 
@@ -192,21 +164,27 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
       });
     }
 
+    // Generate slug from name
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
     // Create client in Supabase
     const { data: client, error } = await supabase
       .from('clients')
       .insert({
         name,
+        slug,
         industry,
         description: description || null,
         website: website || null,
-        logo: logo || null,
+        logo_url: logo || null,
         primary_color: primaryColor || '#1976d2',
         secondary_color: secondaryColor || '#dc004e',
         social_media: socialMedia || {},
-        contacts: contacts || [],
-        brand_guidelines: brandGuidelines || {},
-        tenant_id: 'tenant-1', // Default tenant
+        brand_guidelines: brandGuidelines || {
+          voiceTone: '',
+          targetAudience: '',
+          keyMessages: []
+        },
         is_active: true,
         created_by: user.id,
       })
@@ -218,35 +196,21 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
       throw error;
     }
 
-    // Grant user access to the new client
-    const { error: accessError } = await supabase
-      .from('user_clients')
-      .insert({
-        user_id: user.id,
-        client_id: client.id,
-        role: 'admin',
-        granted_by: user.id,
-      });
-
-    if (accessError) {
-      console.error('Error granting client access:', accessError);
-      // Don't fail the whole operation, just log the error
-    }
+    // Access is automatically granted through created_by relationship
 
     // Transform response
     const transformedClient: Client = {
       id: client.id,
       name: client.name,
+      slug: client.slug,
       industry: client.industry,
       description: client.description,
       website: client.website,
-      logo: client.logo,
+      logo: client.logo_url,
       primaryColor: client.primary_color,
       secondaryColor: client.secondary_color,
       socialMedia: client.social_media || {},
-      contacts: client.contacts || [],
       brandGuidelines: client.brand_guidelines || {},
-      tenantId: client.tenant_id,
       isActive: client.is_active,
       dateCreated: client.created_at,
       lastModified: client.updated_at,

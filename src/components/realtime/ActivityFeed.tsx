@@ -260,7 +260,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
                   size="small" 
                   onClick={() => setShowDetails(!showDetails)}
                 >
-                  {showDetails ? <VisibilityOff /> : <ViewIcon />}
+                  {showDetails ? <HideIcon /> : <ViewIcon />}
                 </IconButton>
               </Tooltip>
               <Tooltip title={isPaused ? "Resume updates" : "Pause updates"}>
