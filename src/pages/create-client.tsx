@@ -20,7 +20,6 @@ import {
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useNotification } from '@/contexts/NotificationContext';
-import { isDemoMode } from '@/lib/demo-data';
 import { supabase } from '@/lib/supabase';
 
 export default function CreateClient() {
@@ -79,15 +78,6 @@ export default function CreateClient() {
         isActive: true,
       };
 
-      if (isDemoMode()) {
-        // In demo mode, just show success and redirect
-        showNotification('Client created successfully! (Demo Mode)', 'success');
-        setTimeout(() => {
-          router.push('/clients');
-        }, 1000);
-        return;
-      }
-
       // Create client in Supabase
       const { data, error: supabaseError } = await supabase
         .from('clients')
@@ -128,11 +118,6 @@ export default function CreateClient() {
             Create New Client
           </Typography>
           
-          {isDemoMode() && (
-            <Alert severity="info" sx={{ mb: 3 }}>
-              You&apos;re in demo mode. Client data won&apos;t be permanently saved.
-            </Alert>
-          )}
           
           {error && (
             <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError('')}>

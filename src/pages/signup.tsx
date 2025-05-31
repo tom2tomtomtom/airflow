@@ -250,16 +250,7 @@ const SignupPage: React.FC = () => {
 
           <Box sx={{ mt: 3, p: 2, bgcolor: '#111827', borderRadius: 2, border: '1px solid rgba(251, 191, 36, 0.2)' }}>
             <Typography variant="caption" color="text.secondary" align="center" display="block">
-              {process.env.NEXT_PUBLIC_DEMO_MODE === 'true' ? (
-                <>
-                  <strong>Demo Note:</strong> This will create a demo account for testing purposes only. 
-                  Data will not be permanently stored.
-                </>
-              ) : (
-                <>
-                  <strong>Note:</strong> By creating an account, you agree to our Terms of Service and Privacy Policy.
-                </>
-              )}
+              <strong>Note:</strong> By creating an account, you agree to our Terms of Service and Privacy Policy.
             </Typography>
           </Box>
         </Paper>

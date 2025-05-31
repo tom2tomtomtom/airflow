@@ -3,7 +3,6 @@ import { jwtVerify } from 'jose';
 import type { JwtPayload } from '@/types/auth';
 
 // Security: Ensure JWT_SECRET is properly set
-const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // Check if we're in Edge Functions build context or other build environments
@@ -13,12 +12,12 @@ const isEdgeBuild = typeof EdgeRuntime !== 'undefined' ||
                    !JWT_SECRET;
 
 // Validate JWT_SECRET in production (skip during any build context)
-if (!isDemoMode && !JWT_SECRET && !isEdgeBuild && process.env.NODE_ENV === 'production') {
+if (!JWT_SECRET && !isEdgeBuild && process.env.NODE_ENV === 'production') {
   console.warn('JWT_SECRET environment variable is missing in production mode');
 }
 
 // In production runtime, ensure JWT_SECRET meets minimum security requirements
-if (!isDemoMode && JWT_SECRET && JWT_SECRET.length < 32 && !isEdgeBuild) {
+if (JWT_SECRET && JWT_SECRET.length < 32 && !isEdgeBuild) {
   console.warn('JWT_SECRET should be at least 32 characters long for security');
 }
 
@@ -55,21 +54,6 @@ const publicRoutes = [
   '/api/realtime/events',
 ];
 
-// Define routes that are allowed in demo mode
-const demoAllowedRoutes = [
-  '/assets',
-  '/templates',
-  '/matrix',
-  '/preview',
-  '/generate-enhanced',
-  '/strategic-content',
-  '/sign-off',
-  '/execute',
-  '/dashboard',
-  '/api/clients',
-  '/api/templates',
-  '/api/assets',
-];
 
 // Define routes that require specific roles
 const roleBasedRoutes: Record<string, string[]> = {
@@ -131,8 +115,8 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
     "upgrade-insecure-requests"
   ];
 
-  // More permissive in development/demo mode
-  if (isDemoMode || process.env.NODE_ENV === 'development') {
+  // More permissive in development mode
+  if (process.env.NODE_ENV === 'development') {
     cspBase.push(
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
@@ -195,51 +179,12 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     return response;
   }
 
-  // In demo mode, handle authentication differently
-  if (isDemoMode) {
-    const isDemoAllowed = demoAllowedRoutes.some(route => pathname.startsWith(route));
-    
-    if (isDemoAllowed) {
-      // Add demo headers for API routes
-      if (pathname.startsWith('/api/')) {
-        const requestHeaders = new Headers(request.headers);
-        requestHeaders.set('x-demo-mode', 'true');
-        requestHeaders.set('x-user-id', 'demo-user');
-        requestHeaders.set('x-user-role', 'user');
-        requestHeaders.set('x-user-email', 'demo@airwave.app');
-        
-        response = NextResponse.next({
-          request: {
-            headers: requestHeaders,
-          },
-        });
-        
-        return addSecurityHeaders(response);
-      }
-      
-      return response;
-    }
-  }
 
   // Check for auth token in cookies (secure) or headers (for API calls)
   const tokenFromCookie = request.cookies.get('auth_token')?.value;
   const tokenFromHeader = request.headers.get('authorization')?.replace('Bearer ', '');
   const token = tokenFromCookie || tokenFromHeader;
 
-  // In demo mode, create a demo session if no token exists
-  if (!token && isDemoMode) {
-    // Generate a demo token (this is only for demo mode)
-    const demoToken = `demo-${Date.now()}`;
-    response.cookies.set('auth_token', demoToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24, // 24 hours
-    });
-    
-    return response;
-  }
 
   if (!token) {
     // For API routes, return 401
@@ -254,27 +199,6 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    // In demo mode, accept demo tokens
-    if (isDemoMode && token.startsWith('demo-')) {
-      // Add demo user info to headers for API routes
-      if (pathname.startsWith('/api')) {
-        const requestHeaders = new Headers(request.headers);
-        requestHeaders.set('x-user-id', 'demo-user');
-        requestHeaders.set('x-user-role', 'user');
-        requestHeaders.set('x-user-email', 'demo@airwave.app');
-        requestHeaders.set('x-demo-mode', 'true');
-
-        response = NextResponse.next({
-          request: {
-            headers: requestHeaders,
-          },
-        });
-        
-        return addSecurityHeaders(response);
-      }
-      
-      return response;
-    }
 
     // Verify real JWT tokens
     if (!JWT_SECRET) {

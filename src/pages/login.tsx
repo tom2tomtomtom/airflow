@@ -54,39 +54,6 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  const handleDemoLogin = () => {
-    setLoading(true);
-    
-    // Set demo user data
-    const demoUser = {
-      id: 'demo-user-' + Date.now(),
-      email: 'demo@airwave.app',
-      name: 'Demo User',
-      token: 'demo-token-' + Math.random().toString(36).substring(7)
-    };
-    
-    // Store in localStorage to persist auth state
-    localStorage.setItem('airwave_user', JSON.stringify(demoUser));
-    
-    // Also set a demo client
-    const demoClient = {
-      id: 'demo-client-' + Date.now(),
-      name: 'Demo Company',
-      description: 'Demo client for testing AIrWAVE features',
-      primaryColor: '#1976d2',
-      secondaryColor: '#dc004e',
-      logoUrl: ''
-    };
-    
-    localStorage.setItem('airwave_active_client', JSON.stringify(demoClient));
-    localStorage.setItem('airwave_clients', JSON.stringify([demoClient]));
-    
-    setTimeout(() => {
-      setLoading(false);
-      // Force a page reload to trigger auth context update
-      window.location.href = '/';
-    }, 500);
-  };
 
   return (
     <>
@@ -208,32 +175,6 @@ const LoginPage: React.FC = () => {
             </Button>
           </form>
 
-          <Divider sx={{ my: 3 }}>
-            <Typography variant="body2" color="text.secondary">
-              OR
-            </Typography>
-          </Divider>
-
-          <Button
-            fullWidth
-            variant="outlined"
-            size="large"
-            onClick={handleDemoLogin}
-            disabled={loading}
-            data-testid="demo-login-button"
-            sx={{
-              mb: 3,
-              height: 48,
-              borderColor: '#FBBF24',
-              color: '#FBBF24',
-              '&:hover': {
-                backgroundColor: 'rgba(251, 191, 36, 0.08)',
-                borderColor: '#FBBF24',
-              },
-            }}
-          >
-            Continue with Demo
-          </Button>
 
           <Box sx={{ textAlign: 'center' }}>
             <Typography variant="body2" color="text.secondary">
@@ -247,11 +188,6 @@ const LoginPage: React.FC = () => {
             </Typography>
           </Box>
 
-          <Box sx={{ mt: 3, p: 2, bgcolor: '#111827', borderRadius: 2, border: '1px solid rgba(251, 191, 36, 0.2)' }}>
-            <Typography variant="caption" color="text.secondary" align="center" display="block">
-              <strong>Demo Note:</strong> Click &quot;Continue with Demo&quot; to explore the application with sample data.
-            </Typography>
-          </Box>
         </Paper>
       </Box>
     </>

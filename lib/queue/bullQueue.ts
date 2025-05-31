@@ -1,12 +1,6 @@
 import { Queue, Worker, Job, QueueEvents } from 'bullmq';
-import Redis from 'ioredis';
+import { connection } from './connection';
 import { handleError } from '@/lib/errors/errorHandler';
-
-// Redis connection
-const connection = new Redis(process.env.REDIS_URL!, {
-  maxRetriesPerRequest: null,
-  enableReadyCheck: false,
-});
 
 // Queue names
 export const QUEUE_NAMES = {
@@ -28,27 +22,29 @@ const defaultJobOptions = {
   },
 };
 
-// Initialize queues
-export const queues = {
+// Initialize queues only if Redis is available
+export const queues = connection ? {
   render: new Queue(QUEUE_NAMES.RENDER, { connection }),
   email: new Queue(QUEUE_NAMES.EMAIL, { connection }),
   webhook: new Queue(QUEUE_NAMES.WEBHOOK, { connection }),
   fileCleanup: new Queue(QUEUE_NAMES.FILE_CLEANUP, { connection }),
   analytics: new Queue(QUEUE_NAMES.ANALYTICS, { connection }),
-};
+} : null;
 
 // Queue event listeners for monitoring
-Object.entries(queues).forEach(([name, queue]) => {
-  const queueEvents = new QueueEvents(name, { connection });
-  
-  queueEvents.on('completed', ({ jobId, returnvalue }) => {
-    console.log(`[${name}] Job ${jobId} completed`);
+if (queues && connection) {
+  Object.entries(queues).forEach(([name, queue]) => {
+    const queueEvents = new QueueEvents(name, { connection });
+    
+    queueEvents.on('completed', ({ jobId, returnvalue }) => {
+      console.log(`[${name}] Job ${jobId} completed`);
+    });
+    
+    queueEvents.on('failed', ({ jobId, failedReason }) => {
+      console.error(`[${name}] Job ${jobId} failed:`, failedReason);
+    });
   });
-  
-  queueEvents.on('failed', ({ jobId, failedReason }) => {
-    console.error(`[${name}] Job ${jobId} failed:`, failedReason);
-  });
-});
+}
 
 // Job interfaces
 export interface RenderJobData {
@@ -93,6 +89,11 @@ export interface AnalyticsJobData {
 
 // Add jobs to queues
 export async function addRenderJob(data: RenderJobData, priority?: number) {
+  if (!queues) {
+    console.warn('Queue system not available - render job skipped');
+    return null;
+  }
+  
   return queues.render.add('process-render', data, {
     ...defaultJobOptions,
     priority,
@@ -105,6 +106,11 @@ export async function addRenderJob(data: RenderJobData, priority?: number) {
 }
 
 export async function addEmailJob(data: EmailJobData) {
+  if (!queues) {
+    console.warn('Queue system not available - email job skipped');
+    return null;
+  }
+  
   return queues.email.add('send-email', data, {
     ...defaultJobOptions,
     attempts: 3,
@@ -116,6 +122,11 @@ export async function addEmailJob(data: EmailJobData) {
 }
 
 export async function addWebhookJob(data: WebhookJobData) {
+  if (!queues) {
+    console.warn('Queue system not available - webhook job skipped');
+    return null;
+  }
+  
   const attempts = data.maxAttempts || 3;
   const attemptNumber = data.attempts || 0;
   
@@ -130,6 +141,11 @@ export async function addWebhookJob(data: WebhookJobData) {
 }
 
 export async function addFileCleanupJob(data: FileCleanupJobData, delay?: number) {
+  if (!queues) {
+    console.warn('Queue system not available - file cleanup job skipped');
+    return null;
+  }
+  
   return queues.fileCleanup.add('cleanup-files', data, {
     ...defaultJobOptions,
     delay, // Delay in milliseconds
@@ -137,6 +153,11 @@ export async function addFileCleanupJob(data: FileCleanupJobData, delay?: number
 }
 
 export async function addAnalyticsJob(data: AnalyticsJobData) {
+  if (!queues) {
+    console.warn('Queue system not available - analytics job skipped');
+    return null;
+  }
+  
   return queues.analytics.add('track-event', data, {
     ...defaultJobOptions,
     attempts: 5,
@@ -231,6 +252,10 @@ export async function retryJob(queueName: keyof typeof queues, jobId: string) {
 
 // Worker health check
 export async function checkWorkerHealth(): Promise<boolean> {
+  if (!connection) {
+    return false;
+  }
+  
   try {
     // Try to ping Redis
     await connection.ping();
@@ -245,13 +270,17 @@ export async function checkWorkerHealth(): Promise<boolean> {
 export async function gracefulShutdown() {
   console.log('Shutting down queues gracefully...');
   
-  // Close all queues
-  await Promise.all(
-    Object.values(queues).map(queue => queue.close())
-  );
+  if (queues) {
+    // Close all queues
+    await Promise.all(
+      Object.values(queues).map(queue => queue.close())
+    );
+  }
   
-  // Close Redis connection
-  await connection.quit();
+  if (connection) {
+    // Close Redis connection
+    await connection.quit();
+  }
   
   console.log('Queues shut down successfully');
 }

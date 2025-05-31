@@ -38,7 +38,6 @@ import LoadingSkeleton from '@/components/LoadingSkeleton';
 import ErrorMessage from '@/components/ErrorMessage';
 import { useClients } from '@/hooks/useData';
 import { useClient } from '@/contexts/ClientContext';
-import { isDemoMode } from '@/lib/demo-data';
 import type { Client } from '@/types/models';
 
 const ClientsPage: React.FC = () => {
@@ -78,13 +77,6 @@ const ClientsPage: React.FC = () => {
   };
 
   const handleDeleteClient = () => {
-    // In demo mode, just close the dialog
-    if (isDemoMode()) {
-      setDeleteDialogOpen(false);
-      handleMenuClose();
-      return;
-    }
-    
     // TODO: Implement actual delete functionality
     if (process.env.NODE_ENV === 'development') {
       console.log('Delete client:', selectedClient);

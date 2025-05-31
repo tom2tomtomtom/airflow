@@ -8,7 +8,6 @@
 [build.environment]
   NODE_VERSION = "20"
   NPM_VERSION = "10"
-  NEXT_PUBLIC_DEMO_MODE = "false"
   NODE_ENV = "production"
   NEXT_TELEMETRY_DISABLED = "1"
   DISABLE_ESLINT = "false"

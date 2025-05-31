@@ -38,14 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Check if demo mode is enabled
-        if (process.env.NEXT_PUBLIC_DEMO_MODE === 'true') {
-          // Don't auto-authenticate in demo mode, let user login
-          setLoading(false);
-          return;
-        }
-
-        // Production mode: Check localStorage for existing session
+        // Check localStorage for existing session
         if (typeof window !== 'undefined') {
           const storedUser = localStorage.getItem('airwave_user');
           if (storedUser) {

@@ -36,41 +36,7 @@ export default async function handler(
   }
 
   try {
-    // Check if we're in demo mode, use mock auth
-    if (process.env.NEXT_PUBLIC_DEMO_MODE === 'true') {
-      // Mock user credentials for demo mode
-      const validCredentials = [
-        { email: 'test@airwave.com', password: 'testpass123', name: 'Test User', role: 'admin' },
-        { email: 'demo@airwave.com', password: 'demo123', name: 'Demo User', role: 'admin' },
-      ];
-
-      const user = validCredentials.find(
-        cred => cred.email === email && cred.password === password
-      );
-
-      if (!user) {
-        return res.status(401).json({ 
-          success: false, 
-          error: 'Invalid email or password' 
-        });
-      }
-
-      // Generate mock token
-      const token = 'demo-jwt-token-' + Date.now();
-
-      return res.status(200).json({
-        success: true,
-        user: {
-          id: 'demo-user-' + Date.now(),
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          token,
-        },
-      });
-    }
-
-    // Production mode: Use Supabase authentication
+    // Use Supabase authentication
     const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password,

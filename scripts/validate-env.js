@@ -8,8 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 
-// Define required environment variables based on mode
-const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+// Define required environment variables
 const envFile = process.argv[2] || '.env.local';
 
 // Core required variables (always needed)
@@ -18,7 +17,7 @@ const coreRequiredVars = [
   'NEXT_PUBLIC_SUPABASE_ANON_KEY',
 ];
 
-// Production required variables (not needed in demo mode)
+// Production required variables
 const productionRequiredVars = [
   'JWT_SECRET',
   'SUPABASE_SERVICE_ROLE_KEY',
@@ -29,85 +28,73 @@ const productionRequiredVars = [
 const optionalVars = [
   'ELEVENLABS_API_KEY',
   'CREATOMATE_API_KEY',
-  'SENTRY_DSN',
+  'RUNWAY_API_KEY',
   'SMTP_HOST',
   'SMTP_PORT',
   'SMTP_USER',
   'SMTP_PASS',
 ];
 
-// Load environment variables from file if it exists
+// Initialize counters
+let errors = [];
+let warnings = [];
+
+console.log('🔍 Environment Variable Validation');
+console.log('=' .repeat(60));
+
+// Load environment file if it exists
 if (fs.existsSync(envFile)) {
+  console.log(`📁 Loading environment from: ${envFile}\n`);
   require('dotenv').config({ path: envFile });
+} else {
+  console.log(`⚠️  Environment file not found: ${envFile}\n`);
+  warnings.push(`Environment file ${envFile} not found`);
 }
 
-console.log(`\n🔍 Validating environment variables${envFile !== '.env.local' ? ` from ${envFile}` : ''}...\n`);
-
-let hasErrors = false;
-const errors = [];
-const warnings = [];
+// Helper function to mask sensitive values
+function maskValue(value, varName) {
+  if (!value) return 'Not set';
+  if (varName.includes('SECRET') || varName.includes('KEY') || varName.includes('PASS')) {
+    return `${value.substring(0, 4)}...${value.substring(value.length - 4)}`;
+  }
+  return value.length > 50 ? `${value.substring(0, 47)}...` : value;
+}
 
 // Check core required variables
 console.log('Core Required Variables:');
 coreRequiredVars.forEach(varName => {
   const value = process.env[varName];
   if (!value || value === '') {
-    if (isDemoMode && varName.includes('SUPABASE')) {
-      console.log(`   ⚠️  ${varName}: Not set (using demo defaults)`);
-      warnings.push(`${varName} is not set - demo mode will use defaults`);
-    } else {
-      console.error(`   ❌ ${varName}: Missing or empty`);
-      errors.push(`${varName} is required`);
-      hasErrors = true;
-    }
+    console.error(`   ❌ ${varName}: Missing or empty`);
+    errors.push(`${varName} is required`);
   } else {
-    const masked = varName.includes('KEY') || varName.includes('SECRET') 
-      ? value.substring(0, 8) + '...' 
-      : value;
+    const masked = maskValue(value, varName);
     console.log(`   ✅ ${varName}: ${masked}`);
   }
 });
 
-// Check production required variables (skip in demo mode)
-if (!isDemoMode) {
-  console.log('\nProduction Required Variables:');
-  productionRequiredVars.forEach(varName => {
-    const value = process.env[varName];
-    if (!value || value === '') {
-      console.error(`   ❌ ${varName}: Missing or empty`);
-      errors.push(`${varName} is required in production mode`);
-      hasErrors = true;
-    } else {
-      // Validate specific variables
-      if (varName === 'JWT_SECRET' && value.length < 32) {
-        console.error(`   ❌ ${varName}: Too short (must be at least 32 characters)`);
-        errors.push(`${varName} must be at least 32 characters for security`);
-        hasErrors = true;
-      } else if (varName === 'OPENAI_API_KEY' && !value.startsWith('sk-')) {
-        console.error(`   ❌ ${varName}: Invalid format (must start with 'sk-')`);
-        errors.push(`${varName} must be a valid OpenAI API key`);
-        hasErrors = true;
-      } else {
-        const masked = value.substring(0, 8) + '...';
-        console.log(`   ✅ ${varName}: ${masked}`);
-      }
-    }
-  });
-} else {
-  console.log('\n⚠️  Skipping production variables validation (demo mode enabled)');
-}
+// Check production required variables
+console.log('\nProduction Required Variables:');
+productionRequiredVars.forEach(varName => {
+  const value = process.env[varName];
+  if (!value || value === '') {
+    console.error(`   ❌ ${varName}: Missing or empty`);
+    errors.push(`${varName} is required`);
+  } else {
+    const masked = maskValue(value, varName);
+    console.log(`   ✅ ${varName}: ${masked}`);
+  }
+});
 
 // Check optional variables
 console.log('\nOptional Variables:');
 optionalVars.forEach(varName => {
   const value = process.env[varName];
   if (!value || value === '') {
-    console.log(`   ⚠️  ${varName}: Not set (optional)`);
-    warnings.push(`${varName} is not set - some features may be limited`);
+    console.log(`   ⚠️  ${varName}: Not set`);
+    warnings.push(`${varName} is not set - some features may be unavailable`);
   } else {
-    const masked = varName.includes('KEY') || varName.includes('SECRET') || varName.includes('PASS')
-      ? value.substring(0, 8) + '...' 
-      : value;
+    const masked = maskValue(value, varName);
     console.log(`   ✅ ${varName}: ${masked}`);
   }
 });
@@ -115,35 +102,37 @@ optionalVars.forEach(varName => {
 // Check for additional configuration
 console.log('\nConfiguration:');
 console.log(`   📍 Environment: ${process.env.NODE_ENV || 'development'}`);
-console.log(`   🎮 Demo Mode: ${isDemoMode ? 'Enabled' : 'Disabled'}`);
 console.log(`   🌐 API URL: ${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}`);
 
 // Summary
 console.log('\n' + '='.repeat(60));
+const hasErrors = errors.length > 0;
+const hasWarnings = warnings.length > 0;
+
 if (hasErrors) {
-  console.error('\n❌ Environment validation failed!\n');
-  console.error('Errors:');
-  errors.forEach(error => console.error(`   - ${error}`));
-  
-  if (warnings.length > 0) {
-    console.log('\nWarnings:');
-    warnings.forEach(warning => console.log(`   - ${warning}`));
-  }
-  
+  console.error(`❌ Validation failed with ${errors.length} errors:`);
+  errors.forEach(error => console.error(`   • ${error}`));
+}
+
+if (hasWarnings) {
+  console.warn(`\n⚠️  ${warnings.length} warnings:`);
+  warnings.forEach(warning => console.warn(`   • ${warning}`));
+}
+
+if (!hasErrors && !hasWarnings) {
+  console.log('✅ All environment variables are properly configured!');
+} else if (!hasErrors) {
+  console.log('✅ Environment is valid (with warnings)');
+}
+
+if (hasErrors) {
   console.error('\n💡 Tips:');
   console.error('   1. Copy .env.example to .env.local');
   console.error('   2. Fill in all required values');
-  console.error('   3. Set NEXT_PUBLIC_DEMO_MODE=true to run in demo mode');
-  console.error('   4. See docs/ENVIRONMENT_SETUP.md for detailed instructions\n');
+  console.error('   3. See docs/ENVIRONMENT_SETUP.md for detailed instructions\n');
   
   process.exit(1);
 } else {
-  if (warnings.length > 0) {
-    console.log('\n⚠️  Environment validation passed with warnings:\n');
-    warnings.forEach(warning => console.log(`   - ${warning}`));
-    console.log('\n✅ You can proceed, but some features may be limited.\n');
-  } else {
-    console.log('\n✅ All environment variables are properly configured!\n');
-  }
+  console.log('\n🚀 Ready to start the application!\n');
   process.exit(0);
 }

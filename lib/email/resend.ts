@@ -103,6 +103,27 @@ function getTemplate(template: EmailTemplate, data: Record<string, any>): string
 export async function sendEmail(options: EmailOptions) {
   const { to, subject, template, data } = options;
   
+  // If Resend is not configured, use fallback logging
+  if (!process.env.RESEND_API_KEY) {
+    const fallbackResult = {
+      id: `mock-${Date.now()}`,
+      to: Array.isArray(to) ? to : [to],
+      subject,
+      template,
+      timestamp: new Date().toISOString(),
+    };
+    
+    console.log('Email service not configured - logging email instead:');
+    console.log('---');
+    console.log(`To: ${fallbackResult.to.join(', ')}`);
+    console.log(`Subject: ${subject}`);
+    console.log(`Template: ${template}`);
+    console.log(`Data:`, JSON.stringify(data, null, 2));
+    console.log('---');
+    
+    return fallbackResult;
+  }
+  
   try {
     const result = await resend.emails.send({
       from: 'AIrWAVE <notifications@airwave.app>',

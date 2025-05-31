@@ -3,7 +3,7 @@ import { isCampaign } from '@/utils/campaign-helpers';
 import { useRouter } from 'next/router';
 import { GetServerSideProps } from 'next';
 import type { Campaign } from '@/types/models';
-import type { UICampaign } from '@/lib/demo-data';
+import type { UICampaign } from '@/hooks/useData';
 import {
   Box,
   Container,

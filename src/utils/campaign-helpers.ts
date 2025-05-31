@@ -1,5 +1,5 @@
 import type { Campaign } from '@/types/models';
-import type { UICampaign } from '@/lib/demo-data';
+import type { UICampaign } from '@/hooks/useData';
 
 // Type guards and helpers for Campaign/UICampaign compatibility
 export function isCampaign(campaign: Campaign | UICampaign): campaign is Campaign {

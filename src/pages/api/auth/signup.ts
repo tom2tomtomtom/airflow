@@ -55,28 +55,8 @@ export default async function handler(
   try {
     // Debug logging
     console.log('Signup attempt for:', email);
-    console.log('Demo mode:', process.env.NEXT_PUBLIC_DEMO_MODE);
     console.log('Supabase URL exists:', !!process.env.NEXT_PUBLIC_SUPABASE_URL);
     console.log('Supabase Anon Key exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-    
-    // Check if we're in demo mode - allow demo signups but simulate them
-    if (process.env.NEXT_PUBLIC_DEMO_MODE === 'true') {
-      console.log('Demo mode signup - creating simulated user');
-      // Simulate successful signup in demo mode
-      const demoUser = {
-        id: 'demo-user-' + Date.now(),
-        email: email,
-        name: name,
-        role: 'user',
-        token: 'demo-token-' + Math.random().toString(36).substring(7),
-      };
-
-      return res.status(200).json({
-        success: true,
-        user: demoUser,
-        message: 'Demo account created successfully! This is a simulated signup for demonstration purposes.'
-      });
-    }
 
     // Check if Supabase is properly configured
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
@@ -87,7 +67,7 @@ export default async function handler(
       });
     }
 
-    // Production mode: Use Supabase authentication
+    // Use Supabase authentication
     console.log('Attempting Supabase signup...');
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,

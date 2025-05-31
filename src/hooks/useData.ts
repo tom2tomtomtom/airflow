@@ -1,17 +1,32 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
-import { 
-  isDemoMode, 
-  getDemoClients, 
-  getDemoAssets, 
-  getDemoTemplates, 
-  getDemoCampaigns,
-  getDemoMatrices,
-  campaignToUICampaign,
-  type UICampaign
-} from '@/lib/demo-data';
 import type { Client, Asset, Template, Campaign, Matrix } from '@/types/models';
+
+// Extended Campaign interface for UI compatibility
+export interface UICampaign extends Omit<Campaign, 'budget' | 'schedule' | 'targeting'> {
+  budget: number;
+  budgetSpent?: number;
+  startDate: string;
+  endDate: string;
+  platforms: string[];
+  createdAt: string;
+  updatedAt?: string;
+}
+
+// Helper function to convert Campaign to UICampaign
+export const campaignToUICampaign = (campaign: Campaign): UICampaign => {
+  return {
+    ...campaign,
+    budget: campaign.budget?.total || 0,
+    budgetSpent: campaign.budget?.spent || 0,
+    startDate: campaign.schedule?.startDate || new Date().toISOString(),
+    endDate: campaign.schedule?.endDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+    platforms: campaign.targeting?.platforms || [],
+    createdAt: campaign.dateCreated,
+    updatedAt: campaign.lastModified,
+  };
+};
 
 // Type mapping for entity types
 type EntityTypes = {
@@ -41,68 +56,35 @@ export function useData<T extends keyof EntityTypes>(
         setLoading(true);
         let result: any = null;
 
-        if (isDemoMode()) {
-          // Demo mode data fetching
-          await new Promise(resolve => setTimeout(resolve, 300)); // Simulate network delay
+        // Supabase data fetching
+        if (id) {
+          const { data, error } = await supabase
+            .from(entityType)
+            .select('*')
+            .eq('id', id)
+            .single();
           
-          switch (entityType) {
-            case 'clients': {
-              const clients = getDemoClients();
-              result = id ? clients.find(c => c.id === id) : clients;
-              break;
-            }
-            case 'campaigns': {
-              const campaigns = getDemoCampaigns() as UICampaign[];
-              result = id ? campaigns.find(c => c.id === id) : campaigns;
-              break;
-            }
-            case 'assets': {
-              const assets = getDemoAssets();
-              result = id ? assets.find(a => a.id === id) : assets;
-              break;
-            }
-            case 'templates': {
-              const templates = getDemoTemplates();
-              result = id ? templates.find(t => t.id === id) : templates;
-              break;
-            }
-            case 'matrices': {
-              const matrices = getDemoMatrices();
-              result = id ? matrices.find(m => m.id === id) : matrices;
-              break;
-            }
+          if (error) throw error;
+          
+          // Convert campaign data for UI if needed
+          if (entityType === 'campaigns' && data) {
+            result = campaignToUICampaign(data as Campaign);
+          } else {
+            result = data;
           }
         } else {
-          // Supabase data fetching
-          if (id) {
-            const { data, error } = await supabase
-              .from(entityType)
-              .select('*')
-              .eq('id', id)
-              .single();
-            
-            if (error) throw error;
-            
-            // Convert campaign data for UI if needed
-            if (entityType === 'campaigns' && data) {
-              result = campaignToUICampaign(data as Campaign);
-            } else {
-              result = data;
-            }
+          const { data, error } = await supabase
+            .from(entityType)
+            .select('*')
+            .order('created_at', { ascending: false });
+          
+          if (error) throw error;
+          
+          // Convert campaign data for UI if needed
+          if (entityType === 'campaigns' && data) {
+            result = (data as Campaign[]).map(campaignToUICampaign);
           } else {
-            const { data, error } = await supabase
-              .from(entityType)
-              .select('*')
-              .order('created_at', { ascending: false });
-            
-            if (error) throw error;
-            
-            // Convert campaign data for UI if needed
-            if (entityType === 'campaigns' && data) {
-              result = (data as Campaign[]).map(campaignToUICampaign);
-            } else {
-              result = data || [];
-            }
+            result = data || [];
           }
         }
 
@@ -125,11 +107,6 @@ export const useClients = () => {
   return useQuery({
     queryKey: ['clients'],
     queryFn: async () => {
-      if (isDemoMode()) {
-        await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
-        return getDemoClients();
-      }
-      
       const { data, error } = await supabase
         .from('clients')
         .select('*')
@@ -147,11 +124,6 @@ export const useAssets = (clientId?: string) => {
   return useQuery({
     queryKey: ['assets', clientId],
     queryFn: async () => {
-      if (isDemoMode()) {
-        await new Promise(resolve => setTimeout(resolve, 300));
-        return getDemoAssets(clientId);
-      }
-      
       let query = supabase.from('assets').select('*');
       
       if (clientId) {
@@ -173,11 +145,6 @@ export const useTemplates = () => {
   return useQuery({
     queryKey: ['templates'],
     queryFn: async () => {
-      if (isDemoMode()) {
-        await new Promise(resolve => setTimeout(resolve, 400));
-        return getDemoTemplates();
-      }
-      
       const { data, error } = await supabase
         .from('templates')
         .select('*')
@@ -195,11 +162,6 @@ export const useCampaigns = (clientId?: string) => {
   return useQuery({
     queryKey: ['campaigns', clientId],
     queryFn: async () => {
-      if (isDemoMode()) {
-        await new Promise(resolve => setTimeout(resolve, 350));
-        return getDemoCampaigns(clientId) as UICampaign[];
-      }
-      
       let query = supabase.from('campaigns').select('*');
       
       if (clientId) {
@@ -222,11 +184,6 @@ export const useMatrices = (clientId?: string) => {
   return useQuery({
     queryKey: ['matrices', clientId],
     queryFn: async () => {
-      if (isDemoMode()) {
-        await new Promise(resolve => setTimeout(resolve, 300));
-        return getDemoMatrices(clientId);
-      }
-      
       let query = supabase.from('matrices').select('*');
       
       if (clientId) {
@@ -252,22 +209,6 @@ export const useCreateAsset = () => {
     setError(null);
 
     try {
-      if (isDemoMode()) {
-        // In demo mode, just return a mock created asset
-        const newAsset = {
-          ...asset,
-          id: `demo-asset-${Date.now()}`,
-          dateCreated: new Date().toISOString(),
-          lastModified: new Date().toISOString(),
-          createdBy: 'demo-user',
-          version: 1,
-          metadata: asset.metadata || {},
-        } as Asset;
-        
-        await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API delay
-        return { data: newAsset, error: null };
-      }
-
       const { data, error } = await supabase
         .from('assets')
         .insert([asset])
@@ -298,22 +239,6 @@ export const useCreateMatrix = () => {
     setError(null);
 
     try {
-      if (isDemoMode()) {
-        // In demo mode, just return a mock created matrix
-        const newMatrix = {
-          ...matrix,
-          id: `demo-matrix-${Date.now()}`,
-          dateCreated: new Date().toISOString(),
-          lastModified: new Date().toISOString(),
-          createdBy: 'demo-user',
-          version: 1,
-          metadata: {},
-        } as Matrix;
-        
-        await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API delay
-        return { data: newMatrix, error: null };
-      }
-
       const { data, error } = await supabase
         .from('matrices')
         .insert([matrix])
@@ -336,19 +261,6 @@ export const useCreateMatrix = () => {
     setError(null);
 
     try {
-      if (isDemoMode()) {
-        // In demo mode, just return the updated matrix
-        const updatedMatrix = {
-          ...updates,
-          id,
-          lastModified: new Date().toISOString(),
-          version: (updates.version || 1) + 1,
-        } as Matrix;
-        
-        await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API delay
-        return { data: updatedMatrix, error: null };
-      }
-
       const { data, error } = await supabase
         .from('matrices')
         .update(updates)
@@ -382,21 +294,6 @@ export const useFileUpload = () => {
     setUploadProgress(0);
 
     try {
-      if (isDemoMode()) {
-        // Simulate upload progress in demo mode
-        for (let i = 0; i <= 100; i += 10) {
-          await new Promise(resolve => setTimeout(resolve, 100));
-          setUploadProgress(i);
-        }
-        
-        // Return a mock URL
-        return {
-          url: URL.createObjectURL(file),
-          path: `demo/${clientId}/${file.name}`,
-          error: null,
-        };
-      }
-
       const fileName = `${Date.now()}-${file.name}`;
       const filePath = path ? `${path}/${fileName}` : `${clientId}/${fileName}`;
 

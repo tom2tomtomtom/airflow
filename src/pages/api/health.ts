@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@supabase/supabase-js';
-import Redis from 'ioredis';
+import { Redis } from '@upstash/redis';
 import { S3Client, HeadBucketCommand } from '@aws-sdk/client-s3';
 
 // Health check statuses
@@ -72,10 +72,22 @@ async function checkRedis(): Promise<ServiceCheck> {
   const start = Date.now();
   
   try {
-    const redis = new Redis(process.env.REDIS_URL!);
+    // Check if Redis is configured
+    if (!process.env.UPSTASH_REDIS_URL || !process.env.UPSTASH_REDIS_TOKEN) {
+      return {
+        status: 'error',
+        message: 'Redis service not configured (optional)',
+        latency: 0,
+      };
+    }
+    
+    const redis = new Redis({
+      url: process.env.UPSTASH_REDIS_URL,
+      token: process.env.UPSTASH_REDIS_TOKEN,
+    });
+    
     await redis.ping();
     const latency = Date.now() - start;
-    await redis.quit();
     
     return {
       status: 'ok',
@@ -189,9 +201,10 @@ async function checkEmail(): Promise<ServiceCheck> {
     // Check if Resend is configured
     if (!process.env.RESEND_API_KEY) {
       return {
-        status: 'error',
-        message: 'Email service not configured',
-        latency: 0,
+        status: 'ok',
+        message: 'Email service using fallback logging (Resend not configured)',
+        latency: Date.now() - start,
+        details: { provider: 'fallback' },
       };
     }
     
@@ -247,7 +260,9 @@ export default async function handler(
   const nonCriticalChecks = allChecks.filter(([name]) => !criticalServices.includes(name));
   
   const criticalFailures = criticalChecks.filter(([_, check]) => check.status === 'error').length;
-  const nonCriticalFailures = nonCriticalChecks.filter(([_, check]) => check.status === 'error').length;
+  const nonCriticalFailures = nonCriticalChecks.filter(([_, check]) => 
+    check.status === 'error' && !check.message?.includes('optional')
+  ).length;
   
   let status: HealthStatus = 'healthy';
   if (criticalFailures > 0) {

@@ -58,7 +58,6 @@ function MyApp(props: MyAppProps) {
     console.log('AIrWAVE App initialized', {
       version: process.env.NEXT_PUBLIC_APP_VERSION || '0.1.0',
       environment: process.env.NODE_ENV,
-      demoMode: process.env.NEXT_PUBLIC_DEMO_MODE === 'true',
     });
   }, []);
 

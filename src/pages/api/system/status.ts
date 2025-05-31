@@ -14,7 +14,6 @@ export default async function handler(
   const envStatus = {
     // Core configuration
     NODE_ENV: process.env.NODE_ENV || 'not set',
-    NEXT_PUBLIC_DEMO_MODE: process.env.NEXT_PUBLIC_DEMO_MODE || 'not set',
     
     // Supabase configuration
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL ? '✅ Set' : '❌ Missing',
@@ -58,10 +57,9 @@ export default async function handler(
 
   const missingRequired = requiredEnvVars.filter(key => !process.env[key]);
   const isConfigured = missingRequired.length === 0;
-  const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
 
   res.status(200).json({
-    status: isConfigured || isDemoMode ? 'ready' : 'incomplete',
+    status: isConfigured ? 'ready' : 'incomplete',
     timestamp: new Date().toISOString(),
     environment: envStatus,
     supabase: {

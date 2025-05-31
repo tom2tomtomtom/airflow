@@ -46,7 +46,6 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorMessage from '@/components/ErrorMessage';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
-import { isDemoMode, demoClients } from '@/lib/demo-data';
 import type { Client, Contact } from '@/types/models';
 
 interface TabPanelProps {
@@ -77,13 +76,6 @@ const ClientDetailPage: React.FC = () => {
   const { data: client, isLoading, error, refetch } = useQuery({
     queryKey: ['client', id],
     queryFn: async () => {
-      if (isDemoMode()) {
-        // In demo mode, find the client from demo data
-        const demoClient = demoClients.find(c => c.id === id);
-        if (!demoClient) throw new Error('Client not found');
-        return demoClient;
-      }
-
       const { data, error } = await supabase
         .from('clients')
         .select('*')
@@ -106,12 +98,6 @@ const ClientDetailPage: React.FC = () => {
     if (!editedClient) return;
 
     try {
-      if (isDemoMode()) {
-        // In demo mode, just simulate save
-        setIsEditing(false);
-        return;
-      }
-
       const { error } = await supabase
         .from('clients')
         .update(editedClient)

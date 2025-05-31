@@ -1,8 +1,5 @@
 import { z } from 'zod';
 
-// Helper to check if we're in demo mode - DEFAULT TO FALSE
-const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
-
 // Helper to check if we're in build context
 const isBuildContext = typeof EdgeRuntime !== 'undefined' || 
                       process.env.NETLIFY || 
@@ -17,11 +14,11 @@ const isBuildContext = typeof EdgeRuntime !== 'undefined' ||
 const envSchema = z.object({
   // Public environment variables (accessible in browser)
   NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional().refine(
-    (val) => isBuildContext || isDemoMode || process.env.NODE_ENV === 'development' || val,
+    (val) => isBuildContext || process.env.NODE_ENV === 'development' || val,
     'Supabase URL is required in production mode'
   ),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().optional().refine(
-    (val) => isBuildContext || isDemoMode || process.env.NODE_ENV === 'development' || val,
+    (val) => isBuildContext || process.env.NODE_ENV === 'development' || val,
     'Supabase anon key is required in production mode'
   ),
   NEXT_PUBLIC_API_URL: z.string().url().optional().default(
@@ -29,18 +26,16 @@ const envSchema = z.object({
       ? 'https://api.airwave.app' // Update this to your production URL
       : 'http://localhost:3000'
   ).describe('API base URL'),
-  // IMPORTANT: Default to false so auth works in production
-  NEXT_PUBLIC_DEMO_MODE: z.enum(['true', 'false']).optional().default('false'),
   
   // Server-only environment variables
   SUPABASE_SERVICE_ROLE_KEY: z.string().optional().refine(
-    (val) => isBuildContext || isDemoMode || process.env.NODE_ENV === 'development' || val,
+    (val) => isBuildContext || process.env.NODE_ENV === 'development' || val,
     'Supabase service role key is required in production mode'
   ),
   JWT_SECRET: z.string().optional().refine(
     (val) => {
       // Allow any value during build context
-      if (isBuildContext || isDemoMode || process.env.NODE_ENV === 'development') return true;
+      if (isBuildContext || process.env.NODE_ENV === 'development') return true;
       if (!val) return false;
       if (val.length < 32) return false;
       // Ensure it's not a default/demo value
@@ -109,7 +104,6 @@ const parseEnv = () => {
     return {
       ...process.env,
       NODE_ENV: process.env.NODE_ENV || 'production',
-      NEXT_PUBLIC_DEMO_MODE: process.env.NEXT_PUBLIC_DEMO_MODE || 'false', // Default to false
       JWT_EXPIRY: '7d',
       REFRESH_TOKEN_EXPIRY: '30d',
       STORAGE_BUCKET: 'airwave-assets',
@@ -130,7 +124,7 @@ const parseEnv = () => {
     }
     
     // Additional validation for production runtime
-    if (process.env.NODE_ENV === 'production' && !isDemoMode) {
+    if (process.env.NODE_ENV === 'production') {
       // Ensure critical security variables are set
       const criticalVars = [
         'NEXT_PUBLIC_SUPABASE_URL',
@@ -167,20 +161,21 @@ const parseEnv = () => {
         console.warn('Some features may not work properly\n');
       }
       
-      // Return a safe default for all contexts
-      return {
-        ...process.env,
-        NODE_ENV: process.env.NODE_ENV || 'production',
-        NEXT_PUBLIC_DEMO_MODE: process.env.NEXT_PUBLIC_DEMO_MODE || 'false', // Default to false
-        JWT_EXPIRY: '7d',
-        REFRESH_TOKEN_EXPIRY: '30d',
-        STORAGE_BUCKET: 'airwave-assets',
-        MAX_FILE_SIZE: '52428800',
-        ALLOWED_ORIGINS: [],
-        ENABLE_SOCIAL_PUBLISHING: 'false',
-        ENABLE_VIDEO_GENERATION: 'false',
-        ENABLE_AI_FEATURES: 'false',
-      } as any;
+      // Return a safe default for builds
+      if (isEdgeBuild || isBuildTime) {
+        return {
+          ...process.env,
+          NODE_ENV: process.env.NODE_ENV || 'production',
+          JWT_EXPIRY: '7d',
+          REFRESH_TOKEN_EXPIRY: '30d',
+          STORAGE_BUCKET: 'airwave-assets',
+          MAX_FILE_SIZE: '52428800',
+          ALLOWED_ORIGINS: [],
+          ENABLE_SOCIAL_PUBLISHING: 'false',
+          ENABLE_VIDEO_GENERATION: 'false',
+          ENABLE_AI_FEATURES: 'false',
+        } as any;
+      }
     }
     throw error;
   }
@@ -198,8 +193,6 @@ export const isProduction = env.NODE_ENV === 'production';
 // Helper to check if we're in development
 export const isDevelopment = env.NODE_ENV === 'development';
 
-// Helper to check if we're in demo mode - will be false by default
-export const isDemo = env.NEXT_PUBLIC_DEMO_MODE === 'true';
 
 // Helper to check if email is configured
 export const isEmailConfigured = Boolean(
