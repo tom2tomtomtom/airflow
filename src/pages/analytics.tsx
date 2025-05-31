@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import {
   Box,
@@ -33,6 +33,7 @@ import {
   ListItemText,
   ListItemAvatar,
   useTheme,
+  CircularProgress,
 } from '@mui/material';
 import {
   TrendingUp as TrendingUpIcon,
@@ -78,6 +79,8 @@ import DashboardLayout from '@/components/DashboardLayout';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
 import { useClient } from '@/contexts/ClientContext';
 import { useCampaigns, useMatrices } from '@/hooks/useData';
+import { useNotification } from '@/contexts/NotificationContext';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -94,25 +97,7 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-// Mock data for charts
-const performanceData = [
-  { date: '2024-01-01', views: 4500, engagement: 320, conversions: 45 },
-  { date: '2024-01-02', views: 5200, engagement: 380, conversions: 52 },
-  { date: '2024-01-03', views: 4800, engagement: 350, conversions: 48 },
-  { date: '2024-01-04', views: 6100, engagement: 420, conversions: 61 },
-  { date: '2024-01-05', views: 7200, engagement: 480, conversions: 72 },
-  { date: '2024-01-06', views: 6800, engagement: 460, conversions: 68 },
-  { date: '2024-01-07', views: 7500, engagement: 510, conversions: 75 },
-];
-
-const platformData = [
-  { name: 'Instagram', value: 35, color: '#E1306C' },
-  { name: 'Facebook', value: 25, color: '#1877F2' },
-  { name: 'Twitter', value: 20, color: '#1DA1F2' },
-  { name: 'LinkedIn', value: 15, color: '#0A66C2' },
-  { name: 'YouTube', value: 5, color: '#FF0000' },
-];
-
+// Static data for analytics features not yet in real data
 const audienceData = [
   { age: '18-24', male: 25, female: 30 },
   { age: '25-34', male: 35, female: 40 },
@@ -129,50 +114,38 @@ const contentPerformance = [
   { subject: 'ROI', A: 88, B: 75, fullMark: 100 },
 ];
 
-const topPerformingContent = [
-  {
-    id: 1,
-    title: 'Summer Fitness Challenge',
-    platform: 'Instagram',
-    views: 125000,
-    engagement: 8.5,
-    conversion: 3.2,
-    trend: 'up',
-  },
-  {
-    id: 2,
-    title: 'Protein Shake Recipe',
-    platform: 'YouTube',
-    views: 98000,
-    engagement: 7.2,
-    conversion: 2.8,
-    trend: 'up',
-  },
-  {
-    id: 3,
-    title: 'Morning Workout Routine',
-    platform: 'Facebook',
-    views: 76000,
-    engagement: 6.8,
-    conversion: 2.5,
-    trend: 'down',
-  },
-  {
-    id: 4,
-    title: 'Healthy Meal Prep',
-    platform: 'LinkedIn',
-    views: 54000,
-    engagement: 5.5,
-    conversion: 2.1,
-    trend: 'stable',
-  },
-];
+interface AnalyticsData {
+  performanceData: Array<any>;
+  platformData: Array<any>;
+  topPerformingContent: Array<any>;
+  kpiSummary: {
+    totalImpressions: number;
+    totalClicks: number;
+    totalConversions: number;
+    totalSpend: number;
+    averageCTR: number;
+    averageConversionRate: number;
+    averageCPC: number;
+    roas: number;
+  };
+  trends: {
+    impressions: { value: number; change: number };
+    clicks: { value: number; change: number };
+    conversions: { value: number; change: number };
+    spend: { value: number; change: number };
+  };
+  dateRange: {
+    start: string;
+    end: string;
+  };
+}
 
 const AnalyticsPage: React.FC = () => {
   const theme = useTheme();
   const { activeClient } = useClient();
   const { data: campaigns, isLoading: campaignsLoading } = useCampaigns(activeClient?.id);
   const { isLoading: matricesLoading } = useMatrices(activeClient?.id);
+  const { showNotification } = useNotification();
   
   const [timeRange, setTimeRange] = useState('7d');
   const [selectedCampaign, setSelectedCampaign] = useState('all');
@@ -180,8 +153,90 @@ const AnalyticsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [viewMode, setViewMode] = useState('chart');
   const [comparison, setComparison] = useState('period');
+  
+  // Analytics data state
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
+  const [analyticsLoading, setAnalyticsLoading] = useState(true);
+  const [analyticsError, setAnalyticsError] = useState<string | null>(null);
 
-  const isLoading = campaignsLoading || matricesLoading;
+  const isLoading = campaignsLoading || matricesLoading || analyticsLoading;
+
+  // Fetch analytics data
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      if (!activeClient) {
+        setAnalyticsData(null);
+        setAnalyticsLoading(false);
+        return;
+      }
+
+      try {
+        setAnalyticsLoading(true);
+        setAnalyticsError(null);
+        
+        // Calculate date range based on timeRange
+        const endDate = new Date();
+        const startDate = new Date();
+        
+        switch (timeRange) {
+          case '24h':
+            startDate.setDate(startDate.getDate() - 1);
+            break;
+          case '7d':
+            startDate.setDate(startDate.getDate() - 7);
+            break;
+          case '30d':
+            startDate.setDate(startDate.getDate() - 30);
+            break;
+          case '90d':
+            startDate.setDate(startDate.getDate() - 90);
+            break;
+          default:
+            startDate.setDate(startDate.getDate() - 7);
+        }
+        
+        const params = new URLSearchParams({
+          clientId: activeClient.id,
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString(),
+        });
+        
+        if (selectedCampaign !== 'all') {
+          params.append('campaignId', selectedCampaign);
+        }
+        
+        if (selectedPlatform !== 'all') {
+          params.append('platform', selectedPlatform);
+        }
+        
+        const response = await fetch(`/api/analytics/overview?${params.toString()}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch analytics data');
+        }
+        
+        const result = await response.json();
+        if (result.success) {
+          setAnalyticsData(result.data);
+        } else {
+          throw new Error(result.error || 'Failed to load analytics');
+        }
+      } catch (error) {
+        const message = getErrorMessage(error);
+        console.error('Error fetching analytics:', error);
+        setAnalyticsError(message);
+        showNotification('Failed to load analytics data', 'error');
+      } finally {
+        setAnalyticsLoading(false);
+      }
+    };
+
+    fetchAnalytics();
+  }, [activeClient, timeRange, selectedCampaign, selectedPlatform, showNotification]);
 
   const getPlatformIcon = (platform: string) => {
     switch (platform.toLowerCase()) {
@@ -191,6 +246,14 @@ const AnalyticsPage: React.FC = () => {
       case 'linkedin': return <LinkedInIcon />;
       case 'youtube': return <YouTubeIcon />;
       default: return <CampaignIcon />;
+    }
+  };
+
+  const handleRefresh = () => {
+    if (activeClient) {
+      // Trigger refresh by updating a dependency
+      setAnalyticsLoading(true);
+      // The useEffect will handle the refresh
     }
   };
 
@@ -242,7 +305,7 @@ const AnalyticsPage: React.FC = () => {
     );
   }
 
-  if (isLoading) {
+  if (isLoading && !analyticsData) {
     return (
       <DashboardLayout title="Analytics">
         <Grid container spacing={3}>
@@ -325,50 +388,86 @@ const AnalyticsPage: React.FC = () => {
               </FormControl>
             </Grid>
             <Grid item xs={12} md={3} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-              <Button startIcon={<RefreshIcon />}>Refresh</Button>
+              <Button 
+                startIcon={<RefreshIcon />} 
+                onClick={handleRefresh}
+                disabled={analyticsLoading}
+              >
+                Refresh
+              </Button>
               <Button variant="contained" startIcon={<DownloadIcon />}>Export</Button>
             </Grid>
           </Grid>
         </Paper>
 
+        {/* Error State */}
+        {analyticsError && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {analyticsError}
+          </Alert>
+        )}
+
         {/* Key Metrics */}
         <Grid container spacing={3} sx={{ mb: 3 }}>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard
-              title="Total Views"
-              value="1.2M"
-              change={15.3}
-              icon={<ViewsIcon />}
-              color="info.light"
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard
-              title="Engagement Rate"
-              value="6.8%"
-              change={-2.1}
-              icon={<EngagementIcon />}
-              color="warning.light"
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard
-              title="Conversions"
-              value="2,845"
-              change={23.5}
-              icon={<ConversionIcon />}
-              color="success.light"
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard
-              title="Revenue"
-              value="$45.2K"
-              change={18.7}
-              icon={<RevenueIcon />}
-              color="primary.light"
-            />
-          </Grid>
+          {analyticsLoading ? (
+            // Loading skeletons
+            [...Array(4)].map((_, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <Card>
+                  <CardContent>
+                    <Box display="flex" justifyContent="center" alignItems="center" minHeight={120}>
+                      <CircularProgress size={24} />
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))
+          ) : analyticsData ? (
+            <>
+              <Grid item xs={12} sm={6} md={3}>
+                <StatCard
+                  title="Total Impressions"
+                  value={analyticsData.kpiSummary.totalImpressions.toLocaleString()}
+                  change={analyticsData.trends.impressions.change}
+                  icon={<ViewsIcon />}
+                  color="info.light"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <StatCard
+                  title="CTR"
+                  value={`${analyticsData.kpiSummary.averageCTR}%`}
+                  change={((analyticsData.trends.clicks.value / Math.max(analyticsData.trends.impressions.value, 1)) * 100 - analyticsData.kpiSummary.averageCTR).toFixed(1)}
+                  icon={<EngagementIcon />}
+                  color="warning.light"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <StatCard
+                  title="Conversions"
+                  value={analyticsData.kpiSummary.totalConversions.toLocaleString()}
+                  change={analyticsData.trends.conversions.change}
+                  icon={<ConversionIcon />}
+                  color="success.light"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <StatCard
+                  title="Total Spend"
+                  value={`$${analyticsData.kpiSummary.totalSpend.toLocaleString()}`}
+                  change={analyticsData.trends.spend.change}
+                  icon={<RevenueIcon />}
+                  color="primary.light"
+                />
+              </Grid>
+            </>
+          ) : (
+            <Grid item xs={12}>
+              <Alert severity="info">
+                No analytics data available for the selected filters.
+              </Alert>
+            </Grid>
+          )}
         </Grid>
 
         {/* Main Content */}
@@ -404,55 +503,79 @@ const AnalyticsPage: React.FC = () => {
                   </ToggleButtonGroup>
                 </Box>
                 <Box sx={{ height: 400 }}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    {viewMode === 'chart' ? (
-                      <BarChart data={performanceData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="date" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Bar dataKey="views" fill={theme.palette.primary.main} />
-                        <Bar dataKey="engagement" fill={theme.palette.secondary.main} />
-                        <Bar dataKey="conversions" fill={theme.palette.success.main} />
-                      </BarChart>
-                    ) : (
-                      <AreaChart data={performanceData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="date" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Area type="monotone" dataKey="views" stroke={theme.palette.primary.main} fill={theme.palette.primary.light} />
-                        <Area type="monotone" dataKey="engagement" stroke={theme.palette.secondary.main} fill={theme.palette.secondary.light} />
-                        <Area type="monotone" dataKey="conversions" stroke={theme.palette.success.main} fill={theme.palette.success.light} />
-                      </AreaChart>
-                    )}
-                  </ResponsiveContainer>
+                  {analyticsLoading ? (
+                    <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+                      <CircularProgress />
+                    </Box>
+                  ) : analyticsData && analyticsData.performanceData.length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      {viewMode === 'chart' ? (
+                        <BarChart data={analyticsData.performanceData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="date" />
+                          <YAxis />
+                          <Tooltip />
+                          <Legend />
+                          <Bar dataKey="impressions" fill={theme.palette.primary.main} name="Impressions" />
+                          <Bar dataKey="clicks" fill={theme.palette.secondary.main} name="Clicks" />
+                          <Bar dataKey="conversions" fill={theme.palette.success.main} name="Conversions" />
+                        </BarChart>
+                      ) : (
+                        <AreaChart data={analyticsData.performanceData}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="date" />
+                          <YAxis />
+                          <Tooltip />
+                          <Legend />
+                          <Area type="monotone" dataKey="impressions" stroke={theme.palette.primary.main} fill={theme.palette.primary.light} name="Impressions" />
+                          <Area type="monotone" dataKey="clicks" stroke={theme.palette.secondary.main} fill={theme.palette.secondary.light} name="Clicks" />
+                          <Area type="monotone" dataKey="conversions" stroke={theme.palette.success.main} fill={theme.palette.success.light} name="Conversions" />
+                        </AreaChart>
+                      )}
+                    </ResponsiveContainer>
+                  ) : (
+                    <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+                      <Typography color="text.secondary">
+                        No performance data available
+                      </Typography>
+                    </Box>
+                  )}
                 </Box>
               </Grid>
               <Grid item xs={12} md={4}>
                 <Typography variant="h6" gutterBottom>Platform Distribution</Typography>
                 <Box sx={{ height: 300 }}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={platformData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={(entry) => `${entry.name}: ${entry.value}%`}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {platformData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
+                  {analyticsLoading ? (
+                    <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+                      <CircularProgress />
+                    </Box>
+                  ) : analyticsData && analyticsData.platformData.length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <PieChart>
+                        <Pie
+                          data={analyticsData.platformData}
+                          cx="50%"
+                          cy="50%"
+                          labelLine={false}
+                          label={(entry) => `${entry.name}: ${entry.value}%`}
+                          outerRadius={80}
+                          fill="#8884d8"
+                          dataKey="value"
+                        >
+                          {analyticsData.platformData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+                      <Typography color="text.secondary">
+                        No platform data available
+                      </Typography>
+                    </Box>
+                  )}
                 </Box>
               </Grid>
             </Grid>
@@ -468,68 +591,88 @@ const AnalyticsPage: React.FC = () => {
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography variant="h6" gutterBottom>Engagement by Platform</Typography>
-                <List>
-                  {platformData.map((platform) => (
-                    <ListItem key={platform.name}>
-                      <ListItemAvatar>
-                        <Avatar sx={{ bgcolor: platform.color }}>
-                          {getPlatformIcon(platform.name)}
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={platform.name}
-                        secondary={
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <LinearProgress
-                              variant="determinate"
-                              value={platform.value}
-                              sx={{ flex: 1, height: 8, borderRadius: 4 }}
-                            />
-                            <Typography variant="body2">{platform.value}%</Typography>
-                          </Box>
-                        }
-                      />
-                    </ListItem>
-                  ))}
-                </List>
+                {analyticsLoading ? (
+                  <Box display="flex" justifyContent="center" alignItems="center" minHeight={200}>
+                    <CircularProgress />
+                  </Box>
+                ) : analyticsData && analyticsData.platformData.length > 0 ? (
+                  <List>
+                    {analyticsData.platformData.map((platform) => (
+                      <ListItem key={platform.name}>
+                        <ListItemAvatar>
+                          <Avatar sx={{ bgcolor: platform.color }}>
+                            {getPlatformIcon(platform.name)}
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={platform.name}
+                          secondary={
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <LinearProgress
+                                variant="determinate"
+                                value={platform.value}
+                                sx={{ flex: 1, height: 8, borderRadius: 4 }}
+                              />
+                              <Typography variant="body2">{platform.value}%</Typography>
+                            </Box>
+                          }
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
+                ) : (
+                  <Typography color="text.secondary" sx={{ p: 2 }}>
+                    No platform engagement data available
+                  </Typography>
+                )}
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography variant="h6" gutterBottom>Top Performing Content</Typography>
-                <TableContainer>
-                  <Table size="small">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Content</TableCell>
-                        <TableCell align="right">Views</TableCell>
-                        <TableCell align="right">Engagement</TableCell>
-                        <TableCell>Trend</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {topPerformingContent.map((content) => (
-                        <TableRow key={content.id}>
-                          <TableCell>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              {getPlatformIcon(content.platform)}
-                              <Typography variant="body2">{content.title}</Typography>
-                            </Box>
-                          </TableCell>
-                          <TableCell align="right">{content.views.toLocaleString()}</TableCell>
-                          <TableCell align="right">{content.engagement}%</TableCell>
-                          <TableCell>
-                            {content.trend === 'up' ? (
-                              <TrendingUpIcon color="success" />
-                            ) : content.trend === 'down' ? (
-                              <TrendingDownIcon color="error" />
-                            ) : (
-                              <Chip label="Stable" size="small" />
-                            )}
-                          </TableCell>
+                {analyticsLoading ? (
+                  <Box display="flex" justifyContent="center" alignItems="center" minHeight={200}>
+                    <CircularProgress />
+                  </Box>
+                ) : analyticsData && analyticsData.topPerformingContent.length > 0 ? (
+                  <TableContainer>
+                    <Table size="small">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Content</TableCell>
+                          <TableCell align="right">Views</TableCell>
+                          <TableCell align="right">Engagement</TableCell>
+                          <TableCell>Trend</TableCell>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
+                      </TableHead>
+                      <TableBody>
+                        {analyticsData.topPerformingContent.map((content) => (
+                          <TableRow key={content.id}>
+                            <TableCell>
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                {getPlatformIcon(content.platform)}
+                                <Typography variant="body2">{content.title}</Typography>
+                              </Box>
+                            </TableCell>
+                            <TableCell align="right">{content.views.toLocaleString()}</TableCell>
+                            <TableCell align="right">{content.engagement}%</TableCell>
+                            <TableCell>
+                              {content.trend === 'up' ? (
+                                <TrendingUpIcon color="success" />
+                              ) : content.trend === 'down' ? (
+                                <TrendingDownIcon color="error" />
+                              ) : (
+                                <Chip label="Neutral" size="small" />
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                ) : (
+                  <Typography color="text.secondary" sx={{ p: 2 }}>
+                    No top performing content data available
+                  </Typography>
+                )}
               </Grid>
             </Grid>
           </TabPanel>
@@ -634,7 +777,7 @@ const AnalyticsPage: React.FC = () => {
                   <CardContent>
                     <Typography variant="h6" gutterBottom>Campaign ROI</Typography>
                     <Typography variant="h3" color="success.main">
-                      245%
+                      {analyticsData ? `${analyticsData.kpiSummary.roas.toFixed(0)}%` : '0%'}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       Average return on investment
@@ -643,15 +786,21 @@ const AnalyticsPage: React.FC = () => {
                     <Stack spacing={1}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Typography variant="body2">Total Spent</Typography>
-                        <Typography variant="body2" fontWeight="bold">$18,500</Typography>
+                        <Typography variant="body2" fontWeight="bold">
+                          ${analyticsData ? analyticsData.kpiSummary.totalSpend.toLocaleString() : '0'}
+                        </Typography>
                       </Box>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="body2">Total Revenue</Typography>
-                        <Typography variant="body2" fontWeight="bold">$45,325</Typography>
+                        <Typography variant="body2">Total Clicks</Typography>
+                        <Typography variant="body2" fontWeight="bold">
+                          {analyticsData ? analyticsData.kpiSummary.totalClicks.toLocaleString() : '0'}
+                        </Typography>
                       </Box>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="body2">Net Profit</Typography>
-                        <Typography variant="body2" fontWeight="bold" color="success.main">$26,825</Typography>
+                        <Typography variant="body2">Total Conversions</Typography>
+                        <Typography variant="body2" fontWeight="bold" color="success.main">
+                          {analyticsData ? analyticsData.kpiSummary.totalConversions.toLocaleString() : '0'}
+                        </Typography>
                       </Box>
                     </Stack>
                   </CardContent>
@@ -665,26 +814,22 @@ const AnalyticsPage: React.FC = () => {
                       <TableRow>
                         <TableCell>Campaign</TableCell>
                         <TableCell align="right">Spent</TableCell>
-                        <TableCell align="right">Revenue</TableCell>
-                        <TableCell align="right">ROI</TableCell>
+                        <TableCell align="right">Clicks</TableCell>
+                        <TableCell align="right">Conversions</TableCell>
                         <TableCell>Status</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {campaigns?.slice(0, 5).map((campaign: any) => {
                         const spent = Math.floor(Math.random() * 5000) + 1000;
-                        const revenue = Math.floor(spent * (Math.random() * 3 + 1));
-                        const roi = ((revenue - spent) / spent * 100).toFixed(0);
+                        const clicks = Math.floor(Math.random() * 1000) + 100;
+                        const conversions = Math.floor(Math.random() * 100) + 10;
                         return (
                           <TableRow key={campaign.id}>
                             <TableCell>{campaign.name}</TableCell>
                             <TableCell align="right">${spent.toLocaleString()}</TableCell>
-                            <TableCell align="right">${revenue.toLocaleString()}</TableCell>
-                            <TableCell align="right">
-                              <Typography color={parseInt(roi) > 0 ? 'success.main' : 'error.main'}>
-                                {roi}%
-                              </Typography>
-                            </TableCell>
+                            <TableCell align="right">{clicks.toLocaleString()}</TableCell>
+                            <TableCell align="right">{conversions.toLocaleString()}</TableCell>
                             <TableCell>
                               <Chip
                                 label={campaign.status}
