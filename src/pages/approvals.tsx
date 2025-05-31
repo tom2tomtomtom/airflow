@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Head from 'next/head';
 import {
   Box,
   Container,
@@ -13,6 +14,18 @@ import {
   Tab,
   Stack,
   Alert,
+  LinearProgress,
+  FormControl,
+  InputLabel,
+  Select,
+  TextField,
+  InputAdornment,
+  Badge,
+  Menu,
+  MenuItem,
+  Divider,
+  CircularProgress,
+  useTheme,
 } from '@mui/material';
 import {
   CheckCircle as ApproveIcon,
@@ -20,34 +33,197 @@ import {
   Speed as SpeedIcon,
   Notifications as NotificationIcon,
   Assignment as AssignmentIcon,
+  Warning as WarningIcon,
+  Schedule as ScheduleIcon,
+  FilterList as FilterIcon,
+  Search as SearchIcon,
+  Download as ExportIcon,
+  Refresh as RefreshIcon,
+  TrendingUp as TrendingUpIcon,
 } from '@mui/icons-material';
-import Head from 'next/head';
 import DashboardLayout from '@/components/DashboardLayout';
 import ApprovalWorkflow from '@/components/ApprovalWorkflow';
 import { useClient } from '@/contexts/ClientContext';
+import { useNotification } from '@/contexts/NotificationContext';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 interface ApprovalStats {
-  total: number;
-  pending: number;
-  approved: number;
-  rejected: number;
-  changes_requested: number;
-  overdue: number;
+  total_approvals: number;
+  status_distribution: Record<string, number>;
+  type_distribution: Record<string, number>;
+  priority_distribution: Record<string, number>;
+  overdue_count: number;
+  pending_count: number;
+  average_approval_time_hours: number;
+}
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index, ...other } = props;
+  return (
+    <div hidden={value !== index} {...other}>
+      {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
+    </div>
+  );
 }
 
 const ApprovalsPage: React.FC = () => {
+  const theme = useTheme();
   const { activeClient } = useClient();
-  const [tabValue, setTabValue] = useState('overview');
+  const { showNotification } = useNotification();
 
-  // Mock stats - in real implementation, these would come from the API
-  const stats: ApprovalStats = {
-    total: 24,
-    pending: 8,
-    approved: 12,
-    rejected: 2,
-    changes_requested: 2,
-    overdue: 3,
+  const [activeTab, setActiveTab] = useState(0);
+  const [stats, setStats] = useState<ApprovalStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [filterMenuAnchor, setFilterMenuAnchor] = useState<null | HTMLElement>(null);
+  const [filters, setFilters] = useState({
+    search: '',
+    priority: '',
+    approval_type: '',
+    status: '',
+  });
+
+  // Tab mapping for status filtering
+  const tabStatusMapping = ['pending', 'approved', 'changes_requested', 'rejected', ''];
+
+  // Fetch approval statistics
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (!activeClient) {
+        setStats(null);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/approvals?client_id=${activeClient.id}&limit=100`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setStats(data.statistics || {
+            total_approvals: 0,
+            status_distribution: {},
+            type_distribution: {},
+            priority_distribution: {},
+            overdue_count: 0,
+            pending_count: 0,
+            average_approval_time_hours: 0,
+          });
+        } else {
+          throw new Error('Failed to fetch approval statistics');
+        }
+      } catch (error) {
+        const message = getErrorMessage(error);
+        console.error('Error fetching approval stats:', error);
+        showNotification('Failed to load approval statistics', 'error');
+        // Set empty stats on error
+        setStats({
+          total_approvals: 0,
+          status_distribution: {},
+          type_distribution: {},
+          priority_distribution: {},
+          overdue_count: 0,
+          pending_count: 0,
+          average_approval_time_hours: 0,
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, [activeClient, showNotification]);
+
+  const handleExportApprovals = async () => {
+    if (!activeClient) return;
+
+    try {
+      showNotification('Export feature coming soon!', 'info');
+    } catch (error) {
+      const message = getErrorMessage(error);
+      showNotification('Failed to export approvals', 'error');
+    }
   };
+
+  const handleRefresh = () => {
+    if (activeClient) {
+      setLoading(true);
+      // Trigger refresh by clearing and refetching stats
+      setStats(null);
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'approved': return 'success';
+      case 'rejected': return 'error';
+      case 'changes_requested': return 'warning';
+      case 'pending': return 'info';
+      default: return 'default';
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'urgent': return 'error';
+      case 'high': return 'warning';
+      case 'normal': return 'info';
+      case 'low': return 'default';
+      default: return 'default';
+    }
+  };
+
+  const StatCard = ({ title, value, subtitle, icon, color, trend }: any) => (
+    <Card>
+      <CardContent>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <Box>
+            <Typography color="text.secondary" variant="body2" gutterBottom>
+              {title}
+            </Typography>
+            <Typography variant="h4" sx={{ mb: 1 }}>
+              {value}
+            </Typography>
+            {subtitle && (
+              <Typography variant="body2" color="text.secondary">
+                {subtitle}
+              </Typography>
+            )}
+            {trend && (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 1 }}>
+                <TrendingUpIcon fontSize="small" color="success" />
+                <Typography variant="caption" color="success.main">
+                  {trend}
+                </Typography>
+              </Box>
+            )}
+          </Box>
+          <Box
+            sx={{
+              backgroundColor: `${color}.light`,
+              borderRadius: 2,
+              p: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {React.cloneElement(icon, { sx: { color: `${color}.main` } })}
+          </Box>
+        </Box>
+      </CardContent>
+    </Card>
+  );
 
   if (!activeClient) {
     return (
@@ -78,92 +254,248 @@ const ApprovalsPage: React.FC = () => {
               Approval Workflow
             </Typography>
             <Typography variant="body1" color="text.secondary">
-              Manage content approvals for {activeClient.name}
+              Manage and track approval requests for {activeClient.name}
             </Typography>
           </Box>
 
-          {/* Quick Stats */}
-          <Grid container spacing={3} sx={{ mb: 4 }}>
-            <Grid item xs={12} sm={6} md={2}>
-              <Card>
-                <CardContent sx={{ textAlign: 'center' }}>
-                  <Typography variant="h4" color="primary">
-                    {stats.total}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Total Approvals
-                  </Typography>
-                </CardContent>
-              </Card>
+          {/* Action Bar */}
+          <Paper sx={{ p: 2, mb: 3 }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12} md={3}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  placeholder="Search approvals..."
+                  value={filters.search}
+                  onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} md={2}>
+                <FormControl fullWidth size="small">
+                  <InputLabel>Priority</InputLabel>
+                  <Select
+                    value={filters.priority}
+                    label="Priority"
+                    onChange={(e) => setFilters({ ...filters, priority: e.target.value })}
+                  >
+                    <MenuItem value="">All Priorities</MenuItem>
+                    <MenuItem value="urgent">Urgent</MenuItem>
+                    <MenuItem value="high">High</MenuItem>
+                    <MenuItem value="normal">Normal</MenuItem>
+                    <MenuItem value="low">Low</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} md={2}>
+                <FormControl fullWidth size="small">
+                  <InputLabel>Type</InputLabel>
+                  <Select
+                    value={filters.approval_type}
+                    label="Type"
+                    onChange={(e) => setFilters({ ...filters, approval_type: e.target.value })}
+                  >
+                    <MenuItem value="">All Types</MenuItem>
+                    <MenuItem value="content">Content</MenuItem>
+                    <MenuItem value="legal">Legal</MenuItem>
+                    <MenuItem value="brand">Brand</MenuItem>
+                    <MenuItem value="final">Final</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} md={5} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                <Button
+                  startIcon={<FilterIcon />}
+                  onClick={(e) => setFilterMenuAnchor(e.currentTarget)}
+                >
+                  Filters
+                </Button>
+                <Button startIcon={<ExportIcon />} onClick={handleExportApprovals}>
+                  Export
+                </Button>
+                <Button 
+                  variant="contained" 
+                  startIcon={<RefreshIcon />}
+                  onClick={handleRefresh}
+                  disabled={loading}
+                >
+                  Refresh
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item xs={12} sm={6} md={2}>
-              <Card>
-                <CardContent sx={{ textAlign: 'center' }}>
-                  <Typography variant="h4" color="warning.main">
-                    {stats.pending}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Pending Review
-                  </Typography>
-                </CardContent>
-              </Card>
+          </Paper>
+
+          {/* Statistics Cards */}
+          {loading ? (
+            <Grid container spacing={3} sx={{ mb: 3 }}>
+              {[1, 2, 3, 4].map((i) => (
+                <Grid item xs={12} sm={6} md={3} key={i}>
+                  <Card>
+                    <CardContent>
+                      <Box display="flex" justifyContent="center" alignItems="center" minHeight={120}>
+                        <CircularProgress size={24} />
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
             </Grid>
-            <Grid item xs={12} sm={6} md={2}>
-              <Card>
-                <CardContent sx={{ textAlign: 'center' }}>
-                  <Typography variant="h4" color="success.main">
-                    {stats.approved}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Approved
-                  </Typography>
-                </CardContent>
-              </Card>
+          ) : stats ? (
+            <Grid container spacing={3} sx={{ mb: 3 }}>
+              <Grid item xs={12} sm={6} md={3}>
+                <StatCard
+                  title="Total Approvals"
+                  value={stats.total_approvals}
+                  subtitle="All time"
+                  icon={<AssignmentIcon />}
+                  color="primary"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <StatCard
+                  title="Pending"
+                  value={stats.pending_count}
+                  subtitle={stats.overdue_count > 0 ? `${stats.overdue_count} overdue` : 'On track'}
+                  icon={<ScheduleIcon />}
+                  color="warning"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <StatCard
+                  title="Overdue"
+                  value={stats.overdue_count}
+                  subtitle="Needs attention"
+                  icon={<WarningIcon />}
+                  color="error"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <StatCard
+                  title="Avg. Time"
+                  value={`${stats.average_approval_time_hours.toFixed(1)}h`}
+                  subtitle="Processing time"
+                  icon={<SpeedIcon />}
+                  color="info"
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={12} sm={6} md={2}>
-              <Card>
-                <CardContent sx={{ textAlign: 'center' }}>
-                  <Typography variant="h4" color="info.main">
-                    {stats.changes_requested}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Changes Requested
-                  </Typography>
-                </CardContent>
-              </Card>
+          ) : null}
+
+          {/* Distribution Charts */}
+          {stats && stats.total_approvals > 0 && (
+            <Grid container spacing={3} sx={{ mb: 3 }}>
+              <Grid item xs={12} md={4}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                      Status Distribution
+                    </Typography>
+                    <Stack spacing={2}>
+                      {Object.entries(stats.status_distribution).map(([status, count]) => (
+                        <Box key={status}>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                            <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>
+                              {status.replace('_', ' ')}
+                            </Typography>
+                            <Typography variant="body2" fontWeight="bold">
+                              {count}
+                            </Typography>
+                          </Box>
+                          <LinearProgress
+                            variant="determinate"
+                            value={(count / stats.total_approvals) * 100}
+                            color={getStatusColor(status) as any}
+                            sx={{ height: 6, borderRadius: 3 }}
+                          />
+                        </Box>
+                      ))}
+                    </Stack>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                      Type Distribution
+                    </Typography>
+                    <Stack spacing={2}>
+                      {Object.entries(stats.type_distribution).map(([type, count]) => (
+                        <Box key={type}>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                            <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>
+                              {type}
+                            </Typography>
+                            <Typography variant="body2" fontWeight="bold">
+                              {count}
+                            </Typography>
+                          </Box>
+                          <LinearProgress
+                            variant="determinate"
+                            value={(count / stats.total_approvals) * 100}
+                            color="primary"
+                            sx={{ height: 6, borderRadius: 3 }}
+                          />
+                        </Box>
+                      ))}
+                    </Stack>
+                  </CardContent>
+                </Card>
+              </Grid>
+              <Grid item xs={12} md={4}>
+                <Card>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                      Priority Distribution
+                    </Typography>
+                    <Stack spacing={2}>
+                      {Object.entries(stats.priority_distribution).map(([priority, count]) => (
+                        <Box key={priority}>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                            <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>
+                              {priority}
+                            </Typography>
+                            <Typography variant="body2" fontWeight="bold">
+                              {count}
+                            </Typography>
+                          </Box>
+                          <LinearProgress
+                            variant="determinate"
+                            value={(count / stats.total_approvals) * 100}
+                            color={getPriorityColor(priority) as any}
+                            sx={{ height: 6, borderRadius: 3 }}
+                          />
+                        </Box>
+                      ))}
+                    </Stack>
+                  </CardContent>
+                </Card>
+              </Grid>
             </Grid>
-            <Grid item xs={12} sm={6} md={2}>
-              <Card>
-                <CardContent sx={{ textAlign: 'center' }}>
-                  <Typography variant="h4" color="error.main">
-                    {stats.rejected}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Rejected
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} sm={6} md={2}>
-              <Card>
-                <CardContent sx={{ textAlign: 'center' }}>
-                  <Typography variant="h4" color="error.main">
-                    {stats.overdue}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Overdue
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
+          )}
 
           {/* Alert for overdue items */}
-          {stats.overdue > 0 && (
-            <Alert severity="warning" sx={{ mb: 3 }}>
-              <Typography variant="body2">
-                <strong>{stats.overdue} approval(s) are overdue.</strong> Consider prioritizing these to avoid delays in your content pipeline.
-              </Typography>
+          {stats && stats.overdue_count > 0 && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography>
+                  You have {stats.overdue_count} overdue approval{stats.overdue_count > 1 ? 's' : ''} that need immediate attention.
+                </Typography>
+                <Button
+                  color="error"
+                  variant="outlined"
+                  size="small"
+                  onClick={() => setActiveTab(0)} // Switch to pending tab
+                >
+                  View Overdue
+                </Button>
+              </Box>
             </Alert>
           )}
 
@@ -221,107 +553,92 @@ const ApprovalsPage: React.FC = () => {
 
           {/* Main Content */}
           <Paper sx={{ mb: 4 }}>
-            <Tabs
-              value={tabValue}
-              onChange={(_, newValue) => setTabValue(newValue)}
-              sx={{ borderBottom: 1, borderColor: 'divider' }}
-            >
-              <Tab label="Overview" value="overview" />
-              <Tab label="My Reviews" value="my-reviews" />
-              <Tab label="Team Reviews" value="team-reviews" />
-              <Tab label="Settings" value="settings" />
-            </Tabs>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+              <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)}>
+                <Tab 
+                  label={
+                    <Badge badgeContent={stats?.pending_count || 0} color="error">
+                      Pending
+                    </Badge>
+                  } 
+                />
+                <Tab label="Approved" />
+                <Tab label="Changes Requested" />
+                <Tab label="Rejected" />
+                <Tab label="All" />
+              </Tabs>
+            </Box>
 
             <Box sx={{ p: 3 }}>
-              {tabValue === 'overview' && (
+              <TabPanel value={activeTab} index={0}>
                 <ApprovalWorkflow
                   maxHeight={600}
                   showHeader={false}
                   clientId={activeClient.id}
                   showActions={true}
                 />
-              )}
+              </TabPanel>
 
-              {tabValue === 'my-reviews' && (
+              <TabPanel value={activeTab} index={1}>
+                <ApprovalWorkflow
+                  maxHeight={600}
+                  showHeader={false}
+                  clientId={activeClient.id}
+                  showActions={false}
+                />
+              </TabPanel>
+
+              <TabPanel value={activeTab} index={2}>
                 <ApprovalWorkflow
                   maxHeight={600}
                   showHeader={false}
                   clientId={activeClient.id}
                   showActions={true}
                 />
-              )}
+              </TabPanel>
 
-              {tabValue === 'team-reviews' && (
-                <Box sx={{ textAlign: 'center', py: 8 }}>
-                  <GroupIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-                  <Typography variant="h6" color="text.secondary" gutterBottom>
-                    Team Reviews
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    View and manage approvals assigned to your team members
-                  </Typography>
-                </Box>
-              )}
+              <TabPanel value={activeTab} index={3}>
+                <ApprovalWorkflow
+                  maxHeight={600}
+                  showHeader={false}
+                  clientId={activeClient.id}
+                  showActions={false}
+                />
+              </TabPanel>
 
-              {tabValue === 'settings' && (
-                <Box sx={{ maxWidth: 600 }}>
-                  <Typography variant="h6" gutterBottom>
-                    Approval Workflow Settings
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" paragraph>
-                    Configure how approvals work for your team and projects.
-                  </Typography>
-
-                  <Stack spacing={3}>
-                    <Card variant="outlined">
-                      <CardContent>
-                        <Typography variant="subtitle1" gutterBottom>
-                          Default Approval Types
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" paragraph>
-                          Set which approval types are required for different content types.
-                        </Typography>
-                        <Stack direction="row" spacing={1}>
-                          <Chip label="Content Review" size="small" />
-                          <Chip label="Legal Review" size="small" />
-                          <Chip label="Brand Review" size="small" />
-                          <Chip label="Final Approval" size="small" />
-                        </Stack>
-                      </CardContent>
-                    </Card>
-
-                    <Card variant="outlined">
-                      <CardContent>
-                        <Typography variant="subtitle1" gutterBottom>
-                          Notification Settings
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" paragraph>
-                          Configure when and how you receive approval notifications.
-                        </Typography>
-                        <Button variant="outlined">
-                          Manage Notifications
-                        </Button>
-                      </CardContent>
-                    </Card>
-
-                    <Card variant="outlined">
-                      <CardContent>
-                        <Typography variant="subtitle1" gutterBottom>
-                          Team Permissions
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" paragraph>
-                          Set who can approve different types of content.
-                        </Typography>
-                        <Button variant="outlined">
-                          Manage Permissions
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </Stack>
-                </Box>
-              )}
+              <TabPanel value={activeTab} index={4}>
+                <ApprovalWorkflow
+                  maxHeight={600}
+                  showHeader={false}
+                  clientId={activeClient.id}
+                  showActions={true}
+                />
+              </TabPanel>
             </Box>
           </Paper>
+
+          {/* Filter Menu */}
+          <Menu
+            anchorEl={filterMenuAnchor}
+            open={Boolean(filterMenuAnchor)}
+            onClose={() => setFilterMenuAnchor(null)}
+          >
+            <MenuItem onClick={() => setFilters({ ...filters, status: 'pending' })}>
+              Show Overdue Only
+            </MenuItem>
+            <MenuItem onClick={() => setFilters({ ...filters, priority: 'urgent' })}>
+              Show Urgent Priority
+            </MenuItem>
+            <MenuItem onClick={() => setFilters({ ...filters, approval_type: 'final' })}>
+              Show Final Approvals
+            </MenuItem>
+            <Divider />
+            <MenuItem 
+              onClick={() => setFilters({ search: '', priority: '', approval_type: '', status: '' })}
+            >
+              Clear All Filters
+            </MenuItem>
+          </Menu>
         </Container>
       </DashboardLayout>
     </>
