@@ -44,8 +44,9 @@ const LoginPage: React.FC = () => {
       // Use the AuthContext login function
       await login(email, password);
       
-      // Redirect to dashboard on successful login
-      router.push('/dashboard');
+      // Redirect to intended page after successful login
+      const from = router.query.from as string;
+      router.push(from || '/dashboard');
     } catch (err) {
       setError('Invalid email or password');
     } finally {

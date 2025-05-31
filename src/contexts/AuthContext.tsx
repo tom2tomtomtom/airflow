@@ -109,9 +109,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
         setUser(data.user);
         
-        // Redirect to dashboard or the intended page
-        const from = router.query.from as string;
-        router.push(from || '/dashboard');
+        // Don't redirect here - let the login page handle it to avoid middleware loops
       } else {
         throw new Error('Invalid response from server');
       }
