@@ -142,9 +142,10 @@ export default async function handler(
     const isProduction = process.env.NODE_ENV === 'production';
     const isHttps = req.headers.host?.includes('netlify.app') || req.headers.host?.includes('vercel.app') || req.headers['x-forwarded-proto'] === 'https';
     
-    // For production HTTPS sites, we need Secure flag and proper domain
+    // For production HTTPS sites, we need Secure flag
+    // Use SameSite=Lax for better compatibility with same-origin requests
     const cookieSettings = isHttps
-      ? `HttpOnly; Secure; SameSite=None; Max-Age=${maxAge}; Path=/`
+      ? `HttpOnly; Secure; SameSite=Lax; Max-Age=${maxAge}; Path=/`
       : `HttpOnly; SameSite=Lax; Max-Age=${maxAge}; Path=/`;
       
     res.setHeader('Set-Cookie', [
