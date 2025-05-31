@@ -33,6 +33,7 @@ import DashboardLayout from '@/components/DashboardLayout';
 import { ActivityFeed } from '@/components/ActivityFeed';
 import ExecutionMonitor from '@/components/ExecutionMonitor';
 import ApprovalWorkflow from '@/components/ApprovalWorkflow';
+import RealTimeDashboard from '@/components/realtime/RealTimeDashboard';
 import { useAuth } from '@/contexts/AuthContext';
 import { useClient } from '@/contexts/ClientContext';
 
@@ -358,7 +359,16 @@ const DashboardPage = () => {
           ))}
         </Grid>
 
+        {/* Real-Time Dashboard Section */}
+        <Typography variant="h5" gutterBottom mb={2}>
+          Real-Time Operations
+        </Typography>
+        <RealTimeDashboard />
+
         {/* Enhanced Dashboard Widgets */}
+        <Typography variant="h5" gutterBottom mt={4} mb={2}>
+          Dashboard Overview
+        </Typography>
         <Grid container spacing={3}>
           {/* Execution Monitor */}
           <Grid item xs={12} lg={4}>

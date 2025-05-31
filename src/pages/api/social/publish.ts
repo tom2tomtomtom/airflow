@@ -12,6 +12,7 @@ interface PublishRequest {
     link?: string;
   };
   scheduledAt?: string;
+  clientId: string;
 }
 
 interface PublishResult {

@@ -32,11 +32,13 @@ import {
   Assignment as ApprovalsIcon,
   Analytics as AnalyticsIcon,
   Webhook as WebhookIcon,
+  Share as SocialIcon,
 } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import ClientSelector from './ClientSelector';
 import UserMenu from './UserMenu';
-import NotificationCenter from './NotificationCenter';
+import NotificationCenter from './realtime/NotificationCenter';
+import LiveCollaboration from './realtime/LiveCollaboration';
 
 const drawerWidth = 240;
 
@@ -53,6 +55,7 @@ const navigation = [
   { divider: true },
   { name: 'Execute', href: '/execute', icon: ExecuteIcon },
   { name: 'Approvals', href: '/approvals', icon: ApprovalsIcon },
+  { name: 'Social Publishing', href: '/social-publishing', icon: SocialIcon },
   { name: 'Analytics', href: '/analytics', icon: AnalyticsIcon },
   { name: 'Webhooks', href: '/webhooks', icon: WebhookIcon },
   { name: 'Preview', href: '/preview', icon: PreviewIcon },
@@ -171,6 +174,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
           </Typography>
           <Box sx={{ ml: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
             <ClientSelector variant="chip" />
+            <LiveCollaboration compact />
             <NotificationCenter />
             <UserMenu />
           </Box>
