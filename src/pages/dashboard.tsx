@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import {
@@ -13,6 +13,8 @@ import {
   CardActions,
   IconButton,
   Chip,
+  CircularProgress,
+  Alert,
 } from '@mui/material';
 import {
   Image as ImageIcon,
@@ -20,8 +22,12 @@ import {
   Campaign as CampaignIcon,
   AutoAwesome as AIIcon,
   TrendingUp,
+  TrendingDown,
+  Remove as TrendingNeutral,
   ArrowForward,
   Add,
+  Business as BusinessIcon,
+  Approval as ApprovalIcon,
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
 import { ActivityFeed } from '@/components/ActivityFeed';
@@ -90,37 +96,105 @@ const DashboardPage = () => {
     },
   ];
 
-  // Mock statistics for demo
-  const stats: StatCard[] = [
-    {
-      title: 'Total Assets',
-      value: 127,
-      change: '+12%',
-      trend: 'up',
-      icon: <ImageIcon />,
-    },
-    {
-      title: 'AI Generated',
-      value: 48,
-      change: '+25%',
-      trend: 'up',
-      icon: <AIIcon />,
-    },
-    {
-      title: 'Active Campaigns',
-      value: 5,
-      change: '0%',
-      trend: 'neutral',
-      icon: <CampaignIcon />,
-    },
-    {
-      title: 'Templates Used',
-      value: 23,
-      change: '+8%',
-      trend: 'up',
-      icon: <DescriptionIcon />,
-    },
-  ];
+  const [dashboardStats, setDashboardStats] = useState<any>(null);
+  const [statsLoading, setStatsLoading] = useState(true);
+  const [statsError, setStatsError] = useState<string | null>(null);
+
+  // Fetch dashboard statistics
+  useEffect(() => {
+    const fetchDashboardStats = async () => {
+      if (!isAuthenticated || loading) return;
+
+      try {
+        setStatsLoading(true);
+        const response = await fetch('/api/dashboard/stats', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch dashboard stats');
+        }
+
+        const data = await response.json();
+        if (data.success) {
+          setDashboardStats(data.data);
+        } else {
+          throw new Error(data.error || 'Failed to load stats');
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+        setStatsError(error instanceof Error ? error.message : 'Failed to load stats');
+      } finally {
+        setStatsLoading(false);
+      }
+    };
+
+    fetchDashboardStats();
+  }, [isAuthenticated, loading]);
+
+  const getStatCards = (): StatCard[] => {
+    if (!dashboardStats) return [];
+
+    return [
+      {
+        title: 'Total Assets',
+        value: dashboardStats.totalAssets.count,
+        change: dashboardStats.totalAssets.change,
+        trend: dashboardStats.totalAssets.trend,
+        icon: <ImageIcon />,
+      },
+      {
+        title: 'AI Generated',
+        value: dashboardStats.aiGenerated.count,
+        change: dashboardStats.aiGenerated.change,
+        trend: dashboardStats.aiGenerated.trend,
+        icon: <AIIcon />,
+      },
+      {
+        title: 'Active Campaigns',
+        value: dashboardStats.activeCampaigns.count,
+        change: dashboardStats.activeCampaigns.change,
+        trend: dashboardStats.activeCampaigns.trend,
+        icon: <CampaignIcon />,
+      },
+      {
+        title: 'Templates Used',
+        value: dashboardStats.templatesUsed.count,
+        change: dashboardStats.templatesUsed.change,
+        trend: dashboardStats.templatesUsed.trend,
+        icon: <DescriptionIcon />,
+      },
+      {
+        title: 'Total Clients',
+        value: dashboardStats.totalClients.count,
+        change: dashboardStats.totalClients.change,
+        trend: dashboardStats.totalClients.trend,
+        icon: <BusinessIcon />,
+      },
+      {
+        title: 'Pending Approvals',
+        value: dashboardStats.pendingApprovals.count,
+        change: dashboardStats.pendingApprovals.change,
+        trend: dashboardStats.pendingApprovals.trend,
+        icon: <ApprovalIcon />,
+      },
+    ];
+  };
+
+  const getTrendIcon = (trend: string) => {
+    switch (trend) {
+      case 'up':
+        return <TrendingUp fontSize="small" sx={{ color: 'success.main' }} />;
+      case 'down':
+        return <TrendingDown fontSize="small" sx={{ color: 'error.main' }} />;
+      default:
+        return <TrendingNeutral fontSize="small" sx={{ color: 'text.secondary' }} />;
+    }
+  };
+
+  const stats = getStatCards();
 
   // Show loading or redirect if not authenticated
   if (loading) {
@@ -161,38 +235,54 @@ const DashboardPage = () => {
           </Typography>
         </Box>
 
+        {/* Error State */}
+        {statsError && (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {statsError}
+          </Alert>
+        )}
+
         {/* Stats Grid */}
         <Grid container spacing={3} mb={4}>
-          {stats.map((stat, index) => (
-            <Grid item xs={12} sm={6} md={3} key={index}>
-              <Card>
-                <CardContent>
-                  <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-                    <Box>
-                      <Typography color="text.secondary" gutterBottom variant="body2">
-                        {stat.title}
-                      </Typography>
-                      <Typography variant="h4" component="div">
+          {statsLoading ? (
+            // Loading skeletons
+            [...Array(6)].map((_, index) => (
+              <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
+                <Card>
+                  <CardContent>
+                    <Box display="flex" justifyContent="center" alignItems="center" minHeight={100}>
+                      <CircularProgress size={24} />
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))
+          ) : (
+            stats.map((stat, index) => (
+              <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
+                <Card>
+                  <CardContent>
+                    <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                      <Box>
+                        <Typography color="text.secondary" gutterBottom variant="body2">
+                          {stat.title}
+                        </Typography>
+                        <Typography variant="h4" component="div">
                         {stat.value}
                       </Typography>
-                      <Box display="flex" alignItems="center" mt={1}>
-                        <TrendingUp
-                          sx={{
-                            fontSize: 16,
-                            color: stat.trend === 'up' ? 'success.main' : 'text.secondary',
-                            transform: stat.trend === 'down' ? 'rotate(180deg)' : 'none',
-                          }}
-                        />
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: stat.trend === 'up' ? 'success.main' : 'text.secondary',
-                            ml: 0.5,
-                          }}
-                        >
-                          {stat.change}
-                        </Typography>
-                      </Box>
+                        <Box display="flex" alignItems="center" mt={1}>
+                          {getTrendIcon(stat.trend)}
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              color: stat.trend === 'up' ? 'success.main' : 
+                                     stat.trend === 'down' ? 'error.main' : 'text.secondary',
+                              ml: 0.5,
+                            }}
+                          >
+                            {stat.change}
+                          </Typography>
+                        </Box>
                     </Box>
                     <Box
                       sx={{

@@ -1,186 +1,266 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { supabase, getUserFromToken, userHasClientAccess } from '@/lib/supabase';
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import type { Client } from '@/types/models';
 
-// Mock clients data for testing
-const mockClients: Client[] = [
-  {
-    id: 'client_1',
-    name: 'Demo Agency',
-    industry: 'Marketing',
-    logo: '',
-    primaryColor: '#2196F3',
-    secondaryColor: '#FF9800',
-    description: 'A demo agency for testing purposes',
-    website: 'https://demo-agency.com',
-    socialMedia: {
-      facebook: 'https://facebook.com/demo-agency',
-      twitter: 'https://twitter.com/demo-agency',
-      instagram: 'https://instagram.com/demo-agency',
-    },
-    contacts: [
-      {
-        id: 'contact_1',
-        name: 'John Doe',
-        email: 'john@demo-agency.com',
-        role: 'Account Manager',
-        phone: '+1-555-0123',
-        isActive: true,
-      },
-    ],
-    brandGuidelines: {
-      voiceTone: 'Professional and friendly',
-      targetAudience: 'Small to medium businesses',
-      keyMessages: ['Innovation', 'Quality', 'Customer-first'],
-    },
-    tenantId: 'tenant-1',
-    isActive: true,
-    dateCreated: '2023-01-01T00:00:00Z',
-    lastModified: '2024-01-01T00:00:00Z',
-    createdBy: 'user-1',
-    version: 1,
-    metadata: {},
-  },
-  {
-    id: 'client_2',
-    name: 'TechCorp Solutions',
-    industry: 'Technology',
-    logo: '',
-    primaryColor: '#4CAF50',
-    secondaryColor: '#FFC107',
-    description: 'A technology solutions company',
-    website: 'https://techcorp.com',
-    socialMedia: {
-      linkedin: 'https://linkedin.com/company/techcorp',
-      twitter: 'https://twitter.com/techcorp',
-    },
-    contacts: [
-      {
-        id: 'contact_2',
-        name: 'Jane Smith',
-        email: 'jane@techcorp.com',
-        role: 'Marketing Director',
-        phone: '+1-555-0456',
-        isActive: true,
-      },
-    ],
-    brandGuidelines: {
-      voiceTone: 'Technical but approachable',
-      targetAudience: 'Enterprise clients',
-      keyMessages: ['Innovation', 'Reliability', 'Scale'],
-    },
-    tenantId: 'tenant-1',
-    isActive: true,
-    dateCreated: '2023-02-01T00:00:00Z',
-    lastModified: '2024-02-01T00:00:00Z',
-    createdBy: 'user-1',
-    version: 1,
-    metadata: {},
-  },
-  {
-    id: 'client_3',
-    name: 'Retail Plus',
-    industry: 'Retail',
-    logo: '',
-    primaryColor: '#E91E63',
-    secondaryColor: '#00BCD4',
-    description: 'A retail chain focused on customer experience',
-    website: 'https://retailplus.com',
-    socialMedia: {
-      facebook: 'https://facebook.com/retailplus',
-      instagram: 'https://instagram.com/retailplus',
-    },
-    contacts: [
-      {
-        id: 'contact_3',
-        name: 'Mike Johnson',
-        email: 'mike@retailplus.com',
-        role: 'Brand Manager',
-        phone: '+1-555-0789',
-        isActive: true,
-      },
-    ],
-    brandGuidelines: {
-      voiceTone: 'Energetic and customer-focused',
-      targetAudience: 'Everyday consumers',
-      keyMessages: ['Value', 'Quality', 'Experience'],
-    },
-    tenantId: 'tenant-1',
-    isActive: true,
-    dateCreated: '2023-03-01T00:00:00Z',
-    lastModified: '2024-03-01T00:00:00Z',
-    createdBy: 'user-1',
-    version: 1,
-    metadata: {},
-  },
-];
+type ResponseData = {
+  success: boolean;
+  message?: string;
+  clients?: Client[];
+  client?: Client;
+  pagination?: {
+    total: number;
+    limit: number;
+    offset: number;
+    hasMore: boolean;
+  };
+};
 
-async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>): Promise<void> {
+  const { method } = req;
   const user = (req as any).user;
+
   try {
-    if (req.method === 'GET') {
-      // Return all clients
-      return res.status(200).json({
-        success: true,
-        clients: mockClients,
-        total: mockClients.length,
-      });
+    switch (method) {
+      case 'GET':
+        return handleGet(req, res, user);
+      case 'POST':
+        return handlePost(req, res, user);
+      default:
+        return res.status(405).json({ 
+          success: false, 
+          message: 'Method not allowed' 
+        });
     }
-
-    if (req.method === 'POST') {
-      // Create a new client
-      const clientData = req.body;
-      const newClient: Client = {
-        id: 'client_' + Math.random().toString(36).substring(2, 9),
-        name: clientData.name || 'New Client',
-        industry: clientData.industry || 'Other',
-        logo: clientData.logo || '',
-        primaryColor: clientData.primaryColor || '#2196F3',
-        secondaryColor: clientData.secondaryColor || '#FF9800',
-        description: clientData.description || '',
-        website: clientData.website || '',
-        socialMedia: clientData.socialMedia || {},
-        contacts: clientData.contacts || [],
-        brandGuidelines: clientData.brandGuidelines || {
-          voiceTone: '',
-          targetAudience: '',
-          keyMessages: [],
-        },
-        tenantId: 'tenant-1',
-        isActive: true,
-        dateCreated: new Date().toISOString(),
-        lastModified: new Date().toISOString(),
-        createdBy: 'user-1',
-        version: 1,
-        metadata: {},
-      };
-
-      // Add to mock data (in a real app, this would persist to database)
-      mockClients.push(newClient);
-
-      return res.status(201).json({
-        success: true,
-        client: newClient,
-        message: 'Client created successfully',
-      });
-    }
-
-    // Method not allowed
-    res.setHeader('Allow', ['GET', 'POST']);
-    return res.status(405).json({
-      success: false,
-      message: `Method ${req.method} not allowed`,
-    });
   } catch (error) {
     const message = getErrorMessage(error);
-    console.error('API Error:', error);
-    return res.status(500).json({
+    console.error('Clients API error:', error);
+    return res.status(500).json({ 
       success: false,
       message: 'Internal server error',
     });
+  }
+}
+
+async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>, user: any): Promise<void> {
+  const { 
+    search,
+    industry,
+    limit = 50, 
+    offset = 0,
+    sort_by = 'name',
+    sort_order = 'asc',
+    include_stats = false,
+  } = req.query;
+
+  try {
+    // Get all clients the user has access to
+    const { data: userClients, error: userError } = await supabase
+      .from('user_clients')
+      .select('client_id')
+      .eq('user_id', user.id);
+
+    if (userError) {
+      console.error('Error fetching user clients:', userError);
+      throw userError;
+    }
+
+    if (!userClients || userClients.length === 0) {
+      return res.json({
+        success: true,
+        clients: [],
+        pagination: {
+          total: 0,
+          limit: parseInt(limit as string),
+          offset: parseInt(offset as string),
+          hasMore: false
+        }
+      });
+    }
+
+    const clientIds = userClients.map(uc => uc.client_id);
+
+    // Build query for clients
+    let query = supabase
+      .from('clients')
+      .select(`
+        *,
+        ${include_stats === 'true' ? `
+          campaigns(count),
+          assets(count),
+          matrices(count)
+        ` : ''}
+      `)
+      .in('id', clientIds);
+
+    // Apply search filter
+    if (search && typeof search === 'string') {
+      query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%,industry.ilike.%${search}%`);
+    }
+
+    // Apply industry filter
+    if (industry && typeof industry === 'string') {
+      query = query.eq('industry', industry);
+    }
+
+    // Apply sorting
+    const validSortFields = ['name', 'industry', 'created_at', 'updated_at'];
+    const sortField = validSortFields.includes(sort_by as string) ? sort_by as string : 'name';
+    const ascending = sort_order === 'asc';
+    query = query.order(sortField, { ascending });
+
+    // Apply pagination
+    const limitNum = Math.min(Number(limit) || 50, 100);
+    const offsetNum = Number(offset) || 0;
+    query = query.range(offsetNum, offsetNum + limitNum - 1);
+
+    const { data: clients, error } = await query;
+
+    if (error) {
+      console.error('Error fetching clients:', error);
+      throw error;
+    }
+
+    // Transform clients to match expected format
+    const transformedClients = clients?.map(client => ({
+      id: client.id,
+      name: client.name,
+      industry: client.industry,
+      description: client.description,
+      website: client.website,
+      logo: client.logo,
+      primaryColor: client.primary_color || client.primaryColor,
+      secondaryColor: client.secondary_color || client.secondaryColor,
+      socialMedia: client.social_media || {},
+      contacts: client.contacts || [],
+      brandGuidelines: client.brand_guidelines || {},
+      tenantId: client.tenant_id,
+      isActive: client.is_active !== false,
+      dateCreated: client.created_at,
+      lastModified: client.updated_at,
+      // Include stats if requested
+      ...(include_stats === 'true' && {
+        stats: {
+          campaignCount: Array.isArray(client.campaigns) ? client.campaigns.length : 0,
+          assetCount: Array.isArray(client.assets) ? client.assets.length : 0,
+          matrixCount: Array.isArray(client.matrices) ? client.matrices.length : 0,
+        }
+      })
+    })) || [];
+
+    return res.json({
+      success: true,
+      clients: transformedClients,
+      pagination: {
+        total: clients?.length || 0,
+        limit: limitNum,
+        offset: offsetNum,
+        hasMore: (clients?.length || 0) === limitNum
+      }
+    });
+
+  } catch (error) {
+    const message = getErrorMessage(error);
+    console.error('Error in handleGet:', error);
+    throw error;
+  }
+}
+
+async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData>, user: any): Promise<void> {
+  try {
+    const {
+      name,
+      industry,
+      description,
+      website,
+      logo,
+      primaryColor,
+      secondaryColor,
+      socialMedia,
+      contacts,
+      brandGuidelines
+    } = req.body;
+
+    // Basic validation
+    if (!name || !industry) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name and industry are required'
+      });
+    }
+
+    // Create client in Supabase
+    const { data: client, error } = await supabase
+      .from('clients')
+      .insert({
+        name,
+        industry,
+        description: description || null,
+        website: website || null,
+        logo: logo || null,
+        primary_color: primaryColor || '#1976d2',
+        secondary_color: secondaryColor || '#dc004e',
+        social_media: socialMedia || {},
+        contacts: contacts || [],
+        brand_guidelines: brandGuidelines || {},
+        tenant_id: 'tenant-1', // Default tenant
+        is_active: true,
+        created_by: user.id,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error creating client:', error);
+      throw error;
+    }
+
+    // Grant user access to the new client
+    const { error: accessError } = await supabase
+      .from('user_clients')
+      .insert({
+        user_id: user.id,
+        client_id: client.id,
+        role: 'admin',
+        granted_by: user.id,
+      });
+
+    if (accessError) {
+      console.error('Error granting client access:', accessError);
+      // Don't fail the whole operation, just log the error
+    }
+
+    // Transform response
+    const transformedClient: Client = {
+      id: client.id,
+      name: client.name,
+      industry: client.industry,
+      description: client.description,
+      website: client.website,
+      logo: client.logo,
+      primaryColor: client.primary_color,
+      secondaryColor: client.secondary_color,
+      socialMedia: client.social_media || {},
+      contacts: client.contacts || [],
+      brandGuidelines: client.brand_guidelines || {},
+      tenantId: client.tenant_id,
+      isActive: client.is_active,
+      dateCreated: client.created_at,
+      lastModified: client.updated_at,
+    };
+
+    return res.status(201).json({
+      success: true,
+      client: transformedClient,
+    });
+
+  } catch (error) {
+    const message = getErrorMessage(error);
+    console.error('Error in handlePost:', error);
+    throw error;
   }
 }
 
