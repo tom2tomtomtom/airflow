@@ -1,7 +1,7 @@
 // API Integration Test for AIrWAVE Platform
 // Tests core API functionality and integrations
 
-const BASE_URL = 'https://airwave2.netlify.app';
+const BASE_URL = 'https://airwave-complete.netlify.app';
 
 const creatomateConfig = {
   templateId: '374ee9e3-de75-4feb-bfae-5c5e11d88d80',

@@ -2,7 +2,7 @@ import { chromium, FullConfig } from '@playwright/test';
 
 async function globalSetup(config: FullConfig) {
   console.log('🚀 Starting AIrWAVE Comprehensive Test Suite');
-  console.log('📍 Target URL: https://airwave2.netlify.app');
+  console.log('📍 Target URL: https://airwave-complete.netlify.app');
   console.log('⏱️  Test Timeout: 60 seconds per test');
   console.log('🔄 Retries: 1 (or 2 on CI)');
   console.log('');
@@ -13,7 +13,7 @@ async function globalSetup(config: FullConfig) {
     const page = await browser.newPage();
     
     console.log('🌐 Testing connectivity to AIrWAVE platform...');
-    const response = await page.goto('https://airwave2.netlify.app', { 
+    const response = await page.goto('https://airwave-complete.netlify.app', { 
       waitUntil: 'networkidle',
       timeout: 30000 
     });
@@ -28,7 +28,7 @@ async function globalSetup(config: FullConfig) {
     
     // Test authentication endpoint
     try {
-      await page.goto('https://airwave2.netlify.app/login');
+      await page.goto('https://airwave-complete.netlify.app/login');
       const loginPageLoaded = await page.waitForSelector('h1, h3', { timeout: 10000 });
       if (loginPageLoaded) {
         console.log('✅ Login page is accessible');

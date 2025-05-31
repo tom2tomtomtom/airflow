@@ -49,55 +49,95 @@ export default async function handler(
       });
     }
 
-    // Get user profile from database
-    const { data: userProfile, error: profileError } = await supabase
-      .from('users')
-      .select('id, email, name, role')
+    // Try to get user profile from database
+    // Check if profile exists - try both schema formats
+    let userProfile: any = null;
+    let profileError: any = null;
+
+    // First try the current schema format (first_name, last_name)
+    const { data: profileData1, error: error1 } = await supabase
+      .from('profiles')
+      .select('*')
       .eq('id', authData.user.id)
       .single();
 
-    if (profileError) {
-      console.error('Error fetching user profile:', profileError);
-      // If profile doesn't exist, create it
+    if (!error1 && profileData1) {
+      userProfile = profileData1;
+    } else {
+      profileError = error1;
+    }
+
+    // If profile doesn't exist, create it with the current schema
+    if (profileError && profileError.code === 'PGRST116') {
+      console.log('Creating new user profile...');
+      
+      // Determine the correct schema to use based on existing table structure
+      // Try to create with the detected schema
+      const userName = authData.user.user_metadata?.name || authData.user.email?.split('@')[0] || 'User';
+      const nameParts = userName.split(' ');
+      
       const { data: newProfile, error: createError } = await supabase
-        .from('users')
+        .from('profiles')
         .insert({
           id: authData.user.id,
-          email: authData.user.email || email,
-          name: authData.user.user_metadata?.name || authData.user.email?.split('@')[0] || 'User',
+          first_name: nameParts[0] || userName,
+          last_name: nameParts.slice(1).join(' ') || '',
           role: 'user',
           created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         })
         .select()
         .single();
 
       if (createError) {
-        console.error('Error creating user profile:', createError);
-        return res.status(500).json({
-          success: false,
-          error: 'Failed to create user profile'
-        });
-      }
+        // Try alternative schema format if the first one fails
+        console.log('First profile creation failed, trying alternative schema...', createError);
+        
+        const { data: altProfile, error: altError } = await supabase
+          .from('profiles')
+          .insert({
+            id: authData.user.id,
+            email: authData.user.email || email,
+            full_name: userName,
+            role: 'user',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+          .select()
+          .single();
 
-      return res.status(200).json({
-        success: true,
-        user: {
-          id: newProfile.id,
-          email: newProfile.email,
-          name: newProfile.name,
-          role: newProfile.role,
-          token: authData.session?.access_token || '',
-        },
+        if (altError) {
+          console.error('Error creating user profile with both schemas:', altError);
+          return res.status(500).json({
+            success: false,
+            error: 'Failed to create user profile'
+          });
+        }
+        
+        userProfile = altProfile;
+      } else {
+        userProfile = newProfile;
+      }
+    } else if (profileError) {
+      console.error('Error fetching user profile:', profileError);
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to fetch user profile'
       });
     }
+
+    // Create response with normalized user data
+    const userName = userProfile.full_name || 
+                    `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim() ||
+                    authData.user.email?.split('@')[0] || 'User';
 
     return res.status(200).json({
       success: true,
       user: {
         id: userProfile.id,
-        email: userProfile.email,
-        name: userProfile.name,
-        role: userProfile.role,
+        email: authData.user.email || email,
+        name: userName,
+        role: userProfile.role || 'user',
         token: authData.session?.access_token || '',
       },
     });

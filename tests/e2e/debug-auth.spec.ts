@@ -1,6 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 
-const BASE_URL = 'https://airwave2.netlify.app';
+const BASE_URL = 'https://airwave-complete.netlify.app';
 const TEST_CREDENTIALS = {
   email: 'test@airwave.app',
   password: 'TestUser123!'

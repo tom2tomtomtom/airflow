@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase, getUserFromToken, userHasClientAccess } from '@/lib/supabase';
-import { isDemo } from '@/lib/env';
 
 export interface Asset {
   id: string;
@@ -29,73 +28,6 @@ type ResponseData = {
   asset?: Asset;
 };
 
-// Mock data for demo mode
-const mockAssets: Asset[] = [
-  {
-    id: 'asset_1',
-    name: 'Product Image 1',
-    type: 'image',
-    url: 'https://via.placeholder.com/800x600',
-    thumbnailUrl: 'https://via.placeholder.com/200x150',
-    description: 'Main product image for the summer collection',
-    tags: ['product', 'summer', 'featured'],
-    dateCreated: '2023-05-01',
-    clientId: 'demo-client-1',
-    userId: 'demo-user',
-    favorite: true,
-  },
-  {
-    id: 'asset_2',
-    name: 'Product Video',
-    type: 'video',
-    url: 'https://example.com/videos/product-demo.mp4',
-    thumbnailUrl: 'https://via.placeholder.com/200x150',
-    description: 'Product demonstration video',
-    tags: ['product', 'demo', 'video'],
-    dateCreated: '2023-04-28',
-    clientId: 'demo-client-1',
-    userId: 'demo-user',
-    favorite: false,
-  },
-  {
-    id: 'asset_3',
-    name: 'Marketing Copy',
-    type: 'text',
-    url: 'https://example.com/text/marketing-copy.txt',
-    description: 'Marketing copy for summer campaign',
-    tags: ['copy', 'marketing', 'summer'],
-    dateCreated: '2023-04-25',
-    clientId: 'demo-client-1',
-    userId: 'demo-user',
-    favorite: false,
-  },
-  {
-    id: 'asset_4',
-    name: 'Brand Voiceover',
-    type: 'voice',
-    url: 'https://example.com/audio/brand-voiceover.mp3',
-    description: 'Official brand voiceover for commercials',
-    tags: ['voice', 'brand', 'commercial'],
-    dateCreated: '2023-04-20',
-    clientId: 'demo-client-1',
-    userId: 'demo-user',
-    favorite: true,
-  },
-  {
-    id: 'asset_5',
-    name: 'Logo Image',
-    type: 'image',
-    url: 'https://via.placeholder.com/500x500',
-    thumbnailUrl: 'https://via.placeholder.com/100x100',
-    description: 'Company logo in high resolution',
-    tags: ['logo', 'brand', 'identity'],
-    dateCreated: '2023-04-15',
-    clientId: 'demo-client-2',
-    userId: 'demo-user',
-    favorite: true,
-  },
-];
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
@@ -110,55 +42,8 @@ export default async function handler(
     return;
   }
 
-  // Check for demo mode
+  // Authentication required
   const authHeader = req.headers.authorization;
-  const isDemoMode = isDemo || !authHeader || authHeader.includes('demo-token') || authHeader.includes('mock_token');
-
-  if (isDemoMode) {
-    // Handle demo mode
-    const { clientId } = req.query;
-    
-    if (req.method === 'GET') {
-      let assets = mockAssets;
-      if (clientId) {
-        assets = assets.filter(asset => asset.clientId === clientId);
-      }
-      return res.status(200).json({
-        success: true,
-        assets,
-      });
-    } else if (req.method === 'POST') {
-      const { name, type, url, thumbnailUrl, description, tags, clientId } = req.body;
-      
-      if (!name || !type || !url || !clientId) {
-        return res.status(400).json({ 
-          success: false, 
-          message: 'Name, type, URL, and client ID are required' 
-        });
-      }
-      
-      const newAsset: Asset = {
-        id: 'asset_' + Math.random().toString(36).substring(2, 9),
-        name,
-        type,
-        url,
-        ...(thumbnailUrl && { thumbnailUrl }),
-        ...(description && { description }),
-        tags: tags || [],
-        dateCreated: new Date().toISOString().split('T')[0],
-        clientId,
-        userId: 'demo-user',
-        favorite: false,
-      };
-      
-      return res.status(201).json({
-        success: true,
-        asset: newAsset,
-      });
-    }
-  }
-
-  // Real Supabase mode
   const token = authHeader?.replace('Bearer ', '');
   if (!token) {
     return res.status(401).json({

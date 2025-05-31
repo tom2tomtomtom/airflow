@@ -1,7 +1,7 @@
 import { test, expect, Page } from '@playwright/test';
 
 // Test configuration
-const BASE_URL = 'https://airwave2.netlify.app';
+const BASE_URL = 'https://airwave-complete.netlify.app';
 const TEST_TIMEOUT = 30000;
 
 // Test data

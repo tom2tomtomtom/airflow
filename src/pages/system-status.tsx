@@ -86,11 +86,6 @@ export default function SystemStatusPage() {
         </Typography>
       </Box>
 
-      {status.configuration.isDemoMode && (
-        <Alert severity="info" sx={{ mb: 3 }}>
-          <strong>Demo Mode Active</strong> - Authentication and external services are bypassed
-        </Alert>
-      )}
 
       {status.recommendations && (
         <Alert severity="warning" sx={{ mb: 3 }}>

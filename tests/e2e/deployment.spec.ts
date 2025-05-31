@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = 'https://airwave2.netlify.app';
+const BASE_URL = 'https://airwave-complete.netlify.app';
 
 test.describe('AIrWAVE Deployment Tests', () => {
   test('Homepage loads successfully', async ({ page }) => {

@@ -3,10 +3,10 @@ import { test, expect, Page } from '@playwright/test';
 /**
  * Comprehensive UI Test Suite for AIrWAVE Application
  * Tests the Carbon Black design system implementation and verifies UI rendering issues are resolved
- * Target URL: https://airwave2.netlify.app
+ * Target URL: https://airwave-complete.netlify.app
  */
 
-const BASE_URL = 'https://airwave2.netlify.app';
+const BASE_URL = 'https://airwave-complete.netlify.app';
 
 // Helper function to wait for page load and styles
 async function waitForPageLoad(page: Page) {

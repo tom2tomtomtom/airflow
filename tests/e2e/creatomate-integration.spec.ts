@@ -1,6 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 
-const BASE_URL = 'https://airwave2.netlify.app';
+const BASE_URL = 'https://airwave-complete.netlify.app';
 
 async function loginWithDemo(page: Page) {
   await page.goto(`${BASE_URL}/login`);
