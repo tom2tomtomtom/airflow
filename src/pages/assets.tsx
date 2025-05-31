@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import {
@@ -13,36 +13,140 @@ import {
   SpeedDialIcon,
   Card,
   CardContent,
+  TextField,
+  InputAdornment,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Chip,
+  IconButton,
+  Menu,
+  ListItemIcon,
+  ListItemText,
+  Checkbox,
+  FormControlLabel,
+  Paper,
+  Stack,
+  Divider,
+  Tooltip,
+  Badge,
+  CircularProgress,
+  Alert,
+  CardMedia,
+  CardActions,
+  Pagination,
 } from '@mui/material';
 import {
   Upload,
   AutoAwesome,
   Add as AddIcon,
+  Search,
+  FilterList,
+  Sort,
+  ViewModule,
+  ViewList,
+  MoreVert,
+  Edit,
+  Delete,
+  Download,
+  Share,
+  Favorite,
+  FavoriteBorder,
+  Image,
+  VideoFile,
+  AudioFile,
+  TextSnippet,
+  Clear,
+  CalendarToday,
 } from '@mui/icons-material';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import DashboardLayout from '@/components/DashboardLayout';
 import AssetUploadModal from '@/components/AssetUploadModal';
+import LoadingSkeleton from '@/components/LoadingSkeleton';
+import ErrorMessage from '@/components/ErrorMessage';
 import { useAuth } from '@/contexts/AuthContext';
+import { useClient } from '@/contexts/ClientContext';
+import { useNotification } from '@/contexts/NotificationContext';
+import { format } from 'date-fns';
 
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
+interface Asset {
+  id: string;
+  name: string;
+  type: 'image' | 'video' | 'text' | 'voice';
+  url: string;
+  thumbnailUrl?: string;
+  description?: string;
+  tags: string[];
+  dateCreated: string;
+  clientId: string;
+  userId: string;
+  favorite?: boolean;
+  metadata?: Record<string, any>;
+  size?: number;
+  mimeType?: string;
+  duration?: number;
+  width?: number;
+  height?: number;
 }
 
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-  return (
-    <div hidden={value !== index} {...other}>
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
-  );
+interface AssetFilters {
+  search: string;
+  type: string;
+  tags: string[];
+  dateFrom: Date | null;
+  dateTo: Date | null;
+  sortBy: string;
+  sortOrder: 'asc' | 'desc';
+  favoritesOnly: boolean;
 }
+
+const assetTypes = [
+  { value: '', label: 'All Types', icon: <TextSnippet /> },
+  { value: 'image', label: 'Images', icon: <Image /> },
+  { value: 'video', label: 'Videos', icon: <VideoFile /> },
+  { value: 'text', label: 'Text', icon: <TextSnippet /> },
+  { value: 'voice', label: 'Audio', icon: <AudioFile /> },
+];
+
+const sortOptions = [
+  { value: 'created_at', label: 'Date Created' },
+  { value: 'name', label: 'Name' },
+  { value: 'type', label: 'Type' },
+  { value: 'file_size', label: 'Size' },
+];
 
 const AssetsPage = () => {
-  const [tabValue, setTabValue] = useState(0);
+  const [assets, setAssets] = useState<Asset[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [selectedAssets, setSelectedAssets] = useState<Set<string>>(new Set());
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
+  
   const router = useRouter();
-  const { loading, isAuthenticated } = useAuth();
+  const { loading, isAuthenticated, user } = useAuth();
+  const { activeClient } = useClient();
+  const { showNotification } = useNotification();
+
+  const [filters, setFilters] = useState<AssetFilters>({
+    search: '',
+    type: '',
+    tags: [],
+    dateFrom: null,
+    dateTo: null,
+    sortBy: 'created_at',
+    sortOrder: 'desc',
+    favoritesOnly: false,
+  });
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -51,26 +155,173 @@ const AssetsPage = () => {
     }
   }, [loading, isAuthenticated, router]);
 
-  // Show loading or redirect if not authenticated
-  if (loading) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="100vh"
-      >
-        <Typography>Loading...</Typography>
-      </Box>
-    );
-  }
+  // Fetch assets when filters change or page changes
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      fetchAssets();
+    }
+  }, [isAuthenticated, user, activeClient, filters, page]);
 
-  if (!isAuthenticated) {
-    return null; // Will redirect via useEffect
-  }
+  const fetchAssets = async () => {
+    if (!user) return;
+    
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const queryParams = new URLSearchParams();
+      
+      // Add client filter
+      if (activeClient?.id) {
+        queryParams.append('clientId', activeClient.id);
+      }
+      
+      // Add search and filters
+      if (filters.search) queryParams.append('search', filters.search);
+      if (filters.type) queryParams.append('type', filters.type);
+      if (filters.tags.length > 0) queryParams.append('tags', filters.tags.join(','));
+      if (filters.dateFrom) queryParams.append('dateFrom', filters.dateFrom.toISOString().split('T')[0]);
+      if (filters.dateTo) queryParams.append('dateTo', filters.dateTo.toISOString().split('T')[0]);
+      
+      // Add sorting and pagination
+      queryParams.append('sortBy', filters.sortBy);
+      queryParams.append('sortOrder', filters.sortOrder);
+      queryParams.append('limit', '20');
+      queryParams.append('offset', ((page - 1) * 20).toString());
 
-  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
+      const response = await fetch(`/api/assets?${queryParams}`, {
+        headers: {
+          'Authorization': `Bearer ${user.token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch assets');
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        let fetchedAssets = data.assets || [];
+        
+        // Apply client-side filters
+        if (filters.favoritesOnly) {
+          fetchedAssets = fetchedAssets.filter((asset: Asset) => asset.favorite);
+        }
+        
+        setAssets(fetchedAssets);
+        
+        // Calculate pagination
+        const total = data.pagination?.total || 0;
+        setTotalPages(Math.ceil(total / 20));
+        
+        // Extract available tags
+        const allTags = fetchedAssets.reduce((acc: Set<string>, asset: Asset) => {
+          asset.tags.forEach(tag => acc.add(tag));
+          return acc;
+        }, new Set<string>());
+        setAvailableTags(Array.from(allTags));
+      } else {
+        throw new Error(data.message || 'Failed to fetch assets');
+      }
+    } catch (err) {
+      console.error('Error fetching assets:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load assets');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleFilterChange = (newFilters: Partial<AssetFilters>) => {
+    setFilters(prev => ({ ...prev, ...newFilters }));
+    setPage(1); // Reset to first page when filters change
+  };
+
+  const handleClearFilters = () => {
+    setFilters({
+      search: '',
+      type: '',
+      tags: [],
+      dateFrom: null,
+      dateTo: null,
+      sortBy: 'created_at',
+      sortOrder: 'desc',
+      favoritesOnly: false,
+    });
+    setPage(1);
+  };
+
+  const handleSelectAsset = (assetId: string) => {
+    const newSelected = new Set(selectedAssets);
+    if (newSelected.has(assetId)) {
+      newSelected.delete(assetId);
+    } else {
+      newSelected.add(assetId);
+    }
+    setSelectedAssets(newSelected);
+  };
+
+  const handleSelectAll = () => {
+    if (selectedAssets.size === assets.length) {
+      setSelectedAssets(new Set());
+    } else {
+      setSelectedAssets(new Set(assets.map(asset => asset.id)));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedAssets.size === 0) return;
+    
+    try {
+      const deletePromises = Array.from(selectedAssets).map(assetId =>
+        fetch(`/api/assets/${assetId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${user?.token}`,
+          },
+        })
+      );
+      
+      await Promise.all(deletePromises);
+      showNotification(`Deleted ${selectedAssets.size} assets`, 'success');
+      setSelectedAssets(new Set());
+      fetchAssets();
+    } catch (error) {
+      showNotification('Failed to delete assets', 'error');
+    }
+  };
+
+  const handleToggleFavorite = async (asset: Asset) => {
+    try {
+      const response = await fetch(`/api/assets/${asset.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user?.token}`,
+        },
+        body: JSON.stringify({
+          metadata: {
+            ...asset.metadata,
+            favorite: !asset.favorite,
+          },
+        }),
+      });
+
+      if (response.ok) {
+        fetchAssets();
+        showNotification(
+          asset.favorite ? 'Removed from favorites' : 'Added to favorites',
+          'success'
+        );
+      }
+    } catch (error) {
+      showNotification('Failed to update favorite', 'error');
+    }
+  };
+
+  const handleUploadComplete = () => {
+    showNotification('Assets uploaded successfully!', 'success');
+    fetchAssets();
   };
 
   const speedDialActions = [
@@ -82,21 +333,28 @@ const AssetsPage = () => {
     {
       icon: <AutoAwesome />,
       name: 'AI Generate',
-      action: () => console.log('AI Generate clicked'),
+      action: () => router.push('/generate'),
     },
   ];
 
-  // Mock assets data for testing
-  const mockAssets = [
-    { id: 1, name: 'Sample Image 1', type: 'image', url: '/api/placeholder/300/200' },
-    { id: 2, name: 'Sample Image 2', type: 'image', url: '/api/placeholder/300/200' },
-    { id: 3, name: 'Sample Video 1', type: 'video', url: '/api/placeholder/300/200' },
-  ];
+  // Show loading or redirect if not authenticated
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+          <CircularProgress />
+        </Box>
+      </DashboardLayout>
+    );
+  }
 
-  const handleUploadComplete = () => {
-    console.log('Upload completed');
-    // In a real app, this would refresh the assets list
-  };
+  if (!isAuthenticated) {
+    return null; // Will redirect via useEffect
+  }
+
+  const activeTypeFilter = assetTypes.find(type => type.value === filters.type);
+  const hasActiveFilters = filters.search || filters.type || filters.tags.length > 0 || 
+                          filters.dateFrom || filters.dateTo || filters.favoritesOnly;
 
   return (
     <DashboardLayout>
