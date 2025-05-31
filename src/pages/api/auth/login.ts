@@ -137,6 +137,21 @@ export default async function handler(
                     `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim() ||
                     authData.user.email?.split('@')[0] || 'User';
 
+    // Set secure HTTP-only cookie with the session token
+    const maxAge = 7 * 24 * 60 * 60; // 7 days in seconds
+    const isProduction = process.env.NODE_ENV === 'production';
+    const isHttps = req.headers.host?.includes('netlify.app') || req.headers.host?.includes('vercel.app') || req.headers['x-forwarded-proto'] === 'https';
+    
+    // For production HTTPS sites, we need Secure flag and proper domain
+    const cookieSettings = isHttps
+      ? `HttpOnly; Secure; SameSite=None; Max-Age=${maxAge}; Path=/`
+      : `HttpOnly; SameSite=Lax; Max-Age=${maxAge}; Path=/`;
+      
+    res.setHeader('Set-Cookie', [
+      `airwave_token=${authData.session?.access_token || ''}; ${cookieSettings}`,
+      `airwave_refresh_token=${authData.session?.refresh_token || ''}; ${cookieSettings}`
+    ]);
+
     return res.status(200).json({
       success: true,
       user: {
