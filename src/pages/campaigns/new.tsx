@@ -21,6 +21,11 @@ import {
   Card,
   CardContent,
   Alert,
+  MenuItem,
+  Select,
+  Chip,
+  CircularProgress,
+  Divider,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -34,11 +39,14 @@ import {
   LinkedIn,
   Info,
   CheckCircle,
+  TikTok,
+  Add as AddIcon,
 } from '@mui/icons-material';
 import { addDays } from 'date-fns';
 import DashboardLayout from '../../components/DashboardLayout';
 import { useNotification } from '../../contexts/NotificationContext';
-import { useData } from '../../hooks/useData';
+import { useClient } from '../../contexts/ClientContext';
+import { useBriefs } from '../../hooks/useData';
 
 const platformOptions = [
   { name: 'Facebook', icon: <Facebook />, value: 'facebook' },
@@ -46,37 +54,89 @@ const platformOptions = [
   { name: 'Twitter', icon: <Twitter />, value: 'twitter' },
   { name: 'YouTube', icon: <YouTube />, value: 'youtube' },
   { name: 'LinkedIn', icon: <LinkedIn />, value: 'linkedin' },
+  { name: 'TikTok', icon: <TikTok />, value: 'tiktok' },
+];
+
+const campaignTypes = [
+  { value: 'awareness', label: 'Brand Awareness' },
+  { value: 'consideration', label: 'Consideration' },
+  { value: 'conversion', label: 'Conversion' },
+  { value: 'retention', label: 'Customer Retention' },
+  { value: 'mixed', label: 'Mixed Objectives' },
+];
+
+const priorities = [
+  { value: 'low', label: 'Low', color: '#4caf50' },
+  { value: 'medium', label: 'Medium', color: '#ff9800' },
+  { value: 'high', label: 'High', color: '#f44336' },
+  { value: 'urgent', label: 'Urgent', color: '#9c27b0' },
+];
+
+const kpiOptions = [
+  'Brand Awareness',
+  'Website Traffic',
+  'Lead Generation',
+  'Sales/Conversions',
+  'Engagement Rate',
+  'Click-through Rate',
+  'Cost per Acquisition',
+  'Return on Ad Spend',
+  'Video Views',
+  'App Downloads',
 ];
 
 interface CampaignFormData {
   name: string;
   description: string;
-  client: string;
+  objective: string;
+  brief_id: string;
   platforms: string[];
   budget: string;
   startDate: Date | null;
   endDate: Date | null;
+  campaign_type: string;
+  priority: string;
+  kpis: string[];
+  tags: string[];
+  creative_requirements: {
+    video_length?: number;
+    image_formats?: string[];
+    copy_length?: number;
+    brand_compliance?: boolean;
+  };
 }
 
 interface ErrorsType extends Partial<Record<keyof CampaignFormData, string>> {
   platforms?: string;
+  kpis?: string;
 }
 
 export default function NewCampaign() {
   const router = useRouter();
   const { showNotification } = useNotification();
-  const { data: clients } = useData('clients');
+  const { activeClient } = useClient();
+  const { data: briefs, isLoading: briefsLoading } = useBriefs(activeClient?.id);
   const [activeStep, setActiveStep] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<CampaignFormData>({
     name: '',
     description: '',
-    client: '',
+    objective: '',
+    brief_id: '',
     platforms: [],
     budget: '',
     startDate: new Date(),
     endDate: addDays(new Date(), 30),
+    campaign_type: 'awareness',
+    priority: 'medium',
+    kpis: [],
+    tags: [],
+    creative_requirements: {
+      brand_compliance: true,
+    },
   });
   const [errors, setErrors] = useState<ErrorsType>({});
+  const [newTag, setNewTag] = useState('');
 
   const validateStep = (step: number): boolean => {
     const newErrors: ErrorsType = {};
@@ -86,13 +146,19 @@ export default function NewCampaign() {
         if (!formData.name.trim()) {
           newErrors.name = 'Campaign name is required';
         }
-        if (!formData.client) {
-          newErrors.client = 'Please select a client';
+        if (!formData.objective.trim()) {
+          newErrors.objective = 'Campaign objective is required';
+        }
+        if (!activeClient) {
+          newErrors.client = 'Please select a client first';
         }
         break;
       case 1:
         if (formData.platforms.length === 0) {
           newErrors.platforms = 'Select at least one platform';
+        }
+        if (formData.kpis.length === 0) {
+          newErrors.kpis = 'Select at least one KPI to track';
         }
         break;
       case 2:
@@ -134,15 +200,78 @@ export default function NewCampaign() {
     }));
   };
 
-  const handleSubmit = async () => {
-    if (!validateStep(activeStep)) return;
+  const handleKPIToggle = (kpi: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      kpis: prev.kpis.includes(kpi)
+        ? prev.kpis.filter((k) => k !== kpi)
+        : [...prev.kpis, kpi],
+    }));
+  };
 
+  const handleAddTag = () => {
+    if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
+      setFormData((prev) => ({
+        ...prev,
+        tags: [...prev.tags, newTag.trim()],
+      }));
+      setNewTag('');
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      tags: prev.tags.filter((tag) => tag !== tagToRemove),
+    }));
+  };
+
+  const handleSubmit = async () => {
+    if (!validateStep(activeStep) || !activeClient) return;
+
+    setIsSubmitting(true);
     try {
-      // In a real app, this would submit to the API
+      const campaignData = {
+        name: formData.name,
+        description: formData.description,
+        objective: formData.objective,
+        brief_id: formData.brief_id || undefined,
+        platforms: formData.platforms,
+        budget: parseFloat(formData.budget),
+        start_date: formData.startDate?.toISOString().split('T')[0],
+        end_date: formData.endDate?.toISOString().split('T')[0],
+        campaign_type: formData.campaign_type,
+        priority: formData.priority,
+        kpis: formData.kpis,
+        tags: formData.tags,
+        creative_requirements: formData.creative_requirements,
+        client_id: activeClient.id,
+      };
+
+      const response = await fetch('/api/campaigns', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(campaignData),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to create campaign');
+      }
+
       showNotification('Campaign created successfully!', 'success');
-      router.push('/campaigns');
-    } catch {
-      showNotification('Failed to create campaign. Please try again.', 'error');
+      router.push(`/campaigns/${result.data.id}`);
+    } catch (error) {
+      console.error('Campaign creation error:', error);
+      showNotification(
+        error instanceof Error ? error.message : 'Failed to create campaign. Please try again.',
+        'error'
+      );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -162,8 +291,13 @@ export default function NewCampaign() {
             Create New Campaign
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            Set up a new marketing campaign across multiple platforms
+            Set up a new marketing campaign for {activeClient?.name}
           </Typography>
+          {!activeClient && (
+            <Alert severity="warning" sx={{ mt: 2 }}>
+              Please select a client before creating a campaign
+            </Alert>
+          )}
         </Box>
 
         <Grid container spacing={3}>
@@ -182,39 +316,99 @@ export default function NewCampaign() {
                         error={!!errors.name}
                         helperText={errors.name}
                         margin="normal"
+                        placeholder="e.g., Summer 2024 Product Launch"
                       />
                       <TextField
                         fullWidth
-                        label="Description"
+                        label="Campaign Objective"
+                        value={formData.objective}
+                        onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, objective: e.target.value })}
+                        error={!!errors.objective}
+                        helperText={errors.objective}
+                        margin="normal"
+                        placeholder="e.g., Increase brand awareness and drive website traffic"
+                      />
+                      <TextField
+                        fullWidth
+                        label="Description (Optional)"
                         value={formData.description}
                         onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, description: e.target.value })}
                         multiline
-                        rows={4}
+                        rows={3}
                         margin="normal"
+                        placeholder="Additional details about this campaign..."
                       />
-                      <FormControl fullWidth margin="normal" error={!!errors.client}>
-                        <TextField
-                          select
-                          label="Client"
-                          value={formData.client}
-                          onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, client: e.target.value })}
-                          SelectProps={{
-                            native: true,
-                          }}
-                          error={!!errors.client}
-                          helperText={errors.client}
-                        >
-                          <option value="">Select a client</option>
-                          {Array.isArray(clients) && clients.map((client: any) => (
-                            <option key={client.id} value={client.id}>
-                              {client.name}
-                            </option>
-                          ))}
-                        </TextField>
-                      </FormControl>
+                      
+                      <Grid container spacing={2} sx={{ mt: 1 }}>
+                        <Grid item xs={12} sm={6}>
+                          <FormControl fullWidth>
+                            <TextField
+                              select
+                              label="Campaign Type"
+                              value={formData.campaign_type}
+                              onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, campaign_type: e.target.value })}
+                            >
+                              {campaignTypes.map((type) => (
+                                <MenuItem key={type.value} value={type.value}>
+                                  {type.label}
+                                </MenuItem>
+                              ))}
+                            </TextField>
+                          </FormControl>
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <FormControl fullWidth>
+                            <TextField
+                              select
+                              label="Priority"
+                              value={formData.priority}
+                              onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, priority: e.target.value })}
+                            >
+                              {priorities.map((priority) => (
+                                <MenuItem key={priority.value} value={priority.value}>
+                                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <Box
+                                      sx={{
+                                        width: 12,
+                                        height: 12,
+                                        borderRadius: '50%',
+                                        backgroundColor: priority.color,
+                                        mr: 1,
+                                      }}
+                                    />
+                                    {priority.label}
+                                  </Box>
+                                </MenuItem>
+                              ))}
+                            </TextField>
+                          </FormControl>
+                        </Grid>
+                      </Grid>
+
+                      {briefs && briefs.length > 0 && (
+                        <FormControl fullWidth margin="normal">
+                          <TextField
+                            select
+                            label="Link to Brief (Optional)"
+                            value={formData.brief_id}
+                            onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, brief_id: e.target.value })}
+                          >
+                            <MenuItem value="">No brief selected</MenuItem>
+                            {briefs.map((brief: any) => (
+                              <MenuItem key={brief.id} value={brief.id}>
+                                {brief.name}
+                              </MenuItem>
+                            ))}
+                          </TextField>
+                        </FormControl>
+                      )}
                     </Box>
                     <Box sx={{ mb: 2 }}>
-                      <Button variant="contained" onClick={handleNext}>
+                      <Button 
+                        variant="contained" 
+                        onClick={handleNext}
+                        disabled={!activeClient}
+                      >
                         Continue
                       </Button>
                     </Box>
@@ -222,7 +416,7 @@ export default function NewCampaign() {
                 </Step>
 
                 <Step>
-                  <StepLabel>Target Platforms</StepLabel>
+                  <StepLabel>Platforms & KPIs</StepLabel>
                   <StepContent>
                     <Box sx={{ mb: 3 }}>
                       <FormControl component="fieldset" error={!!errors.platforms}>
@@ -249,8 +443,8 @@ export default function NewCampaign() {
                                   }}
                                   onClick={() => handlePlatformToggle(platform.value)}
                                 >
-                                  <CardContent sx={{ textAlign: 'center' }}>
-                                    <Box sx={{ color: 'primary.main', mb: 1 }}>
+                                  <CardContent sx={{ textAlign: 'center', p: 2 }}>
+                                    <Box sx={{ color: 'primary.main', mb: 1, fontSize: 24 }}>
                                       {platform.icon}
                                     </Box>
                                     <FormControlLabel
@@ -271,6 +465,43 @@ export default function NewCampaign() {
                           </Grid>
                         </FormGroup>
                       </FormControl>
+
+                      <Divider sx={{ my: 3 }} />
+
+                      <FormControl component="fieldset" error={!!errors.kpis} sx={{ width: '100%' }}>
+                        <FormLabel component="legend">Key Performance Indicators (KPIs)</FormLabel>
+                        {errors.kpis && (
+                          <Alert severity="error" sx={{ mt: 1, mb: 2 }}>
+                            {errors.kpis}
+                          </Alert>
+                        )}
+                        <Grid container spacing={1} sx={{ mt: 1 }}>
+                          {kpiOptions.map((kpi) => (
+                            <Grid item xs={12} sm={6} md={4} key={kpi}>
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    checked={formData.kpis.includes(kpi)}
+                                    onChange={() => handleKPIToggle(kpi)}
+                                  />
+                                }
+                                label={kpi}
+                                sx={{ 
+                                  border: 1,
+                                  borderColor: formData.kpis.includes(kpi) ? 'primary.main' : 'divider',
+                                  borderRadius: 1,
+                                  p: 1,
+                                  m: 0,
+                                  width: '100%',
+                                  '&:hover': {
+                                    borderColor: 'primary.light',
+                                  },
+                                }}
+                              />
+                            </Grid>
+                          ))}
+                        </Grid>
+                      </FormControl>
                     </Box>
                     <Box sx={{ mb: 2 }}>
                       <Button onClick={handleBack} sx={{ mr: 1 }}>
@@ -284,7 +515,7 @@ export default function NewCampaign() {
                 </Step>
 
                 <Step>
-                  <StepLabel>Budget & Timeline</StepLabel>
+                  <StepLabel>Budget, Timeline & Tags</StepLabel>
                   <StepContent>
                     <Box sx={{ mb: 3 }}>
                       <TextField
@@ -294,7 +525,7 @@ export default function NewCampaign() {
                         value={formData.budget}
                         onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, budget: e.target.value })}
                         error={!!errors.budget}
-                        helperText={errors.budget}
+                        helperText={errors.budget || 'Enter total budget for this campaign'}
                         InputProps={{
                           startAdornment: <InputAdornment position="start">$</InputAdornment>,
                         }}
@@ -306,38 +537,75 @@ export default function NewCampaign() {
                             <DatePicker
                               label="Start Date"
                               value={formData.startDate}
-                              onChange={(e: React.ChangeEvent<HTMLElement>) =>
-                                setFormData({ ...formData, startDate: newValue as Date | null })
+                              onChange={(newValue: Date | null) =>
+                                setFormData({ ...formData, startDate: newValue })
                               }
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  fullWidth
-                                  error={!!errors.startDate}
-                                  helperText={errors.startDate}
-                                />
-                              )}
+                              slotProps={{
+                                textField: {
+                                  fullWidth: true,
+                                  error: !!errors.startDate,
+                                  helperText: errors.startDate,
+                                }
+                              }}
                             />
                           </Grid>
                           <Grid item xs={12} sm={6}>
                             <DatePicker
                               label="End Date"
                               value={formData.endDate}
-                              onChange={(e: React.ChangeEvent<HTMLElement>) =>
-                                setFormData({ ...formData, endDate: newValue as Date | null })
+                              onChange={(newValue: Date | null) =>
+                                setFormData({ ...formData, endDate: newValue })
                               }
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  fullWidth
-                                  error={!!errors.endDate}
-                                  helperText={errors.endDate}
-                                />
-                              )}
+                              slotProps={{
+                                textField: {
+                                  fullWidth: true,
+                                  error: !!errors.endDate,
+                                  helperText: errors.endDate,
+                                }
+                              }}
                             />
                           </Grid>
                         </Grid>
                       </LocalizationProvider>
+
+                      <Divider sx={{ my: 3 }} />
+
+                      <Typography variant="subtitle1" gutterBottom>
+                        Campaign Tags
+                      </Typography>
+                      <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
+                        {formData.tags.map((tag) => (
+                          <Chip
+                            key={tag}
+                            label={tag}
+                            onDelete={() => handleRemoveTag(tag)}
+                            color="primary"
+                            variant="outlined"
+                          />
+                        ))}
+                      </Box>
+                      <Box sx={{ display: 'flex', gap: 1 }}>
+                        <TextField
+                          label="Add Tag"
+                          value={newTag}
+                          onChange={(e: React.ChangeEvent<HTMLElement>) => setNewTag(e.target.value)}
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              handleAddTag();
+                            }
+                          }}
+                          placeholder="e.g., Q4-2024, Product-Launch"
+                          size="small"
+                        />
+                        <Button
+                          variant="outlined"
+                          onClick={handleAddTag}
+                          startIcon={<AddIcon />}
+                        >
+                          Add
+                        </Button>
+                      </Box>
                     </Box>
                     <Box sx={{ mb: 2 }}>
                       <Button onClick={handleBack} sx={{ mr: 1 }}>
@@ -357,72 +625,180 @@ export default function NewCampaign() {
                       <Alert severity="info" sx={{ mb: 2 }}>
                         Please review your campaign details before creating.
                       </Alert>
-                      <Grid container spacing={2}>
+                      
+                      <Grid container spacing={3}>
                         <Grid item xs={12}>
-                          <Typography variant="subtitle2" color="text.secondary">
-                            Campaign Name
-                          </Typography>
-                          <Typography variant="body1" gutterBottom>
-                            {formData.name}
-                          </Typography>
+                          <Card variant="outlined">
+                            <CardContent>
+                              <Typography variant="h6" gutterBottom>
+                                Campaign Overview
+                              </Typography>
+                              <Grid container spacing={2}>
+                                <Grid item xs={12}>
+                                  <Typography variant="subtitle2" color="text.secondary">
+                                    Campaign Name
+                                  </Typography>
+                                  <Typography variant="body1" gutterBottom>
+                                    {formData.name}
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={12}>
+                                  <Typography variant="subtitle2" color="text.secondary">
+                                    Objective
+                                  </Typography>
+                                  <Typography variant="body1" gutterBottom>
+                                    {formData.objective}
+                                  </Typography>
+                                </Grid>
+                                {formData.description && (
+                                  <Grid item xs={12}>
+                                    <Typography variant="subtitle2" color="text.secondary">
+                                      Description
+                                    </Typography>
+                                    <Typography variant="body1" gutterBottom>
+                                      {formData.description}
+                                    </Typography>
+                                  </Grid>
+                                )}
+                                <Grid item xs={6}>
+                                  <Typography variant="subtitle2" color="text.secondary">
+                                    Type
+                                  </Typography>
+                                  <Typography variant="body1">
+                                    {campaignTypes.find(t => t.value === formData.campaign_type)?.label}
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={6}>
+                                  <Typography variant="subtitle2" color="text.secondary">
+                                    Priority
+                                  </Typography>
+                                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <Box
+                                      sx={{
+                                        width: 12,
+                                        height: 12,
+                                        borderRadius: '50%',
+                                        backgroundColor: priorities.find(p => p.value === formData.priority)?.color,
+                                        mr: 1,
+                                      }}
+                                    />
+                                    <Typography variant="body1">
+                                      {priorities.find(p => p.value === formData.priority)?.label}
+                                    </Typography>
+                                  </Box>
+                                </Grid>
+                              </Grid>
+                            </CardContent>
+                          </Card>
                         </Grid>
-                        <Grid item xs={12}>
-                          <Typography variant="subtitle2" color="text.secondary">
-                            Description
-                          </Typography>
-                          <Typography variant="body1" gutterBottom>
-                            {formData.description || 'No description provided'}
-                          </Typography>
+
+                        <Grid item xs={12} md={6}>
+                          <Card variant="outlined">
+                            <CardContent>
+                              <Typography variant="h6" gutterBottom>
+                                Target Platforms
+                              </Typography>
+                              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                                {formData.platforms.map((platform) => {
+                                  const option = platformOptions.find((p) => p.value === platform);
+                                  return (
+                                    <Chip
+                                      key={platform}
+                                      icon={option?.icon}
+                                      label={option?.name}
+                                      color="primary"
+                                      variant="outlined"
+                                    />
+                                  );
+                                })}
+                              </Box>
+                            </CardContent>
+                          </Card>
                         </Grid>
-                        <Grid item xs={12}>
-                          <Typography variant="subtitle2" color="text.secondary">
-                            Platforms
-                          </Typography>
-                          <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
-                            {formData.platforms.map((platform) => {
-                              const option = platformOptions.find((p) => p.value === platform);
-                              return (
-                                <Box
-                                  key={platform}
-                                  sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
-                                >
-                                  {option?.icon}
-                                  <Typography variant="body1">{option?.name}</Typography>
+
+                        <Grid item xs={12} md={6}>
+                          <Card variant="outlined">
+                            <CardContent>
+                              <Typography variant="h6" gutterBottom>
+                                Key Performance Indicators
+                              </Typography>
+                              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                                {formData.kpis.map((kpi) => (
+                                  <Chip
+                                    key={kpi}
+                                    label={kpi}
+                                    color="secondary"
+                                    variant="outlined"
+                                    size="small"
+                                  />
+                                ))}
+                              </Box>
+                            </CardContent>
+                          </Card>
+                        </Grid>
+
+                        <Grid item xs={12} md={6}>
+                          <Card variant="outlined">
+                            <CardContent>
+                              <Typography variant="h6" gutterBottom>
+                                Budget & Timeline
+                              </Typography>
+                              <Grid container spacing={2}>
+                                <Grid item xs={12}>
+                                  <Typography variant="subtitle2" color="text.secondary">
+                                    Budget
+                                  </Typography>
+                                  <Typography variant="h6" color="primary">
+                                    ${parseFloat(formData.budget || '0').toLocaleString()}
+                                  </Typography>
+                                </Grid>
+                                <Grid item xs={12}>
+                                  <Typography variant="subtitle2" color="text.secondary">
+                                    Duration
+                                  </Typography>
+                                  <Typography variant="body1">
+                                    {formData.startDate?.toLocaleDateString()} - {formData.endDate?.toLocaleDateString()}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                            </CardContent>
+                          </Card>
+                        </Grid>
+
+                        {formData.tags.length > 0 && (
+                          <Grid item xs={12} md={6}>
+                            <Card variant="outlined">
+                              <CardContent>
+                                <Typography variant="h6" gutterBottom>
+                                  Tags
+                                </Typography>
+                                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                                  {formData.tags.map((tag) => (
+                                    <Chip
+                                      key={tag}
+                                      label={tag}
+                                      size="small"
+                                    />
+                                  ))}
                                 </Box>
-                              );
-                            })}
-                          </Box>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="subtitle2" color="text.secondary">
-                            Budget
-                          </Typography>
-                          <Typography variant="body1">
-                            ${parseFloat(formData.budget || '0').toLocaleString()}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography variant="subtitle2" color="text.secondary">
-                            Duration
-                          </Typography>
-                          <Typography variant="body1">
-                            {formData.startDate?.toLocaleDateString()} -{' '}
-                            {formData.endDate?.toLocaleDateString()}
-                          </Typography>
-                        </Grid>
+                              </CardContent>
+                            </Card>
+                          </Grid>
+                        )}
                       </Grid>
                     </Box>
                     <Box sx={{ mb: 2 }}>
-                      <Button onClick={handleBack} sx={{ mr: 1 }}>
+                      <Button onClick={handleBack} sx={{ mr: 1 }} disabled={isSubmitting}>
                         Back
                       </Button>
                       <Button
                         variant="contained"
                         color="primary"
                         onClick={handleSubmit}
-                        startIcon={<CheckCircle />}
+                        startIcon={isSubmitting ? <CircularProgress size={20} /> : <CheckCircle />}
+                        disabled={isSubmitting}
                       >
-                        Create Campaign
+                        {isSubmitting ? 'Creating Campaign...' : 'Create Campaign'}
                       </Button>
                     </Box>
                   </StepContent>
@@ -439,17 +815,28 @@ export default function NewCampaign() {
                   <Typography variant="h6">Campaign Tips</Typography>
                 </Box>
                 <Typography variant="body2" paragraph>
-                  • Choose a clear, descriptive name for your campaign
+                  <strong>Step 1:</strong> Choose a clear name and specific objective. Link to a brief if available.
                 </Typography>
                 <Typography variant="body2" paragraph>
-                  • Select all platforms where you want to run ads
+                  <strong>Step 2:</strong> Select platforms where your audience is most active. Choose KPIs that align with your objectives.
                 </Typography>
                 <Typography variant="body2" paragraph>
-                  • Set a realistic budget based on your goals
+                  <strong>Step 3:</strong> Set realistic budgets and timelines. Use tags for easy organization.
                 </Typography>
                 <Typography variant="body2">
-                  • Allow enough time for campaign optimization
+                  <strong>Step 4:</strong> Review all details carefully. You can edit these later if needed.
                 </Typography>
+                
+                {activeClient && (
+                  <Box sx={{ mt: 3, p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
+                    <Typography variant="subtitle2" gutterBottom>
+                      Current Client:
+                    </Typography>
+                    <Typography variant="body2" color="primary">
+                      {activeClient.name}
+                    </Typography>
+                  </Box>
+                )}
               </CardContent>
             </Card>
           </Grid>

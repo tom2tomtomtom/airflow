@@ -324,3 +324,24 @@ export const useFileUpload = () => {
 
   return { uploadFile, isUploading, uploadProgress, error };
 };
+
+// Custom hook for fetching briefs for a specific client
+export const useBriefs = (clientId?: string) => {
+  return useQuery({
+    queryKey: ['briefs', clientId],
+    queryFn: async () => {
+      if (!clientId) return [];
+      
+      const { data, error } = await supabase
+        .from('briefs')
+        .select('*')
+        .eq('client_id', clientId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: !!clientId,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+};
