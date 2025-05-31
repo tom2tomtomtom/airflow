@@ -116,7 +116,7 @@ const AssetCard: React.FC<AssetCardProps> = ({
             height: compact ? 100 : 140,
             objectFit: 'cover',
           }}
-          onError={(e) => {
+          onError={(e: React.ErrorEvent<HTMLElement>) => {
             // Fallback to icon if image fails to load
             e.currentTarget.style.display = 'none';
           }}

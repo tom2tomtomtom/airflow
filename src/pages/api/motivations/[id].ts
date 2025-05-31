@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase/client';
 import { withAuth } from '@/middleware/withAuth';
@@ -16,7 +17,7 @@ const MotivationUpdateSchema = z.object({
   generation_context: z.any().optional(),
 });
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
   const { id } = req.query;
   const user = (req as any).user;
@@ -37,6 +38,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Motivation API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
@@ -45,7 +47,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, motivationId: string) {
+async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, motivationId: string): Promise<void> {
   const { include_usage = true, include_related = true } = req.query;
 
   // First verify user has access to this motivation
@@ -103,7 +105,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, m
   });
 }
 
-async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, motivationId: string) {
+async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, motivationId: string): Promise<void> {
   const validationResult = MotivationUpdateSchema.safeParse(req.body);
   
   if (!validationResult.success) {
@@ -161,7 +163,7 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, m
   return res.json({ data: motivation });
 }
 
-async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any, motivationId: string) {
+async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any, motivationId: string): Promise<void> {
   // First verify user has access to this motivation
   const { data: existingMotivation } = await supabase
     .from('motivations')
@@ -256,6 +258,7 @@ async function getDetailedUsageStats(motivationId: string): Promise<any> {
       }
     };
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error getting detailed usage stats:', error);
     return {
       strategies: [],
@@ -306,6 +309,7 @@ async function getRelatedContent(motivationId: string, clientId: string): Promis
       suggested_content: suggestedContent || [],
     };
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error getting related content:', error);
     return {
       sibling_motivations: [],
@@ -429,6 +433,7 @@ async function getMotivationPerformanceHistory(motivationId: string): Promise<an
       }
     };
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error getting performance history:', error);
     return {
       has_data: false,
@@ -487,6 +492,7 @@ async function checkMotivationUsage(motivationId: string): Promise<{ isInUse: bo
       usageDetails,
     };
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error checking motivation usage:', error);
     return {
       isInUse: false,

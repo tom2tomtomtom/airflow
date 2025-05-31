@@ -1,5 +1,8 @@
+import { getErrorMessage } from '@/utils/errorUtils';
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
+import { apiSchemas } from '@/middleware/validation';
 
 interface LoginRequest {
   email: string;
@@ -21,17 +24,20 @@ interface LoginResponse {
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<LoginResponse>
-) {
+): Promise<void> {
   if (req.method !== 'POST') {
     return res.status(405).json({ success: false, error: 'Method not allowed' });
   }
 
-  const { email, password }: LoginRequest = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ 
-      success: false, 
-      error: 'Email and password are required' 
+  // Validate input using comprehensive validation schema
+  try {
+    const validatedData = apiSchemas.login.parse(req.body);
+    var { email, password } = validatedData;
+  } catch (validationError: any) {
+    const errors = validationError.errors?.map((err: any) => err.message).join(', ') || 'Invalid input data';
+    return res.status(400).json({
+      success: false,
+      error: errors
     });
   }
 
@@ -143,6 +149,7 @@ export default async function handler(
     });
 
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Login error:', error);
     return res.status(500).json({
       success: false,

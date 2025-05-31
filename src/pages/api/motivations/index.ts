@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase/client';
 import { withAuth } from '@/middleware/withAuth';
@@ -21,7 +22,7 @@ const MotivationCreateSchema = z.object({
 
 const MotivationUpdateSchema = MotivationCreateSchema.partial().omit(['client_id']);
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
   const user = (req as any).user;
 
@@ -35,6 +36,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Motivations API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
@@ -43,7 +45,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any) {
+async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const { 
     client_id, 
     brief_id,
@@ -152,7 +154,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any) {
   });
 }
 
-async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any) {
+async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const validationResult = MotivationCreateSchema.safeParse(req.body);
   
   if (!validationResult.success) {
@@ -249,6 +251,7 @@ async function getMotivationUsageStats(motivationId: string): Promise<any> {
       total_usage: (strategyUsage || 0) + (contentUsage || 0) + (copyUsage || 0),
     };
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error calculating usage stats:', error);
     return {
       strategy_usage: 0,
@@ -297,6 +300,7 @@ async function calculateRelevanceScore(title: string, description: string, brief
 
     return Math.round(relevanceScore);
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error calculating relevance score:', error);
     return 50; // Default score on error
   }

@@ -46,7 +46,8 @@ const fixes: Fix[] = [
   // Fix error handling with proper typing
   {
     pattern: /catch\s*\(\s*error\s*\)\s*{(?![^}]*const message = getErrorMessage)/g,
-    replacement: 'catch (error) {\n    const message = getErrorMessage(error);',
+    replacement: 'catch (error) {
+    const message = getErrorMessage(error);\n    const message = getErrorMessage(error);',
     description: 'Fix error handling with proper typing'
   },
   
@@ -267,7 +268,7 @@ async function fixFile(filePath: string): Promise<number> {
 }
 
 // Create error utility if it doesn't exist
-async function createErrorUtils() {
+async function createErrorUtils(): Promise<void> {
   const errorUtilsPath = path.join(process.cwd(), 'utils', 'errorUtils.ts');
   const errorUtilsContent = `// utils/errorUtils.ts
 export function getErrorMessage(error: unknown): string {
@@ -309,7 +310,7 @@ export function isAppError(error: unknown): error is AppError {
 }
 
 // Main execution
-async function main() {
+async function main(): Promise<void> {
   console.log('🔧 Starting comprehensive TypeScript fixes...\n');
   
   // Create error utils if needed

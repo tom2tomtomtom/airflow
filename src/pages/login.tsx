@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/router';
@@ -112,7 +113,7 @@ const LoginPage: React.FC = () => {
               label="Email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLElement>) => setEmail(e.target.value)}
               disabled={loading}
               sx={{ mb: 2 }}
               data-testid="email-input"
@@ -130,7 +131,7 @@ const LoginPage: React.FC = () => {
               label="Password"
               type={showPassword ? 'text' : 'password'}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLElement>) => setPassword(e.target.value)}
               disabled={loading}
               sx={{ mb: 3 }}
               data-testid="password-input"

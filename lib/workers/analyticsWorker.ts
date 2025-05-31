@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { Worker, Job } from 'bullmq';
 import { connection } from '@/lib/queue/connection';
 import { AnalyticsJobData } from '@/lib/queue/bullQueue';
@@ -10,7 +11,7 @@ const supabase = createClient(
 );
 
 // Process analytics job
-async function processAnalyticsJob(job: Job<AnalyticsJobData>) {
+async function processAnalyticsJob(job: Job<AnalyticsJobData>): Promise<void> {
   const { event, userId, clientId, properties, timestamp } = job.data;
   
   try {
@@ -53,13 +54,14 @@ async function processAnalyticsJob(job: Job<AnalyticsJobData>) {
       timestamp,
     };
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Analytics processing failed:', error);
     throw error;
   }
 }
 
 // Update asset metrics
-async function updateAssetMetrics(clientId?: string, properties?: any) {
+async function updateAssetMetrics(clientId?: string, properties?: any): Promise<void> {
   if (!clientId) return;
   
   const { error } = await supabase.rpc('increment_client_metric', {
@@ -74,7 +76,7 @@ async function updateAssetMetrics(clientId?: string, properties?: any) {
 }
 
 // Update render metrics
-async function updateRenderMetrics(clientId?: string, properties?: any) {
+async function updateRenderMetrics(clientId?: string, properties?: any): Promise<void> {
   if (!clientId || !properties) return;
   
   const metrics = {
@@ -97,7 +99,7 @@ async function updateRenderMetrics(clientId?: string, properties?: any) {
 }
 
 // Update campaign metrics
-async function updateCampaignMetrics(clientId?: string, properties?: any) {
+async function updateCampaignMetrics(clientId?: string, properties?: any): Promise<void> {
   if (!clientId) return;
   
   const { error } = await supabase.rpc('increment_client_metric', {

@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { z } from 'zod'
 
 // Environment validation schema
@@ -75,6 +76,7 @@ export function validateEnv(env: Record<string, string | undefined> = process.en
   try {
     return envSchema.parse(env)
   } catch (error) {
+    const message = getErrorMessage(error);
     if (error instanceof z.ZodError) {
       const errors = error.errors.map(err => `${err.path.join('.')}: ${err.message}`).join('\n')
       throw new Error(`Environment validation failed:\n${errors}`)
@@ -192,6 +194,7 @@ export function logEnvironmentStatus(): void {
       }
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('❌ Environment validation failed:', error)
     process.exit(1)
   }

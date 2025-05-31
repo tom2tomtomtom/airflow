@@ -65,7 +65,7 @@ const StrategicMotivationsTab: React.FC<StrategicMotivationsTabProps> = ({
           variant="outlined"
           placeholder="Enter client brief text or campaign objectives here..."
           value={briefText}
-          onChange={(e) => setBriefText(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLElement>) => setBriefText(e.target.value)}
           sx={{ mb: 2 }}
         />
         <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>

@@ -1,3 +1,5 @@
+import { getErrorMessage } from '@/utils/errorUtils';
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 interface TestResult {
@@ -25,7 +27,7 @@ interface IntegrationTestResponse {
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<IntegrationTestResponse>
-) {
+): Promise<void> {
   if (req.method !== 'GET') {
     return res.status(405).json({
       success: false,
@@ -52,6 +54,7 @@ export default async function handler(
         data
       };
     } catch (error) {
+    const message = getErrorMessage(error);
       const duration = Date.now() - testStart;
       return {
         name,

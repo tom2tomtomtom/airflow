@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 import type { JwtPayload } from '@/types/auth';
@@ -254,6 +255,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     // Allow access to the requested page
     return response;
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Token verification failed:', error);
 
     // Clear invalid token from cookies

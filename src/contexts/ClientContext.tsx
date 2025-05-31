@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import type { Client } from '@/types/models';
@@ -32,26 +33,39 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [clients, setClients] = useState<Client[]>([]);
   const [activeClient, setActiveClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
-  const { user: _user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
 
   // Load clients from API on initial load
   useEffect(() => {
-    if (isAuthenticated) {
+    // Don't fetch clients if auth is still loading or user is not authenticated
+    if (authLoading) {
+      return;
+    }
+    
+    if (isAuthenticated && user && user.token) {
       const loadClients = async () => {
         try {
           // Get user from localStorage
           const storedUser = localStorage.getItem("airwave_user");
           if (!storedUser) {
+            console.log('No stored user found, skipping client fetch');
             setLoading(false);
             return;
           }
           
           const user = JSON.parse(storedUser);
           
+          // Check if we have a valid token
+          if (!user.token || user.token === "mock_token") {
+            console.log('No valid token found, skipping client fetch');
+            setLoading(false);
+            return;
+          }
+          
           // Fetch clients from API
           const response = await fetch("/api/clients", {
             headers: {
-              Authorization: `Bearer ${user.token || "mock_token"}`,
+              Authorization: `Bearer ${user.token}`,
             },
           });
           
@@ -86,6 +100,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             }
           }
         } catch (error) {
+    const message = getErrorMessage(error);
           console.error('Error loading clients:', error);
           
           // Fallback to localStorage
@@ -111,7 +126,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setActiveClient(null);
       setLoading(false);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user, authLoading]);
 
   // Update active client
   const handleSetActiveClient = (client: Client | null) => {
@@ -164,6 +179,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         throw new Error("Invalid response from server");
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Error creating client:', error);
       
       // Fallback to local creation
@@ -245,6 +261,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         throw new Error("Invalid response from server");
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Error updating client:', error);
       
       // Fallback to local update
@@ -320,6 +337,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         }
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Error deleting client:', error);
       
       // Fallback to local deletion

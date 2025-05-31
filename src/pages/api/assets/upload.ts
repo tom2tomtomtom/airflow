@@ -1,3 +1,5 @@
+import { getErrorMessage } from '@/utils/errorUtils';
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
 import formidable from 'formidable';
@@ -27,7 +29,7 @@ interface UploadResponse {
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<UploadResponse>
-) {
+): Promise<void> {
   if (req.method !== 'POST') {
     return res.status(405).json({ success: false, error: 'Method not allowed' });
   }
@@ -133,6 +135,7 @@ export default async function handler(
         });
 
       } catch (error) {
+    const message = getErrorMessage(error);
         console.error('Error processing file:', file.originalFilename, error);
         continue;
       } finally {
@@ -159,6 +162,7 @@ export default async function handler(
     });
 
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Upload API error:', error);
     return res.status(500).json({
       success: false,

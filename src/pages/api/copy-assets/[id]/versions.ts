@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase/client';
 import { withAuth } from '@/middleware/withAuth';
@@ -10,7 +11,7 @@ const VersionCreateSchema = z.object({
   is_major: z.boolean().default(false),
 });
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
   const { id } = req.query;
   const user = (req as any).user;
@@ -29,6 +30,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Copy Asset Versions API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
@@ -37,7 +39,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, assetId: string) {
+async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, assetId: string): Promise<void> {
   const { limit = 20, offset = 0 } = req.query;
 
   // First verify user has access to this copy asset
@@ -153,7 +155,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
   });
 }
 
-async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, assetId: string) {
+async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, assetId: string): Promise<void> {
   const validationResult = VersionCreateSchema.safeParse(req.body);
   
   if (!validationResult.success) {

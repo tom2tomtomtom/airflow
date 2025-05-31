@@ -118,7 +118,7 @@ const VoiceGenerationTab: React.FC<VoiceGenerationTabProps> = ({
                 variant="outlined"
                 placeholder="Enter the text you want to convert to speech..."
                 value={voiceText}
-                onChange={(e) => setVoiceText(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLElement>) => setVoiceText(e.target.value)}
                 sx={{ mb: 1 }}
               />
               <Typography variant="caption" color="text.secondary">
@@ -137,7 +137,7 @@ const VoiceGenerationTab: React.FC<VoiceGenerationTabProps> = ({
                   id="voice-select"
                   value={selectedVoice}
                   label="Select Voice"
-                  onChange={(e) => setSelectedVoice(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => setSelectedVoice(e.target.value)}
                 >
                   <MenuItem value="emma">Emma (Female, Conversational)</MenuItem>
                   <MenuItem value="james">James (Male, Professional)</MenuItem>
@@ -154,7 +154,7 @@ const VoiceGenerationTab: React.FC<VoiceGenerationTabProps> = ({
                   id="language-select"
                   value={voiceLanguage}
                   label="Language"
-                  onChange={(e) => setVoiceLanguage(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => setVoiceLanguage(e.target.value)}
                 >
                   <MenuItem value="en-US">English (US)</MenuItem>
                   <MenuItem value="en-GB">English (UK)</MenuItem>

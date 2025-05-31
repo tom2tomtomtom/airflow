@@ -280,7 +280,7 @@ const AnalyticsPage: React.FC = () => {
                 <Select
                   value={timeRange}
                   label="Time Range"
-                  onChange={(e) => setTimeRange(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => setTimeRange(e.target.value)}
                 >
                   <MenuItem value="24h">Last 24 Hours</MenuItem>
                   <MenuItem value="7d">Last 7 Days</MenuItem>
@@ -296,7 +296,7 @@ const AnalyticsPage: React.FC = () => {
                 <Select
                   value={selectedCampaign}
                   label="Campaign"
-                  onChange={(e) => setSelectedCampaign(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => setSelectedCampaign(e.target.value)}
                 >
                   <MenuItem value="all">All Campaigns</MenuItem>
                   {campaigns?.map((campaign: any) => (
@@ -313,7 +313,7 @@ const AnalyticsPage: React.FC = () => {
                 <Select
                   value={selectedPlatform}
                   label="Platform"
-                  onChange={(e) => setSelectedPlatform(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => setSelectedPlatform(e.target.value)}
                 >
                   <MenuItem value="all">All Platforms</MenuItem>
                   <MenuItem value="instagram">Instagram</MenuItem>
@@ -604,7 +604,7 @@ const AnalyticsPage: React.FC = () => {
                 <Select
                   value={comparison}
                   label="Comparison"
-                  onChange={(e) => setComparison(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => setComparison(e.target.value)}
                 >
                   <MenuItem value="period">Period Comparison</MenuItem>
                   <MenuItem value="variant">Variant Comparison</MenuItem>

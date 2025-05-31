@@ -400,7 +400,7 @@ const MatrixPage: React.FC = () => {
                 fullWidth
                 placeholder="Search templates..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLElement>) => setSearchTerm(e.target.value)}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -458,7 +458,7 @@ const MatrixPage: React.FC = () => {
                         fullWidth
                         label="Matrix Name"
                         value={matrixName}
-                        onChange={(e) => setMatrixName(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLElement>) => setMatrixName(e.target.value)}
                         required
                       />
                     </Grid>
@@ -468,7 +468,7 @@ const MatrixPage: React.FC = () => {
                         <Select
                           value={selectedCampaign?.id || ''}
                           label="Link to Campaign"
-                          onChange={(e) => {
+                          onChange={(e: React.ChangeEvent<HTMLElement>) => {
                             const campaign = campaigns?.find((c: Campaign) => c.id === e.target.value);
                             setSelectedCampaign(campaign || null);
                           }}
@@ -514,7 +514,7 @@ const MatrixPage: React.FC = () => {
                     fullWidth
                     label="Description"
                     value={matrixDescription}
-                    onChange={(e) => setMatrixDescription(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLElement>) => setMatrixDescription(e.target.value)}
                     multiline
                    
                     sx={{ mt: 2 }}
@@ -555,7 +555,7 @@ const MatrixPage: React.FC = () => {
                                   <TextField
                                     size="small"
                                     value={variation.name}
-                                    onChange={(e) => {
+                                    onChange={(e: React.ChangeEvent<HTMLElement>) => {
                                       setVariations(variations.map(v =>
                                         v.id === variation.id ? { ...v, name: e.target.value } : v
                                       ));
@@ -580,7 +580,7 @@ const MatrixPage: React.FC = () => {
                                     <Switch
                                       size="small"
                                       checked={variation.isActive}
-                                      onChange={(e) => {
+                                      onChange={(e: React.ChangeEvent<HTMLElement>) => {
                                         setVariations(variations.map(v =>
                                           v.id === variation.id ? { ...v, isActive: e.target.checked } : v
                                         ));
@@ -621,7 +621,7 @@ const MatrixPage: React.FC = () => {
                                         multiline={!!(field.constraints?.maxLength && field.constraints.maxLength > 50)}
                                         rows={field.constraints?.maxLength && field.constraints.maxLength > 50 ? 2 : 1}
                                         value={fieldValue?.value || ''}
-                                        onChange={(e) => handleFieldUpdate(field.id, variation.id, e.target.value)}
+                                        onChange={(e: React.ChangeEvent<HTMLElement>) => handleFieldUpdate(field.id, variation.id, e.target.value)}
                                         placeholder={field.defaultValue || 'Enter text...'}
                                       />
                                     ) : field.type === 'color' ? (
@@ -629,7 +629,7 @@ const MatrixPage: React.FC = () => {
                                         size="small"
                                         type="color"
                                         value={fieldValue?.value || '#000000'}
-                                        onChange={(e) => handleFieldUpdate(field.id, variation.id, e.target.value)}
+                                        onChange={(e: React.ChangeEvent<HTMLElement>) => handleFieldUpdate(field.id, variation.id, e.target.value)}
                                       />
                                     ) : fieldValue?.asset ? (
                                       <Box>
@@ -705,7 +705,7 @@ const MatrixPage: React.FC = () => {
                                     control={
                                       <Checkbox
                                         checked={combo.isSelected}
-                                        onChange={(e) => {
+                                        onChange={(e: React.ChangeEvent<HTMLElement>) => {
                                           setCombinations(combinations.map(c =>
                                             c.id === combo.id ? { ...c, isSelected: e.target.checked } : c
                                           ));

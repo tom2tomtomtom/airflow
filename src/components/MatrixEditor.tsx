@@ -130,7 +130,7 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({
                           size="small"
                           placeholder={`Enter ${field.type}...`}
                           value={assignment?.value || ''}
-                          onChange={(e) =>
+                          onChange={(e: React.ChangeEvent<HTMLElement>) =>
                             handleTextFieldChange(template.id, field.id, e.target.value)
                           }
                         />

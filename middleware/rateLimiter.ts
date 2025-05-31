@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
@@ -113,6 +114,7 @@ export function withRateLimit(
       
       return next();
     } catch (error) {
+    const message = getErrorMessage(error);
       if (error instanceof RateLimitError) {
         return res.status(429).json({
           error: {

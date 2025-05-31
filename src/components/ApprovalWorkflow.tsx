@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -139,6 +140,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
         setApprovals(data.data || []);
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Error fetching approvals:', error);
     } finally {
       setLoading(false);
@@ -169,6 +171,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
         showNotification(error.error || 'Failed to process approval', 'error');
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       showNotification('Error processing approval', 'error');
     }
   };
@@ -202,6 +205,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
         showNotification(error.error || 'Failed to process bulk approvals', 'error');
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       showNotification('Error processing bulk approvals', 'error');
     }
   };
@@ -479,7 +483,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
                           )}
                           <IconButton
                             size="small"
-                            onClick={(e) => handleMenuOpen(e, approval)}
+                            onClick={(e: React.ClickEvent<HTMLElement>) => handleMenuOpen(e, approval)}
                           >
                             <MoreIcon />
                           </IconButton>
@@ -615,7 +619,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
             fullWidth
             label="Comments"
             value={decisionData.comments}
-            onChange={(e) => setDecisionData({ ...decisionData, comments: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLElement>) => setDecisionData({ ...decisionData, comments: e.target.value })}
             multiline
             rows={3}
             sx={{ mb: 2 }}
@@ -654,7 +658,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
             <Select
               value={decisionData.action}
               label="Action"
-              onChange={(e) => setDecisionData({ ...decisionData, action: e.target.value as any })}
+              onChange={(e: React.ChangeEvent<HTMLElement>) => setDecisionData({ ...decisionData, action: e.target.value as any })}
             >
               <MenuItem value="approve">Approve All</MenuItem>
               <MenuItem value="reject">Reject All</MenuItem>
@@ -666,7 +670,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
             fullWidth
             label="Comments"
             value={decisionData.comments}
-            onChange={(e) => setDecisionData({ ...decisionData, comments: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLElement>) => setDecisionData({ ...decisionData, comments: e.target.value })}
             multiline
             rows={3}
           />

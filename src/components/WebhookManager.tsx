@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -171,6 +172,7 @@ const WebhookManager: React.FC = () => {
         setAvailableEvents(data.events || []);
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Error fetching webhooks:', error);
       showNotification('Failed to load webhooks', 'error');
     } finally {
@@ -193,6 +195,7 @@ const WebhookManager: React.FC = () => {
         setDetailsDialogOpen(true);
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Error fetching webhook details:', error);
       showNotification('Failed to load webhook details', 'error');
     }
@@ -229,6 +232,7 @@ const WebhookManager: React.FC = () => {
         showNotification(error.error || 'Failed to save webhook', 'error');
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Error saving webhook:', error);
       showNotification('Failed to save webhook', 'error');
     }
@@ -256,6 +260,7 @@ const WebhookManager: React.FC = () => {
         showNotification(error.error || 'Failed to delete webhook', 'error');
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Error deleting webhook:', error);
       showNotification('Failed to delete webhook', 'error');
     }
@@ -294,6 +299,7 @@ const WebhookManager: React.FC = () => {
       setTestDialogOpen(false);
       fetchWebhookDetails(selectedWebhook.id); // Refresh details to show new delivery
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Error testing webhook:', error);
       showNotification('Failed to test webhook', 'error');
     }
@@ -320,6 +326,7 @@ const WebhookManager: React.FC = () => {
         showNotification(error.error || 'Failed to toggle webhook', 'error');
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Error toggling webhook:', error);
       showNotification('Failed to toggle webhook', 'error');
     }
@@ -346,6 +353,7 @@ const WebhookManager: React.FC = () => {
         showNotification(error.error || 'Failed to regenerate secret', 'error');
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Error regenerating secret:', error);
       showNotification('Failed to regenerate secret', 'error');
     }
@@ -642,7 +650,7 @@ const WebhookManager: React.FC = () => {
                           </Tooltip>
                           <IconButton
                             size="small"
-                            onClick={(e) => handleMenuOpen(e, webhook)}
+                            onClick={(e: React.ClickEvent<HTMLElement>) => handleMenuOpen(e, webhook)}
                           >
                             <MoreIcon />
                           </IconButton>
@@ -714,7 +722,7 @@ const WebhookManager: React.FC = () => {
                 fullWidth
                 label="Name"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, name: e.target.value })}
                 required
               />
             </Grid>
@@ -723,7 +731,7 @@ const WebhookManager: React.FC = () => {
                 fullWidth
                 label="URL"
                 value={formData.url}
-                onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, url: e.target.value })}
                 required
                 type="url"
               />
@@ -733,7 +741,7 @@ const WebhookManager: React.FC = () => {
                 fullWidth
                 label="Description"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, description: e.target.value })}
                 multiline
                 rows={2}
               />
@@ -744,7 +752,7 @@ const WebhookManager: React.FC = () => {
                 <Select
                   multiple
                   value={formData.events}
-                  onChange={(e) => setFormData({ ...formData, events: e.target.value as string[] })}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, events: e.target.value as string[] })}
                   renderValue={(selected) => (
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                       {selected.map((value) => (
@@ -767,7 +775,7 @@ const WebhookManager: React.FC = () => {
                 label="Timeout (ms)"
                 type="number"
                 value={formData.timeout_ms}
-                onChange={(e) => setFormData({ ...formData, timeout_ms: parseInt(e.target.value) })}
+                onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, timeout_ms: parseInt(e.target.value) })}
                 inputProps={{ min: 1000, max: 30000 }}
               />
             </Grid>
@@ -776,7 +784,7 @@ const WebhookManager: React.FC = () => {
                 control={
                   <Switch
                     checked={formData.active}
-                    onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                    onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, active: e.target.checked })}
                   />
                 }
                 label="Active"
@@ -795,7 +803,7 @@ const WebhookManager: React.FC = () => {
                         label="Max Attempts"
                         type="number"
                         value={formData.retry_policy.max_attempts}
-                        onChange={(e) => setFormData({
+                        onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({
                           ...formData,
                           retry_policy: {
                             ...formData.retry_policy,
@@ -810,7 +818,7 @@ const WebhookManager: React.FC = () => {
                         <InputLabel>Backoff Strategy</InputLabel>
                         <Select
                           value={formData.retry_policy.backoff_strategy}
-                          onChange={(e) => setFormData({
+                          onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({
                             ...formData,
                             retry_policy: {
                               ...formData.retry_policy,
@@ -829,7 +837,7 @@ const WebhookManager: React.FC = () => {
                         label="Initial Delay (ms)"
                         type="number"
                         value={formData.retry_policy.initial_delay_ms}
-                        onChange={(e) => setFormData({
+                        onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({
                           ...formData,
                           retry_policy: {
                             ...formData.retry_policy,
@@ -865,7 +873,7 @@ const WebhookManager: React.FC = () => {
             <InputLabel>Event Type</InputLabel>
             <Select
               value={testData.event_type}
-              onChange={(e) => setTestData({ ...testData, event_type: e.target.value })}
+              onChange={(e: React.ChangeEvent<HTMLElement>) => setTestData({ ...testData, event_type: e.target.value })}
             >
               {selectedWebhook?.events.map((event) => (
                 <MenuItem key={event} value={event}>
@@ -879,7 +887,7 @@ const WebhookManager: React.FC = () => {
             fullWidth
             label="Test Data (JSON)"
             value={testData.test_data}
-            onChange={(e) => setTestData({ ...testData, test_data: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLElement>) => setTestData({ ...testData, test_data: e.target.value })}
             multiline
             rows={4}
             placeholder='{"key": "value"}'

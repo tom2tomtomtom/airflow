@@ -1,3 +1,5 @@
+import { getErrorMessage } from '@/utils/errorUtils';
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Asset } from './index';
 
@@ -127,6 +129,7 @@ function getAsset(
       asset: asset,
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error fetching asset:', error);
     return res.status(500).json({ success: false, message: 'Internal server error' });
   }
@@ -166,6 +169,7 @@ function updateAsset(
       asset: updatedAsset,
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error updating asset:', error);
     return res.status(500).json({ success: false, message: 'Internal server error' });
   }
@@ -194,6 +198,7 @@ function deleteAsset(
       asset: deletedAsset,
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error deleting asset:', error);
     return res.status(500).json({ success: false, message: 'Internal server error' });
   }

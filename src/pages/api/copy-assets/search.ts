@@ -1,9 +1,10 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase/client';
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
   const user = (req as any).user;
 
@@ -164,6 +165,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     });
 
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Copy Assets Search API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
@@ -229,6 +231,7 @@ async function generateSearchSuggestions(query: string, clientIds: string[]): Pr
     return [...new Set(suggestions)].slice(0, 8);
 
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error generating search suggestions:', error);
     return [];
   }

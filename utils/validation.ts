@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 // utils/validation.ts
 import { z } from 'zod';
 
@@ -128,6 +129,7 @@ export function validatePassword(password: string): { valid: boolean; errors?: s
     passwordSchema.parse(password);
     return { valid: true };
   } catch (error) {
+    const message = getErrorMessage(error);
     if (error instanceof z.ZodError) {
       return { 
         valid: false, 
@@ -167,6 +169,7 @@ export function validateForm<T>(schema: z.ZodSchema<T>, data: unknown): {
     const validData = schema.parse(data);
     return { success: true, data: validData };
   } catch (error) {
+    const message = getErrorMessage(error);
     if (error instanceof z.ZodError) {
       const errors: Record<string, string[]> = {};
       error.errors.forEach((err) => {

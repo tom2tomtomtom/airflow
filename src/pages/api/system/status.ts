@@ -1,10 +1,11 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 // This endpoint helps verify the deployment configuration
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void> {
   // Only allow GET requests
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -43,6 +44,7 @@ export default async function handler(
       });
       supabaseStatus = response.ok ? '✅ Connected' : `❌ Error: ${response.status}`;
     } catch (error) {
+    const message = getErrorMessage(error);
       supabaseStatus = '❌ Connection failed';
     }
   }

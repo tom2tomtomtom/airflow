@@ -1,3 +1,5 @@
+import { getErrorMessage } from '@/utils/errorUtils';
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { GenerationResult } from './generate';
 
@@ -99,6 +101,7 @@ export default function handler(
       generations: userGenerations,
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error fetching generations:', error);
     return res.status(500).json({ success: false, message: 'Internal server error' });
   }

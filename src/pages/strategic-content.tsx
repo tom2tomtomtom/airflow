@@ -380,7 +380,7 @@ const StrategicContent: React.FC = () => {
                 fullWidth
                 placeholder="Search content and briefs..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLElement>) => setSearchQuery(e.target.value)}
                 size="small"
               />
             </Grid>
@@ -391,7 +391,7 @@ const StrategicContent: React.FC = () => {
                   <Select
                     value={typeFilter}
                     label="Content Type"
-                    onChange={(e) => setTypeFilter(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLElement>) => setTypeFilter(e.target.value)}
                   >
                     <MenuItem value="All">All Types</MenuItem>
                     <MenuItem value="Campaign">Campaign</MenuItem>
@@ -559,7 +559,7 @@ const StrategicContent: React.FC = () => {
                           fullWidth
                           label="Brief Title"
                           value={briefForm.title}
-                          onChange={(e) => setBriefForm({ ...briefForm, title: e.target.value })}
+                          onChange={(e: React.ChangeEvent<HTMLElement>) => setBriefForm({ ...briefForm, title: e.target.value })}
                           required
                         />
                         <FormControl fullWidth>
@@ -567,7 +567,7 @@ const StrategicContent: React.FC = () => {
                           <Select
                             value={briefForm.type}
                             label="Brief Type"
-                            onChange={(e) => setBriefForm({ ...briefForm, type: e.target.value as Brief['type'] })}
+                            onChange={(e: React.ChangeEvent<HTMLElement>) => setBriefForm({ ...briefForm, type: e.target.value as Brief['type'] })}
                           >
                             <MenuItem value="campaign">Campaign Brief</MenuItem>
                             <MenuItem value="content">Content Brief</MenuItem>
@@ -581,7 +581,7 @@ const StrategicContent: React.FC = () => {
                             <Select
                               value={briefForm.campaignId}
                               label="Link to Campaign"
-                              onChange={(e) => setBriefForm({ ...briefForm, campaignId: e.target.value })}
+                              onChange={(e: React.ChangeEvent<HTMLElement>) => setBriefForm({ ...briefForm, campaignId: e.target.value })}
                             >
                               <MenuItem value="">None</MenuItem>
                               {campaigns.map((campaign: any) => (
@@ -609,7 +609,7 @@ const StrategicContent: React.FC = () => {
                           rows={3}
                           label="Objective"
                           value={briefForm.objective}
-                          onChange={(e) => setBriefForm({ ...briefForm, objective: e.target.value })}
+                          onChange={(e: React.ChangeEvent<HTMLElement>) => setBriefForm({ ...briefForm, objective: e.target.value })}
                           required
                         />
                         <TextField
@@ -618,7 +618,7 @@ const StrategicContent: React.FC = () => {
                           rows={2}
                           label="Target Audience"
                           value={briefForm.targetAudience}
-                          onChange={(e) => setBriefForm({ ...briefForm, targetAudience: e.target.value })}
+                          onChange={(e: React.ChangeEvent<HTMLElement>) => setBriefForm({ ...briefForm, targetAudience: e.target.value })}
                           required
                         />
                         <FormControl fullWidth>
@@ -626,7 +626,7 @@ const StrategicContent: React.FC = () => {
                           <Select
                             value={briefForm.tone}
                             label="Tone of Voice"
-                            onChange={(e) => setBriefForm({ ...briefForm, tone: e.target.value })}
+                            onChange={(e: React.ChangeEvent<HTMLElement>) => setBriefForm({ ...briefForm, tone: e.target.value })}
                           >
                             <MenuItem value="professional">Professional</MenuItem>
                             <MenuItem value="casual">Casual</MenuItem>
@@ -659,7 +659,7 @@ const StrategicContent: React.FC = () => {
                                 fullWidth
                                 size="small"
                                 value={msg}
-                                onChange={(e) => {
+                                onChange={(e: React.ChangeEvent<HTMLElement>) => {
                                   const newMessages = [...briefForm.keyMessages];
                                   newMessages[index] = e.target.value;
                                   setBriefForm({ ...briefForm, keyMessages: newMessages });
@@ -690,7 +690,7 @@ const StrategicContent: React.FC = () => {
                                 fullWidth
                                 size="small"
                                 value={del}
-                                onChange={(e) => {
+                                onChange={(e: React.ChangeEvent<HTMLElement>) => {
                                   const newDeliverables = [...briefForm.deliverables];
                                   newDeliverables[index] = e.target.value;
                                   setBriefForm({ ...briefForm, deliverables: newDeliverables });
@@ -729,14 +729,14 @@ const StrategicContent: React.FC = () => {
                           fullWidth
                           label="Timeline"
                           value={briefForm.timeline}
-                          onChange={(e) => setBriefForm({ ...briefForm, timeline: e.target.value })}
+                          onChange={(e: React.ChangeEvent<HTMLElement>) => setBriefForm({ ...briefForm, timeline: e.target.value })}
                           placeholder="e.g., 2 weeks, Q1 2024"
                         />
                         <TextField
                           fullWidth
                           label="Budget (Optional)"
                           value={briefForm.budget}
-                          onChange={(e) => setBriefForm({ ...briefForm, budget: e.target.value })}
+                          onChange={(e: React.ChangeEvent<HTMLElement>) => setBriefForm({ ...briefForm, budget: e.target.value })}
                           placeholder="e.g., $5,000"
                         />
                         <TextField
@@ -745,7 +745,7 @@ const StrategicContent: React.FC = () => {
                           rows={3}
                           label="Additional Notes"
                           value={briefForm.additionalNotes}
-                          onChange={(e) => setBriefForm({ ...briefForm, additionalNotes: e.target.value })}
+                          onChange={(e: React.ChangeEvent<HTMLElement>) => setBriefForm({ ...briefForm, additionalNotes: e.target.value })}
                         />
                         <Box sx={{ display: 'flex', gap: 1 }}>
                           <Button onClick={() => setActiveStep(2)}>Back</Button>

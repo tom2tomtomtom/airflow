@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { useCallback, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Tracking } from '@/lib/analytics/tracking';
@@ -93,6 +94,7 @@ export function useAPITracking() {
       
       return result;
     } catch (error) {
+    const message = getErrorMessage(error);
       const duration = performance.now() - startTime;
       const status = (error as any)?.response?.status || 0;
       

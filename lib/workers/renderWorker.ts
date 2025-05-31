@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { Worker, Job } from 'bullmq';
 import { connection } from '@/lib/queue/connection';
 import { RenderJobData } from '@/lib/queue/bullQueue';
@@ -21,7 +22,7 @@ interface CreatomateRenderResponse {
 }
 
 // Process render job
-async function processRenderJob(job: Job<RenderJobData>) {
+async function processRenderJob(job: Job<RenderJobData>): Promise<void> {
   const { executionId, matrixId, templateId, assets, userId, clientId, isPreview } = job.data;
   
   try {
@@ -187,6 +188,7 @@ async function processRenderJob(job: Job<RenderJobData>) {
     };
     
   } catch (error) {
+    const message = getErrorMessage(error);
     // Update execution as failed
     await supabase
       .from('executions')

@@ -1,3 +1,5 @@
+import { getErrorMessage } from '@/utils/errorUtils';
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from 'openai';
 
@@ -12,7 +14,7 @@ interface TestResponse {
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<TestResponse>
-) {
+): Promise<void> {
   // Only allow GET requests for testing
   if (req.method !== 'GET') {
     return res.status(405).json({ 

@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
@@ -16,7 +17,7 @@ interface RealtimeEvent {
   read: boolean;
 }
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
   const user = (req as any).user;
 
@@ -32,6 +33,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('WebSocket API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
@@ -40,7 +42,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-async function handleGetEvents(req: NextApiRequest, res: NextApiResponse, user: any) {
+async function handleGetEvents(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const { 
     client_id, 
     since, 
@@ -138,12 +140,13 @@ async function handleGetEvents(req: NextApiRequest, res: NextApiResponse, user: 
       timestamp: new Date().toISOString()
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error in handleGetEvents:', error);
     return res.status(500).json({ error: 'Failed to fetch events' });
   }
 }
 
-async function handleCreateEvent(req: NextApiRequest, res: NextApiResponse, user: any) {
+async function handleCreateEvent(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const { type, data, client_id, target_user_ids } = req.body;
 
   if (!type || !data || !client_id) {
@@ -208,12 +211,13 @@ async function handleCreateEvent(req: NextApiRequest, res: NextApiResponse, user
       count: successfulEvents.length
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error creating realtime event:', error);
     return res.status(500).json({ error: 'Failed to create event' });
   }
 }
 
-async function handleMarkRead(req: NextApiRequest, res: NextApiResponse, user: any) {
+async function handleMarkRead(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const { event_ids, mark_all = false, client_id } = req.body;
 
   try {
@@ -247,6 +251,7 @@ async function handleMarkRead(req: NextApiRequest, res: NextApiResponse, user: a
       updated_count: data?.length || 0
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error in handleMarkRead:', error);
     return res.status(500).json({ error: 'Failed to mark events as read' });
   }
@@ -310,6 +315,7 @@ async function triggerWebhookNotifications(
     });
 
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error triggering webhook notifications:', error);
   }
 }
@@ -359,6 +365,7 @@ export async function broadcastEvent(
 
     await Promise.all(eventPromises);
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error broadcasting event:', error);
   }
 }

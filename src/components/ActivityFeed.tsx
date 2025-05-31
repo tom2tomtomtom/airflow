@@ -367,7 +367,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
               </IconButton>
               <IconButton
                 size="small"
-                onClick={(e) => setAnchorEl(e.currentTarget)}
+                onClick={(e: React.ClickEvent<HTMLElement>) => setAnchorEl(e.currentTarget)}
               >
                 <MoreIcon />
               </IconButton>
@@ -461,11 +461,11 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
                               fullWidth
                               placeholder="Add a comment..."
                               value={commentInputs[activity.id] || ''}
-                              onChange={(e) => setCommentInputs(prev => ({
+                              onChange={(e: React.ChangeEvent<HTMLElement>) => setCommentInputs(prev => ({
                                 ...prev,
                                 [activity.id]: e.target.value
                               }))}
-                              onKeyPress={(e) => {
+                              onKeyPress={(e: React.KeyPressEvent<HTMLElement>) => {
                                 if (e.key === 'Enter') {
                                   handleComment(activity.id);
                                 }
@@ -517,7 +517,7 @@ export const NotificationBadge: React.FC = () => {
     <>
       <IconButton
         color="inherit"
-        onClick={(e) => setAnchorEl(e.currentTarget)}
+        onClick={(e: React.ClickEvent<HTMLElement>) => setAnchorEl(e.currentTarget)}
       >
         <Badge badgeContent={unreadCount} color="error">
           <NotificationsIcon />

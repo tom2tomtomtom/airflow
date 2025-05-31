@@ -1,6 +1,7 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { chromium, FullConfig } from '@playwright/test';
 
-async function globalSetup(config: FullConfig) {
+async function globalSetup(config: FullConfig): Promise<void> {
   console.log('🚀 Starting AIrWAVE Comprehensive Test Suite');
   console.log('📍 Target URL: https://airwave-complete.netlify.app');
   console.log('⏱️  Test Timeout: 60 seconds per test');
@@ -34,6 +35,7 @@ async function globalSetup(config: FullConfig) {
         console.log('✅ Login page is accessible');
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log('⚠️  Login page accessibility test failed');
     }
     
@@ -41,6 +43,7 @@ async function globalSetup(config: FullConfig) {
     console.log('');
     
   } catch (error) {
+    const message = getErrorMessage(error);
     console.log('❌ Connectivity test failed:', error.message);
     console.log('');
   }

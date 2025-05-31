@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase/client';
 import { withAuth } from '@/middleware/withAuth';
@@ -10,7 +11,7 @@ const CancelRequestSchema = z.object({
   cleanup_resources: z.boolean().default(true), // Clean up external resources (Creatomate jobs)
 });
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
   const { id } = req.query;
   const user = (req as any).user;
@@ -26,6 +27,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     return handleCancel(req, res, user, id);
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Execution Cancel API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
@@ -34,7 +36,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-async function handleCancel(req: NextApiRequest, res: NextApiResponse, user: any, executionId: string) {
+async function handleCancel(req: NextApiRequest, res: NextApiResponse, user: any, executionId: string): Promise<void> {
   const validationResult = CancelRequestSchema.safeParse(req.body);
   
   if (!validationResult.success) {
@@ -244,6 +246,7 @@ async function cleanupExternalResources(execution: any): Promise<any> {
     cleanupResult.success = cleanupResult.errors.length === 0;
     return cleanupResult;
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error cleaning up external resources:', error);
     cleanupResult.errors.push({
       type: 'general_cleanup',
@@ -264,6 +267,7 @@ async function cancelCreatomateJob(jobId: string): Promise<{ success: boolean; e
     
     return { success: true };
   } catch (error) {
+    const message = getErrorMessage(error);
     return { 
       success: false, 
       error: `Failed to cancel Creatomate job: ${error.message}` 
@@ -285,6 +289,7 @@ async function cancelPendingWebhooks(webhookIds: string[]): Promise<{ cleaned: a
         status: 'cancelled'
       });
     } catch (error) {
+    const message = getErrorMessage(error);
       errors.push({
         type: 'webhook',
         resource_id: webhookId,
@@ -302,6 +307,7 @@ async function cleanupTempFiles(tempFiles: string[]): Promise<{ success: boolean
     console.log(`Cleaning up ${tempFiles.length} temporary files`);
     return { success: true, files_cleaned: tempFiles.length };
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error cleaning up temp files:', error);
     return { success: false, files_cleaned: 0 };
   }
@@ -363,6 +369,7 @@ async function handleRelatedExecutions(execution: any, force: boolean): Promise<
       actions
     };
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error handling related executions:', error);
     return { 
       affected_count: 0, 
@@ -381,6 +388,7 @@ async function logCancellationEvent(executionId: string, userId: string, reason?
       timestamp: new Date().toISOString()
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error logging cancellation event:', error);
   }
 }
@@ -391,6 +399,7 @@ async function triggerCancellationNotification(execution: any, user: any): Promi
     // via WebSocket or Server-Sent Events to relevant stakeholders
     console.log(`Execution ${execution.id} cancelled by ${user.full_name || user.id} - triggering notifications`);
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error triggering cancellation notification:', error);
   }
 }

@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY!);
@@ -100,7 +101,7 @@ function getTemplate(template: EmailTemplate, data: Record<string, any>): string
   }
 }
 
-export async function sendEmail(options: EmailOptions) {
+export async function sendEmail(options: EmailOptions): Promise<void> {
   const { to, subject, template, data } = options;
   
   // If Resend is not configured, use fallback logging
@@ -151,13 +152,14 @@ export async function sendEmail(options: EmailOptions) {
     
     throw new Error('Unexpected response from Resend API');
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Email send failed:', error);
     throw error;
   }
 }
 
 // Helper functions for common email sends
-export async function sendClientApprovalEmail(data: ClientApprovalData & { to: string }) {
+export async function sendClientApprovalEmail(data: ClientApprovalData & { to: string }): Promise<void> {
   return sendEmail({
     to: data.to,
     subject: `Review Required: ${data.campaignName}`,
@@ -166,7 +168,7 @@ export async function sendClientApprovalEmail(data: ClientApprovalData & { to: s
   });
 }
 
-export async function sendRenderCompleteEmail(data: RenderCompleteData & { to: string }) {
+export async function sendRenderCompleteEmail(data: RenderCompleteData & { to: string }): Promise<void> {
   return sendEmail({
     to: data.to,
     subject: `Render Complete: ${data.campaignName}`,
@@ -175,7 +177,7 @@ export async function sendRenderCompleteEmail(data: RenderCompleteData & { to: s
   });
 }
 
-export async function sendWelcomeEmail(data: WelcomeData & { to: string }) {
+export async function sendWelcomeEmail(data: WelcomeData & { to: string }): Promise<void> {
   return sendEmail({
     to: data.to,
     subject: 'Welcome to AIrWAVE!',
@@ -184,7 +186,7 @@ export async function sendWelcomeEmail(data: WelcomeData & { to: string }) {
   });
 }
 
-export async function sendPasswordResetEmail(data: PasswordResetData & { to: string }) {
+export async function sendPasswordResetEmail(data: PasswordResetData & { to: string }): Promise<void> {
   return sendEmail({
     to: data.to,
     subject: 'Password Reset Request',
@@ -193,7 +195,7 @@ export async function sendPasswordResetEmail(data: PasswordResetData & { to: str
   });
 }
 
-export async function sendSystemAlertEmail(data: SystemAlertData & { to: string }) {
+export async function sendSystemAlertEmail(data: SystemAlertData & { to: string }): Promise<void> {
   const alertEmoji = {
     error: '🚨',
     warning: '⚠️',

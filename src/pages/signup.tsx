@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/router';
@@ -126,7 +127,7 @@ const SignupPage: React.FC = () => {
               label="Full Name"
               type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLElement>) => setName(e.target.value)}
               disabled={loading}
               sx={{ mb: 2 }}
               data-testid="name-input"
@@ -144,7 +145,7 @@ const SignupPage: React.FC = () => {
               label="Email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLElement>) => setEmail(e.target.value)}
               disabled={loading}
               sx={{ mb: 2 }}
               data-testid="email-input"
@@ -162,7 +163,7 @@ const SignupPage: React.FC = () => {
               label="Password"
               type={showPassword ? 'text' : 'password'}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLElement>) => setPassword(e.target.value)}
               disabled={loading}
               sx={{ mb: 2 }}
               data-testid="password-input"
@@ -191,7 +192,7 @@ const SignupPage: React.FC = () => {
               label="Confirm Password"
               type={showConfirmPassword ? 'text' : 'password'}
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLElement>) => setConfirmPassword(e.target.value)}
               disabled={loading}
               sx={{ mb: 3 }}
               data-testid="confirm-password-input"

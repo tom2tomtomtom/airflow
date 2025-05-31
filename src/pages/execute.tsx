@@ -461,7 +461,7 @@ const ExecutePage: React.FC = () => {
                         type="datetime-local"
                         fullWidth
                         value={scheduledDate}
-                        onChange={(e) => setScheduledDate(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLElement>) => setScheduledDate(e.target.value)}
                         sx={{ mb: 2 }}
                       />
                     )}
@@ -504,7 +504,7 @@ const ExecutePage: React.FC = () => {
               <Select
                 value={selectedExportFormat}
                 label="Export Format"
-                onChange={(e) => setSelectedExportFormat(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLElement>) => setSelectedExportFormat(e.target.value)}
               >
                 {exportFormats.map(format => (
                   <MenuItem key={format.id} value={format.id}>

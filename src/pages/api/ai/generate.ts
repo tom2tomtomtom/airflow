@@ -1,3 +1,5 @@
+import { getErrorMessage } from '@/utils/errorUtils';
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from 'openai';
 import { env, hasOpenAI } from '@/lib/env';
@@ -60,6 +62,7 @@ const generateText = async (prompt: string, parameters?: Record<string, any>): P
     const variations = content.split(/\n\d+\.|\n-/).filter(v => v.trim()).slice(0, 3);
     return variations.length > 0 ? variations.map(v => v.trim()) : [content];
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('OpenAI text generation error:', error);
     return mockGenerateText(prompt);
   }
@@ -99,6 +102,7 @@ const generateImage = async (prompt: string, parameters?: Record<string, any>): 
 
     return imageUrl;
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('DALL-E image generation error:', error);
     return mockGenerateImage(prompt);
   }
@@ -126,6 +130,7 @@ const enhanceImagePrompt = async (prompt: string, parameters?: Record<string, an
 
     return completion.choices[0]?.message?.content?.trim() || prompt;
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Prompt enhancement error:', error);
     return prompt;
   }
@@ -150,7 +155,7 @@ const mockGenerateVoice = (_prompt: string): string => {
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
-) {
+): Promise<void> {
   // Only allow POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ success: false, message: 'Method not allowed' });
@@ -215,6 +220,7 @@ export default async function handler(
       result,
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error generating content:', error);
     return res.status(500).json({ success: false, message: 'Internal server error' });
   }

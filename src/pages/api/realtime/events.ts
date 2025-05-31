@@ -1,3 +1,5 @@
+import { getErrorMessage } from '@/utils/errorUtils';
+import { NextApiRequest, NextApiResponse } from 'next';
 // Server-Sent Events (SSE) API for Real-Time Updates
 // Alternative to WebSocket that works with Next.js deployment on Netlify
 
@@ -31,7 +33,7 @@ setInterval(() => {
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void> {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -93,6 +95,7 @@ function sendSSEMessage(res: NextApiResponse, event: string, data: any) {
     res.write(`event: ${event}\n`);
     res.write(`data: ${JSON.stringify(data)}\n\n`);
   } catch (error) {
+    const message = getErrorMessage(error);
     // Connection already closed
   }
 }

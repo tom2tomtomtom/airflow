@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import mixpanel, { Dict, Query } from 'mixpanel-browser';
 
 // Generate a simple session ID without external dependencies
@@ -131,6 +132,7 @@ class Analytics {
         });
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Analytics identify error:', error);
     }
   }
@@ -156,6 +158,7 @@ class Analytics {
       
       mixpanel.track(event, enrichedProperties);
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Analytics track error:', error);
     }
   }
@@ -169,6 +172,7 @@ class Analytics {
     try {
       mixpanel.time_event(event);
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Analytics time event error:', error);
     }
   }
@@ -182,6 +186,7 @@ class Analytics {
     try {
       mixpanel.people.set(properties);
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Analytics set user properties error:', error);
     }
   }
@@ -195,6 +200,7 @@ class Analytics {
     try {
       mixpanel.people.increment(property, value);
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Analytics increment error:', error);
     }
   }
@@ -212,6 +218,7 @@ class Analytics {
         amount,
       });
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Analytics revenue error:', error);
     }
   }
@@ -226,6 +233,7 @@ class Analytics {
       mixpanel.reset();
       this.sessionId = generateSessionId();
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Analytics reset error:', error);
     }
   }

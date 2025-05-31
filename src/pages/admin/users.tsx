@@ -463,7 +463,7 @@ const UserManagementPage: React.FC = () => {
                   fullWidth
                   placeholder="Search users..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => setSearchQuery(e.target.value)}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -479,7 +479,7 @@ const UserManagementPage: React.FC = () => {
                   <Select
                     value={roleFilter}
                     label="Role"
-                    onChange={(e) => setRoleFilter(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLElement>) => setRoleFilter(e.target.value)}
                   >
                     <MenuItem value="all">All Roles</MenuItem>
                     <MenuItem value="admin">Admin</MenuItem>
@@ -495,7 +495,7 @@ const UserManagementPage: React.FC = () => {
                   <Select
                     value={statusFilter}
                     label="Status"
-                    onChange={(e) => setStatusFilter(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLElement>) => setStatusFilter(e.target.value)}
                   >
                     <MenuItem value="all">All Status</MenuItem>
                     <MenuItem value="active">Active</MenuItem>
@@ -561,7 +561,7 @@ const UserManagementPage: React.FC = () => {
                         </TableCell>
                         <TableCell align="right">
                           <IconButton
-                            onClick={(e) => handleMenuClick(e, user.id)}
+                            onClick={(e: React.ClickEvent<HTMLElement>) => handleMenuClick(e, user.id)}
                           >
                             <MoreIcon />
                           </IconButton>
@@ -578,7 +578,7 @@ const UserManagementPage: React.FC = () => {
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={(_, newPage) => setPage(newPage)}
-              onRowsPerPageChange={(e) => {
+              onRowsPerPageChange={(e: React.RowsPerPageChangeEvent<HTMLElement>) => {
                 setRowsPerPage(parseInt(e.target.value, 10));
                 setPage(0);
               }}
@@ -740,7 +740,7 @@ const UserManagementPage: React.FC = () => {
                 label="Name"
                 fullWidth
                 value={newUser.name}
-                onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLElement>) => setNewUser({ ...newUser, name: e.target.value })}
                 required
               />
               <TextField
@@ -748,7 +748,7 @@ const UserManagementPage: React.FC = () => {
                 type="email"
                 fullWidth
                 value={newUser.email}
-                onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLElement>) => setNewUser({ ...newUser, email: e.target.value })}
                 required
                 disabled={!!selectedUser}
               />
@@ -757,7 +757,7 @@ const UserManagementPage: React.FC = () => {
                 <Select
                   value={newUser.role}
                   label="Role"
-                  onChange={(e) => setNewUser({ ...newUser, role: e.target.value as User['role'] })}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => setNewUser({ ...newUser, role: e.target.value as User['role'] })}
                 >
                   <MenuItem value="admin">Administrator</MenuItem>
                   <MenuItem value="manager">Manager</MenuItem>
@@ -769,7 +769,7 @@ const UserManagementPage: React.FC = () => {
                 label="Department"
                 fullWidth
                 value={newUser.department}
-                onChange={(e) => setNewUser({ ...newUser, department: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLElement>) => setNewUser({ ...newUser, department: e.target.value })}
               />
               {!selectedUser && (
                 <Alert severity="info">

@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 // WebSocket Service for Real-Time Updates
 // Provides real-time communication for render progress, notifications, and live updates
 
@@ -87,6 +88,7 @@ class WebSocketService extends EventEmitter {
           const message: WebSocketMessage = JSON.parse(event.data);
           this.handleMessage(message);
         } catch (error) {
+    const message = getErrorMessage(error);
           console.error('Failed to parse WebSocket message:', error);
         }
       };
@@ -107,6 +109,7 @@ class WebSocketService extends EventEmitter {
       };
 
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Failed to create WebSocket connection:', error);
       // Fallback to polling if WebSocket fails
       this.emit('fallback_to_polling');
@@ -192,6 +195,7 @@ class WebSocketService extends EventEmitter {
         try {
           ws.send(messageStr);
         } catch (error) {
+    const message = getErrorMessage(error);
           console.error(`Failed to send message to connection ${connectionId}:`, error);
           this.connections.delete(connectionId);
         }
@@ -213,6 +217,7 @@ class WebSocketService extends EventEmitter {
         try {
           ws.send(messageStr);
         } catch (error) {
+    const message = getErrorMessage(error);
           console.error(`Failed to send message to user ${userId}:`, error);
           this.removeConnection(connectionId, userId);
         }

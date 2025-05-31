@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { createClient } from '@supabase/supabase-js';
 import { env } from './env';
 import { Database } from '@/types/database';
@@ -39,7 +40,7 @@ export const getServiceSupabase = () => {
 };
 
 // Helper function to get user from token with better error handling
-export async function getUserFromToken(token: string) {
+export async function getUserFromToken(token: string): Promise<void> {
   if (!token) {
     throw new Error('Token is required');
   }
@@ -58,6 +59,7 @@ export async function getUserFromToken(token: string) {
     
     return data.user;
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error getting user from token:', error);
     if (error instanceof Error) {
       throw error;
@@ -67,7 +69,7 @@ export async function getUserFromToken(token: string) {
 }
 
 // Helper function to get user profile with better error handling
-export async function getUserProfile(userId: string) {
+export async function getUserProfile(userId: string): Promise<void> {
   if (!userId) {
     throw new Error('User ID is required');
   }
@@ -89,13 +91,14 @@ export async function getUserProfile(userId: string) {
     
     return data;
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error getting user profile:', error);
     throw error;
   }
 }
 
 // Helper function to get user's client access with better error handling
-export async function getUserClients(userId: string) {
+export async function getUserClients(userId: string): Promise<void> {
   if (!userId) {
     throw new Error('User ID is required');
   }
@@ -112,6 +115,7 @@ export async function getUserClients(userId: string) {
     
     return data?.map((uc: { client_id: string }) => uc.client_id) || [];
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error getting user clients:', error);
     throw error;
   }
@@ -123,6 +127,7 @@ export async function userHasClientAccess(userId: string, clientId: string): Pro
     const userClients = await getUserClients(userId);
     return userClients.includes(clientId);
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error checking client access:', error);
     return false;
   }

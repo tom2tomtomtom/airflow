@@ -1,3 +1,5 @@
+import { getErrorMessage } from '@/utils/errorUtils';
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
 import { env } from '@/lib/env';
@@ -30,7 +32,7 @@ const SUPPORTED_TYPES = {
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void> {
   if (req.method !== 'POST') {
     return res.status(405).json({ 
       success: false, 
@@ -184,6 +186,7 @@ export default async function handler(
     });
 
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Brief upload error:', error);
     return res.status(500).json({
       success: false,
@@ -193,7 +196,7 @@ export default async function handler(
 }
 
 // Async function to parse brief with AI
-async function parseBriefAsync(briefId: string, content: string) {
+async function parseBriefAsync(briefId: string, content: string): Promise<void> {
   try {
     // Make API call to parse endpoint
     await fetch(`${env.NEXT_PUBLIC_API_URL}/api/briefs/parse`, {
@@ -207,6 +210,7 @@ async function parseBriefAsync(briefId: string, content: string) {
       }),
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Failed to trigger parsing:', error);
   }
 }

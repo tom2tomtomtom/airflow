@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase/client';
 import { withAuth } from '@/middleware/withAuth';
@@ -12,7 +13,7 @@ const ExecutionUpdateSchema = z.object({
   completion_percentage: z.number().min(0).max(100).optional(),
 });
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
   const { id } = req.query;
   const user = (req as any).user;
@@ -33,6 +34,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Execution API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
@@ -41,7 +43,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, executionId: string) {
+async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, executionId: string): Promise<void> {
   const { include_logs = false, include_analytics = false } = req.query;
 
   // First verify user has access to this execution
@@ -113,7 +115,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, e
   });
 }
 
-async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, executionId: string) {
+async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, executionId: string): Promise<void> {
   const validationResult = ExecutionUpdateSchema.safeParse(req.body);
   
   if (!validationResult.success) {
@@ -200,7 +202,7 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, e
   return res.json({ data: execution });
 }
 
-async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any, executionId: string) {
+async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any, executionId: string): Promise<void> {
   // Verify user has access to this execution
   const { data: existingExecution } = await supabase
     .from('executions')
@@ -301,6 +303,7 @@ async function getExecutionLogs(executionId: string): Promise<any[]> {
 
     return logs;
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error getting execution logs:', error);
     return [];
   }
@@ -332,6 +335,7 @@ async function getExecutionAnalytics(executionId: string): Promise<any> {
       daily_data: analytics,
     };
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error getting execution analytics:', error);
     return { has_data: false, error: 'Failed to retrieve analytics' };
   }
@@ -389,6 +393,7 @@ async function getRelatedExecutions(matrixId: string, excludeId: string): Promis
 
     return executions || [];
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error getting related executions:', error);
     return [];
   }
@@ -460,6 +465,7 @@ async function logExecutionEvent(executionId: string, eventType: string, details
     // In a full implementation, this would log to an execution_events table
     console.log(`Execution ${executionId} event:`, eventType, details);
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error logging execution event:', error);
   }
 }
@@ -470,6 +476,7 @@ async function triggerExecutionNotification(execution: any, status: string): Pro
     // via WebSocket or Server-Sent Events
     console.log(`Execution ${execution.id} ${status} - triggering notifications`);
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error triggering execution notification:', error);
   }
 }

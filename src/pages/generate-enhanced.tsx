@@ -613,7 +613,7 @@ const GenerateEnhancedPage: React.FC = () => {
                   variant="outlined"
                   placeholder="Enter client brief text or campaign objectives here..."
                   value={briefText}
-                  onChange={(e) => setBriefText(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => setBriefText(e.target.value)}
                   sx={{ mb: 2 }}
                 />
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -951,7 +951,7 @@ const GenerateEnhancedPage: React.FC = () => {
                         variant="outlined"
                         placeholder="Describe the image you want to generate..."
                         value={imagePrompt}
-                        onChange={(e) => setImagePrompt(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLElement>) => setImagePrompt(e.target.value)}
                         sx={{ mb: 1 }}
                       />
                       <Typography variant="caption" color="text.secondary">
@@ -1165,7 +1165,7 @@ const GenerateEnhancedPage: React.FC = () => {
                         variant="outlined"
                         placeholder="Describe the video you want to generate..."
                         value={videoPrompt}
-                        onChange={(e) => setVideoPrompt(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLElement>) => setVideoPrompt(e.target.value)}
                         sx={{ mb: 1 }}
                       />
                       <Typography variant="caption" color="text.secondary">

@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
@@ -56,7 +57,7 @@ const WEBHOOK_EVENTS = {
   USER_JOINED: 'user.joined',
 } as const;
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
   const user = (req as any).user;
 
@@ -70,6 +71,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Webhook API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
@@ -78,7 +80,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any) {
+async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const validationResult = WebhookFilterSchema.safeParse(req.query);
   
   if (!validationResult.success) {
@@ -157,12 +159,13 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any) {
       }
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error in handleGet:', error);
     return res.status(500).json({ error: 'Failed to fetch webhooks' });
   }
 }
 
-async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any) {
+async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const validationResult = WebhookCreateSchema.safeParse(req.body);
   
   if (!validationResult.success) {
@@ -255,6 +258,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any) 
       }
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error creating webhook:', error);
     return res.status(500).json({ error: 'Failed to create webhook' });
   }
@@ -297,6 +301,7 @@ async function testWebhookUrl(url: string, timeoutMs: number = 10000): Promise<{
       };
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     if (error.name === 'AbortError') {
       return { success: false, error: 'Request timeout' };
     }
@@ -344,6 +349,7 @@ async function calculateWebhookStatistics(clientIds: string[]): Promise<any> {
       event_distribution: eventDistribution,
     };
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error calculating webhook statistics:', error);
     return getEmptyWebhookStatistics();
   }
@@ -375,6 +381,7 @@ async function logWebhookEvent(webhookId: string, action: string, userId: string
         timestamp: new Date().toISOString(),
       });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error logging webhook event:', error);
   }
 }
@@ -395,6 +402,7 @@ async function triggerTestWebhook(webhook: any): Promise<void> {
 
     await deliverWebhook(webhook, payload);
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error sending test webhook:', error);
   }
 }
@@ -458,6 +466,7 @@ export async function deliverWebhook(webhook: any, payload: any): Promise<{ succ
       error: response.ok ? undefined : `HTTP ${response.status}: ${response.statusText}`
     };
   } catch (error) {
+    const message = getErrorMessage(error);
     // Update failed delivery count
     await supabase
       .from('webhooks')
@@ -524,6 +533,7 @@ export async function triggerWebhookEvent(
 
     await Promise.allSettled(deliveryPromises);
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error triggering webhook event:', error);
   }
 }

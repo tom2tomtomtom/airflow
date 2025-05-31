@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase/client';
 import { withAuth } from '@/middleware/withAuth';
@@ -20,7 +21,7 @@ const ExecuteRequestSchema = z.object({
   }).optional(),
 });
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
   const { id } = req.query;
   const user = (req as any).user;
@@ -36,6 +37,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     return handleExecute(req, res, user, id);
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Matrix Execute API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
@@ -44,7 +46,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-async function handleExecute(req: NextApiRequest, res: NextApiResponse, user: any, matrixId: string) {
+async function handleExecute(req: NextApiRequest, res: NextApiResponse, user: any, matrixId: string): Promise<void> {
   const validationResult = ExecuteRequestSchema.safeParse(req.body);
   
   if (!validationResult.success) {
@@ -214,6 +216,7 @@ async function checkExecutionLimits(clientId: string, userId: string): Promise<{
 
     return { allowed: true };
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error checking execution limits:', error);
     return { 
       allowed: false, 
@@ -339,6 +342,7 @@ async function executeImmediate(executionPlan: any): Promise<any> {
       });
 
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Error executing:', error);
       results.push({
         execution_id: execution.id,
@@ -454,6 +458,7 @@ async function triggerRenderJob(execution: any): Promise<any> {
       return await triggerCustomRender(execution);
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error triggering render job:', error);
     return {
       success: false,

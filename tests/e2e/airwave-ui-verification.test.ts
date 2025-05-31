@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { test, expect, Page } from '@playwright/test';
 
 /**
@@ -9,13 +10,13 @@ import { test, expect, Page } from '@playwright/test';
 const BASE_URL = 'https://airwave-complete.netlify.app';
 
 // Helper function to wait for page load and styles
-async function waitForPageLoad(page: Page) {
+async function waitForPageLoad(page: Page): Promise<void> {
   await page.waitForLoadState('networkidle');
   await page.waitForTimeout(2000); // Allow time for CSS to apply
 }
 
 // Helper function to check if element has proper Carbon Black styling
-async function verifyCarbonBlackTheme(page: Page) {
+async function verifyCarbonBlackTheme(page: Page): Promise<void> {
   // Check for dark background (Carbon Black theme)
   const bodyStyles = await page.evaluate(() => {
     const body = document.body;
@@ -31,7 +32,7 @@ async function verifyCarbonBlackTheme(page: Page) {
 }
 
 // Helper function to check icon sizes
-async function verifyIconSizes(page: Page) {
+async function verifyIconSizes(page: Page): Promise<void> {
   const icons = await page.locator('svg, img[src*="icon"], .icon').all();
   
   for (const icon of icons) {
@@ -555,6 +556,7 @@ test.describe('AIrWAVE UI Verification Suite', () => {
             await page.goto(BASE_URL);
             await waitForPageLoad(page);
           } catch (error) {
+    const message = getErrorMessage(error);
             console.log(`Navigation to ${href} failed:`, error);
           }
         }

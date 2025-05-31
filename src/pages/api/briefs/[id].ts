@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase/client';
 import { withAuth } from '@/middleware/withAuth';
@@ -17,7 +18,7 @@ const BriefUpdateSchema = z.object({
   parsing_status: z.enum(['pending', 'processing', 'completed', 'error']).optional(),
 });
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
   const { id } = req.query;
   const user = (req as any).user;
@@ -38,6 +39,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Brief API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
@@ -46,7 +48,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, briefId: string) {
+async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, briefId: string): Promise<void> {
   // First verify user has access to this brief
   const { data: brief, error } = await supabase
     .from('briefs')
@@ -114,7 +116,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, b
   });
 }
 
-async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, briefId: string) {
+async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, briefId: string): Promise<void> {
   const validationResult = BriefUpdateSchema.safeParse(req.body);
   
   if (!validationResult.success) {
@@ -171,7 +173,7 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, b
   return res.json({ data: brief });
 }
 
-async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any, briefId: string) {
+async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any, briefId: string): Promise<void> {
   // First verify user has access to this brief
   const { data: existingBrief } = await supabase
     .from('briefs')

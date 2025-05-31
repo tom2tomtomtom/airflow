@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { errorResponse, ErrorCode } from '@/utils/api';
 import { UserRole } from '@/types/auth';
@@ -93,6 +94,7 @@ export function withAuth(handler: AuthenticatedHandler) {
         // Call the handler
         return await handler(req as AuthenticatedRequest, res);
       } catch (error) {
+    const message = getErrorMessage(error);
         console.error('Token verification error:', error);
         return errorResponse(
           res,
@@ -102,6 +104,7 @@ export function withAuth(handler: AuthenticatedHandler) {
         );
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Authentication error:', error);
       return errorResponse(
         res,

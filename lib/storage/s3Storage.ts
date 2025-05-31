@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import {
   S3Client,
   PutObjectCommand,
@@ -107,6 +108,7 @@ export async function uploadFile(
       metadata: headResponse.Metadata,
     };
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('S3 upload error:', error);
     throw new Error(`Failed to upload file: ${error.message}`);
   }
@@ -163,6 +165,7 @@ export async function deleteFile(key: string): Promise<void> {
     
     await s3Client.send(command);
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('S3 delete error:', error);
     throw new Error(`Failed to delete file: ${error.message}`);
   }
@@ -205,6 +208,7 @@ export async function listFiles(
       lastModified: object.LastModified || new Date(),
     }));
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('S3 list error:', error);
     throw new Error(`Failed to list files: ${error.message}`);
   }
@@ -221,6 +225,7 @@ export async function fileExists(key: string): Promise<boolean> {
     await s3Client.send(command);
     return true;
   } catch (error) {
+    const message = getErrorMessage(error);
     if (error.name === 'NotFound') {
       return false;
     }
@@ -248,6 +253,7 @@ export async function getFileMetadata(key: string): Promise<StorageFile | null> 
       metadata: response.Metadata,
     };
   } catch (error) {
+    const message = getErrorMessage(error);
     if (error.name === 'NotFound') {
       return null;
     }

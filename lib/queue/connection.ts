@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import Redis from 'ioredis';
 
 // Create a shared Redis connection for all queues and workers
@@ -20,6 +21,7 @@ try {
     console.warn('No Redis URL configured. Queue functionality will be disabled.');
   }
 } catch (error) {
+    const message = getErrorMessage(error);
   console.error('Failed to initialize Redis connection:', error);
   connection = null;
 }
@@ -56,13 +58,14 @@ export async function checkRedisHealth(): Promise<boolean> {
     const result = await connection.ping();
     return result === 'PONG';
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Redis health check failed:', error);
     return false;
   }
 }
 
 // Graceful shutdown
-export async function closeRedisConnection() {
+export async function closeRedisConnection(): Promise<void> {
   if (connection) {
     await connection.quit();
   }

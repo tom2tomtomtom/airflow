@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import React, { useState, useCallback } from 'react';
 import {
   Dialog,
@@ -127,6 +128,7 @@ export const AssetUploadModal: React.FC<AssetUploadModalProps> = ({
       
       console.log('Successfully uploaded files:', result);
     } catch (error) {
+    const message = getErrorMessage(error);
       setUploading(false);
       setUploadProgress(0);
       console.error('Upload failed:', error);

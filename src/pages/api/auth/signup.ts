@@ -1,5 +1,8 @@
+import { getErrorMessage } from '@/utils/errorUtils';
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
+import { apiSchemas } from '@/middleware/validation';
 
 interface SignupRequest {
   email: string;
@@ -23,32 +26,21 @@ interface SignupResponse {
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<SignupResponse>
-) {
+): Promise<void> {
   if (req.method !== 'POST') {
     return res.status(405).json({ success: false, error: 'Method not allowed' });
   }
 
-  const { email, password, name }: SignupRequest = req.body;
-
-  if (!email || !password || !name) {
-    return res.status(400).json({ 
-      success: false, 
-      error: 'Email, password, and name are required' 
-    });
-  }
-
-  // Basic validation
-  if (password.length < 6) {
+  // Validate input using comprehensive validation schema
+  let email: string, password: string, name: string;
+  try {
+    const validatedData = apiSchemas.signup.parse(req.body);
+    ({ email, password, name } = validatedData);
+  } catch (validationError: any) {
+    const errors = validationError.errors?.map((err: any) => err.message).join(', ') || 'Invalid input data';
     return res.status(400).json({
       success: false,
-      error: 'Password must be at least 6 characters long'
-    });
-  }
-
-  if (!email.includes('@')) {
-    return res.status(400).json({
-      success: false,
-      error: 'Please enter a valid email address'
+      error: errors
     });
   }
 
@@ -165,6 +157,7 @@ export default async function handler(
     });
 
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Signup error:', error);
     return res.status(500).json({
       success: false,

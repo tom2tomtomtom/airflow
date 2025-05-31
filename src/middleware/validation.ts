@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextRequest, NextResponse } from 'next/server';
 import { z, ZodError, ZodSchema } from 'zod';
 import { loggers } from '@/lib/logger';
@@ -170,6 +171,7 @@ export async function validateRequest<T>(
     
     return { data, error: null };
   } catch (error) {
+    const message = getErrorMessage(error);
     if (error instanceof ZodError) {
       return { data: {} as T, error: validationErrorResponse(error) };
     }

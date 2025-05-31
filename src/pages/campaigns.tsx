@@ -137,7 +137,7 @@ const CampaignsPage: React.FC = () => {
             fullWidth
             placeholder="Search campaigns..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLElement>) => setSearchTerm(e.target.value)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -225,7 +225,7 @@ const CampaignsPage: React.FC = () => {
                       </Typography>
                       <IconButton
                         size="small"
-                        onClick={(e) => handleMenuOpen(e, campaign)}
+                        onClick={(e: React.ClickEvent<HTMLElement>) => handleMenuOpen(e, campaign)}
                       >
                         <MoreIcon />
                       </IconButton>

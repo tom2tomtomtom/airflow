@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import React, { useState, useEffect } from 'react';
 import { isCampaign } from '@/utils/campaign-helpers';
 import { useRouter } from 'next/router';
@@ -341,7 +342,7 @@ export default function EditCampaign() {
                 fullWidth
                 label="Campaign Name"
                 value={formData.name}
-                onChange={(e) => handleFieldChange('name', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLElement>) => handleFieldChange('name', e.target.value)}
                 error={!!errors.name}
                 helperText={errors.name}
                 margin="normal"
@@ -351,7 +352,7 @@ export default function EditCampaign() {
                 fullWidth
                 label="Description"
                 value={formData.description}
-                onChange={(e) => handleFieldChange('description', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLElement>) => handleFieldChange('description', e.target.value)}
                 multiline
                 rows={4}
                 margin="normal"
@@ -362,7 +363,7 @@ export default function EditCampaign() {
                   select
                   label="Status"
                   value={formData.status}
-                  onChange={(e) => handleFieldChange('status', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => handleFieldChange('status', e.target.value)}
                   SelectProps={{
                     native: true,
                   }}
@@ -411,7 +412,7 @@ export default function EditCampaign() {
                                   <Checkbox
                                     checked={formData.platforms.includes(platform.value)}
                                     onChange={() => handlePlatformToggle(platform.value)}
-                                    onClick={(e) => e.stopPropagation()}
+                                    onClick={(e: React.ClickEvent<HTMLElement>) => e.stopPropagation()}
                                   />
                                 }
                                 label={platform.name}
@@ -435,7 +436,7 @@ export default function EditCampaign() {
                   label="Campaign Budget"
                   type="number"
                   value={formData.budget}
-                  onChange={(e) => handleFieldChange('budget', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => handleFieldChange('budget', e.target.value)}
                   error={!!errors.budget}
                   helperText={errors.budget}
                   InputProps={{
@@ -449,7 +450,7 @@ export default function EditCampaign() {
                       <DatePicker
                         label="Start Date"
                         value={formData.startDate}
-                        onChange={(newValue) => handleFieldChange('startDate', newValue)}
+                        onChange={(e: React.ChangeEvent<HTMLElement>) => handleFieldChange('startDate', newValue)}
                         renderInput={(params) => (
                           <TextField
                             {...params}
@@ -464,7 +465,7 @@ export default function EditCampaign() {
                       <DatePicker
                         label="End Date"
                         value={formData.endDate}
-                        onChange={(newValue) => handleFieldChange('endDate', newValue)}
+                        onChange={(e: React.ChangeEvent<HTMLElement>) => handleFieldChange('endDate', newValue)}
                         renderInput={(params) => (
                           <TextField
                             {...params}

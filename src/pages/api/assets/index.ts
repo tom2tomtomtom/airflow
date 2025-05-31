@@ -1,3 +1,5 @@
+import { getErrorMessage } from '@/utils/errorUtils';
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase, getUserFromToken, userHasClientAccess } from '@/lib/supabase';
 
@@ -31,7 +33,7 @@ type ResponseData = {
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
-) {
+): Promise<void> {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -70,6 +72,7 @@ export default async function handler(
         return res.status(405).json({ success: false, message: 'Method not allowed' });
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('API error:', error);
     return res.status(500).json({
       success: false,
@@ -84,7 +87,7 @@ async function getAssets(
   res: NextApiResponse<ResponseData>,
   userId: string,
   clientId?: string
-) {
+): Promise<void> {
   try {
     // Build query
     let query = supabase
@@ -155,6 +158,7 @@ async function getAssets(
       assets: transformedAssets,
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error fetching assets:', error);
     throw error;
   }
@@ -165,7 +169,7 @@ async function createAsset(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>,
   userId: string
-) {
+): Promise<void> {
   try {
     const { 
       name, type, url, thumbnailUrl, description, tags, clientId,
@@ -250,6 +254,7 @@ async function createAsset(
       asset: transformedAsset,
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error creating asset:', error);
     throw error;
   }
@@ -260,7 +265,7 @@ async function updateAsset(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>,
   userId: string
-) {
+): Promise<void> {
   try {
     const { id } = req.query;
     const updates = req.body;
@@ -337,6 +342,7 @@ async function updateAsset(
       asset: transformedAsset,
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error updating asset:', error);
     throw error;
   }
@@ -347,7 +353,7 @@ async function deleteAsset(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>,
   userId: string
-) {
+): Promise<void> {
   try {
     const { id } = req.query;
 
@@ -397,6 +403,7 @@ async function deleteAsset(
       message: 'Asset deleted successfully'
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error deleting asset:', error);
     throw error;
   }

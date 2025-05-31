@@ -1,3 +1,5 @@
+import { getErrorMessage } from '@/utils/errorUtils';
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@supabase/supabase-js';
 
@@ -12,7 +14,7 @@ interface SupabaseTestResponse {
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<SupabaseTestResponse>
-) {
+): Promise<void> {
   // Only allow GET requests for testing
   if (req.method !== 'GET') {
     return res.status(405).json({ 
@@ -64,6 +66,7 @@ export default async function handler(
         recordCount: usersData?.length || 0
       });
     } catch (error) {
+    const message = getErrorMessage(error);
       tableTests.push({
         table: 'users',
         accessible: false,
@@ -85,6 +88,7 @@ export default async function handler(
         recordCount: clientsData?.length || 0
       });
     } catch (error) {
+    const message = getErrorMessage(error);
       tableTests.push({
         table: 'clients',
         accessible: false,
@@ -106,6 +110,7 @@ export default async function handler(
         recordCount: campaignsData?.length || 0
       });
     } catch (error) {
+    const message = getErrorMessage(error);
       tableTests.push({
         table: 'campaigns',
         accessible: false,
@@ -127,6 +132,7 @@ export default async function handler(
         error: bucketsError?.message || null
       };
     } catch (error) {
+    const message = getErrorMessage(error);
       storageTest = {
         accessible: false,
         error: error instanceof Error ? error.message : 'Unknown error'

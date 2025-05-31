@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 #!/usr/bin/env tsx
 // Script to create a test user in Supabase for testing purposes
 
@@ -56,7 +57,7 @@ const testUsers: TestUser[] = [
   }
 ];
 
-async function createTestUser(testUser: TestUser) {
+async function createTestUser(testUser: TestUser): Promise<void> {
   console.log(`\n🔧 Creating test user: ${testUser.email}`);
   
   try {
@@ -170,12 +171,13 @@ async function createTestUser(testUser: TestUser) {
     };
 
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error(`❌ Unexpected error creating test user:`, error);
     return null;
   }
 }
 
-async function main() {
+async function main(): Promise<void> {
   console.log('🚀 Creating test users for AIrWAVE platform testing...\n');
 
   const createdUsers = [];

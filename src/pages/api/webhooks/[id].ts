@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
@@ -25,7 +26,7 @@ const WebhookTestSchema = z.object({
   test_data: z.record(z.any()).optional(),
 });
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
   const { id } = req.query;
   const user = (req as any).user;
@@ -48,6 +49,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Webhook API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
@@ -56,7 +58,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, webhookId: string) {
+async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, webhookId: string): Promise<void> {
   try {
     // Get user's accessible clients
     const { data: userClients } = await supabase
@@ -119,12 +121,13 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, w
       events: Object.values(WEBHOOK_EVENTS)
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error in handleGet:', error);
     return res.status(500).json({ error: 'Failed to fetch webhook' });
   }
 }
 
-async function handleUpdate(req: NextApiRequest, res: NextApiResponse, user: any, webhookId: string) {
+async function handleUpdate(req: NextApiRequest, res: NextApiResponse, user: any, webhookId: string): Promise<void> {
   const validationResult = WebhookUpdateSchema.safeParse(req.body);
   
   if (!validationResult.success) {
@@ -223,12 +226,13 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse, user: any
       }
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error updating webhook:', error);
     return res.status(500).json({ error: 'Failed to update webhook' });
   }
 }
 
-async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any, webhookId: string) {
+async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any, webhookId: string): Promise<void> {
   try {
     // Get webhook with access validation
     const { data: webhook, error: fetchError } = await supabase
@@ -278,12 +282,13 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
 
     return res.json({ success: true });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error deleting webhook:', error);
     return res.status(500).json({ error: 'Failed to delete webhook' });
   }
 }
 
-async function handleAction(req: NextApiRequest, res: NextApiResponse, user: any, webhookId: string) {
+async function handleAction(req: NextApiRequest, res: NextApiResponse, user: any, webhookId: string): Promise<void> {
   const { action } = req.query;
 
   switch (action) {
@@ -298,7 +303,7 @@ async function handleAction(req: NextApiRequest, res: NextApiResponse, user: any
   }
 }
 
-async function handleTestWebhook(req: NextApiRequest, res: NextApiResponse, user: any, webhookId: string) {
+async function handleTestWebhook(req: NextApiRequest, res: NextApiResponse, user: any, webhookId: string): Promise<void> {
   const validationResult = WebhookTestSchema.safeParse(req.body);
   
   if (!validationResult.success) {
@@ -372,12 +377,13 @@ async function handleTestWebhook(req: NextApiRequest, res: NextApiResponse, user
       payload
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error testing webhook:', error);
     return res.status(500).json({ error: 'Failed to test webhook' });
   }
 }
 
-async function handleRegenerateSecret(req: NextApiRequest, res: NextApiResponse, user: any, webhookId: string) {
+async function handleRegenerateSecret(req: NextApiRequest, res: NextApiResponse, user: any, webhookId: string): Promise<void> {
   try {
     // Get webhook with access validation
     const { data: webhook, error: fetchError } = await supabase
@@ -437,12 +443,13 @@ async function handleRegenerateSecret(req: NextApiRequest, res: NextApiResponse,
       secret: `${newSecret.substring(0, 8)}...`
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error regenerating webhook secret:', error);
     return res.status(500).json({ error: 'Failed to regenerate secret' });
   }
 }
 
-async function handleToggleWebhook(req: NextApiRequest, res: NextApiResponse, user: any, webhookId: string) {
+async function handleToggleWebhook(req: NextApiRequest, res: NextApiResponse, user: any, webhookId: string): Promise<void> {
   try {
     // Get webhook with access validation
     const { data: webhook, error: fetchError } = await supabase
@@ -501,6 +508,7 @@ async function handleToggleWebhook(req: NextApiRequest, res: NextApiResponse, us
       active: newActiveState
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error toggling webhook:', error);
     return res.status(500).json({ error: 'Failed to toggle webhook' });
   }
@@ -543,6 +551,7 @@ async function testWebhookUrl(url: string, timeoutMs: number = 10000): Promise<{
       };
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     if (error.name === 'AbortError') {
       return { success: false, error: 'Request timeout' };
     }
@@ -565,6 +574,7 @@ async function logWebhookEvent(webhookId: string, action: string, userId: string
         timestamp: new Date().toISOString(),
       });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error logging webhook event:', error);
   }
 }

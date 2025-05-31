@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase/client';
 import { withAuth } from '@/middleware/withAuth';
@@ -29,7 +30,7 @@ const ApprovalFilterSchema = z.object({
   sort_order: z.enum(['asc', 'desc']).default('desc'),
 });
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
   const user = (req as any).user;
 
@@ -43,6 +44,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Approvals API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
@@ -51,7 +53,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any) {
+async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const validationResult = ApprovalFilterSchema.safeParse(req.query);
   
   if (!validationResult.success) {
@@ -160,7 +162,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any) {
   });
 }
 
-async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any) {
+async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const validationResult = ApprovalCreateSchema.safeParse(req.body);
   
   if (!validationResult.success) {
@@ -336,6 +338,7 @@ async function getApprovalItemDetails(itemType: string, itemId: string): Promise
       item_type: itemType,
     };
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error getting approval item details:', error);
     return null;
   }
@@ -393,6 +396,7 @@ async function determineApprovalAssignee(clientId: string, approvalType: string,
 
     return managers && managers.length > 0 ? managers[0].user_id : null;
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error determining approval assignee:', error);
     return null;
   }
@@ -410,6 +414,7 @@ async function updateItemApprovalStatus(itemType: string, itemId: string, status
       })
       .eq('id', itemId);
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error updating item approval status:', error);
   }
 }
@@ -420,6 +425,7 @@ async function triggerApprovalNotification(approval: any, action: string): Promi
     // via WebSocket, email, or push notifications
     console.log(`Approval ${approval.id} ${action} - triggering notifications to ${approval.assigned_to}`);
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error triggering approval notification:', error);
   }
 }

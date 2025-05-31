@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
@@ -11,7 +12,7 @@ const NotificationUpdateSchema = z.object({
   metadata: z.any().optional(),
 });
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
   const { id } = req.query;
   const user = (req as any).user;
@@ -32,6 +33,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Notification API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
@@ -40,7 +42,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, notificationId: string) {
+async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, notificationId: string): Promise<void> {
   try {
     const { data: notification, error } = await supabase
       .from('notifications')
@@ -139,12 +141,13 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, n
 
     return res.json({ data: enrichedNotification });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error in handleGet:', error);
     return res.status(500).json({ error: 'Failed to fetch notification' });
   }
 }
 
-async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, notificationId: string) {
+async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, notificationId: string): Promise<void> {
   const validationResult = NotificationUpdateSchema.safeParse(req.body);
   
   if (!validationResult.success) {
@@ -213,12 +216,13 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, n
 
     return res.json({ data: notification });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error in handlePut:', error);
     return res.status(500).json({ error: 'Failed to update notification' });
   }
 }
 
-async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any, notificationId: string) {
+async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any, notificationId: string): Promise<void> {
   try {
     // Verify notification belongs to user
     const { data: existingNotification } = await supabase
@@ -257,6 +261,7 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
 
     return res.status(200).json({ message: 'Notification deleted successfully' });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error in handleDelete:', error);
     return res.status(500).json({ error: 'Failed to delete notification' });
   }

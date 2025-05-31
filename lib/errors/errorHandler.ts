@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import * as Sentry from '@sentry/nextjs';
 
 export class AppError extends Error {
@@ -152,6 +153,7 @@ export function withErrorHandler(
     try {
       await handler(req, res);
     } catch (error) {
+    const message = getErrorMessage(error);
       handleError(error as Error);
       
       const statusCode = error instanceof AppError ? error.statusCode : 500;

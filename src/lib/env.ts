@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { z } from 'zod';
 
 // Helper to check if we're in build context
@@ -142,6 +143,7 @@ const parseEnv = () => {
     
     return parsed;
   } catch (error) {
+    const message = getErrorMessage(error);
     if (error instanceof z.ZodError) {
       const errorMessage = ['❌ Invalid environment variables:'];
       error.errors.forEach((err) => {

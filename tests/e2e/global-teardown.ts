@@ -1,4 +1,4 @@
-async function globalTeardown() {
+async function globalTeardown(): Promise<void> {
   console.log('🧹 Running global teardown...');
   
   // Clean up any global test data

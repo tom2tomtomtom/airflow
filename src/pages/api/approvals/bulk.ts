@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase/client';
 import { withAuth } from '@/middleware/withAuth';
@@ -27,7 +28,7 @@ const BulkApprovalCreateSchema = z.object({
   client_id: z.string().uuid(),
 });
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
   const user = (req as any).user;
 
@@ -41,6 +42,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Bulk Approvals API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
@@ -49,7 +51,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any) {
+async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   // Handle bulk approval creation
   const validationResult = BulkApprovalCreateSchema.safeParse(req.body);
   
@@ -147,7 +149,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any) 
   });
 }
 
-async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any) {
+async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   // Handle bulk approval decisions
   const validationResult = BulkApprovalDecisionSchema.safeParse(req.body);
   
@@ -353,6 +355,7 @@ async function validateBulkItems(items: any[], clientId: string): Promise<any[]>
 
       return { valid: true, item_id: item.item_id };
     } catch (error) {
+    const message = getErrorMessage(error);
       return { valid: false, item_id: item.item_id, reason: 'Validation error' };
     }
   }));
@@ -417,6 +420,7 @@ async function determineApprovalAssignee(clientId: string, approvalType: string,
 
     return approvers && approvers.length > 0 ? approvers[0].user_id : null;
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error determining approval assignee:', error);
     return null;
   }
@@ -435,6 +439,7 @@ async function updateItemsApprovalStatus(items: any[], status: string): Promise<
         })
         .eq('id', item.item_id);
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error(`Error updating item ${item.item_id} status:`, error);
     }
   }));
@@ -461,6 +466,7 @@ async function updateItemsStatusAfterDecision(items: any[], decision: string): P
         })
         .eq('id', item.item_id);
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error(`Error updating item ${item.item_id} status after decision:`, error);
     }
   }));
@@ -483,6 +489,7 @@ async function verifyApprovalPermission(approval: any, userId: string, action: s
 
     return permissions[action] || false;
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error verifying approval permission:', error);
     return false;
   }
@@ -506,6 +513,7 @@ async function triggerPostDecisionWorkflow(approval: any, decision: any): Promis
       }
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error triggering post-decision workflow:', error);
   }
 }
@@ -517,6 +525,7 @@ async function logBulkApprovalDecision(approvalIds: string[], action: string, us
       comments 
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error logging bulk approval decision:', error);
   }
 }
@@ -525,6 +534,7 @@ async function triggerBulkNotification(userId: string, approvals: any[], action:
   try {
     console.log(`Bulk notification for user ${userId}: ${action} - ${approvals.length} approvals`);
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error triggering bulk notification:', error);
   }
 }

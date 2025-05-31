@@ -119,7 +119,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
                   borderRadius: 1,
                   flexShrink: 0,
                 }}
-                onError={(e) => {
+                onError={(e: React.ErrorEvent<HTMLElement>) => {
                   e.currentTarget.style.display = 'none';
                 }}
               />

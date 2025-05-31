@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
@@ -58,6 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         }
       } catch (error) {
+    const message = getErrorMessage(error);
         console.error('Authentication error:', error);
         if (typeof window !== 'undefined') {
           localStorage.removeItem('airwave_user');
@@ -114,6 +116,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error('Invalid response from server');
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Login error:', error);
       throw error;
     } finally {
@@ -162,6 +165,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error('Invalid response from server');
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Signup error:', error);
       throw error;
     } finally {

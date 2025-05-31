@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 // workers/email.ts
 import { Worker, Job } from 'bullmq';
 import { connection } from '@/lib/queue/connection';
@@ -23,6 +24,7 @@ export const emailWorker = new Worker<EmailJobData>(
       
       return { success: true, sentAt: new Date().toISOString() };
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Email send failed:', error);
       throw error;
     }

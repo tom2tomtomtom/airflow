@@ -1,3 +1,5 @@
+import { getErrorMessage } from '@/utils/errorUtils';
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 
@@ -12,7 +14,7 @@ interface CreatomateTestResponse {
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<CreatomateTestResponse>
-) {
+): Promise<void> {
   const { action } = req.query;
   const actionPath = Array.isArray(action) ? action.join('/') : action;
 

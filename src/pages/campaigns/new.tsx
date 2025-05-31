@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import {
@@ -178,7 +179,7 @@ export default function NewCampaign() {
                         fullWidth
                         label="Campaign Name"
                         value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, name: e.target.value })}
                         error={!!errors.name}
                         helperText={errors.name}
                         margin="normal"
@@ -187,7 +188,7 @@ export default function NewCampaign() {
                         fullWidth
                         label="Description"
                         value={formData.description}
-                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                        onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, description: e.target.value })}
                         multiline
                         rows={4}
                         margin="normal"
@@ -197,7 +198,7 @@ export default function NewCampaign() {
                           select
                           label="Client"
                           value={formData.client}
-                          onChange={(e) => setFormData({ ...formData, client: e.target.value })}
+                          onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, client: e.target.value })}
                           SelectProps={{
                             native: true,
                           }}
@@ -258,7 +259,7 @@ export default function NewCampaign() {
                                         <Checkbox
                                           checked={formData.platforms.includes(platform.value)}
                                           onChange={() => handlePlatformToggle(platform.value)}
-                                          onClick={(e) => e.stopPropagation()}
+                                          onClick={(e: React.ClickEvent<HTMLElement>) => e.stopPropagation()}
                                         />
                                       }
                                       label={platform.name}
@@ -292,7 +293,7 @@ export default function NewCampaign() {
                         label="Campaign Budget"
                         type="number"
                         value={formData.budget}
-                        onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                        onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, budget: e.target.value })}
                         error={!!errors.budget}
                         helperText={errors.budget}
                         InputProps={{
@@ -306,7 +307,7 @@ export default function NewCampaign() {
                             <DatePicker
                               label="Start Date"
                               value={formData.startDate}
-                              onChange={(newValue) =>
+                              onChange={(e: React.ChangeEvent<HTMLElement>) =>
                                 setFormData({ ...formData, startDate: newValue as Date | null })
                               }
                               renderInput={(params) => (
@@ -323,7 +324,7 @@ export default function NewCampaign() {
                             <DatePicker
                               label="End Date"
                               value={formData.endDate}
-                              onChange={(newValue) =>
+                              onChange={(e: React.ChangeEvent<HTMLElement>) =>
                                 setFormData({ ...formData, endDate: newValue as Date | null })
                               }
                               renderInput={(params) => (

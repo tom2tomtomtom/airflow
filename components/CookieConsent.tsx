@@ -10,7 +10,7 @@ interface CookiePreferences {
   timestamp: string;
 }
 
-export default function CookieConsent() {
+export default function CookieConsent(: { req: NextApiRequest; res: NextApiResponse }) {
   const [showBanner, setShowBanner] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [preferences, setPreferences] = useState<CookiePreferences>({
@@ -144,7 +144,7 @@ export default function CookieConsent() {
                     type="checkbox"
                     id="analytics"
                     checked={preferences.analytics}
-                    onChange={(e) => setPreferences({ ...preferences, analytics: e.target.checked })}
+                    onChange={(e: React.ChangeEvent<HTMLElement>) => setPreferences({ ...preferences, analytics: e.target.checked })}
                     className="mt-1 h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                   />
                   <label htmlFor="analytics" className="ml-3">
@@ -160,7 +160,7 @@ export default function CookieConsent() {
                     type="checkbox"
                     id="marketing"
                     checked={preferences.marketing}
-                    onChange={(e) => setPreferences({ ...preferences, marketing: e.target.checked })}
+                    onChange={(e: React.ChangeEvent<HTMLElement>) => setPreferences({ ...preferences, marketing: e.target.checked })}
                     className="mt-1 h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                   />
                   <label htmlFor="marketing" className="ml-3">

@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 import { addWebhookJob } from '@/lib/queue/bullQueue';
@@ -84,6 +85,7 @@ export class WebhookManager {
         Buffer.from(expectedSignature)
       );
     } catch (error) {
+    const message = getErrorMessage(error);
       return false;
     }
   }
@@ -101,6 +103,7 @@ export class WebhookManager {
     try {
       new URL(url);
     } catch (error) {
+    const message = getErrorMessage(error);
       throw new AppError('Invalid webhook URL', 'INVALID_URL', 400);
     }
     
@@ -274,6 +277,7 @@ export class WebhookManager {
       
       console.log(`Queued ${jobs.length} webhook jobs for event: ${event.type}`);
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Failed to trigger webhook event:', error);
       throw error;
     }

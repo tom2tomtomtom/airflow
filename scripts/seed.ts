@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 // scripts/seed.ts
 import { createClient } from '@supabase/supabase-js';
 import * as dotenv from 'dotenv';
@@ -17,7 +18,7 @@ if (!supabaseUrl || !supabaseServiceKey) {
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-async function seedDatabase() {
+async function seedDatabase(): Promise<void> {
   console.log('Seeding database...');
   
   try {
@@ -127,6 +128,7 @@ async function seedDatabase() {
     console.log('User: user@test.com / Test123!');
     
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('❌ Seeding failed:', error);
     process.exit(1);
   }

@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@supabase/supabase-js';
 import { Redis } from '@upstash/redis';
@@ -60,6 +61,7 @@ async function checkDatabase(): Promise<ServiceCheck> {
       latency,
     };
   } catch (error) {
+    const message = getErrorMessage(error);
     return {
       status: 'error',
       message: error instanceof Error ? error.message : 'Unknown error',
@@ -94,6 +96,7 @@ async function checkRedis(): Promise<ServiceCheck> {
       latency,
     };
   } catch (error) {
+    const message = getErrorMessage(error);
     return {
       status: 'error',
       message: error instanceof Error ? error.message : 'Unknown error',
@@ -151,6 +154,7 @@ async function checkStorage(): Promise<ServiceCheck> {
       details: { provider: 'supabase' },
     };
   } catch (error) {
+    const message = getErrorMessage(error);
     return {
       status: 'error',
       message: error instanceof Error ? error.message : 'Unknown error',
@@ -186,6 +190,7 @@ async function checkCreatomate(): Promise<ServiceCheck> {
       latency,
     };
   } catch (error) {
+    const message = getErrorMessage(error);
     return {
       status: error.name === 'AbortError' ? 'timeout' : 'error',
       message: error instanceof Error ? error.message : 'Unknown error',
@@ -216,6 +221,7 @@ async function checkEmail(): Promise<ServiceCheck> {
       details: { provider: 'resend' },
     };
   } catch (error) {
+    const message = getErrorMessage(error);
     return {
       status: 'error',
       message: error instanceof Error ? error.message : 'Unknown error',
@@ -228,7 +234,7 @@ async function checkEmail(): Promise<ServiceCheck> {
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<HealthCheckResponse>
-) {
+): Promise<void> {
   // Only allow GET requests
   if (req.method !== 'GET') {
     res.setHeader('Allow', ['GET']);

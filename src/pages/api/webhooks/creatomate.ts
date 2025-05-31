@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@supabase/supabase-js';
 import { webhookManager, WebhookManager } from '@/lib/webhooks/webhookManager';
@@ -22,7 +23,7 @@ interface CreatomateWebhookPayload {
   };
 }
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   // Only accept POST requests
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -63,12 +64,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     
     res.status(200).json({ success: true });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error processing Creatomate webhook:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }
 
-async function handleRenderCompleted(payload: CreatomateWebhookPayload) {
+async function handleRenderCompleted(payload: CreatomateWebhookPayload): Promise<void> {
   const { render_id, url, metadata } = payload;
   
   if (!metadata?.execution_id) {
@@ -134,7 +136,7 @@ async function handleRenderCompleted(payload: CreatomateWebhookPayload) {
   }
 }
 
-async function handleRenderFailed(payload: CreatomateWebhookPayload) {
+async function handleRenderFailed(payload: CreatomateWebhookPayload): Promise<void> {
   const { render_id, error, metadata } = payload;
   
   if (!metadata?.execution_id) {

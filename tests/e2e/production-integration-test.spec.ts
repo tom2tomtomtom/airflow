@@ -1,8 +1,9 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { test, expect, Page } from '@playwright/test';
 
 const BASE_URL = 'https://airwave-complete.netlify.app';
 
-async function loginWithDemo(page: Page) {
+async function loginWithDemo(page: Page): Promise<void> {
   console.log('🎯 Using demo authentication...');
   
   await page.goto(`${BASE_URL}/login`);
@@ -47,6 +48,7 @@ test.describe('Production AIrWAVE Integration Tests with Demo Auth', () => {
         const data = await response.json();
         return { success: response.ok, data };
       } catch (error) {
+    const message = getErrorMessage(error);
         return { success: false, error: error.message };
       }
     });
@@ -64,6 +66,7 @@ test.describe('Production AIrWAVE Integration Tests with Demo Auth', () => {
         const data = await response.json();
         return { success: response.ok, data };
       } catch (error) {
+    const message = getErrorMessage(error);
         return { success: false, error: error.message };
       }
     });
@@ -102,6 +105,7 @@ test.describe('Production AIrWAVE Integration Tests with Demo Auth', () => {
             eventSource.close();
           }, 10000);
         } catch (error) {
+    const message = getErrorMessage(error);
           resolve({ success: false, message: error.message });
         }
       });
@@ -126,6 +130,7 @@ test.describe('Production AIrWAVE Integration Tests with Demo Auth', () => {
         const data = await response.json();
         return { success: response.ok, data };
       } catch (error) {
+    const message = getErrorMessage(error);
         return { success: false, error: error.message };
       }
     });
@@ -155,6 +160,7 @@ test.describe('Production AIrWAVE Integration Tests with Demo Auth', () => {
         const isLoaded = await pageContent.isVisible();
         console.log(`${nav.name} page: ${isLoaded ? '✅ LOADED' : '❌ FAILED'}`);
       } catch (error) {
+    const message = getErrorMessage(error);
         console.log(`${nav.name} page: ❌ ERROR - ${error.message}`);
       }
     }
@@ -228,6 +234,7 @@ test.describe('Production AIrWAVE Integration Tests with Demo Auth', () => {
         const apiTime = Date.now() - apiStartTime;
         console.log(`${api.name} response time: ${apiTime}ms ${response ? '✅' : '❌'}`);
       } catch (error) {
+    const message = getErrorMessage(error);
         console.log(`${api.name}: ❌ ERROR`);
       }
     }
@@ -273,6 +280,7 @@ test.describe('Production AIrWAVE Integration Tests with Demo Auth', () => {
         const isExpectedError = status >= 400 && status < 600;
         console.log(`${errorTest.name}: ${isExpectedError ? '✅ HANDLED' : '❌ UNEXPECTED'} (${status})`);
       } catch (error) {
+    const message = getErrorMessage(error);
         console.log(`${errorTest.name}: ✅ PROPERLY REJECTED`);
       }
     }
@@ -289,6 +297,7 @@ test.describe('Production AIrWAVE Integration Tests with Demo Auth', () => {
       const hasOfflineHandling = await offlineIndicator.first().isVisible();
       console.log(`Offline handling: ${hasOfflineHandling ? '✅ IMPLEMENTED' : '⚠️ BASIC'}`);
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log('Offline handling: ⚠️ NO SPECIFIC HANDLING');
     }
     

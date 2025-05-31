@@ -354,7 +354,7 @@ const SignOffPage: React.FC = () => {
                 <InputLabel>Status</InputLabel>
                 <Select
                   value={filter}
-                  onChange={(e) => setFilter(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => setFilter(e.target.value)}
                   label="Status"
                 >
                   <MenuItem value="all">All</MenuItem>
@@ -582,7 +582,7 @@ const SignOffPage: React.FC = () => {
                    
                     placeholder="Add a comment..."
                     value={comment}
-                    onChange={(e) => setComment(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLElement>) => setComment(e.target.value)}
                   />
                   <Button
                     startIcon={<SendIcon />}

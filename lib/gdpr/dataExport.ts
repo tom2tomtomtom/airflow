@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -44,12 +45,13 @@ export async function exportUserData(userId: string): Promise<string> {
     // Return formatted JSON
     return JSON.stringify(exportData, null, 2);
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error exporting user data:', error);
     throw error;
   }
 }
 
-async function getUserProfile(userId: string) {
+async function getUserProfile(userId: string): Promise<void> {
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
@@ -60,7 +62,7 @@ async function getUserProfile(userId: string) {
   return data;
 }
 
-async function getUserAssets(userId: string) {
+async function getUserAssets(userId: string): Promise<void> {
   const { data, error } = await supabase
     .from('assets')
     .select('*')
@@ -70,7 +72,7 @@ async function getUserAssets(userId: string) {
   return data || [];
 }
 
-async function getUserCampaigns(userId: string) {
+async function getUserCampaigns(userId: string): Promise<void> {
   const { data, error } = await supabase
     .from('executions')
     .select(`
@@ -83,7 +85,7 @@ async function getUserCampaigns(userId: string) {
   return data || [];
 }
 
-async function getUserBriefs(userId: string) {
+async function getUserBriefs(userId: string): Promise<void> {
   const { data, error } = await supabase
     .from('briefs')
     .select('*')
@@ -93,7 +95,7 @@ async function getUserBriefs(userId: string) {
   return data || [];
 }
 
-async function getUserAnalytics(userId: string) {
+async function getUserAnalytics(userId: string): Promise<void> {
   const { data, error } = await supabase
     .from('analytics_events')
     .select('*')
@@ -103,7 +105,7 @@ async function getUserAnalytics(userId: string) {
   return data || [];
 }
 
-async function getUserActivityLog(userId: string) {
+async function getUserActivityLog(userId: string): Promise<void> {
   // This would fetch from an activity log table if implemented
   return [];
 }
@@ -159,6 +161,7 @@ export async function deleteUserData(userId: string): Promise<void> {
     
     console.log(`User data deleted for user: ${userId}`);
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error deleting user data:', error);
     throw error;
   }
@@ -190,6 +193,7 @@ export async function anonymizeUserData(userId: string): Promise<void> {
     
     console.log(`User data anonymized for user: ${userId}`);
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error anonymizing user data:', error);
     throw error;
   }

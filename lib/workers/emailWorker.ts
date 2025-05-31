@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { Worker, Job } from 'bullmq';
 import { connection } from '@/lib/queue/connection';
 import { EmailJobData } from '@/lib/queue/bullQueue';
@@ -5,7 +6,7 @@ import { sendEmail } from '@/lib/email/resend';
 import * as Sentry from '@sentry/node';
 
 // Process email job
-async function processEmailJob(job: Job<EmailJobData>) {
+async function processEmailJob(job: Job<EmailJobData>): Promise<void> {
   const { to, template, subject, data } = job.data;
   
   try {
@@ -31,6 +32,7 @@ async function processEmailJob(job: Job<EmailJobData>) {
       template,
     };
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Email send failed:', error);
     
     // Check if it's a permanent failure

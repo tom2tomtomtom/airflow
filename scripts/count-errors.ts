@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 // scripts/count-errors.ts
 import { exec } from 'child_process';
 import { promisify } from 'util';
@@ -23,7 +24,7 @@ const errorDescriptions: Record<string, string> = {
   'TS2532': 'Object is possibly undefined'
 };
 
-async function countErrors() {
+async function countErrors(): Promise<void> {
   console.log('📊 Analyzing TypeScript errors...\n');
   
   try {
@@ -84,6 +85,7 @@ async function countErrors() {
     }
     
   } catch (error) {
+    const message = getErrorMessage(error);
     // Error is expected since tsc returns non-zero exit code
     if (error instanceof Error && 'stdout' in error) {
       // Process the output even if tsc failed

@@ -1,9 +1,10 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase/client';
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
   const { id } = req.query;
   const user = (req as any).user;
@@ -22,6 +23,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Copy Asset Performance API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
@@ -30,7 +32,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, assetId: string) {
+async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, assetId: string): Promise<void> {
   const { 
     period = '30d',
     platform,
@@ -188,7 +190,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
   });
 }
 
-async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, assetId: string) {
+async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, assetId: string): Promise<void> {
   const {
     performance_score,
     brand_compliance_score,

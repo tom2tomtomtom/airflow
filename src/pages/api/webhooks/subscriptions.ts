@@ -4,7 +4,7 @@ import { withRateLimitedRoute } from '@/middleware/rateLimiter';
 import { webhookManager } from '@/lib/webhooks/webhookManager';
 import { AuthorizationError, ValidationError } from '@/lib/errors/errorHandler';
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   // Check authentication
   const userId = (req as any).userId;
   if (!userId) {
@@ -30,7 +30,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse) {
+async function handleGet(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { event, client_id } = req.query;
   
   if (event && typeof event === 'string') {
@@ -47,7 +47,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
   return res.status(501).json({ error: 'Not implemented' });
 }
 
-async function handlePost(req: NextApiRequest, res: NextApiResponse, userId: string) {
+async function handlePost(req: NextApiRequest, res: NextApiResponse, userId: string): Promise<void> {
   const { url, events, client_id, metadata } = req.body;
   
   // Validate input
@@ -69,7 +69,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, userId: str
   res.status(201).json({ subscription });
 }
 
-async function handlePut(req: NextApiRequest, res: NextApiResponse, userId: string) {
+async function handlePut(req: NextApiRequest, res: NextApiResponse, userId: string): Promise<void> {
   const { id } = req.query;
   const { url, events, active, metadata } = req.body;
   
@@ -92,7 +92,7 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, userId: stri
   res.status(200).json({ subscription });
 }
 
-async function handleDelete(req: NextApiRequest, res: NextApiResponse, userId: string) {
+async function handleDelete(req: NextApiRequest, res: NextApiResponse, userId: string): Promise<void> {
   const { id } = req.query;
   
   if (!id || typeof id !== 'string') {

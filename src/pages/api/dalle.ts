@@ -1,3 +1,5 @@
+import { getErrorMessage } from '@/utils/errorUtils';
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
 import { env, hasOpenAI } from '@/lib/env';
@@ -55,7 +57,7 @@ const GenerateImageSchema = z.object({
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void> {
   if (req.method !== 'POST') {
     return res.status(405).json({ 
       success: false, 
@@ -241,6 +243,7 @@ export default async function handler(
     });
 
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Image generation error:', error);
     
     if (error instanceof OpenAI.APIError) {

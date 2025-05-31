@@ -1,3 +1,5 @@
+import { getErrorMessage } from '@/utils/errorUtils';
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
 import { env, hasCreatomate } from '@/lib/env';
@@ -6,7 +8,7 @@ import { creatomateService } from '@/services/creatomate';
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
-) {
+): Promise<void> {
   if (req.method !== 'GET') {
     return res.status(405).json({ 
       success: false, 
@@ -81,6 +83,7 @@ export default async function handler(
     });
 
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Status check error:', error);
     
     if (error instanceof Error && error.message.includes('not found')) {

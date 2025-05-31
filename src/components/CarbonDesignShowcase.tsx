@@ -188,7 +188,7 @@ const CarbonDesignShowcase: React.FC = () => {
                       control={
                         <Switch
                           checked={switchState}
-                          onChange={(e) => setSwitchState(e.target.checked)}
+                          onChange={(e: React.ChangeEvent<HTMLElement>) => setSwitchState(e.target.checked)}
                         />
                       }
                       label="Enable real-time updates"

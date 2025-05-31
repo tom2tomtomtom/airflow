@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase/client';
 import { withAuth } from '@/middleware/withAuth';
@@ -16,7 +17,7 @@ const MatrixUpdateSchema = z.object({
   generation_settings: z.any().optional(),
 });
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
   const { id } = req.query;
   const user = (req as any).user;
@@ -37,6 +38,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Matrix API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
@@ -45,7 +47,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, matrixId: string) {
+async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, matrixId: string): Promise<void> {
   const { 
     include_executions = true,
     include_assets = true,
@@ -151,7 +153,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, m
   });
 }
 
-async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, matrixId: string) {
+async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, matrixId: string): Promise<void> {
   const validationResult = MatrixUpdateSchema.safeParse(req.body);
   
   if (!validationResult.success) {
@@ -237,7 +239,7 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, m
   return res.json({ data: matrix });
 }
 
-async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any, matrixId: string) {
+async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any, matrixId: string): Promise<void> {
   // First verify user has access to this matrix
   const { data: existingMatrix } = await supabase
     .from('matrices')
@@ -339,6 +341,7 @@ function extractAssetIdsFromMatrix(matrix: any): string[] {
 
     return [...new Set(assetIds)]; // Remove duplicates
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error extracting asset IDs:', error);
     return [];
   }
@@ -407,6 +410,7 @@ async function getMatrixAnalytics(matrixId: string): Promise<any> {
       platform_breakdown: platformBreakdown,
     };
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error getting matrix analytics:', error);
     return {
       has_data: false,
@@ -535,6 +539,7 @@ async function getMatrixVersionHistory(matrixId: string): Promise<any[]> {
     // For now, return empty array as we don't have version tracking table
     return [];
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error getting matrix version history:', error);
     return [];
   }
@@ -603,6 +608,7 @@ async function createMatrixVersionEntry(matrixId: string, changes: any, userId: 
     // For now, we'll just log the change
     console.log(`Matrix ${matrixId} updated by user ${userId}`, changes);
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error creating matrix version entry:', error);
   }
 }

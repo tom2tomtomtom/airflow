@@ -116,7 +116,7 @@ const ClientsPage: React.FC = () => {
             fullWidth
             placeholder="Search clients by name, industry, or description..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLElement>) => setSearchTerm(e.target.value)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -227,7 +227,7 @@ const ClientsPage: React.FC = () => {
                       bgcolor: 'background.paper',
                       '&:hover': { bgcolor: 'background.paper' },
                     }}
-                    onClick={(e) => {
+                    onClick={(e: React.ClickEvent<HTMLElement>) => {
                       e.stopPropagation();
                       handleMenuOpen(e, client);
                     }}
@@ -271,7 +271,7 @@ const ClientsPage: React.FC = () => {
                 <CardActions>
                   <Button
                     size="small"
-                    onClick={(e) => {
+                    onClick={(e: React.ClickEvent<HTMLElement>) => {
                       e.stopPropagation();
                       handleSelectClient(client);
                     }}
@@ -282,7 +282,7 @@ const ClientsPage: React.FC = () => {
                   {client.website && (
                     <IconButton
                       size="small"
-                      onClick={(e) => {
+                      onClick={(e: React.ClickEvent<HTMLElement>) => {
                         e.stopPropagation();
                         window.open(client.website, '_blank');
                       }}

@@ -99,7 +99,7 @@ const VideoGenerationTab: React.FC<VideoGenerationTabProps> = ({
                 variant="outlined"
                 placeholder="Describe the video you want to generate..."
                 value={videoPrompt}
-                onChange={(e) => setVideoPrompt(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLElement>) => setVideoPrompt(e.target.value)}
                 sx={{ mb: 1 }}
               />
               <Typography variant="caption" color="text.secondary">

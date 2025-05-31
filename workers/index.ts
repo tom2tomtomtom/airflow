@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 // workers/index.ts
 import { Worker } from 'bullmq';
 import { connection } from '@/lib/queue/connection';
@@ -8,7 +9,7 @@ import { emailWorker } from './email';
 const args = process.argv.slice(2);
 const onlyWorker = args.find(arg => arg.startsWith('--only='))?.split('=')[1];
 
-async function startWorkers() {
+async function startWorkers(): Promise<void> {
   console.log('Starting workers...');
   
   const workers: Worker[] = [];

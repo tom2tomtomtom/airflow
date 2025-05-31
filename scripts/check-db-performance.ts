@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 #!/usr/bin/env tsx
 
 /**
@@ -23,7 +24,7 @@ interface QueryStats {
   max_time: number;
 }
 
-async function checkSlowQueries() {
+async function checkSlowQueries(): Promise<void> {
   console.log('\n🔍 Checking for slow queries...');
   
   // This would typically query pg_stat_statements
@@ -31,7 +32,7 @@ async function checkSlowQueries() {
   console.log('Check Supabase dashboard for slow query logs');
 }
 
-async function checkTableSizes() {
+async function checkTableSizes(): Promise<void> {
   console.log('\n📊 Checking table sizes...');
   
   const tables = [
@@ -54,7 +55,7 @@ async function checkTableSizes() {
   }
 }
 
-async function checkIndexUsage() {
+async function checkIndexUsage(): Promise<void> {
   console.log('\n🔧 Checking index usage...');
   
   // Sample queries to test
@@ -104,7 +105,7 @@ async function checkIndexUsage() {
   }
 }
 
-async function generateReport() {
+async function generateReport(): Promise<void> {
   console.log('\n📋 Performance Recommendations:\n');
   
   const recommendations = [
@@ -131,7 +132,7 @@ async function generateReport() {
   });
 }
 
-async function main() {
+async function main(): Promise<void> {
   console.log('🚀 AIrWAVE Database Performance Check\n');
   
   await checkTableSizes();

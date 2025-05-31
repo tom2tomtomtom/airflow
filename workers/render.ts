@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 // workers/render.ts
 import { Worker, Job } from 'bullmq';
 import { connection } from '@/lib/queue/connection';
@@ -76,6 +77,7 @@ export const renderWorker = new Worker<RenderJobData>(
       }
       
     } catch (error) {
+    const message = getErrorMessage(error);
       // Update execution as failed
       await supabase
         .from('executions')

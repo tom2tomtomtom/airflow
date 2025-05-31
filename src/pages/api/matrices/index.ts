@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase/client';
 import { withAuth } from '@/middleware/withAuth';
@@ -19,7 +20,7 @@ const MatrixCreateSchema = z.object({
 
 const MatrixUpdateSchema = MatrixCreateSchema.partial().omit(['campaign_id']);
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
   const user = (req as any).user;
 
@@ -33,6 +34,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Matrices API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
@@ -41,7 +43,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any) {
+async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const { 
     campaign_id, 
     template_id,
@@ -144,7 +146,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any) {
   });
 }
 
-async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any) {
+async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const validationResult = MatrixCreateSchema.safeParse(req.body);
   
   if (!validationResult.success) {
@@ -258,6 +260,7 @@ async function getMatrixExecutionStats(matrixId: string): Promise<any> {
       last_execution: executions.length > 0 ? executions[executions.length - 1].created_at : null,
     };
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error getting execution stats:', error);
     return { total: 0, by_status: {}, by_platform: {} };
   }
@@ -368,6 +371,7 @@ async function generateMatrixContent(matrixData: any, template: any, userId: str
       field_assignments: fieldAssignments,
     };
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error generating matrix content:', error);
     return {
       variations: [],

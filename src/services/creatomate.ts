@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 // Creatomate Integration Service
 // This service handles video generation using the Creatomate API
 
@@ -70,6 +71,7 @@ class CreatomateService {
 
       return response.data;
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Error fetching Creatomate templates:', error);
       return this.getMockTemplates();
     }
@@ -93,6 +95,7 @@ class CreatomateService {
 
       return response.data;
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Error fetching Creatomate template:', error);
       return null;
     }
@@ -129,6 +132,7 @@ class CreatomateService {
         createdAt: response.data.created_at,
       };
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Error rendering video:', error);
       throw new Error('Failed to start video rendering');
     }
@@ -159,6 +163,7 @@ class CreatomateService {
         completedAt: response.data.completed_at,
       };
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Error getting render status:', error);
       throw new Error('Failed to get render status');
     }

@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withErrorHandler } from '@/lib/errors/errorHandler';
 import { withRateLimitedRoute } from '@/middleware/rateLimiter';
@@ -5,7 +6,7 @@ import { deleteUserData } from '@/lib/gdpr/dataExport';
 import { AuthorizationError, ValidationError } from '@/lib/errors/errorHandler';
 import { sendEmail } from '@/lib/email/resend';
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -51,6 +52,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       message: 'Your account and all associated data have been permanently deleted.',
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Account deletion failed:', error);
     throw error;
   }

@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 // scripts/migrate.ts
 import { createClient } from '@supabase/supabase-js';
 import * as dotenv from 'dotenv';
@@ -16,7 +17,7 @@ if (!supabaseUrl || !supabaseServiceKey) {
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-async function runMigrations() {
+async function runMigrations(): Promise<void> {
   console.log('Running database migrations...');
   
   try {
@@ -25,6 +26,7 @@ async function runMigrations() {
     
     console.log('✅ Migrations completed successfully');
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('❌ Migration failed:', error);
     process.exit(1);
   }

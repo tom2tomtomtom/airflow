@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 // React Hook for Real-Time Updates using Server-Sent Events
 // Provides real-time communication for render progress and notifications
 
@@ -84,6 +85,7 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
         try {
           callback(data);
         } catch (error) {
+    const message = getErrorMessage(error);
           console.error(`Error in event listener for ${eventType}:`, error);
         }
       });
@@ -147,6 +149,7 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
           setLastEvent(realTimeEvent);
           emit('message', realTimeEvent);
         } catch (error) {
+    const message = getErrorMessage(error);
           console.error('Failed to parse SSE message:', error);
         }
       };
@@ -181,6 +184,7 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
       });
 
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Failed to create SSE connection:', error);
       setError(error instanceof Error ? error.message : 'Connection failed');
     }

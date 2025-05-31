@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { test, expect } from './fixtures/test-fixtures';
 import path from 'path';
 
@@ -198,6 +199,7 @@ test.describe('Asset Management', () => {
         // Assets should reload for new client context
         await authenticatedPage.screenshot({ path: 'test-results/assets-client-filter.png' });
       } catch (error) {
+    const message = getErrorMessage(error);
         // If client switching fails, just verify current state
         console.log('Client switching not available, verifying current state');
         await expect(authenticatedPage.locator('[data-testid="selected-client"]')).toBeVisible();

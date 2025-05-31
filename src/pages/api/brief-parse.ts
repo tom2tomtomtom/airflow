@@ -1,3 +1,5 @@
+import { getErrorMessage } from '@/utils/errorUtils';
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
 import { env } from '@/lib/env';
@@ -20,7 +22,7 @@ async function extractTextFromFile(fileUrl: string): Promise<string> {
   throw new Error('Text extraction for PDF/DOCX not implemented');
 }
 
-async function aiParseBrief(text: string) {
+async function aiParseBrief(text: string): Promise<void> {
   // Initialize OpenAI client
   const openai = new OpenAI({
     apiKey: env.OPENAI_API_KEY,
@@ -42,7 +44,7 @@ async function aiParseBrief(text: string) {
   return completion.choices[0]?.message?.content;
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   if (req.method !== 'POST') {
     return res.status(405).json({ success: false, message: 'Method not allowed' });
   }

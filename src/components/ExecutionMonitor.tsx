@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -141,6 +142,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
         setExecutions(data.data || []);
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Error fetching executions:', error);
     } finally {
       setLoading(false);
@@ -171,6 +173,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
         showNotification(error.error || 'Failed to retry execution', 'error');
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       showNotification('Error retrying execution', 'error');
     }
   };
@@ -201,6 +204,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
         showNotification(error.error || 'Failed to cancel execution', 'error');
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       showNotification('Error cancelling execution', 'error');
     }
   };
@@ -373,7 +377,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
                       secondaryAction={
                         <IconButton
                           size="small"
-                          onClick={(e) => handleMenuOpen(e, execution)}
+                          onClick={(e: React.ClickEvent<HTMLElement>) => handleMenuOpen(e, execution)}
                         >
                           <MoreIcon />
                         </IconButton>
@@ -494,7 +498,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
             fullWidth
             label="Retry Reason"
             value={retryOptions.retry_reason}
-            onChange={(e) => setRetryOptions({ ...retryOptions, retry_reason: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLElement>) => setRetryOptions({ ...retryOptions, retry_reason: e.target.value })}
             multiline
             rows={2}
             sx={{ mb: 2 }}
@@ -504,7 +508,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
             control={
               <Checkbox
                 checked={retryOptions.force}
-                onChange={(e) => setRetryOptions({ ...retryOptions, force: e.target.checked })}
+                onChange={(e: React.ChangeEvent<HTMLElement>) => setRetryOptions({ ...retryOptions, force: e.target.checked })}
               />
             }
             label="Force retry (override status check)"
@@ -514,7 +518,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
             control={
               <Checkbox
                 checked={retryOptions.reset_attempts}
-                onChange={(e) => setRetryOptions({ ...retryOptions, reset_attempts: e.target.checked })}
+                onChange={(e: React.ChangeEvent<HTMLElement>) => setRetryOptions({ ...retryOptions, reset_attempts: e.target.checked })}
               />
             }
             label="Reset retry attempt counter"
@@ -525,7 +529,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
             type="number"
             label="Delay (seconds)"
             value={retryOptions.delay_seconds}
-            onChange={(e) => setRetryOptions({ ...retryOptions, delay_seconds: parseInt(e.target.value) || 0 })}
+            onChange={(e: React.ChangeEvent<HTMLElement>) => setRetryOptions({ ...retryOptions, delay_seconds: parseInt(e.target.value) || 0 })}
             sx={{ mt: 2 }}
           />
         </DialogContent>

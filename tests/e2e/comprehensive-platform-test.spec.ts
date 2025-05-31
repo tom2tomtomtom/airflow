@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { test, expect, Page } from '@playwright/test';
 
 // Test configuration
@@ -28,7 +29,7 @@ const creatomateConfig = {
 };
 
 // Helper functions
-async function loginToApp(page: Page) {
+async function loginToApp(page: Page): Promise<void> {
   await page.goto(`${BASE_URL}/login`);
   await expect(page.locator('h1, h3')).toContainText('AIrWAVE');
   
@@ -47,7 +48,7 @@ async function loginToApp(page: Page) {
   await page.waitForURL('**/dashboard', { timeout: 10000 });
 }
 
-async function createTestAsset(page: Page, assetType: string) {
+async function createTestAsset(page: Page, assetType: string): Promise<void> {
   // Navigate to assets page
   await page.goto(`${BASE_URL}/assets`);
   
@@ -299,6 +300,7 @@ test.describe('AIrWAVE Platform Comprehensive Testing', () => {
         });
         return { status: res.status, ok: res.ok };
       } catch (error) {
+    const message = getErrorMessage(error);
         return { error: error.message };
       }
     }, creatomateConfig);
@@ -345,6 +347,7 @@ test.describe('AIrWAVE Platform Comprehensive Testing', () => {
         }
         return { supported: false, message: 'WebSocket not supported' };
       } catch (error) {
+    const message = getErrorMessage(error);
         return { supported: false, error: error.message };
       }
     });
@@ -371,6 +374,7 @@ test.describe('AIrWAVE Platform Comprehensive Testing', () => {
         await page.waitForTimeout(2000);
         console.log('✓ Invalid file upload handling tested');
       } catch (error) {
+    const message = getErrorMessage(error);
         console.log('File upload test skipped:', error.message);
       }
     }
@@ -381,6 +385,7 @@ test.describe('AIrWAVE Platform Comprehensive Testing', () => {
         const res = await fetch('/api/nonexistent-endpoint');
         return { status: res.status, ok: res.ok };
       } catch (error) {
+    const message = getErrorMessage(error);
         return { error: error.message };
       }
     });

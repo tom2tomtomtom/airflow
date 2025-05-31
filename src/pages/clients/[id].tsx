@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
@@ -108,6 +109,7 @@ const ClientDetailPage: React.FC = () => {
       setIsEditing(false);
       refetch();
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Error saving client:', error);
     }
   };
@@ -276,7 +278,7 @@ const ClientDetailPage: React.FC = () => {
                   fullWidth
                   label="Client Name"
                   value={editedClient.name}
-                  onChange={(e) => handleFieldChange('name', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => handleFieldChange('name', e.target.value)}
                   disabled={!isEditing}
                 />
               </Grid>
@@ -285,7 +287,7 @@ const ClientDetailPage: React.FC = () => {
                   fullWidth
                   label="Industry"
                   value={editedClient.industry}
-                  onChange={(e) => handleFieldChange('industry', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => handleFieldChange('industry', e.target.value)}
                   disabled={!isEditing}
                 />
               </Grid>
@@ -296,7 +298,7 @@ const ClientDetailPage: React.FC = () => {
                   rows={3}
                   label="Description"
                   value={editedClient.description}
-                  onChange={(e) => handleFieldChange('description', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => handleFieldChange('description', e.target.value)}
                   disabled={!isEditing}
                 />
               </Grid>
@@ -305,7 +307,7 @@ const ClientDetailPage: React.FC = () => {
                   fullWidth
                   label="Website"
                   value={editedClient.website}
-                  onChange={(e) => handleFieldChange('website', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => handleFieldChange('website', e.target.value)}
                   disabled={!isEditing}
                 />
               </Grid>
@@ -314,7 +316,7 @@ const ClientDetailPage: React.FC = () => {
                   fullWidth
                   label="Logo URL"
                   value={editedClient.logo}
-                  onChange={(e) => handleFieldChange('logo', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => handleFieldChange('logo', e.target.value)}
                   disabled={!isEditing}
                 />
               </Grid>
@@ -324,7 +326,7 @@ const ClientDetailPage: React.FC = () => {
                   label="Primary Color"
                   type="color"
                   value={editedClient.primaryColor}
-                  onChange={(e) => handleFieldChange('primaryColor', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => handleFieldChange('primaryColor', e.target.value)}
                   disabled={!isEditing}
                   InputProps={{
                     startAdornment: <ColorIcon sx={{ mr: 1 }} />,
@@ -337,7 +339,7 @@ const ClientDetailPage: React.FC = () => {
                   label="Secondary Color"
                   type="color"
                   value={editedClient.secondaryColor}
-                  onChange={(e) => handleFieldChange('secondaryColor', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => handleFieldChange('secondaryColor', e.target.value)}
                   disabled={!isEditing}
                   InputProps={{
                     startAdornment: <ColorIcon sx={{ mr: 1 }} />,
@@ -357,7 +359,7 @@ const ClientDetailPage: React.FC = () => {
                   rows={2}
                   label="Voice & Tone"
                   value={editedClient.brandGuidelines?.voiceTone || ''}
-                  onChange={(e) => handleFieldChange('brandGuidelines', {
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => handleFieldChange('brandGuidelines', {
                     ...editedClient.brandGuidelines,
                     voiceTone: e.target.value
                   })}
@@ -371,7 +373,7 @@ const ClientDetailPage: React.FC = () => {
                   rows={2}
                   label="Target Audience"
                   value={editedClient.brandGuidelines?.targetAudience || ''}
-                  onChange={(e) => handleFieldChange('brandGuidelines', {
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => handleFieldChange('brandGuidelines', {
                     ...editedClient.brandGuidelines,
                     targetAudience: e.target.value
                   })}
@@ -461,7 +463,7 @@ const ClientDetailPage: React.FC = () => {
                   fullWidth
                   label="Instagram"
                   value={editedClient.socialMedia?.instagram || ''}
-                  onChange={(e) => handleSocialMediaChange('instagram', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => handleSocialMediaChange('instagram', e.target.value)}
                   disabled={!isEditing}
                   InputProps={{
                     startAdornment: <InstagramIcon sx={{ mr: 1 }} />,
@@ -473,7 +475,7 @@ const ClientDetailPage: React.FC = () => {
                   fullWidth
                   label="Facebook"
                   value={editedClient.socialMedia?.facebook || ''}
-                  onChange={(e) => handleSocialMediaChange('facebook', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => handleSocialMediaChange('facebook', e.target.value)}
                   disabled={!isEditing}
                   InputProps={{
                     startAdornment: <FacebookIcon sx={{ mr: 1 }} />,
@@ -485,7 +487,7 @@ const ClientDetailPage: React.FC = () => {
                   fullWidth
                   label="Twitter"
                   value={editedClient.socialMedia?.twitter || ''}
-                  onChange={(e) => handleSocialMediaChange('twitter', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => handleSocialMediaChange('twitter', e.target.value)}
                   disabled={!isEditing}
                   InputProps={{
                     startAdornment: <TwitterIcon sx={{ mr: 1 }} />,
@@ -497,7 +499,7 @@ const ClientDetailPage: React.FC = () => {
                   fullWidth
                   label="LinkedIn"
                   value={editedClient.socialMedia?.linkedin || ''}
-                  onChange={(e) => handleSocialMediaChange('linkedin', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => handleSocialMediaChange('linkedin', e.target.value)}
                   disabled={!isEditing}
                   InputProps={{
                     startAdornment: <LinkedInIcon sx={{ mr: 1 }} />,
@@ -520,7 +522,7 @@ const ClientDetailPage: React.FC = () => {
                   fullWidth
                   label="Name"
                   value={editingContact?.name || ''}
-                  onChange={(e) => setEditingContact(prev => prev ? { ...prev, name: e.target.value } : null)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => setEditingContact(prev => prev ? { ...prev, name: e.target.value } : null)}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -528,7 +530,7 @@ const ClientDetailPage: React.FC = () => {
                   fullWidth
                   label="Role"
                   value={editingContact?.role || ''}
-                  onChange={(e) => setEditingContact(prev => prev ? { ...prev, role: e.target.value } : null)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => setEditingContact(prev => prev ? { ...prev, role: e.target.value } : null)}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -537,7 +539,7 @@ const ClientDetailPage: React.FC = () => {
                   label="Email"
                   type="email"
                   value={editingContact?.email || ''}
-                  onChange={(e) => setEditingContact(prev => prev ? { ...prev, email: e.target.value } : null)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => setEditingContact(prev => prev ? { ...prev, email: e.target.value } : null)}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -545,7 +547,7 @@ const ClientDetailPage: React.FC = () => {
                   fullWidth
                   label="Phone"
                   value={editingContact?.phone || ''}
-                  onChange={(e) => setEditingContact(prev => prev ? { ...prev, phone: e.target.value } : null)}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => setEditingContact(prev => prev ? { ...prev, phone: e.target.value } : null)}
                 />
               </Grid>
             </Grid>

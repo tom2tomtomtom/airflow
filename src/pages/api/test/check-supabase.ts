@@ -1,6 +1,8 @@
+import { getErrorMessage } from '@/utils/errorUtils';
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   // Check environment variables
   const envCheck = {
     hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,

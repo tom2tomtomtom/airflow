@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase/client';
 import { withAuth } from '@/middleware/withAuth';
@@ -24,7 +25,7 @@ const CampaignCreateSchema = z.object({
 
 const CampaignUpdateSchema = CampaignCreateSchema.partial().omit(['client_id']);
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
   const user = (req as any).user;
 
@@ -38,6 +39,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Campaigns API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
@@ -46,7 +48,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any) {
+async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const { 
     client_id, 
     status,
@@ -150,7 +152,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any) {
   });
 }
 
-async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any) {
+async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const validationResult = CampaignCreateSchema.safeParse(req.body);
   
   if (!validationResult.success) {
@@ -264,6 +266,7 @@ async function getCampaignStats(campaignId: string): Promise<any> {
       }
     };
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error getting campaign stats:', error);
     return {
       matrices_count: 0,
@@ -336,6 +339,7 @@ async function initializeCampaignAnalytics(campaignId: string): Promise<void> {
         }
       });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Error initializing campaign analytics:', error);
     // Don't throw error, as this is not critical for campaign creation
   }

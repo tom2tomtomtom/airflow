@@ -1,7 +1,8 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { chromium, FullConfig } from '@playwright/test';
 import { AuthHelper } from './helpers/auth-helper';
 
-async function globalSetup(config: FullConfig) {
+async function globalSetup(config: FullConfig): Promise<void> {
   console.log('🔧 Setting up global test environment...');
   
   const { baseURL } = config.projects[0].use;
@@ -44,6 +45,7 @@ async function globalSetup(config: FullConfig) {
     console.log('✅ Global setup completed successfully');
     
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('❌ Global setup failed:', error);
     throw error;
   } finally {

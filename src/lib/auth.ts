@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { supabase } from './supabase';
 import { User } from '@/types/auth';
 import axios, { AxiosError } from 'axios';
@@ -49,6 +50,7 @@ export async function signIn(email: string, password: string): Promise<{ user: U
 
     return { user, token };
   } catch (error) {
+    const message = getErrorMessage(error);
     const axiosError = error as AxiosError<ApiError>;
     console.error('Sign in error:', error);
     throw new Error(axiosError.response?.data?.message || axiosError.message || 'Login failed');
@@ -97,6 +99,7 @@ export async function signUp(
     
     return result;
   } catch (error) {
+    const message = getErrorMessage(error);
     const axiosError = error as AxiosError<ApiError>;
     console.error('Sign up error:', error);
     throw new Error(axiosError.response?.data?.message || axiosError.message || 'Sign up failed');
@@ -109,6 +112,7 @@ export async function signOut(): Promise<void> {
     // Call the logout API
     await authAxios.post('/api/auth/logout');
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Sign out API error:', error);
     // Continue with cleanup even if API call fails
   } finally {
@@ -121,6 +125,7 @@ export async function signOut(): Promise<void> {
     try {
       await supabase.auth.signOut();
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Supabase signout error:', error);
     }
   }
@@ -136,6 +141,7 @@ export function getCurrentUser(): User | null {
 
     return JSON.parse(userJson) as User;
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Get current user error:', error);
     return null;
   }
@@ -161,6 +167,7 @@ export async function refreshToken(): Promise<boolean> {
     const response = await authAxios.get<{ success: boolean }>('/api/auth/me');
     return response.data.success;
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Token refresh check failed:', error);
     return false;
   }
@@ -177,6 +184,7 @@ export async function requestPasswordReset(email: string): Promise<void> {
       throw error;
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     const authError = error as { message?: string };
     console.error('Password reset request error:', error);
     throw new Error(authError.message || 'Failed to send password reset email');
@@ -194,6 +202,7 @@ export async function resetPassword(_token: string, newPassword: string): Promis
       throw error;
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     const authError = error as { message?: string };
     console.error('Password reset error:', error);
     throw new Error(authError.message || 'Failed to reset password');

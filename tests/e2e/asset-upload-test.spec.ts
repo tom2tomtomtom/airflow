@@ -1,8 +1,9 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { test, expect, Page } from '@playwright/test';
 
 const BASE_URL = 'https://airwave-complete.netlify.app';
 
-async function loginWithDemo(page: Page) {
+async function loginWithDemo(page: Page): Promise<void> {
   await page.goto(`${BASE_URL}/login`);
   
   // Use demo login
@@ -126,6 +127,7 @@ test.describe('Asset Upload Integration Tests', () => {
           data: response.ok ? await response.json() : await response.text()
         };
       } catch (error) {
+    const message = getErrorMessage(error);
         return {
           error: error.message
         };
@@ -158,6 +160,7 @@ test.describe('Asset Upload Integration Tests', () => {
           storage: 'Storage test would require actual file'
         };
       } catch (error) {
+    const message = getErrorMessage(error);
         return {
           error: error.message
         };

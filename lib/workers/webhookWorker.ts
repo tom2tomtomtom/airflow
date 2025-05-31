@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { Worker, Job } from 'bullmq';
 import { connection } from '@/lib/queue/connection';
 import { WebhookJobData, addWebhookJob } from '@/lib/queue/bullQueue';
@@ -17,7 +18,7 @@ function generateSignature(payload: any, secret: string): string {
 }
 
 // Process webhook job
-async function processWebhookJob(job: Job<WebhookJobData>) {
+async function processWebhookJob(job: Job<WebhookJobData>): Promise<void> {
   const { url, event, data, secret, attempts = 0, maxAttempts = 3 } = job.data;
   
   try {
@@ -70,6 +71,7 @@ async function processWebhookJob(job: Job<WebhookJobData>) {
     };
     
   } catch (error) {
+    const message = getErrorMessage(error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     
     // Check if we should retry

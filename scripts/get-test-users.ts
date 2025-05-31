@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 #!/usr/bin/env tsx
 // Script to get existing test users from Supabase
 
@@ -24,7 +25,7 @@ const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY,
   }
 });
 
-async function getTestUsers() {
+async function getTestUsers(): Promise<void> {
   console.log('🔍 Looking for existing test users...\n');
 
   const testEmails = ['test@airwave.app', 'playwright@airwave.app'];
@@ -97,6 +98,7 @@ async function getTestUsers() {
         console.log(`❌ User not found: ${email}\n`);
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error(`❌ Error checking user ${email}:`, error);
     }
   }
@@ -121,7 +123,7 @@ async function getTestUsers() {
   }
 }
 
-async function main() {
+async function main(): Promise<void> {
   await getTestUsers();
 }
 

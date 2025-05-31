@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withErrorHandler } from '@/lib/errors/errorHandler';
 import { withRateLimitedRoute } from '@/middleware/rateLimiter';
@@ -8,7 +9,7 @@ import { AuthorizationError, ValidationError } from '@/lib/errors/errorHandler';
  * Test endpoint for triggering webhook events
  * Only available in development mode
  */
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   // Only allow in development
   if (process.env.NODE_ENV === 'production') {
     return res.status(404).json({ error: 'Not found' });
@@ -52,6 +53,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       message: `Webhook event '${event}' triggered successfully`,
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('Failed to trigger test webhook:', error);
     throw error;
   }

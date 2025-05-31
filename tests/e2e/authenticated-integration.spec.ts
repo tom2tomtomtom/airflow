@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { test, expect, Page } from '@playwright/test';
 
 const BASE_URL = 'https://airwave-complete.netlify.app';
@@ -8,7 +9,7 @@ const TEST_CREDENTIALS = {
   password: 'TestUser123!'
 };
 
-async function loginWithRealCredentials(page: Page) {
+async function loginWithRealCredentials(page: Page): Promise<void> {
   console.log('🔐 Logging in with real credentials...');
   
   await page.goto(`${BASE_URL}/login`);
@@ -282,6 +283,7 @@ test.describe('Authenticated AIrWAVE Integration Tests', () => {
         // Brief pause between pages
         await page.waitForTimeout(1000);
       } catch (error) {
+    const message = getErrorMessage(error);
         console.log(`${pageInfo.name} page: ❌ Error - ${error.message}`);
       }
     }

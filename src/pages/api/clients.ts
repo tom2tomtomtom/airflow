@@ -1,4 +1,8 @@
+import { getErrorMessage } from '@/utils/errorUtils';
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { withAuth } from '@/middleware/withAuth';
+import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import type { Client } from '@/types/models';
 
 // Mock clients data for testing
@@ -114,7 +118,8 @@ const mockClients: Client[] = [
   },
 ];
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+  const user = (req as any).user;
   try {
     if (req.method === 'GET') {
       // Return all clients
@@ -170,6 +175,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       message: `Method ${req.method} not allowed`,
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('API Error:', error);
     return res.status(500).json({
       success: false,
@@ -177,3 +183,5 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     });
   }
 }
+
+export default withAuth(withSecurityHeaders(handler));
