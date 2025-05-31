@@ -258,43 +258,86 @@ const MatrixPage: React.FC = () => {
   };
 
   const handleGenerateCombinations = () => {
-    // Generate all possible combinations of active variations
+    // Generate strategic combinations based on active variations
     const activeVariations = variations.filter(v => v.isActive);
     const newCombinations: Combination[] = [];
     
-    // For demo, just create a few meaningful combinations
-    if (activeVariations.length >= 1 && activeVariations[0]) {
-      newCombinations.push({
-        id: `combo-${Date.now()}-1`,
-        name: 'Primary Combination',
-        variationIds: [activeVariations[0].id],
-        isSelected: true,
-        performanceScore: 85,
-      });
+    if (activeVariations.length === 0) {
+      showNotification('Please create and activate variations first', 'warning');
+      return;
     }
     
+    // Single variation tests (for baseline performance)
+    activeVariations.forEach((variation, index) => {
+      newCombinations.push({
+        id: `single-${variation.id}`,
+        name: `${variation.name} Solo Test`,
+        variationIds: [variation.id],
+        isSelected: index < 2, // Auto-select first 2
+        performanceScore: 75 + Math.random() * 20, // Simulated score
+      });
+    });
+    
+    // A/B test combinations (pairs)
     if (activeVariations.length >= 2) {
-      newCombinations.push({
-        id: `combo-${Date.now()}-2`,
-        name: 'A/B Test Combination',
-        variationIds: activeVariations.slice(0, 2).map(v => v.id),
-        isSelected: true,
-        performanceScore: 72,
-      });
+      for (let i = 0; i < activeVariations.length - 1; i++) {
+        for (let j = i + 1; j < activeVariations.length; j++) {
+          newCombinations.push({
+            id: `ab-${activeVariations[i].id}-${activeVariations[j].id}`,
+            name: `${activeVariations[i].name} vs ${activeVariations[j].name}`,
+            variationIds: [activeVariations[i].id, activeVariations[j].id],
+            isSelected: newCombinations.filter(c => c.isSelected).length < 3,
+            performanceScore: 70 + Math.random() * 25,
+          });
+        }
+      }
     }
     
+    // Multi-variant tests (3+ variations)
     if (activeVariations.length >= 3) {
+      // Full test with all variations
       newCombinations.push({
-        id: `combo-${Date.now()}-3`,
-        name: 'Full Test Suite',
+        id: `multi-all`,
+        name: 'Complete Test Suite',
         variationIds: activeVariations.map(v => v.id),
         isSelected: false,
-        performanceScore: 68,
+        performanceScore: 65 + Math.random() * 20,
       });
+      
+      // Subset tests (75% of variations)
+      const subsetSize = Math.max(3, Math.floor(activeVariations.length * 0.75));
+      if (subsetSize < activeVariations.length) {
+        newCombinations.push({
+          id: `subset-${subsetSize}`,
+          name: `Top ${subsetSize} Variations`,
+          variationIds: activeVariations.slice(0, subsetSize).map(v => v.id),
+          isSelected: false,
+          performanceScore: 68 + Math.random() * 22,
+        });
+      }
+    }
+    
+    // Performance-based combination (select top performing if available)
+    const hasPerformanceData = variations.some(v => v.performance?.score);
+    if (hasPerformanceData && activeVariations.length >= 2) {
+      const topPerformers = activeVariations
+        .filter(v => v.performance?.score)
+        .sort((a, b) => (b.performance?.score || 0) - (a.performance?.score || 0))
+        .slice(0, 3);
+      
+      if (topPerformers.length >= 2) {
+        newCombinations.push({
+          id: `top-performers`,
+          name: 'Top Performers Test',
+          variationIds: topPerformers.map(v => v.id),
+          isSelected: true,
+          performanceScore: Math.max(...topPerformers.map(v => v.performance?.score || 0)) + 5,
+        });
+      }
     }
 
     setCombinations(newCombinations);
-    showNotification(`Generated ${newCombinations.length} combinations`, 'success');
+    showNotification(`Generated ${newCombinations.length} strategic combinations`, 'success');
   };
 
   const handleSaveMatrix = async () => {
@@ -303,15 +346,19 @@ const MatrixPage: React.FC = () => {
       return;
     }
 
-    const matrixData: Partial<Matrix> = {
+    if (!selectedCampaign) {
+      showNotification('Please select a campaign to link this matrix', 'error');
+      return;
+    }
+
+    const matrixData = {
       name: matrixName,
       description: matrixDescription,
-      clientId: activeClient?.id || '',
-      templateId: selectedTemplate.id,
-      status: 'draft',
+      campaign_id: selectedCampaign.id,
+      template_id: selectedTemplate.id,
       variations,
       combinations,
-      fieldAssignments: selectedTemplate.dynamicFields.reduce((acc, field) => {
+      field_assignments: selectedTemplate.dynamicFields.reduce((acc, field) => {
         acc[field.id] = {
           status: 'completed',
           content: variations.map(v => {
@@ -338,7 +385,7 @@ const MatrixPage: React.FC = () => {
       showNotification('Failed to save matrix', 'error');
     } else {
       showNotification('Matrix saved successfully!', 'success');
-      router.push('/campaigns');
+      router.push(`/campaigns/${selectedCampaign.id}?tab=matrices`);
     }
   };
 
@@ -362,6 +409,96 @@ const MatrixPage: React.FC = () => {
 
   const getFieldValue = (fieldId: string, variationId: string) => {
     return fieldValues.find(fv => fv.fieldId === fieldId && fv.variationId === variationId);
+  };
+
+  const getMatrixQualityScore = () => {
+    let score = 100;
+    const issues: string[] = [];
+    
+    // Check basic requirements
+    if (!matrixName || matrixName.length < 3) {
+      score -= 20;
+      issues.push('Matrix needs a descriptive name');
+    }
+    
+    if (!matrixDescription || matrixDescription.length < 10) {
+      score -= 15;
+      issues.push('Add a detailed description');
+    }
+    
+    if (!selectedCampaign) {
+      score -= 20;
+      issues.push('Link matrix to a campaign');
+    }
+    
+    // Check variations
+    const activeVariations = variations.filter(v => v.isActive);
+    if (activeVariations.length === 0) {
+      score -= 25;
+      issues.push('Create at least one active variation');
+    } else if (activeVariations.length === 1) {
+      score -= 10;
+      issues.push('Add more variations for A/B testing');
+    }
+    
+    // Check field completeness
+    if (selectedTemplate) {
+      const totalFields = selectedTemplate.dynamicFields.length;
+      const completedFields = selectedTemplate.dynamicFields.filter(field => {
+        return variations.some(variation => {
+          const fv = getFieldValue(field.id, variation.id);
+          return fv && (fv.value || fv.assetId);
+        });
+      }).length;
+      
+      const completionRatio = totalFields > 0 ? completedFields / totalFields : 1;
+      if (completionRatio < 0.5) {
+        score -= 15;
+        issues.push('Complete more template fields');
+      } else if (completionRatio < 1) {
+        score -= 5;
+        issues.push('Fill remaining template fields');
+      }
+    }
+    
+    // Check combinations
+    if (combinations.length === 0) {
+      score -= 10;
+      issues.push('Generate test combinations');
+    }
+    
+    return {
+      score: Math.max(0, score),
+      grade: score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : score >= 60 ? 'D' : 'F',
+      issues,
+      isReady: score >= 70 && selectedCampaign && matrixName && activeVariations.length > 0
+    };
+  };
+
+  const getMatrixInsights = () => {
+    const insights: string[] = [];
+    const activeVariations = variations.filter(v => v.isActive);
+    
+    if (activeVariations.length === 2) {
+      insights.push('Perfect setup for A/B testing');
+    } else if (activeVariations.length > 4) {
+      insights.push('High variation count enables comprehensive testing');
+    }
+    
+    if (selectedTemplate?.platform) {
+      insights.push(`Optimized for ${selectedTemplate.platform} platform`);
+    }
+    
+    if (combinations.filter(c => c.isSelected).length > 0) {
+      insights.push('Test combinations selected and ready');
+    }
+    
+    const totalAssets = fieldValues.filter(fv => fv.assetId).length;
+    if (totalAssets > 0) {
+      insights.push(`${totalAssets} assets assigned to variations`);
+    }
+    
+    return insights;
   };
 
   const filteredTemplates = templates?.filter((template: Template) =>
@@ -516,9 +653,48 @@ const MatrixPage: React.FC = () => {
                     value={matrixDescription}
                     onChange={(e: React.ChangeEvent<HTMLElement>) => setMatrixDescription(e.target.value)}
                     multiline
-                   
+                    rows={2}
                     sx={{ mt: 2 }}
                   />
+                  
+                  {/* Matrix Quality Indicator */}
+                  {selectedTemplate && (
+                    <Card sx={{ mt: 2, p: 2, bgcolor: 'background.default' }}>
+                      <Grid container spacing={2} alignItems="center">
+                        <Grid item xs={12} md={6}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <Typography variant="h6">Matrix Quality</Typography>
+                            <Chip 
+                              label={`Grade ${getMatrixQualityScore().grade}`} 
+                              color={getMatrixQualityScore().score >= 80 ? 'success' : 
+                                     getMatrixQualityScore().score >= 60 ? 'warning' : 'error'}
+                              variant="outlined"
+                            />
+                            <Typography variant="body2" color="text.secondary">
+                              {getMatrixQualityScore().score}/100
+                            </Typography>
+                          </Box>
+                          {getMatrixQualityScore().issues.length > 0 && (
+                            <Box sx={{ mt: 1 }}>
+                              {getMatrixQualityScore().issues.slice(0, 2).map((issue, index) => (
+                                <Typography key={index} variant="caption" color="warning.main" display="block">
+                                  • {issue}
+                                </Typography>
+                              ))}
+                            </Box>
+                          )}
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                          <Typography variant="subtitle2" gutterBottom>Insights</Typography>
+                          {getMatrixInsights().slice(0, 3).map((insight, index) => (
+                            <Typography key={index} variant="caption" color="text.secondary" display="block">
+                              • {insight}
+                            </Typography>
+                          ))}
+                        </Grid>
+                      </Grid>
+                    </Card>
+                  )}
                 </Box>
 
                 <Divider sx={{ mb: 3 }} />
