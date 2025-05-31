@@ -90,7 +90,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, c
     return res.status(403).json({ error: 'Access denied to this campaign' });
   }
 
-  let enrichedCampaign = { ...campaign };
+  const enrichedCampaign = { ...campaign };
 
   // Include matrices
   if (include_matrices === 'true') {

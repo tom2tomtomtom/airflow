@@ -78,7 +78,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, m
     return res.status(403).json({ error: 'Access denied to this motivation' });
   }
 
-  let enrichedMotivation = { ...motivation };
+  const enrichedMotivation = { ...motivation };
 
   // Include usage statistics
   if (include_usage === 'true') {

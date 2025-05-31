@@ -487,7 +487,7 @@ function calculateEmotionalImpact(category: string, description: string): number
   const emotionalWords = ['feel', 'emotion', 'heart', 'passion', 'love', 'fear', 'hope', 'dream', 'worry', 'excited'];
   const lowerDesc = description.toLowerCase();
   
-  let base = emotionalWords.filter(word => lowerDesc.includes(word)).length * 10;
+  const base = emotionalWords.filter(word => lowerDesc.includes(word)).length * 10;
   
   // Category-based emotional impact
   const categoryImpact: Record<string, number> = {

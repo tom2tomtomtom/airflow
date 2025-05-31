@@ -1,4 +1,3 @@
-import { getErrorMessage } from '@/utils/errorUtils';
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/router';

@@ -1,4 +1,3 @@
-import { getErrorMessage } from '@/utils/errorUtils';
 import React from 'react';
 import { FormHelperText, Box, Typography } from '@mui/material';
 import { Error as ErrorIcon } from '@mui/icons-material';

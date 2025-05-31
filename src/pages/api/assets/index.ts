@@ -89,11 +89,23 @@ async function getAssets(
   clientId?: string
 ): Promise<void> {
   try {
+    // Extract query parameters for search and filtering
+    const {
+      search,
+      type,
+      tags,
+      dateFrom,
+      dateTo,
+      sortBy = 'created_at',
+      sortOrder = 'desc',
+      limit = 50,
+      offset = 0
+    } = req.query;
+
     // Build query
     let query = supabase
       .from('assets')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select('*');
     
     // Filter by client if provided
     if (clientId) {
@@ -124,6 +136,41 @@ async function getAssets(
         });
       }
     }
+
+    // Apply search filter
+    if (search && typeof search === 'string') {
+      query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`);
+    }
+
+    // Apply type filter
+    if (type && typeof type === 'string') {
+      query = query.eq('type', type);
+    }
+
+    // Apply tags filter
+    if (tags && typeof tags === 'string') {
+      const tagArray = tags.split(',').map(tag => tag.trim());
+      query = query.overlaps('tags', tagArray);
+    }
+
+    // Apply date range filters
+    if (dateFrom && typeof dateFrom === 'string') {
+      query = query.gte('created_at', dateFrom);
+    }
+    if (dateTo && typeof dateTo === 'string') {
+      query = query.lte('created_at', dateTo);
+    }
+
+    // Apply sorting
+    const validSortFields = ['created_at', 'name', 'type', 'file_size'];
+    const sortField = validSortFields.includes(sortBy as string) ? sortBy as string : 'created_at';
+    const ascending = sortOrder === 'asc';
+    query = query.order(sortField, { ascending });
+
+    // Apply pagination
+    const limitNum = Math.min(Number(limit) || 50, 100); // Max 100 items
+    const offsetNum = Number(offset) || 0;
+    query = query.range(offsetNum, offsetNum + limitNum - 1);
     
     const { data: assets, error } = await query;
     
@@ -156,6 +203,21 @@ async function getAssets(
     return res.status(200).json({
       success: true,
       assets: transformedAssets,
+      pagination: {
+        limit: limitNum,
+        offset: offsetNum,
+        total: assets?.length || 0,
+        hasMore: (assets?.length || 0) === limitNum
+      },
+      filters: {
+        search: search || null,
+        type: type || null,
+        tags: tags || null,
+        dateFrom: dateFrom || null,
+        dateTo: dateTo || null,
+        sortBy: sortField,
+        sortOrder: ascending ? 'asc' : 'desc'
+      }
     });
   } catch (error) {
     const message = getErrorMessage(error);

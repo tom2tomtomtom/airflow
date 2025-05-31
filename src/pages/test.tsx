@@ -15,9 +15,7 @@ import {
   Lock as LockIcon,
   Visibility,
   VisibilityOff,
-  Home,
-  Settings,
-  Person
+  Home
 } from '@mui/icons-material';
 
 const TestPage: React.FC = () => {

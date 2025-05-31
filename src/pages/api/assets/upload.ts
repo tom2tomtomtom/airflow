@@ -104,15 +104,15 @@ export default async function handler(
           .insert({
             name: file.originalFilename || filename,
             type: assetType,
-            file_type: file.mimetype || 'application/octet-stream',
-            size: file.size,
-            storage_path: storagePath,
-            url: urlData.publicUrl,
+            mime_type: file.mimetype || 'application/octet-stream',
+            file_size: file.size,
+            file_url: urlData.publicUrl,
             client_id: clientId || null,
             created_by: userId,
             metadata: {
               original_filename: file.originalFilename,
               uploaded_at: new Date().toISOString(),
+              storage_path: storagePath
             }
           })
           .select()
@@ -129,9 +129,9 @@ export default async function handler(
           id: assetData.id,
           name: assetData.name,
           type: assetData.type,
-          size: assetData.size,
-          url: assetData.url,
-          storage_path: assetData.storage_path,
+          size: assetData.file_size,
+          url: assetData.file_url,
+          storage_path: storagePath,
         });
 
       } catch (error) {

@@ -72,7 +72,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, n
     }
 
     // Get related context based on notification category
-    let enrichedNotification = { ...notification };
+    const enrichedNotification = { ...notification };
 
     if (notification.metadata) {
       switch (notification.category) {

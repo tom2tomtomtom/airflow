@@ -3,7 +3,6 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase/client';
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
-import { validate } from '@/middleware/validation';
 import { z } from 'zod';
 
 const BriefCreateSchema = z.object({

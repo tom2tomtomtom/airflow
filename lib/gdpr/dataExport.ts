@@ -62,7 +62,7 @@ async function getUserProfile(userId: string): Promise<void> {
   return data;
 }
 
-async function getUserAssets(userId: string): Promise<void> {
+async function getUserAssets(userId: string): Promise<any[]> {
   const { data, error } = await supabase
     .from('assets')
     .select('*')
@@ -72,7 +72,7 @@ async function getUserAssets(userId: string): Promise<void> {
   return data || [];
 }
 
-async function getUserCampaigns(userId: string): Promise<void> {
+async function getUserCampaigns(userId: string): Promise<any[]> {
   const { data, error } = await supabase
     .from('executions')
     .select(`
@@ -85,7 +85,7 @@ async function getUserCampaigns(userId: string): Promise<void> {
   return data || [];
 }
 
-async function getUserBriefs(userId: string): Promise<void> {
+async function getUserBriefs(userId: string): Promise<any[]> {
   const { data, error } = await supabase
     .from('briefs')
     .select('*')
@@ -95,7 +95,7 @@ async function getUserBriefs(userId: string): Promise<void> {
   return data || [];
 }
 
-async function getUserAnalytics(userId: string): Promise<void> {
+async function getUserAnalytics(userId: string): Promise<any[]> {
   const { data, error } = await supabase
     .from('analytics_events')
     .select('*')
@@ -105,7 +105,7 @@ async function getUserAnalytics(userId: string): Promise<void> {
   return data || [];
 }
 
-async function getUserActivityLog(userId: string): Promise<void> {
+async function getUserActivityLog(userId: string): Promise<any[]> {
   // This would fetch from an activity log table if implemented
   return [];
 }

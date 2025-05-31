@@ -101,7 +101,7 @@ function getTemplate(template: EmailTemplate, data: Record<string, any>): string
   }
 }
 
-export async function sendEmail(options: EmailOptions): Promise<void> {
+export async function sendEmail(options: EmailOptions): Promise<any> {
   const { to, subject, template, data } = options;
   
   // If Resend is not configured, use fallback logging
@@ -122,7 +122,7 @@ export async function sendEmail(options: EmailOptions): Promise<void> {
     console.log(`Data:`, JSON.stringify(data, null, 2));
     console.log('---');
     
-    return fallbackResult;
+    return;
   }
   
   try {
@@ -147,7 +147,7 @@ export async function sendEmail(options: EmailOptions): Promise<void> {
         ? (result.data as { id: string }).id 
         : 'unknown';
       console.log('Email sent successfully:', dataId);
-      return result.data;
+      return;
     }
     
     throw new Error('Unexpected response from Resend API');

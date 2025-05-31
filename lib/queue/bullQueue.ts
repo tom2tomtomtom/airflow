@@ -89,7 +89,7 @@ export interface AnalyticsJobData {
 }
 
 // Add jobs to queues
-export async function addRenderJob(data: RenderJobData, priority?: number): Promise<void> {
+export async function addRenderJob(data: RenderJobData, priority?: number): Promise<Job | null> {
   if (!queues) {
     console.warn('Queue system not available - render job skipped');
     return null;
@@ -106,7 +106,7 @@ export async function addRenderJob(data: RenderJobData, priority?: number): Prom
   });
 }
 
-export async function addEmailJob(data: EmailJobData): Promise<void> {
+export async function addEmailJob(data: EmailJobData): Promise<Job | null> {
   if (!queues) {
     console.warn('Queue system not available - email job skipped');
     return null;
@@ -122,7 +122,7 @@ export async function addEmailJob(data: EmailJobData): Promise<void> {
   });
 }
 
-export async function addWebhookJob(data: WebhookJobData): Promise<void> {
+export async function addWebhookJob(data: WebhookJobData): Promise<Job | null> {
   if (!queues) {
     console.warn('Queue system not available - webhook job skipped');
     return null;
@@ -141,7 +141,7 @@ export async function addWebhookJob(data: WebhookJobData): Promise<void> {
   });
 }
 
-export async function addFileCleanupJob(data: FileCleanupJobData, delay?: number): Promise<void> {
+export async function addFileCleanupJob(data: FileCleanupJobData, delay?: number): Promise<Job | null> {
   if (!queues) {
     console.warn('Queue system not available - file cleanup job skipped');
     return null;
@@ -153,7 +153,7 @@ export async function addFileCleanupJob(data: FileCleanupJobData, delay?: number
   });
 }
 
-export async function addAnalyticsJob(data: AnalyticsJobData): Promise<void> {
+export async function addAnalyticsJob(data: AnalyticsJobData): Promise<Job | null> {
   if (!queues) {
     console.warn('Queue system not available - analytics job skipped');
     return null;
@@ -170,7 +170,12 @@ export async function addAnalyticsJob(data: AnalyticsJobData): Promise<void> {
 }
 
 // Bulk operations
-export async function addBulkRenderJobs(jobs: RenderJobData[]): Promise<void> {
+export async function addBulkRenderJobs(jobs: RenderJobData[]): Promise<Job[] | null> {
+  if (!queues) {
+    console.warn('Queue system not available - bulk render jobs skipped');
+    return null;
+  }
+  
   const bulkJobs = jobs.map(data => ({
     name: 'process-render',
     data,
@@ -188,7 +193,8 @@ export async function addBulkRenderJobs(jobs: RenderJobData[]): Promise<void> {
 }
 
 // Queue management functions
-export async function getQueueStats(queueName: keyof typeof queues): Promise<void> {
+export async function getQueueStats(queueName: keyof typeof queues): Promise<any> {
+  if (!queues) return null;
   const queue = queues[queueName];
   
   const [waiting, active, completed, failed, delayed] = await Promise.all([
@@ -209,7 +215,8 @@ export async function getQueueStats(queueName: keyof typeof queues): Promise<voi
   };
 }
 
-export async function getAllQueueStats(): Promise<void> {
+export async function getAllQueueStats(): Promise<Record<string, any>> {
+  if (!queues) return {};
   const stats: Record<string, any> = {};
   
   for (const [name, _] of Object.entries(queues)) {
@@ -231,15 +238,18 @@ export async function cleanQueue(queueName: keyof typeof queues, grace: number =
 
 // Pause/resume queue
 export async function pauseQueue(queueName: keyof typeof queues): Promise<void> {
+  if (!queues) return;
   await queues[queueName].pause();
 }
 
 export async function resumeQueue(queueName: keyof typeof queues): Promise<void> {
+  if (!queues) return;
   await queues[queueName].resume();
 }
 
 // Get job by ID
-export async function getJob(queueName: keyof typeof queues, jobId: string): Promise<void> {
+export async function getJob(queueName: keyof typeof queues, jobId: string): Promise<Job | null> {
+  if (!queues) return null;
   return queues[queueName].getJob(jobId);
 }
 

@@ -89,7 +89,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, m
     return res.status(403).json({ error: 'Access denied to this matrix' });
   }
 
-  let enrichedMatrix = { ...matrix };
+  const enrichedMatrix = { ...matrix };
 
   // Include executions
   if (include_executions === 'true') {

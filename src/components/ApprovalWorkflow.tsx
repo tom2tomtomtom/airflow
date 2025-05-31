@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   Typography,
-  Grid,
   Chip,
   Button,
   IconButton,
@@ -46,7 +45,6 @@ import {
   Person as PersonIcon,
   Comment as CommentIcon,
   History as HistoryIcon,
-  Speed as SpeedIcon,
   Warning as WarningIcon,
   Notifications as NotificationIcon,
 } from '@mui/icons-material';
@@ -483,7 +481,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
                           )}
                           <IconButton
                             size="small"
-                            onClick={(e: React.ClickEvent<HTMLElement>) => handleMenuOpen(e, approval)}
+                            onClick={(e: React.MouseEvent<HTMLElement>) => handleMenuOpen(e, approval)}
                           >
                             <MoreIcon />
                           </IconButton>
@@ -619,7 +617,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
             fullWidth
             label="Comments"
             value={decisionData.comments}
-            onChange={(e: React.ChangeEvent<HTMLElement>) => setDecisionData({ ...decisionData, comments: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDecisionData({ ...decisionData, comments: e.target.value })}
             multiline
             rows={3}
             sx={{ mb: 2 }}
@@ -658,7 +656,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
             <Select
               value={decisionData.action}
               label="Action"
-              onChange={(e: React.ChangeEvent<HTMLElement>) => setDecisionData({ ...decisionData, action: e.target.value as any })}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDecisionData({ ...decisionData, action: e.target.value as any })}
             >
               <MenuItem value="approve">Approve All</MenuItem>
               <MenuItem value="reject">Reject All</MenuItem>
@@ -670,7 +668,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
             fullWidth
             label="Comments"
             value={decisionData.comments}
-            onChange={(e: React.ChangeEvent<HTMLElement>) => setDecisionData({ ...decisionData, comments: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDecisionData({ ...decisionData, comments: e.target.value })}
             multiline
             rows={3}
           />

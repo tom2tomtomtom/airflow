@@ -3,7 +3,6 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from 'openai';
 import { env, hasOpenAI } from '@/lib/env';
-import { supabase } from '@/lib/supabase';
 
 export interface GenerationPrompt {
   prompt: string;

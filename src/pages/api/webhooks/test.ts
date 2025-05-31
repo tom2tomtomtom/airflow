@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { withErrorHandler } from '@/lib/errors/errorHandler';
 import { withRateLimitedRoute } from '@/middleware/rateLimiter';
 import { webhookManager, WebhookManager } from '@/lib/webhooks/webhookManager';
-import { AuthorizationError, ValidationError } from '@/lib/errors/errorHandler';
+import { ValidationError } from '@/lib/errors/errorHandler';
 
 /**
  * Test endpoint for triggering webhook events

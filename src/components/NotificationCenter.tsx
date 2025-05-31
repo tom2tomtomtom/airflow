@@ -24,11 +24,9 @@ import {
 import {
   Notifications as NotificationIcon,
   NotificationsActive as NotificationActiveIcon,
-  Close as CloseIcon,
   CheckCircle as SuccessIcon,
   Error as ErrorIcon,
   Warning as WarningIcon,
-  Info as InfoIcon,
   PlayArrow as ExecutionIcon,
   Assignment as ApprovalIcon,
   Campaign as CampaignIcon,

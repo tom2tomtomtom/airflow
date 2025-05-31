@@ -1,4 +1,3 @@
-import { getErrorMessage } from '@/utils/errorUtils';
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -23,7 +22,6 @@ import {
 } from '@mui/material';
 import {
   Security as SecurityIcon,
-  QrCode as QrCodeIcon,
   Key as KeyIcon,
   CheckCircle as CheckCircleIcon,
   Warning as WarningIcon,

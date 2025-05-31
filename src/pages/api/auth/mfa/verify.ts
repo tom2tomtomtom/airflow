@@ -1,9 +1,8 @@
 import { getErrorMessage } from '@/utils/errorUtils';
-import { NextApiRequest, NextApiResponse } from 'next';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiResponse } from 'next';
+import type { NextApiResponse } from 'next';
 import { verifyAndEnableMFA } from '@/lib/mfa';
 import { withAuth } from '@/middleware/withAuth';
-import { apiSchemas } from '@/middleware/validation';
 import { z } from 'zod';
 import type { AuthenticatedRequest } from '@/middleware/withAuth';
 

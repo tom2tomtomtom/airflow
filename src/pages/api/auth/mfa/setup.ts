@@ -1,6 +1,6 @@
 import { getErrorMessage } from '@/utils/errorUtils';
-import { NextApiRequest, NextApiResponse } from 'next';
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiResponse } from 'next';
+import type { NextApiResponse } from 'next';
 import { setupMFA } from '@/lib/mfa';
 import { withAuth } from '@/middleware/withAuth';
 import type { AuthenticatedRequest } from '@/middleware/withAuth';

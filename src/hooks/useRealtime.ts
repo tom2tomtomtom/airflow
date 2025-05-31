@@ -1,4 +1,3 @@
-import { getErrorMessage } from '@/utils/errorUtils';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useClient } from '@/contexts/ClientContext';
 import { useAuth } from '@/contexts/AuthContext';

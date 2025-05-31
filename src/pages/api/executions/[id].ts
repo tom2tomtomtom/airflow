@@ -84,7 +84,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, e
     return res.status(403).json({ error: 'Access denied to this execution' });
   }
 
-  let enrichedExecution = { ...execution };
+  const enrichedExecution = { ...execution };
 
   // Include execution logs if requested
   if (include_logs === 'true') {
@@ -348,7 +348,7 @@ function calculateExecutionProgress(execution: any): any {
 
   let progressPercentage = 0;
   let estimatedCompletion = null;
-  let timeElapsed = (now - created) / 1000; // seconds
+  const timeElapsed = (now - created) / 1000; // seconds
 
   switch (execution.status) {
     case 'pending':

@@ -18,6 +18,9 @@
     "migrate": "tsx scripts/migrate.ts",
     "seed": "tsx scripts/seed.ts",
     "fix:typescript": "tsx scripts/fix-typescript-errors.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
     "fix:typescript:all": "tsx scripts/fix-all-typescript-errors.ts",
     "count:errors": "tsx scripts/count-errors.ts"
   },

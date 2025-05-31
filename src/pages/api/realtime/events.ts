@@ -4,7 +4,6 @@ import { NextApiRequest, NextApiResponse } from 'next';
 // Alternative to WebSocket that works with Next.js deployment on Netlify
 
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase';
 
 interface SSEConnection {
   res: NextApiResponse;

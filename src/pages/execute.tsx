@@ -24,17 +24,9 @@ import {
   FormControlLabel,
   FormGroup,
   Alert,
-  LinearProgress,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   Avatar,
-  Divider,
   Paper,
   Stack,
-  Tooltip,
-  Badge,
 } from '@mui/material';
 import {
   PlayArrow as PlayIcon,
@@ -48,11 +40,8 @@ import {
   YouTube as YouTubeIcon,
   Pinterest as PinterestIcon,
   CheckCircle as CheckIcon,
-  Cancel as CancelIcon,
-  Pending as PendingIcon,
   CalendarMonth as CalendarIcon,
   AttachMoney as BudgetIcon,
-  Analytics as AnalyticsIcon,
 } from '@mui/icons-material';
 import Head from 'next/head';
 import DashboardLayout from '@/components/DashboardLayout';

@@ -30,17 +30,13 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  List,
-  ListItem,
   ListItemText,
   ListItemIcon,
   Divider,
-  Alert,
   LinearProgress,
   Menu,
   Stack,
   Tooltip,
-  Badge,
 } from '@mui/material';
 import {
   Webhook as WebhookIcon,
@@ -50,17 +46,11 @@ import {
   PlayArrow as TestIcon,
   Refresh as RefreshIcon,
   MoreVert as MoreIcon,
-  CheckCircle as SuccessIcon,
-  Error as ErrorIcon,
-  Warning as WarningIcon,
-  Schedule as ScheduleIcon,
   Settings as SettingsIcon,
   Security as SecurityIcon,
-  Timeline as TimelineIcon,
   ExpandMore as ExpandMoreIcon,
   ContentCopy as CopyIcon,
   Visibility as ViewIcon,
-  VisibilityOff as HideIcon,
 } from '@mui/icons-material';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';

@@ -16,8 +16,6 @@ import {
 } from '@mui/material';
 import {
   CheckCircle as ApproveIcon,
-  Cancel as RejectIcon,
-  Edit as RequestChangesIcon,
   Group as GroupIcon,
   Speed as SpeedIcon,
   Notifications as NotificationIcon,

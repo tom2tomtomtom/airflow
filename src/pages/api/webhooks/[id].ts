@@ -4,7 +4,7 @@ import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { supabase } from '@/lib/supabase/client';
 import { z } from 'zod';
-import { deliverWebhook, triggerWebhookEvent, WEBHOOK_EVENTS } from './index';
+import { deliverWebhook, WEBHOOK_EVENTS } from './index';
 
 const WebhookUpdateSchema = z.object({
   name: z.string().min(1, 'Name is required').optional(),

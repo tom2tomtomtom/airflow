@@ -2,7 +2,7 @@ import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
-import { env, hasCreatomate } from '@/lib/env';
+import { hasCreatomate } from '@/lib/env';
 import { creatomateService } from '@/services/creatomate';
 
 export default async function handler(

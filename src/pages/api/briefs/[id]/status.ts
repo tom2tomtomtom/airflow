@@ -68,7 +68,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
     // Calculate parsing progress
     let progress = 0;
-    let status = brief.parsing_status;
+    const status = brief.parsing_status;
     let message = '';
 
     switch (brief.parsing_status) {
@@ -95,7 +95,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
     // Calculate completeness score
     let completenessScore = 0;
-    let completenessDetails: Record<string, boolean> = {};
+    const completenessDetails: Record<string, boolean> = {};
 
     if (brief.objectives) {
       completenessScore += 25;

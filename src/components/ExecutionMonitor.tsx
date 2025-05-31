@@ -10,7 +10,6 @@ import {
   Button,
   IconButton,
   LinearProgress,
-  Tooltip,
   Menu,
   MenuItem,
   Dialog,
@@ -32,7 +31,6 @@ import {
 } from '@mui/material';
 import {
   PlayArrow as PlayIcon,
-  Pause as PauseIcon,
   Stop as StopIcon,
   Refresh as RetryIcon,
   MoreVert as MoreIcon,
@@ -43,7 +41,6 @@ import {
   Cancel as CancelIcon,
   Analytics as AnalyticsIcon,
   Timeline as TimelineIcon,
-  Speed as SpeedIcon,
 } from '@mui/icons-material';
 import { useNotification } from '@/contexts/NotificationContext';
 import { useClient } from '@/contexts/ClientContext';

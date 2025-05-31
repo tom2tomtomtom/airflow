@@ -169,8 +169,8 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
         id: data.id || `act-${Date.now()}`,
         type: data.type || 'comment_added',
         user: {
-          id: data.userId || user?.id || 'unknown',
-          name: data.userName || user?.name || 'Unknown User',
+          id: data.userId || _user?.id || 'unknown',
+          name: data.userName || _user?.name || 'Unknown User',
           isOnline: true,
         },
         timestamp: new Date(data.timestamp || Date.now()),
@@ -185,7 +185,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
       
       setActivities(prev => [newActivity, ...prev].slice(0, 50));
       setUnreadCount(prev => prev + 1);
-      showNotification('New activity', data.description || 'Activity updated', 'info');
+      showNotification(data.description || 'Activity updated', 'info');
     });
 
     // Subscribe to render progress updates
@@ -194,7 +194,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
         id: `render-${data.renderId}`,
         type: 'content_published',
         user: {
-          id: user?.id || 'system',
+          id: _user?.id || 'system',
           name: 'Video Generator',
           isOnline: true,
         },
@@ -226,7 +226,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
         id: `complete-${data.renderId}`,
         type: 'content_published',
         user: {
-          id: user?.id || 'system',
+          id: _user?.id || 'system',
           name: 'Video Generator',
           isOnline: true,
         },
@@ -242,7 +242,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
       
       setActivities(prev => [completeActivity, ...prev].slice(0, 50));
       setUnreadCount(prev => prev + 1);
-      showNotification('Render Complete', 'Your video is ready!', 'success');
+      showNotification('Your video is ready!', 'info');
     });
 
     return () => {
@@ -250,7 +250,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
       unsubscribeRender();
       unsubscribeComplete();
     };
-  }, [activeClient, realtime, realTimeUpdates, user, showNotification]);
+  }, [activeClient, realtime, realTimeUpdates, _user, showNotification]);
 
   const getActivityIcon = (type: Activity['type']) => {
     switch (type) {
@@ -367,7 +367,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
               </IconButton>
               <IconButton
                 size="small"
-                onClick={(e: React.ClickEvent<HTMLElement>) => setAnchorEl(e.currentTarget)}
+                onClick={(e: React.MouseEvent<HTMLElement>) => setAnchorEl(e.currentTarget)}
               >
                 <MoreIcon />
               </IconButton>
@@ -461,11 +461,11 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
                               fullWidth
                               placeholder="Add a comment..."
                               value={commentInputs[activity.id] || ''}
-                              onChange={(e: React.ChangeEvent<HTMLElement>) => setCommentInputs(prev => ({
+                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCommentInputs(prev => ({
                                 ...prev,
                                 [activity.id]: e.target.value
                               }))}
-                              onKeyPress={(e: React.KeyPressEvent<HTMLElement>) => {
+                              onKeyPress={(e: React.KeyboardEvent<HTMLElement>) => {
                                 if (e.key === 'Enter') {
                                   handleComment(activity.id);
                                 }
@@ -517,7 +517,7 @@ export const NotificationBadge: React.FC = () => {
     <>
       <IconButton
         color="inherit"
-        onClick={(e: React.ClickEvent<HTMLElement>) => setAnchorEl(e.currentTarget)}
+        onClick={(e: React.MouseEvent<HTMLElement>) => setAnchorEl(e.currentTarget)}
       >
         <Badge badgeContent={unreadCount} color="error">
           <NotificationsIcon />
