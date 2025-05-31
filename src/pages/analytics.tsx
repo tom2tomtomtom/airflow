@@ -77,6 +77,7 @@ import {
 } from 'recharts';
 import DashboardLayout from '@/components/DashboardLayout';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
+import PerformanceDashboard from '@/components/analytics/PerformanceDashboard';
 import { useClient } from '@/contexts/ClientContext';
 import { useCampaigns, useMatrices } from '@/hooks/useData';
 import { useNotification } from '@/contexts/NotificationContext';
@@ -479,6 +480,7 @@ const AnalyticsPage: React.FC = () => {
               <Tab label="Audience" />
               <Tab label="Content Performance" />
               <Tab label="ROI Analysis" />
+              <Tab label="Performance Dashboard" />
             </Tabs>
           </Box>
 
@@ -845,6 +847,17 @@ const AnalyticsPage: React.FC = () => {
                 </TableContainer>
               </Grid>
             </Grid>
+          </TabPanel>
+
+          <TabPanel value={activeTab} index={5}>
+            {/* Performance Dashboard Tab */}
+            <PerformanceDashboard 
+              clientId={activeClient?.id}
+              dateRange={{
+                start: new Date(Date.now() - (timeRange === '24h' ? 1 : timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : 90) * 24 * 60 * 60 * 1000).toISOString(),
+                end: new Date().toISOString()
+              }}
+            />
           </TabPanel>
         </Paper>
       </DashboardLayout>
