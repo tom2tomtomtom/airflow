@@ -58,11 +58,16 @@ export function useData<T extends keyof EntityTypes>(
 
         // Supabase data fetching
         if (id) {
-          const { data, error } = await supabase
-            .from(entityType)
-            .select('*')
-            .eq('id', id)
-            .single();
+          let query = supabase.from(entityType).eq('id', id).single();
+          
+          // Use specific column selection for clients to avoid schema issues
+          if (entityType === 'clients') {
+            query = query.select('id, name, description, industry, logo_url, primary_color, secondary_color, brand_guidelines, created_at, updated_at');
+          } else {
+            query = query.select('*');
+          }
+          
+          const { data, error } = await query;
           
           if (error) throw error;
           
@@ -73,10 +78,16 @@ export function useData<T extends keyof EntityTypes>(
             result = data;
           }
         } else {
-          const { data, error } = await supabase
-            .from(entityType)
-            .select('*')
-            .order('created_at', { ascending: false });
+          let query = supabase.from(entityType).order('created_at', { ascending: false });
+          
+          // Use specific column selection for clients to avoid schema issues
+          if (entityType === 'clients') {
+            query = query.select('id, name, description, industry, logo_url, primary_color, secondary_color, brand_guidelines, created_at, updated_at');
+          } else {
+            query = query.select('*');
+          }
+          
+          const { data, error } = await query;
           
           if (error) throw error;
           
@@ -109,7 +120,7 @@ export const useClients = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('clients')
-        .select('*')
+        .select('id, name, description, industry, logo_url, primary_color, secondary_color, brand_guidelines, created_at, updated_at')
         .order('name');
       
       if (error) throw error;

@@ -110,7 +110,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
       primaryColor: client.primary_color,
       secondaryColor: client.secondary_color,
       socialMedia: client.social_media || {},
-      brandGuidelines: client.brand_guidelines || {},
+      brand_guidelines: client.brand_guidelines || {},
       isActive: client.is_active !== false,
       dateCreated: client.created_at,
       lastModified: client.updated_at,
@@ -153,7 +153,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
       primaryColor,
       secondaryColor,
       socialMedia,
-      brandGuidelines
+      brand_guidelines
     } = req.body;
 
     // Basic validation
@@ -180,7 +180,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
         primary_color: primaryColor || '#1976d2',
         secondary_color: secondaryColor || '#dc004e',
         social_media: socialMedia || {},
-        brand_guidelines: brandGuidelines || {
+        brand_guidelines: brand_guidelines || {
           voiceTone: '',
           targetAudience: '',
           keyMessages: []
@@ -210,7 +210,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
       primaryColor: client.primary_color,
       secondaryColor: client.secondary_color,
       socialMedia: client.social_media || {},
-      brandGuidelines: client.brand_guidelines || {},
+      brand_guidelines: client.brand_guidelines || {},
       isActive: client.is_active,
       dateCreated: client.created_at,
       lastModified: client.updated_at,

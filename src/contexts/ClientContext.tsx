@@ -194,7 +194,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         website: clientData.website || '',
         socialMedia: clientData.socialMedia || {},
         contacts: clientData.contacts || [],
-        brandGuidelines: clientData.brandGuidelines || {
+        brand_guidelines: clientData.brand_guidelines || {
           voiceTone: '',
           targetAudience: '',
           keyMessages: [],

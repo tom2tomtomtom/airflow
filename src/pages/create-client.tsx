@@ -244,7 +244,7 @@ export default function CreateClient() {
         logo: formData.logo,
         socialMedia: {},
         contacts: contacts,
-        brandGuidelines: {
+        brand_guidelines: {
           voiceTone: formData.voiceTone,
           targetAudience: formData.targetAudience,
           keyMessages: keyMessages,

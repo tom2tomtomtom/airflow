@@ -327,6 +327,7 @@ export interface Database {
           logo_url: string | null;
           primary_color?: string | null;
           secondary_color?: string | null;
+          brand_guidelines: Record<string, any> | null;
           created_at: string | null;
           updated_at: string | null;
         };
@@ -338,6 +339,7 @@ export interface Database {
           logo_url?: string | null;
           primary_color?: string | null;
           secondary_color?: string | null;
+          brand_guidelines?: Record<string, any> | null;
           created_at?: string | null;
           updated_at?: string | null;
         };
@@ -349,6 +351,7 @@ export interface Database {
           logo_url?: string | null;
           primary_color?: string | null;
           secondary_color?: string | null;
+          brand_guidelines?: Record<string, any> | null;
           created_at?: string | null;
           updated_at?: string | null;
         };
