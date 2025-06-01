@@ -44,6 +44,9 @@ import { useRouter } from 'next/router';
 import DashboardLayout from '@/components/DashboardLayout';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
 import ErrorMessage from '@/components/ErrorMessage';
+import { EmptyTemplates } from '@/components/EmptyStates';
+import { CardSkeleton } from '@/components/SkeletonLoaders';
+import { AnimatedActionButton } from '@/components/AnimatedComponents';
 import { useTemplates } from '@/hooks/useData';
 import { useNotification } from '@/contexts/NotificationContext';
 import type { Template } from '@/types/models';
@@ -255,7 +258,7 @@ const Templates: React.FC = () => {
         <Grid container spacing={3}>
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <Grid item xs={12} sm={6} md={4} key={i}>
-              <LoadingSkeleton variant="card" />
+              <CardSkeleton height={300} />
             </Grid>
           ))}
         </Grid>
@@ -320,13 +323,10 @@ const Templates: React.FC = () => {
               </FormControl>
             </Grid>
             <Grid item xs={12} md={5} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', md: 'flex-end' } }}>
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={handleAddTemplate}
-              >
+              <AnimatedActionButton onClick={handleAddTemplate}>
+                <AddIcon sx={{ mr: 1 }} />
                 Create Template
-              </Button>
+              </AnimatedActionButton>
             </Grid>
           </Grid>
         </Paper>
@@ -345,25 +345,23 @@ const Templates: React.FC = () => {
                 />
               </Grid>
             ))
-          ) : (
+          ) : searchQuery || platformFilter !== 'All' ? (
             <Grid item xs={12}>
               <Box textAlign="center" py={8}>
                 <Typography variant="h6" color="text.secondary" gutterBottom>
                   No templates found
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                  {searchQuery || platformFilter !== 'All' 
-                    ? 'Try adjusting your filters'
-                    : 'Create your first template to get started'}
+                  Try adjusting your filters
                 </Typography>
-                <Button
-                  variant="contained"
-                  startIcon={<AddIcon />}
-                  onClick={handleAddTemplate}
-                >
-                  Create Template
-                </Button>
+                <AnimatedActionButton onClick={() => { setSearchQuery(''); setPlatformFilter('All'); }}>
+                  Clear Filters
+                </AnimatedActionButton>
               </Box>
+            </Grid>
+          ) : (
+            <Grid item xs={12}>
+              <EmptyTemplates onAddTemplate={handleAddTemplate} />
             </Grid>
           )}
         </Grid>

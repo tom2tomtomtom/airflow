@@ -34,6 +34,8 @@ import { ActivityFeed } from '@/components/ActivityFeed';
 import ExecutionMonitor from '@/components/ExecutionMonitor';
 import ApprovalWorkflow from '@/components/ApprovalWorkflow';
 import RealTimeDashboard from '@/components/realtime/RealTimeDashboard';
+import { StatsSkeleton, CardSkeleton } from '@/components/SkeletonLoaders';
+import { AnimatedActionButton, AnimatedProgressCard } from '@/components/AnimatedComponents';
 import { useAuth } from '@/contexts/AuthContext';
 import { useClient } from '@/contexts/ClientContext';
 
@@ -246,18 +248,9 @@ const DashboardPage = () => {
         {/* Stats Grid */}
         <Grid container spacing={3} mb={4}>
           {statsLoading ? (
-            // Loading skeletons
-            [...Array(6)].map((_, index) => (
-              <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
-                <Card>
-                  <CardContent>
-                    <Box display="flex" justifyContent="center" alignItems="center" minHeight={100}>
-                      <CircularProgress size={24} />
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))
+            <Grid item xs={12}>
+              <StatsSkeleton />
+            </Grid>
           ) : (
             stats.map((stat, index) => (
               <Grid item xs={12} sm={6} md={4} lg={2} key={index}>

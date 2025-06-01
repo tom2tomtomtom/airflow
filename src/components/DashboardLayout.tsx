@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   AppBar,
   Box,
@@ -15,6 +15,9 @@ import {
   useTheme,
   useMediaQuery,
   Divider,
+  Chip,
+  InputAdornment,
+  TextField,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -33,12 +36,14 @@ import {
   Analytics as AnalyticsIcon,
   Webhook as WebhookIcon,
   Share as SocialIcon,
+  Search as SearchIcon,
 } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import ClientSelector from './ClientSelector';
 import UserMenu from './UserMenu';
 import NotificationCenter from './realtime/NotificationCenter';
 import LiveCollaboration from './realtime/LiveCollaboration';
+import { GlobalSearch } from './GlobalSearch';
 
 const drawerWidth = 240;
 
@@ -69,6 +74,7 @@ export type DashboardLayoutProps = {
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const router = useRouter();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -76,6 +82,19 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+
+  // Add Cmd+K / Ctrl+K keyboard shortcut for global search
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+        event.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const drawer = (
     <div>
@@ -172,7 +191,51 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
           <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 600, flexGrow: 1 }}>
             {title || 'AIrWAVE Dashboard'}
           </Typography>
-          <Box sx={{ ml: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          
+          {/* Global Search Button */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mr: 2 }}>
+            <TextField
+              size="small"
+              placeholder="Search... (⌘K)"
+              onClick={() => setSearchOpen(true)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon color="action" />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <Chip 
+                      label="⌘K" 
+                      size="small" 
+                      variant="outlined"
+                      sx={{ height: 20, fontSize: '0.7rem' }}
+                    />
+                  </InputAdornment>
+                ),
+                readOnly: true,
+              }}
+              sx={{ 
+                minWidth: 200,
+                cursor: 'pointer',
+                '& .MuiInputBase-input': {
+                  cursor: 'pointer',
+                },
+                display: { xs: 'none', md: 'block' }
+              }}
+            />
+            
+            {/* Mobile search icon */}
+            <IconButton 
+              onClick={() => setSearchOpen(true)}
+              sx={{ display: { xs: 'block', md: 'none' } }}
+            >
+              <SearchIcon />
+            </IconButton>
+          </Box>
+
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <ClientSelector variant="chip" />
             <LiveCollaboration compact />
             <NotificationCenter />
@@ -233,6 +296,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
         <Toolbar />
         {children}
       </Box>
+      
+      {/* Global Search Modal */}
+      <GlobalSearch 
+        open={searchOpen} 
+        onClose={() => setSearchOpen(false)} 
+      />
     </Box>
   );
 };
