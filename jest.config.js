@@ -1,20 +1,41 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  roots: ['<rootDir>/tests'],
-  testMatch: ['**/__tests__/**/*.ts', '**/?(*.)+(spec|test).ts'],
+  roots: [
+    '<rootDir>/src/components/__tests__',
+    '<rootDir>/src/utils',
+    '<rootDir>/tests/api',
+  ],
+  testMatch: [
+    '**/__tests__/**/*.ts?(x)',
+    '**/?(*.)+(spec|test).ts?(x)',
+    '!**/tests/e2e/**',
+    '!**/*.e2e.ts',
+    '!**/*.e2e.spec.ts',
+    '!**/tests/**/*.e2e.ts',
+    '!**/tests/**/*.e2e.spec.ts',
+    '!**/tests/e2e/**',
+    '!**/tests/**/*.playwright.ts',
+    '!**/tests/**/*.playwright.spec.ts',
+    '!**/tests/ui-*.spec.ts',
+  ],
   transform: {
     '^.+\\.tsx?$': 'ts-jest',
   },
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/$1',
+    '^@/(.*)$': '<rootDir>/src/$1',
   },
   setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
   collectCoverageFrom: [
-    'lib/**/*.{ts,tsx}',
-    'pages/api/**/*.{ts,tsx}',
+    'src/**/*.{ts,tsx}',
     '!**/*.d.ts',
     '!**/node_modules/**',
+    '!**/tests/e2e/**',
+    '!**/*.e2e.ts',
+    '!**/*.e2e.spec.ts',
+    '!**/tests/**/*.e2e.ts',
+    '!**/tests/**/*.e2e.spec.ts',
+    '!**/tests/ui-*.spec.ts',
   ],
   coverageThreshold: {
     global: {

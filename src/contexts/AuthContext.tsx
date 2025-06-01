@@ -172,14 +172,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // Logout function
-  const logout = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('airwave_user');
-      localStorage.removeItem('airwave_active_client');
-      localStorage.removeItem('airwave_clients');
+  const logout = async () => {
+    try {
+      // Call logout API to clear cookies
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+    } catch (error) {
+      console.error('Logout API error:', error);
+    } finally {
+      // Clear local storage regardless of API call result
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('airwave_user');
+        localStorage.removeItem('airwave_active_client');
+        localStorage.removeItem('airwave_clients');
+      }
+      setUser(null);
+      router.push('/login');
     }
-    setUser(null);
-    router.push('/login');
   };
 
   return (

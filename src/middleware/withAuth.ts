@@ -26,20 +26,28 @@ export type AuthenticatedHandler = (
 export function withAuth(handler: AuthenticatedHandler) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     try {
-      // Get authorization header
+      // Get token from either Authorization header or cookies
+      let token: string | undefined;
+      
+      // Try Authorization header first
       const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.split(' ')[1];
+      }
+      
+      // Fall back to cookie
+      if (!token) {
+        token = req.cookies.airwave_token;
+      }
 
-      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      if (!token) {
         return errorResponse(
           res,
           ErrorCode.UNAUTHORIZED,
-          'Authorization header missing or invalid',
+          'Authentication token missing',
           401
         );
       }
-
-      // Extract token
-      const token = authHeader.split(' ')[1];
 
       // Verify token with Supabase
       try {

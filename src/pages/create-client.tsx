@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
+import dynamic from 'next/dynamic';
 import {
   Box,
   Paper,
@@ -46,7 +47,12 @@ import {
   Check as CheckIcon,
   Info as InfoIcon,
 } from '@mui/icons-material';
-import { MuiColorInput } from 'mui-color-input';
+// Dynamic import for MuiColorInput to avoid SSR issues
+const MuiColorInput = dynamic(() => import('mui-color-input').then(mod => ({ default: mod.MuiColorInput })), {
+  ssr: false,
+  loading: () => <div>Loading color picker...</div>
+});
+
 import DashboardLayout from '@/components/DashboardLayout';
 import { useNotification } from '@/contexts/NotificationContext';
 import { supabase } from '@/lib/supabase';
@@ -268,7 +274,7 @@ export default function CreateClient() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,

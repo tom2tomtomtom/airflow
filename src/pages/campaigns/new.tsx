@@ -39,7 +39,7 @@ import {
   LinkedIn,
   Info,
   CheckCircle,
-  TikTok,
+  MusicNote as TikTok,
   Add as AddIcon,
 } from '@mui/icons-material';
 import { addDays } from 'date-fns';

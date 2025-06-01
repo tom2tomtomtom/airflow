@@ -41,9 +41,9 @@ async function loginToApp(page: Page): Promise<void> {
     return;
   }
   
-  // Fallback to regular login
-  await page.fill('[data-testid="email-input"]', testUser.email);
-  await page.fill('[data-testid="password-input"]', testUser.password);
+  // Fallback to regular login - target actual input elements
+  await page.fill('[data-testid="email-input"] input', testUser.email);
+  await page.fill('[data-testid="password-input"] input', testUser.password);
   await page.click('[data-testid="sign-in-button"]');
   await page.waitForURL('**/dashboard', { timeout: 10000 });
 }
