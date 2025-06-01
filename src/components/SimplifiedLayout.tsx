@@ -202,15 +202,11 @@ export const SimplifiedLayout: React.FC<SimplifiedLayoutProps> = ({
             {/* Right Side */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               {/* Quick Actions */}
-<<<<<<< HEAD
               <IconButton
                 size="small"
                 sx={{ color: 'text.secondary' }}
                 onClick={() => setSearchOpen(true)}
               >
-=======
-              <IconButton size="small" sx={{ color: 'text.secondary' }}>
->>>>>>> 67032892723b6c3baa991a25bfc2a82ec06c4641
                 <Search />
               </IconButton>
               
@@ -274,7 +270,6 @@ export const SimplifiedLayout: React.FC<SimplifiedLayoutProps> = ({
         >
           {children}
         </Box>
-<<<<<<< HEAD
 
         {/* Global Search */}
         <GlobalSearch
@@ -285,9 +280,3 @@ export const SimplifiedLayout: React.FC<SimplifiedLayoutProps> = ({
     </Box>
   );
 };
-=======
-      </Box>
-    </Box>
-  );
-};
->>>>>>> 67032892723b6c3baa991a25bfc2a82ec06c4641

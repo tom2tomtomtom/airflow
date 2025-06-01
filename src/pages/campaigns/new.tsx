@@ -24,6 +24,7 @@ import {
   TextField,
   Divider,
   CardContent,
+  CircularProgress,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -793,7 +794,7 @@ export default function NewCampaign() {
                         variant="contained"
                         color="primary"
                         onClick={handleSubmit}
-                        startIcon={isSubmitting ? < size={20} /> : <CheckCircle />}
+                        startIcon={isSubmitting ? <CircularProgress size={20} /> : <CheckCircle />}
                         disabled={isSubmitting}
                       >
                         {isSubmitting ? 'Creating Campaign...' : 'Create Campaign'}
