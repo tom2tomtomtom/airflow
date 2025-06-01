@@ -8,7 +8,6 @@ import {
   Card,
   CardContent,
   Button,
-  Chip,
   Paper,
   Tabs,
   Tab,

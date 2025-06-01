@@ -209,7 +209,11 @@ export default function AssetBrowser({ clientId, onAssetSelect, selectionMode = 
         ));
       }
     } catch (err) {
-      console.error('Failed to toggle favorite:', err);
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Failed to toggle favorite:', err);
+
+      }
     }
   };
 

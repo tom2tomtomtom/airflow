@@ -327,7 +327,11 @@ const CampaignsPage: React.FC = () => {
           <MenuItem
             onClick={() => {
               if (process.env.NODE_ENV === 'development') {
-                console.log('Archive campaign:', selectedCampaign);
+                if (process.env.NODE_ENV === 'development') {
+
+                  console.log('Archive campaign:', selectedCampaign);
+
+                }
               }
             }}
           >
@@ -337,7 +341,11 @@ const CampaignsPage: React.FC = () => {
           <MenuItem
             onClick={() => {
               if (process.env.NODE_ENV === 'development') {
-                console.log('Delete campaign:', selectedCampaign);
+                if (process.env.NODE_ENV === 'development') {
+
+                  console.log('Delete campaign:', selectedCampaign);
+
+                }
               }
             }}
             sx={{ color: 'error.main' }}

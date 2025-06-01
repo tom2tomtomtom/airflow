@@ -72,7 +72,11 @@ class CreatomateService {
       return response.data;
     } catch (error) {
     const message = getErrorMessage(error);
-      console.error('Error fetching Creatomate templates:', error);
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Error fetching Creatomate templates:', error);
+
+      }
       return this.getMockTemplates();
     }
   }
@@ -96,7 +100,11 @@ class CreatomateService {
       return response.data;
     } catch (error) {
     const message = getErrorMessage(error);
-      console.error('Error fetching Creatomate template:', error);
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Error fetching Creatomate template:', error);
+
+      }
       return null;
     }
   }
@@ -133,7 +141,11 @@ class CreatomateService {
       };
     } catch (error) {
     const message = getErrorMessage(error);
-      console.error('Error rendering video:', error);
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Error rendering video:', error);
+
+      }
       throw new Error('Failed to start video rendering');
     }
   }
@@ -164,7 +176,11 @@ class CreatomateService {
       };
     } catch (error) {
     const message = getErrorMessage(error);
-      console.error('Error getting render status:', error);
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Error getting render status:', error);
+
+      }
       throw new Error('Failed to get render status');
     }
   }

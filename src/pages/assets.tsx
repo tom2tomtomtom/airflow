@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import {
@@ -6,8 +6,6 @@ import {
   Button,
   Typography,
   Grid,
-  Tabs,
-  Tab,
   SpeedDial,
   SpeedDialAction,
   SpeedDialIcon,
@@ -34,7 +32,6 @@ import {
   CircularProgress,
   Alert,
   CardMedia,
-  CardActions,
   Pagination,
 } from '@mui/material';
 import {
@@ -58,7 +55,6 @@ import {
   AudioFile,
   TextSnippet,
   Clear,
-  CalendarToday,
 } from '@mui/icons-material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';

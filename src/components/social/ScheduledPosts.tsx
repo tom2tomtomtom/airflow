@@ -9,12 +9,8 @@ import {
   Avatar,
   Chip,
   Stack,
-  Grid,
-  List,
-  ListItem,
   ListItemIcon,
   ListItemText,
-  ListItemSecondaryAction,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -24,17 +20,14 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Alert,
   CircularProgress,
   Tooltip,
-  Badge,
   Menu,
   MenuItem as MenuItemComponent,
   Divider,
   Paper,
 } from '@mui/material';
 import {
-  Schedule as ScheduleIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
   PlayArrow as PublishIcon,
@@ -49,7 +42,6 @@ import {
   VideoLibrary as VideoIcon,
   Link as LinkIcon,
   Event as EventIcon,
-  FilterList as FilterIcon,
 } from '@mui/icons-material';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';

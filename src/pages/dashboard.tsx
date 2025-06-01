@@ -15,6 +15,14 @@ import {
   Chip,
   CircularProgress,
   Alert,
+  Avatar,
+  LinearProgress,
+  Divider,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  ListItemSecondaryAction,
 } from '@mui/material';
 import {
   Image as ImageIcon,
@@ -28,6 +36,15 @@ import {
   Add,
   Business as BusinessIcon,
   Approval as ApprovalIcon,
+  PlayArrow,
+  Schedule,
+  CheckCircle,
+  Pending,
+  Speed,
+  TrendingUp as TrendingUpIcon,
+  Group,
+  VideoLibrary,
+  Analytics,
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
 import { ActivityFeed } from '@/components/ActivityFeed';
@@ -68,11 +85,11 @@ const DashboardPage = () => {
   // Quick actions for easy navigation
   const quickActions: QuickAction[] = [
     {
-      title: 'Generate AI Image',
-      description: 'Create images with DALL-E 3',
+      title: 'Brief to Execution',
+      description: 'Complete workflow from brief to render',
       icon: <AIIcon />,
-      color: '#9c27b0',
-      href: '/assets?tab=ai',
+      color: '#4caf50',
+      href: '/strategic-content',
     },
     {
       title: 'Browse Templates',
@@ -85,14 +102,14 @@ const DashboardPage = () => {
       title: 'Content Matrix',
       description: 'Plan your content strategy',
       icon: <CampaignIcon />,
-      color: '#4caf50',
+      color: '#ff9800',
       href: '/matrix',
     },
     {
       title: 'Asset Library',
       description: 'Manage your digital assets',
       icon: <ImageIcon />,
-      color: '#ff9800',
+      color: '#9c27b0',
       href: '/assets',
     },
   ];

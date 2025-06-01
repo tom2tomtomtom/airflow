@@ -13,7 +13,6 @@ import {
   Button,
   Divider,
   Chip,
-  Avatar,
   Stack,
   CircularProgress,
   Alert,

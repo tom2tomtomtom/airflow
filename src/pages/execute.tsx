@@ -340,7 +340,7 @@ const ExecutePage: React.FC = () => {
                               border: selectedCampaign?.id === campaign.id ? 2 : 0,
                               borderColor: 'primary.main',
                             }}
-                            onClick={() => setSelectedCampaign(campaign)}
+                            onClick={() => setSelectedCampaign(campaign: any)}
                           >
                             <CardContent>
                               <Typography variant="h6" gutterBottom>

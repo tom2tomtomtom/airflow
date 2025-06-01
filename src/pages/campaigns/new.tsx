@@ -6,7 +6,6 @@ import {
   Typography,
   Paper,
   Grid,
-  TextField,
   Button,
   FormControl,
   FormLabel,
@@ -19,13 +18,12 @@ import {
   StepLabel,
   StepContent,
   Card,
-  CardContent,
   Alert,
   MenuItem,
-  Select,
   Chip,
-  CircularProgress,
+  TextField,
   Divider,
+  CardContent,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -155,10 +153,10 @@ export default function NewCampaign() {
         break;
       case 1:
         if (formData.platforms.length === 0) {
-          newErrors.platforms = 'Select at least one platform';
+          newErrors.platforms = ' at least one platform';
         }
         if (formData.kpis.length === 0) {
-          newErrors.kpis = 'Select at least one KPI to track';
+          newErrors.kpis = ' at least one KPI to track';
         }
         break;
       case 2:
@@ -312,7 +310,7 @@ export default function NewCampaign() {
                         fullWidth
                         label="Campaign Name"
                         value={formData.name}
-                        onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, name: e.target.value })}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, name: e.target.value })}
                         error={!!errors.name}
                         helperText={errors.name}
                         margin="normal"
@@ -322,7 +320,7 @@ export default function NewCampaign() {
                         fullWidth
                         label="Campaign Objective"
                         value={formData.objective}
-                        onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, objective: e.target.value })}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, objective: e.target.value })}
                         error={!!errors.objective}
                         helperText={errors.objective}
                         margin="normal"
@@ -332,7 +330,7 @@ export default function NewCampaign() {
                         fullWidth
                         label="Description (Optional)"
                         value={formData.description}
-                        onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, description: e.target.value })}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, description: e.target.value })}
                         multiline
                         rows={3}
                         margin="normal"
@@ -346,7 +344,7 @@ export default function NewCampaign() {
                               select
                               label="Campaign Type"
                               value={formData.campaign_type}
-                              onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, campaign_type: e.target.value })}
+                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, campaign_type: e.target.value })}
                             >
                               {campaignTypes.map((type) => (
                                 <MenuItem key={type.value} value={type.value}>
@@ -362,7 +360,7 @@ export default function NewCampaign() {
                               select
                               label="Priority"
                               value={formData.priority}
-                              onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, priority: e.target.value })}
+                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, priority: e.target.value })}
                             >
                               {priorities.map((priority) => (
                                 <MenuItem key={priority.value} value={priority.value}>
@@ -391,7 +389,7 @@ export default function NewCampaign() {
                             select
                             label="Link to Brief (Optional)"
                             value={formData.brief_id}
-                            onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, brief_id: e.target.value })}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, brief_id: e.target.value })}
                           >
                             <MenuItem value="">No brief selected</MenuItem>
                             {briefs.map((brief: any) => (
@@ -399,7 +397,7 @@ export default function NewCampaign() {
                                 {brief.name}
                               </MenuItem>
                             ))}
-                          </TextField>
+                          </>
                         </FormControl>
                       )}
                     </Box>
@@ -420,7 +418,7 @@ export default function NewCampaign() {
                   <StepContent>
                     <Box sx={{ mb: 3 }}>
                       <FormControl component="fieldset" error={!!errors.platforms}>
-                        <FormLabel component="legend">Select platforms for this campaign</FormLabel>
+                        <FormLabel component="legend"> platforms for this campaign</FormLabel>
                         {errors.platforms && (
                           <Alert severity="error" sx={{ mt: 1, mb: 2 }}>
                             {errors.platforms}
@@ -443,7 +441,7 @@ export default function NewCampaign() {
                                   }}
                                   onClick={() => handlePlatformToggle(platform.value)}
                                 >
-                                  <CardContent sx={{ textAlign: 'center', p: 2 }}>
+                                  <CardContent sx={{ textAlign: "center", p: 2 }}>
                                     <Box sx={{ color: 'primary.main', mb: 1, fontSize: 24 }}>
                                       {platform.icon}
                                     </Box>
@@ -458,7 +456,7 @@ export default function NewCampaign() {
                                       label={platform.name}
                                       sx={{ margin: 0 }}
                                     />
-                                  </CardContent>
+                                  </>
                                 </Card>
                               </Grid>
                             ))}
@@ -518,7 +516,7 @@ export default function NewCampaign() {
                   <StepLabel>Budget, Timeline & Tags</StepLabel>
                   <StepContent>
                     <Box sx={{ mb: 3 }}>
-                      <TextField
+                      <
                         fullWidth
                         label="Campaign Budget"
                         type="number"
@@ -568,7 +566,7 @@ export default function NewCampaign() {
                         </Grid>
                       </LocalizationProvider>
 
-                      <Divider sx={{ my: 3 }} />
+                      < sx={{ my: 3 }} />
 
                       <Typography variant="subtitle1" gutterBottom>
                         Campaign Tags
@@ -585,7 +583,7 @@ export default function NewCampaign() {
                         ))}
                       </Box>
                       <Box sx={{ display: 'flex', gap: 1 }}>
-                        <TextField
+                        <
                           label="Add Tag"
                           value={newTag}
                           onChange={(e: React.ChangeEvent<HTMLElement>) => setNewTag(e.target.value)}
@@ -629,7 +627,7 @@ export default function NewCampaign() {
                       <Grid container spacing={3}>
                         <Grid item xs={12}>
                           <Card variant="outlined">
-                            <CardContent>
+                            </CardContent>
                               <Typography variant="h6" gutterBottom>
                                 Campaign Overview
                               </Typography>
@@ -688,13 +686,13 @@ export default function NewCampaign() {
                                   </Box>
                                 </Grid>
                               </Grid>
-                            </CardContent>
+                            </>
                           </Card>
                         </Grid>
 
                         <Grid item xs={12} md={6}>
                           <Card variant="outlined">
-                            <CardContent>
+                            <>
                               <Typography variant="h6" gutterBottom>
                                 Target Platforms
                               </Typography>
@@ -712,13 +710,13 @@ export default function NewCampaign() {
                                   );
                                 })}
                               </Box>
-                            </CardContent>
+                            </>
                           </Card>
                         </Grid>
 
                         <Grid item xs={12} md={6}>
                           <Card variant="outlined">
-                            <CardContent>
+                            <>
                               <Typography variant="h6" gutterBottom>
                                 Key Performance Indicators
                               </Typography>
@@ -733,13 +731,13 @@ export default function NewCampaign() {
                                   />
                                 ))}
                               </Box>
-                            </CardContent>
+                            </>
                           </Card>
                         </Grid>
 
                         <Grid item xs={12} md={6}>
                           <Card variant="outlined">
-                            <CardContent>
+                            <>
                               <Typography variant="h6" gutterBottom>
                                 Budget & Timeline
                               </Typography>
@@ -761,14 +759,14 @@ export default function NewCampaign() {
                                   </Typography>
                                 </Grid>
                               </Grid>
-                            </CardContent>
+                            </>
                           </Card>
                         </Grid>
 
                         {formData.tags.length > 0 && (
                           <Grid item xs={12} md={6}>
                             <Card variant="outlined">
-                              <CardContent>
+                              <>
                                 <Typography variant="h6" gutterBottom>
                                   Tags
                                 </Typography>
@@ -781,7 +779,7 @@ export default function NewCampaign() {
                                     />
                                   ))}
                                 </Box>
-                              </CardContent>
+                              </>
                             </Card>
                           </Grid>
                         )}
@@ -795,7 +793,7 @@ export default function NewCampaign() {
                         variant="contained"
                         color="primary"
                         onClick={handleSubmit}
-                        startIcon={isSubmitting ? <CircularProgress size={20} /> : <CheckCircle />}
+                        startIcon={isSubmitting ? < size={20} /> : <CheckCircle />}
                         disabled={isSubmitting}
                       >
                         {isSubmitting ? 'Creating Campaign...' : 'Create Campaign'}
@@ -809,7 +807,7 @@ export default function NewCampaign() {
 
           <Grid item xs={12} md={4}>
             <Card>
-              <CardContent>
+              <>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <Info sx={{ mr: 1, color: 'info.main' }} />
                   <Typography variant="h6">Campaign Tips</Typography>
@@ -818,7 +816,7 @@ export default function NewCampaign() {
                   <strong>Step 1:</strong> Choose a clear name and specific objective. Link to a brief if available.
                 </Typography>
                 <Typography variant="body2" paragraph>
-                  <strong>Step 2:</strong> Select platforms where your audience is most active. Choose KPIs that align with your objectives.
+                  <strong>Step 2:</strong>  platforms where your audience is most active. Choose KPIs that align with your objectives.
                 </Typography>
                 <Typography variant="body2" paragraph>
                   <strong>Step 3:</strong> Set realistic budgets and timelines. Use tags for easy organization.
@@ -837,7 +835,7 @@ export default function NewCampaign() {
                     </Typography>
                   </Box>
                 )}
-              </CardContent>
+              </>
             </Card>
           </Grid>
         </Grid>

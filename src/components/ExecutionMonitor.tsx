@@ -135,7 +135,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
       });
 
       if (response.ok) {
-        const data = await response.json();
+        const _data = await response.json();
         setExecutions(data.data || []);
       }
     } catch (error) {

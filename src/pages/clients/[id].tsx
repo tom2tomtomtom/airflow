@@ -110,7 +110,11 @@ const ClientDetailPage: React.FC = () => {
       refetch();
     } catch (error) {
     const message = getErrorMessage(error);
-      console.error('Error saving client:', error);
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Error saving client:', error);
+
+      }
     }
   };
 

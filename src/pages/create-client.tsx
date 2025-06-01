@@ -6,27 +6,20 @@ import {
   Box,
   Paper,
   Typography,
-  TextField,
   Button,
   Grid,
   Alert,
   InputAdornment,
   Avatar,
   Card,
-  CardContent,
-  Divider,
   Chip,
-  IconButton,
   FormControl,
   InputLabel,
-  Select,
   MenuItem,
   Stepper,
   Step,
   StepLabel,
   StepContent,
-  CircularProgress,
-  Tooltip,
   List,
   ListItem,
   ListItemIcon,
@@ -35,7 +28,6 @@ import {
 import {
   Business as BusinessIcon,
   Email as EmailIcon,
-  ColorLens as ColorIcon,
   Person as PersonIcon,
   Phone as PhoneIcon,
   Upload as UploadIcon,
@@ -129,14 +121,18 @@ export default function CreateClient() {
       setFormData(prev => ({ ...prev, logo: urlData.publicUrl }));
       showNotification('Logo uploaded successfully!', 'success');
     } catch (error) {
-      console.error('Error uploading logo:', error);
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Error uploading logo:', error);
+
+      }
       showNotification('Failed to upload logo', 'error');
     } finally {
       setUploadingLogo(false);
     }
   };
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFile = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       // Check file type
@@ -266,7 +262,11 @@ export default function CreateClient() {
       router.push('/clients');
       
     } catch (err: any) {
-      console.error('Error creating client:', err);
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Error creating client:', err);
+
+      }
       setError(err.message || 'Failed to create client. Please try again.');
       showNotification('Failed to create client', 'error');
     } finally {
@@ -311,7 +311,7 @@ export default function CreateClient() {
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth required error={!formData.industry && activeStep > 0}>
                 <InputLabel>Industry</InputLabel>
-                <Select
+                <
                   name="industry"
                   value={formData.industry}
                   onChange={(e) => setFormData(prev => ({ ...prev, industry: e.target.value }))}
@@ -321,13 +321,12 @@ export default function CreateClient() {
                       {industry}
                     </MenuItem>
                   ))}
-                </Select>
+                </TextField>
               </FormControl>
             </Grid>
             
             <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
+              <TextField fullWidth
                 label="Website"
                 name="website"
                 type="url"
@@ -345,8 +344,7 @@ export default function CreateClient() {
             </Grid>
             
             <Grid item xs={12}>
-              <TextField
-                fullWidth
+              <TextField fullWidth
                 multiline
                 rows={3}
                 label="Description"
@@ -403,7 +401,7 @@ export default function CreateClient() {
                   type="file"
                   accept="image/*"
                   style={{ display: 'none' }}
-                  onChange={handleFileSelect}
+                  onChange={handleFile}
                 />
                 
                 <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
@@ -420,7 +418,7 @@ export default function CreateClient() {
                   
                   <Button
                     variant="outlined"
-                    startIcon={uploadingLogo ? <CircularProgress size={20} /> : <UploadIcon />}
+                    startIcon={uploadingLogo ? < size={20} /> : <UploadIcon />}
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploadingLogo}
                   >
@@ -457,8 +455,7 @@ export default function CreateClient() {
                 </Typography>
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
+                    <TextField fullWidth
                       label="Full Name"
                       name="contactName"
                       value={formData.contactName}
@@ -474,8 +471,7 @@ export default function CreateClient() {
                   </Grid>
                   
                   <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
+                    <TextField fullWidth
                       label="Role/Title"
                       name="contactRole"
                       value={formData.contactRole}
@@ -485,8 +481,7 @@ export default function CreateClient() {
                   </Grid>
                   
                   <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
+                    <TextField fullWidth
                       label="Email Address"
                       name="contactEmail"
                       type="email"
@@ -503,8 +498,7 @@ export default function CreateClient() {
                   </Grid>
                   
                   <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
+                    <TextField fullWidth
                       label="Phone Number"
                       name="contactPhone"
                       value={formData.contactPhone}
@@ -550,13 +544,13 @@ export default function CreateClient() {
                         mb: 1 
                       }}
                       secondaryAction={
-                        <IconButton 
+                        < 
                           edge="end" 
                           onClick={() => handleRemoveContact(contact.id)}
                           color="error"
                         >
                           <DeleteIcon />
-                        </IconButton>
+                        </TextField>
                       }
                     >
                       <ListItemIcon>
@@ -590,7 +584,7 @@ export default function CreateClient() {
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel>Voice & Tone</InputLabel>
-                <Select
+                <
                   name="voiceTone"
                   value={formData.voiceTone}
                   onChange={(e) => setFormData(prev => ({ ...prev, voiceTone: e.target.value }))}
@@ -600,13 +594,12 @@ export default function CreateClient() {
                       {tone}
                     </MenuItem>
                   ))}
-                </Select>
+                </TextField>
               </FormControl>
             </Grid>
             
             <Grid item xs={12}>
-              <TextField
-                fullWidth
+              <TextField fullWidth
                 multiline
                 rows={3}
                 label="Target Audience"
@@ -622,8 +615,7 @@ export default function CreateClient() {
                 Key Messages
               </Typography>
               <Box display="flex" gap={1} mb={2}>
-                <TextField
-                  fullWidth
+                <TextField fullWidth
                   label="Add key message"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
@@ -715,7 +707,7 @@ export default function CreateClient() {
                       startIcon={index === steps.length - 1 ? <CheckIcon /> : undefined}
                     >
                       {loading ? (
-                        <CircularProgress size={20} />
+                        < size={20} />
                       ) : index === steps.length - 1 ? (
                         'Create Client'
                       ) : (

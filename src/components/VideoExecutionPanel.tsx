@@ -3,13 +3,10 @@ import {
   Box,
   Typography,
   Card,
-  CardContent,
   Button,
   Grid,
   Stack,
   Chip,
-  IconButton,
-  LinearProgress,
   Alert,
   Dialog,
   DialogTitle,
@@ -19,17 +16,11 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-  Divider,
-  TextField,
   FormControl,
   InputLabel,
-  Select,
   MenuItem,
   Switch,
   FormControlLabel,
-  Badge,
-  Tooltip,
-  CircularProgress,
 } from '@mui/material';
 import {
   Videocam as VideocamIcon,
@@ -39,13 +30,8 @@ import {
   Check as CheckIcon,
   Error as ErrorIcon,
   Schedule as ScheduleIcon,
-  SmartToy as SmartToyIcon,
-  Download as DownloadIcon,
-  Save as SaveIcon,
-  Visibility as VisibilityIcon,
   Delete as DeleteIcon,
   RocketLaunch as RocketLaunchIcon,
-  Analytics as AnalyticsIcon,
 } from '@mui/icons-material';
 import { useNotification } from '@/contexts/NotificationContext';
 import { getErrorMessage } from '@/utils/errorUtils';
@@ -80,7 +66,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
   const [isExecuting, setIsExecuting] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [selectedCombinations, setSelectedCombinations] = useState<string[]>([]);
+  const [selectedCombinations, setedCombinations] = useState<string[]>([]);
   const [executionSettings, setExecutionSettings] = useState({
     quality: 'standard',
     auto_generate_variations: true,
@@ -126,7 +112,11 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
         setExecutions(data.data || []);
       }
     } catch (error) {
-      console.error('Error loading executions:', error);
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Error loading executions:', error);
+
+      }
     } finally {
       setLoading(false);
     }
@@ -177,7 +167,11 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
       });
 
     } catch (error) {
-      console.error('Error checking execution status:', error);
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Error checking execution status:', error);
+
+      }
     }
   };
 
@@ -228,7 +222,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
         );
         
         // Clear selection and reload executions
-        setSelectedCombinations([]);
+        setedCombinations([]);
         loadExecutions();
         
         if (onExecutionComplete) {
@@ -300,7 +294,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
     switch (status) {
       case 'completed': return <CheckIcon />;
       case 'failed': return <ErrorIcon />;
-      case 'processing': return <CircularProgress size={16} />;
+      case 'processing': return < size={16} />;
       case 'pending': return <ScheduleIcon />;
       default: return <ScheduleIcon />;
     }
@@ -341,59 +335,59 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
       <Grid container spacing={2} sx={{ mb: 3 }}>
         <Grid item xs={3}>
           <Card>
-            <CardContent sx={{ textAlign: 'center', py: 2 }}>
+            < sx={{ textAlign: 'center', py: 2 }}>
               <Typography variant="h4" color="primary.main">
                 {activeExecutions.length}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Active
               </Typography>
-            </CardContent>
+            </>
           </Card>
         </Grid>
         <Grid item xs={3}>
           <Card>
-            <CardContent sx={{ textAlign: 'center', py: 2 }}>
+            < sx={{ textAlign: 'center', py: 2 }}>
               <Typography variant="h4" color="success.main">
                 {completedExecutions.length}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Completed
               </Typography>
-            </CardContent>
+            </>
           </Card>
         </Grid>
         <Grid item xs={3}>
           <Card>
-            <CardContent sx={{ textAlign: 'center', py: 2 }}>
+            < sx={{ textAlign: 'center', py: 2 }}>
               <Typography variant="h4" color="error.main">
                 {failedExecutions.length}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Failed
               </Typography>
-            </CardContent>
+            </>
           </Card>
         </Grid>
         <Grid item xs={3}>
           <Card>
-            <CardContent sx={{ textAlign: 'center', py: 2 }}>
+            < sx={{ textAlign: 'center', py: 2 }}>
               <Typography variant="h4" color="text.primary">
                 {executions.length}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Total
               </Typography>
-            </CardContent>
+            </>
           </Card>
         </Grid>
       </Grid>
 
-      {/* Combination Selection */}
+      {/* Combination ion */}
       <Card sx={{ mb: 3 }}>
-        <CardContent>
+        <>
           <Typography variant="subtitle1" gutterBottom fontWeight={600}>
-            Select Combinations for Video Execution
+             Combinations for Video Execution
           </Typography>
           <Typography variant="body2" color="text.secondary" paragraph>
             Choose which combinations to generate videos for. Each combination will create multiple video variations.
@@ -410,14 +404,14 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
                     borderColor: selectedCombinations.includes(combination.id) ? 'primary.main' : 'divider',
                   }}
                   onClick={() => {
-                    setSelectedCombinations(prev => 
+                    setedCombinations(prev => 
                       prev.includes(combination.id)
                         ? prev.filter(id => id !== combination.id)
                         : [...prev, combination.id]
                     );
                   }}
                 >
-                  <CardContent sx={{ py: 2 }}>
+                  < sx={{ py: 2 }}>
                     <Typography variant="subtitle2" gutterBottom>
                       {combination.name}
                     </Typography>
@@ -430,7 +424,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
                         sx={{ position: 'absolute', top: 8, right: 8, fontSize: 20 }}
                       />
                     )}
-                  </CardContent>
+                  </>
                 </Card>
               </Grid>
             ))}
@@ -447,7 +441,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
               </Typography>
               <Button
                 variant="contained"
-                startIcon={isExecuting ? <CircularProgress size={20} /> : <RocketLaunchIcon />}
+                startIcon={isExecuting ? < size={20} /> : <RocketLaunchIcon />}
                 onClick={handleExecuteVideos}
                 disabled={isExecuting}
                 sx={{ mt: 1 }}
@@ -456,13 +450,13 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
               </Button>
             </Box>
           )}
-        </CardContent>
+        </>
       </Card>
 
       {/* Active Executions */}
       {activeExecutions.length > 0 && (
         <Card sx={{ mb: 3 }}>
-          <CardContent>
+          <>
             <Typography variant="subtitle1" gutterBottom fontWeight={600}>
               Active Executions
             </Typography>
@@ -479,7 +473,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
                         <Typography variant="body2">
                           Status: {execution.status} • Progress: {execution.progress}%
                         </Typography>
-                        <LinearProgress 
+                        < 
                           variant="determinate" 
                           value={execution.progress} 
                           sx={{ mt: 1 }}
@@ -495,14 +489,14 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
                 </ListItem>
               ))}
             </List>
-          </CardContent>
+          </>
         </Card>
       )}
 
       {/* Completed Executions */}
       {executions.length > 0 && (
         <Card>
-          <CardContent>
+          <>
             <Typography variant="subtitle1" gutterBottom fontWeight={600}>
               Execution History
             </Typography>
@@ -530,35 +524,35 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
                   />
                   <Stack direction="row" spacing={1}>
                     {execution.video_url && (
-                      <Tooltip title="View Video">
-                        <IconButton 
+                      < title="View Video">
+                        < 
                           size="small"
                           href={execution.video_url}
                           target="_blank"
                         >
                           <PlayArrowIcon />
-                        </IconButton>
-                      </Tooltip>
+                        </>
+                      </>
                     )}
                     {execution.status === 'failed' && (
-                      <Tooltip title="Retry">
-                        <IconButton 
+                      < title="Retry">
+                        < 
                           size="small"
                           onClick={() => handleRetryExecution(execution.id)}
                         >
                           <RefreshIcon />
-                        </IconButton>
-                      </Tooltip>
+                        </>
+                      </>
                     )}
-                    <Tooltip title="Delete">
-                      <IconButton 
+                    < title="Delete">
+                      < 
                         size="small"
                         onClick={() => handleDeleteExecution(execution.id)}
                         disabled={['pending', 'processing'].includes(execution.status)}
                       >
                         <DeleteIcon />
-                      </IconButton>
-                    </Tooltip>
+                      </>
+                    </>
                   </Stack>
                 </ListItem>
               ))}
@@ -571,11 +565,11 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
                   No video executions yet
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Select combinations above to start generating videos
+                   combinations above to start generating videos
                 </Typography>
               </Box>
             )}
-          </CardContent>
+          </>
         </Card>
       )}
 
@@ -586,7 +580,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
           <Stack spacing={3} sx={{ mt: 1 }}>
             <FormControl fullWidth>
               <InputLabel>Quality</InputLabel>
-              <Select
+              <
                 value={executionSettings.quality}
                 label="Quality"
                 onChange={(e) => setExecutionSettings(prev => ({ 
@@ -597,14 +591,14 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
                 <MenuItem value="draft">Draft (Fast)</MenuItem>
                 <MenuItem value="standard">Standard</MenuItem>
                 <MenuItem value="high">High (Slow)</MenuItem>
-              </Select>
+              </>
             </FormControl>
 
             <Box>
               <Typography variant="body2" gutterBottom>
                 Variations per Combination: {executionSettings.variations_per_combination}
               </Typography>
-              <TextField
+              <
                 type="number"
                 fullWidth
                 value={executionSettings.variations_per_combination}

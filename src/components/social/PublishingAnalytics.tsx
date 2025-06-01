@@ -9,7 +9,6 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -19,12 +18,8 @@ import {
   Chip,
   Avatar,
   Stack,
-  LinearProgress,
   CircularProgress,
-  Divider,
   Button,
-  IconButton,
-  Tooltip,
 } from '@mui/material';
 import {
   TrendingUp as TrendingUpIcon,
@@ -36,7 +31,6 @@ import {
   YouTube as YouTubeIcon,
   Visibility as ViewsIcon,
   ThumbUp as LikesIcon,
-  Comment as CommentsIcon,
   Share as SharesIcon,
   Download as DownloadIcon,
   Refresh as RefreshIcon,
@@ -44,8 +38,6 @@ import {
 import {
   AreaChart,
   Area,
-  BarChart,
-  Bar,
   PieChart,
   Pie,
   Cell,
@@ -55,10 +47,8 @@ import {
   Tooltip as ChartTooltip,
   Legend,
   ResponsiveContainer,
-  LineChart,
-  Line,
 } from 'recharts';
-import { format, subDays, startOfDay } from 'date-fns';
+import { format, subDays } from 'date-fns';
 import { useNotification } from '@/contexts/NotificationContext';
 
 interface Platform {

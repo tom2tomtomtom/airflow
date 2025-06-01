@@ -164,7 +164,11 @@ const WebhookManager: React.FC = () => {
       }
     } catch (error) {
     const message = getErrorMessage(error);
-      console.error('Error fetching webhooks:', error);
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Error fetching webhooks:', error);
+
+      }
       showNotification('Failed to load webhooks', 'error');
     } finally {
       setLoading(false);
@@ -187,7 +191,11 @@ const WebhookManager: React.FC = () => {
       }
     } catch (error) {
     const message = getErrorMessage(error);
-      console.error('Error fetching webhook details:', error);
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Error fetching webhook details:', error);
+
+      }
       showNotification('Failed to load webhook details', 'error');
     }
   };
@@ -224,7 +232,11 @@ const WebhookManager: React.FC = () => {
       }
     } catch (error) {
     const message = getErrorMessage(error);
-      console.error('Error saving webhook:', error);
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Error saving webhook:', error);
+
+      }
       showNotification('Failed to save webhook', 'error');
     }
   };
@@ -252,7 +264,11 @@ const WebhookManager: React.FC = () => {
       }
     } catch (error) {
     const message = getErrorMessage(error);
-      console.error('Error deleting webhook:', error);
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Error deleting webhook:', error);
+
+      }
       showNotification('Failed to delete webhook', 'error');
     }
   };
@@ -291,7 +307,11 @@ const WebhookManager: React.FC = () => {
       fetchWebhookDetails(selectedWebhook.id); // Refresh details to show new delivery
     } catch (error) {
     const message = getErrorMessage(error);
-      console.error('Error testing webhook:', error);
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Error testing webhook:', error);
+
+      }
       showNotification('Failed to test webhook', 'error');
     }
   };
@@ -318,7 +338,11 @@ const WebhookManager: React.FC = () => {
       }
     } catch (error) {
     const message = getErrorMessage(error);
-      console.error('Error toggling webhook:', error);
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Error toggling webhook:', error);
+
+      }
       showNotification('Failed to toggle webhook', 'error');
     }
   };
@@ -345,7 +369,11 @@ const WebhookManager: React.FC = () => {
       }
     } catch (error) {
     const message = getErrorMessage(error);
-      console.error('Error regenerating secret:', error);
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Error regenerating secret:', error);
+
+      }
       showNotification('Failed to regenerate secret', 'error');
     }
   };

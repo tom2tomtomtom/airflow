@@ -125,12 +125,22 @@ export const AssetUploadModal: React.FC<AssetUploadModalProps> = ({
       onUploadComplete?.();
       onClose();
       
-      console.log('Successfully uploaded files:', result);
+      if (process.env.NODE_ENV === 'development') {
+
+      
+        console.log('Successfully uploaded files:', result);
+
+      
+      }
     } catch (error) {
     const message = getErrorMessage(error);
       setUploading(false);
       setUploadProgress(0);
-      console.error('Upload failed:', error);
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Upload failed:', error);
+
+      }
       alert('Upload failed. Please try again.');
     }
   };

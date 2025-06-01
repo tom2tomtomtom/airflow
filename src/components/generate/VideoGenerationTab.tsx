@@ -5,20 +5,12 @@ import {
   Grid,
   Paper,
   Card,
-  CardContent,
-  CardMedia,
   Button,
-  TextField,
-  CircularProgress,
   Stack,
   Chip,
-  IconButton,
-  Tooltip,
-  LinearProgress,
   Slider,
   FormControl,
   InputLabel,
-  Select,
   MenuItem,
   Alert,
   Dialog,
@@ -28,8 +20,6 @@ import {
   Switch,
   FormControlLabel,
   Autocomplete,
-  Badge,
-  Divider,
   List,
   ListItem,
   ListItemText,
@@ -37,22 +27,14 @@ import {
   Collapse,
 } from '@mui/material';
 import {
-  Star as StarIcon,
-  StarBorder as StarBorderIcon,
-  Edit as EditIcon,
-  Download as DownloadIcon,
-  Save as SaveIcon,
   PlayArrow as PlayArrowIcon,
-  Stop as StopIcon,
   Videocam as VideocamIcon,
   Style as StyleIcon,
   Refresh as RefreshIcon,
-  Settings as SettingsIcon,
-  Analytics as AnalyticsIcon,
   Campaign as CampaignIcon,
-  SmartToy as SmartToyIcon,
+  SmartToy as ,
   Delete as DeleteIcon,
-  Visibility as VisibilityIcon,
+  Visibility as ,
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
   Check as CheckIcon,
@@ -155,7 +137,7 @@ const VideoGenerationTab: React.FC<VideoGenerationTabProps> = ({
   // UI state
   const [isGenerating, setIsGenerating] = useState(false);
   const [availableContexts, setAvailableContexts] = useState<VideoContext[]>([]);
-  const [selectedContext, setSelectedContext] = useState<VideoContext | null>(null);
+  const [selectedContext, setedContext] = useState<VideoContext | null>(null);
   const [generations, setGenerations] = useState<VideoGeneration[]>([]);
   const [activeGeneration, setActiveGeneration] = useState<string | null>(null);
   const [generationJobs, setGenerationJobs] = useState<VideoGenerationJob[]>([]);
@@ -174,11 +156,11 @@ const VideoGenerationTab: React.FC<VideoGenerationTabProps> = ({
   // Set initial context based on props
   useEffect(() => {
     if (briefId && generationType === 'brief') {
-      setSelectedContext({ id: briefId, name: 'Current Brief', type: 'brief' });
+      setedContext({ id: briefId, name: 'Current Brief', type: 'brief' });
     } else if (campaignId && generationType === 'campaign') {
-      setSelectedContext({ id: campaignId, name: 'Current Campaign', type: 'campaign' });
+      setedContext({ id: campaignId, name: 'Current Campaign', type: 'campaign' });
     } else if (matrixId && generationType === 'matrix') {
-      setSelectedContext({ id: matrixId, name: 'Current Matrix', type: 'matrix' });
+      setedContext({ id: matrixId, name: 'Current Matrix', type: 'matrix' });
     }
   }, [briefId, campaignId, matrixId, generationType]);
 
@@ -429,7 +411,7 @@ const VideoGenerationTab: React.FC<VideoGenerationTabProps> = ({
     switch (status) {
       case 'completed': return <CheckIcon />;
       case 'failed': return <ErrorIcon />;
-      case 'processing': return <CircularProgress size={16} />;
+      case 'processing': return < size={16} />;
       case 'pending': return <ScheduleIcon />;
       default: return <ScheduleIcon />;
     }
@@ -452,26 +434,26 @@ const VideoGenerationTab: React.FC<VideoGenerationTabProps> = ({
               Video Configuration
             </Typography>
             
-            {/* Context Selection */}
+            {/* Context ion */}
             {generationType === 'standalone' && availableContexts.length > 0 && (
               <Box sx={{ mb: 3 }}>
                 <Autocomplete
                   options={availableContexts}
                   getOptionLabel={(option) => `${option.name} (${option.type})`}
                   value={selectedContext}
-                  onChange={(_, newValue) => setSelectedContext(newValue)}
+                  onChange={(_, newValue) => setedContext(newValue)}
                   renderInput={(params) => (
-                    <TextField
+                    <
                       {...params}
                       label="Context (Optional)"
-                      placeholder="Select a brief, campaign, or matrix"
+                      placeholder=" a brief, campaign, or matrix"
                       size="small"
                     />
                   )}
                   renderOption={(props, option) => (
                     <Box component="li" {...props}>
                       <ListItemIcon>
-                        {option.type === 'brief' && <SmartToyIcon />}
+                        {option.type === 'brief' && < />}
                         {option.type === 'campaign' && <CampaignIcon />}
                         {option.type === 'matrix' && <AssessmentIcon />}
                       </ListItemIcon>
@@ -487,7 +469,7 @@ const VideoGenerationTab: React.FC<VideoGenerationTabProps> = ({
             
             {/* Video Prompt */}
             <Box sx={{ mb: 3 }}>
-              <TextField
+              <
                 fullWidth
                 multiline
                 rows={4}
@@ -502,7 +484,7 @@ const VideoGenerationTab: React.FC<VideoGenerationTabProps> = ({
               </Typography>
             </Box>
             
-            {/* Style Selection */}
+            {/* Style ion */}
             <Box sx={{ mb: 3 }}>
               <Typography variant="body2" gutterBottom>Style</Typography>
               <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
@@ -520,11 +502,11 @@ const VideoGenerationTab: React.FC<VideoGenerationTabProps> = ({
               </Stack>
             </Box>
             
-            {/* Platform Selection */}
+            {/* Platform ion */}
             <Box sx={{ mb: 3 }}>
               <FormControl fullWidth size="small">
                 <InputLabel>Platform (Optional)</InputLabel>
-                <Select
+                <
                   value={videoConfig.platform}
                   label="Platform (Optional)"
                   onChange={(e) => setVideoConfig(prev => ({ ...prev, platform: e.target.value }))}
@@ -536,7 +518,7 @@ const VideoGenerationTab: React.FC<VideoGenerationTabProps> = ({
                   <MenuItem value="facebook">Facebook</MenuItem>
                   <MenuItem value="linkedin">LinkedIn</MenuItem>
                   <MenuItem value="twitter">Twitter</MenuItem>
-                </Select>
+                </>
               </FormControl>
             </Box>
             
@@ -576,7 +558,7 @@ const VideoGenerationTab: React.FC<VideoGenerationTabProps> = ({
                   {/* Quality */}
                   <FormControl fullWidth size="small" sx={{ mb: 2 }}>
                     <InputLabel>Quality</InputLabel>
-                    <Select
+                    <
                       value={videoConfig.quality}
                       label="Quality"
                       onChange={(e) => setVideoConfig(prev => ({ ...prev, quality: e.target.value }))}
@@ -584,7 +566,7 @@ const VideoGenerationTab: React.FC<VideoGenerationTabProps> = ({
                       <MenuItem value="draft">Draft (Fast)</MenuItem>
                       <MenuItem value="standard">Standard</MenuItem>
                       <MenuItem value="high">High (Slow)</MenuItem>
-                    </Select>
+                    </>
                   </FormControl>
                   
                   {/* Variations Count */}
@@ -655,7 +637,7 @@ const VideoGenerationTab: React.FC<VideoGenerationTabProps> = ({
               fullWidth
               onClick={handleGenerateVideo}
               disabled={isGenerating || !videoConfig.prompt.trim() || !activeClient}
-              startIcon={isGenerating ? <CircularProgress size={20} /> : <VideocamIcon />}
+              startIcon={isGenerating ? < size={20} /> : <VideocamIcon />}
               sx={{ mb: 2 }}
             >
               {isGenerating ? 'Generating...' : 'Generate Video'}
@@ -686,7 +668,7 @@ const VideoGenerationTab: React.FC<VideoGenerationTabProps> = ({
             
             {loading ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-                <CircularProgress />
+                < />
               </Box>
             ) : generations.length === 0 ? (
               <Box sx={{ textAlign: 'center', py: 4 }}>
@@ -703,7 +685,7 @@ const VideoGenerationTab: React.FC<VideoGenerationTabProps> = ({
                 {generations.map((generation) => (
                   <Grid item xs={12} key={generation.generation_id}>
                     <Card>
-                      <CardContent>
+                      <>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                           <Box>
                             <Typography variant="subtitle2" gutterBottom>
@@ -724,16 +706,16 @@ const VideoGenerationTab: React.FC<VideoGenerationTabProps> = ({
                               icon={getStatusIcon(generation.status)}
                               sx={{ textTransform: 'capitalize' }}
                             />
-                            <IconButton size="small" onClick={() => handleViewJobs(generation.generation_id)}>
-                              <VisibilityIcon />
-                            </IconButton>
-                            <IconButton 
+                            < size="small" onClick={() => handleViewJobs(generation.generation_id)}>
+                              < />
+                            </>
+                            < 
                               size="small" 
                               onClick={() => handleDeleteGeneration(generation.generation_id)}
                               disabled={['pending', 'processing'].includes(generation.status)}
                             >
                               <DeleteIcon />
-                            </IconButton>
+                            </>
                           </Stack>
                         </Box>
                         
@@ -760,7 +742,7 @@ const VideoGenerationTab: React.FC<VideoGenerationTabProps> = ({
                         <Typography variant="body2" color="text.secondary">
                           Prompt: {generation.config?.video_config?.prompt?.substring(0, 100)}...
                         </Typography>
-                      </CardContent>
+                      </>
                     </Card>
                   </Grid>
                 ))}
@@ -796,7 +778,7 @@ const VideoGenerationTab: React.FC<VideoGenerationTabProps> = ({
                           Status: {job.progress.message}
                         </Typography>
                         {job.progress.percentage > 0 && (
-                          <LinearProgress 
+                          < 
                             variant="determinate" 
                             value={job.progress.percentage} 
                             sx={{ mt: 1 }}

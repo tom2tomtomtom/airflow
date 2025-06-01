@@ -1,5 +1,4 @@
 import { getErrorMessage } from '@/utils/errorUtils';
-import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
 import { apiSchemas } from '@/middleware/validation';
@@ -46,9 +45,11 @@ export default async function handler(
 
   try {
     // Debug logging
-    console.log('Signup attempt for:', email);
-    console.log('Supabase URL exists:', !!process.env.NEXT_PUBLIC_SUPABASE_URL);
-    console.log('Supabase Anon Key exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Signup attempt for:', email);
+      console.log('Supabase URL exists:', !!process.env.NEXT_PUBLIC_SUPABASE_URL);
+      console.log('Supabase Anon Key exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+    }
 
     // Check if Supabase is properly configured
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
@@ -60,7 +61,9 @@ export default async function handler(
     }
 
     // Use Supabase authentication
-    console.log('Attempting Supabase signup...');
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Attempting Supabase signup...');
+    }
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,

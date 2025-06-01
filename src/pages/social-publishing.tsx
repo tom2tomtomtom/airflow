@@ -7,20 +7,16 @@ import {
   Typography,
   Button,
   Card,
-  CardContent,
-  CardActions,
   Tab,
   Tabs,
   Alert,
-  CircularProgress,
   Fab,
-  Badge,
 } from '@mui/material';
 import {
   Add as AddIcon,
   Publish as PublishIcon,
   Schedule as ScheduleIcon,
-  Analytics as AnalyticsIcon,
+  Analytics as ,
   Settings as SettingsIcon,
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
@@ -84,7 +80,11 @@ const SocialPublishingPage: React.FC = () => {
         throw new Error('Failed to load platform connections');
       }
     } catch (error) {
-      console.error('Error loading platforms:', error);
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Error loading platforms:', error);
+
+      }
       setError(error instanceof Error ? error.message : 'Failed to load platforms');
       showNotification('Failed to load platform connections', 'error');
     } finally {
@@ -113,7 +113,7 @@ const SocialPublishingPage: React.FC = () => {
       <DashboardLayout title="Social Publishing">
         <Box textAlign="center" py={8}>
           <Typography variant="h6" color="text.secondary" gutterBottom>
-            Select a client to manage social publishing
+             a client to manage social publishing
           </Typography>
         </Box>
       </DashboardLayout>
@@ -145,7 +145,7 @@ const SocialPublishingPage: React.FC = () => {
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid item xs={12} sm={6} md={3}>
             <Card>
-              <CardContent>
+              <>
                 <Typography color="text.secondary" variant="body2" gutterBottom>
                   Connected Platforms
                 </Typography>
@@ -155,12 +155,12 @@ const SocialPublishingPage: React.FC = () => {
                 <Typography variant="body2" color="text.secondary">
                   {activePlatforms.length} active
                 </Typography>
-              </CardContent>
+              </>
             </Card>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <Card>
-              <CardContent>
+              <>
                 <Typography color="text.secondary" variant="body2" gutterBottom>
                   Scheduled Posts
                 </Typography>
@@ -170,12 +170,12 @@ const SocialPublishingPage: React.FC = () => {
                 <Typography variant="body2" color="text.secondary">
                   Next 7 days
                 </Typography>
-              </CardContent>
+              </>
             </Card>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <Card>
-              <CardContent>
+              <>
                 <Typography color="text.secondary" variant="body2" gutterBottom>
                   Posts Today
                 </Typography>
@@ -185,12 +185,12 @@ const SocialPublishingPage: React.FC = () => {
                 <Typography variant="body2" color="text.secondary">
                   Published
                 </Typography>
-              </CardContent>
+              </>
             </Card>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <Card>
-              <CardContent>
+              <>
                 <Typography color="text.secondary" variant="body2" gutterBottom>
                   Engagement Rate
                 </Typography>
@@ -200,7 +200,7 @@ const SocialPublishingPage: React.FC = () => {
                 <Typography variant="body2" color="text.secondary">
                   Last 30 days
                 </Typography>
-              </CardContent>
+              </>
             </Card>
           </Grid>
         </Grid>
@@ -221,16 +221,16 @@ const SocialPublishingPage: React.FC = () => {
               />
               <Tab 
                 label={
-                  <Badge badgeContent={scheduledCount} color="primary">
+                  < badgeContent={scheduledCount} color="primary">
                     Schedule
-                  </Badge>
+                  </>
                 } 
                 icon={<ScheduleIcon />} 
                 iconPosition="start"
               />
               <Tab 
                 label="Analytics" 
-                icon={<AnalyticsIcon />} 
+                icon={< />} 
                 iconPosition="start"
               />
             </Tabs>

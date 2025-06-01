@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Card,
@@ -8,10 +8,7 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-  ListItemAvatar,
-  Avatar,
   Chip,
-  Button,
   IconButton,
   Divider,
   Stack,
@@ -33,11 +30,8 @@ import {
   Campaign as CampaignIcon,
   Approval as ApprovalIcon,
   VideoLibrary as VideoIcon,
-  Analytics as AnalyticsIcon,
-  Person as PersonIcon,
   Timeline as TimelineIcon,
   Visibility as ViewIcon,
-  VisibilityOff as HideIcon,
 } from '@mui/icons-material';
 import { useRealtime } from '@/hooks/useRealtime';
 import { useClient } from '@/contexts/ClientContext';

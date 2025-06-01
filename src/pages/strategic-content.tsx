@@ -48,8 +48,10 @@ import {
   Refresh as RefreshIcon,
   Send as SendIcon,
   Article as BriefIcon,
+  CloudUpload as CloudUploadIcon,
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
+import { UnifiedBriefWorkflow } from '@/components/UnifiedBriefWorkflow';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
 import { useCampaigns } from '@/hooks/useData';
@@ -117,6 +119,7 @@ const StrategicContent: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('All');
   const [openBriefDialog, setOpenBriefDialog] = useState(false);
+  const [openWorkflow, setOpenWorkflow] = useState(false);
   const [currentBrief, setCurrentBrief] = useState<Brief | null>(null);
   const [tabValue, setTabValue] = useState(0);
   const [generating, setGenerating] = useState(false);
@@ -184,9 +187,66 @@ const StrategicContent: React.FC = () => {
     handleGenerateFromBrief(newBrief);
   };
 
+  const handleWorkflowComplete = (workflowData: any) => {
+    // Create brief from workflow data
+    const newBrief: Brief = {
+      id: `brief-${Date.now()}`,
+      title: workflowData.brief.title,
+      type: 'campaign',
+      campaignId: '',
+      objective: workflowData.brief.objective,
+      targetAudience: workflowData.brief.targetAudience,
+      keyMessages: workflowData.brief.keyMessages || [],
+      tone: workflowData.brief.tone || '',
+      deliverables: workflowData.brief.deliverables || [],
+      timeline: workflowData.brief.timeline || '',
+      budget: workflowData.brief.budget || '',
+      additionalNotes: '',
+      status: 'completed',
+      dateCreated: new Date().toISOString(),
+      lastModified: new Date().toISOString(),
+    };
+
+    setBriefs([...briefs, newBrief]);
+
+    // Create strategic content from workflow
+    const newContent: StrategicContentItem = {
+      id: `sc${Date.now()}`,
+      title: `Complete Strategy: ${workflowData.brief.title}`,
+      type: 'framework',
+      description: 'End-to-end strategy generated from unified workflow',
+      dateCreated: new Date().toISOString(),
+      lastModified: new Date().toISOString(),
+      briefId: newBrief.id,
+      content: [
+        {
+          id: `content-1`,
+          title: 'Selected Motivations',
+          description: `${workflowData.motivations.length} strategic motivations`,
+          details: workflowData.motivations.map((m: any) => m.title).join(', ')
+        },
+        {
+          id: `content-2`,
+          title: 'Copy Variations',
+          description: `${workflowData.copy.length} platform-specific copy variations`,
+          details: workflowData.copy.map((c: any) => `${c.platform}: ${c.text}`).join('\n\n')
+        },
+        {
+          id: `content-3`,
+          title: 'Template Selection',
+          description: 'Video template ready for rendering',
+          details: `Selected template: ${workflowData.template}`
+        }
+      ]
+    };
+
+    setStrategicContent([newContent, ...strategicContent]);
+    showNotification('Workflow completed! Content ready for execution.', 'success');
+  };
+
   const handleGenerateFromBrief = async (brief: Brief) => {
     setGenerating(true);
-    
+
     // Simulate AI content generation
     setTimeout(() => {
       const timestamp = Date.now();
@@ -302,8 +362,34 @@ const StrategicContent: React.FC = () => {
 
         {/* Quick Actions */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} md={6}>
-            <Card>
+          <Grid item xs={12} md={4}>
+            <Card sx={{ height: '100%' }}>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Avatar sx={{ bgcolor: 'success.main', mr: 2 }}>
+                    <CloudUploadIcon />
+                  </Avatar>
+                  <Box>
+                    <Typography variant="h6">Brief to Execution</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Complete guided workflow from brief to render
+                    </Typography>
+                  </Box>
+                </Box>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  color="success"
+                  startIcon={<CloudUploadIcon />}
+                  onClick={() => setOpenWorkflow(true)}
+                >
+                  Start Workflow
+                </Button>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <Card sx={{ height: '100%' }}>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <Avatar sx={{ bgcolor: 'primary.main', mr: 2 }}>
@@ -327,8 +413,8 @@ const StrategicContent: React.FC = () => {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} md={6}>
-            <Card>
+          <Grid item xs={12} md={4}>
+            <Card sx={{ height: '100%' }}>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <Avatar sx={{ bgcolor: 'secondary.main', mr: 2 }}>
@@ -766,6 +852,13 @@ const StrategicContent: React.FC = () => {
             </Button>
           </DialogActions>
         </Dialog>
+
+        {/* Unified Brief Workflow */}
+        <UnifiedBriefWorkflow
+          open={openWorkflow}
+          onClose={() => setOpenWorkflow(false)}
+          onComplete={handleWorkflowComplete}
+        />
       </DashboardLayout>
     </>
   );

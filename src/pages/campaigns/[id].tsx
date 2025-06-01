@@ -167,7 +167,7 @@ export default function CampaignDetail() {
   
   if (campaignData.budget) {
     if (typeof campaignData.budget === 'object' && 'total' in campaignData.budget) {
-      budgetTotal = campaignData.budget.total;
+      budgetTotal = campaignData.budget?.total;
       budgetSpent = campaignData.budget.spent || 0;
     } else if (typeof campaignData.budget === 'number') {
       budgetTotal = campaignData.budget;

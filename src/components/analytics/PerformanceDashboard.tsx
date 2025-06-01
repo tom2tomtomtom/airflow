@@ -3,30 +3,25 @@ import {
   Box,
   Grid,
   Card,
-  CardContent,
   Typography,
   Button,
   Stack,
   Chip,
-  LinearProgress,
   FormControl,
   InputLabel,
-  Select,
   MenuItem,
-  TextField,
   Alert,
-  Badge,
-  IconButton,
-  Tooltip,
   Paper,
   Tabs,
   Tab,
-  CircularProgress,
   List,
   ListItem,
   ListItemText,
   ListItemIcon,
+  Select,
+  CircularProgress,
   Divider,
+  CardContent,
 } from '@mui/material';
 import {
   TrendingUp as TrendingUpIcon,
@@ -41,33 +36,18 @@ import {
   Refresh as RefreshIcon,
   Download as DownloadIcon,
   Visibility as VisibilityIcon,
-  Schedule as ScheduleIcon,
-  Speed as SpeedIcon,
   AttachMoney as MoneyIcon,
-  MouseIcon,
   TouchApp as TouchAppIcon,
 } from '@mui/icons-material';
 import {
-  LineChart,
-  Line,
   AreaChart,
   Area,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip as ChartTooltip,
+  Tooltip as Chart,
   Legend,
   ResponsiveContainer,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
 } from 'recharts';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
@@ -330,7 +310,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
           <CircularProgress />
         </Box>
       ) : (
-        <>
+        <CardContent>
           {/* KPI Cards */}
           {performanceData && (
             <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -358,7 +338,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                           </Stack>
                         )}
                       </Box>
-                      <VisibilityIcon sx={{ color: 'primary.main' }} />
+                      <VisibilityIcon sx={{ color: "primary.main" }} />
                     </Box>
                   </CardContent>
                 </Card>
@@ -461,7 +441,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
             <Grid container spacing={3} sx={{ mb: 4 }}>
               <Grid item xs={12} sm={6} md={3}>
                 <Card>
-                  <CardContent sx={{ textAlign: 'center' }}>
+                  < sx={{ textAlign: 'center' }}>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
                       Click-Through Rate
                     </Typography>
@@ -477,7 +457,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
 
               <Grid item xs={12} sm={6} md={3}>
                 <Card>
-                  <CardContent sx={{ textAlign: 'center' }}>
+                  < sx={{ textAlign: 'center' }}>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
                       Conversion Rate
                     </Typography>
@@ -493,7 +473,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
 
               <Grid item xs={12} sm={6} md={3}>
                 <Card>
-                  <CardContent sx={{ textAlign: 'center' }}>
+                  < sx={{ textAlign: 'center' }}>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
                       Cost Per Click
                     </Typography>
@@ -509,7 +489,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
 
               <Grid item xs={12} sm={6} md={3}>
                 <Card>
-                  <CardContent sx={{ textAlign: 'center' }}>
+                  < sx={{ textAlign: 'center' }}>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
                       Performance Score
                     </Typography>
@@ -531,7 +511,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
               <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)}>
                 <Tab 
                   label="Time Series" 
-                  icon={<AnalyticsIcon />}
+                  icon={<CircularProgress />}
                   iconPosition="start"
                 />
                 <Tab 
@@ -559,7 +539,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="date" />
                         <YAxis />
-                        <ChartTooltip />
+                        <Chart />
                         <Legend />
                         <Area type="monotone" dataKey="impressions" stackId="1" stroke="#8884d8" fill="#8884d8" />
                         <Area type="monotone" dataKey="clicks" stackId="2" stroke="#82ca9d" fill="#82ca9d" />
@@ -640,7 +620,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                                 }
                               />
                             </ListItem>
-                            {index < insights.optimization_opportunities.length - 1 && <Divider />}
+                            {index < insights.optimization_opportunities.length - 1 && <CircularProgress />}
                           </React.Fragment>
                         ))}
                       </List>
@@ -655,7 +635,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                         <Grid container spacing={3}>
                           <Grid item xs={12} sm={6} md={3}>
                             <Card>
-                              <CardContent sx={{ textAlign: 'center' }}>
+                              < sx={{ textAlign: 'center' }}>
                                 <Typography variant="body2" color="text.secondary">
                                   Expected Impressions
                                 </Typography>
@@ -667,7 +647,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                           </Grid>
                           <Grid item xs={12} sm={6} md={3}>
                             <Card>
-                              <CardContent sx={{ textAlign: 'center' }}>
+                              < sx={{ textAlign: 'center' }}>
                                 <Typography variant="body2" color="text.secondary">
                                   Expected Conversions
                                 </Typography>
@@ -679,7 +659,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                           </Grid>
                           <Grid item xs={12} sm={6} md={3}>
                             <Card>
-                              <CardContent sx={{ textAlign: 'center' }}>
+                              < sx={{ textAlign: 'center' }}>
                                 <Typography variant="body2" color="text.secondary">
                                   Expected Spend
                                 </Typography>
@@ -691,7 +671,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                           </Grid>
                           <Grid item xs={12} sm={6} md={3}>
                             <Card>
-                              <CardContent sx={{ textAlign: 'center' }}>
+                              < sx={{ textAlign: 'center' }}>
                                 <Typography variant="body2" color="text.secondary">
                                   Confidence Level
                                 </Typography>
@@ -784,7 +764,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
               </TabPanel>
             </Box>
           </Paper>
-        </>
+        </CardContent>
       )}
     </Box>
   );

@@ -21,6 +21,8 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
+    "test:auth": "playwright test tests/e2e/auth-comprehensive-test.spec.ts",
+    "debug:auth": "node scripts/debug-auth.js",
     "fix:typescript:all": "tsx scripts/fix-all-typescript-errors.ts",
     "count:errors": "tsx scripts/count-errors.ts"
   },

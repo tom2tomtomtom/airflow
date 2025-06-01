@@ -17,7 +17,6 @@ import {
   Stack,
   Chip,
   Avatar,
-  LinearProgress,
   Table,
   TableBody,
   TableCell,
@@ -558,7 +557,7 @@ const AnalyticsPage: React.FC = () => {
                           data={analyticsData.platformData}
                           cx="50%"
                           cy="50%"
-                          labelLine={false}
+                          label={false}
                           label={(entry) => `${entry.name}: ${entry.value}%`}
                           outerRadius={80}
                           fill="#8884d8"
@@ -610,7 +609,7 @@ const AnalyticsPage: React.FC = () => {
                           primary={platform.name}
                           secondary={
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                              <LinearProgress
+                              <arProgress
                                 variant="determinate"
                                 value={platform.value}
                                 sx={{ flex: 1, height: 8, borderRadius: 4 }}

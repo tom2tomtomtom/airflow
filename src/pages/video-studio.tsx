@@ -6,38 +6,27 @@ import {
   Typography,
   Grid,
   Card,
-  CardContent,
   Button,
   Tabs,
   Tab,
   Stack,
   Chip,
-  LinearProgress,
   Alert,
   Paper,
-  IconButton,
-  Badge,
-  Tooltip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   List,
   ListItem,
   ListItemText,
   ListItemIcon,
   FormControl,
   InputLabel,
-  Select,
   MenuItem,
-  TextField,
   InputAdornment,
 } from '@mui/material';
 import {
   Videocam as VideocamIcon,
   Add as AddIcon,
   Refresh as RefreshIcon,
-  Analytics as AnalyticsIcon,
+  Analytics as ,
   FilterList as FilterIcon,
   Search as SearchIcon,
   TrendingUp as TrendingUpIcon,
@@ -45,17 +34,14 @@ import {
   Check as CheckIcon,
   Error as ErrorIcon,
   PlayArrow as PlayArrowIcon,
-  Download as DownloadIcon,
-  Share as ShareIcon,
   Assessment as AssessmentIcon,
-  SmartToy as SmartToyIcon,
+  SmartToy as ,
   Campaign as CampaignIcon,
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
 import VideoGenerationTab from '@/components/generate/VideoGenerationTab';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
-import { getErrorMessage } from '@/utils/errorUtils';
 
 interface VideoStudioStats {
   total_generations: number;
@@ -166,7 +152,11 @@ const VideoStudioPage: React.FC = () => {
         });
       }
     } catch (error) {
-      console.error('Error loading studio data:', error);
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Error loading studio data:', error);
+
+      }
     } finally {
       setLoading(false);
     }
@@ -197,7 +187,11 @@ const VideoStudioPage: React.FC = () => {
         setRecentGenerations(data.data || []);
       }
     } catch (error) {
-      console.error('Error loading recent generations:', error);
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Error loading recent generations:', error);
+
+      }
     }
   };
 
@@ -228,7 +222,7 @@ const VideoStudioPage: React.FC = () => {
 
   const StatCard = ({ title, value, subtitle, icon, color, trend }: any) => (
     <Card>
-      <CardContent>
+      <>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <Box>
             <Typography color="text.secondary" variant="body2" gutterBottom>
@@ -264,7 +258,7 @@ const VideoStudioPage: React.FC = () => {
             {React.cloneElement(icon, { sx: { color: `${color}.main` } })}
           </Box>
         </Box>
-      </CardContent>
+      </>
     </Card>
   );
 
@@ -274,7 +268,7 @@ const VideoStudioPage: React.FC = () => {
         <Box textAlign="center" py={8}>
           <VideocamIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
           <Typography variant="h6" color="text.secondary" gutterBottom>
-            Select a client to access Video Studio
+             a client to access Video Studio
           </Typography>
           <Typography variant="body2" color="text.secondary">
             AI-powered video generation and management tools
@@ -374,7 +368,7 @@ const VideoStudioPage: React.FC = () => {
                   title="Avg. Time"
                   value={`${stats.average_generation_time}m`}
                   subtitle="Generation time"
-                  icon={<AnalyticsIcon />}
+                  icon={< />}
                   color="info"
                 />
               </Grid>
@@ -413,16 +407,16 @@ const VideoStudioPage: React.FC = () => {
                 />
                 <Tab 
                   label={
-                    <Badge badgeContent={stats?.active_generations || 0} color="primary">
+                    < badgeContent={stats?.active_generations || 0} color="primary">
                       Management
-                    </Badge>
+                    </>
                   }
                   icon={<AssessmentIcon />}
                   iconPosition="start"
                 />
                 <Tab 
                   label="Analytics" 
-                  icon={<AnalyticsIcon />}
+                  icon={< />}
                   iconPosition="start"
                 />
               </Tabs>
@@ -443,7 +437,7 @@ const VideoStudioPage: React.FC = () => {
                   <Paper sx={{ p: 2, mb: 3 }}>
                     <Grid container spacing={2} alignItems="center">
                       <Grid item xs={12} md={3}>
-                        <TextField
+                        <
                           fullWidth
                           size="small"
                           placeholder="Search generations..."
@@ -461,7 +455,7 @@ const VideoStudioPage: React.FC = () => {
                       <Grid item xs={12} md={2}>
                         <FormControl fullWidth size="small">
                           <InputLabel>Status</InputLabel>
-                          <Select
+                          <
                             value={filters.status}
                             label="Status"
                             onChange={(e) => setFilters({ ...filters, status: e.target.value })}
@@ -471,11 +465,11 @@ const VideoStudioPage: React.FC = () => {
                             <MenuItem value="processing">Processing</MenuItem>
                             <MenuItem value="completed">Completed</MenuItem>
                             <MenuItem value="failed">Failed</MenuItem>
-                          </Select>
+                          </>
                         </FormControl>
                       </Grid>
                       <Grid item xs={12} md={2}>
-                        <TextField
+                        <
                           fullWidth
                           size="small"
                           type="date"
@@ -486,7 +480,7 @@ const VideoStudioPage: React.FC = () => {
                         />
                       </Grid>
                       <Grid item xs={12} md={2}>
-                        <TextField
+                        <
                           fullWidth
                           size="small"
                           type="date"
@@ -534,7 +528,7 @@ const VideoStudioPage: React.FC = () => {
                           }
                         >
                           <ListItemIcon>
-                            {generation.context.type === 'brief' && <SmartToyIcon />}
+                            {generation.context.type === 'brief' && < />}
                             {generation.context.type === 'campaign' && <CampaignIcon />}
                             {generation.context.type === 'matrix' && <AssessmentIcon />}
                             {generation.context.type === 'standalone' && <VideocamIcon />}
@@ -549,7 +543,7 @@ const VideoStudioPage: React.FC = () => {
                                   Created: {new Date(generation.created_at).toLocaleString()}
                                 </Typography>
                                 {generation.progress && generation.progress.status === 'processing' && (
-                                  <LinearProgress 
+                                  < 
                                     variant="determinate" 
                                     value={generation.progress.percentage} 
                                     sx={{ mt: 1 }}

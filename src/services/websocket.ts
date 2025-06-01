@@ -78,7 +78,11 @@ class WebSocketService extends EventEmitter {
       const ws = new WebSocket(url);
       
       ws.onopen = () => {
-        console.log('WebSocket connected');
+        if (process.env.NODE_ENV === 'development') {
+
+          console.log('WebSocket connected');
+
+        }
         this.emit('connected');
         this.startHeartbeat(ws);
       };
@@ -89,12 +93,20 @@ class WebSocketService extends EventEmitter {
           this.handleMessage(message);
         } catch (error) {
     const message = getErrorMessage(error);
-          console.error('Failed to parse WebSocket message:', error);
+          if (process.env.NODE_ENV === 'development') {
+
+            console.error('Failed to parse WebSocket message:', error);
+
+          }
         }
       };
 
       ws.onclose = (event) => {
-        console.log('WebSocket disconnected:', event.code, event.reason);
+        if (process.env.NODE_ENV === 'development') {
+
+          console.log('WebSocket disconnected:', event.code, event.reason);
+
+        }
         this.emit('disconnected');
         
         // Reconnect after delay if not intentional close
@@ -104,13 +116,21 @@ class WebSocketService extends EventEmitter {
       };
 
       ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
+        if (process.env.NODE_ENV === 'development') {
+
+          console.error('WebSocket error:', error);
+
+        }
         this.emit('error', error);
       };
 
     } catch (error) {
     const message = getErrorMessage(error);
-      console.error('Failed to create WebSocket connection:', error);
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Failed to create WebSocket connection:', error);
+
+      }
       // Fallback to polling if WebSocket fails
       this.emit('fallback_to_polling');
     }
@@ -196,7 +216,11 @@ class WebSocketService extends EventEmitter {
           ws.send(messageStr);
         } catch (error) {
     const message = getErrorMessage(error);
-          console.error(`Failed to send message to connection ${connectionId}:`, error);
+          if (process.env.NODE_ENV === 'development') {
+
+            console.error(`Failed to send message to connection ${connectionId}:`, error);
+
+          }
           this.connections.delete(connectionId);
         }
       }
@@ -218,7 +242,11 @@ class WebSocketService extends EventEmitter {
           ws.send(messageStr);
         } catch (error) {
     const message = getErrorMessage(error);
-          console.error(`Failed to send message to user ${userId}:`, error);
+          if (process.env.NODE_ENV === 'development') {
+
+            console.error(`Failed to send message to user ${userId}:`, error);
+
+          }
           this.removeConnection(connectionId, userId);
         }
       }

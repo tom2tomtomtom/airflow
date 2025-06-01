@@ -62,7 +62,11 @@ const SignupPage: React.FC = () => {
       // Redirect to dashboard on successful signup
       router.push('/dashboard');
     } catch (err: any) {
-      console.error('Signup error:', err);
+      if (process.env.NODE_ENV === 'development') {
+
+        console.error('Signup error:', err);
+
+      }
       setError(err.message || 'Failed to create account. Please try again.');
     } finally {
       setLoading(false);

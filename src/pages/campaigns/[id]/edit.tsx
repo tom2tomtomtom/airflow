@@ -118,9 +118,9 @@ export default function EditCampaign() {
       let startDate: Date | null = null;
       let endDate: Date | null = null;
       
-      if (isCampaign(campaignData) && 'schedule' in campaignData && campaignData.schedule) {
-        startDate = campaignData.schedule.startDate ? new Date(campaignData.schedule.startDate) : null;
-        endDate = campaignData.schedule.endDate ? new Date(campaignData.schedule.endDate) : null;
+      if (isCampaign(campaignData) && 'schedule' in campaignData && campaignData?.schedule) {
+        startDate = campaignData?.schedule.startDate ? new Date(campaignData?.schedule.startDate) : null;
+        endDate = campaignData?.schedule.endDate ? new Date(campaignData?.schedule.endDate) : null;
       } else if ('startDate' in campaignData && 'endDate' in campaignData) {
         // UICampaign has startDate/endDate as direct properties
         startDate = campaignData.startDate ? new Date(campaignData.startDate) : null;
@@ -233,9 +233,9 @@ export default function EditCampaign() {
       let startDate: Date | null = null;
       let endDate: Date | null = null;
       
-      if (isCampaign(campaignData) && 'schedule' in campaignData && campaignData.schedule) {
-        startDate = campaignData.schedule.startDate ? new Date(campaignData.schedule.startDate) : null;
-        endDate = campaignData.schedule.endDate ? new Date(campaignData.schedule.endDate) : null;
+      if (isCampaign(campaignData) && 'schedule' in campaignData && campaignData?.schedule) {
+        startDate = campaignData?.schedule.startDate ? new Date(campaignData?.schedule.startDate) : null;
+        endDate = campaignData?.schedule.endDate ? new Date(campaignData?.schedule.endDate) : null;
       } else if ('startDate' in campaignData && 'endDate' in campaignData) {
         // UICampaign has startDate/endDate as direct properties
         startDate = campaignData.startDate ? new Date(campaignData.startDate) : null;

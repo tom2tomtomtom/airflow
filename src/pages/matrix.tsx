@@ -1003,7 +1003,7 @@ const MatrixPage: React.FC = () => {
                   <ListItem
                     key={asset.id}
                     button
-                    onClick={() => handleAssetSelect(asset)}
+                    onClick={() => handleAssetSelect(asset: any)}
                   >
                     <ListItemAvatar>
                       {asset.type === 'image' && asset.thumbnail ? (

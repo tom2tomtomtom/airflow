@@ -1,7 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabase, getUserFromToken, userHasClientAccess } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import type { Client } from '@/types/models';
