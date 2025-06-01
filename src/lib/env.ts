@@ -209,10 +209,10 @@ export const isEmailConfigured = Boolean(
 );
 
 // Helper to check if AI features are available
-export const hasOpenAI = Boolean(env.OPENAI_API_KEY) && env.ENABLE_AI_FEATURES === 'true';
-export const hasElevenLabs = Boolean(env.ELEVENLABS_API_KEY) && env.ENABLE_AI_FEATURES === 'true';
-export const hasRunway = Boolean(env.RUNWAY_API_KEY) && env.ENABLE_AI_FEATURES === 'true';
-export const hasCreatomate = Boolean(env.CREATOMATE_API_KEY) && env.ENABLE_VIDEO_GENERATION === 'true';
+export const hasOpenAI = Boolean(env.OPENAI_API_KEY) && (env.ENABLE_AI_FEATURES?.toLowerCase() === 'true');
+export const hasElevenLabs = Boolean(env.ELEVENLABS_API_KEY) && (env.ENABLE_AI_FEATURES?.toLowerCase() === 'true');
+export const hasRunway = Boolean(env.RUNWAY_API_KEY) && (env.ENABLE_AI_FEATURES?.toLowerCase() === 'true');
+export const hasCreatomate = Boolean(env.CREATOMATE_API_KEY) && (env.ENABLE_VIDEO_GENERATION?.toLowerCase() === 'true');
 
 // Helper to get allowed origins for CORS
 export const getAllowedOrigins = (): string[] => {

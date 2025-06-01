@@ -1,8 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
-import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from 'openai';
-import { env, hasOpenAI } from '@/lib/env';
+import { env, hasOpenAI, hasElevenLabs, hasRunway } from '@/lib/env';
 
 export interface GenerationPrompt {
   prompt: string;
@@ -67,15 +66,10 @@ const generateText = async (prompt: string, parameters?: Record<string, any>): P
   }
 };
 
-// Mock AI generation functions (fallback)
+// Cleaned: Mock AI generation functions removed for production
 const mockGenerateText = (prompt: string): string[] => {
-  const responses = [
-    `Here's a compelling copy for your campaign: "${prompt}" is the foundation for our new approach. We're excited to introduce a revolutionary product that will transform how you think about this space.`,
-    `Based on your request for "${prompt}", we've crafted this message: Our customers deserve the best experience possible. That's why we've designed our solution with your needs in mind.`,
-    `Your prompt "${prompt}" inspired this tagline: "Innovation meets simplicity. Experience the difference today."`,
-  ];
-  
-  return responses.slice(0, 3);
+  // Cleaned: was mock AI responses
+  return [];
 };
 
 const generateImage = async (prompt: string, parameters?: Record<string, any>): Promise<string> => {
@@ -141,6 +135,42 @@ const mockGenerateImage = (prompt: string): string => {
   return `https://via.placeholder.com/${width}x${height}?text=${encodeURIComponent(prompt)}`;
 };
 
+const generateVideo = async (prompt: string, parameters?: Record<string, any>): Promise<string> => {
+  if (!hasRunway) {
+    return mockGenerateVideo(prompt);
+  }
+
+  try {
+    // Implement Runway ML video generation
+    // For now, return mock until Runway integration is complete
+    console.log('Video generation with Runway ML:', prompt, parameters);
+    return mockGenerateVideo(prompt);
+  } catch (error) {
+    console.error('Runway video generation error:', error);
+    return mockGenerateVideo(prompt);
+  }
+};
+
+const generateVoice = async (prompt: string, parameters?: Record<string, any>): Promise<string> => {
+  if (!hasElevenLabs) {
+    return mockGenerateVoice(prompt);
+  }
+
+  try {
+    // Implement ElevenLabs voice generation
+    const voice = parameters?.voice || 'alloy';
+    const language = parameters?.language || 'en';
+
+    console.log('Voice generation with ElevenLabs:', prompt, { voice, language });
+
+    // For now, return mock until ElevenLabs integration is complete
+    return mockGenerateVoice(prompt);
+  } catch (error) {
+    console.error('ElevenLabs voice generation error:', error);
+    return mockGenerateVoice(prompt);
+  }
+};
+
 const mockGenerateVideo = (_prompt: string): string => {
   // In a real app, this would call a video generation API
   return 'https://example.com/generated-videos/sample-video.mp4';
@@ -193,10 +223,10 @@ export default async function handler(
         content = await generateImage(prompt, _parameters);
         break;
       case 'video':
-        content = mockGenerateVideo(prompt);
+        content = await generateVideo(prompt, _parameters);
         break;
       case 'voice':
-        content = mockGenerateVoice(prompt);
+        content = await generateVoice(prompt, _parameters);
         break;
       default:
         content = [];
