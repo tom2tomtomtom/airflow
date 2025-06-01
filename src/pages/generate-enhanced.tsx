@@ -47,6 +47,7 @@ import {
   PlayArrow as PlayArrowIcon,
   Stop as StopIcon,
   AutoAwesome as AutoAwesomeIcon,
+  Palette as PaletteIcon,
 } from '@mui/icons-material';
 import { useAuth } from '@/contexts/AuthContext';
 import { useClient } from '@/contexts/ClientContext';
@@ -125,6 +126,7 @@ const GenerateEnhancedPage: React.FC = () => {
 
   // State
   const [activeTab, setActiveTab] = useState('strategy');
+  const [brandGuidelines, setBrandGuidelines] = useState<any>(null);
   const [motivations, setMotivations] = useState<Motivation[]>(mockMotivations);
   const [clientBrief, setClientBrief] = useState<any>(null);
   const [isFetchingBrief, setIsFetchingBrief] = useState(false);
@@ -208,6 +210,15 @@ const GenerateEnhancedPage: React.FC = () => {
     fetchClientBrief();
   }, [activeClient?.id, isAuthenticated]);
 
+  // Load brand guidelines when active client changes
+  useEffect(() => {
+    if (activeClient?.brand_guidelines) {
+      setBrandGuidelines(activeClient.brand_guidelines);
+    } else {
+      setBrandGuidelines(null);
+    }
+  }, [activeClient?.brand_guidelines]);
+
   // Handle tab change
   const handleTabChange = (_event: React.SyntheticEvent, newValue: string) => {
     setActiveTab(newValue);
@@ -250,6 +261,27 @@ const GenerateEnhancedPage: React.FC = () => {
         .map(m => `${m.title}: ${m.description}`)
         .join('\n');
 
+      // Add brand guidelines to prompt if available
+      let brandGuidelinesText = '';
+      if (brandGuidelines) {
+        const brandContext = [];
+        if (brandGuidelines.toneOfVoice?.communication_style) {
+          brandContext.push(`Brand Tone: ${brandGuidelines.toneOfVoice.communication_style}`);
+        }
+        if (brandGuidelines.toneOfVoice?.personality?.length > 0) {
+          brandContext.push(`Brand Personality: ${brandGuidelines.toneOfVoice.personality.join(', ')}`);
+        }
+        if (brandGuidelines.toneOfVoice?.dos?.length > 0) {
+          brandContext.push(`Do: ${brandGuidelines.toneOfVoice.dos.join(', ')}`);
+        }
+        if (brandGuidelines.toneOfVoice?.donts?.length > 0) {
+          brandContext.push(`Don't: ${brandGuidelines.toneOfVoice.donts.join(', ')}`);
+        }
+        if (brandContext.length > 0) {
+          brandGuidelinesText = `\n\nBrand Guidelines: ${brandContext.join('. ')}`;
+        }
+      }
+
       const response = await fetch('/api/ai/generate', {
         method: 'POST',
         headers: {
@@ -257,7 +289,7 @@ const GenerateEnhancedPage: React.FC = () => {
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          prompt: `Generate ${copySettings.frameCount} compelling copy variations based on these strategic motivations: ${motivationsText}. Create copy that is ${copySettings.tone} in tone, ${copySettings.style} in style, and ${copySettings.length} in length. ${copySettings.includeCta ? 'Include strong call-to-action.' : 'No call-to-action needed.'}`,
+          prompt: `Generate ${copySettings.frameCount} compelling copy variations based on these strategic motivations: ${motivationsText}. Create copy that is ${copySettings.tone} in tone, ${copySettings.style} in style, and ${copySettings.length} in length. ${copySettings.includeCta ? 'Include strong call-to-action.' : 'No call-to-action needed.'}${brandGuidelinesText}`,
           type: 'text',
           parameters: {
             tone: copySettings.tone,
@@ -431,6 +463,21 @@ const GenerateEnhancedPage: React.FC = () => {
       const newImages: GeneratedImage[] = [];
       
       for (let i = 0; i < Math.min(imageCount, 4); i++) { // Limit to 4 images
+        // Add brand colors to image prompt if available
+        let enhancedImagePrompt = imagePrompt;
+        if (brandGuidelines?.colors) {
+          const brandColors = [];
+          if (brandGuidelines.colors.primary?.length > 0) {
+            brandColors.push(...brandGuidelines.colors.primary);
+          }
+          if (brandGuidelines.colors.secondary?.length > 0) {
+            brandColors.push(...brandGuidelines.colors.secondary);
+          }
+          if (brandColors.length > 0) {
+            enhancedImagePrompt += ` Use brand colors: ${brandColors.join(', ')}`;
+          }
+        }
+
         const response = await fetch('/api/ai/generate', {
           method: 'POST',
           headers: {
@@ -438,7 +485,7 @@ const GenerateEnhancedPage: React.FC = () => {
             'Authorization': `Bearer ${token}`,
           },
           body: JSON.stringify({
-            prompt: imagePrompt,
+            prompt: enhancedImagePrompt,
             type: 'image',
             parameters: {
               size: imageAspectRatio === '16:9' ? '1792x1024' : 
@@ -520,6 +567,24 @@ const GenerateEnhancedPage: React.FC = () => {
     try {
       const token = localStorage.getItem('token');
       
+      // Add brand guidelines to video prompt if available
+      let enhancedVideoPrompt = videoPrompt;
+      if (brandGuidelines) {
+        const brandContext = [];
+        if (brandGuidelines.colors?.primary?.length > 0) {
+          brandContext.push(`Use brand colors: ${brandGuidelines.colors.primary.join(', ')}`);
+        }
+        if (brandGuidelines.imagery?.style) {
+          brandContext.push(`Visual style: ${brandGuidelines.imagery.style}`);
+        }
+        if (brandGuidelines.toneOfVoice?.communication_style) {
+          brandContext.push(`Brand tone: ${brandGuidelines.toneOfVoice.communication_style}`);
+        }
+        if (brandContext.length > 0) {
+          enhancedVideoPrompt += `. Brand guidelines: ${brandContext.join(', ')}`;
+        }
+      }
+      
       const response = await fetch('/api/ai/generate', {
         method: 'POST',
         headers: {
@@ -527,7 +592,7 @@ const GenerateEnhancedPage: React.FC = () => {
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          prompt: videoPrompt,
+          prompt: enhancedVideoPrompt,
           type: 'video',
           parameters: {
             duration: videoDuration,
@@ -706,6 +771,25 @@ const GenerateEnhancedPage: React.FC = () => {
           <Typography variant="body1" color="text.secondary">
             Use AI to generate various content types for your campaign
           </Typography>
+          
+          {/* Brand Guidelines Indicator */}
+          {brandGuidelines && (
+            <Alert severity="info" sx={{ mt: 2, mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <PaletteIcon />
+                <Typography variant="body2">
+                  Brand guidelines are active for {activeClient?.name}. All generated content will follow your brand colors, tone, and style.
+                </Typography>
+                <Button 
+                  size="small" 
+                  onClick={() => router.push('/strategic-content')}
+                  sx={{ ml: 'auto' }}
+                >
+                  View Guidelines
+                </Button>
+              </Box>
+            </Alert>
+          )}
         </Box>
 
         <Tabs

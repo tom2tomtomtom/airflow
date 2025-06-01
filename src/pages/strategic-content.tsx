@@ -49,12 +49,18 @@ import {
   Send as SendIcon,
   Article as BriefIcon,
   CloudUpload as CloudUploadIcon,
+  Upload as UploadIcon,
+  Palette as PaletteIcon,
+  TextFormat as TextFormatIcon,
+  VoiceOverOff as VoiceOverOffIcon,
+  CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
 import { UnifiedBriefWorkflow } from '@/components/UnifiedBriefWorkflow';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
 import { useCampaigns } from '@/hooks/useData';
+import { useRouter } from 'next/router';
 
 // Content type icons mapping
 const contentTypeIcons: Record<string, React.ReactNode> = {
@@ -110,6 +116,7 @@ interface StrategicContentItem {
 }
 
 const StrategicContent: React.FC = () => {
+  const router = useRouter();
   const { activeClient } = useClient();
   const { showNotification } = useNotification();
   const { data: campaigns } = useCampaigns(activeClient?.id);
@@ -124,6 +131,32 @@ const StrategicContent: React.FC = () => {
   const [tabValue, setTabValue] = useState(0);
   const [generating, setGenerating] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
+  const [brandGuidelinesUploading, setBrandGuidelinesUploading] = useState(false);
+  const [brandGuidelines, setBrandGuidelines] = useState<any>(null);
+  const [dragActive, setDragActive] = useState(false);
+
+  // Load existing brand guidelines when client changes
+  React.useEffect(() => {
+    const loadBrandGuidelines = async () => {
+      if (!activeClient?.id) {
+        setBrandGuidelines(null);
+        return;
+      }
+
+      try {
+        // Check if brand guidelines exist for this client
+        if (activeClient.brand_guidelines) {
+          setBrandGuidelines(activeClient.brand_guidelines);
+        } else {
+          setBrandGuidelines(null);
+        }
+      } catch (error) {
+        console.error('Error loading brand guidelines:', error);
+      }
+    };
+
+    loadBrandGuidelines();
+  }, [activeClient?.id]);
   
   // Brief form state
   const [briefForm, setBriefForm] = useState({
@@ -344,6 +377,71 @@ const StrategicContent: React.FC = () => {
     });
   };
 
+  // Brand Guidelines Upload Handlers
+  const handleBrandGuidelinesUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    await uploadBrandGuidelines(file);
+  };
+
+  const handleBrandGuidelinesDrop = async (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setDragActive(false);
+    
+    const file = event.dataTransfer.files?.[0];
+    if (!file) return;
+    
+    await uploadBrandGuidelines(file);
+  };
+
+  const uploadBrandGuidelines = async (file: File) => {
+    if (!activeClient?.id) {
+      showNotification('Please select a client first', 'error');
+      return;
+    }
+
+    // Validate file type
+    const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+    if (!allowedTypes.includes(file.type)) {
+      showNotification('Please upload a PDF, DOCX, or TXT file', 'error');
+      return;
+    }
+
+    setBrandGuidelinesUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/brand-guidelines/analyze', {
+        method: 'POST',
+        headers: {
+          'X-Client-Id': activeClient.id,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to analyze brand guidelines');
+      }
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setBrandGuidelines(result.guidelines);
+        showNotification('Brand guidelines analyzed and saved successfully!', 'success');
+      } else {
+        throw new Error(result.error || 'Analysis failed');
+      }
+    } catch (error) {
+      console.error('Error uploading brand guidelines:', error);
+      showNotification('Failed to analyze brand guidelines. Please try again.', 'error');
+    } finally {
+      setBrandGuidelinesUploading(false);
+    }
+  };
+
   const filteredContent = strategicContent.filter(item => {
     if (tabValue === 1) return item.briefId; // AI Generated
     if (tabValue === 2) return !item.briefId; // Manual
@@ -383,6 +481,205 @@ const StrategicContent: React.FC = () => {
             AI-powered strategic content planning and brief management
           </Typography>
         </Box>
+
+        {/* Brand Guidelines Upload Section */}
+        <Paper sx={{ p: 3, mb: 4, border: '2px dashed', borderColor: dragActive ? 'primary.main' : 'grey.300', bgcolor: dragActive ? 'primary.50' : 'background.paper' }}>
+          <Typography variant="h6" gutterBottom>
+            Brand Guidelines
+          </Typography>
+          <Typography variant="body2" color="text.secondary" paragraph>
+            Upload your brand guidelines document to automatically extract colors, tone of voice, fonts, and other brand elements for use across all content generation.
+          </Typography>
+          
+          {!brandGuidelines ? (
+            <Box
+              sx={{
+                border: '2px dashed',
+                borderColor: 'grey.300',
+                borderRadius: 2,
+                p: 4,
+                textAlign: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                '&:hover': {
+                  borderColor: 'primary.main',
+                  bgcolor: 'primary.50',
+                },
+              }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragActive(true);
+              }}
+              onDragLeave={() => setDragActive(false)}
+              onDrop={handleBrandGuidelinesDrop}
+              onClick={() => document.getElementById('brand-guidelines-input')?.click()}
+            >
+              <input
+                id="brand-guidelines-input"
+                type="file"
+                accept=".pdf,.docx,.txt"
+                style={{ display: 'none' }}
+                onChange={handleBrandGuidelinesUpload}
+              />
+              <UploadIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
+              <Typography variant="h6" color="text.secondary" gutterBottom>
+                {brandGuidelinesUploading ? 'Analyzing brand guidelines...' : 'Upload Brand Guidelines'}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Drag and drop or click to select a PDF, DOCX, or TXT file
+              </Typography>
+              {brandGuidelinesUploading && (
+                <Box sx={{ mt: 2 }}>
+                  <LinearProgress />
+                </Box>
+              )}
+            </Box>
+          ) : (
+            <Box>
+              <Alert severity="success" sx={{ mb: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <CheckCircleIcon />
+                  <Typography variant="body2">
+                    Brand guidelines analyzed and saved for client: {activeClient?.name}
+                  </Typography>
+                </Box>
+              </Alert>
+              
+              <Grid container spacing={3}>
+                {/* Colors */}
+                <Grid item xs={12} md={3}>
+                  <Card>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <PaletteIcon sx={{ mr: 1, color: 'primary.main' }} />
+                        <Typography variant="h6">Colors</Typography>
+                      </Box>
+                      {brandGuidelines.colors && (
+                        <>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                            Primary
+                          </Typography>
+                          <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+                            {brandGuidelines.colors.primary?.map((color: string, index: number) => (
+                              <Box
+                                key={index}
+                                sx={{
+                                  width: 24,
+                                  height: 24,
+                                  bgcolor: color,
+                                  borderRadius: 1,
+                                  border: '1px solid #ccc',
+                                }}
+                                title={color}
+                              />
+                            ))}
+                          </Stack>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                            Secondary
+                          </Typography>
+                          <Stack direction="row" spacing={1}>
+                            {brandGuidelines.colors.secondary?.map((color: string, index: number) => (
+                              <Box
+                                key={index}
+                                sx={{
+                                  width: 24,
+                                  height: 24,
+                                  bgcolor: color,
+                                  borderRadius: 1,
+                                  border: '1px solid #ccc',
+                                }}
+                                title={color}
+                              />
+                            ))}
+                          </Stack>
+                        </>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Grid>
+                
+                {/* Tone of Voice */}
+                <Grid item xs={12} md={3}>
+                  <Card>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <VoiceOverOffIcon sx={{ mr: 1, color: 'primary.main' }} />
+                        <Typography variant="h6">Tone</Typography>
+                      </Box>
+                      {brandGuidelines.toneOfVoice && (
+                        <>
+                          <Typography variant="body2" paragraph>
+                            {brandGuidelines.toneOfVoice.communication_style}
+                          </Typography>
+                          <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
+                            {brandGuidelines.toneOfVoice.personality?.map((trait: string, index: number) => (
+                              <Chip key={index} label={trait} size="small" />
+                            ))}
+                          </Stack>
+                        </>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Grid>
+                
+                {/* Typography */}
+                <Grid item xs={12} md={3}>
+                  <Card>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <TextFormatIcon sx={{ mr: 1, color: 'primary.main' }} />
+                        <Typography variant="h6">Typography</Typography>
+                      </Box>
+                      {brandGuidelines.typography && (
+                        <>
+                          <Typography variant="subtitle2" color="text.secondary">
+                            Primary Font
+                          </Typography>
+                          <Typography variant="body2" paragraph>
+                            {brandGuidelines.typography.primary_font}
+                          </Typography>
+                          <Typography variant="subtitle2" color="text.secondary">
+                            Secondary Font
+                          </Typography>
+                          <Typography variant="body2">
+                            {brandGuidelines.typography.secondary_font}
+                          </Typography>
+                        </>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Grid>
+                
+                {/* Actions */}
+                <Grid item xs={12} md={3}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="h6" gutterBottom>
+                        Actions
+                      </Typography>
+                      <Stack spacing={2}>
+                        <Button
+                          variant="outlined"
+                          fullWidth
+                          onClick={() => setBrandGuidelines(null)}
+                        >
+                          Upload New Guidelines
+                        </Button>
+                        <Button
+                          variant="contained"
+                          fullWidth
+                          onClick={() => router.push('/generate-enhanced')}
+                        >
+                          Use in Generation
+                        </Button>
+                      </Stack>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Box>
+          )}
+        </Paper>
 
         {/* Quick Actions */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
