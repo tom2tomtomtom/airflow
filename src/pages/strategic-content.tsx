@@ -246,51 +246,74 @@ const StrategicContent: React.FC = () => {
   };
 
   const handleGenerateFromBrief = async (brief: Brief) => {
+    if (!activeClient?.id) {
+      showNotification('Please select a client first', 'error');
+      return;
+    }
+
     setGenerating(true);
     
-    // Simulate AI content generation
-    setTimeout(() => {
-      const timestamp = Date.now();
-      const newContent: StrategicContentItem = {
-        id: `sc${timestamp}`,
-        title: `Strategy for: ${brief.title}`,
-        type: 'framework',
-        description: `AI-generated strategic content based on brief: ${brief.objective}`,
-        dateCreated: new Date().toISOString(),
-        lastModified: new Date().toISOString(),
-        briefId: brief.id,
-        content: [
-          {
-            id: `idea${timestamp}-1`,
-            title: 'Content Pillars',
-            description: 'Key content themes aligned with your objectives',
-            details: `Based on your target audience (${brief.targetAudience}) and objectives, focus on: Educational content about product benefits, Behind-the-scenes stories, User testimonials and case studies, Industry insights and trends.`
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/ai/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          prompt: `Generate strategic content framework for campaign: ${brief.title}. Objective: ${brief.objective}. Target Audience: ${brief.targetAudience}. Key Messages: ${brief.keyMessages.join(', ')}. Tone: ${brief.tone}.`,
+          type: 'text',
+          parameters: {
+            tone: brief.tone,
+            style: 'strategic',
+            purpose: 'campaign framework'
           },
-          {
-            id: `idea${timestamp}-2`,
-            title: 'Channel Strategy',
-            description: 'Optimized platform approach for maximum reach',
-            details: 'Instagram: Visual storytelling with carousel posts and Reels. LinkedIn: Thought leadership articles and company updates. Email: Nurture sequences with valuable content. Blog: SEO-optimized long-form content.'
-          },
-          {
-            id: `idea${timestamp}-3`,
-            title: 'Content Calendar',
-            description: 'Strategic posting schedule for consistent engagement',
-            details: `Week 1-2: Launch phase with teaser content. Week 3-4: Educational series highlighting key messages. Week 5-6: User-generated content campaign. Week 7-8: Results and testimonials showcase.`
-          },
-          {
-            id: `idea${timestamp}-4`,
-            title: 'Key Messaging Framework',
-            description: 'Core messages tailored to your audience',
-            details: brief.keyMessages.join(' • ') + ` Tone: ${brief.tone}. Focus on emotional connection while maintaining credibility.`
-          }
-        ]
-      };
+          clientId: activeClient.id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate strategic content');
+      }
+
+      const result = await response.json();
       
-      setStrategicContent([newContent, ...strategicContent]);
+      if (result.success && result.result) {
+        const timestamp = Date.now();
+        const generatedText = Array.isArray(result.result.content) 
+          ? result.result.content.join('\n\n') 
+          : result.result.content;
+
+        const newContent: StrategicContentItem = {
+          id: `sc${timestamp}`,
+          title: `AI Strategy: ${brief.title}`,
+          type: 'framework',
+          description: `AI-generated strategic content based on brief: ${brief.objective}`,
+          dateCreated: new Date().toISOString(),
+          lastModified: new Date().toISOString(),
+          briefId: brief.id,
+          content: [
+            {
+              id: `idea${timestamp}-1`,
+              title: 'AI-Generated Strategic Framework',
+              description: 'AI-powered content strategy based on your brief',
+              details: generatedText
+            }
+          ]
+        };
+        
+        setStrategicContent([newContent, ...strategicContent]);
+        showNotification('Strategic content generated successfully!', 'success');
+      } else {
+        throw new Error('Invalid response from AI service');
+      }
+    } catch (error) {
+      console.error('Error generating strategic content:', error);
+      showNotification('Failed to generate strategic content. Please try again.', 'error');
+    } finally {
       setGenerating(false);
-      showNotification('Strategic content generated successfully!', 'success');
-    }, 3000);
+    }
   };
 
   const handleAddKeyMessage = () => {

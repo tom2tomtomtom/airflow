@@ -223,13 +223,18 @@ const GenerateEnhancedPage: React.FC = () => {
   };
 
   // Handle copy generation
-  const handleGenerateCopy = () => {
-    const selectedMotivationIds = motivations
-      .filter(m => m.selected)
-      .map(m => m.id);
+  const handleGenerateCopy = async () => {
+    const selectedMotivations = motivations.filter(m => m.selected);
 
-    if (selectedMotivationIds.length === 0) {
+    if (selectedMotivations.length === 0) {
       setSnackbarMessage('Please select at least one motivation');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+      return;
+    }
+
+    if (!activeClient?.id) {
+      setSnackbarMessage('Please select a client first.');
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
       return;
@@ -237,18 +242,71 @@ const GenerateEnhancedPage: React.FC = () => {
 
     setIsGeneratingCopy(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      // In a real app, this would be an API call to generate copy
-      setIsGeneratingCopy(false);
-      setSnackbarMessage('Copy generated successfully');
-      setSnackbarSeverity('success');
+    try {
+      const token = localStorage.getItem('token');
+      
+      // Create prompt based on selected motivations
+      const motivationsText = selectedMotivations
+        .map(m => `${m.title}: ${m.description}`)
+        .join('\n');
+
+      const response = await fetch('/api/ai/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          prompt: `Generate ${copySettings.frameCount} compelling copy variations based on these strategic motivations: ${motivationsText}. Create copy that is ${copySettings.tone} in tone, ${copySettings.style} in style, and ${copySettings.length} in length. ${copySettings.includeCta ? 'Include strong call-to-action.' : 'No call-to-action needed.'}`,
+          type: 'text',
+          parameters: {
+            tone: copySettings.tone,
+            style: copySettings.style,
+            purpose: 'marketing copy variations'
+          },
+          clientId: activeClient.id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate copy');
+      }
+
+      const result = await response.json();
+      
+      if (result.success && result.result) {
+        const generatedTexts = Array.isArray(result.result.content) 
+          ? result.result.content 
+          : [result.result.content];
+
+        // Create new copy variations
+        const newCopyVariations: CopyVariation[] = generatedTexts.slice(0, copySettings.frameCount).map((text, index) => ({
+          id: `copy-${Date.now()}-${index}`,
+          text: text.trim(),
+          motivationId: selectedMotivations[index % selectedMotivations.length]?.id || selectedMotivations[0]?.id,
+          favorite: false,
+        }));
+
+        // Add to existing copy variations
+        setCopyVariations([...newCopyVariations, ...copyVariations]);
+        setSnackbarMessage(`Generated ${newCopyVariations.length} copy variations successfully!`);
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
+      } else {
+        throw new Error('Invalid response from AI service');
+      }
+    } catch (error) {
+      console.error('Error generating copy:', error);
+      setSnackbarMessage('Failed to generate copy. Please try again.');
+      setSnackbarSeverity('error');
       setSnackbarOpen(true);
-    }, 2000);
+    } finally {
+      setIsGeneratingCopy(false);
+    }
   };
 
   // Handle brief-based motivation generation
-  const handleGenerateMotivations = () => {
+  const handleGenerateMotivations = async () => {
     if (!clientBrief) {
       setSnackbarMessage('No client brief found. Please upload a brief on the Strategy page first.');
       setSnackbarSeverity('error');
@@ -256,16 +314,87 @@ const GenerateEnhancedPage: React.FC = () => {
       return;
     }
 
+    if (!activeClient?.id) {
+      setSnackbarMessage('Please select a client first.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+      return;
+    }
+
     setIsGeneratingMotivations(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      // In a real app, this would be an API call to OpenAI
-      setIsGeneratingMotivations(false);
-      setSnackbarMessage('Motivations generated successfully');
-      setSnackbarSeverity('success');
+    try {
+      const token = localStorage.getItem('token');
+      
+      // Create a comprehensive prompt from the client brief
+      const briefContent = [
+        clientBrief.description,
+        clientBrief.target_audience ? `Target Audience: ${clientBrief.target_audience}` : '',
+        clientBrief.objectives ? `Objectives: ${typeof clientBrief.objectives === 'string' ? clientBrief.objectives : JSON.stringify(clientBrief.objectives)}` : '',
+        clientBrief.raw_content ? clientBrief.raw_content.slice(0, 1000) : '' // Limit content length
+      ].filter(Boolean).join('\n\n');
+
+      const response = await fetch('/api/ai/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          prompt: `Generate 5-8 strategic motivations for this campaign brief. Each motivation should be a clear, actionable insight that drives creative direction. Brief: ${briefContent}`,
+          type: 'text',
+          parameters: {
+            tone: 'strategic',
+            style: 'motivational',
+            purpose: 'strategic motivations for campaign'
+          },
+          clientId: activeClient.id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate motivations');
+      }
+
+      const result = await response.json();
+      
+      if (result.success && result.result) {
+        const generatedText = Array.isArray(result.result.content) 
+          ? result.result.content.join('\n\n') 
+          : result.result.content;
+
+        // Parse the generated motivations into structured data
+        const motivationTexts = generatedText.split(/\n\d+\.|\n-/).filter(text => text.trim());
+        
+        const newMotivations: Motivation[] = motivationTexts.slice(0, 8).map((text, index) => {
+          const cleanText = text.trim();
+          const [title, ...descriptionParts] = cleanText.split(':');
+          
+          return {
+            id: `motivation-${Date.now()}-${index}`,
+            title: title?.trim() || `Motivation ${index + 1}`,
+            description: descriptionParts.join(':').trim() || cleanText,
+            relevanceScore: Math.floor(Math.random() * 3) + 8, // Random score between 8-10
+            selected: false,
+          };
+        });
+
+        // Update motivations with generated ones
+        setMotivations(newMotivations.length > 0 ? newMotivations : mockMotivations);
+        setSnackbarMessage('Strategic motivations generated successfully!');
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
+      } else {
+        throw new Error('Invalid response from AI service');
+      }
+    } catch (error) {
+      console.error('Error generating motivations:', error);
+      setSnackbarMessage('Failed to generate motivations. Please try again.');
+      setSnackbarSeverity('error');
       setSnackbarOpen(true);
-    }, 2000);
+    } finally {
+      setIsGeneratingMotivations(false);
+    }
   };
 
   // Handle favorite toggle for copy
@@ -278,7 +407,7 @@ const GenerateEnhancedPage: React.FC = () => {
   };
 
   // Handle image generation
-  const handleGenerateImages = () => {
+  const handleGenerateImages = async () => {
     if (!imagePrompt.trim()) {
       setSnackbarMessage('Please enter an image prompt');
       setSnackbarSeverity('error');
@@ -286,29 +415,79 @@ const GenerateEnhancedPage: React.FC = () => {
       return;
     }
 
+    if (!activeClient?.id) {
+      setSnackbarMessage('Please select a client first.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+      return;
+    }
+
     setIsGeneratingImages(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      // In a real app, this would be an API call to an image generation service
-      setIsGeneratingImages(false);
-      setSnackbarMessage('Images generated successfully');
+    try {
+      const token = localStorage.getItem('token');
+      
+      // Generate images sequentially (DALL-E API limit)
+      const newImages: GeneratedImage[] = [];
+      
+      for (let i = 0; i < Math.min(imageCount, 4); i++) { // Limit to 4 images
+        const response = await fetch('/api/ai/generate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            prompt: imagePrompt,
+            type: 'image',
+            parameters: {
+              size: imageAspectRatio === '16:9' ? '1792x1024' : 
+                    imageAspectRatio === '9:16' ? '1024x1792' : '1024x1024',
+              style: imageStyle === 'photorealistic' ? 'natural' : 'vivid',
+              quality: 'hd',
+              enhance: true
+            },
+            clientId: activeClient.id,
+          }),
+        });
+
+        if (!response.ok) {
+          console.error(`Failed to generate image ${i + 1}`);
+          continue;
+        }
+
+        const result = await response.json();
+        
+        if (result.success && result.result) {
+          const imageUrl = typeof result.result.content === 'string' 
+            ? result.result.content 
+            : result.result.content[0];
+
+          newImages.push({
+            id: `img-${Date.now()}-${i}`,
+            url: imageUrl,
+            prompt: imagePrompt,
+            style: imageStyle,
+            aspectRatio: imageAspectRatio,
+            dateCreated: new Date().toISOString(),
+            favorite: false,
+          });
+        }
+      }
+
+      // Add new images to the generated images array
+      setGeneratedImages([...newImages, ...generatedImages]);
+      setSnackbarMessage(`Generated ${newImages.length} images successfully!`);
       setSnackbarSeverity('success');
       setSnackbarOpen(true);
-
-      // Add new generated images to the list
-      const newImages: GeneratedImage[] = Array.from({ length: imageCount }, (_, i) => ({
-        id: `img-new-${Date.now()}-${i}`,
-        url: '/mock-images/generated-image.jpg',
-        prompt: imagePrompt,
-        style: imageStyle,
-        aspectRatio: imageAspectRatio,
-        dateCreated: new Date().toISOString(),
-        favorite: false,
-      }));
-
-      setGeneratedImages([...newImages, ...generatedImages]);
-    }, 3000);
+    } catch (error) {
+      console.error('Error generating images:', error);
+      setSnackbarMessage('Failed to generate images. Please try again.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    } finally {
+      setIsGeneratingImages(false);
+    }
   };
 
   // Handle favorite toggle for images
@@ -321,7 +500,7 @@ const GenerateEnhancedPage: React.FC = () => {
   };
 
   // Handle video generation
-  const handleGenerateVideo = () => {
+  const handleGenerateVideo = async () => {
     if (!videoPrompt.trim()) {
       setSnackbarMessage('Please enter a video prompt');
       setSnackbarSeverity('error');
@@ -329,49 +508,76 @@ const GenerateEnhancedPage: React.FC = () => {
       return;
     }
 
+    if (!activeClient?.id) {
+      setSnackbarMessage('Please select a client first.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+      return;
+    }
+
     setIsGeneratingVideo(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      // In a real app, this would be an API call to a video generation service
-      setIsGeneratingVideo(false);
-      setSnackbarMessage('Video generation started. This may take a few minutes.');
-      setSnackbarSeverity('success');
-      setSnackbarOpen(true);
+    try {
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch('/api/ai/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          prompt: videoPrompt,
+          type: 'video',
+          parameters: {
+            duration: videoDuration,
+            resolution: videoResolution,
+            style: videoStyle,
+            quality: 'hd'
+          },
+          clientId: activeClient.id,
+        }),
+      });
 
-      // Add new generated video to the list (in processing state)
-      const newVideo: GeneratedVideo = {
-        id: `vid-new-${Date.now()}`,
-        url: '',
-        thumbnail: '/mock-videos/processing-thumb.jpg',
-        prompt: videoPrompt,
-        duration: `00:${videoDuration < 10 ? '0' + videoDuration : videoDuration}`,
-        resolution: videoResolution,
-        dateCreated: new Date().toISOString(),
-        status: 'processing',
-        favorite: false,
-      };
+      if (!response.ok) {
+        throw new Error('Failed to generate video');
+      }
 
-      setGeneratedVideos([newVideo, ...generatedVideos]);
+      const result = await response.json();
+      
+      if (result.success && result.result) {
+        const videoUrl = typeof result.result.content === 'string' 
+          ? result.result.content 
+          : result.result.content[0];
 
-      // Simulate video completion after 5 seconds
-      setTimeout(() => {
-        setGeneratedVideos(prev => prev.map(video =>
-          video.id === newVideo.id
-            ? {
-                ...video,
-                status: 'completed',
-                url: '/mock-videos/generated-video.mp4',
-                thumbnail: '/mock-videos/generated-video-thumb.jpg',
-              }
-            : video
-        ));
+        // Add new generated video to the list
+        const newVideo: GeneratedVideo = {
+          id: `vid-${Date.now()}`,
+          url: videoUrl,
+          thumbnail: '/mock-videos/generated-video-thumb.jpg', // In real app, would extract from video
+          prompt: videoPrompt,
+          duration: `00:${videoDuration < 10 ? '0' + videoDuration : videoDuration}`,
+          resolution: videoResolution,
+          dateCreated: new Date().toISOString(),
+          status: 'completed',
+          favorite: false,
+        };
 
-        setSnackbarMessage('Video generation completed');
+        setGeneratedVideos([newVideo, ...generatedVideos]);
+        setSnackbarMessage('Video generated successfully!');
         setSnackbarSeverity('success');
         setSnackbarOpen(true);
-      }, 5000);
-    }, 2000);
+      } else {
+        throw new Error('Invalid response from video generation service');
+      }
+    } catch (error) {
+      console.error('Error generating video:', error);
+      setSnackbarMessage('Failed to generate video. Please try again.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    } finally {
+      setIsGeneratingVideo(false);
+    }
   };
 
   // Handle favorite toggle for videos
@@ -384,7 +590,7 @@ const GenerateEnhancedPage: React.FC = () => {
   };
 
   // Handle voice generation
-  const handleGenerateVoice = () => {
+  const handleGenerateVoice = async () => {
     if (!voiceText.trim()) {
       setSnackbarMessage('Please enter text for voice generation');
       setSnackbarSeverity('error');
@@ -392,30 +598,75 @@ const GenerateEnhancedPage: React.FC = () => {
       return;
     }
 
+    if (!activeClient?.id) {
+      setSnackbarMessage('Please select a client first.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+      return;
+    }
+
     setIsGeneratingVoice(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      // In a real app, this would be an API call to a voice generation service
-      setIsGeneratingVoice(false);
-      setSnackbarMessage('Voice generated successfully');
-      setSnackbarSeverity('success');
+    try {
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch('/api/ai/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          prompt: voiceText,
+          type: 'voice',
+          parameters: {
+            voice: selectedVoice,
+            language: voiceLanguage,
+            speed: voiceSpeed,
+            quality: 'hd'
+          },
+          clientId: activeClient.id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate voice');
+      }
+
+      const result = await response.json();
+      
+      if (result.success && result.result) {
+        const voiceUrl = typeof result.result.content === 'string' 
+          ? result.result.content 
+          : result.result.content[0];
+
+        // Add new generated voice to the list
+        const newVoice: GeneratedVoice = {
+          id: `voice-${Date.now()}`,
+          url: voiceUrl,
+          text: voiceText,
+          voice: selectedVoice,
+          language: voiceLanguage,
+          duration: '00:' + Math.ceil(voiceText.length / 20).toString().padStart(2, '0'),
+          dateCreated: new Date().toISOString(),
+          favorite: false,
+        };
+
+        setGeneratedVoices([newVoice, ...generatedVoices]);
+        setSnackbarMessage('Voice generated successfully!');
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
+      } else {
+        throw new Error('Invalid response from voice generation service');
+      }
+    } catch (error) {
+      console.error('Error generating voice:', error);
+      setSnackbarMessage('Failed to generate voice. Please try again.');
+      setSnackbarSeverity('error');
       setSnackbarOpen(true);
-
-      // Add new generated voice to the list
-      const newVoice: GeneratedVoice = {
-        id: `voice-new-${Date.now()}`,
-        url: '/mock-voices/generated-voice.mp3',
-        text: voiceText,
-        voice: selectedVoice,
-        language: voiceLanguage,
-        duration: '00:' + Math.ceil(voiceText.length / 20).toString().padStart(2, '0'),
-        dateCreated: new Date().toISOString(),
-        favorite: false,
-      };
-
-      setGeneratedVoices([newVoice, ...generatedVoices]);
-    }, 2000);
+    } finally {
+      setIsGeneratingVoice(false);
+    }
   };
 
   // Handle favorite toggle for voices

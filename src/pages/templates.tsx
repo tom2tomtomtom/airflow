@@ -206,6 +206,16 @@ const Templates: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const [currentTemplate, setCurrentTemplate] = useState<Template | null>(null);
+  
+  // Form state for template dialog
+  const [formData, setFormData] = useState({
+    name: '',
+    platform: 'Instagram',
+    aspect_ratio: '1:1',
+    description: '',
+    width: 1080,
+    height: 1080,
+  });
 
   // Filtering logic
   const filteredTemplates = (templates ?? []).filter((template: any) => {
@@ -220,26 +230,100 @@ const Templates: React.FC = () => {
   
   const handleAddTemplate = () => {
     setCurrentTemplate(null);
+    setFormData({
+      name: '',
+      platform: 'Instagram',
+      aspect_ratio: '1:1',
+      description: '',
+      width: 1080,
+      height: 1080,
+    });
     setOpenDialog(true);
   };
   
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setCurrentTemplate(null);
+    setFormData({
+      name: '',
+      platform: 'Instagram',
+      aspect_ratio: '1:1',
+      description: '',
+      width: 1080,
+      height: 1080,
+    });
   };
 
-  const handleDuplicateTemplate = (_template: Template) => {
-    showNotification('Template duplication coming soon', 'info');
+  const handleDuplicateTemplate = async (template: Template) => {
+    try {
+      const duplicatedTemplate = {
+        ...template,
+        name: `${template.name} (Copy)`,
+        created_by: null, // Will be set by the API
+        created_at: undefined,
+        updated_at: undefined,
+      };
+      delete duplicatedTemplate.id; // Remove ID so it creates a new template
+
+      const response = await fetch('/api/templates', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(duplicatedTemplate),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to duplicate template');
+      }
+
+      const newTemplate = await response.json();
+      showNotification('Template duplicated successfully!', 'success');
+      
+      // Refresh templates data
+      window.location.reload(); // Simple refresh for now
+    } catch (error) {
+      console.error('Error duplicating template:', error);
+      showNotification('Failed to duplicate template. Please try again.', 'error');
+    }
   };
 
   const handleEditTemplate = (template: Template) => {
     setCurrentTemplate(template);
+    setFormData({
+      name: template.name || '',
+      platform: template.platform || 'Instagram',
+      aspect_ratio: template.aspectRatio || '1:1',
+      description: template.description || '',
+      width: template.width || 1080,
+      height: template.height || 1080,
+    });
     setOpenDialog(true);
   };
 
-  const handleDeleteTemplate = async (_templateId: string) => {
+  const handleDeleteTemplate = async (templateId: string) => {
     if (confirm('Are you sure you want to delete this template?')) {
-      showNotification('Template deletion coming soon', 'info');
+      try {
+        const response = await fetch('/api/templates', {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ id: templateId }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to delete template');
+        }
+
+        showNotification('Template deleted successfully!', 'success');
+        
+        // Refresh templates data
+        window.location.reload(); // Simple refresh for now
+      } catch (error) {
+        console.error('Error deleting template:', error);
+        showNotification('Failed to delete template. Please try again.', 'error');
+      }
     }
   };
 
@@ -247,9 +331,59 @@ const Templates: React.FC = () => {
     router.push(`/matrix?templateId=${templateId}`);
   };
 
-  const handleSaveTemplate = () => {
-    showNotification('Template saving coming soon', 'info');
-    handleCloseDialog();
+  const handleSaveTemplate = async () => {
+    if (!formData.name.trim()) {
+      showNotification('Please enter a template name', 'error');
+      return;
+    }
+
+    try {
+      const method = currentTemplate ? 'PUT' : 'POST';
+      
+      // Prepare template data for API
+      const templateData = {
+        name: formData.name,
+        platform: formData.platform,
+        aspect_ratio: formData.aspect_ratio,
+        description: formData.description || '',
+        width: formData.width,
+        height: formData.height,
+        structure: currentTemplate?.structure || {}, // Use existing structure or empty object
+      };
+
+      const body = currentTemplate 
+        ? { ...templateData, id: currentTemplate.id }
+        : templateData;
+
+      const response = await fetch('/api/templates', {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to ${currentTemplate ? 'update' : 'create'} template`);
+      }
+
+      const savedTemplate = await response.json();
+      showNotification(
+        `Template ${currentTemplate ? 'updated' : 'created'} successfully!`, 
+        'success'
+      );
+      
+      handleCloseDialog();
+      
+      // Refresh templates data
+      window.location.reload(); // Simple refresh for now
+    } catch (error) {
+      console.error('Error saving template:', error);
+      showNotification(
+        `Failed to ${currentTemplate ? 'update' : 'create'} template. Please try again.`, 
+        'error'
+      );
+    }
   };
 
   if (isLoading) {
@@ -380,15 +514,18 @@ const Templates: React.FC = () => {
                 type="text"
                 fullWidth
                 variant="outlined"
-                defaultValue={currentTemplate?.name || ''}
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 sx={{ mb: 2 }}
+                required
               />
               <FormControl fullWidth margin="dense" sx={{ mb: 2 }}>
                 <InputLabel id="platform-label">Platform</InputLabel>
                 <Select
                   labelId="platform-label"
                   id="platform"
-                  defaultValue={currentTemplate?.platform || 'Instagram'}
+                  value={formData.platform}
+                  onChange={(e) => setFormData({ ...formData, platform: e.target.value })}
                   label="Platform"
                 >
                   <MenuItem value="Instagram">Instagram</MenuItem>
@@ -405,7 +542,17 @@ const Templates: React.FC = () => {
                 <Select
                   labelId="aspect-ratio-label"
                   id="aspect-ratio"
-                  defaultValue={currentTemplate?.aspectRatio || '1:1'}
+                  value={formData.aspect_ratio}
+                  onChange={(e) => {
+                    const aspectRatio = e.target.value;
+                    setFormData({ 
+                      ...formData, 
+                      aspect_ratio: aspectRatio,
+                      // Update dimensions based on aspect ratio
+                      width: aspectRatio === '16:9' ? 1920 : aspectRatio === '9:16' ? 1080 : 1080,
+                      height: aspectRatio === '16:9' ? 1080 : aspectRatio === '9:16' ? 1920 : 1080,
+                    });
+                  }}
                   label="Aspect Ratio"
                 >
                   <MenuItem value="1:1">1:1 (Square)</MenuItem>
@@ -424,7 +571,8 @@ const Templates: React.FC = () => {
                 multiline
                 rows={3}
                 variant="outlined"
-                defaultValue={currentTemplate?.description || ''}
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
             </Box>
           </DialogContent>
