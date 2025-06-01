@@ -1,0 +1,11 @@
+# Force deployment trigger file
+# Created: 2025-01-06
+# Purpose: Force Netlify to rebuild and deploy latest changes
+# 
+# Changes that need to be deployed:
+# - Fix for VisibilityOff import error in WebhookManager.tsx (commit 924db97)
+# - This should resolve the dashboard "Oops! Something went wrong" error
+# 
+# If this file exists, it means we're forcing a deployment
+DEPLOY_TIMESTAMP=2025-01-06T00:00:53Z
+REASON=Fix_VisibilityOff_Error
