@@ -21,21 +21,12 @@ import {
   Description as DescriptionIcon,
   Campaign as CampaignIcon,
   AutoAwesome as AIIcon,
-  TrendingUp,
-  TrendingDown,
-  Remove as TrendingNeutral,
   ArrowForward,
   Add,
   Business as BusinessIcon,
-  Approval as ApprovalIcon,
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
-import { ActivityFeed } from '@/components/ActivityFeed';
-import ExecutionMonitor from '@/components/ExecutionMonitor';
-import ApprovalWorkflow from '@/components/ApprovalWorkflow';
-import RealTimeDashboard from '@/components/realtime/RealTimeDashboard';
-import { StatsSkeleton, CardSkeleton } from '@/components/SkeletonLoaders';
-import { AnimatedActionButton, AnimatedProgressCard } from '@/components/AnimatedComponents';
+import { AnimatedActionButton } from '@/components/AnimatedComponents';
 import { useAuth } from '@/contexts/AuthContext';
 import { useClient } from '@/contexts/ClientContext';
 
@@ -45,14 +36,6 @@ interface QuickAction {
   icon: React.ReactNode;
   color: string;
   href: string;
-}
-
-interface StatCard {
-  title: string;
-  value: string | number;
-  change: string;
-  trend: 'up' | 'down' | 'neutral';
-  icon: React.ReactNode;
 }
 
 const DashboardPage = () => {
@@ -70,11 +53,11 @@ const DashboardPage = () => {
   // Quick actions for easy navigation
   const quickActions: QuickAction[] = [
     {
-      title: 'Generate AI Image',
-      description: 'Create images with DALL-E 3',
+      title: 'Generate AI Content',
+      description: 'Create images, copy, and videos with AI',
       icon: <AIIcon />,
       color: '#9c27b0',
-      href: '/assets?tab=ai',
+      href: '/generate-enhanced',
     },
     {
       title: 'Browse Templates',
@@ -99,106 +82,6 @@ const DashboardPage = () => {
     },
   ];
 
-  const [dashboardStats, setDashboardStats] = useState<any>(null);
-  const [statsLoading, setStatsLoading] = useState(true);
-  const [statsError, setStatsError] = useState<string | null>(null);
-
-  // Fetch dashboard statistics
-  useEffect(() => {
-    const fetchDashboardStats = async () => {
-      if (!isAuthenticated || loading) return;
-
-      try {
-        setStatsLoading(true);
-        const response = await fetch('/api/dashboard/stats', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch dashboard stats');
-        }
-
-        const data = await response.json();
-        if (data.success) {
-          setDashboardStats(data.data);
-        } else {
-          throw new Error(data.error || 'Failed to load stats');
-        }
-      } catch (error) {
-        console.error('Error fetching dashboard stats:', error);
-        setStatsError(error instanceof Error ? error.message : 'Failed to load stats');
-      } finally {
-        setStatsLoading(false);
-      }
-    };
-
-    fetchDashboardStats();
-  }, [isAuthenticated, loading]);
-
-  const getStatCards = (): StatCard[] => {
-    if (!dashboardStats) return [];
-
-    return [
-      {
-        title: 'Total Assets',
-        value: dashboardStats.totalAssets.count,
-        change: dashboardStats.totalAssets.change,
-        trend: dashboardStats.totalAssets.trend,
-        icon: <ImageIcon />,
-      },
-      {
-        title: 'AI Generated',
-        value: dashboardStats.aiGenerated.count,
-        change: dashboardStats.aiGenerated.change,
-        trend: dashboardStats.aiGenerated.trend,
-        icon: <AIIcon />,
-      },
-      {
-        title: 'Active Campaigns',
-        value: dashboardStats.activeCampaigns.count,
-        change: dashboardStats.activeCampaigns.change,
-        trend: dashboardStats.activeCampaigns.trend,
-        icon: <CampaignIcon />,
-      },
-      {
-        title: 'Templates Used',
-        value: dashboardStats.templatesUsed.count,
-        change: dashboardStats.templatesUsed.change,
-        trend: dashboardStats.templatesUsed.trend,
-        icon: <DescriptionIcon />,
-      },
-      {
-        title: 'Total Clients',
-        value: dashboardStats.totalClients.count,
-        change: dashboardStats.totalClients.change,
-        trend: dashboardStats.totalClients.trend,
-        icon: <BusinessIcon />,
-      },
-      {
-        title: 'Pending Approvals',
-        value: dashboardStats.pendingApprovals.count,
-        change: dashboardStats.pendingApprovals.change,
-        trend: dashboardStats.pendingApprovals.trend,
-        icon: <ApprovalIcon />,
-      },
-    ];
-  };
-
-  const getTrendIcon = (trend: string) => {
-    switch (trend) {
-      case 'up':
-        return <TrendingUp fontSize="small" sx={{ color: 'success.main' }} />;
-      case 'down':
-        return <TrendingDown fontSize="small" sx={{ color: 'error.main' }} />;
-      default:
-        return <TrendingNeutral fontSize="small" sx={{ color: 'text.secondary' }} />;
-    }
-  };
-
-  const stats = getStatCards();
-
   // Show loading or redirect if not authenticated
   if (loading) {
     return (
@@ -208,7 +91,7 @@ const DashboardPage = () => {
         alignItems="center"
         minHeight="100vh"
       >
-        <Typography>Loading...</Typography>
+        <CircularProgress />
       </Box>
     );
   }
@@ -238,67 +121,18 @@ const DashboardPage = () => {
           </Typography>
         </Box>
 
-        {/* Error State */}
-        {statsError && (
-          <Alert severity="error" sx={{ mb: 3 }}>
-            {statsError}
+        {/* No Client Selected */}
+        {!activeClient && (
+          <Alert severity="info" sx={{ mb: 4 }}>
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+              <Typography>Please select a client to access the full dashboard features</Typography>
+              <AnimatedActionButton onClick={() => router.push('/clients')}>
+                <BusinessIcon sx={{ mr: 1 }} />
+                View Clients
+              </AnimatedActionButton>
+            </Box>
           </Alert>
         )}
-
-        {/* Stats Grid */}
-        <Grid container spacing={3} mb={4}>
-          {statsLoading ? (
-            <Grid item xs={12}>
-              <StatsSkeleton />
-            </Grid>
-          ) : (
-            stats.map((stat, index) => (
-              <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
-                <Card>
-                  <CardContent>
-                    <Box display="flex" justifyContent="space-between" alignItems="flex-start">
-                      <Box>
-                        <Typography color="text.secondary" gutterBottom variant="body2">
-                          {stat.title}
-                        </Typography>
-                        <Typography variant="h4" component="div">
-                        {stat.value}
-                      </Typography>
-                        <Box display="flex" alignItems="center" mt={1}>
-                          {getTrendIcon(stat.trend)}
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              color: stat.trend === 'up' ? 'success.main' : 
-                                     stat.trend === 'down' ? 'error.main' : 'text.secondary',
-                              ml: 0.5,
-                            }}
-                          >
-                            {stat.change}
-                          </Typography>
-                        </Box>
-                      </Box>
-                      <Box
-                        sx={{
-                          backgroundColor: 'primary.light',
-                          borderRadius: 2,
-                          p: 1,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        {React.cloneElement(stat.icon as React.ReactElement, {
-                          sx: { color: 'primary.main' },
-                        })}
-                      </Box>
-                    </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))
-          )}
-        </Grid>
 
         {/* Quick Actions */}
         <Typography variant="h5" gutterBottom mb={2}>
@@ -353,56 +187,8 @@ const DashboardPage = () => {
           ))}
         </Grid>
 
-        {/* Real-Time Dashboard Section */}
-        <Typography variant="h5" gutterBottom mb={2}>
-          Real-Time Operations
-        </Typography>
-        <RealTimeDashboard />
-
-        {/* Enhanced Dashboard Widgets */}
-        <Typography variant="h5" gutterBottom mt={4} mb={2}>
-          Dashboard Overview
-        </Typography>
-        <Grid container spacing={3}>
-          {/* Execution Monitor */}
-          <Grid item xs={12} lg={4}>
-            <Paper sx={{ p: 2, height: 500 }}>
-              <ExecutionMonitor
-                maxHeight={450}
-                showHeader={true}
-                realtime={true}
-              />
-            </Paper>
-          </Grid>
-
-          {/* Approval Workflow */}
-          <Grid item xs={12} lg={4}>
-            <Paper sx={{ p: 2, height: 500 }}>
-              <ApprovalWorkflow
-                maxHeight={450}
-                showHeader={true}
-                showActions={true}
-              />
-            </Paper>
-          </Grid>
-
-          {/* Activity Feed */}
-          <Grid item xs={12} lg={4}>
-            <Paper sx={{ p: 2, height: 500 }}>
-              <Typography variant="h6" gutterBottom>
-                Recent Activity
-              </Typography>
-              <ActivityFeed
-                maxHeight={400}
-                showHeader={false}
-                realtime={true}
-              />
-            </Paper>
-          </Grid>
-        </Grid>
-
         {/* Getting Started Section */}
-        <Grid container spacing={3} sx={{ mt: 2 }}>
+        <Grid container spacing={3}>
           <Grid item xs={12}>
             <Paper sx={{ p: 3 }}>
               <Typography variant="h6" gutterBottom>
@@ -411,58 +197,48 @@ const DashboardPage = () => {
               <Grid container spacing={2}>
                 <Grid item xs={12} md={6}>
                   <Typography variant="body2" color="text.secondary" paragraph>
-                    New to AIrWAVE? Here's your workflow:
+                    New to AIrWAVE? Here's your simple workflow:
                   </Typography>
                   <Box component="ol" sx={{ pl: 2 }}>
                     <Box component="li" sx={{ mb: 1 }}>
                       <Typography variant="body2">
-                        <strong>Upload Briefs:</strong> Start with your creative brief or strategy document
+                        <strong>Create/Select Client:</strong> Start by setting up your client
                       </Typography>
                     </Box>
                     <Box component="li" sx={{ mb: 1 }}>
                       <Typography variant="body2">
-                        <strong>Generate Motivations:</strong> AI extracts key motivations and insights
+                        <strong>Generate Content:</strong> Use AI to create images, copy, and videos
                       </Typography>
                     </Box>
                     <Box component="li" sx={{ mb: 1 }}>
                       <Typography variant="body2">
-                        <strong>Create Content Matrix:</strong> Plan campaigns across platforms and formats
+                        <strong>Organize Assets:</strong> Build your content library
                       </Typography>
                     </Box>
                     <Box component="li" sx={{ mb: 1 }}>
                       <Typography variant="body2">
-                        <strong>Execute & Monitor:</strong> Launch campaigns and track real-time progress
-                      </Typography>
-                    </Box>
-                    <Box component="li" sx={{ mb: 1 }}>
-                      <Typography variant="body2">
-                        <strong>Approve & Optimize:</strong> Streamlined approval workflows with analytics
+                        <strong>Plan Campaigns:</strong> Create content matrices and campaigns
                       </Typography>
                     </Box>
                   </Box>
                 </Grid>
                 <Grid item xs={12} md={6}>
                   <Typography variant="subtitle2" gutterBottom>
-                    Quick Tips & Shortcuts
+                    Quick Tips
                   </Typography>
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
                     <Chip 
-                      label="Press Ctrl+K for quick search" 
+                      label="Press Cmd+K for quick search" 
                       size="small" 
                       variant="outlined" 
                     />
                     <Chip 
-                      label="Use bulk approvals for efficiency" 
+                      label="Start with templates for faster creation" 
                       size="small" 
                       variant="outlined" 
                     />
                     <Chip 
-                      label="Monitor executions in real-time" 
-                      size="small" 
-                      variant="outlined" 
-                    />
-                    <Chip 
-                      label="Retry failed executions automatically" 
+                      label="Use AI generation for unique content" 
                       size="small" 
                       variant="outlined" 
                     />
@@ -472,9 +248,9 @@ const DashboardPage = () => {
                     variant="contained"
                     fullWidth
                     startIcon={<Add />}
-                    onClick={() => router.push('/assets?tab=ai')}
+                    onClick={() => router.push(activeClient ? '/generate-enhanced' : '/clients')}
                   >
-                    Start Creating Content
+                    {activeClient ? 'Start Creating Content' : 'Create Your First Client'}
                   </Button>
                 </Grid>
               </Grid>

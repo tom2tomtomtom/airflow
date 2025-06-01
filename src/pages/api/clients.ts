@@ -62,6 +62,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
       .from('clients')
       .select(`
         *,
+        client_contacts(*),
         ${include_stats === 'true' ? `
           campaigns(count),
           assets(count),
@@ -114,6 +115,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
       isActive: client.is_active !== false,
       dateCreated: client.created_at,
       lastModified: client.updated_at,
+      contacts: client.client_contacts || [],
       // Include stats if requested
       ...(include_stats === 'true' && {
         stats: {
@@ -153,7 +155,8 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
       primaryColor,
       secondaryColor,
       socialMedia,
-      brand_guidelines
+      brand_guidelines,
+      contacts
     } = req.body;
 
     // Basic validation
@@ -196,6 +199,28 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
       throw error;
     }
 
+    // Add contacts if provided
+    if (contacts && Array.isArray(contacts) && contacts.length > 0) {
+      const contactInserts = contacts.map((contact: any) => ({
+        client_id: client.id,
+        name: contact.name,
+        role: contact.role || null,
+        email: contact.email || null,
+        phone: contact.phone || null,
+        is_primary: contact.isActive || false,
+        is_active: true,
+      }));
+
+      const { error: contactError } = await supabase
+        .from('client_contacts')
+        .insert(contactInserts);
+
+      if (contactError) {
+        console.error('Error creating contacts:', contactError);
+        // Don't fail the whole operation for contact errors, just log it
+      }
+    }
+
     // Access is automatically granted through created_by relationship
 
     // Transform response
@@ -214,6 +239,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
       isActive: client.is_active,
       dateCreated: client.created_at,
       lastModified: client.updated_at,
+      contacts: contacts || [], // Include the contacts in response
     };
 
     return res.status(201).json({
