@@ -26,7 +26,7 @@ import {
   Videocam as VideocamIcon,
   Add as AddIcon,
   Refresh as RefreshIcon,
-  Analytics as ,
+  Analytics as AnalyticsIcon,
   FilterList as FilterIcon,
   Search as SearchIcon,
   TrendingUp as TrendingUpIcon,
