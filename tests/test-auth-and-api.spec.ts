@@ -11,8 +11,8 @@ test.describe('Authentication and API Tests', () => {
     console.log('Navigated to login page');
     
     // Fill in credentials
-    await page.fill('input[type="email"]', 'tomh@redbaez.com');
-    await page.fill('input[type="password"]', 'Wijlre2010');
+    await page.fill('input[type="email"]', process.env.TEST_EMAIL || 'test@example.com');
+    await page.fill('input[type="password"]', process.env.TEST_PASSWORD || 'testpassword');
     
     console.log('Filled in credentials');
     
@@ -68,8 +68,8 @@ test.describe('Authentication and API Tests', () => {
     
     // Login first
     await page.goto('https://airwave-complete.netlify.app/login');
-    await page.fill('input[type="email"]', 'tomh@redbaez.com');
-    await page.fill('input[type="password"]', 'Wijlre2010');
+    await page.fill('input[type="email"]', process.env.TEST_EMAIL || 'test@example.com');
+    await page.fill('input[type="password"]', process.env.TEST_PASSWORD || 'testpassword');
     await page.click('button[type="submit"]');
     await page.waitForLoadState('networkidle');
     

@@ -38,7 +38,7 @@ After comprehensive testing and multiple critical fixes deployed to production, 
 
 ### Authentication System ✅ 100% WORKING
 ```
-✅ Login successful with tomh@redbaez.com / Wijlre2010
+✅ Login successful with [REDACTED_EMAIL] / [REDACTED_PASSWORD]
 ✅ Session persistence working
 ✅ Real API authentication confirmed
 ✅ Supabase integration functional
@@ -218,7 +218,7 @@ Once the session token issue is resolved, all user workflows you mentioned are *
 
 ### Test Date: January 6, 2025
 ### Environment: Production (https://airwave-complete.netlify.app)  
-### Test Credentials: tomh@redbaez.com / Wijlre2010 ✅ CONFIRMED WORKING
+### Test Credentials: [REDACTED_EMAIL] / [REDACTED_PASSWORD] ✅ CONFIRMED WORKING
 
 ### 🎊 FINAL WORKFLOW RESULTS:
 ```

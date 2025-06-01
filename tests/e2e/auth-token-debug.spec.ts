@@ -19,11 +19,11 @@ test.describe('Authentication Token Debug Test', () => {
     
     const emailInput = page.locator('input[type="email"], input[name="email"], #email');
     await emailInput.waitFor({ state: 'visible', timeout: 10000 });
-    await emailInput.fill('tomh@redbaez.com');
+    await emailInput.fill('process.env.TEST_EMAIL || 'test@example.com'');
     
     const passwordInput = page.locator('input[type="password"], input[name="password"], #password');
     await passwordInput.waitFor({ state: 'visible', timeout: 10000 });
-    await passwordInput.fill('Wijlre2010');
+    await passwordInput.fill('process.env.TEST_PASSWORD || 'testpassword'');
     
     console.log('✅ Credentials filled');
 

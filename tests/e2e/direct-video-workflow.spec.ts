@@ -1,8 +1,8 @@
 import { test, expect, Page } from '@playwright/test';
 
 const BASE_URL = 'https://airwave-complete.netlify.app';
-const TEST_EMAIL = 'tomh@redbaez.com';
-const TEST_PASSWORD = 'Wijlre2010';
+const TEST_EMAIL = process.env.TEST_EMAIL || 'test@example.com';
+const TEST_PASSWORD = process.env.TEST_PASSWORD || 'testpassword';
 
 test.describe('Direct Video Generation Workflow', () => {
   test('Complete Video Workflow: Login → Direct to Video Studio → AIrWAVE Brief Test', async ({ page }) => {

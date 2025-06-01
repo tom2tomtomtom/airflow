@@ -58,12 +58,12 @@ test.describe('Debug Authentication', () => {
     try {
       // Try email input
       if (emailInput > 0) {
-        await page.fill('input[type="email"]', 'tomh@redbaez.com');
+        await page.fill('input[type="email"]', process.env.TEST_EMAIL || 'test@example.com');
         console.log('Filled email using type selector');
       } else {
         const emailByName = await page.locator('input[name="email"]').count();
         if (emailByName > 0) {
-          await page.fill('input[name="email"]', 'tomh@redbaez.com');
+          await page.fill('input[name="email"]', process.env.TEST_EMAIL || 'test@example.com');
           console.log('Filled email using name selector');
         } else {
           console.log('Could not find email input field');
@@ -72,12 +72,12 @@ test.describe('Debug Authentication', () => {
       
       // Try password input
       if (passwordInput > 0) {
-        await page.fill('input[type="password"]', 'Wijlre2010');
+        await page.fill('input[type="password"]', process.env.TEST_PASSWORD || 'testpassword');
         console.log('Filled password using type selector');
       } else {
         const passwordByName = await page.locator('input[name="password"]').count();
         if (passwordByName > 0) {
-          await page.fill('input[name="password"]', 'Wijlre2010');
+          await page.fill('input[name="password"]', process.env.TEST_PASSWORD || 'testpassword');
           console.log('Filled password using name selector');
         } else {
           console.log('Could not find password input field');

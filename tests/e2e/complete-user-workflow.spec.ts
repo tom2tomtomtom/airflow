@@ -4,7 +4,7 @@ const BASE_URL = 'https://airwave-complete.netlify.app';
 
 // Test credentials - working production account
 const testCredentials = [
-  { email: 'tomh@redbaez.com', password: 'Wijlre2010' },
+  { email: 'process.env.TEST_EMAIL || 'test@example.com'', password: 'process.env.TEST_PASSWORD || 'testpassword'' },
   { email: 'test@airwave.app', password: 'TestUser123!' },
   { email: 'playwright@airwave.app', password: 'PlaywrightTest123!' }
 ];

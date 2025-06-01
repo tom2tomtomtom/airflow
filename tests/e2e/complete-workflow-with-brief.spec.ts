@@ -62,8 +62,8 @@ async function attemptLogin(page: Page): Promise<boolean> {
     const passwordInput = page.locator('input[type="password"]').first();
     const submitButton = page.locator('button[type="submit"]').first();
     
-    await emailInput.fill('tomh@redbaez.com');
-    await passwordInput.fill('Wijlre2010');
+    await emailInput.fill(process.env.TEST_EMAIL || 'test@example.com');
+    await passwordInput.fill(process.env.TEST_PASSWORD || 'testpassword');
     await submitButton.click();
     
     // Wait and check if login was successful

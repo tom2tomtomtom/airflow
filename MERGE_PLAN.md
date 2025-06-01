@@ -50,7 +50,7 @@ cp -r /Users/thomasdowuona-hyde/Documents/AIRWAVE_0525_CODEX/src/utils/ ./src/
 ### **🧪 TESTING PLAN:**
 
 #### **Phase 1 Testing (Authentication):**
-1. Test login with `tomh@redbaez.com` / `Wijlre2010`
+1. Test login with `[REDACTED_EMAIL]` / `[REDACTED_PASSWORD]`
 2. Verify dashboard loads without errors  
 3. Check session persistence on refresh
 4. Verify logout functionality

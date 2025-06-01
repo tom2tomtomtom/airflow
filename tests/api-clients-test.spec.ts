@@ -8,8 +8,8 @@ test.describe('API Clients Test', () => {
     await page.goto('https://airwave-complete.netlify.app/login');
     await page.waitForLoadState('networkidle');
     
-    await page.fill('input[type="email"]', 'tomh@redbaez.com');
-    await page.fill('input[type="password"]', 'Wijlre2010');
+    await page.fill('input[type="email"]', process.env.TEST_EMAIL || 'test@example.com');
+    await page.fill('input[type="password"]', process.env.TEST_PASSWORD || 'testpassword');
     
     // Listen for the login response
     const loginResponsePromise = page.waitForResponse(response => 

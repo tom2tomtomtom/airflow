@@ -4,7 +4,7 @@
 **Date:** June 1, 2025  
 **Tester:** Claude Code  
 **Environment:** Production (https://airwave-complete.netlify.app)  
-**Test User:** tomh@redbaez.com  
+**Test User:** [REDACTED_EMAIL]  
 
 ---
 
@@ -25,7 +25,7 @@ Comprehensive end-to-end testing was conducted on the AIrWAVE platform to valida
 ### 1. Authentication Testing ✅
 **Status:** PASSED  
 **Details:**
-- Login with tomh@redbaez.com credentials successful
+- Login with [REDACTED_EMAIL] credentials successful
 - Session management working
 - Redirect to dashboard after authentication
 - API authentication endpoint functional (200 response)

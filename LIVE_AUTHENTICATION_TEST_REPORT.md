@@ -3,7 +3,7 @@
 
 **Test Date:** May 31, 2025  
 **Test URL:** https://airwave-complete.netlify.app/login  
-**Test Credentials:** tomh@redbaez.com / Wijlre2010  
+**Test Credentials:** [REDACTED_EMAIL] / [REDACTED_PASSWORD]  
 
 ---
 
@@ -24,8 +24,8 @@ The authentication system is working correctly for login and session management,
 - **Form Elements:** Email and password inputs detected and accessible
 
 ### 2. Login Form Submission ✅ SUCCESS
-- **Email:** tomh@redbaez.com (filled successfully)
-- **Password:** Wijlre2010 (filled successfully)
+- **Email:** [REDACTED_EMAIL] (filled successfully)
+- **Password:** [REDACTED_PASSWORD] (filled successfully)
 - **Form Submission:** Completed without errors
 - **Redirect:** Successfully redirected to `/dashboard`
 
@@ -61,7 +61,7 @@ The authentication system is working correctly for login and session management,
 ```json
 {
   "id": "354d56b0-440b-403e-b207-7038fb8b00d7",
-  "email": "tomh@redbaez.com", 
+  "email": "[REDACTED_EMAIL]", 
   "name": "tomh",
   "role": "user",
   "token": "eyJhbGciOiJIUzI1NiIs..." // Valid JWT token
@@ -73,7 +73,7 @@ The authentication system is working correctly for login and session management,
 - **Issuer:** Supabase Auth
 - **Subject:** 354d56b0-440b-403e-b207-7038fb8b00d7
 - **Audience:** authenticated
-- **Email:** tomh@redbaez.com
+- **Email:** [REDACTED_EMAIL]
 - **Role:** authenticated
 - **Session ID:** eaa19d90-a42e-4488-bdf8-66a71de10c1e
 
@@ -108,7 +108,7 @@ The authentication system is working correctly for login and session management,
    INSERT INTO profiles (auth_user_id, email, name, role, created_at, updated_at)
    VALUES (
      '354d56b0-440b-403e-b207-7038fb8b00d7',
-     'tomh@redbaez.com',
+     '[REDACTED_EMAIL]',
      'tomh',
      'user',
      NOW(),

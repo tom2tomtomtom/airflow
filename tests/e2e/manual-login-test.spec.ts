@@ -117,11 +117,11 @@ test.describe('Manual Login Test', () => {
     console.log('Step 4: Filling login form');
     
     console.log('Filling email...');
-    await emailInput.fill('tomh@redbaez.com');
+    await emailInput.fill('process.env.TEST_EMAIL || 'test@example.com'');
     await page.waitForTimeout(1000);
     
     console.log('Filling password...');
-    await passwordInput.fill('Wijlre2010');
+    await passwordInput.fill('process.env.TEST_PASSWORD || 'testpassword'');
     await page.waitForTimeout(1000);
     
     // Take screenshot before submit

@@ -3,8 +3,8 @@ import { test, expect, Page } from '@playwright/test';
 const BASE_URL = 'https://airwave-complete.netlify.app';
 
 // Test credentials for production environment
-const TEST_EMAIL = 'tomh@redbaez.com';
-const TEST_PASSWORD = 'Wijlre2010';
+const TEST_EMAIL = process.env.TEST_EMAIL || 'test@example.com';
+const TEST_PASSWORD = process.env.TEST_PASSWORD || 'testpassword';
 
 test.describe('Full Workflow: Login to Video Generation', () => {
   let page: Page;
@@ -36,7 +36,7 @@ test.describe('Full Workflow: Login to Video Generation', () => {
     console.log('🚀 Starting complete workflow test: Login to Video Generation');
     
     // STEP 1: Authentication
-    console.log('🔐 Step 1: Login with tomh@redbaez.com');
+    console.log('🔐 Step 1: Login with', process.env.TEST_EMAIL || 'test@example.com');
     await page.goto(`${BASE_URL}/login`);
     await page.waitForLoadState('networkidle');
     
