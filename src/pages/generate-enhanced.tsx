@@ -250,7 +250,8 @@ const GenerateEnhancedPage: React.FC = () => {
   // State
   const [activeTab, setActiveTab] = useState('strategy');
   const [motivations, setMotivations] = useState<Motivation[]>(mockMotivations);
-  const [briefText, setBriefText] = useState('');
+  const [clientBrief, setClientBrief] = useState<any>(null);
+  const [isFetchingBrief, setIsFetchingBrief] = useState(false);
   const [isGeneratingMotivations, setIsGeneratingMotivations] = useState(false);
   const [copySettings, setCopySettings] = useState({
     tone: 'professional',
@@ -298,6 +299,39 @@ const GenerateEnhancedPage: React.FC = () => {
     }
   }, [isAuthenticated, authLoading, router]);
 
+  // Fetch client brief when active client changes
+  useEffect(() => {
+    const fetchClientBrief = async () => {
+      if (!activeClient?.id || !isAuthenticated) return;
+      
+      setIsFetchingBrief(true);
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/api/briefs?client_id=${activeClient.id}&limit=1`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          if (result.data && result.data.length > 0) {
+            setClientBrief(result.data[0]); // Get the most recent brief
+          } else {
+            setClientBrief(null);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching client brief:', error);
+      } finally {
+        setIsFetchingBrief(false);
+      }
+    };
+
+    fetchClientBrief();
+  }, [activeClient?.id, isAuthenticated]);
+
   // Handle tab change
   const handleTabChange = (_event: React.SyntheticEvent, newValue: string) => {
     setActiveTab(newValue);
@@ -339,8 +373,8 @@ const GenerateEnhancedPage: React.FC = () => {
 
   // Handle brief-based motivation generation
   const handleGenerateMotivations = () => {
-    if (!briefText.trim()) {
-      setSnackbarMessage('Please enter a brief description');
+    if (!clientBrief) {
+      setSnackbarMessage('No client brief found. Please upload a brief on the Strategy page first.');
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
       return;
@@ -599,28 +633,91 @@ const GenerateEnhancedPage: React.FC = () => {
                 Generate Strategic Motivations
               </Typography>
               <Typography variant="body2" color="text.secondary" paragraph>
-                Upload or enter your client brief to generate strategic motivations that will inform your content creation.
+                Review your client brief uploaded on the Strategy page and generate strategic motivations that will inform your content creation.
               </Typography>
 
               <Paper sx={{ p: 3, mb: 4 }}>
                 <Typography variant="subtitle1" gutterBottom fontWeight={600}>
                   Client Brief
                 </Typography>
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={6}
-                  variant="outlined"
-                  placeholder="Enter client brief text or campaign objectives here..."
-                  value={briefText}
-                  onChange={(e: React.ChangeEvent<HTMLElement>) => setBriefText(e.target.value)}
-                  sx={{ mb: 2 }}
-                />
+                
+                {isFetchingBrief ? (
+                  <Box sx={{ display: 'flex', alignItems: 'center', py: 4 }}>
+                    <CircularProgress size={20} sx={{ mr: 2 }} />
+                    <Typography variant="body2" color="text.secondary">
+                      Loading client brief...
+                    </Typography>
+                  </Box>
+                ) : clientBrief ? (
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                      Brief: {clientBrief.name}
+                    </Typography>
+                    
+                    {clientBrief.description && (
+                      <Typography variant="body2" paragraph>
+                        <strong>Description:</strong> {clientBrief.description}
+                      </Typography>
+                    )}
+                    
+                    {clientBrief.target_audience && (
+                      <Typography variant="body2" paragraph>
+                        <strong>Target Audience:</strong> {clientBrief.target_audience}
+                      </Typography>
+                    )}
+                    
+                    {clientBrief.objectives && (
+                      <Typography variant="body2" paragraph>
+                        <strong>Objectives:</strong> {
+                          typeof clientBrief.objectives === 'string' 
+                            ? clientBrief.objectives 
+                            : JSON.stringify(clientBrief.objectives)
+                        }
+                      </Typography>
+                    )}
+                    
+                    {clientBrief.raw_content && (
+                      <Box>
+                        <Typography variant="body2" fontWeight={600} gutterBottom>
+                          Parsed Content:
+                        </Typography>
+                        <Box 
+                          sx={{ 
+                            bgcolor: 'grey.50', 
+                            p: 2, 
+                            borderRadius: 1, 
+                            maxHeight: 200, 
+                            overflow: 'auto',
+                            whiteSpace: 'pre-wrap',
+                            fontSize: '0.875rem'
+                          }}
+                        >
+                          {clientBrief.raw_content.slice(0, 500)}
+                          {clientBrief.raw_content.length > 500 && '...'}
+                        </Box>
+                      </Box>
+                    )}
+                  </Box>
+                ) : (
+                  <Alert severity="info" sx={{ mb: 2 }}>
+                    No client brief found. Please upload a brief on the{' '}
+                    <Button 
+                      variant="text" 
+                      size="small" 
+                      onClick={() => router.push('/strategic-content')}
+                      sx={{ textTransform: 'none' }}
+                    >
+                      Strategy page
+                    </Button>
+                    {' '}first.
+                  </Alert>
+                )}
+                
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Button
                     variant="contained"
                     onClick={handleGenerateMotivations}
-                    disabled={isGeneratingMotivations || !briefText.trim()}
+                    disabled={isGeneratingMotivations || !clientBrief}
                     startIcon={isGeneratingMotivations ? <CircularProgress size={20} /> : <AutoAwesomeIcon />}
                   >
                     {isGeneratingMotivations ? 'Generating...' : 'Generate Motivations'}
