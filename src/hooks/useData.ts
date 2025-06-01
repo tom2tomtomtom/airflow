@@ -118,15 +118,40 @@ export const useClients = () => {
   return useQuery({
     queryKey: ['clients'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('clients')
-        .select('id, name, description, industry, logo_url, primary_color, secondary_color, brand_guidelines, created_at, updated_at')
-        .order('name');
-      
-      if (error) throw error;
-      return data || [];
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await fetch('/api/clients', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Authentication failed');
+        }
+        throw new Error(`Failed to fetch clients: ${response.status}`);
+      }
+
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to fetch clients');
+      }
+
+      return result.clients || [];
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: (failureCount, error) => {
+      // Don't retry on auth errors
+      if (error.message.includes('Authentication failed')) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 };
 

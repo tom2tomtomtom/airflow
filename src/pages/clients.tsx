@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import {
@@ -52,6 +52,14 @@ const ClientsPage: React.FC = () => {
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
+  // Handle authentication errors
+  useEffect(() => {
+    if (error && error.message.includes('Authentication failed')) {
+      // Redirect to login if authentication fails
+      router.push('/login');
+    }
+  }, [error, router]);
+
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, client: Client) => {
     setAnchorEl(event.currentTarget);
     setSelectedClient(client);
@@ -76,7 +84,8 @@ const ClientsPage: React.FC = () => {
 
   const handleSelectClient = (client: Client) => {
     setActiveClient(client);
-    router.push('/dashboard');
+    // Use router.replace to avoid navigation history issues
+    router.replace('/dashboard');
   };
 
   const handleDeleteClient = () => {
