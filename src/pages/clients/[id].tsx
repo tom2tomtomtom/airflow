@@ -362,9 +362,9 @@ const ClientDetailPage: React.FC = () => {
                   multiline
                   rows={2}
                   label="Voice & Tone"
-                  value={editedClient.brandGuidelines?.voiceTone || ''}
-                  onChange={(e: React.ChangeEvent<HTMLElement>) => handleFieldChange('brandGuidelines', {
-                    ...editedClient.brandGuidelines,
+                  value={editedClient.brand_guidelines?.voiceTone || ''}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => handleFieldChange('brand_guidelines', {
+                    ...editedClient.brand_guidelines,
                     voiceTone: e.target.value
                   })}
                   disabled={!isEditing}
@@ -376,9 +376,9 @@ const ClientDetailPage: React.FC = () => {
                   multiline
                   rows={2}
                   label="Target Audience"
-                  value={editedClient.brandGuidelines?.targetAudience || ''}
-                  onChange={(e: React.ChangeEvent<HTMLElement>) => handleFieldChange('brandGuidelines', {
-                    ...editedClient.brandGuidelines,
+                  value={editedClient.brand_guidelines?.targetAudience || ''}
+                  onChange={(e: React.ChangeEvent<HTMLElement>) => handleFieldChange('brand_guidelines', {
+                    ...editedClient.brand_guidelines,
                     targetAudience: e.target.value
                   })}
                   disabled={!isEditing}
@@ -388,17 +388,17 @@ const ClientDetailPage: React.FC = () => {
                 <Typography variant="subtitle2" gutterBottom>
                   Key Messages
                 </Typography>
-                {editedClient.brandGuidelines?.keyMessages?.map((message, index) => (
+                {editedClient.brand_guidelines?.keyMessages?.map((message, index) => (
                   <Chip
                     key={index}
                     label={message}
                     sx={{ mr: 1, mb: 1 }}
                     {...(isEditing ? {
                       onDelete: () => {
-                        const messages = [...(editedClient.brandGuidelines?.keyMessages || [])];
+                        const messages = [...(editedClient.brand_guidelines?.keyMessages || [])];
                         messages.splice(index, 1);
-                        handleFieldChange('brandGuidelines', {
-                          ...editedClient.brandGuidelines,
+                        handleFieldChange('brand_guidelines', {
+                          ...editedClient.brand_guidelines,
                           keyMessages: messages
                         });
                       }

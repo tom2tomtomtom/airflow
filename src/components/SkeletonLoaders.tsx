@@ -254,4 +254,8 @@ export const ActivitySkeleton: React.FC = () => (
       </ListItem>
     ))}
   </List>
+<<<<<<< HEAD
 );
+=======
+);
+>>>>>>> 67032892723b6c3baa991a25bfc2a82ec06c4641

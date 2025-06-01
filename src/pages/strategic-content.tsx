@@ -49,12 +49,18 @@ import {
   Send as SendIcon,
   Article as BriefIcon,
   CloudUpload as CloudUploadIcon,
+  Upload as UploadIcon,
+  Palette as PaletteIcon,
+  TextFormat as TextFormatIcon,
+  VoiceOverOff as VoiceOverOffIcon,
+  CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
 import { UnifiedBriefWorkflow } from '@/components/UnifiedBriefWorkflow';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
 import { useCampaigns } from '@/hooks/useData';
+import { useRouter } from 'next/router';
 
 // Content type icons mapping
 const contentTypeIcons: Record<string, React.ReactNode> = {
@@ -110,6 +116,7 @@ interface StrategicContentItem {
 }
 
 const StrategicContent: React.FC = () => {
+  const router = useRouter();
   const { activeClient } = useClient();
   const { showNotification } = useNotification();
   const { data: campaigns } = useCampaigns(activeClient?.id);
@@ -124,6 +131,32 @@ const StrategicContent: React.FC = () => {
   const [tabValue, setTabValue] = useState(0);
   const [generating, setGenerating] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
+  const [brandGuidelinesUploading, setBrandGuidelinesUploading] = useState(false);
+  const [brandGuidelines, setBrandGuidelines] = useState<any>(null);
+  const [dragActive, setDragActive] = useState(false);
+
+  // Load existing brand guidelines when client changes
+  React.useEffect(() => {
+    const loadBrandGuidelines = async () => {
+      if (!activeClient?.id) {
+        setBrandGuidelines(null);
+        return;
+      }
+
+      try {
+        // Check if brand guidelines exist for this client
+        if (activeClient.brand_guidelines) {
+          setBrandGuidelines(activeClient.brand_guidelines);
+        } else {
+          setBrandGuidelines(null);
+        }
+      } catch (error) {
+        console.error('Error loading brand guidelines:', error);
+      }
+    };
+
+    loadBrandGuidelines();
+  }, [activeClient?.id]);
   
   // Brief form state
   const [briefForm, setBriefForm] = useState({
@@ -197,99 +230,123 @@ const StrategicContent: React.FC = () => {
       objective: workflowData.brief.objective,
       targetAudience: workflowData.brief.targetAudience,
       keyMessages: workflowData.brief.keyMessages || [],
-      tone: workflowData.brief.tone || '',
-      deliverables: workflowData.brief.deliverables || [],
-      timeline: workflowData.brief.timeline || '',
-      budget: workflowData.brief.budget || '',
-      additionalNotes: '',
+      tone: 'professional',
+      deliverables: ['Video content', 'Social media posts'],
+      timeline: workflowData.brief.timeline,
+      budget: workflowData.brief.budget,
       status: 'completed',
       dateCreated: new Date().toISOString(),
       lastModified: new Date().toISOString(),
     };
 
     setBriefs([...briefs, newBrief]);
-
+    
     // Create strategic content from workflow
+    const timestamp = Date.now();
     const newContent: StrategicContentItem = {
-      id: `sc${Date.now()}`,
-      title: `Complete Strategy: ${workflowData.brief.title}`,
+      id: `wf-${timestamp}`,
+      title: `Workflow: ${workflowData.brief.title}`,
       type: 'framework',
-      description: 'End-to-end strategy generated from unified workflow',
+      description: 'Generated from unified brief workflow',
       dateCreated: new Date().toISOString(),
       lastModified: new Date().toISOString(),
       briefId: newBrief.id,
       content: [
         {
-          id: `content-1`,
+          id: `wf-motivations-${timestamp}`,
           title: 'Selected Motivations',
-          description: `${workflowData.motivations.length} strategic motivations`,
-          details: workflowData.motivations.map((m: any) => m.title).join(', ')
+          description: 'Strategic motivations chosen from AI generation',
+          details: workflowData.motivations.map((m: any) => `${m.title}: ${m.description}`).join(' • ')
         },
         {
-          id: `content-2`,
+          id: `wf-copy-${timestamp}`,
           title: 'Copy Variations',
-          description: `${workflowData.copy.length} platform-specific copy variations`,
-          details: workflowData.copy.map((c: any) => `${c.platform}: ${c.text}`).join('\n\n')
+          description: 'Platform-specific copy variations',
+          details: workflowData.copy.map((c: any) => `${c.platform}: ${c.text}`).join(' • ')
         },
         {
-          id: `content-3`,
-          title: 'Template Selection',
-          description: 'Video template ready for rendering',
-          details: `Selected template: ${workflowData.template}`
+          id: `wf-template-${timestamp}`,
+          title: 'Selected Template',
+          description: 'Chosen video template for rendering',
+          details: `Template: ${workflowData.template} - Ready for Creatomate rendering`
         }
       ]
     };
-
+    
     setStrategicContent([newContent, ...strategicContent]);
-    showNotification('Workflow completed! Content ready for execution.', 'success');
+    setOpenWorkflow(false);
+    showNotification('Workflow completed! Content and brief created.', 'success');
   };
 
   const handleGenerateFromBrief = async (brief: Brief) => {
-    setGenerating(true);
+    if (!activeClient?.id) {
+      showNotification('Please select a client first', 'error');
+      return;
+    }
 
-    // Simulate AI content generation
-    setTimeout(() => {
-      const timestamp = Date.now();
-      const newContent: StrategicContentItem = {
-        id: `sc${timestamp}`,
-        title: `Strategy for: ${brief.title}`,
-        type: 'framework',
-        description: `AI-generated strategic content based on brief: ${brief.objective}`,
-        dateCreated: new Date().toISOString(),
-        lastModified: new Date().toISOString(),
-        briefId: brief.id,
-        content: [
-          {
-            id: `idea${timestamp}-1`,
-            title: 'Content Pillars',
-            description: 'Key content themes aligned with your objectives',
-            details: `Based on your target audience (${brief.targetAudience}) and objectives, focus on: Educational content about product benefits, Behind-the-scenes stories, User testimonials and case studies, Industry insights and trends.`
+    setGenerating(true);
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/ai/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          prompt: `Generate strategic content framework for campaign: ${brief.title}. Objective: ${brief.objective}. Target Audience: ${brief.targetAudience}. Key Messages: ${brief.keyMessages.join(', ')}. Tone: ${brief.tone}.`,
+          type: 'text',
+          parameters: {
+            tone: brief.tone,
+            style: 'strategic',
+            purpose: 'campaign framework'
           },
-          {
-            id: `idea${timestamp}-2`,
-            title: 'Channel Strategy',
-            description: 'Optimized platform approach for maximum reach',
-            details: 'Instagram: Visual storytelling with carousel posts and Reels. LinkedIn: Thought leadership articles and company updates. Email: Nurture sequences with valuable content. Blog: SEO-optimized long-form content.'
-          },
-          {
-            id: `idea${timestamp}-3`,
-            title: 'Content Calendar',
-            description: 'Strategic posting schedule for consistent engagement',
-            details: `Week 1-2: Launch phase with teaser content. Week 3-4: Educational series highlighting key messages. Week 5-6: User-generated content campaign. Week 7-8: Results and testimonials showcase.`
-          },
-          {
-            id: `idea${timestamp}-4`,
-            title: 'Key Messaging Framework',
-            description: 'Core messages tailored to your audience',
-            details: brief.keyMessages.join(' • ') + ` Tone: ${brief.tone}. Focus on emotional connection while maintaining credibility.`
-          }
-        ]
-      };
+          clientId: activeClient.id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate strategic content');
+      }
+
+      const result = await response.json();
       
-      setStrategicContent([newContent, ...strategicContent]);
+      if (result.success && result.result) {
+        const timestamp = Date.now();
+        const generatedText = Array.isArray(result.result.content) 
+          ? result.result.content.join('\n\n') 
+          : result.result.content;
+
+        const newContent: StrategicContentItem = {
+          id: `sc${timestamp}`,
+          title: `AI Strategy: ${brief.title}`,
+          type: 'framework',
+          description: `AI-generated strategic content based on brief: ${brief.objective}`,
+          dateCreated: new Date().toISOString(),
+          lastModified: new Date().toISOString(),
+          briefId: brief.id,
+          content: [
+            {
+              id: `idea${timestamp}-1`,
+              title: 'AI-Generated Strategic Framework',
+              description: 'AI-powered content strategy based on your brief',
+              details: generatedText
+            }
+          ]
+        };
+        
+        setStrategicContent([newContent, ...strategicContent]);
+        showNotification('Strategic content generated successfully!', 'success');
+      } else {
+        throw new Error('Invalid response from AI service');
+      }
+    } catch (error) {
+      console.error('Error generating strategic content:', error);
+      showNotification('Failed to generate strategic content. Please try again.', 'error');
+    } finally {
       setGenerating(false);
-      showNotification('Strategic content generated successfully!', 'success');
-    }, 3000);
+    }
   };
 
   const handleAddKeyMessage = () => {
@@ -318,6 +375,71 @@ const StrategicContent: React.FC = () => {
       ...briefForm,
       deliverables: briefForm.deliverables.filter((_, i) => i !== index)
     });
+  };
+
+  // Brand Guidelines Upload Handlers
+  const handleBrandGuidelinesUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    await uploadBrandGuidelines(file);
+  };
+
+  const handleBrandGuidelinesDrop = async (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    setDragActive(false);
+    
+    const file = event.dataTransfer.files?.[0];
+    if (!file) return;
+    
+    await uploadBrandGuidelines(file);
+  };
+
+  const uploadBrandGuidelines = async (file: File) => {
+    if (!activeClient?.id) {
+      showNotification('Please select a client first', 'error');
+      return;
+    }
+
+    // Validate file type
+    const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+    if (!allowedTypes.includes(file.type)) {
+      showNotification('Please upload a PDF, DOCX, or TXT file', 'error');
+      return;
+    }
+
+    setBrandGuidelinesUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/brand-guidelines/analyze', {
+        method: 'POST',
+        headers: {
+          'X-Client-Id': activeClient.id,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to analyze brand guidelines');
+      }
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setBrandGuidelines(result.guidelines);
+        showNotification('Brand guidelines analyzed and saved successfully!', 'success');
+      } else {
+        throw new Error(result.error || 'Analysis failed');
+      }
+    } catch (error) {
+      console.error('Error uploading brand guidelines:', error);
+      showNotification('Failed to analyze brand guidelines. Please try again.', 'error');
+    } finally {
+      setBrandGuidelinesUploading(false);
+    }
   };
 
   const filteredContent = strategicContent.filter(item => {
@@ -360,27 +482,230 @@ const StrategicContent: React.FC = () => {
           </Typography>
         </Box>
 
+        {/* Brand Guidelines Upload Section */}
+        <Paper sx={{ p: 3, mb: 4, border: '2px dashed', borderColor: dragActive ? 'primary.main' : 'grey.300', bgcolor: dragActive ? 'primary.50' : 'background.paper' }}>
+          <Typography variant="h6" gutterBottom>
+            Brand Guidelines
+          </Typography>
+          <Typography variant="body2" color="text.secondary" paragraph>
+            Upload your brand guidelines document to automatically extract colors, tone of voice, fonts, and other brand elements for use across all content generation.
+          </Typography>
+          
+          {!brandGuidelines ? (
+            <Box
+              sx={{
+                border: '2px dashed',
+                borderColor: 'grey.300',
+                borderRadius: 2,
+                p: 4,
+                textAlign: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                '&:hover': {
+                  borderColor: 'primary.main',
+                  bgcolor: 'primary.50',
+                },
+              }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragActive(true);
+              }}
+              onDragLeave={() => setDragActive(false)}
+              onDrop={handleBrandGuidelinesDrop}
+              onClick={() => document.getElementById('brand-guidelines-input')?.click()}
+            >
+              <input
+                id="brand-guidelines-input"
+                type="file"
+                accept=".pdf,.docx,.txt"
+                style={{ display: 'none' }}
+                onChange={handleBrandGuidelinesUpload}
+              />
+              <UploadIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
+              <Typography variant="h6" color="text.secondary" gutterBottom>
+                {brandGuidelinesUploading ? 'Analyzing brand guidelines...' : 'Upload Brand Guidelines'}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Drag and drop or click to select a PDF, DOCX, or TXT file
+              </Typography>
+              {brandGuidelinesUploading && (
+                <Box sx={{ mt: 2 }}>
+                  <LinearProgress />
+                </Box>
+              )}
+            </Box>
+          ) : (
+            <Box>
+              <Alert severity="success" sx={{ mb: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <CheckCircleIcon />
+                  <Typography variant="body2">
+                    Brand guidelines analyzed and saved for client: {activeClient?.name}
+                  </Typography>
+                </Box>
+              </Alert>
+              
+              <Grid container spacing={3}>
+                {/* Colors */}
+                <Grid item xs={12} md={3}>
+                  <Card>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <PaletteIcon sx={{ mr: 1, color: 'primary.main' }} />
+                        <Typography variant="h6">Colors</Typography>
+                      </Box>
+                      {brandGuidelines.colors && (
+                        <>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                            Primary
+                          </Typography>
+                          <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+                            {brandGuidelines.colors.primary?.map((color: string, index: number) => (
+                              <Box
+                                key={index}
+                                sx={{
+                                  width: 24,
+                                  height: 24,
+                                  bgcolor: color,
+                                  borderRadius: 1,
+                                  border: '1px solid #ccc',
+                                }}
+                                title={color}
+                              />
+                            ))}
+                          </Stack>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                            Secondary
+                          </Typography>
+                          <Stack direction="row" spacing={1}>
+                            {brandGuidelines.colors.secondary?.map((color: string, index: number) => (
+                              <Box
+                                key={index}
+                                sx={{
+                                  width: 24,
+                                  height: 24,
+                                  bgcolor: color,
+                                  borderRadius: 1,
+                                  border: '1px solid #ccc',
+                                }}
+                                title={color}
+                              />
+                            ))}
+                          </Stack>
+                        </>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Grid>
+                
+                {/* Tone of Voice */}
+                <Grid item xs={12} md={3}>
+                  <Card>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <VoiceOverOffIcon sx={{ mr: 1, color: 'primary.main' }} />
+                        <Typography variant="h6">Tone</Typography>
+                      </Box>
+                      {brandGuidelines.toneOfVoice && (
+                        <>
+                          <Typography variant="body2" paragraph>
+                            {brandGuidelines.toneOfVoice.communication_style}
+                          </Typography>
+                          <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
+                            {brandGuidelines.toneOfVoice.personality?.map((trait: string, index: number) => (
+                              <Chip key={index} label={trait} size="small" />
+                            ))}
+                          </Stack>
+                        </>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Grid>
+                
+                {/* Typography */}
+                <Grid item xs={12} md={3}>
+                  <Card>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <TextFormatIcon sx={{ mr: 1, color: 'primary.main' }} />
+                        <Typography variant="h6">Typography</Typography>
+                      </Box>
+                      {brandGuidelines.typography && (
+                        <>
+                          <Typography variant="subtitle2" color="text.secondary">
+                            Primary Font
+                          </Typography>
+                          <Typography variant="body2" paragraph>
+                            {brandGuidelines.typography.primary_font}
+                          </Typography>
+                          <Typography variant="subtitle2" color="text.secondary">
+                            Secondary Font
+                          </Typography>
+                          <Typography variant="body2">
+                            {brandGuidelines.typography.secondary_font}
+                          </Typography>
+                        </>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Grid>
+                
+                {/* Actions */}
+                <Grid item xs={12} md={3}>
+                  <Card>
+                    <CardContent>
+                      <Typography variant="h6" gutterBottom>
+                        Actions
+                      </Typography>
+                      <Stack spacing={2}>
+                        <Button
+                          variant="outlined"
+                          fullWidth
+                          onClick={() => setBrandGuidelines(null)}
+                        >
+                          Upload New Guidelines
+                        </Button>
+                        <Button
+                          variant="contained"
+                          fullWidth
+                          onClick={() => router.push('/generate-enhanced')}
+                        >
+                          Use in Generation
+                        </Button>
+                      </Stack>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Box>
+          )}
+        </Paper>
+
         {/* Quick Actions */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid item xs={12} md={4}>
-            <Card sx={{ height: '100%' }}>
+            <Card sx={{ height: '100%', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <Avatar sx={{ bgcolor: 'success.main', mr: 2 }}>
+                  <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', mr: 2 }}>
                     <CloudUploadIcon />
                   </Avatar>
                   <Box>
-                    <Typography variant="h6">Brief to Execution</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Complete guided workflow from brief to render
+                    <Typography variant="h6" color="inherit">Brief to Execution</Typography>
+                    <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                      Complete workflow from brief upload to video rendering
                     </Typography>
                   </Box>
                 </Box>
                 <Button
                   variant="contained"
                   fullWidth
-                  color="success"
-                  startIcon={<CloudUploadIcon />}
+                  sx={{ 
+                    bgcolor: 'rgba(255,255,255,0.2)', 
+                    color: 'white',
+                    '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' }
+                  }}
+                  startIcon={<MagicIcon />}
                   onClick={() => setOpenWorkflow(true)}
                 >
                   Start Workflow
@@ -389,7 +714,7 @@ const StrategicContent: React.FC = () => {
             </Card>
           </Grid>
           <Grid item xs={12} md={4}>
-            <Card sx={{ height: '100%' }}>
+            <Card>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <Avatar sx={{ bgcolor: 'primary.main', mr: 2 }}>
@@ -414,7 +739,7 @@ const StrategicContent: React.FC = () => {
             </Card>
           </Grid>
           <Grid item xs={12} md={4}>
-            <Card sx={{ height: '100%' }}>
+            <Card>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <Avatar sx={{ bgcolor: 'secondary.main', mr: 2 }}>

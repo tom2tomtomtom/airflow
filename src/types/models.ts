@@ -30,7 +30,7 @@ export interface Client extends BaseModel {
     youtube?: string;
   };
   contacts: Contact[];
-  brandGuidelines: BrandGuidelines;
+  brand_guidelines: BrandGuidelines;
   tenantId: string;
   isActive: boolean;
 }

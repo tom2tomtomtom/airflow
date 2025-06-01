@@ -36,6 +36,8 @@ import {
 import DashboardLayout from '@/components/DashboardLayout';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
 import ErrorMessage from '@/components/ErrorMessage';
+import { CardSkeleton } from '@/components/SkeletonLoaders';
+import { AnimatedActionButton } from '@/components/AnimatedComponents';
 import ClientSelector from '@/components/ClientSelector';
 import { useCampaigns } from '@/hooks/useData';
 import { useClient } from '@/contexts/ClientContext';
@@ -123,14 +125,13 @@ const CampaignsPage: React.FC = () => {
               </Typography>
               <ClientSelector variant="compact" />
             </Box>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
+            <AnimatedActionButton 
               onClick={handleCreateCampaign}
               disabled={!activeClient}
             >
+              <AddIcon sx={{ mr: 1 }} />
               Create Campaign
-            </Button>
+            </AnimatedActionButton>
           </Box>
 
           <TextField
@@ -162,7 +163,7 @@ const CampaignsPage: React.FC = () => {
           <Grid container spacing={3}>
             {[1, 2, 3].map((i) => (
               <Grid item xs={12} sm={6} md={4} key={i}>
-                <LoadingSkeleton variant="card" />
+                <CardSkeleton height={300} />
               </Grid>
             ))}
           </Grid>
@@ -188,14 +189,10 @@ const CampaignsPage: React.FC = () => {
                 : 'Create your first campaign to get started'}
             </Typography>
             {!searchTerm && (
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={handleCreateCampaign}
-                sx={{ mt: 2 }}
-              >
+              <AnimatedActionButton onClick={handleCreateCampaign} sx={{ mt: 2 }}>
+                <AddIcon sx={{ mr: 1 }} />
                 Create First Campaign
-              </Button>
+              </AnimatedActionButton>
             )}
           </Box>
         )}

@@ -29,7 +29,11 @@ import {
   ExpandLess,
   CheckCircle,
   Schedule,
+<<<<<<< HEAD
   Draft,
+=======
+  Edit as Draft,
+>>>>>>> 67032892723b6c3baa991a25bfc2a82ec06c4641
 } from '@mui/icons-material';
 import { SimplifiedLayout } from '@/components/SimplifiedLayout';
 import { UnifiedBriefWorkflow } from '@/components/UnifiedBriefWorkflow';
@@ -285,4 +289,8 @@ const CleanStrategicContent: React.FC = () => {
   );
 };
 
+<<<<<<< HEAD
 export default CleanStrategicContent;
+=======
+export default CleanStrategicContent;
+>>>>>>> 67032892723b6c3baa991a25bfc2a82ec06c4641

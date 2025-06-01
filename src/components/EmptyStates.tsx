@@ -377,4 +377,8 @@ export const SuccessState: React.FC<{
       {continueLabel}
     </Button>
   </Box>
+<<<<<<< HEAD
 );
+=======
+);
+>>>>>>> 67032892723b6c3baa991a25bfc2a82ec06c4641

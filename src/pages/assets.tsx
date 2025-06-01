@@ -1,4 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { EmptyAssets } from '@/components/EmptyStates';
+import { AssetGridSkeleton } from '@/components/SkeletonLoaders';
+import { AnimatedUploadZone, AnimatedActionButton } from '@/components/AnimatedComponents';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import {
@@ -6,6 +9,8 @@ import {
   Button,
   Typography,
   Grid,
+  Tabs,
+  Tab,
   SpeedDial,
   SpeedDialAction,
   SpeedDialIcon,
@@ -32,6 +37,7 @@ import {
   CircularProgress,
   Alert,
   CardMedia,
+  CardActions,
   Pagination,
 } from '@mui/material';
 import {
@@ -55,6 +61,7 @@ import {
   AudioFile,
   TextSnippet,
   Clear,
+  CalendarToday,
 } from '@mui/icons-material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -262,6 +269,82 @@ const AssetsPage = () => {
       setSelectedAssets(new Set());
     } else {
       setSelectedAssets(new Set(assets.map(asset => asset.id)));
+    }
+  };
+
+  // Download single asset
+  const handleDownloadAsset = async (asset: Asset) => {
+    try {
+      const response = await fetch(asset.file_url);
+      if (!response.ok) throw new Error('Failed to fetch asset');
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = asset.name || 'asset';
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      showNotification(`Downloaded ${asset.name}`, 'success');
+    } catch (error) {
+      console.error('Error downloading asset:', error);
+      showNotification('Failed to download asset', 'error');
+    }
+  };
+
+  // Download multiple assets as ZIP
+  const handleBulkDownload = async () => {
+    if (selectedAssets.size === 0) return;
+
+    try {
+      const selectedAssetsList = assets.filter(asset => selectedAssets.has(asset.id));
+      
+      if (selectedAssetsList.length === 1) {
+        // Single asset - direct download
+        await handleDownloadAsset(selectedAssetsList[0]);
+        return;
+      }
+
+      // Multiple assets - create ZIP
+      const JSZip = (await import('jszip')).default;
+      const zip = new JSZip();
+
+      showNotification(`Preparing ${selectedAssetsList.length} files for download...`, 'info');
+
+      // Add files to ZIP
+      for (const asset of selectedAssetsList) {
+        try {
+          const response = await fetch(asset.file_url);
+          if (response.ok) {
+            const blob = await response.blob();
+            const extension = asset.mime_type?.split('/')[1] || 'bin';
+            const fileName = `${asset.name || asset.id}.${extension}`;
+            zip.file(fileName, blob);
+          }
+        } catch (error) {
+          console.warn(`Failed to add ${asset.name} to ZIP:`, error);
+        }
+      }
+
+      // Generate and download ZIP
+      const content = await zip.generateAsync({ type: 'blob' });
+      const url = window.URL.createObjectURL(content);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `assets-${new Date().toISOString().split('T')[0]}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      showNotification(`Downloaded ${selectedAssetsList.length} assets as ZIP`, 'success');
+      setSelectedAssets(new Set()); // Clear selection
+    } catch (error) {
+      console.error('Error creating ZIP:', error);
+      showNotification('Failed to download assets', 'error');
     }
   };
 
@@ -604,8 +687,9 @@ const AssetsPage = () => {
               <Box display="flex" gap={1}>
                 <Button
                   startIcon={<Download />}
-                  onClick={() => console.log('Download selected')}
+                  onClick={handleBulkDownload}
                   size="small"
+                  disabled={selectedAssets.size === 0}
                 >
                   Download
                 </Button>
@@ -740,7 +824,10 @@ const AssetsPage = () => {
             <ListItemIcon><Edit /></ListItemIcon>
             <ListItemText>Edit</ListItemText>
           </MenuItem>
-          <MenuItem onClick={() => console.log('Download', selectedAsset)}>
+          <MenuItem onClick={() => {
+            if (selectedAsset) handleDownloadAsset(selectedAsset);
+            setAnchorEl(null);
+          }}>
             <ListItemIcon><Download /></ListItemIcon>
             <ListItemText>Download</ListItemText>
           </MenuItem>

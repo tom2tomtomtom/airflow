@@ -24,12 +24,16 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+<<<<<<< HEAD
   useTheme,
   useMediaQuery,
 } from '@mui/material';
 import { SmartProgressIndicator, briefWorkflowSteps } from './SmartProgressIndicator';
 import { MobileOptimizedWorkflow } from './MobileOptimizedWorkflow';
 import { AnimatedActionButton, LoadingState, SuccessState } from './AnimatedComponents';
+=======
+} from '@mui/material';
+>>>>>>> 67032892723b6c3baa991a25bfc2a82ec06c4641
 import {
   CloudUpload,
   AutoAwesome,
@@ -99,8 +103,11 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
   onClose,
   onComplete,
 }) => {
+<<<<<<< HEAD
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+=======
+>>>>>>> 67032892723b6c3baa991a25bfc2a82ec06c4641
   const [activeStep, setActiveStep] = useState(0);
   const [briefData, setBriefData] = useState<BriefData | null>(null);
   const [motivations, setMotivations] = useState<Motivation[]>([]);
@@ -109,6 +116,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+<<<<<<< HEAD
   const [workflowSteps, setWorkflowSteps] = useState(briefWorkflowSteps);
 
   const { showNotification } = useNotification();
@@ -124,6 +132,11 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
     );
   }
 
+=======
+  
+  const { showNotification } = useNotification();
+
+>>>>>>> 67032892723b6c3baa991a25bfc2a82ec06c4641
   // Step 1: File Upload
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -654,4 +667,8 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
       </DialogActions>
     </Dialog>
   );
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> 67032892723b6c3baa991a25bfc2a82ec06c4641

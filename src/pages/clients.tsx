@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import {
@@ -38,6 +38,9 @@ import LoadingSkeleton from '@/components/LoadingSkeleton';
 import ErrorMessage from '@/components/ErrorMessage';
 import { useClients } from '@/hooks/useData';
 import { useClient } from '@/contexts/ClientContext';
+import { EmptyClients } from '@/components/EmptyStates';
+import { CardSkeleton } from '@/components/SkeletonLoaders';
+import { AnimatedActionButton } from '@/components/AnimatedComponents';
 import type { Client } from '@/types/models';
 
 const ClientsPage: React.FC = () => {
@@ -48,6 +51,14 @@ const ClientsPage: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+  // Handle authentication errors
+  useEffect(() => {
+    if (error && error.message.includes('Authentication failed')) {
+      // Redirect to login if authentication fails
+      router.push('/login');
+    }
+  }, [error, router]);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, client: Client) => {
     setAnchorEl(event.currentTarget);
@@ -73,7 +84,8 @@ const ClientsPage: React.FC = () => {
 
   const handleSelectClient = (client: Client) => {
     setActiveClient(client);
-    router.push('/dashboard');
+    // Use router.replace to avoid navigation history issues
+    router.replace('/dashboard');
   };
 
   const handleDeleteClient = () => {
@@ -103,13 +115,10 @@ const ClientsPage: React.FC = () => {
             <Typography variant="h4">
               Clients
             </Typography>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={handleCreateClient}
-            >
+            <AnimatedActionButton onClick={handleCreateClient}>
+              <AddIcon sx={{ mr: 1 }} />
               Add Client
-            </Button>
+            </AnimatedActionButton>
           </Box>
 
           <TextField
@@ -129,9 +138,9 @@ const ClientsPage: React.FC = () => {
 
         {isLoading && (
           <Grid container spacing={3}>
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3, 4, 5, 6].map((i) => (
               <Grid item xs={12} sm={6} md={4} key={i}>
-                <LoadingSkeleton variant="card" />
+                <CardSkeleton height={300} />
               </Grid>
             ))}
           </Grid>
@@ -145,27 +154,22 @@ const ClientsPage: React.FC = () => {
           />
         )}
 
-        {!isLoading && !error && filteredClients.length === 0 && (
+        {!isLoading && !error && filteredClients.length === 0 && !searchTerm && (
+          <EmptyClients onAddClient={handleCreateClient} />
+        )}
+
+        {!isLoading && !error && filteredClients.length === 0 && searchTerm && (
           <Box textAlign="center" py={8}>
-            <BusinessIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+            <SearchIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
             <Typography variant="h6" color="text.secondary" gutterBottom>
-              {searchTerm ? 'No clients found' : 'No clients yet'}
+              No clients found for "{searchTerm}"
             </Typography>
             <Typography variant="body2" color="text.secondary" paragraph>
-              {searchTerm 
-                ? 'Try adjusting your search criteria' 
-                : 'Create your first client to get started'}
+              Try adjusting your search criteria or create a new client
             </Typography>
-            {!searchTerm && (
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={handleCreateClient}
-                sx={{ mt: 2 }}
-              >
-                Create First Client
-              </Button>
-            )}
+            <AnimatedActionButton onClick={() => setSearchTerm('')}>
+              Clear Search
+            </AnimatedActionButton>
           </Box>
         )}
 

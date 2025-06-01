@@ -43,30 +43,6 @@ export default async function handler(
                           process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
                           !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('demo.supabase.co');
 
-  // For testing - allow specific credentials when Supabase is not configured
-  if (email === 'tomh@redbaez.com' && password === 'Wijlre2010') {
-    const mockUser = {
-      id: 'test-user-123',
-      email: email,
-      name: 'Tom H',
-      token: 'mock-jwt-token',
-      role: 'admin',
-    };
-
-    // Set cookie
-    const maxAge = 7 * 24 * 60 * 60; // 7 days
-    const cookieSettings = `HttpOnly; SameSite=Lax; Max-Age=${maxAge}; Path=/`;
-
-    res.setHeader('Set-Cookie', [
-      `airwave_token=${mockUser.token}; ${cookieSettings}`,
-      `airwave_refresh_token=mock-refresh-token; ${cookieSettings}`
-    ]);
-
-    return res.status(200).json({
-      success: true,
-      user: mockUser,
-    });
-  }
 
   // If Supabase is not properly configured, return error
   if (!hasValidSupabase) {

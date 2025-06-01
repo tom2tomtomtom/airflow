@@ -149,42 +149,218 @@ const ExecutePage: React.FC = () => {
     
     // Start execution if immediate
     if (scheduleType === 'immediate') {
-      simulateExecution(newTask.id);
+      executeRealCampaign(newTask.id);
     }
   };
 
-  const simulateExecution = (taskId: string) => {
+  const executeRealCampaign = async (taskId: string) => {
     setExecutingTask(taskId);
     
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 10;
+    try {
+      const task = executionTasks.find(t => t.id === taskId);
+      if (!task) {
+        throw new Error('Task not found');
+      }
+
+      // Update task status to in_progress
       setExecutionTasks(prev =>
-        prev.map(task =>
-          task.id === taskId
-            ? {
-                ...task,
-                status: progress < 100 ? 'in_progress' : 'completed',
-                progress,
-                assets: task.assets.map((asset, index) => ({
-                  ...asset,
-                  status: progress > (index + 1) * (100 / task.assets.length)
-                    ? 'published'
-                    : progress > index * (100 / task.assets.length)
-                    ? 'processing'
-                    : 'ready',
-                })),
-              }
-            : task
+        prev.map(t =>
+          t.id === taskId
+            ? { ...t, status: 'in_progress', progress: 5 }
+            : t
         )
       );
 
-      if (progress >= 100) {
-        clearInterval(interval);
-        setExecutingTask(null);
-        showNotification('Campaign executed successfully!', 'success');
+      // Process each asset for video rendering
+      const updatedAssets = [];
+      
+      for (let i = 0; i < task.assets.length; i++) {
+        const asset = task.assets[i];
+        
+        try {
+          // Update asset status to processing
+          setExecutionTasks(prev =>
+            prev.map(t =>
+              t.id === taskId
+                ? {
+                    ...t,
+                    progress: 10 + (i * 80) / task.assets.length,
+                    assets: t.assets.map((a, idx) =>
+                      idx === i
+                        ? { ...a, status: 'processing' }
+                        : idx < i
+                        ? { ...a, status: 'published' }
+                        : a
+                    ),
+                  }
+                : t
+            )
+          );
+
+          // Render video using Creatomate API
+          const renderResponse = await fetch('/api/creatomate/renders', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              template_id: asset.templateId || 'default-template',
+              modifications: {
+                'text-1': {
+                  text: asset.name,
+                },
+                'text-2': {
+                  text: task.campaignName,
+                },
+                // Add more modifications based on asset data
+              },
+              webhook_url: `${window.location.origin}/api/webhooks/creatomate`,
+              metadata: {
+                taskId,
+                assetId: asset.id,
+                campaignId: task.campaignId,
+              },
+            }),
+          });
+
+          if (!renderResponse.ok) {
+            throw new Error(`Failed to start render for ${asset.name}`);
+          }
+
+          const renderData = await renderResponse.json();
+          
+          if (renderData.success) {
+            updatedAssets.push({
+              ...asset,
+              renderId: renderData.data.id,
+              status: 'processing' as const,
+            });
+
+            // Poll for completion
+            await pollRenderStatus(taskId, i, renderData.data.id);
+          } else {
+            throw new Error(renderData.error || 'Failed to start render');
+          }
+        } catch (error) {
+          console.error(`Error processing asset ${asset.name}:`, error);
+          
+          // Mark asset as failed but continue with others
+          setExecutionTasks(prev =>
+            prev.map(t =>
+              t.id === taskId
+                ? {
+                    ...t,
+                    assets: t.assets.map((a, idx) =>
+                      idx === i ? { ...a, status: 'failed' } : a
+                    ),
+                  }
+                : t
+            )
+          );
+        }
       }
-    }, 500);
+
+      // Mark task as completed
+      setExecutionTasks(prev =>
+        prev.map(t =>
+          t.id === taskId
+            ? { ...t, status: 'completed', progress: 100 }
+            : t
+        )
+      );
+
+      setExecutingTask(null);
+      showNotification('Campaign execution completed!', 'success');
+      
+    } catch (error) {
+      console.error('Error executing campaign:', error);
+      
+      // Mark task as failed
+      setExecutionTasks(prev =>
+        prev.map(t =>
+          t.id === taskId
+            ? { ...t, status: 'failed', progress: 0 }
+            : t
+        )
+      );
+      
+      setExecutingTask(null);
+      showNotification('Campaign execution failed. Please try again.', 'error');
+    }
+  };
+
+  const pollRenderStatus = async (taskId: string, assetIndex: number, renderId: string) => {
+    const maxPolls = 120; // 10 minutes max (5 second intervals)
+    let pollCount = 0;
+
+    const poll = async (): Promise<void> => {
+      if (pollCount >= maxPolls) {
+        console.warn(`Render ${renderId} timed out after ${maxPolls * 5} seconds`);
+        return;
+      }
+
+      try {
+        const statusResponse = await fetch(`/api/creatomate/renders?id=${renderId}`, {
+          method: 'GET',
+        });
+
+        if (!statusResponse.ok) {
+          throw new Error('Failed to get render status');
+        }
+
+        const statusData = await statusResponse.json();
+        
+        if (statusData.success) {
+          const renderStatus = statusData.data;
+          
+          if (renderStatus.status === 'completed') {
+            // Update asset as published with video URL
+            setExecutionTasks(prev =>
+              prev.map(t =>
+                t.id === taskId
+                  ? {
+                      ...t,
+                      assets: t.assets.map((a, idx) =>
+                        idx === assetIndex
+                          ? { ...a, status: 'published', videoUrl: renderStatus.url }
+                          : a
+                      ),
+                    }
+                  : t
+              )
+            );
+            return;
+          } else if (renderStatus.status === 'failed') {
+            setExecutionTasks(prev =>
+              prev.map(t =>
+                t.id === taskId
+                  ? {
+                      ...t,
+                      assets: t.assets.map((a, idx) =>
+                        idx === assetIndex
+                          ? { ...a, status: 'failed' }
+                          : a
+                      ),
+                    }
+                  : t
+              )
+            );
+            return;
+          }
+          
+          // Still processing, continue polling
+          pollCount++;
+          setTimeout(poll, 5000); // Check again in 5 seconds
+        }
+      } catch (error) {
+        console.error('Error polling render status:', error);
+        pollCount++;
+        setTimeout(poll, 5000);
+      }
+    };
+
+    // Start polling
+    setTimeout(poll, 5000); // First check after 5 seconds
   };
 
   const handleExport = () => {
