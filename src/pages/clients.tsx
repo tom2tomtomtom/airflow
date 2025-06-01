@@ -227,7 +227,7 @@ const ClientsPage: React.FC = () => {
                       bgcolor: 'background.paper',
                       '&:hover': { bgcolor: 'background.paper' },
                     }}
-                    onClick={(e: React.ClickEvent<HTMLElement>) => {
+                    onClick={(e: React.MouseEvent<HTMLElement>) => {
                       e.stopPropagation();
                       handleMenuOpen(e, client);
                     }}
@@ -271,7 +271,7 @@ const ClientsPage: React.FC = () => {
                 <CardActions>
                   <Button
                     size="small"
-                    onClick={(e: React.ClickEvent<HTMLElement>) => {
+                    onClick={(e: React.MouseEvent<HTMLElement>) => {
                       e.stopPropagation();
                       handleSelectClient(client);
                     }}
@@ -282,7 +282,7 @@ const ClientsPage: React.FC = () => {
                   {client.website && (
                     <IconButton
                       size="small"
-                      onClick={(e: React.ClickEvent<HTMLElement>) => {
+                      onClick={(e: React.MouseEvent<HTMLElement>) => {
                         e.stopPropagation();
                         window.open(client.website, '_blank');
                       }}

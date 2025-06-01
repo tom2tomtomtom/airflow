@@ -189,7 +189,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
 
   // Check for auth token in cookies (secure) or headers (for API calls)
-  const tokenFromCookie = request.cookies.get('auth_token')?.value;
+  const tokenFromCookie = request.cookies.get('airwave_token')?.value;
   const tokenFromHeader = request.headers.get('authorization')?.replace('Bearer ', '');
   const token = tokenFromCookie || tokenFromHeader;
 
@@ -274,7 +274,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       : redirectToLogin(request);
 
     // Clear the invalid token
-    errorResponse.cookies.delete('auth_token');
+    errorResponse.cookies.delete('airwave_token');
     
     return errorResponse;
   }

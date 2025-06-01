@@ -60,7 +60,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       } catch (error) {
     const message = getErrorMessage(error);
-        console.error('Authentication error:', error);
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Authentication error:', error);
+        }
         if (typeof window !== 'undefined') {
           localStorage.removeItem('airwave_user');
         }
@@ -72,7 +74,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Add timeout to prevent infinite loading
     const timeoutId = setTimeout(() => {
-      console.warn('Auth check timeout, setting loading to false');
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Auth check timeout, setting loading to false');
+      }
       setLoading(false);
     }, 5000); // 5 second timeout
 
@@ -172,27 +176,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // Logout function
-  const logout = async () => {
-    try {
-      // Call logout API to clear cookies
-      await fetch('/api/auth/logout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-    } catch (error) {
-      console.error('Logout API error:', error);
-    } finally {
-      // Clear local storage regardless of API call result
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('airwave_user');
-        localStorage.removeItem('airwave_active_client');
-        localStorage.removeItem('airwave_clients');
-      }
-      setUser(null);
-      router.push('/login');
+  const logout = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('airwave_user');
+      localStorage.removeItem('airwave_active_client');
+      localStorage.removeItem('airwave_clients');
     }
+    setUser(null);
+    router.push('/login');
   };
 
   return (
