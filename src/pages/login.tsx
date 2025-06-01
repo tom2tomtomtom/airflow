@@ -46,7 +46,10 @@ const LoginPage: React.FC = () => {
       
       // Redirect to intended page after successful login
       const from = router.query.from as string;
-      router.push(from || '/dashboard');
+      const redirectTo = from && from !== '/login' ? from : '/dashboard';
+      
+      // Use window.location to avoid Next.js router issues with middleware
+      window.location.href = redirectTo;
     } catch (err) {
       setError('Invalid email or password');
     } finally {

@@ -280,14 +280,21 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
 
 function redirectToLogin(request: NextRequest): NextResponse {
   const url = request.nextUrl.clone();
+  
+  // Prevent infinite redirect loops
+  if (url.pathname === '/login') {
+    return NextResponse.next();
+  }
+  
   url.pathname = '/login';
   
-  // Preserve the original URL for redirect after login
-  if (request.nextUrl.pathname !== '/') {
+  // Preserve the original URL for redirect after login (but don't redirect if already on login)
+  if (request.nextUrl.pathname !== '/' && request.nextUrl.pathname !== '/login') {
     url.searchParams.set('from', request.nextUrl.pathname + request.nextUrl.search);
   }
   
   const response = NextResponse.redirect(url);
+  response.cookies.delete('airwave_token');
   response.cookies.delete('auth_token');
   
   return response;
