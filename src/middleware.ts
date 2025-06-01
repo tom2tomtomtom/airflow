@@ -177,8 +177,11 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   const isStaticAsset = pathname.startsWith('/_next') || 
     pathname.startsWith('/favicon') || 
     pathname.includes('.');
+  
+  // Let API routes handle their own authentication via withAuth middleware
+  const isApiRoute = pathname.startsWith('/api');
     
-  if (isPublicRoute || isStaticAsset) {
+  if (isPublicRoute || isStaticAsset || isApiRoute) {
     return response;
   }
 
