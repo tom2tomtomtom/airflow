@@ -104,143 +104,19 @@ interface GeneratedVoice {
 }
 
 // Mock data for motivations
-const mockMotivations: Motivation[] = [
-  {
-    id: 'm1',
-    title: 'Sustainable Weight Loss Journey',
-    description: 'Focus on the long-term benefits of sustainable weight loss practices, emphasizing lifestyle changes over quick fixes. Appeal to customers seeking lasting results.',
-    relevanceScore: 4.5,
-    selected: true,
-  },
-  {
-    id: 'm2',
-    title: 'Science-Backed Solutions',
-    description: 'Highlight the scientific research and evidence supporting our weight loss programs. Appeal to analytical customers who value proven methods.',
-    relevanceScore: 4.8,
-    selected: true,
-  },
-  {
-    id: 'm3',
-    title: 'Community Support',
-    description: 'Emphasize the community aspect of weight loss, including group support, shared experiences, and the journey with like-minded individuals.',
-    relevanceScore: 3.9,
-    selected: false,
-  },
-  {
-    id: 'm4',
-    title: 'Personal Transformation',
-    description: 'Focus on the holistic transformation beyond weight loss, including improved confidence, energy levels, and overall quality of life.',
-    relevanceScore: 4.2,
-    selected: true,
-  },
-  {
-    id: 'm5',
-    title: 'Expert Guidance',
-    description: 'Highlight the professional support from nutritionists, fitness experts, and health coaches that guide customers through their weight loss journey.',
-    relevanceScore: 4.0,
-    selected: true,
-  },
-];
+const mockMotivations: any[] = []; // Cleaned: was mock data
 
 // Mock data for copy variations
-const mockCopyVariations: CopyVariation[] = [
-  {
-    id: 'c1',
-    text: 'Transform your life with our science-backed weight loss program, designed for sustainable results that last.',
-    motivationId: 'm1',
-    favorite: true,
-  },
-  {
-    id: 'c2',
-    text: 'Achieve lasting weight loss with methods validated by scientific research and expert nutritionists.',
-    motivationId: 'm2',
-    favorite: false,
-  },
-  {
-    id: 'c3',
-    text: 'Experience the difference of our sustainable approach to weight loss, where healthy habits replace quick fixes.',
-    motivationId: 'm1',
-    favorite: false,
-  },
-  {
-    id: 'c4',
-    text: 'Backed by science, supported by experts. Our weight loss program delivers results you can measure and maintain.',
-    motivationId: 'm2',
-    favorite: true,
-  },
-];
+const mockCopyVariations: any[] = []; // Cleaned: was mock data
 
 // Mock data for generated images
-const mockGeneratedImages: GeneratedImage[] = [
-  {
-    id: 'img1',
-    url: '/mock-images/weight-loss-1.jpg',
-    prompt: 'A person celebrating their weight loss journey, showing before and after transformation',
-    style: 'Photorealistic',
-    aspectRatio: '1:1',
-    dateCreated: '2023-05-15T10:30:00Z',
-    favorite: true,
-  },
-  {
-    id: 'img2',
-    url: '/mock-images/weight-loss-2.jpg',
-    prompt: 'A nutritionist explaining a healthy meal plan to a client',
-    style: 'Cinematic',
-    aspectRatio: '16:9',
-    dateCreated: '2023-05-15T11:15:00Z',
-    favorite: false,
-  },
-];
+const mockGeneratedImages: any[] = []; // Cleaned: was mock data
 
 // Mock data for generated videos
-const mockGeneratedVideos: GeneratedVideo[] = [
-  {
-    id: 'vid1',
-    url: '/mock-videos/weight-loss-journey.mp4',
-    thumbnail: '/mock-videos/weight-loss-journey-thumb.jpg',
-    prompt: 'A montage showing a person\'s weight loss journey over 3 months',
-    duration: '00:30',
-    resolution: '1080p',
-    dateCreated: '2023-05-16T09:45:00Z',
-    status: 'completed',
-    favorite: true,
-  },
-  {
-    id: 'vid2',
-    url: '/mock-videos/nutrition-tips.mp4',
-    thumbnail: '/mock-videos/nutrition-tips-thumb.jpg',
-    prompt: 'A nutritionist sharing 5 quick tips for healthy eating habits',
-    duration: '00:45',
-    resolution: '720p',
-    dateCreated: '2023-05-16T10:30:00Z',
-    status: 'processing',
-    favorite: false,
-  },
-];
+const mockGeneratedVideos: any[] = []; // Cleaned: was mock data
 
 // Mock data for generated voices
-const mockGeneratedVoices: GeneratedVoice[] = [
-  {
-    id: 'voice1',
-    url: '/mock-voices/weight-loss-intro.mp3',
-    text: 'Welcome to your sustainable weight loss journey. Our science-backed approach focuses on long-term results through healthy lifestyle changes.',
-    voice: 'Emma',
-    language: 'English (US)',
-    duration: '00:15',
-    dateCreated: '2023-05-17T14:20:00Z',
-    favorite: true,
-  },
-  {
-    id: 'voice2',
-    url: '/mock-voices/expert-advice.mp3',
-    text: 'Our team of certified nutritionists and fitness experts will guide you through every step of your personalized weight loss program.',
-    voice: 'James',
-    language: 'English (UK)',
-    duration: '00:12',
-    dateCreated: '2023-05-17T14:35:00Z',
-    favorite: false,
-  },
-];
+const mockGeneratedVoices: any[] = []; // Cleaned: was mock data
 
 const GenerateEnhancedPage: React.FC = () => {
   const router = useRouter();
