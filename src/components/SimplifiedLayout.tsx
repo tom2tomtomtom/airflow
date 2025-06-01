@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
-=======
-import React, { useState } from 'react';
->>>>>>> 67032892723b6c3baa991a25bfc2a82ec06c4641
 import {
   Box,
   AppBar,
@@ -30,10 +26,7 @@ import {
 } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import { SimplifiedNavigation } from './SimplifiedNavigation';
-<<<<<<< HEAD
 import { GlobalSearch } from './GlobalSearch';
-=======
->>>>>>> 67032892723b6c3baa991a25bfc2a82ec06c4641
 import { useAuth } from '@/contexts/AuthContext';
 
 interface SimplifiedLayoutProps {
@@ -54,7 +47,6 @@ export const SimplifiedLayout: React.FC<SimplifiedLayoutProps> = ({
   
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(null);
-<<<<<<< HEAD
   const [searchOpen, setSearchOpen] = useState(false);
 
   // Global keyboard shortcut for search (Ctrl+K)
@@ -69,8 +61,6 @@ export const SimplifiedLayout: React.FC<SimplifiedLayoutProps> = ({
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
-=======
->>>>>>> 67032892723b6c3baa991a25bfc2a82ec06c4641
 
   const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setUserMenuAnchor(event.currentTarget);

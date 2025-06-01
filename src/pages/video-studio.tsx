@@ -35,7 +35,7 @@ import {
   Error as ErrorIcon,
   PlayArrow as PlayArrowIcon,
   Assessment as AssessmentIcon,
-  SmartToy as ,
+  SmartToy as SmartToyIcon,
   Campaign as CampaignIcon,
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
