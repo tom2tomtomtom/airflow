@@ -425,8 +425,4 @@ export const ShimmerSkeleton: React.FC<{
       borderRadius: variant === 'circular' ? '50%' : variant === 'text' ? 1 : 2,
     }}
   />
-<<<<<<< HEAD
 );
-=======
-);
->>>>>>> 67032892723b6c3baa991a25bfc2a82ec06c4641

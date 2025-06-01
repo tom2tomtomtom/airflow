@@ -441,7 +441,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
             <Grid container spacing={3} sx={{ mb: 4 }}>
               <Grid item xs={12} sm={6} md={3}>
                 <Card>
-                  < sx={{ textAlign: 'center' }}>
+                  <CardContent sx={{ textAlign: 'center' }}>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
                       Click-Through Rate
                     </Typography>
@@ -457,7 +457,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
 
               <Grid item xs={12} sm={6} md={3}>
                 <Card>
-                  < sx={{ textAlign: 'center' }}>
+                  <CardContent sx={{ textAlign: 'center' }}>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
                       Conversion Rate
                     </Typography>
@@ -473,7 +473,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
 
               <Grid item xs={12} sm={6} md={3}>
                 <Card>
-                  < sx={{ textAlign: 'center' }}>
+                  <CardContent sx={{ textAlign: 'center' }}>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
                       Cost Per Click
                     </Typography>
@@ -489,7 +489,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
 
               <Grid item xs={12} sm={6} md={3}>
                 <Card>
-                  < sx={{ textAlign: 'center' }}>
+                  <CardContent sx={{ textAlign: 'center' }}>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
                       Performance Score
                     </Typography>
@@ -635,7 +635,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                         <Grid container spacing={3}>
                           <Grid item xs={12} sm={6} md={3}>
                             <Card>
-                              < sx={{ textAlign: 'center' }}>
+                              <CardContent sx={{ textAlign: 'center' }}>
                                 <Typography variant="body2" color="text.secondary">
                                   Expected Impressions
                                 </Typography>
@@ -647,7 +647,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                           </Grid>
                           <Grid item xs={12} sm={6} md={3}>
                             <Card>
-                              < sx={{ textAlign: 'center' }}>
+                              <CardContent sx={{ textAlign: 'center' }}>
                                 <Typography variant="body2" color="text.secondary">
                                   Expected Conversions
                                 </Typography>
@@ -659,7 +659,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                           </Grid>
                           <Grid item xs={12} sm={6} md={3}>
                             <Card>
-                              < sx={{ textAlign: 'center' }}>
+                              <CardContent sx={{ textAlign: 'center' }}>
                                 <Typography variant="body2" color="text.secondary">
                                   Expected Spend
                                 </Typography>
@@ -671,7 +671,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                           </Grid>
                           <Grid item xs={12} sm={6} md={3}>
                             <Card>
-                              < sx={{ textAlign: 'center' }}>
+                              <CardContent sx={{ textAlign: 'center' }}>
                                 <Typography variant="body2" color="text.secondary">
                                   Confidence Level
                                 </Typography>
