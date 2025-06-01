@@ -40,7 +40,7 @@ export const getServiceSupabase = () => {
 };
 
 // Helper function to get user from token with better error handling
-export async function getUserFromToken(token: string): Promise<void> {
+export async function getUserFromToken(token: string): Promise<any> {
   if (!token) {
     throw new Error('Token is required');
   }
@@ -69,7 +69,7 @@ export async function getUserFromToken(token: string): Promise<void> {
 }
 
 // Helper function to get user profile with better error handling
-export async function getUserProfile(userId: string): Promise<void> {
+export async function getUserProfile(userId: string): Promise<any> {
   if (!userId) {
     throw new Error('User ID is required');
   }

@@ -148,12 +148,7 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
   
-  // Temporarily bypass auth middleware for production to fix dual auth conflict
-  if (process.env.NODE_ENV === 'production') {
-    let response = NextResponse.next();
-    response = addSecurityHeaders(response);
-    return response;
-  }
+  // SECURITY: Removed production auth bypass - authentication is now enforced in all environments
   
   // Create response object
   let response = NextResponse.next();
