@@ -516,7 +516,7 @@ const ExecutePage: React.FC = () => {
                               border: selectedCampaign?.id === campaign.id ? 2 : 0,
                               borderColor: 'primary.main',
                             }}
-                            onClick={() => setSelectedCampaign(campaign: any)}
+                            onClick={() => setSelectedCampaign(campaign)}
                           >
                             <CardContent>
                               <Typography variant="h6" gutterBottom>
@@ -626,7 +626,7 @@ const ExecutePage: React.FC = () => {
                         type="datetime-local"
                         fullWidth
                         value={scheduledDate}
-                        onChange={(e: React.ChangeEvent<HTMLElement>) => setScheduledDate(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setScheduledDate(e.target.value)}
                         sx={{ mb: 2 }}
                       />
                     )}
@@ -669,7 +669,7 @@ const ExecutePage: React.FC = () => {
               <Select
                 value={selectedExportFormat}
                 label="Export Format"
-                onChange={(e: React.ChangeEvent<HTMLElement>) => setSelectedExportFormat(e.target.value)}
+                onChange={(e: React.ChangeEvent<{ value: unknown }>) => setSelectedExportFormat(e.target.value as string)}
               >
                 {exportFormats.map(format => (
                   <MenuItem key={format.id} value={format.id}>

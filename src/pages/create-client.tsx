@@ -311,7 +311,7 @@ export default function CreateClient() {
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth required error={!formData.industry && activeStep > 0}>
                 <InputLabel>Industry</InputLabel>
-                <
+                <Select
                   name="industry"
                   value={formData.industry}
                   onChange={(e) => setFormData(prev => ({ ...prev, industry: e.target.value }))}
@@ -321,7 +321,7 @@ export default function CreateClient() {
                       {industry}
                     </MenuItem>
                   ))}
-                </TextField>
+                </Select>
               </FormControl>
             </Grid>
             
@@ -418,7 +418,7 @@ export default function CreateClient() {
                   
                   <Button
                     variant="outlined"
-                    startIcon={uploadingLogo ? < size={20} /> : <UploadIcon />}
+                    startIcon={uploadingLogo ? <CircularProgress size={20} /> : <UploadIcon />}
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploadingLogo}
                   >
@@ -544,13 +544,13 @@ export default function CreateClient() {
                         mb: 1 
                       }}
                       secondaryAction={
-                        < 
-                          edge="end" 
+                        <IconButton
+                          edge="end"
                           onClick={() => handleRemoveContact(contact.id)}
                           color="error"
                         >
                           <DeleteIcon />
-                        </TextField>
+                        </IconButton>
                       }
                     >
                       <ListItemIcon>
@@ -584,7 +584,7 @@ export default function CreateClient() {
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
                 <InputLabel>Voice & Tone</InputLabel>
-                <
+                <Select
                   name="voiceTone"
                   value={formData.voiceTone}
                   onChange={(e) => setFormData(prev => ({ ...prev, voiceTone: e.target.value }))}
@@ -594,7 +594,7 @@ export default function CreateClient() {
                       {tone}
                     </MenuItem>
                   ))}
-                </TextField>
+                </Select>
               </FormControl>
             </Grid>
             
@@ -707,7 +707,7 @@ export default function CreateClient() {
                       startIcon={index === steps.length - 1 ? <CheckIcon /> : undefined}
                     >
                       {loading ? (
-                        < size={20} />
+                        <CircularProgress size={20} />
                       ) : index === steps.length - 1 ? (
                         'Create Client'
                       ) : (

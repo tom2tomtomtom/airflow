@@ -277,8 +277,4 @@ const CleanDashboard: React.FC = () => {
   );
 };
 
-<<<<<<< HEAD
 export default CleanDashboard;
-=======
-export default CleanDashboard;
->>>>>>> 67032892723b6c3baa991a25bfc2a82ec06c4641
