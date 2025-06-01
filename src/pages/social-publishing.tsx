@@ -7,16 +7,18 @@ import {
   Typography,
   Button,
   Card,
+  CardContent,
   Tab,
   Tabs,
   Alert,
   Fab,
+  Badge,
 } from '@mui/material';
 import {
   Add as AddIcon,
   Publish as PublishIcon,
   Schedule as ScheduleIcon,
-  Analytics as ,
+  Analytics as AnalyticsIcon,
   Settings as SettingsIcon,
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
@@ -113,7 +115,7 @@ const SocialPublishingPage: React.FC = () => {
       <DashboardLayout title="Social Publishing">
         <Box textAlign="center" py={8}>
           <Typography variant="h6" color="text.secondary" gutterBottom>
-             a client to manage social publishing
+            Select a client to manage social publishing
           </Typography>
         </Box>
       </DashboardLayout>
@@ -145,7 +147,7 @@ const SocialPublishingPage: React.FC = () => {
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid item xs={12} sm={6} md={3}>
             <Card>
-              <>
+              <CardContent>
                 <Typography color="text.secondary" variant="body2" gutterBottom>
                   Connected Platforms
                 </Typography>
@@ -155,12 +157,12 @@ const SocialPublishingPage: React.FC = () => {
                 <Typography variant="body2" color="text.secondary">
                   {activePlatforms.length} active
                 </Typography>
-              </>
+              </CardContent>
             </Card>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <Card>
-              <>
+              <CardContent>
                 <Typography color="text.secondary" variant="body2" gutterBottom>
                   Scheduled Posts
                 </Typography>
@@ -170,12 +172,12 @@ const SocialPublishingPage: React.FC = () => {
                 <Typography variant="body2" color="text.secondary">
                   Next 7 days
                 </Typography>
-              </>
+              </CardContent>
             </Card>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <Card>
-              <>
+              <CardContent>
                 <Typography color="text.secondary" variant="body2" gutterBottom>
                   Posts Today
                 </Typography>
@@ -185,12 +187,12 @@ const SocialPublishingPage: React.FC = () => {
                 <Typography variant="body2" color="text.secondary">
                   Published
                 </Typography>
-              </>
+              </CardContent>
             </Card>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
             <Card>
-              <>
+              <CardContent>
                 <Typography color="text.secondary" variant="body2" gutterBottom>
                   Engagement Rate
                 </Typography>
@@ -200,7 +202,7 @@ const SocialPublishingPage: React.FC = () => {
                 <Typography variant="body2" color="text.secondary">
                   Last 30 days
                 </Typography>
-              </>
+              </CardContent>
             </Card>
           </Grid>
         </Grid>
@@ -219,18 +221,18 @@ const SocialPublishingPage: React.FC = () => {
                 icon={<SettingsIcon />} 
                 iconPosition="start"
               />
-              <Tab 
+              <Tab
                 label={
-                  < badgeContent={scheduledCount} color="primary">
+                  <Badge badgeContent={scheduledCount} color="primary">
                     Schedule
-                  </>
-                } 
-                icon={<ScheduleIcon />} 
+                  </Badge>
+                }
+                icon={<ScheduleIcon />}
                 iconPosition="start"
               />
-              <Tab 
-                label="Analytics" 
-                icon={< />} 
+              <Tab
+                label="Analytics"
+                icon={<AnalyticsIcon />}
                 iconPosition="start"
               />
             </Tabs>
