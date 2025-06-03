@@ -333,7 +333,18 @@ const GenerateEnhancedPage: React.FC = () => {
     setIsGeneratingCopy(true);
 
     try {
-      const token = localStorage.getItem('token');
+      // Get user from localStorage to access the token
+      const storedUser = localStorage.getItem('airwave_user');
+      if (!storedUser) {
+        setSnackbarMessage('User not authenticated');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+        setIsGeneratingCopy(false);
+        return;
+      }
+      
+      const user = JSON.parse(storedUser);
+      const token = user.token;
 
       // Generate copy for each selected motivation
       const newVariations: CopyVariation[] = [];
@@ -413,7 +424,18 @@ const GenerateEnhancedPage: React.FC = () => {
     setIsGeneratingMotivations(true);
 
     try {
-      const token = localStorage.getItem('token');
+      // Get user from localStorage to access the token
+      const storedUser = localStorage.getItem('airwave_user');
+      if (!storedUser) {
+        setSnackbarMessage('User not authenticated');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+        setIsGeneratingMotivations(false);
+        return;
+      }
+      
+      const user = JSON.parse(storedUser);
+      const token = user.token;
 
       const response = await fetch('/api/ai/generate', {
         method: 'POST',
@@ -510,7 +532,18 @@ const GenerateEnhancedPage: React.FC = () => {
     setIsGeneratingImages(true);
 
     try {
-      const token = localStorage.getItem('token');
+      // Get user from localStorage to access the token
+      const storedUser = localStorage.getItem('airwave_user');
+      if (!storedUser) {
+        setSnackbarMessage('User not authenticated');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+        setIsGeneratingImages(false);
+        return;
+      }
+      
+      const user = JSON.parse(storedUser);
+      const token = user.token;
 
       // Generate images sequentially (DALL-E API limit)
       const newImages: GeneratedImage[] = [];
@@ -601,7 +634,18 @@ const GenerateEnhancedPage: React.FC = () => {
     setIsGeneratingVideo(true);
 
     try {
-      const token = localStorage.getItem('token');
+      // Get user from localStorage to access the token
+      const storedUser = localStorage.getItem('airwave_user');
+      if (!storedUser) {
+        setSnackbarMessage('User not authenticated');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+        setIsGeneratingVideo(false);
+        return;
+      }
+      
+      const user = JSON.parse(storedUser);
+      const token = user.token;
 
       const response = await fetch('/api/ai/generate', {
         method: 'POST',
@@ -685,7 +729,18 @@ const GenerateEnhancedPage: React.FC = () => {
     setIsGeneratingVoice(true);
 
     try {
-      const token = localStorage.getItem('token');
+      // Get user from localStorage to access the token
+      const storedUser = localStorage.getItem('airwave_user');
+      if (!storedUser) {
+        setSnackbarMessage('User not authenticated');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+        setIsGeneratingVoice(false);
+        return;
+      }
+      
+      const user = JSON.parse(storedUser);
+      const token = user.token;
 
       const response = await fetch('/api/ai/generate', {
         method: 'POST',

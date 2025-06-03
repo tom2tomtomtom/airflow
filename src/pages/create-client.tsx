@@ -27,6 +27,7 @@ import {
   TextField,
   Select,
   CircularProgress,
+  IconButton,
 } from '@mui/material';
 import {
   Business as BusinessIcon,
@@ -252,14 +253,19 @@ export default function CreateClient() {
         isActive: true,
       };
 
-      // Create client in Supabase
-      const { data, error: supabaseError } = await supabase
-        .from('clients')
-        .insert([clientData])
-        .select()
-        .single();
+      // Create client through API endpoint instead of direct Supabase call
+      const response = await fetch('/api/clients', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(clientData),
+      });
 
-      if (supabaseError) throw supabaseError;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to create client');
+      }
 
       showNotification('Client created successfully!', 'success');
       router.push('/clients');
