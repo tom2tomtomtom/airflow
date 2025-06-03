@@ -37,6 +37,8 @@ import {
   Webhook as WebhookIcon,
   Share as SocialIcon,
   Search as SearchIcon,
+  LightMode as LightModeIcon,
+  DarkMode as DarkModeIcon,
 } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import ClientSelector from './ClientSelector';
@@ -44,6 +46,7 @@ import UserMenu from './UserMenu';
 import NotificationCenter from './realtime/NotificationCenter';
 import LiveCollaboration from './realtime/LiveCollaboration';
 import { GlobalSearch } from './GlobalSearch';
+import { useThemeMode } from '@/contexts/ThemeContext';
 
 const drawerWidth = 240;
 
@@ -78,6 +81,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
   const router = useRouter();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const { mode, toggleMode } = useThemeMode();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -98,21 +102,29 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
 
   const drawer = (
     <div>
-      <Toolbar>
-        <Typography 
-          variant="h6" 
-          noWrap 
-          component="div" 
-          className="carbon-text-gradient"
-          sx={{ 
-            fontWeight: 600, 
-            cursor: 'pointer',
-            fontSize: '1.5rem',
-          }}
-          onClick={() => router.push('/dashboard')}
-        >
-          AIrWAVE
-        </Typography>
+      <Toolbar sx={{ py: 2 }}>
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          width: '100%',
+          justifyContent: 'center'
+        }}>
+          <Typography 
+            variant="h5" 
+            noWrap 
+            component="div" 
+            className="text-gradient"
+            sx={{ 
+              fontWeight: 700, 
+              cursor: 'pointer',
+              fontSize: '1.75rem',
+              letterSpacing: '-0.02em',
+            }}
+            onClick={() => router.push('/dashboard')}
+          >
+            AIrWAVE
+          </Typography>
+        </Box>
       </Toolbar>
       <Divider />
       <List>
@@ -136,23 +148,41 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
                     setMobileOpen(false);
                   }
                 }}
+                className="floating-card"
                 sx={{
+                  mx: 1,
+                  borderRadius: 3,
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    paddingLeft: '20px',
+                  },
                   '&.Mui-selected': {
-                    backgroundColor: 'primary.light',
+                    background: (theme) => 
+                      theme.palette.mode === 'light' 
+                        ? 'linear-gradient(135deg, #7C3AED 0%, #EC4899 100%)'
+                        : 'linear-gradient(135deg, #A78BFA 0%, #F472B6 100%)',
+                    color: '#FFFFFF',
+                    '& .MuiListItemIcon-root': {
+                      color: '#FFFFFF',
+                    },
                     '&:hover': {
-                      backgroundColor: 'primary.light',
+                      opacity: 0.9,
                     },
                   },
                 }}
               >
-                <ListItemIcon>
-                  <Icon color={isActive ? 'primary' : 'inherit'} />
+                <ListItemIcon sx={{ 
+                  minWidth: 40,
+                  transition: 'transform 0.3s ease',
+                  ...(isActive && { transform: 'scale(1.1)' })
+                }}>
+                  <Icon />
                 </ListItemIcon>
                 <ListItemText 
                   primary={item.name}
                   primaryTypographyProps={{
-                    fontWeight: isActive ? 600 : 400,
-                    color: isActive ? 'primary.main' : 'inherit',
+                    fontWeight: isActive ? 600 : 500,
+                    fontSize: '0.95rem',
                   }}
                 />
               </ListItemButton>
@@ -168,14 +198,23 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
       <CssBaseline />
       <AppBar
         position="fixed"
+        className="glass-panel"
         sx={{
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
-          backgroundColor: 'background.paper',
+          background: (theme) => 
+            theme.palette.mode === 'light'
+              ? 'rgba(255, 255, 255, 0.7)'
+              : 'rgba(15, 22, 41, 0.6)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
           color: 'text.primary',
           boxShadow: 'none',
           borderBottom: '1px solid',
-          borderColor: 'divider',
+          borderColor: (theme) => 
+            theme.palette.mode === 'light'
+              ? 'rgba(124, 58, 237, 0.1)'
+              : 'rgba(167, 139, 250, 0.15)',
         }}
       >
         <Toolbar>
@@ -238,6 +277,27 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <ClientSelector variant="chip" />
             <LiveCollaboration compact />
+            <IconButton 
+              onClick={toggleMode}
+              sx={{ 
+                p: 1,
+                background: (theme) => 
+                  theme.palette.mode === 'light' 
+                    ? 'rgba(124, 58, 237, 0.1)'
+                    : 'rgba(167, 139, 250, 0.1)',
+                '&:hover': {
+                  background: (theme) => 
+                    theme.palette.mode === 'light' 
+                      ? 'rgba(124, 58, 237, 0.2)'
+                      : 'rgba(167, 139, 250, 0.2)',
+                  transform: 'rotate(180deg)',
+                },
+                transition: 'all 0.3s ease',
+              }}
+              title={mode === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+            >
+              {mode === 'light' ? <DarkModeIcon /> : <LightModeIcon />}
+            </IconButton>
             <NotificationCenter />
             <UserMenu />
           </Box>
@@ -260,8 +320,17 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
             '& .MuiDrawer-paper': { 
               boxSizing: 'border-box', 
               width: drawerWidth,
+              background: (theme) => 
+                theme.palette.mode === 'light'
+                  ? 'rgba(255, 255, 255, 0.7)'
+                  : 'rgba(15, 22, 41, 0.6)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
               borderRight: '1px solid',
-              borderColor: 'divider',
+              borderColor: (theme) => 
+                theme.palette.mode === 'light'
+                  ? 'rgba(255, 255, 255, 0.18)'
+                  : 'rgba(167, 139, 250, 0.2)',
             },
           }}
         >
@@ -274,8 +343,17 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
             '& .MuiDrawer-paper': { 
               boxSizing: 'border-box', 
               width: drawerWidth,
+              background: (theme) => 
+                theme.palette.mode === 'light'
+                  ? 'rgba(255, 255, 255, 0.7)'
+                  : 'rgba(15, 22, 41, 0.6)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
               borderRight: '1px solid',
-              borderColor: 'divider',
+              borderColor: (theme) => 
+                theme.palette.mode === 'light'
+                  ? 'rgba(255, 255, 255, 0.18)'
+                  : 'rgba(167, 139, 250, 0.2)',
             },
           }}
           open
@@ -287,10 +365,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
         component="main"
         sx={{ 
           flexGrow: 1, 
-          p: 3, 
+          p: 4, 
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           minHeight: '100vh',
-          backgroundColor: 'background.default',
+          background: 'transparent',
+          position: 'relative',
         }}
       >
         <Toolbar />

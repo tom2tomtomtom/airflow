@@ -322,39 +322,100 @@ export interface Database {
         Row: {
           id: string;
           name: string;
+          slug: string;
           description: string | null;
           industry: string | null;
           logo_url: string | null;
-          primary_color?: string | null;
-          secondary_color?: string | null;
+          primary_color: string | null;
+          secondary_color: string | null;
+          website: string | null;
+          social_media: Record<string, any> | null;
           brand_guidelines: Record<string, any> | null;
+          is_active: boolean;
+          created_by: string | null;
           created_at: string | null;
           updated_at: string | null;
         };
         Insert: {
           id?: string;
           name: string;
+          slug: string;
           description?: string | null;
           industry?: string | null;
           logo_url?: string | null;
           primary_color?: string | null;
           secondary_color?: string | null;
+          website?: string | null;
+          social_media?: Record<string, any> | null;
           brand_guidelines?: Record<string, any> | null;
+          is_active?: boolean;
+          created_by?: string | null;
           created_at?: string | null;
           updated_at?: string | null;
         };
         Update: {
           id?: string;
           name?: string;
+          slug?: string;
           description?: string | null;
           industry?: string | null;
           logo_url?: string | null;
           primary_color?: string | null;
           secondary_color?: string | null;
+          website?: string | null;
+          social_media?: Record<string, any> | null;
           brand_guidelines?: Record<string, any> | null;
+          is_active?: boolean;
+          created_by?: string | null;
           created_at?: string | null;
           updated_at?: string | null;
         };
+      };
+      client_contacts: {
+        Row: {
+          id: string;
+          client_id: string;
+          name: string;
+          role: string | null;
+          email: string | null;
+          phone: string | null;
+          is_primary: boolean;
+          is_active: boolean;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          client_id: string;
+          name: string;
+          role?: string | null;
+          email?: string | null;
+          phone?: string | null;
+          is_primary?: boolean;
+          is_active?: boolean;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          client_id?: string;
+          name?: string;
+          role?: string | null;
+          email?: string | null;
+          phone?: string | null;
+          is_primary?: boolean;
+          is_active?: boolean;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "client_contacts_client_id_fkey";
+            columns: ["client_id"];
+            referencedRelation: "clients";
+            referencedColumns: ["id"];
+          }
+        ];
       };
       content_variations: {
         Row: {
@@ -911,6 +972,7 @@ export type Asset = Tables<'assets'>;
 export type Brief = Tables<'briefs'>;
 export type CampaignAnalytics = Tables<'campaign_analytics'>;
 export type Client = Tables<'clients'>;
+export type ClientContact = Tables<'client_contacts'>;
 export type ContentVariation = Tables<'content_variations'>;
 export type CopyAsset = Tables<'copy_assets'>;
 export type CopyText = Tables<'copy_texts'>;

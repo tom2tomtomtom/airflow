@@ -61,9 +61,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
     let query = supabase
       .from('clients')
       .select(`
-        *,
-        client_contacts(*),
-        ${include_stats === 'true' ? `
+        *
+        ${include_stats === 'true' ? `,
           campaigns(count),
           assets(count),
           matrices(count)
@@ -99,6 +98,29 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
       throw error;
     }
 
+    // Fetch contacts separately for each client
+    const clientIds = clients?.map(c => c.id) || [];
+    let contactsMap: Record<string, any[]> = {};
+    
+    if (clientIds.length > 0) {
+      const { data: contacts, error: contactsError } = await supabase
+        .from('client_contacts')
+        .select('*')
+        .in('client_id', clientIds)
+        .eq('is_active', true);
+      
+      if (!contactsError && contacts) {
+        // Group contacts by client_id
+        contactsMap = contacts.reduce((acc, contact) => {
+          if (!acc[contact.client_id]) {
+            acc[contact.client_id] = [];
+          }
+          acc[contact.client_id].push(contact);
+          return acc;
+        }, {} as Record<string, any[]>);
+      }
+    }
+
     // Transform clients to match expected format
     const transformedClients = clients?.map(client => ({
       id: client.id,
@@ -115,7 +137,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
       isActive: client.is_active !== false,
       dateCreated: client.created_at,
       lastModified: client.updated_at,
-      contacts: client.client_contacts || [],
+      contacts: contactsMap[client.id] || [],
       // Include stats if requested
       ...(include_stats === 'true' && {
         stats: {

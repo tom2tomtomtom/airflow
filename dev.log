@@ -2,13 +2,486 @@
 > airwave@1.0.0 dev
 > next dev
 
- ⚠ Port 3000 is in use, using available port 3001 instead.
    ▲ Next.js 15.3.2
-   - Local:        http://localhost:3001
-   - Network:      http://192.168.68.117:3001
-   - Environments: .env
+   - Local:        http://localhost:3003
+   - Network:      http://192.168.68.117:3003
+   - Environments: .env.local, .env
    - Experiments (use with caution):
      ✓ optimizeCss
 
  ✓ Starting...
- ✓ Ready in 1551ms
+ ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
+ ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
+ ✓ Ready in 1385ms
+ ✓ Compiled /middleware in 215ms (246 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 1027ms (1498 modules)
+(node:28655) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Time 2.919208
+ GET / 200 in 1952ms
+Time 1.415083
+ GET / 200 in 219ms
+Time 1.032625
+ GET / 200 in 216ms
+ ○ Compiling /login ...
+ ✓ Compiled /login in 647ms (1673 modules)
+Time 1.342958
+ GET /login 200 in 1008ms
+Time 1.362292
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 231ms
+Time 1.142084
+ GET / 200 in 229ms
+Time 0.868958
+ GET / 200 in 215ms
+Time 1.608625
+ GET /login 200 in 232ms
+Time 1.564625
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 329ms
+Time 1.285459
+ GET /login? 200 in 252ms
+Time 1.170834
+ GET / 200 in 230ms
+Time 0.625917
+ GET / 200 in 212ms
+Time 0.956625
+ GET /login 200 in 221ms
+Time 2.843667
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 234ms
+ ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
+ ✓ Compiled in 363ms (1673 modules)
+Time 1.641042
+ GET / 200 in 390ms
+Time 0.564833
+ GET / 200 in 209ms
+Time 2.151
+ GET /login 200 in 278ms
+Time 1.642166
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 238ms
+Time 1.323708
+ GET / 200 in 232ms
+Time 0.657166
+ GET / 200 in 211ms
+Time 0.9235
+ GET /login 200 in 346ms
+Time 1.124458
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 231ms
+Time 1.316166
+ GET /login?from=%2Fdashboard 200 in 237ms
+Time 0.968042
+ GET /login?from=%2Fclients 200 in 220ms
+Time 2.266459
+ GET /login?from=%2Fassets 200 in 242ms
+Time 1.311375
+ GET /login?from=%2Fgenerate-enhanced 200 in 236ms
+ ✓ Compiled in 217ms (1667 modules)
+ ✓ Compiled in 690ms (1679 modules)
+ ✓ Compiled in 101ms (106 modules)
+ ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
+ ✓ Compiled in 207ms (177 modules)
+ ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
+ ✓ Compiled in 117ms (177 modules)
+ ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
+ ✓ Compiled in 206ms (177 modules)
+ ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
+ ✓ Compiled in 368ms (1605 modules)
+ ✓ Compiled in 212ms (1679 modules)
+ ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
+ ✓ Compiled in 583ms (177 modules)
+ ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
+ ✓ Compiled in 303ms (178 modules)
+ ✓ Compiled in 698ms (178 modules)
+ ✓ Compiled in 179ms (178 modules)
+ ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
+ ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
+ ✓ Compiled in 886ms (178 modules)
+ ✓ Compiled in 62ms (178 modules)
+ ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
+ ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
+ ✓ Compiled in 88ms (178 modules)
+ ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
+ ○ Compiling / ...
+ ✓ Compiled / in 1094ms (1685 modules)
+Time 0.627
+ GET / 200 in 1419ms
+Time 1.07325
+ GET / 200 in 212ms
+Time 4.916834
+ GET /login 200 in 308ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 2.2s (2151 modules)
+Time 0.689458
+ GET /_next/data/development/dashboard.json 200 in 2616ms
+ ○ Compiling /clients ...
+ ✓ Compiled /clients in 1343ms (2236 modules)
+Time 0.663041
+Time 0.367417
+ GET /avatars/mike.jpg 404 in 1771ms
+ GET /avatars/sarah.jpg 404 in 1761ms
+MUI Grid: The `item` prop has been removed and is no longer necessary. You can safely remove it.
+
+MUI Grid: The `xs` prop has been removed. See https://mui.com/material-ui/migration/upgrade-to-grid-v2/ for migration instructions.
+
+MUI Grid: The `sm` prop has been removed. See https://mui.com/material-ui/migration/upgrade-to-grid-v2/ for migration instructions.
+
+MUI Grid: The `md` prop has been removed. See https://mui.com/material-ui/migration/upgrade-to-grid-v2/ for migration instructions.
+
+Time 1.492125
+ GET /clients 200 in 1637ms
+Time 0.5465
+Time 0.372542
+ GET /avatars/mike.jpg 404 in 222ms
+ GET /avatars/sarah.jpg 404 in 219ms
+ ○ Compiling /generate-enhanced ...
+ ✓ Compiled /generate-enhanced in 1855ms (2328 modules)
+Time 1.065333
+ GET /generate-enhanced 200 in 2273ms
+Time 1.045292
+ GET /_next/data/development/login.json 200 in 246ms
+ ○ Compiling /assets ...
+ ✓ Compiled /assets in 1313ms (2596 modules)
+Time 1.644959
+ GET /assets 200 in 1870ms
+Time 1.513958
+ GET /_next/data/development/login.json 200 in 238ms
+Time 1.093958
+ GET / 200 in 236ms
+Time 2.01875
+ GET / 200 in 212ms
+Time 2.065667
+ GET /login 200 in 267ms
+Time 1.210916
+ GET /_next/data/development/dashboard.json 200 in 291ms
+Time 0.954041
+Time 0.357917
+ GET /avatars/mike.jpg 404 in 240ms
+ GET /avatars/sarah.jpg 404 in 239ms
+Time 1.525042
+ GET /clients 200 in 278ms
+Time 1.607084
+Time 0.397708
+ GET /avatars/mike.jpg 404 in 229ms
+ GET /avatars/sarah.jpg 404 in 229ms
+ ○ Compiling /create-client ...
+ ✓ Compiled /create-client in 2.7s (2323 modules)
+Time 0.685792
+Time 2.11425
+ GET /briefs 404 in 1163ms
+ GET /_next/data/development/create-client.json 200 in 3239ms
+ ✓ Compiled /generate-enhanced in 310ms (2404 modules)
+Time 0.517959
+Time 0.285958
+ GET /briefs 404 in 296ms
+Time 3.4105
+ GET / 200 in 322ms
+Time 0.6505
+ GET / 200 in 210ms
+Time 1.9975
+ GET /login 200 in 260ms
+Time 1.081458
+ GET /_next/data/development/dashboard.json 200 in 322ms
+Time 1.173833
+Time 0.642583
+ GET /avatars/mike.jpg 404 in 269ms
+ GET /avatars/sarah.jpg 404 in 257ms
+Time 0.818
+ GET /generate-enhanced 200 in 229ms
+ ○ Compiling /assets ...
+ ✓ Compiled /assets in 698ms (2570 modules)
+Time 1.380875
+Time 0.614916
+ GET /assets 200 in 1229ms
+ GET /_next/data/development/login.json 200 in 1130ms
+ ✓ Compiled /clients in 451ms (2596 modules)
+Time 1.561583
+Time 0.448875
+ GET /clients 200 in 847ms
+ GET /_next/data/development/login.json 200 in 826ms
+Time 1.189583
+Time 22.432
+ ○ Compiling /templates ...
+ GET /avatars/mike.jpg 404 in 1075ms
+ GET /avatars/sarah.jpg 404 in 1091ms
+ ✓ Compiled /templates in 6.9s (2618 modules)
+Time 1.47475
+ GET /templates 200 in 7372ms
+Time 0.491792
+Time 0.393375
+ GET /avatars/mike.jpg 404 in 477ms
+ GET /avatars/sarah.jpg 404 in 473ms
+ ○ Compiling /campaigns ...
+ ✓ Compiled /campaigns in 4.3s (2632 modules)
+Time 1.619291
+ GET /campaigns 200 in 4797ms
+Time 0.647042
+Time 0.333666
+ GET /avatars/mike.jpg 404 in 284ms
+ GET /avatars/sarah.jpg 404 in 280ms
+ ○ Compiling /matrix ...
+ ✓ Compiled /matrix in 4.5s (2710 modules)
+Time 1.604208
+ GET /matrix 200 in 4967ms
+Time 4.176542
+Time 0.41225
+ GET /avatars/mike.jpg 404 in 433ms
+ GET /avatars/sarah.jpg 404 in 431ms
+Time 1.271417
+ GET /dashboard 200 in 489ms
+Time 0.451708
+Time 0.442625
+ GET /avatars/mike.jpg 404 in 221ms
+ GET /avatars/sarah.jpg 404 in 219ms
+Time 0.807958
+Time 1.128958
+ GET /_next/data/development/generate-enhanced.json 200 in 385ms
+ GET /assets 200 in 368ms
+Time 1.064292
+ GET /_next/data/development/login.json 200 in 235ms
+Time 2.0855
+ GET /clients 200 in 374ms
+Time 1.121708
+Time 0.348167
+ GET /avatars/mike.jpg 404 in 245ms
+ GET /avatars/sarah.jpg 404 in 243ms
+Time 0.983958
+ GET /dashboard 200 in 239ms
+Time 1.466667
+Time 0.847542
+ GET /avatars/mike.jpg 404 in 300ms
+ GET /avatars/sarah.jpg 404 in 267ms
+Time 0.4075
+ GET / 200 in 219ms
+Time 0.502291
+ GET / 200 in 208ms
+Time 1.103625
+ GET /login 200 in 266ms
+Time 17.289125
+ GET /_next/data/development/dashboard.json 200 in 279ms
+Time 1.058583
+Time 0.288917
+ GET /avatars/mike.jpg 404 in 234ms
+ GET /avatars/sarah.jpg 404 in 232ms
+Time 0.529292
+ GET /generate-enhanced 200 in 257ms
+Time 0.634208
+ GET /_next/data/development/login.json 200 in 226ms
+Time 38.597333
+ GET / 200 in 508ms
+Time 0.474542
+ GET / 200 in 216ms
+Time 1.440792
+ GET /login 200 in 244ms
+Time 1.450875
+ GET /_next/data/development/dashboard.json 200 in 242ms
+Time 3.244041
+Time 0.384708
+ GET /avatars/mike.jpg 404 in 228ms
+ GET /avatars/sarah.jpg 404 in 223ms
+Time 0.326333
+ GET /generate-enhanced 200 in 211ms
+Time 1.424291
+ GET /_next/data/development/login.json 200 in 235ms
+Time 1.463625
+ GET / 200 in 230ms
+Time 0.696833
+ GET / 200 in 211ms
+Time 2.374416
+ GET /login 200 in 228ms
+Time 2.821
+ GET /_next/data/development/dashboard.json 200 in 228ms
+Time 0.345167
+Time 0.873958
+ GET /avatars/mike.jpg 404 in 222ms
+ GET /avatars/sarah.jpg 404 in 220ms
+Time 0.341833
+ GET /generate-enhanced 200 in 209ms
+Time 3.330125
+ GET /_next/data/development/login.json 200 in 347ms
+Time 9.212166
+ GET / 200 in 275ms
+Time 0.306042
+ GET / 200 in 230ms
+Time 69.874875
+ GET /login 200 in 326ms
+Time 0.996458
+ GET /_next/data/development/dashboard.json 200 in 283ms
+Time 0.731542
+Time 0.353584
+ GET /avatars/mike.jpg 404 in 232ms
+ GET /avatars/sarah.jpg 404 in 228ms
+Time 0.235875
+ GET /generate-enhanced 200 in 225ms
+Time 1.500041
+ GET /_next/data/development/login.json 200 in 254ms
+Time 4.420083
+ GET / 200 in 255ms
+Time 0.461167
+ GET / 200 in 214ms
+Time 16.365792
+ GET /login 200 in 303ms
+Time 0.8695
+ GET /_next/data/development/dashboard.json 200 in 238ms
+Time 1.0975
+Time 0.315417
+Time 0.301083
+ GET /avatars/mike.jpg 404 in 378ms
+ GET /avatars/sarah.jpg 404 in 262ms
+ GET /dashboard 200 in 254ms
+Time 0.33025
+Time 0.281292
+ GET /avatars/mike.jpg 404 in 222ms
+ GET /avatars/sarah.jpg 404 in 221ms
+Time 2.542541
+ GET /clients 200 in 487ms
+Time 0.440584
+Time 4.548125
+ GET /avatars/mike.jpg 404 in 248ms
+ GET /avatars/sarah.jpg 404 in 245ms
+Time 1.940375
+ GET /assets 200 in 280ms
+Time 2.481375
+ GET /_next/data/development/login.json 200 in 231ms
+Time 0.668625
+ GET /generate-enhanced 200 in 226ms
+Time 0.936541
+ GET /_next/data/development/login.json 200 in 244ms
+Time 1.488667
+ GET /campaigns 200 in 275ms
+Time 0.854291
+Time 0.314083
+ GET /avatars/mike.jpg 404 in 216ms
+ GET /avatars/sarah.jpg 404 in 214ms
+Time 1.723833
+ GET /templates 200 in 317ms
+Time 0.898959
+Time 0.284291
+ GET /avatars/sarah.jpg 404 in 226ms
+ GET /avatars/mike.jpg 404 in 229ms
+Time 1.217667
+ GET /matrix 200 in 246ms
+Time 2.369958
+Time 0.341875
+ GET /avatars/mike.jpg 404 in 229ms
+ GET /avatars/sarah.jpg 404 in 227ms
+Time 0.6005
+ GET /api/auth/me 404 in 215ms
+Time 2.2375
+ GET / 200 in 226ms
+Time 0.584041
+ GET / 200 in 243ms
+Time 0.961375
+ GET /login 200 in 234ms
+Time 1.740208
+ GET /_next/data/development/dashboard.json 200 in 233ms
+Time 0.3325
+Time 0.2695
+ GET /avatars/mike.jpg 404 in 224ms
+ GET /avatars/sarah.jpg 404 in 223ms
+Time 0.229625
+ GET /generate-enhanced 200 in 209ms
+Time 2.8145
+ GET /_next/data/development/login.json 200 in 233ms
+Time 1.034042
+ GET / 200 in 248ms
+Time 0.506541
+ GET / 200 in 212ms
+Time 1.856083
+ GET /login 200 in 245ms
+Time 2.616167
+ GET /_next/data/development/dashboard.json 200 in 246ms
+Time 0.290417
+Time 0.2365
+ GET /avatars/mike.jpg 404 in 258ms
+ GET /avatars/sarah.jpg 404 in 240ms
+Time 0.340708
+ GET /generate-enhanced 200 in 214ms
+Time 3.006333
+ GET /_next/data/development/login.json 200 in 411ms
+Time 0.935125
+ GET /_next/data/development/dashboard.json 200 in 283ms
+Time 1.412625
+Time 0.275375
+ GET /avatars/mike.jpg 404 in 378ms
+ GET /avatars/sarah.jpg 404 in 376ms
+Time 1.721708
+ GET / 200 in 410ms
+Time 0.331083
+ GET / 200 in 221ms
+Time 6.933667
+ GET /login 200 in 260ms
+Time 4.267708
+ GET /_next/data/development/dashboard.json 200 in 381ms
+Time 6.447542
+Time 0.291708
+ GET /avatars/mike.jpg 404 in 282ms
+ GET /avatars/sarah.jpg 404 in 263ms
+Time 3.047583
+ GET /_next/data/development/generate-enhanced.json 200 in 442ms
+Time 5.866458
+ GET /_next/data/development/login.json 200 in 259ms
+Time 1.377834
+ GET /dashboard 200 in 232ms
+Time 1.348375
+Time 0.427333
+ GET /avatars/mike.jpg 404 in 257ms
+ GET /avatars/sarah.jpg 404 in 253ms
+Time 5.963292
+ GET /_next/data/development/templates.json 200 in 548ms
+Time 0.35925
+Time 0.284208
+ GET /avatars/mike.jpg 404 in 226ms
+ GET /avatars/sarah.jpg 404 in 225ms
+Time 1.287083
+ GET /dashboard 200 in 231ms
+Time 1.659209
+Time 1.610375
+ GET /avatars/mike.jpg 404 in 380ms
+ GET /avatars/sarah.jpg 404 in 361ms
+Time 1.884
+ GET /_next/data/development/matrix.json 200 in 258ms
+Time 0.487417
+Time 0.709958
+ GET /avatars/mike.jpg 404 in 241ms
+ GET /avatars/sarah.jpg 404 in 239ms
+Time 0.865292
+ GET /dashboard 200 in 235ms
+Time 1.376125
+Time 0.350916
+ GET /avatars/mike.jpg 404 in 255ms
+ GET /avatars/sarah.jpg 404 in 253ms
+Time 1.6185
+ GET /_next/data/development/assets.json 200 in 240ms
+Time 1.707125
+ GET /_next/data/development/login.json 200 in 242ms
+ ✓ Compiled in 4.9s (2294 modules)
+ ✓ Compiled in 4.6s (2294 modules)
+ ✓ Compiled in 1724ms (2294 modules)
+ ✓ Compiled in 278ms (2294 modules)
+ ✓ Compiled in 256ms (2294 modules)
+ ✓ Compiled in 256ms (2294 modules)
+ ✓ Compiled in 391ms (2294 modules)
+ ✓ Compiled in 306ms (2294 modules)
+ ✓ Compiled in 253ms (2294 modules)
+ ✓ Compiled in 239ms (2294 modules)
+ ✓ Compiled in 435ms (2294 modules)
+ ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
+ ✓ Compiled in 36.6s (2293 modules)
+ ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
+ ✓ Compiled in 1022ms (2293 modules)
+ ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
+ ✓ Compiled in 4.3s (2296 modules)
+ ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
+ ✓ Compiled in 358ms (2296 modules)
+ ✓ Compiled in 3.4s (2296 modules)
+ ✓ Compiled in 387ms (2296 modules)
+ ✓ Compiled in 301ms (2296 modules)
+ ✓ Compiled in 955ms (2300 modules)
+ ✓ Compiled in 490ms (2300 modules)
+ ✓ Compiled in 261ms (2300 modules)
+ ✓ Compiled in 1026ms (2300 modules)
+ ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
+ ✓ Compiled in 790ms (729 modules)
+ ✓ Compiled in 159ms (729 modules)
+ ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
+ ✓ Compiled in 143ms (729 modules)
+ ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications

@@ -90,17 +90,35 @@ const AssetCard: React.FC<AssetCardProps> = ({
 
   return (
     <Card
-      variant="outlined"
+      className="floating-card"
       sx={{
         cursor: onClick ? 'pointer' : 'default',
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        transition: 'all 0.2s ease-in-out',
+        background: (theme) => 
+          theme.palette.mode === 'light'
+            ? 'rgba(255, 255, 255, 0.8)'
+            : 'rgba(15, 22, 41, 0.8)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        borderRadius: '24px',
+        border: '1px solid',
+        borderColor: (theme) => 
+          theme.palette.mode === 'light'
+            ? 'rgba(124, 58, 237, 0.1)'
+            : 'rgba(167, 139, 250, 0.15)',
+        boxShadow: (theme) => 
+          theme.palette.mode === 'light'
+            ? '0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04)'
+            : '0 8px 32px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.25)',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         '&:hover': onClick ? {
-          borderColor: 'primary.main',
-          boxShadow: '0 0 0 1px rgba(25, 118, 210, 0.5)',
-          transform: 'translateY(-2px)',
+          transform: 'translateY(-4px)',
+          boxShadow: (theme) => 
+            theme.palette.mode === 'light'
+              ? '0 12px 48px rgba(124, 58, 237, 0.15), 0 4px 12px rgba(0, 0, 0, 0.05)'
+              : '0 12px 48px rgba(167, 139, 250, 0.25), 0 4px 12px rgba(0, 0, 0, 0.3)',
         } : {},
       }}
       onClick={handleCardClick}

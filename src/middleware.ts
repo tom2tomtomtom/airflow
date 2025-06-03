@@ -1,26 +1,8 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextRequest, NextResponse } from 'next/server';
-import { jwtVerify } from 'jose';
-import type { JwtPayload } from '@/types/auth';
+import { updateSession } from '@/utils/supabase-middleware';
 
-// Security: Ensure JWT_SECRET is properly set
-const JWT_SECRET = process.env.JWT_SECRET;
-
-// Check if we're in Edge Functions build context or other build environments
-const isEdgeBuild = typeof EdgeRuntime !== 'undefined' || 
-                   process.env.NETLIFY || 
-                   process.env.VERCEL ||
-                   !JWT_SECRET;
-
-// Validate JWT_SECRET in production (skip during any build context)
-if (!JWT_SECRET && !isEdgeBuild && process.env.NODE_ENV === 'production') {
-  console.warn('JWT_SECRET environment variable is missing in production mode');
-}
-
-// In production runtime, ensure JWT_SECRET meets minimum security requirements
-if (JWT_SECRET && JWT_SECRET.length < 32 && !isEdgeBuild) {
-  console.warn('JWT_SECRET should be at least 32 characters long for security');
-}
+// No JWT_SECRET needed - using Supabase for authentication
 
 // Define public routes that don't require authentication
 const publicRoutes = [
@@ -31,6 +13,7 @@ const publicRoutes = [
   '/reset-password',
   '/verify-success',
   '/unauthorized',
+  '/test-auth',
   '/api/auth/csrf-token',
   '/api/auth/login',
   '/api/auth/signup',
@@ -150,8 +133,9 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   
   // SECURITY: Removed production auth bypass - authentication is now enforced in all environments
   
-  // Create response object
-  let response = NextResponse.next();
+  // Update session and get response
+  const { response: updatedResponse, user } = await updateSession(request);
+  let response = updatedResponse;
   
   // Add security headers to all responses
   response = addSecurityHeaders(response);
@@ -186,67 +170,28 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   }
 
 
-  // Check for auth token in cookies (secure) or headers (for API calls)
-  const tokenFromCookie = request.cookies.get('airwave_token')?.value;
-  const tokenFromHeader = request.headers.get('authorization')?.replace('Bearer ', '');
-  const token = tokenFromCookie || tokenFromHeader;
-
-
-  if (!token) {
-    // For API routes, return 401
-    if (pathname.startsWith('/api')) {
-      return NextResponse.json(
-        { success: false, message: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-    // For pages, redirect to login
-    return redirectToLogin(request);
-  }
-
   try {
-
-    // Verify real JWT tokens
-    if (!JWT_SECRET) {
-      // In Edge build context, allow the request to pass through
-      if (isEdgeBuild) {
-        return response;
+    // Check if user is authenticated
+    const hasSession = !!user;
+    
+    if (!hasSession) {
+      // For API routes, return 401
+      if (pathname.startsWith('/api')) {
+        return NextResponse.json(
+          { success: false, message: 'Authentication required' },
+          { status: 401 }
+        );
       }
-      throw new Error('JWT_SECRET not configured');
+      // For pages, redirect to login
+      return redirectToLogin(request);
     }
-
-    const secret = new TextEncoder().encode(JWT_SECRET);
-    const { payload } = await jwtVerify(token, secret, {
-      algorithms: ['HS256']
-    }) as { payload: JwtPayload };
-
-    // Validate payload structure
-    if (!payload.sub || !payload.role || !payload.exp) {
-      throw new Error('Invalid token structure');
-    }
-
-    // Check role-based access for protected routes
-    for (const [route, roles] of Object.entries(roleBasedRoutes)) {
-      if (pathname.startsWith(route) && !roles.includes(payload.role)) {
-        // For API routes, return 403
-        if (pathname.startsWith('/api')) {
-          return NextResponse.json(
-            { success: false, message: 'Insufficient permissions' },
-            { status: 403 }
-          );
-        }
-        // For pages, redirect to dashboard
-        return NextResponse.redirect(new URL('/dashboard', request.url));
-      }
-    }
-
-    // Add user info to headers for API routes
-    if (pathname.startsWith('/api')) {
+    
+    // User is authenticated - add user info to headers for API routes
+    if (pathname.startsWith('/api') && user) {
       const requestHeaders = new Headers(request.headers);
-      requestHeaders.set('x-user-id', payload.sub);
-      requestHeaders.set('x-user-role', payload.role);
-      requestHeaders.set('x-user-email', payload.email || '');
-
+      requestHeaders.set('x-user-id', user.id);
+      requestHeaders.set('x-user-email', user.email || '');
+      
       response = NextResponse.next({
         request: {
           headers: requestHeaders,
@@ -256,25 +201,22 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       // Re-apply security headers
       response = addSecurityHeaders(response);
     }
-
-    // Allow access to the requested page
+    
+    // IMPORTANT: Return the modified response to ensure cookies are set
     return response;
   } catch (error) {
-    const message = getErrorMessage(error);
-    console.error('Token verification failed:', error);
-
-    // Clear invalid token from cookies
-    const errorResponse = pathname.startsWith('/api') 
-      ? NextResponse.json(
-          { success: false, message: 'Invalid or expired token' },
-          { status: 401 }
-        )
-      : redirectToLogin(request);
-
-    // Clear the invalid token
-    errorResponse.cookies.delete('airwave_token');
+    console.error('Middleware error:', error);
     
-    return errorResponse;
+    // For API routes, return 401
+    if (pathname.startsWith('/api')) {
+      return NextResponse.json(
+        { success: false, message: 'Authentication error' },
+        { status: 401 }
+      );
+    }
+    
+    // For pages, redirect to login
+    return redirectToLogin(request);
   }
 }
 

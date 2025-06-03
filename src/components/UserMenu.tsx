@@ -15,14 +15,18 @@ import {
   Settings as SettingsIcon,
   Logout as LogoutIcon,
   Person as PersonIcon,
+  LightMode as LightModeIcon,
+  DarkMode as DarkModeIcon,
 } from '@mui/icons-material';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/router';
+import { useThemeMode } from '@/contexts/ThemeContext';
 
 const UserMenu: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const { user, logout } = useAuth();
   const router = useRouter();
+  const { mode, toggleMode } = useThemeMode();
   const open = Boolean(anchorEl);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -49,6 +53,12 @@ const UserMenu: React.FC = () => {
     e.stopPropagation();
     handleClose();
     router.push('/settings');
+  };
+
+  const handleThemeToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleMode();
+    handleClose();
   };
 
   return (
@@ -123,6 +133,15 @@ const UserMenu: React.FC = () => {
           </ListItemIcon>
           Settings
         </MenuItem>
+        
+        <MenuItem onClick={handleThemeToggle}>
+          <ListItemIcon>
+            {mode === 'light' ? <DarkModeIcon fontSize="small" /> : <LightModeIcon fontSize="small" />}
+          </ListItemIcon>
+          {mode === 'light' ? 'Dark Mode' : 'Light Mode'}
+        </MenuItem>
+        
+        <Divider />
         
         <MenuItem onClick={handleLogout} data-testid="logout-button">
           <ListItemIcon>

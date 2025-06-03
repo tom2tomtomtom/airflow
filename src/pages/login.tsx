@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import {
@@ -23,7 +23,7 @@ import {
 
 const LoginPage: React.FC = () => {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login } = useSupabaseAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -41,15 +41,22 @@ const LoginPage: React.FC = () => {
         return;
       }
 
-      // Use the AuthContext login function
-      await login(email, password);
+      // Use the Supabase login function
+      const result = await login(email, password);
       
-      // Redirect to intended page after successful login
-      const from = router.query.from as string;
-      const redirectTo = from && from !== '/login' ? from : '/dashboard';
-      
-      // Use window.location to avoid Next.js router issues with middleware
-      window.location.href = redirectTo;
+      if (result.success) {
+        // Redirect to intended page after successful login
+        const from = router.query.from as string;
+        const redirectTo = from && from !== '/login' ? from : '/dashboard';
+        
+        // Small delay to ensure auth state propagates
+        setTimeout(() => {
+          // Use router.replace to avoid back button issues
+          router.replace(redirectTo);
+        }, 100);
+      } else {
+        setError(result.error || 'Invalid email or password');
+      }
     } catch (err) {
       setError('Invalid email or password');
     } finally {

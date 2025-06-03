@@ -27,8 +27,9 @@ import {
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
 import { AnimatedActionButton } from '@/components/AnimatedComponents';
-import { useAuth } from '@/contexts/AuthContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import { useClient } from '@/contexts/ClientContext';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 
 interface QuickAction {
   title: string;
@@ -40,15 +41,8 @@ interface QuickAction {
 
 const DashboardPage = () => {
   const router = useRouter();
-  const { user, loading, isAuthenticated } = useAuth();
+  const { user } = useSupabaseAuth();
   const { activeClient } = useClient();
-
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!loading && !isAuthenticated) {
-      router.push('/login');
-    }
-  }, [loading, isAuthenticated, router]);
 
   // Quick actions for easy navigation
   const quickActions: QuickAction[] = [
@@ -82,26 +76,9 @@ const DashboardPage = () => {
     },
   ];
 
-  // Show loading or redirect if not authenticated
-  if (loading) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="100vh"
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return null; // Will redirect via useEffect
-  }
-
   return (
-    <DashboardLayout>
+    <ProtectedRoute>
+      <DashboardLayout>
       <Head>
         <title>Dashboard | AIrWAVE</title>
       </Head>
@@ -110,7 +87,7 @@ const DashboardPage = () => {
         {/* Welcome Section */}
         <Box mb={4}>
           <Typography variant="h4" gutterBottom>
-            Welcome back, {user?.name || 'User'}!
+            Welcome back, {user?.user_metadata?.name || user?.email || 'User'}!
           </Typography>
           <Typography variant="body1" color="text.secondary">
             {activeClient ? (
@@ -259,6 +236,7 @@ const DashboardPage = () => {
         </Grid>
       </Container>
     </DashboardLayout>
+    </ProtectedRoute>
   );
 };
 

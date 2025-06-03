@@ -144,6 +144,7 @@ export type {
   Brief,
   CampaignAnalytics,
   Client,
+  ClientContact,
   ContentVariation,
   CopyAsset,
   CopyText,

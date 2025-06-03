@@ -10,10 +10,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { SupabaseAuthProvider } from '@/contexts/SupabaseAuthContext';
+import { AuthRefreshHandler } from '@/components/AuthRefreshHandler';
 import { ClientProvider } from '@/contexts/ClientContext';
 import { NotificationProvider } from '@/contexts/NotificationContext';
 import createEmotionCache from '@/lib/createEmotionCache';
-import theme from '@/styles/theme';
+import { lightTheme, darkTheme } from '@/styles/theme';
+import { ThemeModeProvider, useThemeMode } from '@/contexts/ThemeContext';
 
 // Import CSS files in the correct order
 import '@/styles/globals.css';
@@ -41,6 +44,36 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+// Inner component that uses the theme mode
+function AppWithTheme(props: MyAppProps) {
+  const { Component, pageProps } = props;
+  const { mode } = useThemeMode();
+  const theme = mode === 'light' ? lightTheme : darkTheme;
+
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <ErrorBoundary>
+          <AuthProvider>
+            <SupabaseAuthProvider>
+              <ClientProvider>
+                <NotificationProvider>
+                  <AuthRefreshHandler />
+                  <Component {...pageProps} />
+                  {process.env.NODE_ENV === 'development' && (
+                    <ReactQueryDevtools initialIsOpen={false} />
+                  )}
+                </NotificationProvider>
+              </ClientProvider>
+            </SupabaseAuthProvider>
+          </AuthProvider>
+        </ErrorBoundary>
+      </LocalizationProvider>
+    </ThemeProvider>
+  );
+}
 
 function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
@@ -91,23 +124,9 @@ function MyApp(props: MyAppProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <ErrorBoundary>
-              <AuthProvider>
-                <ClientProvider>
-                  <NotificationProvider>
-                    <Component {...pageProps} />
-                    {process.env.NODE_ENV === 'development' && (
-                      <ReactQueryDevtools initialIsOpen={false} />
-                    )}
-                  </NotificationProvider>
-                </ClientProvider>
-              </AuthProvider>
-            </ErrorBoundary>
-          </LocalizationProvider>
-        </ThemeProvider>
+        <ThemeModeProvider>
+          <AppWithTheme {...props} />
+        </ThemeModeProvider>
       </QueryClientProvider>
     </CacheProvider>
   );

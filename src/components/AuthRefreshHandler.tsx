@@ -1,0 +1,91 @@
+import { useEffect, useRef } from 'react';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
+import { supabase } from '@/lib/supabase/client';
+
+/**
+ * Component to handle automatic token refresh
+ * Should be included in _app.tsx to run on all pages
+ */
+export function AuthRefreshHandler() {
+  const { session, refreshSession } = useSupabaseAuth();
+  const refreshTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (!session) {
+      // Clear any existing refresh timer
+      if (refreshTimerRef.current) {
+        clearTimeout(refreshTimerRef.current);
+        refreshTimerRef.current = null;
+      }
+      return;
+    }
+
+    // Calculate when to refresh (5 minutes before expiry)
+    const expiresAt = session.expires_at;
+    if (!expiresAt) return;
+
+    const expiryTime = expiresAt * 1000; // Convert to milliseconds
+    const currentTime = Date.now();
+    const timeUntilExpiry = expiryTime - currentTime;
+    const refreshTime = timeUntilExpiry - (5 * 60 * 1000); // 5 minutes before expiry
+
+    // If token expires in less than 5 minutes, refresh immediately
+    if (refreshTime <= 0) {
+      console.log('Token expiring soon, refreshing now...');
+      refreshSession();
+      return;
+    }
+
+    // Schedule refresh
+    console.log(`Scheduling token refresh in ${Math.round(refreshTime / 1000 / 60)} minutes`);
+    
+    refreshTimerRef.current = setTimeout(async () => {
+      console.log('Refreshing token...');
+      const result = await refreshSession();
+      
+      if (result.success) {
+        console.log('Token refreshed successfully');
+      } else {
+        console.error('Failed to refresh token:', result.error);
+      }
+    }, refreshTime);
+
+    // Cleanup on unmount or session change
+    return () => {
+      if (refreshTimerRef.current) {
+        clearTimeout(refreshTimerRef.current);
+        refreshTimerRef.current = null;
+      }
+    };
+  }, [session, refreshSession]);
+
+  // Also listen for visibility changes to refresh when tab becomes active
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible' && session) {
+        // Check if token needs refresh
+        const expiresAt = session.expires_at;
+        if (!expiresAt) return;
+
+        const expiryTime = expiresAt * 1000;
+        const currentTime = Date.now();
+        const timeUntilExpiry = expiryTime - currentTime;
+
+        // Refresh if less than 10 minutes until expiry
+        if (timeUntilExpiry < 10 * 60 * 1000) {
+          console.log('Tab became visible, refreshing token...');
+          await refreshSession();
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [session, refreshSession]);
+
+  // No UI needed
+  return null;
+}
