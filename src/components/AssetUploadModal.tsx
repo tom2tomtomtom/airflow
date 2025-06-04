@@ -1,4 +1,3 @@
-import { getErrorMessage } from '@/utils/errorUtils';
 import React, { useState, useCallback } from 'react';
 import {
   Dialog,
@@ -24,6 +23,7 @@ import {
   AudioFile,
 } from '@mui/icons-material';
 import { useDropzone } from 'react-dropzone';
+import { useNotification } from '@/contexts/NotificationContext';
 
 interface AssetUploadModalProps {
   open: boolean;
@@ -52,6 +52,7 @@ export const AssetUploadModal: React.FC<AssetUploadModalProps> = ({
   const [files, setFiles] = useState<FilePreview[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const { showNotification } = useNotification();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const newFiles = acceptedFiles.map((file) => ({
@@ -66,10 +67,11 @@ export const AssetUploadModal: React.FC<AssetUploadModalProps> = ({
     onDrop,
     accept: {
       'image/*': ['.png', '.jpg', '.jpeg', '.gif', '.webp'],
-      'video/*': ['.mp4', '.mov', '.avi'],
-      'audio/*': ['.mp3', '.wav', '.m4a'],
+      'video/*': ['.mp4', '.mov', '.avi', '.webm'],
+      'audio/*': ['.mp3', '.wav', '.m4a', '.ogg'],
     },
     multiple: true,
+    maxSize: 100 * 1024 * 1024, // 100MB
   });
 
   const removeFile = (index: number) => {
@@ -89,65 +91,50 @@ export const AssetUploadModal: React.FC<AssetUploadModalProps> = ({
         formData.append('files', filePreview.file);
       });
 
-      // Upload files with progress tracking
-      const xhr = new XMLHttpRequest();
-      
-      // Track upload progress
-      xhr.upload.addEventListener('progress', (e) => {
-        if (e.lengthComputable) {
-          const progress = Math.round((e.loaded / e.total) * 100);
-          setUploadProgress(progress);
-        }
-      });
-
-      // Handle completion
-      const uploadPromise = new Promise((resolve, reject) => {
-        xhr.onload = () => {
-          if (xhr.status === 200) {
-            resolve(JSON.parse(xhr.responseText));
-          } else {
-            reject(new Error(`Upload failed: ${xhr.statusText}`));
+      // Simulate progress for better UX
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
           }
-        };
-        xhr.onerror = () => reject(new Error('Upload failed'));
+          return prev + 10;
+        });
+      }, 200);
+
+      const response = await fetch('/api/assets/upload', {
+        method: 'POST',
+        body: formData,
       });
 
-      // Start upload
-      xhr.open('POST', '/api/assets/upload');
-      xhr.send(formData);
+      clearInterval(progressInterval);
+      setUploadProgress(100);
 
-      const result = await uploadPromise;
-      
-      // Success
-      setUploading(false);
-      setUploadProgress(0);
-      setFiles([]);
-      onUploadComplete?.();
-      onClose();
-      
-      if (process.env.NODE_ENV === 'development') {
-
-      
-        console.log('Successfully uploaded files:', result);
-
-      
+      if (!response.ok) {
+        throw new Error('Upload failed');
       }
-    } catch (error) {
-    const message = getErrorMessage(error);
-      setUploading(false);
-      setUploadProgress(0);
-      if (process.env.NODE_ENV === 'development') {
 
-        console.error('Upload failed:', error);
-
+      const result = await response.json();
+      
+      if (result.success) {
+        showNotification(`Successfully uploaded ${result.assets.length} file(s)!`, 'success');
+        if (onUploadComplete) onUploadComplete();
+        handleClose();
+      } else {
+        throw new Error(result.error || 'Upload failed');
       }
-      alert('Upload failed. Please try again.');
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      showNotification('Upload failed: ' + error.message, 'error');
+    } finally {
+      setUploading(false);
     }
   };
 
   const handleClose = () => {
     if (!uploading) {
       setFiles([]);
+      setUploadProgress(0);
       onClose();
     }
   };
@@ -161,10 +148,12 @@ export const AssetUploadModal: React.FC<AssetUploadModalProps> = ({
           disabled={uploading}
           sx={{ position: 'absolute', right: 8, top: 8 }}
           data-testid="close-upload-modal"
+          aria-label="Close upload modal"
         >
           <Close />
         </IconButton>
       </DialogTitle>
+      
       <DialogContent>
         <Box
           {...getRootProps()}
@@ -193,7 +182,7 @@ export const AssetUploadModal: React.FC<AssetUploadModalProps> = ({
             or click to browse files
           </Typography>
           <Typography variant="caption" color="text.secondary">
-            Supports: Images (PNG, JPG, WebP), Videos (MP4, MOV), Audio (MP3, WAV)
+            Supports: Images (PNG, JPG, WebP), Videos (MP4, MOV), Audio (MP3, WAV) • Max 100MB per file
           </Typography>
         </Box>
 
@@ -211,6 +200,7 @@ export const AssetUploadModal: React.FC<AssetUploadModalProps> = ({
                       size="small"
                       onClick={() => removeFile(index)}
                       disabled={uploading}
+                      aria-label="Remove file"
                     >
                       <Close />
                     </IconButton>
@@ -221,7 +211,7 @@ export const AssetUploadModal: React.FC<AssetUploadModalProps> = ({
                   </ListItemIcon>
                   <ListItemText
                     primary={filePreview.file.name}
-                    secondary={`${(filePreview.file.size / 1024 / 1024).toFixed(2)} MB`}
+                    secondary={`${(filePreview.file.size / 1024 / 1024).toFixed(2)} MB • ${filePreview.type}`}
                   />
                 </ListItem>
               ))}
@@ -238,6 +228,7 @@ export const AssetUploadModal: React.FC<AssetUploadModalProps> = ({
           </Box>
         )}
       </DialogContent>
+      
       <DialogActions>
         <Button onClick={handleClose} disabled={uploading}>
           Cancel

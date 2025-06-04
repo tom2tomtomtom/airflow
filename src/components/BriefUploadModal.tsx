@@ -225,9 +225,7 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
         <IconButton
           onClick={handleClose}
           disabled={uploading || processing}
-          sx={{ position: 'absolute', right: 8, top: 8 }}
-        >
-          <Close />
+          sx={{ position: 'absolute', right: 8, top: 8 }} aria-label="Icon button">          <Close />
         </IconButton>
       </DialogTitle>
       
@@ -277,7 +275,7 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
                         primary={file.file.name}
                         secondary={`${file.size} • ${file.type}`}
                       />
-                      <IconButton onClick={() => removeFile(index)} size="small">
+                      <IconButton onClick={() => removeFile(index)} aria-label="Icon button" size="small">
                         <Close />
                       </IconButton>
                     </ListItem>
@@ -292,7 +290,7 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
                     onClick={handleUpload}
                     disabled={uploading}
                     fullWidth
-                  >
+                   data-testid="upload-button">
                     {uploading ? 'Uploading...' : 'Upload & Process'}
                   </Button>
                   {uploading && (
@@ -362,8 +360,4 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
       </DialogActions>
     </Dialog>
   );
-<<<<<<< HEAD
 };
-=======
-};
->>>>>>> 67032892723b6c3baa991a25bfc2a82ec06c4641
