@@ -1,42 +1,58 @@
 import { getErrorMessage } from '@/utils/errorUtils';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { env } from './env';
 import { Database } from '@/types/database';
 
-// Create Supabase client with validated environment variables
-export const supabase = createClient<Database>(
-  env.NEXT_PUBLIC_SUPABASE_URL || 'https://demo.supabase.co',
-  env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'demo-anon-key',
-  {
-    auth: {
-      autoRefreshToken: true,
-      persistSession: true,
-      detectSessionInUrl: true
-    },
-    global: {
-      headers: {
-        'x-application-name': 'airwave'
+// Singleton instance to prevent multiple GoTrueClient warnings
+let supabaseInstance: SupabaseClient<Database> | null = null;
+
+// Create Supabase client with validated environment variables (singleton pattern)
+export const supabase = (() => {
+  if (!supabaseInstance) {
+    supabaseInstance = createClient<Database>(
+      env.NEXT_PUBLIC_SUPABASE_URL || 'https://demo.supabase.co',
+      env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'demo-anon-key',
+      {
+        auth: {
+          autoRefreshToken: true,
+          persistSession: true,
+          detectSessionInUrl: true,
+          storageKey: 'airwave-auth-token', // Use a specific storage key to avoid conflicts
+          storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+        },
+        global: {
+          headers: {
+            'x-application-name': 'airwave'
+          }
+        }
       }
-    }
+    );
   }
-);
+  return supabaseInstance;
+})();
 
 // Create service role client for server-side operations (when available)
+let serviceSupabaseInstance: SupabaseClient<Database> | null = null;
+
 export const getServiceSupabase = () => {
   if (!env.SUPABASE_SERVICE_ROLE_KEY) {
     throw new Error('Service role key not configured. Please set SUPABASE_SERVICE_ROLE_KEY environment variable.');
   }
   
-  return createClient<Database>(
-    env.NEXT_PUBLIC_SUPABASE_URL || 'https://demo.supabase.co',
-    env.SUPABASE_SERVICE_ROLE_KEY,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
+  if (!serviceSupabaseInstance) {
+    serviceSupabaseInstance = createClient<Database>(
+      env.NEXT_PUBLIC_SUPABASE_URL || 'https://demo.supabase.co',
+      env.SUPABASE_SERVICE_ROLE_KEY,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
       }
-    }
-  );
+    );
+  }
+  
+  return serviceSupabaseInstance;
 };
 
 // Helper function to get user from token with better error handling
@@ -98,7 +114,7 @@ export async function getUserProfile(userId: string): Promise<any> {
 }
 
 // Helper function to get user's client access with better error handling
-export async function getUserClients(userId: string): Promise<void> {
+export async function getUserClients(userId: string): Promise<string[]> {
   if (!userId) {
     throw new Error('User ID is required');
   }
