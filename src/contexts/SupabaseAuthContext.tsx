@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { User, Session } from '@supabase/supabase-js';
 import { createSupabaseBrowserClient } from '@/utils/supabase-browser';
@@ -36,6 +36,9 @@ export const useSupabaseAuth = () => {
   return context;
 };
 
+// Create the Supabase client once, outside of the component
+const supabaseClient = createSupabaseBrowserClient();
+
 export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
@@ -44,15 +47,12 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
     isAuthenticated: false,
   });
   const router = useRouter();
-  
-  // Create a single instance of the Supabase client
-  const supabase = useMemo(() => createSupabaseBrowserClient(), []);
 
   useEffect(() => {
     // Check active session
     const checkSession = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
         
         if (error) {
           console.error('Error getting session:', error);
@@ -111,7 +111,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
     checkSession();
 
     // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    const { data: { subscription } } = supabaseClient.auth.onAuthStateChange(
       async (event, session) => {
         process.env.NODE_ENV === 'development' && console.log('Auth state changed:', event, session?.user?.email);
         
@@ -166,7 +166,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const login = async (email: string, password: string) => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
         email,
         password,
       });
@@ -175,7 +175,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
       if (data.session) {
         // Force a session refresh to ensure cookies are properly set
-        await supabase.auth.refreshSession();
+        await supabaseClient.auth.refreshSession();
         
         // The onAuthStateChange listener will update the state
         // Just return success here
@@ -191,7 +191,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const signup = async (email: string, password: string, name: string) => {
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { data, error } = await supabaseClient.auth.signUp({
         email,
         password,
         options: {
@@ -213,7 +213,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const logout = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
+      const { error } = await supabaseClient.auth.signOut();
       if (error) throw error;
       
       // The onAuthStateChange listener will handle the state update and redirect
@@ -224,7 +224,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const refreshSession = async () => {
     try {
-      const { data: { session }, error } = await supabase.auth.refreshSession();
+      const { data: { session }, error } = await supabaseClient.auth.refreshSession();
       
       if (error) throw error;
       
