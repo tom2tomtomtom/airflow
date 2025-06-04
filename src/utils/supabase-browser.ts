@@ -1,7 +1,17 @@
-import { createBrowserClient } from '@supabase/ssr';
+import { createBrowserClient, SupabaseClient } from '@supabase/ssr';
+import { Database } from '@/types/database';
+
+// Singleton instance to prevent multiple GoTrueClient warnings
+let browserClientInstance: SupabaseClient<Database> | null = null;
 
 export function createSupabaseBrowserClient() {
-  return createBrowserClient(
+  // Return existing instance if already created
+  if (browserClientInstance) {
+    return browserClientInstance;
+  }
+
+  // Create new instance with singleton pattern
+  browserClientInstance = createBrowserClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -73,4 +83,11 @@ export function createSupabaseBrowserClient() {
       },
     }
   );
+
+  return browserClientInstance;
+}
+
+// Helper to reset the client instance (useful for testing or logout)
+export function resetSupabaseBrowserClient() {
+  browserClientInstance = null;
 }
