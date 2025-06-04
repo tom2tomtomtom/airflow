@@ -42,9 +42,7 @@ const getAuthToken = (): string | null => {
   } catch (error) {
     const message = getErrorMessage(error);
     if (process.env.NODE_ENV === 'development') {
-
       console.error('Error getting auth token:', error);
-
     }
     return null;
   }
@@ -58,17 +56,18 @@ export const apiRequest = async <T>(
   try {
     const token = getAuthToken();
     
-    // Set default headers
+    // Set default headers - include credentials for cookie-based auth
     const headers = {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     };
     
-    // Make the request
+    // Make the request with credentials to include cookies
     const response = await fetch(url, {
       ...options,
       headers,
+      credentials: 'include', // Include cookies for authentication
     });
     
     // Parse the response

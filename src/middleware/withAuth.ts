@@ -2,7 +2,7 @@ import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { errorResponse, ErrorCode } from '@/utils/api';
 import { UserRole } from '@/types/auth';
-import { supabase } from '@/lib/supabase';
+import { createServerClient } from '@supabase/ssr';
 
 // Extended request with user information
 export interface AuthenticatedRequest extends NextApiRequest {
@@ -26,93 +26,131 @@ export type AuthenticatedHandler = (
 export function withAuth(handler: AuthenticatedHandler) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     try {
-      // Get token from either Authorization header or cookies
-      let token: string | undefined;
-      
-      // Try Authorization header first
-      const authHeader = req.headers.authorization;
-      if (authHeader && authHeader.startsWith('Bearer ')) {
-        token = authHeader.split(' ')[1];
-      }
-      
-      // Fall back to cookie
-      if (!token) {
-        token = req.cookies.airwave_token;
-      }
+      // Create Supabase server client with proper cookie handling
+      const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+          cookies: {
+            get(name: string) {
+              return req.cookies[name];
+            },
+            set(name: string, value: string, options: any) {
+              // We don't need to set cookies in API routes
+            },
+            remove(name: string, options: any) {
+              // We don't need to remove cookies in API routes
+            },
+          },
+        }
+      );
 
-      if (!token) {
+      // Get user from Supabase using cookies
+      const { data: { user }, error } = await supabase.auth.getUser();
+
+      if (error || !user) {
+        console.log('Supabase auth error:', error?.message || 'No user found');
         return errorResponse(
           res,
           ErrorCode.UNAUTHORIZED,
-          'Authentication token missing',
+          'Authentication required',
           401
         );
       }
 
-      // Verify token with Supabase
-      try {
-        // Get user from Supabase
-        const { data: { user }, error } = await supabase.auth.getUser(token);
+      console.log('Authenticated user:', user.id, user.email);
 
-        if (error || !user) {
-          return errorResponse(
-            res,
-            ErrorCode.INVALID_TOKEN,
-            'Invalid token',
-            401
-          );
+      // Get user profile from Supabase
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (profileError) {
+        console.log('Profile error:', profileError.message, 'Code:', profileError.code);
+        // If profile doesn't exist, create a basic one or use defaults
+        if (profileError.code === 'PGRST116') {
+          console.log('Profile does not exist, creating one...');
+          try {
+            const userName = user.user_metadata?.name || user.email?.split('@')[0] || 'User';
+            const nameParts = userName.split(' ');
+            
+            const { data: newProfile, error: createError } = await supabase
+              .from('profiles')
+              .insert({
+                id: user.id,
+                first_name: nameParts[0] || userName,
+                last_name: nameParts.slice(1).join(' ') || '',
+                role: 'user',
+              })
+              .select()
+              .single();
+
+            if (createError) {
+              console.error('Error creating profile:', createError);
+              // If profile creation fails, use a minimal profile for API access
+              profile = {
+                id: user.id,
+                email: user.email || '',
+                full_name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+                role: 'user',
+                permissions: [],
+                tenant_id: null
+              };
+            } else {
+              profile = newProfile;
+            }
+          } catch (err) {
+            console.error('Profile creation exception:', err);
+            // Use minimal profile as fallback
+            profile = {
+              id: user.id,
+              email: user.email || '',
+              full_name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+              role: 'user',
+              permissions: [],
+              tenant_id: null
+            };
+          }
+        } else {
+          console.error('Unexpected profile error:', profileError);
+          // Use minimal profile as fallback
+          profile = {
+            id: user.id,
+            email: user.email || '',
+            full_name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+            role: 'user',
+            permissions: [],
+            tenant_id: null
+          };
         }
-
-        // Get user profile from Supabase
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
-
-        if (profileError || !profile) {
-          return errorResponse(
-            res,
-            ErrorCode.NOT_FOUND,
-            'User profile not found',
-            404
-          );
-        }
-
-        // Get user's client access
-        const { data: userClients, error: clientsError } = await supabase
-          .from('user_clients')
-          .select('client_id')
-          .eq('user_id', user.id);
-
-        if (clientsError) {
-          console.error('Error fetching user clients:', clientsError);
-        }
-
-        // Add user info to request
-        (req as AuthenticatedRequest).user = {
-          id: user.id,
-          email: user.email || '',
-          role: (profile.role as UserRole) || UserRole.VIEWER,
-          permissions: profile.permissions || [],
-          clientIds: userClients?.map((uc: { client_id: string }) => uc.client_id) || [],
-          tenantId: profile.tenant_id || ''
-        };
-
-        // Call the handler
-        return await handler(req as AuthenticatedRequest, res);
-      } catch (error) {
-    const message = getErrorMessage(error);
-        console.error('Token verification error:', error);
-        return errorResponse(
-          res,
-          ErrorCode.INVALID_TOKEN,
-          'Invalid token',
-          401
-        );
       }
+
+      // Get user's client access
+      const { data: userClients, error: clientsError } = await supabase
+        .from('user_clients')
+        .select('client_id')
+        .eq('user_id', user.id);
+
+      if (clientsError) {
+        console.error('Error fetching user clients:', clientsError);
+      }
+
+      // Add user info to request
+      (req as AuthenticatedRequest).user = {
+        id: user.id,
+        email: user.email || '',
+        role: (profile?.role as UserRole) || UserRole.VIEWER,
+        permissions: profile?.permissions || [],
+        clientIds: userClients?.map((uc: { client_id: string }) => uc.client_id) || [],
+        tenantId: profile?.tenant_id || ''
+      };
+
+      // Call the handler
+      return await handler(req as AuthenticatedRequest, res);
     } catch (error) {
-    const message = getErrorMessage(error);
+      const message = getErrorMessage(error);
       console.error('Authentication error:', error);
       return errorResponse(
         res,

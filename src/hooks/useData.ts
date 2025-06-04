@@ -118,16 +118,25 @@ export const useClients = () => {
   return useQuery({
     queryKey: ['clients'],
     queryFn: async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No authentication token found');
+      // Get token from the correct localStorage key
+      let token = null;
+      try {
+        const storedUser = localStorage.getItem('airwave_user');
+        if (storedUser) {
+          const userData = JSON.parse(storedUser);
+          token = userData.token;
+        }
+      } catch (error) {
+        console.error('Error parsing stored user:', error);
       }
 
+      // Use credentials include to send cookies for authentication
       const response = await fetch('/api/clients', {
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
         },
+        credentials: 'include', // Include cookies for authentication
       });
 
       if (!response.ok) {

@@ -3,6 +3,74 @@ import { createBrowserClient } from '@supabase/ssr';
 export function createSupabaseBrowserClient() {
   return createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          // Only run in browser environment
+          if (typeof window === 'undefined' || typeof document === 'undefined') {
+            return undefined;
+          }
+          // Get cookie value from document.cookie
+          const value = `; ${document.cookie}`;
+          const parts = value.split(`; ${name}=`);
+          if (parts.length === 2) {
+            return parts.pop()?.split(';').shift();
+          }
+          return undefined;
+        },
+        set(name: string, value: string, options: any) {
+          // Only run in browser environment
+          if (typeof window === 'undefined' || typeof document === 'undefined') {
+            return;
+          }
+          // Set cookie with proper attributes for server-side reading
+          let cookieString = `${name}=${value}`;
+          
+          if (options?.expires) {
+            cookieString += `; expires=${options.expires.toUTCString()}`;
+          }
+          if (options?.maxAge) {
+            cookieString += `; max-age=${options.maxAge}`;
+          }
+          if (options?.domain) {
+            cookieString += `; domain=${options.domain}`;
+          }
+          if (options?.path) {
+            cookieString += `; path=${options.path}`;
+          } else {
+            cookieString += `; path=/`;
+          }
+          if (options?.secure) {
+            cookieString += `; secure`;
+          }
+          if (options?.httpOnly) {
+            cookieString += `; httponly`;
+          }
+          if (options?.sameSite) {
+            cookieString += `; samesite=${options.sameSite}`;
+          }
+          
+          document.cookie = cookieString;
+        },
+        remove(name: string, options: any) {
+          // Only run in browser environment
+          if (typeof window === 'undefined' || typeof document === 'undefined') {
+            return;
+          }
+          // Remove cookie by setting expiry in the past
+          let cookieString = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+          if (options?.path) {
+            cookieString += `; path=${options.path}`;
+          } else {
+            cookieString += `; path=/`;
+          }
+          if (options?.domain) {
+            cookieString += `; domain=${options.domain}`;
+          }
+          document.cookie = cookieString;
+        },
+      },
+    }
   );
 }

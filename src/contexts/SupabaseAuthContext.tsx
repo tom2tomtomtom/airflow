@@ -72,6 +72,18 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
             loading: false,
             isAuthenticated: true,
           });
+          
+          // Store user data in localStorage for compatibility with other parts of the app
+          if (typeof window !== 'undefined' && session.user) {
+            const userData = {
+              id: session.user.id,
+              email: session.user.email || '',
+              name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
+              token: session.access_token,
+              role: session.user.user_metadata?.role || 'user',
+            };
+            localStorage.setItem('airwave_user', JSON.stringify(userData));
+          }
         } else {
           setAuthState({
             user: null,
@@ -79,6 +91,11 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
             loading: false,
             isAuthenticated: false,
           });
+          
+          // Clear localStorage when logged out
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('airwave_user');
+          }
         }
       } catch (error) {
         console.error('Session check error:', error);
@@ -105,6 +122,18 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
             loading: false,
             isAuthenticated: true,
           });
+          
+          // Store user data in localStorage for compatibility with other parts of the app
+          if (typeof window !== 'undefined' && session.user) {
+            const userData = {
+              id: session.user.id,
+              email: session.user.email || '',
+              name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
+              token: session.access_token,
+              role: session.user.user_metadata?.role || 'user',
+            };
+            localStorage.setItem('airwave_user', JSON.stringify(userData));
+          }
         } else {
           setAuthState({
             user: null,
@@ -112,6 +141,11 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
             loading: false,
             isAuthenticated: false,
           });
+          
+          // Clear localStorage when logged out
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('airwave_user');
+          }
         }
 
         // Handle auth events
@@ -140,6 +174,9 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
       if (error) throw error;
 
       if (data.session) {
+        // Force a session refresh to ensure cookies are properly set
+        await supabase.auth.refreshSession();
+        
         // The onAuthStateChange listener will update the state
         // Just return success here
         return { success: true };

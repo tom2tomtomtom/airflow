@@ -23,11 +23,23 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
   const { method } = req;
   const user = (req as any).user;
 
+  console.log('Clients API called:', method, 'User:', user?.id, user?.email);
+
   try {
+    if (!user) {
+      console.error('No user found in request');
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Authentication required' 
+      });
+    }
+
     switch (method) {
       case 'GET':
+        console.log('Calling handleGet...');
         return handleGet(req, res, user);
       case 'POST':
+        console.log('Calling handlePost...');
         return handlePost(req, res, user);
       default:
         return res.status(405).json({ 
@@ -38,6 +50,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Clients API error:', error);
+    console.error('Error stack:', error.stack);
     return res.status(500).json({ 
       success: false,
       message: 'Internal server error',
@@ -46,8 +59,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>, user: any): Promise<void> {
-  const { 
-    search,
+  console.log('handleGet started for user:', user.id);
+  
+  try {
+    const { 
+      search,
     industry,
     limit = 50, 
     offset = 0,
@@ -56,8 +72,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
     include_stats = false,
   } = req.query;
 
-  try {
-    // Get all clients the user created (based on schema using created_by)
+    // Get all clients (RLS policies will handle access control)
+    // Note: created_by column doesn't exist in current database schema
     let query = supabase
       .from('clients')
       .select(`
@@ -67,8 +83,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
           assets(count),
           matrices(count)
         ` : ''}
-      `)
-      .eq('created_by', user.id);
+      `);
 
     // Apply search filter
     if (search && typeof search === 'string') {
@@ -211,7 +226,6 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
           keyMessages: []
         },
         is_active: true,
-        created_by: user.id,
       })
       .select()
       .single();
@@ -243,7 +257,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
       }
     }
 
-    // Access is automatically granted through created_by relationship
+    // Access is handled by Supabase RLS policies
 
     // Transform response
     const transformedClient: Client = {
