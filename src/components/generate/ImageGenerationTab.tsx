@@ -215,8 +215,7 @@ const ImageGenerationTab: React.FC<ImageGenerationTabProps> = ({
                         }}
                         size="small"
                         color={image.favorite ? 'error' : 'default'}
-                        onClick={() => handleToggleImageFavorite(image.id)}
-                      >
+                        onClick={() => handleToggleImageFavorite(image.id)} aria-label="Icon button">
                         {image.favorite ? <StarIcon /> : <StarBorderIcon />}
                       </IconButton>
                     </Box>
@@ -239,23 +238,19 @@ const ImageGenerationTab: React.FC<ImageGenerationTabProps> = ({
                         mt: 2,
                       }}>
                         <Tooltip title="View full size">
-                          <IconButton size="small">
-                            <FullscreenIcon fontSize="small" />
+                          <IconButton size="small" aria-label="Icon button">                            <FullscreenIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="Edit">
-                          <IconButton size="small">
-                            <EditIcon fontSize="small" />
+                          <IconButton size="small" aria-label="Icon button">                            <EditIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="Download">
-                          <IconButton size="small">
-                            <DownloadIcon fontSize="small" />
+                          <IconButton size="small" aria-label="Icon button">                            <DownloadIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="Save to assets">
-                          <IconButton size="small" color="primary">
-                            <SaveIcon fontSize="small" />
+                          <IconButton size="small" color="primary" aria-label="Icon button">                            <SaveIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
                       </Box>

@@ -101,7 +101,7 @@ const StrategicMotivationsTab: React.FC<StrategicMotivationsTabProps> = ({
                 title={motivation.title}
                 action={
                   <IconButton 
-                    onClick={() => handleSelectMotivation(motivation.id)}
+                    onClick={() => handleSelectMotivation(motivation.id)} aria-label="Icon button"
                     color={motivation.selected ? 'primary' : 'default'}
                   >
                     {motivation.selected ? <CheckIcon /> : <AddIcon />}

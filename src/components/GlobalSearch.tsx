@@ -221,8 +221,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
               ),
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton onClick={onClose} size="small">
-                    <Close />
+                  <IconButton onClick={onClose} size="small" aria-label="Icon button">                    <Close />
                   </IconButton>
                 </InputAdornment>
               ),

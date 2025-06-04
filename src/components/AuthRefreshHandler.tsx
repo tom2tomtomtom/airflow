@@ -31,20 +31,20 @@ export function AuthRefreshHandler() {
 
     // If token expires in less than 5 minutes, refresh immediately
     if (refreshTime <= 0) {
-      console.log('Token expiring soon, refreshing now...');
+      process.env.NODE_ENV === 'development' && console.log('Token expiring soon, refreshing now...');
       refreshSession();
       return;
     }
 
     // Schedule refresh
-    console.log(`Scheduling token refresh in ${Math.round(refreshTime / 1000 / 60)} minutes`);
+    process.env.NODE_ENV === 'development' && console.log(`Scheduling token refresh in ${Math.round(refreshTime / 1000 / 60);} minutes`);
     
     refreshTimerRef.current = setTimeout(async () => {
-      console.log('Refreshing token...');
+      process.env.NODE_ENV === 'development' && console.log('Refreshing token...');
       const result = await refreshSession();
       
       if (result.success) {
-        console.log('Token refreshed successfully');
+        process.env.NODE_ENV === 'development' && console.log('Token refreshed successfully');
       } else {
         console.error('Failed to refresh token:', result.error);
       }
@@ -73,7 +73,7 @@ export function AuthRefreshHandler() {
 
         // Refresh if less than 10 minutes until expiry
         if (timeUntilExpiry < 10 * 60 * 1000) {
-          console.log('Tab became visible, refreshing token...');
+          process.env.NODE_ENV === 'development' && console.log('Tab became visible, refreshing token...');
           await refreshSession();
         }
       }

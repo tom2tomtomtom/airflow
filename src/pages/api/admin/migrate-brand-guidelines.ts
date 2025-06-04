@@ -7,7 +7,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    console.log('🚀 Adding brand_guidelines column to clients table...');
+    process.env.NODE_ENV === 'development' && console.log('🚀 Adding brand_guidelines column to clients table...');
 
     // Add the brand_guidelines column if it doesn't exist
     const { error: columnError } = await supabase.rpc('exec_sql', {
@@ -57,7 +57,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    console.log('✅ Migration completed successfully!');
+    process.env.NODE_ENV === 'development' && console.log('✅ Migration completed successfully!');
     
     return res.json({
       success: true,

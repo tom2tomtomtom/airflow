@@ -1,5 +1,10 @@
 const { withSentryConfig } = require('@sentry/nextjs');
 
+// Bundle analyzer for performance optimization
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+});
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -44,7 +49,7 @@ const nextConfig = {
           },
           {
             key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
+            value: 'DENY',
           },
           {
             key: 'X-Content-Type-Options',
@@ -52,8 +57,17 @@ const nextConfig = {
           },
           {
             key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin',
+            value: 'strict-origin-when-cross-origin',
           },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(), payment=()',
+          },
+          // Add HSTS in production
+          ...(process.env.NODE_ENV === 'production' ? [{
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000; includeSubDomains; preload',
+          }] : []),
         ],
       },
       {
@@ -61,7 +75,23 @@ const nextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 'no-store, max-age=0',
+            value: 'no-store, no-cache, must-revalidate, max-age=0',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
           },
         ],
       },
@@ -170,10 +200,18 @@ const sentryWebpackPluginOptions = {
   widenClientFileUpload: true,
 };
 
-// Export with Sentry wrapper for production only if all required env vars are present
-module.exports = process.env.NODE_ENV === 'production' && 
-                 process.env.SENTRY_AUTH_TOKEN && 
-                 process.env.SENTRY_ORG && 
-                 process.env.SENTRY_PROJECT
-  ? withSentryConfig(nextConfig, sentryWebpackPluginOptions)
-  : nextConfig;
+// Compose all the wrappers
+let finalConfig = nextConfig;
+
+// Add bundle analyzer
+finalConfig = withBundleAnalyzer(finalConfig);
+
+// Add Sentry wrapper for production only if all required env vars are present
+if (process.env.NODE_ENV === 'production' && 
+    process.env.SENTRY_AUTH_TOKEN && 
+    process.env.SENTRY_ORG && 
+    process.env.SENTRY_PROJECT) {
+  finalConfig = withSentryConfig(finalConfig, sentryWebpackPluginOptions);
+}
+
+module.exports = finalConfig;

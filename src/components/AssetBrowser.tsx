@@ -302,10 +302,9 @@ export default function AssetBrowser({ clientId, onAssetSelect, selectionMode = 
             
             <Grid item xs={12} md={1}>
               <Box display="flex" gap={1}>
-                <IconButton onClick={handleClearFilters} title="Clear Filters">
-                  <Clear />
+                <IconButton onClick={handleClearFilters} title="Clear Filters" aria-label="Icon button">                  <Clear />
                 </IconButton>
-                <IconButton onClick={() => loadAssets(true)} title="Refresh">
+                <IconButton onClick={() => loadAssets(true)} aria-label="Icon button" title="Refresh">
                   <Refresh />
                 </IconButton>
               </Box>
@@ -383,7 +382,7 @@ export default function AssetBrowser({ clientId, onAssetSelect, selectionMode = 
                         onClick={(e) => {
                           e.stopPropagation();
                           toggleFavorite(asset);
-                        }}
+                        } aria-label="Icon button"}
                       >
                         {asset.favorite ? <Favorite color="error" /> : <FavoriteBorder />}
                       </IconButton>
@@ -447,8 +446,7 @@ export default function AssetBrowser({ clientId, onAssetSelect, selectionMode = 
                 {selectedAsset.name}
                 <IconButton
                   sx={{ position: 'absolute', right: 8, top: 8 }}
-                  onClick={() => toggleFavorite(selectedAsset)}
-                >
+                  onClick={() => toggleFavorite(selectedAsset)} aria-label="Icon button">
                   {selectedAsset.favorite ? <Favorite color="error" /> : <FavoriteBorder />}
                 </IconButton>
               </DialogTitle>

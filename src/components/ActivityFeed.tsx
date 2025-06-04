@@ -362,8 +362,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
               )}
             </Box>
             <Box sx={{ display: 'flex', gap: 1 }}>
-              <IconButton size="small" onClick={() => setAutoRefresh(!autoRefresh)}>
-                <RefreshIcon color={autoRefresh ? 'primary' : 'inherit'} />
+              <IconButton size="small" onClick={() => setAutoRefresh(!autoRefresh)} aria-label="Icon button">                <RefreshIcon color={autoRefresh ? 'primary' : 'inherit'} />
               </IconButton>
               <IconButton
                 size="small"
@@ -475,8 +474,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
                                   <InputAdornment position="end">
                                     <IconButton
                                       size="small"
-                                      onClick={() => handleComment(activity.id)}
-                                    >
+                                      onClick={() => handleComment(activity.id)} aria-label="Icon button">
                                       <SendIcon />
                                     </IconButton>
                                   </InputAdornment>

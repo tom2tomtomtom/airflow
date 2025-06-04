@@ -376,8 +376,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 Step {activeStep + 1} of {steps.length}
               </Typography>
             </Box>
-            <IconButton onClick={onClose} sx={{ ml: 2 }}>
-              <Close />
+            <IconButton onClick={onClose} sx={{ ml: 2 }} aria-label="Icon button">              <Close />
             </IconButton>
           </Box>
           

@@ -173,9 +173,7 @@ const AssetCard: React.FC<AssetCardProps> = ({
               <IconButton
                 size="small"
                 onClick={handleMenuClick}
-                sx={{ ml: 0.5 }}
-              >
-                <MoreIcon fontSize="small" />
+                sx={{ ml: 0.5 }} aria-label="Icon button">                <MoreIcon fontSize="small" />
               </IconButton>
             )}
           </Box>

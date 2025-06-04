@@ -336,7 +336,7 @@ const LiveCollaboration: React.FC<LiveCollaborationProps> = ({
               startIcon={<MessageIcon />}
               onClick={() => {
                 // Implement team chat or collaboration features
-                console.log('Open team chat');
+                process.env.NODE_ENV === 'development' && console.log('Open team chat');
               }}
             >
               Team Chat

@@ -1,6 +1,7 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Box, Container, Typography, Button, Paper, Alert } from '@mui/material';
 import { ErrorOutline, Refresh, Home } from '@mui/icons-material';
+import { errorReporter } from '@/utils/errorReporting';
 
 interface Props {
   children: ReactNode;
@@ -33,20 +34,51 @@ class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log error to console in development
     if (process.env.NODE_ENV === 'development') {
-      if (process.env.NODE_ENV === 'development') {
-
-        console.error('ErrorBoundary caught an error:', error, errorInfo);
-
-      }
+      console.error('ErrorBoundary caught an error:', error, errorInfo);
     }
 
-    // In production, you would send this to an error reporting service
-    // Example: logErrorToService(error, errorInfo);
+    // In production, send error to reporting service
+    if (process.env.NODE_ENV === 'production') {
+      this.reportError(error, errorInfo);
+    }
 
     this.setState({
       error,
       errorInfo,
     });
+  }
+
+  private async reportError(error: Error, errorInfo: ErrorInfo) {
+    try {
+      // Use the global error reporter
+      await errorReporter.reportError(error, {
+        action: 'error_boundary',
+        component: 'ErrorBoundary',
+        metadata: {
+          componentStack: errorInfo.componentStack,
+          errorId: this.state.errorId,
+          errorBoundary: true,
+        },
+      });
+
+      // Also send to Sentry if available
+      if (typeof window !== 'undefined' && (window as any).Sentry) {
+        (window as any).Sentry.captureException(error, {
+          contexts: {
+            react: {
+              componentStack: errorInfo.componentStack,
+            },
+          },
+          tags: {
+            errorBoundary: true,
+            errorId: this.state.errorId,
+          },
+        });
+      }
+    } catch (reportingError) {
+      // Silently fail if error reporting fails
+      console.warn('Failed to report error:', reportingError);
+    }
   }
 
   generateErrorId(): string {

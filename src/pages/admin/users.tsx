@@ -505,7 +505,7 @@ const UserManagementPage: React.FC = () => {
                 </FormControl>
               </Grid>
               <Grid item xs={12} md={4} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-                <Button startIcon={<UploadIcon />}>Import</Button>
+                <Button startIcon={<UploadIcon />} data-testid="upload-button">Import</Button>
                 <Button startIcon={<DownloadIcon />}>Export</Button>
                 <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateUser}>
                   Add User
@@ -561,7 +561,8 @@ const UserManagementPage: React.FC = () => {
                         </TableCell>
                         <TableCell align="right">
                           <IconButton
-                            onClick={(e: React.ClickEvent<HTMLElement>) => handleMenuClick(e, user.id)}
+                            onClick={(e: React.MouseEvent<HTMLElement>) => handleMenuClick(e, user.id)}
+                            aria-label="Icon button"
                           >
                             <MoreIcon />
                           </IconButton>
@@ -600,8 +601,7 @@ const UserManagementPage: React.FC = () => {
                           {role.userCount} users
                         </Typography>
                       </Box>
-                      <IconButton>
-                        <EditIcon />
+                      <IconButton aria-label="Icon button">                        <EditIcon />
                       </IconButton>
                     </Box>
                     <Typography variant="body2" paragraph>

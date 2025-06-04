@@ -239,8 +239,7 @@ export const AdvancedAnalytics: React.FC = () => {
                     {metric.icon}
                   </Avatar>
                   <Tooltip title="More info">
-                    <IconButton size="small">
-                      <Info fontSize="small" />
+                    <IconButton size="small" aria-label="Icon button">                      <Info fontSize="small" />
                     </IconButton>
                   </Tooltip>
                 </Box>

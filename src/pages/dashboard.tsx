@@ -155,8 +155,7 @@ const DashboardPage = () => {
                   </Typography>
                 </CardContent>
                 <CardActions>
-                  <IconButton size="small" color="primary">
-                    <ArrowForward />
+                  <IconButton size="small" color="primary" aria-label="Icon button">                    <ArrowForward />
                   </IconButton>
                 </CardActions>
               </Card>

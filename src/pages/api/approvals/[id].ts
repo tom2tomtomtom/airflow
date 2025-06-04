@@ -525,7 +525,7 @@ async function triggerPostDecisionWorkflow(approval: any, decision: any): Promis
       // For executions, trigger the actual execution
       if (approval.item_type === 'execution') {
         // This would integrate with the execution pipeline
-        console.log(`Triggering execution for approved item: ${approval.item_id}`);
+        process.env.NODE_ENV === 'development' && console.log(`Triggering execution for approved item: ${approval.item_id}`);
       }
       
       // For campaigns, activate them
@@ -548,7 +548,7 @@ async function triggerPostDecisionWorkflow(approval: any, decision: any): Promis
 async function logApprovalDecision(approvalId: string, action: string, userId: string, comments?: string): Promise<void> {
   try {
     // In a full implementation, this would log to an approval_events table
-    console.log(`Approval ${approvalId} ${action} by user ${userId}`, { comments });
+    process.env.NODE_ENV === 'development' && console.log(`Approval ${approvalId} ${action} by user ${userId}`, { comments });
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Error logging approval decision:', error);
@@ -558,7 +558,7 @@ async function logApprovalDecision(approvalId: string, action: string, userId: s
 async function logApprovalUpdate(approvalId: string, updateData: any, userId: string): Promise<void> {
   try {
     // In a full implementation, this would log to an approval_events table
-    console.log(`Approval ${approvalId} updated by user ${userId}`, updateData);
+    process.env.NODE_ENV === 'development' && console.log(`Approval ${approvalId} updated by user ${userId}`, updateData);
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Error logging approval update:', error);
@@ -568,7 +568,7 @@ async function logApprovalUpdate(approvalId: string, updateData: any, userId: st
 async function triggerApprovalNotification(approval: any, action: string): Promise<void> {
   try {
     // In a full implementation, this would trigger real-time notifications
-    console.log(`Approval ${approval.id} ${action} - triggering notifications`);
+    process.env.NODE_ENV === 'development' && console.log(`Approval ${approval.id} ${action} - triggering notifications`);
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Error triggering approval notification:', error);

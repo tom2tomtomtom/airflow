@@ -244,8 +244,7 @@ export const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
                 }
               />
               {hasChildren && (
-                <IconButton size="small" sx={{ color: 'inherit' }}>
-                  {isExpanded ? <ExpandLess /> : <ExpandMore />}
+                <IconButton size="small" sx={{ color: 'inherit' }} aria-label="Icon button">                  {isExpanded ? <ExpandLess /> : <ExpandMore />}
                 </IconButton>
               )}
             </ListItemButton>
@@ -271,8 +270,7 @@ export const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
           AIrWAVE
         </Typography>
         {variant === 'temporary' && (
-          <IconButton onClick={onClose} size="small">
-            <Close />
+          <IconButton onClick={onClose} size="small" aria-label="Icon button">            <Close />
           </IconButton>
         )}
       </Box>

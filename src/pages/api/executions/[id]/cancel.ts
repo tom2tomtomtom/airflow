@@ -260,7 +260,7 @@ async function cancelCreatomateJob(jobId: string): Promise<{ success: boolean; e
   try {
     // In a real implementation, this would call Creatomate API
     // For now, simulate the cancellation
-    console.log(`Simulating Creatomate job cancellation: ${jobId}`);
+    process.env.NODE_ENV === 'development' && console.log(`Simulating Creatomate job cancellation: ${jobId}`);
     
     // Mock API call delay
     await new Promise(resolve => setTimeout(resolve, 100));
@@ -282,7 +282,7 @@ async function cancelPendingWebhooks(webhookIds: string[]): Promise<{ cleaned: a
   for (const webhookId of webhookIds) {
     try {
       // Simulate webhook cancellation
-      console.log(`Cancelling webhook: ${webhookId}`);
+      process.env.NODE_ENV === 'development' && console.log(`Cancelling webhook: ${webhookId}`);
       cleaned.push({
         type: 'webhook',
         resource_id: webhookId,
@@ -304,7 +304,7 @@ async function cancelPendingWebhooks(webhookIds: string[]): Promise<{ cleaned: a
 async function cleanupTempFiles(tempFiles: string[]): Promise<{ success: boolean; files_cleaned: number }> {
   try {
     // Simulate file cleanup
-    console.log(`Cleaning up ${tempFiles.length} temporary files`);
+    process.env.NODE_ENV === 'development' && console.log(`Cleaning up ${tempFiles.length} temporary files`);
     return { success: true, files_cleaned: tempFiles.length };
   } catch (error) {
     const message = getErrorMessage(error);
@@ -397,7 +397,7 @@ async function triggerCancellationNotification(execution: any, user: any): Promi
   try {
     // In a full implementation, this would trigger real-time notifications
     // via WebSocket or Server-Sent Events to relevant stakeholders
-    console.log(`Execution ${execution.id} cancelled by ${user.full_name || user.id} - triggering notifications`);
+    process.env.NODE_ENV === 'development' && console.log(`Execution ${execution.id} cancelled by ${user.full_name || user.id} - triggering notifications`);
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Error triggering cancellation notification:', error);

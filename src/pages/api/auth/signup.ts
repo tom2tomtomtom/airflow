@@ -46,9 +46,9 @@ export default async function handler(
   try {
     // Debug logging
     if (process.env.NODE_ENV === 'development') {
-      console.log('Signup attempt for:', email);
-      console.log('Supabase URL exists:', !!process.env.NEXT_PUBLIC_SUPABASE_URL);
-      console.log('Supabase Anon Key exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+      process.env.NODE_ENV === 'development' && console.log('Signup attempt for:', email);
+      process.env.NODE_ENV === 'development' && console.log('Supabase URL exists:', !!process.env.NEXT_PUBLIC_SUPABASE_URL);
+      process.env.NODE_ENV === 'development' && console.log('Supabase Anon Key exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
     }
 
     // Check if Supabase is properly configured
@@ -62,7 +62,7 @@ export default async function handler(
 
     // Use Supabase authentication
     if (process.env.NODE_ENV === 'development') {
-      console.log('Attempting Supabase signup...');
+      process.env.NODE_ENV === 'development' && console.log('Attempting Supabase signup...');
     }
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
@@ -103,11 +103,11 @@ export default async function handler(
       });
     }
 
-    console.log('Supabase signup successful, user created:', authData.user.id);
+    process.env.NODE_ENV === 'development' && console.log('Supabase signup successful, user created:', authData.user.id);
 
     // Check if email confirmation is required
     if (!authData.session) {
-      console.log('Email confirmation required');
+      process.env.NODE_ENV === 'development' && console.log('Email confirmation required');
       return res.status(200).json({
         success: true,
         message: 'Please check your email for a confirmation link before logging in.',
@@ -115,7 +115,7 @@ export default async function handler(
     }
 
     // If no email confirmation required, create user profile
-    console.log('Creating user profile...');
+    process.env.NODE_ENV === 'development' && console.log('Creating user profile...');
     
     // First check if profiles table exists by attempting to query it
     const { data: existingProfile, error: profileCheckError } = await supabase

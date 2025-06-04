@@ -175,8 +175,7 @@ export const MobileOptimizedWorkflow: React.FC<MobileOptimizedWorkflowProps> = (
           }}
         >
           <Box display="flex" alignItems="center" justifyContent="between" mb={2}>
-            <IconButton onClick={onClose} edge="start">
-              <Close />
+            <IconButton onClick={onClose} edge="start" aria-label="Icon button">              <Close />
             </IconButton>
             <Typography variant="h6" flex={1} textAlign="center">
               {steps[activeStep].title}

@@ -440,8 +440,7 @@ const SignOffPage: React.FC = () => {
                               </Typography>
                             )}
                           </Box>
-                          <IconButton onClick={() => handleViewDetails(item)}>
-                            <VisibilityIcon />
+                          <IconButton onClick={() => handleViewDetails(item)} aria-label="Icon button">                            <VisibilityIcon />
                           </IconButton>
                         </Box>
 

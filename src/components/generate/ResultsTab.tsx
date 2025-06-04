@@ -214,8 +214,7 @@ const ResultsTab: React.FC<ResultsTabProps> = ({
                           transform: 'translateY(-50%)',
                         }}
                         color={copy.favorite ? 'error' : 'default'}
-                        onClick={() => handleToggleCopyFavorite(copy.id)}
-                      >
+                        onClick={() => handleToggleCopyFavorite(copy.id)} aria-label="Icon button">
                         {copy.favorite ? <StarIcon /> : <StarBorderIcon />}
                       </IconButton>
                       
@@ -229,18 +228,15 @@ const ResultsTab: React.FC<ResultsTabProps> = ({
                         mt: 1,
                       }}>
                         <Tooltip title="Copy to clipboard">
-                          <IconButton size="small">
-                            <ContentCopyIcon fontSize="small" />
+                          <IconButton size="small" aria-label="Icon button">                            <ContentCopyIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="Edit">
-                          <IconButton size="small">
-                            <EditIcon fontSize="small" />
+                          <IconButton size="small" aria-label="Icon button">                            <EditIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="Save to assets">
-                          <IconButton size="small" color="primary">
-                            <SaveIcon fontSize="small" />
+                          <IconButton size="small" color="primary" aria-label="Icon button">                            <SaveIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
                       </Box>
@@ -282,8 +278,7 @@ const ResultsTab: React.FC<ResultsTabProps> = ({
                           }}
                           size="small"
                           color={image.favorite ? 'error' : 'default'}
-                          onClick={() => handleToggleImageFavorite(image.id)}
-                        >
+                          onClick={() => handleToggleImageFavorite(image.id)} aria-label="Icon button">
                           {image.favorite ? <StarIcon /> : <StarBorderIcon />}
                         </IconButton>
                       </Box>
@@ -306,18 +301,15 @@ const ResultsTab: React.FC<ResultsTabProps> = ({
                           mt: 2,
                         }}>
                           <Tooltip title="View full size">
-                            <IconButton size="small">
-                              <FullscreenIcon fontSize="small" />
+                            <IconButton size="small" aria-label="Icon button">                              <FullscreenIcon fontSize="small" />
                             </IconButton>
                           </Tooltip>
                           <Tooltip title="Download">
-                            <IconButton size="small">
-                              <DownloadIcon fontSize="small" />
+                            <IconButton size="small" aria-label="Icon button">                              <DownloadIcon fontSize="small" />
                             </IconButton>
                           </Tooltip>
                           <Tooltip title="Save to assets">
-                            <IconButton size="small" color="primary">
-                              <SaveIcon fontSize="small" />
+                            <IconButton size="small" color="primary" aria-label="Icon button">                              <SaveIcon fontSize="small" />
                             </IconButton>
                           </Tooltip>
                         </Box>
@@ -363,9 +355,7 @@ const ResultsTab: React.FC<ResultsTabProps> = ({
                                     bgcolor: 'rgba(0,0,0,0.7)',
                                   }
                                 }}
-                                size="large"
-                              >
-                                <PlayArrowIcon fontSize="large" />
+                                size="large" aria-label="Icon button">                                <PlayArrowIcon fontSize="large" />
                               </IconButton>
                             )}
                             <IconButton
@@ -380,8 +370,7 @@ const ResultsTab: React.FC<ResultsTabProps> = ({
                               }}
                               size="small"
                               color={video.favorite ? 'error' : 'default'}
-                              onClick={() => handleToggleVideoFavorite(video.id)}
-                            >
+                              onClick={() => handleToggleVideoFavorite(video.id)} aria-label="Icon button">
                               {video.favorite ? <StarIcon /> : <StarBorderIcon />}
                             </IconButton>
                           </Box>
@@ -411,13 +400,11 @@ const ResultsTab: React.FC<ResultsTabProps> = ({
                               {video.status === 'completed' && (
                                 <>
                                   <Tooltip title="Download">
-                                    <IconButton size="small">
-                                      <DownloadIcon fontSize="small" />
+                                    <IconButton size="small" aria-label="Icon button">                                      <DownloadIcon fontSize="small" />
                                     </IconButton>
                                   </Tooltip>
                                   <Tooltip title="Save to assets">
-                                    <IconButton size="small" color="primary">
-                                      <SaveIcon fontSize="small" />
+                                    <IconButton size="small" color="primary" aria-label="Icon button">                                      <SaveIcon fontSize="small" />
                                     </IconButton>
                                   </Tooltip>
                                 </>
@@ -467,23 +454,19 @@ const ResultsTab: React.FC<ResultsTabProps> = ({
                             </Box>
                             
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 'auto' }}>
-                              <IconButton color="primary">
-                                <PlayArrowIcon />
+                              <IconButton color="primary" aria-label="Icon button">                                <PlayArrowIcon />
                               </IconButton>
                               
                               <Box>
                                 <IconButton
                                   size="small"
                                   color={voice.favorite ? 'error' : 'default'}
-                                  onClick={() => handleToggleVoiceFavorite(voice.id)}
-                                >
+                                  onClick={() => handleToggleVoiceFavorite(voice.id)} aria-label="Icon button">
                                   {voice.favorite ? <StarIcon /> : <StarBorderIcon />}
                                 </IconButton>
-                                <IconButton size="small">
-                                  <DownloadIcon fontSize="small" />
+                                <IconButton size="small" aria-label="Icon button">                                  <DownloadIcon fontSize="small" />
                                 </IconButton>
-                                <IconButton size="small" color="primary">
-                                  <SaveIcon fontSize="small" />
+                                <IconButton size="small" color="primary" aria-label="Icon button">                                  <SaveIcon fontSize="small" />
                                 </IconButton>
                               </Box>
                             </Box>

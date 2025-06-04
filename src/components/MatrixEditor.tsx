@@ -140,8 +140,7 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({
                           <IconButton
                             size="small"
                             sx={{ ml: 'auto' }}
-                            onClick={() => handleOpenAssetDialog(template.id, field.id)}
-                          >
+                            onClick={() => handleOpenAssetDialog(template.id, field.id)} aria-label="Icon button">
                             <EditIcon fontSize="small" />
                           </IconButton>
                         </Box>

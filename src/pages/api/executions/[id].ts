@@ -463,7 +463,7 @@ function validateStatusTransition(currentStatus: string, newStatus: string): { v
 async function logExecutionEvent(executionId: string, eventType: string, details: any): Promise<void> {
   try {
     // In a full implementation, this would log to an execution_events table
-    console.log(`Execution ${executionId} event:`, eventType, details);
+    process.env.NODE_ENV === 'development' && console.log(`Execution ${executionId} event:`, eventType, details);
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Error logging execution event:', error);
@@ -474,7 +474,7 @@ async function triggerExecutionNotification(execution: any, status: string): Pro
   try {
     // In a full implementation, this would trigger real-time notifications
     // via WebSocket or Server-Sent Events
-    console.log(`Execution ${execution.id} ${status} - triggering notifications`);
+    process.env.NODE_ENV === 'development' && console.log(`Execution ${execution.id} ${status} - triggering notifications`);
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Error triggering execution notification:', error);

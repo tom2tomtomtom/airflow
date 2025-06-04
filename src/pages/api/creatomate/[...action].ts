@@ -30,7 +30,7 @@ export default async function handler(
     const apiKey = process.env.CREATOMATE_API_KEY;
     const baseUrl = 'https://api.creatomate.com/v1';
 
-    console.log(`Testing Creatomate ${actionPath} endpoint...`);
+    process.env.NODE_ENV === 'development' && console.log(`Testing Creatomate ${actionPath} endpoint...`);
 
     switch (actionPath) {
       case 'test':

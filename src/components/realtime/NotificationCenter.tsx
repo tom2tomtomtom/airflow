@@ -231,8 +231,7 @@ const NotificationCenter: React.FC = () => {
                   <Tooltip title="Mark as read">
                     <IconButton
                       size="small"
-                      onClick={() => handleMarkAsRead(notification.id)}
-                    >
+                      onClick={() => handleMarkAsRead(notification.id)} aria-label="Icon button">
                       <MarkReadIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>
@@ -240,8 +239,7 @@ const NotificationCenter: React.FC = () => {
                 <Tooltip title="Dismiss">
                   <IconButton
                     size="small"
-                    onClick={() => handleDismiss(notification.id)}
-                  >
+                    onClick={() => handleDismiss(notification.id)} aria-label="Icon button">
                     <DeleteIcon fontSize="small" />
                   </IconButton>
                 </Tooltip>
@@ -258,9 +256,7 @@ const NotificationCenter: React.FC = () => {
       <IconButton
         color="inherit"
         onClick={handleClick}
-        disabled={loading}
-      >
-        <Badge badgeContent={unreadNotifications.length} color="error">
+        disabled={loading} aria-label="Icon button">        <Badge badgeContent={unreadNotifications.length} color="error">
           <NotificationsIcon />
         </Badge>
       </IconButton>
@@ -296,30 +292,24 @@ const NotificationCenter: React.FC = () => {
             </Typography>
             <Stack direction="row" spacing={1}>
               <Tooltip title="Refresh">
-                <IconButton size="small" onClick={refresh} disabled={loading}>
-                  {loading ? <CircularProgress size={16} /> : <RefreshIcon />}
+                <IconButton size="small" onClick={refresh} disabled={loading} aria-label="Icon button">                  {loading ? <CircularProgress size={16} /> : <RefreshIcon />}
                 </IconButton>
               </Tooltip>
               <Tooltip title="Mark all as read">
                 <IconButton
                   size="small"
                   onClick={handleMarkAllAsRead}
-                  disabled={unreadNotifications.length === 0}
-                >
-                  <MarkReadIcon />
+                  disabled={unreadNotifications.length === 0} aria-label="Icon button">                  <MarkReadIcon />
                 </IconButton>
               </Tooltip>
               <Tooltip title="Clear all">
                 <IconButton
                   size="small"
                   onClick={handleClearAll}
-                  disabled={notifications.length === 0}
-                >
-                  <ClearAllIcon />
+                  disabled={notifications.length === 0} aria-label="Icon button">                  <ClearAllIcon />
                 </IconButton>
               </Tooltip>
-              <IconButton size="small" onClick={handleClose}>
-                <CloseIcon />
+              <IconButton size="small" onClick={handleClose} aria-label="Icon button">                <CloseIcon />
               </IconButton>
             </Stack>
           </Box>

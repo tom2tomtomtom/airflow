@@ -222,7 +222,7 @@ const CampaignsPage: React.FC = () => {
                       </Typography>
                       <IconButton
                         size="small"
-                        onClick={(e: React.ClickEvent<HTMLElement>) => handleMenuOpen(e, campaign)}
+                        onClick={(e: React.MouseEvent<HTMLElement>) => handleMenuOpen(e, campaign)}
                       >
                         <MoreIcon />
                       </IconButton>
@@ -326,7 +326,7 @@ const CampaignsPage: React.FC = () => {
               if (process.env.NODE_ENV === 'development') {
                 if (process.env.NODE_ENV === 'development') {
 
-                  console.log('Archive campaign:', selectedCampaign);
+                  process.env.NODE_ENV === 'development' && console.log('Archive campaign:', selectedCampaign);
 
                 }
               }
@@ -340,7 +340,7 @@ const CampaignsPage: React.FC = () => {
               if (process.env.NODE_ENV === 'development') {
                 if (process.env.NODE_ENV === 'development') {
 
-                  console.log('Delete campaign:', selectedCampaign);
+                  process.env.NODE_ENV === 'development' && console.log('Delete campaign:', selectedCampaign);
 
                 }
               }

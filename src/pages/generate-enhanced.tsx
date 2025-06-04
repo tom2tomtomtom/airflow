@@ -935,7 +935,7 @@ const GenerateEnhancedPage: React.FC = () => {
                         title={motivation.title}
                         action={
                           <IconButton
-                            onClick={() => handleSelectMotivation(motivation.id)}
+                            onClick={() => handleSelectMotivation(motivation.id)} aria-label="Icon button"
                             color={motivation.selected ? 'primary' : 'default'}
                           >
                             {motivation.selected ? <CheckIcon /> : <AddIcon />}
@@ -1162,8 +1162,7 @@ const GenerateEnhancedPage: React.FC = () => {
                                         transform: 'translateY(-50%)',
                                       }}
                                       color={variation.favorite ? 'error' : 'default'}
-                                      onClick={() => handleToggleCopyFavorite(variation.id)}
-                                    >
+                                      onClick={() => handleToggleCopyFavorite(variation.id)} aria-label="Icon button">
                                       {variation.favorite ? <StarIcon /> : <StarBorderIcon />}
                                     </IconButton>
 
@@ -1177,23 +1176,19 @@ const GenerateEnhancedPage: React.FC = () => {
                                       mt: 1,
                                     }}>
                                       <Tooltip title="Edit">
-                                        <IconButton size="small">
-                                          <EditIcon fontSize="small" />
+                                        <IconButton size="small" aria-label="Icon button">                                          <EditIcon fontSize="small" />
                                         </IconButton>
                                       </Tooltip>
                                       <Tooltip title="Regenerate">
-                                        <IconButton size="small">
-                                          <RefreshIcon fontSize="small" />
+                                        <IconButton size="small" aria-label="Icon button">                                          <RefreshIcon fontSize="small" />
                                         </IconButton>
                                       </Tooltip>
                                       <Tooltip title="Copy to clipboard">
-                                        <IconButton size="small">
-                                          <ContentCopyIcon fontSize="small" />
+                                        <IconButton size="small" aria-label="Icon button">                                          <ContentCopyIcon fontSize="small" />
                                         </IconButton>
                                       </Tooltip>
                                       <Tooltip title="Save to assets">
-                                        <IconButton size="small" color="primary">
-                                          <SaveIcon fontSize="small" />
+                                        <IconButton size="small" color="primary" aria-label="Icon button">                                          <SaveIcon fontSize="small" />
                                         </IconButton>
                                       </Tooltip>
                                     </Box>
@@ -1357,8 +1352,7 @@ const GenerateEnhancedPage: React.FC = () => {
                                 }}
                                 size="small"
                                 color={image.favorite ? 'error' : 'default'}
-                                onClick={() => handleToggleImageFavorite(image.id)}
-                              >
+                                onClick={() => handleToggleImageFavorite(image.id)} aria-label="Icon button">
                                 {image.favorite ? <StarIcon /> : <StarBorderIcon />}
                               </IconButton>
                             </Box>
@@ -1381,23 +1375,19 @@ const GenerateEnhancedPage: React.FC = () => {
                                 mt: 2,
                               }}>
                                 <Tooltip title="View full size">
-                                  <IconButton size="small">
-                                    <FullscreenIcon fontSize="small" />
+                                  <IconButton size="small" aria-label="Icon button">                                    <FullscreenIcon fontSize="small" />
                                   </IconButton>
                                 </Tooltip>
                                 <Tooltip title="Edit">
-                                  <IconButton size="small">
-                                    <EditIcon fontSize="small" />
+                                  <IconButton size="small" aria-label="Icon button">                                    <EditIcon fontSize="small" />
                                   </IconButton>
                                 </Tooltip>
                                 <Tooltip title="Download">
-                                  <IconButton size="small">
-                                    <DownloadIcon fontSize="small" />
+                                  <IconButton size="small" aria-label="Icon button">                                    <DownloadIcon fontSize="small" />
                                   </IconButton>
                                 </Tooltip>
                                 <Tooltip title="Save to assets">
-                                  <IconButton size="small" color="primary">
-                                    <SaveIcon fontSize="small" />
+                                  <IconButton size="small" color="primary" aria-label="Icon button">                                    <SaveIcon fontSize="small" />
                                   </IconButton>
                                 </Tooltip>
                               </Box>
@@ -1592,9 +1582,7 @@ const GenerateEnhancedPage: React.FC = () => {
                                           bgcolor: 'rgba(0,0,0,0.7)',
                                         }
                                       }}
-                                      size="large"
-                                    >
-                                      <PlayArrowIcon fontSize="large" />
+                                      size="large" aria-label="Icon button">                                      <PlayArrowIcon fontSize="large" />
                                     </IconButton>
                                   )}
                                   <IconButton
@@ -1609,8 +1597,7 @@ const GenerateEnhancedPage: React.FC = () => {
                                     }}
                                     size="small"
                                     color={video.favorite ? 'error' : 'default'}
-                                    onClick={() => handleToggleVideoFavorite(video.id)}
-                                  >
+                                    onClick={() => handleToggleVideoFavorite(video.id)} aria-label="Icon button">
                                     {video.favorite ? <StarIcon /> : <StarBorderIcon />}
                                   </IconButton>
                                 </Box>
@@ -1647,28 +1634,24 @@ const GenerateEnhancedPage: React.FC = () => {
                                     {video.status === 'completed' && (
                                       <>
                                         <Tooltip title="Download">
-                                          <IconButton size="small">
-                                            <DownloadIcon fontSize="small" />
+                                          <IconButton size="small" aria-label="Icon button">                                            <DownloadIcon fontSize="small" />
                                           </IconButton>
                                         </Tooltip>
                                         <Tooltip title="Edit">
-                                          <IconButton size="small">
-                                            <EditIcon fontSize="small" />
+                                          <IconButton size="small" aria-label="Icon button">                                            <EditIcon fontSize="small" />
                                           </IconButton>
                                         </Tooltip>
                                       </>
                                     )}
                                     {video.status === 'processing' && (
                                       <Tooltip title="Cancel">
-                                        <IconButton size="small">
-                                          <StopIcon fontSize="small" />
+                                        <IconButton size="small" aria-label="Icon button">                                          <StopIcon fontSize="small" />
                                         </IconButton>
                                       </Tooltip>
                                     )}
                                     {video.status === 'failed' && (
                                       <Tooltip title="Retry">
-                                        <IconButton size="small">
-                                          <RefreshIcon fontSize="small" />
+                                        <IconButton size="small" aria-label="Icon button">                                          <RefreshIcon fontSize="small" />
                                         </IconButton>
                                       </Tooltip>
                                     )}
@@ -1676,9 +1659,7 @@ const GenerateEnhancedPage: React.FC = () => {
                                       <IconButton
                                         size="small"
                                         color="primary"
-                                        disabled={video.status !== 'completed'}
-                                      >
-                                        <SaveIcon fontSize="small" />
+                                        disabled={video.status !== 'completed'} aria-label="Icon button">                                        <SaveIcon fontSize="small" />
                                       </IconButton>
                                     </Tooltip>
                                   </Box>

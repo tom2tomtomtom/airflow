@@ -13,6 +13,8 @@ import {
   CircularProgress,
   InputAdornment,
   IconButton,
+  Checkbox,
+  FormControlLabel,
 } from '@mui/material';
 import {
   Visibility,
@@ -29,22 +31,55 @@ const LoginPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setEmailError('');
+    setPasswordError('');
+
+    // Form validation
+    let hasErrors = false;
+    
+    if (!email) {
+      setEmailError('Email is required');
+      hasErrors = true;
+    } else if (!validateEmail(email)) {
+      setEmailError('Please enter a valid email address');
+      hasErrors = true;
+    }
+    
+    if (!password) {
+      setPasswordError('Password is required');
+      hasErrors = true;
+    }
+    
+    if (hasErrors) {
+      setLoading(false);
+      return;
+    }
 
     try {
-      if (!email || !password) {
-        setError('Please enter both email and password');
-        return;
-      }
-
       // Use the Supabase login function
       const result = await login(email, password);
       
       if (result.success) {
+        // Handle remember me
+        if (rememberMe) {
+          localStorage.setItem('rememberLogin', 'true');
+        } else {
+          localStorage.removeItem('rememberLogin');
+        }
+        
         // Redirect to intended page after successful login
         const from = router.query.from as string;
         const redirectTo = from && from !== '/login' ? from : '/dashboard';
@@ -122,8 +157,13 @@ const LoginPage: React.FC = () => {
               label="Email"
               type="email"
               value={email}
-              onChange={(e: React.ChangeEvent<HTMLElement>) => setEmail(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setEmail(e.target.value);
+                if (emailError) setEmailError('');
+              }}
               disabled={loading}
+              error={!!emailError}
+              helperText={emailError}
               sx={{ mb: 2 }}
               data-testid="email-input"
               InputProps={{
@@ -140,9 +180,14 @@ const LoginPage: React.FC = () => {
               label="Password"
               type={showPassword ? 'text' : 'password'}
               value={password}
-              onChange={(e: React.ChangeEvent<HTMLElement>) => setPassword(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setPassword(e.target.value);
+                if (passwordError) setPasswordError('');
+              }}
               disabled={loading}
-              sx={{ mb: 3 }}
+              error={!!passwordError}
+              helperText={passwordError}
+              sx={{ mb: 2 }}
               data-testid="password-input"
               InputProps={{
                 startAdornment: (
@@ -154,13 +199,28 @@ const LoginPage: React.FC = () => {
                   <InputAdornment position="end">
                     <IconButton
                       onClick={() => setShowPassword(!showPassword)}
+                      aria-label="Toggle password visibility"
                       edge="end"
+                      data-testid="password-visibility-toggle"
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
                 ),
               }}
+            />
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  name="remember"
+                  color="primary"
+                />
+              }
+              label="Remember me"
+              sx={{ mb: 2, alignSelf: 'flex-start' }}
             />
 
             <Button
@@ -173,20 +233,39 @@ const LoginPage: React.FC = () => {
               sx={{
                 mb: 2,
                 height: 48,
-                backgroundColor: '#FBBF24', // Carbon Black amber
+                backgroundColor: '#FBBF24',
                 color: '#000000',
                 '&:hover': {
                   backgroundColor: '#F59E0B',
                   boxShadow: '0 0 0 2px rgba(251, 191, 36, 0.3)',
                 },
+                '&:disabled': {
+                  backgroundColor: '#6B7280',
+                  color: '#9CA3AF',
+                },
               }}
             >
-              {loading ? <CircularProgress size={24} color="inherit" /> : 'Sign In'}
+              {loading ? (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <CircularProgress size={20} color="inherit" data-testid="loading" />
+                  Signing In...
+                </Box>
+              ) : (
+                'Sign In'
+              )}
             </Button>
           </form>
 
 
           <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              <Link
+                href="/forgot-password"
+                sx={{ color: '#FBBF24', textDecoration: 'none' }}
+              >
+                Forgot your password?
+              </Link>
+            </Typography>
             <Typography variant="body2" color="text.secondary">
               Don&apos;t have an account?{' '}
               <Link

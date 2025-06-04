@@ -87,7 +87,7 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
   // Control referrer information
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   
-  // Content Security Policy - Stricter in production
+  // Content Security Policy - Improved security
   const cspBase = [
     "default-src 'self'",
     "font-src 'self' https://fonts.gstatic.com",
@@ -96,22 +96,26 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
     "base-uri 'self'",
     "form-action 'self'",
     "frame-ancestors 'none'",
-    "upgrade-insecure-requests"
   ];
+
+  // Don't add upgrade-insecure-requests in development
+  if (process.env.NODE_ENV === 'production') {
+    cspBase.push("upgrade-insecure-requests");
+  }
 
   // More permissive in development mode
   if (process.env.NODE_ENV === 'development') {
     cspBase.push(
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'unsafe-hashes' https://cdn.jsdelivr.net",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.openai.com https://api.elevenlabs.io https://api.creatomate.com ws://localhost:*"
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.openai.com https://api.elevenlabs.io https://api.creatomate.com https://graph.facebook.com https://api.twitter.com https://api.linkedin.com ws://localhost:* http://localhost:*"
     );
   } else {
-    // Production CSP - Allow unsafe-inline for Material-UI emotion styles and event handlers
+    // Production CSP - Allow unsafe-inline for Material-UI emotion styles and unsafe-hashes for event handlers
     cspBase.push(
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'unsafe-hashes'",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.openai.com https://api.elevenlabs.io https://api.creatomate.com"
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.openai.com https://api.elevenlabs.io https://api.creatomate.com https://graph.facebook.com https://api.twitter.com https://api.linkedin.com"
     );
   }
   

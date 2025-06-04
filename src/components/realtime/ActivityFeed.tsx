@@ -252,8 +252,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
               <Tooltip title={showDetails ? "Hide details" : "Show details"}>
                 <IconButton 
                   size="small" 
-                  onClick={() => setShowDetails(!showDetails)}
-                >
+                  onClick={() => setShowDetails(!showDetails)} aria-label="Icon button">
                   {showDetails ? <HideIcon /> : <ViewIcon />}
                 </IconButton>
               </Tooltip>
@@ -261,14 +260,11 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
                 <IconButton 
                   size="small" 
                   onClick={handlePauseToggle}
-                  color={isPaused ? "warning" : "default"}
-                >
-                  {isPaused ? <PlayIcon /> : <PauseIcon />}
+                  color={isPaused ? "warning" : "default"} aria-label="Icon button">                  {isPaused ? <PlayIcon /> : <PauseIcon />}
                 </IconButton>
               </Tooltip>
               <Tooltip title="Refresh">
-                <IconButton size="small" onClick={refresh} disabled={loading}>
-                  {loading ? <CircularProgress size={16} /> : <RefreshIcon />}
+                <IconButton size="small" onClick={refresh} disabled={loading} aria-label="Icon button">                  {loading ? <CircularProgress size={16} /> : <RefreshIcon />}
                 </IconButton>
               </Tooltip>
             </Stack>

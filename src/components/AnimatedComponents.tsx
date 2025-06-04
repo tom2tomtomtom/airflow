@@ -186,9 +186,7 @@ export const AnimatedLikeButton: React.FC<{
           transform: 'scale(1.1)',
           backgroundColor: liked ? 'error.light' : 'action.hover',
         },
-      }}
-    >
-      <Box
+      }} aria-label="Icon button">      <Box
         sx={{
           transform: animating ? 'scale(1.3)' : 'scale(1)',
           transition: 'transform 0.3s ease',
@@ -331,8 +329,7 @@ export const AnimatedToast: React.FC<{
         >
           <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Typography flex={1}>{message}</Typography>
-            <IconButton size="small" onClick={onClose} sx={{ color: 'inherit' }}>
-              <Add sx={{ transform: 'rotate(45deg)' }} />
+            <IconButton size="small" onClick={onClose} sx={{ color: 'inherit' }} aria-label="Icon button">              <Add sx={{ transform: 'rotate(45deg)' }} />
             </IconButton>
           </CardContent>
         </Card>

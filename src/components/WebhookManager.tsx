@@ -662,14 +662,13 @@ const WebhookManager: React.FC = () => {
                           <Tooltip title="View Details">
                             <IconButton
                               size="small"
-                              onClick={() => fetchWebhookDetails(webhook.id)}
-                            >
+                              onClick={() => fetchWebhookDetails(webhook.id)} aria-label="Icon button">
                               <ViewIcon />
                             </IconButton>
                           </Tooltip>
                           <IconButton
                             size="small"
-                            onClick={(e: React.ClickEvent<HTMLElement>) => handleMenuOpen(e, webhook)}
+                            onClick={(e: React.ClickEvent<HTMLElement aria-label="Icon button">) => handleMenuOpen(e, webhook)}
                           >
                             <MoreIcon />
                           </IconButton>
@@ -961,8 +960,7 @@ const WebhookManager: React.FC = () => {
                       <Typography variant="body2" color="text.secondary">URL</Typography>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Typography variant="body2">{webhookDetails.data.url}</Typography>
-                        <IconButton size="small" onClick={() => copyToClipboard(webhookDetails.data.url)}>
-                          <CopyIcon fontSize="small" />
+                        <IconButton size="small" onClick={() => copyToClipboard(webhookDetails.data.url)} aria-label="Icon button">                          <CopyIcon fontSize="small" />
                         </IconButton>
                       </Box>
                     </Grid>
@@ -974,13 +972,11 @@ const WebhookManager: React.FC = () => {
                         </Typography>
                         <IconButton 
                           size="small" 
-                          onClick={() => setShowSecret(!showSecret)}
-                        >
+                          onClick={() => setShowSecret(!showSecret)} aria-label="Icon button">
                           {showSecret ? <VisibilityOff fontSize="small" /> : <ViewIcon fontSize="small" />}
                         </IconButton>
                         {showSecret && (
-                          <IconButton size="small" onClick={() => copyToClipboard(webhookDetails.data.secret)}>
-                            <CopyIcon fontSize="small" />
+                          <IconButton size="small" onClick={() => copyToClipboard(webhookDetails.data.secret)} aria-label="Icon button">                            <CopyIcon fontSize="small" />
                           </IconButton>
                         )}
                       </Box>

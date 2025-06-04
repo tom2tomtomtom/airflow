@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:3001';
+const BASE_URL = 'http://localhost:3000';
 const TEST_EMAIL = 'tomh@redbaez.com';
-const TEST_PASSWORD = 'Wijlre2010';
+const TEST_PASSWORD = 'Wijre2010';
 
 test.describe('Comprehensive Authentication & Page Loading Tests', () => {
   

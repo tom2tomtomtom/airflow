@@ -161,9 +161,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
       <Tooltip title="Notifications">
         <IconButton
           color="inherit"
-          onClick={handleClick}
-          aria-label="notifications"
-        >
+          onClick={handleClick} aria-label="notifications">
           <Badge badgeContent={unreadNotifications.length} color="error">
             {unreadNotifications.length > 0 ? (
               <NotificationActiveIcon />

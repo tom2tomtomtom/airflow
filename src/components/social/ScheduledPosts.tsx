@@ -449,6 +449,7 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
                             setActionMenuAnchor(e.currentTarget);
                             setActionMenuPost(post);
                           }}
+                          aria-label="Icon button"
                         >
                           <MoreIcon />
                         </IconButton>

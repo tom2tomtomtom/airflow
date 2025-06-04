@@ -204,7 +204,7 @@ export const SmartProgressIndicator: React.FC<SmartProgressIndicatorProps> = ({
         {/* Toggle Steps Detail */}
         <Box display="flex" alignItems="center" justifyContent="center">
           <IconButton 
-            onClick={() => setShowSteps(!showSteps)}
+            onClick={() => setShowSteps(!showSteps)} aria-label="Icon button"
             size="small"
           >
             {showSteps ? <ExpandLess /> : <ExpandMore />}

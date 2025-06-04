@@ -499,7 +499,7 @@ async function triggerPostDecisionWorkflow(approval: any, decision: any): Promis
   try {
     if (decision.action === 'approve') {
       if (approval.item_type === 'execution') {
-        console.log(`Triggering execution for approved item: ${approval.item_id}`);
+        process.env.NODE_ENV === 'development' && console.log(`Triggering execution for approved item: ${approval.item_id}`);
       }
       
       if (approval.item_type === 'campaign') {
@@ -532,7 +532,7 @@ async function logBulkApprovalDecision(approvalIds: string[], action: string, us
 
 async function triggerBulkNotification(userId: string, approvals: any[], action: string): Promise<void> {
   try {
-    console.log(`Bulk notification for user ${userId}: ${action} - ${approvals.length} approvals`);
+    process.env.NODE_ENV === 'development' && console.log(`Bulk notification for user ${userId}: ${action} - ${approvals.length} approvals`);
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Error triggering bulk notification:', error);

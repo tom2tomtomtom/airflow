@@ -1079,7 +1079,7 @@ const StrategicContent: React.FC = () => {
                               />
                               <IconButton 
                                 size="small" 
-                                onClick={() => handleRemoveKeyMessage(index)}
+                                onClick={() => handleRemoveKeyMessage(index)} aria-label="Icon button"
                                 disabled={briefForm.keyMessages.length === 1}
                               >
                                 <DeleteIcon />
@@ -1110,7 +1110,7 @@ const StrategicContent: React.FC = () => {
                               />
                               <IconButton 
                                 size="small" 
-                                onClick={() => handleRemoveDeliverable(index)}
+                                onClick={() => handleRemoveDeliverable(index)} aria-label="Icon button"
                                 disabled={briefForm.deliverables.length === 1}
                               >
                                 <DeleteIcon />

@@ -1,0 +1,1867 @@
+{
+  "timestamp": "2025-06-03T14:41:49.998Z",
+  "totalIssues": 232,
+  "critical": 0,
+  "high": 165,
+  "medium": 67,
+  "low": 0,
+  "autoFixable": 48,
+  "issues": [
+    {
+      "file": "src/components/ActivityFeed.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/ActivityFeed.tsx",
+      "line": 11,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/ActivityFeed.tsx",
+      "line": 31,
+      "issue": "Image missing alt text",
+      "severity": "medium",
+      "suggestedFix": "Add alt attribute with descriptive text",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/AdvancedAnalytics.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/AdvancedAnalytics.tsx",
+      "line": 25,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/AnimatedComponents.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/AnimatedComponents.tsx",
+      "line": 7,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/ApprovalWorkflow.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/ApprovalWorkflow.tsx",
+      "line": 10,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/AssetBrowser.tsx",
+      "line": 17,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/AssetCard.tsx",
+      "line": 8,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/AssetUploadModal.tsx",
+      "line": 242,
+      "issue": "Upload button missing test ID",
+      "severity": "medium",
+      "suggestedFix": "Add data-testid=\"upload-button\" to Button",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/AssetUploadModal.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/AssetUploadModal.tsx",
+      "line": 12,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/AssetUploadModal.tsx",
+      "line": 22,
+      "issue": "Image missing alt text",
+      "severity": "medium",
+      "suggestedFix": "Add alt attribute with descriptive text",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/BriefUploadModal.tsx",
+      "line": 354,
+      "issue": "Upload button missing test ID",
+      "severity": "medium",
+      "suggestedFix": "Add data-testid=\"upload-button\" to Button",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/BriefUploadModal.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/BriefUploadModal.tsx",
+      "line": 11,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/DashboardLayout.tsx",
+      "line": 307,
+      "issue": "Navigation component missing test ID",
+      "severity": "medium",
+      "suggestedFix": "Add data-testid=\"sidebar-nav\" to navigation component",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/DashboardLayout.tsx",
+      "line": 27,
+      "issue": "Image missing alt text",
+      "severity": "medium",
+      "suggestedFix": "Add alt attribute with descriptive text",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/EmptyStates.tsx",
+      "line": 16,
+      "issue": "Image missing alt text",
+      "severity": "medium",
+      "suggestedFix": "Add alt attribute with descriptive text",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/ExecutionMonitor.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/ExecutionMonitor.tsx",
+      "line": 11,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/FieldEditor.tsx",
+      "line": 7,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/GlobalSearch.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/GlobalSearch.tsx",
+      "line": 16,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/GlobalSearch.tsx",
+      "line": 26,
+      "issue": "Image missing alt text",
+      "severity": "medium",
+      "suggestedFix": "Add alt attribute with descriptive text",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/MatrixEditor.tsx",
+      "line": 15,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/MobileOptimizedWorkflow.tsx",
+      "line": 10,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/MobileOptimizedWorkflow.tsx",
+      "line": 31,
+      "issue": "Image missing alt text",
+      "severity": "medium",
+      "suggestedFix": "Add alt attribute with descriptive text",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/OnboardingWizard.tsx",
+      "line": 18,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/SimplifiedNavigation.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/SimplifiedNavigation.tsx",
+      "line": 14,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/SimplifiedNavigation.tsx",
+      "line": 27,
+      "issue": "Image missing alt text",
+      "severity": "medium",
+      "suggestedFix": "Add alt attribute with descriptive text",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/SmartProgressIndicator.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/SmartProgressIndicator.tsx",
+      "line": 15,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/SmartProgressIndicator.tsx",
+      "line": 26,
+      "issue": "Image missing alt text",
+      "severity": "medium",
+      "suggestedFix": "Add alt attribute with descriptive text",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/UnifiedBriefWorkflow.tsx",
+      "line": 16,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/UnifiedBriefWorkflow.tsx",
+      "line": 37,
+      "issue": "Image missing alt text",
+      "severity": "medium",
+      "suggestedFix": "Add alt attribute with descriptive text",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/UserMenu.tsx",
+      "line": 4,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/VideoExecutionPanel.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/WebhookManager.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/WebhookManager.tsx",
+      "line": 11,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/analytics/PerformanceDashboard.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/debug/EnvironmentDebug.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/generate/CopyGenerationTab.tsx",
+      "line": 11,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/generate/ImageGenerationTab.tsx",
+      "line": 15,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/generate/ResultsTab.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/generate/ResultsTab.tsx",
+      "line": 10,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/generate/StrategicMotivationsTab.tsx",
+      "line": 13,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/generate/VoiceGenerationTab.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/generate/VoiceGenerationTab.tsx",
+      "line": 15,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/realtime/ActivityFeed.tsx",
+      "line": 12,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/realtime/LiveCollaboration.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/realtime/NotificationCenter.tsx",
+      "line": 4,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/social/PlatformConnections.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/social/PlatformConnections.tsx",
+      "line": 12,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/social/PlatformConnections.tsx",
+      "line": 80,
+      "issue": "Image missing alt text",
+      "severity": "medium",
+      "suggestedFix": "Add alt attribute with descriptive text",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/social/PublishingAnalytics.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/social/ScheduledPosts.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/social/ScheduledPosts.tsx",
+      "line": 8,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/components/social/ScheduledPosts.tsx",
+      "line": 41,
+      "issue": "Image missing alt text",
+      "severity": "medium",
+      "suggestedFix": "Add alt attribute with descriptive text",
+      "autoFixable": false
+    },
+    {
+      "file": "src/components/social/SocialPublisher.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/contexts/AuthContext.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/contexts/ClientContext.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/contexts/SupabaseAuthContext.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/hooks/useData.ts",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/hooks/useRealTimeUpdates.ts",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/hooks/useRealtime.ts",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/lib/auth.ts",
+      "line": 33,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/lib/auth.ts",
+      "line": -1,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/lib/mfa.ts",
+      "line": -1,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/lib/mfa.ts",
+      "line": -1,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/lib/mfa.ts",
+      "line": -1,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/lib/mfa.ts",
+      "line": 318,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/lib/mfa.ts",
+      "line": 324,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/lib/mfa.ts",
+      "line": 329,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/lib/mfa.ts",
+      "line": 334,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/middleware/validation.ts",
+      "line": 265,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/_document.tsx",
+      "line": -1,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/admin/users.tsx",
+      "line": 508,
+      "issue": "Upload button missing test ID",
+      "severity": "medium",
+      "suggestedFix": "Add data-testid=\"upload-button\" to Button",
+      "autoFixable": true
+    },
+    {
+      "file": "src/pages/admin/users.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/admin/users.tsx",
+      "line": 16,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/pages/analytics.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/ai/generate.ts",
+      "line": 75,
+      "issue": "Image missing alt text",
+      "severity": "medium",
+      "suggestedFix": "Add alt attribute with descriptive text",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/ai/generations.ts",
+      "line": 31,
+      "issue": "Image missing alt text",
+      "severity": "medium",
+      "suggestedFix": "Add alt attribute with descriptive text",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/analytics/insights.ts",
+      "line": 114,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/analytics/insights.ts",
+      "line": -1,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/analytics/insights.ts",
+      "line": 186,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/analytics/overview.ts",
+      "line": -1,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/analytics/performance.ts",
+      "line": 98,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/analytics/performance.ts",
+      "line": -1,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/analytics/performance.ts",
+      "line": -1,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/analytics/performance.ts",
+      "line": 355,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/approval-workflow.ts",
+      "line": 14,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/approvals/[id].ts",
+      "line": 60,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/approvals/[id].ts",
+      "line": 112,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/approvals/[id].ts",
+      "line": 123,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/approvals/[id].ts",
+      "line": 226,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/approvals/[id].ts",
+      "line": 287,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/approvals/bulk.ts",
+      "line": 54,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/approvals/bulk.ts",
+      "line": 152,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/approvals/bulk.ts",
+      "line": 366,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/approvals/index.ts",
+      "line": 165,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/assets/[id].ts",
+      "line": 16,
+      "issue": "Image missing alt text",
+      "severity": "medium",
+      "suggestedFix": "Add alt attribute with descriptive text",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/brand-guidelines/analyze.ts",
+      "line": 91,
+      "issue": "Image missing alt text",
+      "severity": "medium",
+      "suggestedFix": "Add alt attribute with descriptive text",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/brand-guidelines/analyze.ts",
+      "line": 57,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/brief-parse.ts",
+      "line": 13,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/brief-parse.ts",
+      "line": 24,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/briefs/[id].ts",
+      "line": 51,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/briefs/[id].ts",
+      "line": 119,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/briefs/[id].ts",
+      "line": 176,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/briefs/index.ts",
+      "line": 47,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/campaigns/[id].ts",
+      "line": 56,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/campaigns/[id].ts",
+      "line": 161,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/campaigns/[id].ts",
+      "line": 236,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/campaigns/[id].ts",
+      "line": 549,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/campaigns/[id].ts",
+      "line": 603,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/campaigns/[id].ts",
+      "line": 639,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/campaigns/index.ts",
+      "line": 51,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/campaigns/index.ts",
+      "line": 155,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/copy-assets/[id]/performance.ts",
+      "line": 35,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/copy-assets/[id]/performance.ts",
+      "line": 193,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/copy-assets/[id]/versions.ts",
+      "line": 42,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/copy-assets/[id].ts",
+      "line": 52,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/copy-assets/[id].ts",
+      "line": 231,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/copy-assets/[id].ts",
+      "line": 368,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/copy-assets/index.ts",
+      "line": 54,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/copy-assets/index.ts",
+      "line": 155,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/dalle.ts",
+      "line": 40,
+      "issue": "Image missing alt text",
+      "severity": "medium",
+      "suggestedFix": "Add alt attribute with descriptive text",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/execution-schedule.ts",
+      "line": 15,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/executions/[id]/cancel.ts",
+      "line": 39,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/executions/[id]/cancel.ts",
+      "line": 259,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/executions/[id]/cancel.ts",
+      "line": 278,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/executions/[id]/cancel.ts",
+      "line": 304,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/executions/[id].ts",
+      "line": 46,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/executions/[id].ts",
+      "line": 118,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/executions/[id].ts",
+      "line": 205,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/health.ts",
+      "line": -1,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/matrices/[id]/execute.ts",
+      "line": 49,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/matrices/[id]/execute.ts",
+      "line": 182,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/matrices/[id]/execute.ts",
+      "line": -1,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/matrices/[id]/execute.ts",
+      "line": 364,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/matrices/[id]/execute.ts",
+      "line": 409,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/matrices/[id]/execute.ts",
+      "line": 470,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/matrices/[id]/execute.ts",
+      "line": 492,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/matrices/[id].ts",
+      "line": 242,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/matrices/[id].ts",
+      "line": -1,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/matrices/index.ts",
+      "line": 46,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/matrices/index.ts",
+      "line": 149,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/motivation-select.ts",
+      "line": 13,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/motivations/[id]/score.ts",
+      "line": 52,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/motivations/[id]/score.ts",
+      "line": 122,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/motivations/[id]/score.ts",
+      "line": 197,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/motivations/[id]/score.ts",
+      "line": 276,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/motivations/[id]/score.ts",
+      "line": 321,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/motivations/[id]/score.ts",
+      "line": 513,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/motivations/[id]/score.ts",
+      "line": 567,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/motivations/[id].ts",
+      "line": 50,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/motivations/[id].ts",
+      "line": 108,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/motivations/[id].ts",
+      "line": 166,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/motivations/[id].ts",
+      "line": 322,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/motivations/[id].ts",
+      "line": 445,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/motivations/index.ts",
+      "line": 48,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/motivations/index.ts",
+      "line": 157,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/realtime/events.ts",
+      "line": -1,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/social/publish.ts",
+      "line": 25,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/social/publish.ts",
+      "line": 52,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/social/publish.ts",
+      "line": 77,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/social/publish.ts",
+      "line": 115,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/templates.ts",
+      "line": 43,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/video/generate.ts",
+      "line": 71,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/video/generate.ts",
+      "line": 221,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/video/generate.ts",
+      "line": 267,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/video/generate.ts",
+      "line": 309,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/video/generations.ts",
+      "line": 47,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/video/generations.ts",
+      "line": 161,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/video/generations.ts",
+      "line": 177,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/video/generations.ts",
+      "line": 227,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/webhooks/[id].ts",
+      "line": 291,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/webhooks/[id].ts",
+      "line": 523,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/webhooks/creatomate.ts",
+      "line": 73,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/webhooks/creatomate.ts",
+      "line": 139,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/webhooks/index.ts",
+      "line": 273,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/webhooks/index.ts",
+      "line": 411,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/webhooks/subscriptions.ts",
+      "line": 7,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/webhooks/subscriptions.ts",
+      "line": 33,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/webhooks/subscriptions.ts",
+      "line": 50,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/webhooks/subscriptions.ts",
+      "line": 72,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/api/webhooks/subscriptions.ts",
+      "line": 95,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/approvals.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/assets.tsx",
+      "line": 26,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/pages/campaigns/[id]/edit.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/campaigns/[id].tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/campaigns/new.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/campaigns.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/campaigns.tsx",
+      "line": 16,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/pages/clients/[id].tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/clients/[id].tsx",
+      "line": 15,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/pages/clients.tsx",
+      "line": 17,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/pages/create-client.tsx",
+      "line": 30,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/pages/dashboard-complex.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/dashboard-complex.tsx",
+      "line": 14,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/pages/dashboard-complex.tsx",
+      "line": 20,
+      "issue": "Image missing alt text",
+      "severity": "medium",
+      "suggestedFix": "Add alt attribute with descriptive text",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/dashboard.tsx",
+      "line": 14,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/pages/dashboard.tsx",
+      "line": 20,
+      "issue": "Image missing alt text",
+      "severity": "medium",
+      "suggestedFix": "Add alt attribute with descriptive text",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/execute.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/generate-enhanced.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/generate-enhanced.tsx",
+      "line": 18,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/pages/login.tsx",
+      "line": 15,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/pages/matrix.tsx",
+      "line": 392,
+      "issue": "Form submission missing validation",
+      "severity": "high",
+      "suggestedFix": "Add validation checks before processing form data",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/matrix.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/matrix.tsx",
+      "line": 15,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/pages/sign-off.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/sign-off.tsx",
+      "line": 28,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/pages/signup.tsx",
+      "line": 15,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/pages/strategic-content-clean.tsx",
+      "line": 19,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/pages/strategic-content.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/strategic-content.tsx",
+      "line": 19,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/pages/system-status.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/templates.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/templates.tsx",
+      "line": 94,
+      "issue": "Image missing alt text",
+      "severity": "medium",
+      "suggestedFix": "Add alt attribute with descriptive text",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/test-auth.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/pages/video-studio.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/services/creatomate.ts",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/services/creatomate.ts",
+      "line": -1,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/services/creatomate.ts",
+      "line": 289,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/services/creatomate.ts",
+      "line": 303,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    },
+    {
+      "file": "src/services/websocket.ts",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/styles/theme.ts",
+      "line": 349,
+      "issue": "IconButton missing aria-label for accessibility",
+      "severity": "medium",
+      "suggestedFix": "Add aria-label to describe button action",
+      "autoFixable": true
+    },
+    {
+      "file": "src/utils/formValidation.tsx",
+      "line": 0,
+      "issue": "Error state defined but not displayed to user",
+      "severity": "high",
+      "suggestedFix": "Add error display component with proper styling",
+      "autoFixable": false
+    },
+    {
+      "file": "src/utils/supabase-middleware.ts",
+      "line": 5,
+      "issue": "Async function missing error handling",
+      "severity": "high",
+      "suggestedFix": "Wrap async operations in try-catch block",
+      "autoFixable": false
+    }
+  ]
+}

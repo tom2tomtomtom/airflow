@@ -374,7 +374,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
                       secondaryAction={
                         <IconButton
                           size="small"
-                          onClick={(e: React.ClickEvent<HTMLElement>) => handleMenuOpen(e, execution)}
+                          onClick={(e: React.ClickEvent<HTMLElement aria-label="Icon button">) => handleMenuOpen(e, execution)}
                         >
                           <MoreIcon />
                         </IconButton>

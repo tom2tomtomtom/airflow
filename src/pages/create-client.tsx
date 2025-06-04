@@ -555,7 +555,7 @@ export default function CreateClient() {
                       secondaryAction={
                         <IconButton
                           edge="end"
-                          onClick={() => handleRemoveContact(contact.id)}
+                          onClick={() => handleRemoveContact(contact.id)} aria-label="Icon button"
                           color="error"
                         >
                           <DeleteIcon />

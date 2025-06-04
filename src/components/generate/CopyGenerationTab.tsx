@@ -251,8 +251,7 @@ const CopyGenerationTab: React.FC<CopyGenerationTabProps> = ({
                                 transform: 'translateY(-50%)',
                               }}
                               color={variation.favorite ? 'error' : 'default'}
-                              onClick={() => handleToggleCopyFavorite(variation.id)}
-                            >
+                              onClick={() => handleToggleCopyFavorite(variation.id)} aria-label="Icon button">
                               {variation.favorite ? <StarIcon /> : <StarBorderIcon />}
                             </IconButton>
                             
@@ -266,23 +265,19 @@ const CopyGenerationTab: React.FC<CopyGenerationTabProps> = ({
                               mt: 1,
                             }}>
                               <Tooltip title="Edit">
-                                <IconButton size="small">
-                                  <EditIcon fontSize="small" />
+                                <IconButton size="small" aria-label="Icon button">                                  <EditIcon fontSize="small" />
                                 </IconButton>
                               </Tooltip>
                               <Tooltip title="Regenerate">
-                                <IconButton size="small">
-                                  <RefreshIcon fontSize="small" />
+                                <IconButton size="small" aria-label="Icon button">                                  <RefreshIcon fontSize="small" />
                                 </IconButton>
                               </Tooltip>
                               <Tooltip title="Copy to clipboard">
-                                <IconButton size="small">
-                                  <ContentCopyIcon fontSize="small" />
+                                <IconButton size="small" aria-label="Icon button">                                  <ContentCopyIcon fontSize="small" />
                                 </IconButton>
                               </Tooltip>
                               <Tooltip title="Save to assets">
-                                <IconButton size="small" color="primary">
-                                  <SaveIcon fontSize="small" />
+                                <IconButton size="small" color="primary" aria-label="Icon button">                                  <SaveIcon fontSize="small" />
                                 </IconButton>
                               </Tooltip>
                             </Box>

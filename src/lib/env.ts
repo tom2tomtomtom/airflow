@@ -104,7 +104,7 @@ const parseEnv = () => {
   // During build context or client-side, skip strict validation entirely
   if (isEdgeBuild || isBuildTime || isBuildContext || isClientSide) {
     if (!isClientSide) {
-      console.log('🔨 Build context detected - skipping strict environment validation');
+      process.env.NODE_ENV === 'development' && console.log('🔨 Build context detected - skipping strict environment validation');
     }
     return {
       ...process.env,

@@ -108,7 +108,7 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
           ...prev,
           lastConnected: new Date(),
         }));
-        console.log('Real-time connection established');
+        process.env.NODE_ENV === 'development' && console.log('Real-time connection established');
       };
 
       eventSource.onerror = (event) => {
@@ -129,7 +129,7 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
           }));
 
           reconnectTimeoutRef.current = setTimeout(() => {
-            console.log(`Reconnecting... attempt ${attemptCountRef.current}/${maxReconnectAttempts}`);
+            process.env.NODE_ENV === 'development' && console.log(`Reconnecting... attempt ${attemptCountRef.current}/${maxReconnectAttempts}`);
             disconnect();
             connect();
           }, reconnectDelay);

@@ -307,7 +307,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
         aria-label="navigation menu"
-      >
+       data-testid="sidebar-nav">
         <Drawer
           variant="temporary"
           open={mobileOpen}

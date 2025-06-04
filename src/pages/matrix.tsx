@@ -739,13 +739,12 @@ const MatrixPage: React.FC = () => {
                                   />
                                   <IconButton
                                     size="small"
-                                    onClick={() => handleDuplicateVariation(variation.id)}
-                                  >
+                                    onClick={() => handleDuplicateVariation(variation.id)} aria-label="Icon button">
                                     <DuplicateIcon fontSize="small" />
                                   </IconButton>
                                   <IconButton
                                     size="small"
-                                    onClick={() => handleDeleteVariation(variation.id)}
+                                    onClick={() => handleDeleteVariation(variation.id)} aria-label="Icon button"
                                     disabled={variations.length === 1}
                                   >
                                     <DeleteIcon fontSize="small" />

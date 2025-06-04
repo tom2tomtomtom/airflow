@@ -386,7 +386,7 @@ async function triggerExecutionPipeline(execution: any): Promise<any> {
 async function logRetryEvent(originalId: string, retryId: string, userId: string, reason?: string): Promise<void> {
   try {
     // In a full implementation, this would log to an execution_events table
-    console.log(`Execution retry: ${originalId} -> ${retryId} by user ${userId}`, { reason });
+    process.env.NODE_ENV === 'development' && console.log(`Execution retry: ${originalId} -> ${retryId} by user ${userId}`, { reason });
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Error logging retry event:', error);

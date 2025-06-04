@@ -617,8 +617,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
       <DialogTitle>
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <Typography variant="h5">Brief to Execution Workflow</Typography>
-          <IconButton onClick={onClose}>
-            <Close />
+          <IconButton onClick={onClose} aria-label="Icon button">            <Close />
           </IconButton>
         </Box>
       </DialogTitle>

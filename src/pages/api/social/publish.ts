@@ -1,7 +1,8 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase/client';
 import { withAuth } from '@/middleware/withAuth';
+import axios from 'axios';
 
 interface PublishRequest {
   platforms: string[];
@@ -74,56 +75,127 @@ async function publishToTwitter(accessToken: string, content: any): Promise<{ su
   }
 }
 
-async function publishToLinkedIn(accessToken: string, content: any): Promise<{ success: boolean; postId?: string; error?: string }> {
+async function publishToInstagram(accessToken: string, pageId: string, content: any): Promise<{ success: boolean; postId?: string; error?: string }> {
   try {
-    const response = await fetch('https://api.linkedin.com/v2/ugcPosts', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-        'X-Restli-Protocol-Version': '2.0.0',
-      },
-      body: JSON.stringify({
-        author: 'urn:li:person:PERSON_ID', // Would need to get actual person ID
-        lifecycleState: 'PUBLISHED',
-        specificContent: {
-          'com.linkedin.ugc.ShareContent': {
-            shareCommentary: {
-              text: content.text || '',
-            },
-            shareMediaCategory: 'NONE',
-          },
-        },
-        visibility: {
-          'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC',
-        },
-      }),
-    });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      return { success: false, error: result.message || 'LinkedIn API error' };
+    // For Instagram, we need to create a media container first, then publish it
+    let mediaResponse;
+    
+    if (content.images && content.images.length > 0) {
+      // Image post
+      mediaResponse = await axios.post(
+        `https://graph.facebook.com/v18.0/${pageId}/media`,
+        {
+          image_url: content.images[0],
+          caption: content.text || '',
+          access_token: accessToken,
+        }
+      );
+    } else if (content.video) {
+      // Video post
+      mediaResponse = await axios.post(
+        `https://graph.facebook.com/v18.0/${pageId}/media`,
+        {
+          video_url: content.video,
+          caption: content.text || '',
+          media_type: 'VIDEO',
+          access_token: accessToken,
+        }
+      );
+    } else {
+      return { success: false, error: 'Instagram requires an image or video' };
     }
 
-    return { success: true, postId: result.id };
-  } catch (error) {
-    return { success: false, error: getErrorMessage(error) };
+    if (!mediaResponse.data.id) {
+      return { success: false, error: 'Failed to create Instagram media container' };
+    }
+
+    // Publish the media container
+    const publishResponse = await axios.post(
+      `https://graph.facebook.com/v18.0/${pageId}/media_publish`,
+      {
+        creation_id: mediaResponse.data.id,
+        access_token: accessToken,
+      }
+    );
+
+    return { success: true, postId: publishResponse.data.id };
+  } catch (error: any) {
+    return { success: false, error: error.response?.data?.error?.message || getErrorMessage(error) };
   }
 }
 
-async function publishToPlatform(platform: string, accessToken: string, content: any): Promise<PublishResult> {
+async function publishToLinkedIn(accessToken: string, profileId: string, content: any): Promise<{ success: boolean; postId?: string; error?: string }> {
+  try {
+    const postData = {
+      author: `urn:li:person:${profileId}`,
+      lifecycleState: 'PUBLISHED',
+      specificContent: {
+        'com.linkedin.ugc.ShareContent': {
+          shareCommentary: {
+            text: content.text || '',
+          },
+          shareMediaCategory: 'NONE',
+        },
+      },
+      visibility: {
+        'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC',
+      },
+    };
+
+    // If there's a link, add it as media
+    if (content.link) {
+      postData.specificContent['com.linkedin.ugc.ShareContent'].shareMediaCategory = 'ARTICLE';
+      postData.specificContent['com.linkedin.ugc.ShareContent'].media = [{
+        status: 'READY',
+        originalUrl: content.link,
+      }];
+    }
+
+    const response = await axios.post(
+      'https://api.linkedin.com/v2/ugcPosts',
+      postData,
+      {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+          'X-Restli-Protocol-Version': '2.0.0',
+        },
+      }
+    );
+
+    return { success: true, postId: response.data.id };
+  } catch (error: any) {
+    return { success: false, error: error.response?.data?.message || getErrorMessage(error) };
+  }
+}
+
+async function publishToPlatform(platform: string, connection: any, content: any): Promise<PublishResult> {
   let result: { success: boolean; postId?: string; error?: string };
 
   switch (platform) {
     case 'facebook':
-      result = await publishToFacebook(accessToken, content);
+      result = await publishToFacebook(connection.access_token, content);
+      break;
+    case 'instagram':
+      // Instagram requires the page ID from the connection profile
+      const instagramPageId = connection.profile_data?.primary?.page_id || connection.profile_data?.page_id;
+      if (!instagramPageId) {
+        result = { success: false, error: 'Instagram page ID not found in connection' };
+      } else {
+        result = await publishToInstagram(connection.access_token, instagramPageId, content);
+      }
       break;
     case 'twitter':
-      result = await publishToTwitter(accessToken, content);
+      result = await publishToTwitter(connection.access_token, content);
       break;
     case 'linkedin':
-      result = await publishToLinkedIn(accessToken, content);
+      // LinkedIn requires the profile ID
+      const profileId = connection.platform_user_id || connection.profile_data?.id;
+      if (!profileId) {
+        result = { success: false, error: 'LinkedIn profile ID not found in connection' };
+      } else {
+        result = await publishToLinkedIn(connection.access_token, profileId, content);
+      }
       break;
     default:
       result = { success: false, error: 'Unsupported platform' };
@@ -159,25 +231,25 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
         return res.status(501).json({ success: false, error: 'Scheduling not yet implemented' });
       }
 
-      // Get platform integrations
-      const { data: integrations, error: integrationsError } = await supabase
-        .from('platform_integrations')
+      // Get social media connections
+      const { data: connections, error: connectionsError } = await supabase
+        .from('social_connections')
         .select('*')
-        .eq('client_id', clientId || null)
-        .eq('created_by', userId)
+        .eq('user_id', userId)
+        .eq('is_active', true)
         .in('platform', platforms);
 
-      if (integrationsError) {
-        return res.status(500).json({ success: false, error: integrationsError.message });
+      if (connectionsError) {
+        return res.status(500).json({ success: false, error: connectionsError.message });
       }
 
       const results: PublishResult[] = [];
 
       // Publish to each platform
       for (const platform of platforms) {
-        const integration = integrations?.find(i => i.platform === platform);
+        const connection = connections?.find(c => c.platform === platform);
         
-        if (!integration || !integration.access_token) {
+        if (!connection || !connection.access_token) {
           results.push({
             platform,
             success: false,
@@ -186,8 +258,32 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
           continue;
         }
 
-        const result = await publishToPlatform(platform, integration.access_token, content);
+        // Check if token is expired
+        if (connection.token_expires_at && new Date(connection.token_expires_at) < new Date()) {
+          results.push({
+            platform,
+            success: false,
+            error: 'Access token expired, please reconnect your account',
+          });
+          continue;
+        }
+
+        const result = await publishToPlatform(platform, connection, content);
         results.push(result);
+
+        // Log the publish result
+        await supabase
+          .from('social_posts')
+          .insert({
+            user_id: userId,
+            client_id: clientId,
+            platform,
+            platform_post_id: result.postId,
+            content: content,
+            status: result.success ? 'published' : 'failed',
+            error_message: result.error,
+            published_at: result.success ? new Date().toISOString() : null,
+          });
       }
 
       // Log the publish attempt

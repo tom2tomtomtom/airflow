@@ -96,7 +96,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.email);
+        process.env.NODE_ENV === 'development' && console.log('Auth state changed:', event, session?.user?.email);
         
         if (session) {
           setAuthState({
@@ -118,9 +118,9 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         if (event === 'SIGNED_OUT') {
           router.push('/login');
         } else if (event === 'TOKEN_REFRESHED') {
-          console.log('Token refreshed successfully');
+          process.env.NODE_ENV === 'development' && console.log('Token refreshed successfully');
         } else if (event === 'USER_UPDATED') {
-          console.log('User data updated');
+          process.env.NODE_ENV === 'development' && console.log('User data updated');
         }
       }
     );

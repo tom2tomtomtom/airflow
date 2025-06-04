@@ -158,9 +158,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
             <IconButton
               size="small"
               onClick={handleAssetSelectClick}
-              title="Change asset"
-            >
-              <EditIcon fontSize="small" />
+              title="Change asset" aria-label="Icon button">              <EditIcon fontSize="small" />
             </IconButton>
           </Box>
         );

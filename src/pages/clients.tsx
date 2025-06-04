@@ -91,7 +91,7 @@ const ClientsPage: React.FC = () => {
   const handleDeleteClient = () => {
     // TODO: Implement actual delete functionality
     if (process.env.NODE_ENV === 'development') {
-      console.log('Delete client:', selectedClient);
+      process.env.NODE_ENV === 'development' && console.log('Delete client:', selectedClient);
     }
     setDeleteDialogOpen(false);
     handleMenuClose();

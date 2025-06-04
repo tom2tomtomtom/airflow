@@ -249,8 +249,7 @@ const VoiceGenerationTab: React.FC<VoiceGenerationTabProps> = ({
                           <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 'auto' }}>
                             <IconButton
                               color="primary"
-                              onClick={() => handlePlayPause(voice.id)}
-                            >
+                              onClick={() => handlePlayPause(voice.id)} aria-label="Icon button">
                               {playingVoiceId === voice.id ? <PauseIcon /> : <PlayArrowIcon />}
                             </IconButton>
                             
@@ -258,15 +257,12 @@ const VoiceGenerationTab: React.FC<VoiceGenerationTabProps> = ({
                               <IconButton
                                 size="small"
                                 color={voice.favorite ? 'error' : 'default'}
-                                onClick={() => handleToggleVoiceFavorite(voice.id)}
-                              >
+                                onClick={() => handleToggleVoiceFavorite(voice.id)} aria-label="Icon button">
                                 {voice.favorite ? <StarIcon /> : <StarBorderIcon />}
                               </IconButton>
-                              <IconButton size="small">
-                                <DownloadIcon fontSize="small" />
+                              <IconButton size="small" aria-label="Icon button">                                <DownloadIcon fontSize="small" />
                               </IconButton>
-                              <IconButton size="small" color="primary">
-                                <SaveIcon fontSize="small" />
+                              <IconButton size="small" color="primary" aria-label="Icon button">                                <SaveIcon fontSize="small" />
                               </IconButton>
                             </Box>
                           </Box>

@@ -1,6 +1,6 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase/client';
 import { withAuth } from '@/middleware/withAuth';
 
 interface Platform {
@@ -20,12 +20,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
   try {
     if (req.method === 'GET') {
-      // Get platform integrations for the client
-      const { data: integrations, error } = await supabase
-        .from('platform_integrations')
+      // Get social media connections for the user
+      const { data: connections, error } = await supabase
+        .from('social_connections')
         .select('*')
-        .eq('client_id', clientId || null)
-        .eq('created_by', userId);
+        .eq('user_id', userId)
+        .eq('is_active', true);
 
       if (error) {
         return res.status(500).json({ success: false, error: error.message });
@@ -41,15 +41,18 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       ];
 
       const platforms: Platform[] = supportedPlatforms.map(platform => {
-        const integration = integrations?.find(i => i.platform === platform.name);
+        const connection = connections?.find(c => c.platform === platform.name);
+        
+        // Check if token is expired
+        const isExpired = connection?.token_expires_at && new Date(connection.token_expires_at) < new Date();
         
         return {
           ...platform,
-          isConnected: !!integration,
-          accountName: integration?.account_name || undefined,
-          permissions: integration?.permissions || [],
-          lastSync: integration?.last_sync_at || undefined,
-          status: integration?.status || 'active',
+          isConnected: !!connection,
+          accountName: connection?.platform_username || undefined,
+          permissions: connection?.scope?.split(',') || [],
+          lastSync: connection?.connected_at || undefined,
+          status: isExpired ? 'expired' : (connection ? 'active' : 'active'),
         };
       });
 

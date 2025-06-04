@@ -88,7 +88,7 @@ export default async function handler(
     // If profile doesn't exist, create it with the current schema
     if (profileError && profileError.code === 'PGRST116') {
       if (process.env.NODE_ENV === 'development') {
-        console.log('Creating new user profile...');
+        process.env.NODE_ENV === 'development' && console.log('Creating new user profile...');
       }
       
       // Determine the correct schema to use based on existing table structure
@@ -112,7 +112,7 @@ export default async function handler(
       if (createError) {
         // Try alternative schema format if the first one fails
         if (process.env.NODE_ENV === 'development') {
-          console.log('First profile creation failed, trying alternative schema...', createError);
+          console.error('First profile creation failed, trying alternative schema...', createError);
         }
         
         const { data: altProfile, error: altError } = await supabase

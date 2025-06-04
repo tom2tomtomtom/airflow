@@ -180,7 +180,7 @@ const SignupPage: React.FC = () => {
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
-                      onClick={() => setShowPassword(!showPassword)}
+                      onClick={() => setShowPassword(!showPassword)} aria-label="Icon button"
                       edge="end"
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
@@ -208,7 +208,7 @@ const SignupPage: React.FC = () => {
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)} aria-label="Icon button"
                       edge="end"
                     >
                       {showConfirmPassword ? <VisibilityOff /> : <Visibility />}

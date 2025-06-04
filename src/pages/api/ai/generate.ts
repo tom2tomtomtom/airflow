@@ -143,7 +143,7 @@ const generateVideo = async (prompt: string, parameters?: Record<string, any>): 
   try {
     // Implement Runway ML video generation
     // For now, return mock until Runway integration is complete
-    console.log('Video generation with Runway ML:', prompt, parameters);
+    process.env.NODE_ENV === 'development' && console.log('Video generation with Runway ML:', prompt, parameters);
     return mockGenerateVideo(prompt);
   } catch (error) {
     console.error('Runway video generation error:', error);
@@ -161,7 +161,7 @@ const generateVoice = async (prompt: string, parameters?: Record<string, any>): 
     const voice = parameters?.voice || 'alloy';
     const language = parameters?.language || 'en';
 
-    console.log('Voice generation with ElevenLabs:', prompt, { voice, language });
+    process.env.NODE_ENV === 'development' && console.log('Voice generation with ElevenLabs:', prompt, { voice, language });
 
     // For now, return mock until ElevenLabs integration is complete
     return mockGenerateVoice(prompt);

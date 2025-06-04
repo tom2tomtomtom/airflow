@@ -191,8 +191,7 @@ const ClientDetailPage: React.FC = () => {
         {/* Header */}
         <Box mb={4}>
           <Box display="flex" alignItems="center" gap={1} mb={2}>
-            <IconButton onClick={() => router.push('/clients')}>
-              <ArrowBackIcon />
+            <IconButton onClick={() => router.push('/clients')} aria-label="Icon button">              <ArrowBackIcon />
             </IconButton>
             <Typography variant="h4" sx={{ flexGrow: 1 }}>
               {client.name}
@@ -446,11 +445,9 @@ const ClientDetailPage: React.FC = () => {
                   />
                   {isEditing && (
                     <ListItemSecondaryAction>
-                      <IconButton edge="end" onClick={() => handleEditContact(contact)}>
-                        <EditIcon />
+                      <IconButton edge="end" onClick={() => handleEditContact(contact)} aria-label="Icon button">                        <EditIcon />
                       </IconButton>
-                      <IconButton edge="end" onClick={() => handleDeleteContact(contact.id)}>
-                        <DeleteIcon />
+                      <IconButton edge="end" onClick={() => handleDeleteContact(contact.id)} aria-label="Icon button">                        <DeleteIcon />
                       </IconButton>
                     </ListItemSecondaryAction>
                   )}

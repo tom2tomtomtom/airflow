@@ -454,10 +454,18 @@ const AssetsPage = () => {
               </Typography>
             )}
           </Box>
-          <Box display="flex" gap={1}>
+          <Box display="flex" gap={2}>
+            <Button
+              variant="contained"
+              startIcon={<Upload />}
+              onClick={() => setShowUploadModal(true)}
+              data-testid="upload-button"
+            >
+              Upload Assets
+            </Button>
             <Tooltip title="Grid View">
               <IconButton 
-                onClick={() => setViewMode('grid')}
+                onClick={() => setViewMode('grid')} aria-label="Icon button"
                 color={viewMode === 'grid' ? 'primary' : 'default'}
               >
                 <ViewModule />
@@ -465,7 +473,7 @@ const AssetsPage = () => {
             </Tooltip>
             <Tooltip title="List View">
               <IconButton 
-                onClick={() => setViewMode('list')}
+                onClick={() => setViewMode('list')} aria-label="Icon button"
                 color={viewMode === 'list' ? 'primary' : 'default'}
               >
                 <ViewList />
@@ -527,8 +535,7 @@ const AssetsPage = () => {
 
               <IconButton
                 onClick={() => handleFilterChange({ 
-                  sortOrder: filters.sortOrder === 'asc' ? 'desc' : 'asc' 
-                })}
+                  sortOrder: filters.sortOrder === 'asc' ? 'desc' : 'asc'}
               >
                 <Sort sx={{ 
                   transform: filters.sortOrder === 'desc' ? 'rotate(180deg)' : 'none' 
@@ -536,7 +543,7 @@ const AssetsPage = () => {
               </IconButton>
 
               <Badge color="error" badgeContent={hasActiveFilters ? '•' : 0}>
-                <IconButton onClick={() => setShowFilters(!showFilters)}>
+                <IconButton onClick={() => setShowFilters(!showFilters)} aria-label="Icon button">
                   <FilterList />
                 </IconButton>
               </Badge>
@@ -820,7 +827,7 @@ const AssetsPage = () => {
           open={Boolean(anchorEl)}
           onClose={() => setAnchorEl(null)}
         >
-          <MenuItem onClick={() => console.log('Edit', selectedAsset)}>
+          <MenuItem onClick={() => process.env.NODE_ENV === 'development' && console.log('Edit', selectedAsset);}>
             <ListItemIcon><Edit /></ListItemIcon>
             <ListItemText>Edit</ListItemText>
           </MenuItem>
@@ -831,13 +838,13 @@ const AssetsPage = () => {
             <ListItemIcon><Download /></ListItemIcon>
             <ListItemText>Download</ListItemText>
           </MenuItem>
-          <MenuItem onClick={() => console.log('Share', selectedAsset)}>
+          <MenuItem onClick={() => process.env.NODE_ENV === 'development' && console.log('Share', selectedAsset);}>
             <ListItemIcon><Share /></ListItemIcon>
             <ListItemText>Share</ListItemText>
           </MenuItem>
           <Divider />
           <MenuItem 
-            onClick={() => console.log('Delete', selectedAsset)}
+            onClick={() => process.env.NODE_ENV === 'development' && console.log('Delete', selectedAsset);}
             sx={{ color: 'error.main' }}
           >
             <ListItemIcon><Delete color="error" /></ListItemIcon>
@@ -973,11 +980,9 @@ const AssetCard: React.FC<AssetCardProps> = ({
                 </Box>
               </Box>
               <Box display="flex" alignItems="center" gap={1}>
-                <IconButton onClick={onToggleFavorite} size="small">
-                  {asset.favorite ? <Favorite color="error" /> : <FavoriteBorder />}
+                <IconButton onClick={onToggleFavorite} size="small" aria-label="Icon button">                  {asset.favorite ? <Favorite color="error" /> : <FavoriteBorder />}
                 </IconButton>
-                <IconButton onClick={onMenuClick} size="small">
-                  <MoreVert />
+                <IconButton onClick={onMenuClick} size="small" aria-label="Icon button">                  <MoreVert />
                 </IconButton>
               </Box>
             </Box>
@@ -1019,16 +1024,12 @@ const AssetCard: React.FC<AssetCardProps> = ({
         <IconButton
           onClick={onToggleFavorite}
           sx={{ position: 'absolute', top: 8, right: 40, zIndex: 1 }}
-          size="small"
-        >
-          {asset.favorite ? <Favorite color="error" /> : <FavoriteBorder />}
+          size="small" aria-label="Icon button">          {asset.favorite ? <Favorite color="error" /> : <FavoriteBorder />}
         </IconButton>
         <IconButton
           onClick={onMenuClick}
           sx={{ position: 'absolute', top: 8, right: 8, zIndex: 1 }}
-          size="small"
-        >
-          <MoreVert />
+          size="small" aria-label="Icon button">          <MoreVert />
         </IconButton>
 
         {asset.thumbnailUrl || asset.type === 'image' ? (

@@ -80,7 +80,7 @@ class WebSocketService extends EventEmitter {
       ws.onopen = () => {
         if (process.env.NODE_ENV === 'development') {
 
-          console.log('WebSocket connected');
+          process.env.NODE_ENV === 'development' && console.log('WebSocket connected');
 
         }
         this.emit('connected');
@@ -104,7 +104,7 @@ class WebSocketService extends EventEmitter {
       ws.onclose = (event) => {
         if (process.env.NODE_ENV === 'development') {
 
-          console.log('WebSocket disconnected:', event.code, event.reason);
+          process.env.NODE_ENV === 'development' && console.log('WebSocket disconnected:', event.code, event.reason);
 
         }
         this.emit('disconnected');
