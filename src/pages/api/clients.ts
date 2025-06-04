@@ -1,10 +1,9 @@
 import { getErrorMessage } from '@/utils/errorUtils';
-import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase';
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import type { Client } from '@/types/models';
+import { createServerClient } from '@supabase/ssr';
 
 type ResponseData = {
   success: boolean;
@@ -25,6 +24,25 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
 
   console.log('Clients API called:', method, 'User:', user?.id, user?.email);
 
+  // Create Supabase server client with proper cookie handling
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return req.cookies[name];
+        },
+        set(name: string, value: string, options: any) {
+          // We don't need to set cookies in API routes
+        },
+        remove(name: string, options: any) {
+          // We don't need to remove cookies in API routes
+        },
+      },
+    }
+  );
+
   try {
     if (!user) {
       console.error('No user found in request');
@@ -37,10 +55,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
     switch (method) {
       case 'GET':
         console.log('Calling handleGet...');
-        return handleGet(req, res, user);
+        return handleGet(req, res, user, supabase);
       case 'POST':
         console.log('Calling handlePost...');
-        return handlePost(req, res, user);
+        return handlePost(req, res, user, supabase);
       default:
         return res.status(405).json({ 
           success: false, 
@@ -50,7 +68,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Clients API error:', error);
-    console.error('Error stack:', error.stack);
+    console.error('Error stack:', (error as any)?.stack);
     return res.status(500).json({ 
       success: false,
       message: 'Internal server error',
@@ -58,22 +76,21 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
   }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>, user: any): Promise<void> {
+async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>, user: any, supabase: any): Promise<void> {
   console.log('handleGet started for user:', user.id);
   
   try {
     const { 
       search,
-    industry,
-    limit = 50, 
-    offset = 0,
-    sort_by = 'name',
-    sort_order = 'asc',
-    include_stats = false,
-  } = req.query;
+      industry,
+      limit = 50, 
+      offset = 0,
+      sort_by = 'name',
+      sort_order = 'asc',
+      include_stats = false,
+    } = req.query;
 
     // Get all clients (RLS policies will handle access control)
-    // Note: created_by column doesn't exist in current database schema
     let query = supabase
       .from('clients')
       .select(`
@@ -181,7 +198,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
   }
 }
 
-async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData>, user: any): Promise<void> {
+async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData>, user: any, supabase: any): Promise<void> {
   try {
     const {
       name,
@@ -256,8 +273,6 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
         // Don't fail the whole operation for contact errors, just log it
       }
     }
-
-    // Access is handled by Supabase RLS policies
 
     // Transform response
     const transformedClient: Client = {
