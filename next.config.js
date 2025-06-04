@@ -1,9 +1,23 @@
-const { withSentryConfig } = require('@sentry/nextjs');
+// Sentry configuration (optional)
+let withSentryConfig;
+try {
+  const sentry = require('@sentry/nextjs');
+  withSentryConfig = sentry.withSentryConfig;
+} catch (e) {
+  // Sentry not available, use identity function
+  withSentryConfig = (config, options) => config;
+}
 
-// Bundle analyzer for performance optimization
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-});
+// Bundle analyzer for performance optimization (optional)
+let withBundleAnalyzer;
+try {
+  withBundleAnalyzer = require('@next/bundle-analyzer')({
+    enabled: process.env.ANALYZE === 'true',
+  });
+} catch (e) {
+  // Bundle analyzer not available, use identity function
+  withBundleAnalyzer = (config) => config;
+}
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {

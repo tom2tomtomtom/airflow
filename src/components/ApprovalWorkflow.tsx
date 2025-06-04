@@ -448,7 +448,8 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
                                   onClick={() => {
                                     setSelectedApproval(approval);
                                     handleDecisionClick('approve');
-                                  } aria-label="Icon button"}
+                                  }}
+                                  aria-label="Icon button"
                                 >
                                   <ApproveIcon />
                                 </IconButton>
@@ -460,7 +461,8 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
                                   onClick={() => {
                                     setSelectedApproval(approval);
                                     handleDecisionClick('request_changes');
-                                  } aria-label="Icon button"}
+                                  }}
+                                  aria-label="Icon button"
                                 >
                                   <RequestChangesIcon />
                                 </IconButton>
@@ -472,7 +474,8 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
                                   onClick={() => {
                                     setSelectedApproval(approval);
                                     handleDecisionClick('reject');
-                                  } aria-label="Icon button"}
+                                  }}
+                                  aria-label="Icon button"
                                 >
                                   <RejectIcon />
                                 </IconButton>

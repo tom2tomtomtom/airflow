@@ -96,11 +96,11 @@
     "typescript": "5.1.6",
     "vitest": "^3.1.4",
     "xlsx": "^0.18.5",
-    "zod": "^3.25.32"
+    "zod": "^3.25.32",
+    "@next/bundle-analyzer": "^15.1.2"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.8.0",
-    "@next/bundle-analyzer": "^15.1.2",
     "@playwright/test": "^1.52.0",
     "@types/compression": "^1.7.5",
     "@types/cors": "^2.8.17",

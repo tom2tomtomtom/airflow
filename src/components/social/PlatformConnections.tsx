@@ -416,7 +416,8 @@ const PlatformConnections: React.FC<PlatformConnectionsProps> = ({
                       onClick={() => {
                         setSelectedPlatform(platform);
                         setShowDetailsDialog(true);
-                      } aria-label="Icon button"}
+                      }}
+                      aria-label="Icon button"
                     >
                       <SettingsIcon />
                     </IconButton>

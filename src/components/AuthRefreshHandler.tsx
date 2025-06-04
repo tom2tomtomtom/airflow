@@ -37,7 +37,7 @@ export function AuthRefreshHandler() {
     }
 
     // Schedule refresh
-    process.env.NODE_ENV === 'development' && console.log(`Scheduling token refresh in ${Math.round(refreshTime / 1000 / 60);} minutes`);
+    process.env.NODE_ENV === 'development' && console.log(`Scheduling token refresh in ${Math.round(refreshTime / 1000 / 60)} minutes`);
     
     refreshTimerRef.current = setTimeout(async () => {
       process.env.NODE_ENV === 'development' && console.log('Refreshing token...');

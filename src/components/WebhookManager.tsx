@@ -662,13 +662,15 @@ const WebhookManager: React.FC = () => {
                           <Tooltip title="View Details">
                             <IconButton
                               size="small"
-                              onClick={() => fetchWebhookDetails(webhook.id)} aria-label="Icon button">
+                              onClick={() => fetchWebhookDetails(webhook.id)}
+                              aria-label="Icon button">
                               <ViewIcon />
                             </IconButton>
                           </Tooltip>
                           <IconButton
                             size="small"
-                            onClick={(e: React.ClickEvent<HTMLElement aria-label="Icon button">) => handleMenuOpen(e, webhook)}
+                            onClick={(e: React.MouseEvent<HTMLElement>) => handleMenuOpen(e, webhook)}
+                            aria-label="Icon button"
                           >
                             <MoreIcon />
                           </IconButton>
@@ -740,7 +742,7 @@ const WebhookManager: React.FC = () => {
                 fullWidth
                 label="Name"
                 value={formData.name}
-                onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, name: e.target.value })}
                 required
               />
             </Grid>
@@ -749,7 +751,7 @@ const WebhookManager: React.FC = () => {
                 fullWidth
                 label="URL"
                 value={formData.url}
-                onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, url: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, url: e.target.value })}
                 required
                 type="url"
               />
@@ -759,7 +761,7 @@ const WebhookManager: React.FC = () => {
                 fullWidth
                 label="Description"
                 value={formData.description}
-                onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, description: e.target.value })}
                 multiline
                 rows={2}
               />
@@ -770,7 +772,7 @@ const WebhookManager: React.FC = () => {
                 <Select
                   multiple
                   value={formData.events}
-                  onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, events: e.target.value as string[] })}
+                  onChange={(e: any) => setFormData({ ...formData, events: e.target.value as string[] })}
                   renderValue={(selected) => (
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                       {selected.map((value) => (
@@ -793,7 +795,7 @@ const WebhookManager: React.FC = () => {
                 label="Timeout (ms)"
                 type="number"
                 value={formData.timeout_ms}
-                onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, timeout_ms: parseInt(e.target.value) })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, timeout_ms: parseInt(e.target.value) })}
                 inputProps={{ min: 1000, max: 30000 }}
               />
             </Grid>
@@ -802,7 +804,7 @@ const WebhookManager: React.FC = () => {
                 control={
                   <Switch
                     checked={formData.active}
-                    onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({ ...formData, active: e.target.checked })}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, active: e.target.checked })}
                   />
                 }
                 label="Active"
@@ -821,7 +823,7 @@ const WebhookManager: React.FC = () => {
                         label="Max Attempts"
                         type="number"
                         value={formData.retry_policy.max_attempts}
-                        onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({
                           ...formData,
                           retry_policy: {
                             ...formData.retry_policy,
@@ -836,7 +838,7 @@ const WebhookManager: React.FC = () => {
                         <InputLabel>Backoff Strategy</InputLabel>
                         <Select
                           value={formData.retry_policy.backoff_strategy}
-                          onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({
+                          onChange={(e: any) => setFormData({
                             ...formData,
                             retry_policy: {
                               ...formData.retry_policy,
@@ -855,7 +857,7 @@ const WebhookManager: React.FC = () => {
                         label="Initial Delay (ms)"
                         type="number"
                         value={formData.retry_policy.initial_delay_ms}
-                        onChange={(e: React.ChangeEvent<HTMLElement>) => setFormData({
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({
                           ...formData,
                           retry_policy: {
                             ...formData.retry_policy,
@@ -891,7 +893,7 @@ const WebhookManager: React.FC = () => {
             <InputLabel>Event Type</InputLabel>
             <Select
               value={testData.event_type}
-              onChange={(e: React.ChangeEvent<HTMLElement>) => setTestData({ ...testData, event_type: e.target.value })}
+              onChange={(e: any) => setTestData({ ...testData, event_type: e.target.value })}
             >
               {selectedWebhook?.events.map((event) => (
                 <MenuItem key={event} value={event}>
@@ -905,7 +907,7 @@ const WebhookManager: React.FC = () => {
             fullWidth
             label="Test Data (JSON)"
             value={testData.test_data}
-            onChange={(e: React.ChangeEvent<HTMLElement>) => setTestData({ ...testData, test_data: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTestData({ ...testData, test_data: e.target.value })}
             multiline
             rows={4}
             placeholder='{"key": "value"}'
@@ -960,7 +962,8 @@ const WebhookManager: React.FC = () => {
                       <Typography variant="body2" color="text.secondary">URL</Typography>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Typography variant="body2">{webhookDetails.data.url}</Typography>
-                        <IconButton size="small" onClick={() => copyToClipboard(webhookDetails.data.url)} aria-label="Icon button">                          <CopyIcon fontSize="small" />
+                        <IconButton size="small" onClick={() => copyToClipboard(webhookDetails.data.url)} aria-label="Icon button">
+                          <CopyIcon fontSize="small" />
                         </IconButton>
                       </Box>
                     </Grid>
@@ -972,11 +975,13 @@ const WebhookManager: React.FC = () => {
                         </Typography>
                         <IconButton 
                           size="small" 
-                          onClick={() => setShowSecret(!showSecret)} aria-label="Icon button">
+                          onClick={() => setShowSecret(!showSecret)}
+                          aria-label="Icon button">
                           {showSecret ? <VisibilityOff fontSize="small" /> : <ViewIcon fontSize="small" />}
                         </IconButton>
                         {showSecret && (
-                          <IconButton size="small" onClick={() => copyToClipboard(webhookDetails.data.secret)} aria-label="Icon button">                            <CopyIcon fontSize="small" />
+                          <IconButton size="small" onClick={() => copyToClipboard(webhookDetails.data.secret)} aria-label="Icon button">
+                            <CopyIcon fontSize="small" />
                           </IconButton>
                         )}
                       </Box>

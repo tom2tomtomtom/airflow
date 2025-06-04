@@ -121,7 +121,7 @@ const sortOptions = [
   { value: 'file_size', label: 'Size' },
 ];
 
-const AssetsPage = () => {
+const AssetsPage: React.FC = () => {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -416,6 +416,11 @@ const AssetsPage = () => {
     },
   ];
 
+  // Prepare computed values
+  const activeTypeFilter = assetTypes.find(type => type.value === filters.type);
+  const hasActiveFilters = filters.search || filters.type || filters.tags.length > 0 || 
+                          filters.dateFrom || filters.dateTo || filters.favoritesOnly;
+
   // Show loading or redirect if not authenticated
   if (loading) {
     return (
@@ -431,450 +436,13 @@ const AssetsPage = () => {
     return null; // Will redirect via useEffect
   }
 
-  const activeTypeFilter = assetTypes.find(type => type.value === filters.type);
-  const hasActiveFilters = filters.search || filters.type || filters.tags.length > 0 || 
-                          filters.dateFrom || filters.dateTo || filters.favoritesOnly;
-
   return (
     <DashboardLayout>
       <Head>
         <title>Assets | AIrWAVE</title>
       </Head>
-      
-      <Box sx={{ width: '100%' }}>
-        {/* Header */}
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-          <Box>
-            <Typography variant="h4" gutterBottom>
-              Asset Library
-            </Typography>
-            {activeClient && (
-              <Typography variant="subtitle1" color="text.secondary">
-                {activeClient.name}
-              </Typography>
-            )}
-          </Box>
-          <Box display="flex" gap={2}>
-            <Button
-              variant="contained"
-              startIcon={<Upload />}
-              onClick={() => setShowUploadModal(true)}
-              data-testid="upload-button"
-            >
-              Upload Assets
-            </Button>
-            <Tooltip title="Grid View">
-              <IconButton 
-                onClick={() => setViewMode('grid')} aria-label="Icon button"
-                color={viewMode === 'grid' ? 'primary' : 'default'}
-              >
-                <ViewModule />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="List View">
-              <IconButton 
-                onClick={() => setViewMode('list')} aria-label="Icon button"
-                color={viewMode === 'list' ? 'primary' : 'default'}
-              >
-                <ViewList />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        </Box>
-
-        {/* Search and Filter Bar */}
-        <Paper sx={{ p: 2, mb: 3 }}>
-          <Stack spacing={2}>
-            {/* Main Search Row */}
-            <Box display="flex" gap={2} alignItems="center">
-              <TextField
-                placeholder="Search assets..."
-                value={filters.search}
-                onChange={(e) => handleFilterChange({ search: e.target.value })}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Search />
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{ flexGrow: 1 }}
-              />
-              
-              <FormControl sx={{ minWidth: 120 }}>
-                <Select
-                  value={filters.type}
-                  onChange={(e) => handleFilterChange({ type: e.target.value })}
-                  displayEmpty
-                  size="small"
-                >
-                  {assetTypes.map((type) => (
-                    <MenuItem key={type.value} value={type.value}>
-                      <Box display="flex" alignItems="center" gap={1}>
-                        {type.icon}
-                        {type.label}
-                      </Box>
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <FormControl sx={{ minWidth: 120 }}>
-                <Select
-                  value={filters.sortBy}
-                  onChange={(e) => handleFilterChange({ sortBy: e.target.value })}
-                  size="small"
-                >
-                  {sortOptions.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <IconButton
-                onClick={() => handleFilterChange({ 
-                  sortOrder: filters.sortOrder === 'asc' ? 'desc' : 'asc'}
-              >
-                <Sort sx={{ 
-                  transform: filters.sortOrder === 'desc' ? 'rotate(180deg)' : 'none' 
-                }} />
-              </IconButton>
-
-              <Badge color="error" badgeContent={hasActiveFilters ? '•' : 0}>
-                <IconButton onClick={() => setShowFilters(!showFilters)} aria-label="Icon button">
-                  <FilterList />
-                </IconButton>
-              </Badge>
-
-              {hasActiveFilters && (
-                <Button
-                  onClick={handleClearFilters}
-                  startIcon={<Clear />}
-                  size="small"
-                >
-                  Clear
-                </Button>
-              )}
-            </Box>
-
-            {/* Advanced Filters Panel */}
-            {showFilters && (
-              <>
-                <Divider />
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6} md={3}>
-                      <DatePicker
-                        label="From Date"
-                        value={filters.dateFrom}
-                        onChange={(date) => handleFilterChange({ dateFrom: date })}
-                        slotProps={{
-                          textField: { size: 'small', fullWidth: true }
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={3}>
-                      <DatePicker
-                        label="To Date"
-                        value={filters.dateTo}
-                        onChange={(date) => handleFilterChange({ dateTo: date })}
-                        slotProps={{
-                          textField: { size: 'small', fullWidth: true }
-                        }}
-                      />
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={3}>
-                      <FormControl fullWidth size="small">
-                        <InputLabel>Tags</InputLabel>
-                        <Select
-                          multiple
-                          value={filters.tags}
-                          onChange={(e) => handleFilterChange({ 
-                            tags: typeof e.target.value === 'string' 
-                              ? e.target.value.split(',') 
-                              : e.target.value 
-                          })}
-                          renderValue={(selected) => (
-                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                              {selected.map((value) => (
-                                <Chip key={value} label={value} size="small" />
-                              ))}
-                            </Box>
-                          )}
-                        >
-                          {availableTags.map((tag) => (
-                            <MenuItem key={tag} value={tag}>
-                              <Checkbox checked={filters.tags.indexOf(tag) > -1} />
-                              <ListItemText primary={tag} />
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={3}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={filters.favoritesOnly}
-                            onChange={(e) => handleFilterChange({ favoritesOnly: e.target.checked })}
-                          />
-                        }
-                        label="Favorites Only"
-                      />
-                    </Grid>
-                  </Grid>
-                </LocalizationProvider>
-              </>
-            )}
-
-            {/* Active Filters Display */}
-            {hasActiveFilters && (
-              <Box display="flex" gap={1} flexWrap="wrap">
-                {filters.search && (
-                  <Chip
-                    label={`Search: "${filters.search}"`}
-                    onDelete={() => handleFilterChange({ search: '' })}
-                    size="small"
-                  />
-                )}
-                {filters.type && (
-                  <Chip
-                    icon={activeTypeFilter?.icon}
-                    label={`Type: ${activeTypeFilter?.label}`}
-                    onDelete={() => handleFilterChange({ type: '' })}
-                    size="small"
-                  />
-                )}
-                {filters.tags.map((tag) => (
-                  <Chip
-                    key={tag}
-                    label={`Tag: ${tag}`}
-                    onDelete={() => handleFilterChange({ 
-                      tags: filters.tags.filter(t => t !== tag) 
-                    })}
-                    size="small"
-                  />
-                ))}
-                {filters.dateFrom && (
-                  <Chip
-                    label={`From: ${format(filters.dateFrom, 'MMM d, yyyy')}`}
-                    onDelete={() => handleFilterChange({ dateFrom: null })}
-                    size="small"
-                  />
-                )}
-                {filters.dateTo && (
-                  <Chip
-                    label={`To: ${format(filters.dateTo, 'MMM d, yyyy')}`}
-                    onDelete={() => handleFilterChange({ dateTo: null })}
-                    size="small"
-                  />
-                )}
-                {filters.favoritesOnly && (
-                  <Chip
-                    icon={<Favorite />}
-                    label="Favorites Only"
-                    onDelete={() => handleFilterChange({ favoritesOnly: false })}
-                    size="small"
-                  />
-                )}
-              </Box>
-            )}
-          </Stack>
-        </Paper>
-
-        {/* Bulk Actions */}
-        {selectedAssets.size > 0 && (
-          <Paper sx={{ p: 2, mb: 2, bgcolor: 'primary.50' }}>
-            <Box display="flex" justifyContent="space-between" alignItems="center">
-              <Typography variant="subtitle1">
-                {selectedAssets.size} asset{selectedAssets.size !== 1 ? 's' : ''} selected
-              </Typography>
-              <Box display="flex" gap={1}>
-                <Button
-                  startIcon={<Download />}
-                  onClick={handleBulkDownload}
-                  size="small"
-                  disabled={selectedAssets.size === 0}
-                >
-                  Download
-                </Button>
-                <Button
-                  startIcon={<Delete />}
-                  onClick={handleBulkDelete}
-                  color="error"
-                  size="small"
-                >
-                  Delete
-                </Button>
-              </Box>
-            </Box>
-          </Paper>
-        )}
-
-        {/* Content Area */}
-        {!activeClient && (
-          <Alert severity="info" sx={{ mb: 3 }}>
-            Please select a client to view assets
-          </Alert>
-        )}
-
-        {error && (
-          <ErrorMessage
-            title="Failed to load assets"
-            error={error}
-            onRetry={fetchAssets}
-          />
-        )}
-
-        {isLoading && (
-          <Grid container spacing={2}>
-            {[...Array(8)].map((_, i) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={i}>
-                <LoadingSkeleton variant="card" />
-              </Grid>
-            ))}
-          </Grid>
-        )}
-
-        {!isLoading && !error && assets.length === 0 && (
-          <Box textAlign="center" py={8}>
-            <Image sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-            <Typography variant="h6" color="text.secondary" gutterBottom>
-              {hasActiveFilters ? 'No assets found' : 'No assets yet'}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" paragraph>
-              {hasActiveFilters 
-                ? 'Try adjusting your search criteria'
-                : 'Upload your first assets to get started'
-              }
-            </Typography>
-            {!hasActiveFilters && activeClient && (
-              <Button
-                variant="contained"
-                startIcon={<Upload />}
-                onClick={() => setShowUploadModal(true)}
-                sx={{ mt: 2 }}
-              >
-                Upload Assets
-              </Button>
-            )}
-          </Box>
-        )}
-
-        {/* Assets Grid/List */}
-        {!isLoading && !error && assets.length > 0 && (
-          <>
-            <Box mb={2} display="flex" justifyContent="space-between" alignItems="center">
-              <Typography variant="body2" color="text.secondary">
-                Showing {assets.length} assets
-              </Typography>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={selectedAssets.size === assets.length && assets.length > 0}
-                    indeterminate={selectedAssets.size > 0 && selectedAssets.size < assets.length}
-                    onChange={handleSelectAll}
-                  />
-                }
-                label="Select All"
-              />
-            </Box>
-
-            <Grid container spacing={viewMode === 'grid' ? 3 : 2}>
-              {assets.map((asset) => (
-                <Grid 
-                  item 
-                  xs={12} 
-                  sm={viewMode === 'grid' ? 6 : 12} 
-                  md={viewMode === 'grid' ? 4 : 12} 
-                  lg={viewMode === 'grid' ? 3 : 12} 
-                  key={asset.id}
-                >
-                  <AssetCard
-                    asset={asset}
-                    viewMode={viewMode}
-                    isSelected={selectedAssets.has(asset.id)}
-                    onSelect={() => handleSelectAsset(asset.id)}
-                    onToggleFavorite={() => handleToggleFavorite(asset)}
-                    onMenuClick={(e) => {
-                      setAnchorEl(e.currentTarget);
-                      setSelectedAsset(asset);
-                    }}
-                  />
-                </Grid>
-              ))}
-            </Grid>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <Box display="flex" justifyContent="center" mt={4}>
-                <Pagination
-                  count={totalPages}
-                  page={page}
-                  onChange={(_, newPage) => setPage(newPage)}
-                  color="primary"
-                />
-              </Box>
-            )}
-          </>
-        )}
-
-        {/* Action Menu */}
-        <Menu
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={() => setAnchorEl(null)}
-        >
-          <MenuItem onClick={() => process.env.NODE_ENV === 'development' && console.log('Edit', selectedAsset);}>
-            <ListItemIcon><Edit /></ListItemIcon>
-            <ListItemText>Edit</ListItemText>
-          </MenuItem>
-          <MenuItem onClick={() => {
-            if (selectedAsset) handleDownloadAsset(selectedAsset);
-            setAnchorEl(null);
-          }}>
-            <ListItemIcon><Download /></ListItemIcon>
-            <ListItemText>Download</ListItemText>
-          </MenuItem>
-          <MenuItem onClick={() => process.env.NODE_ENV === 'development' && console.log('Share', selectedAsset);}>
-            <ListItemIcon><Share /></ListItemIcon>
-            <ListItemText>Share</ListItemText>
-          </MenuItem>
-          <Divider />
-          <MenuItem 
-            onClick={() => process.env.NODE_ENV === 'development' && console.log('Delete', selectedAsset);}
-            sx={{ color: 'error.main' }}
-          >
-            <ListItemIcon><Delete color="error" /></ListItemIcon>
-            <ListItemText>Delete</ListItemText>
-          </MenuItem>
-        </Menu>
-
-        {/* Upload Modal */}
-        <AssetUploadModal
-          open={showUploadModal}
-          onClose={() => setShowUploadModal(false)}
-          onUploadComplete={handleUploadComplete}
-        />
-
-        {/* Speed Dial */}
-        <SpeedDial
-          ariaLabel="Asset actions"
-          sx={{ position: 'fixed', bottom: 16, right: 16 }}
-          icon={<SpeedDialIcon icon={<AddIcon />} />}
-        >
-          {speedDialActions.map((action) => (
-            <SpeedDialAction
-              key={action.name}
-              icon={action.icon}
-              tooltipTitle={action.name}
-              onClick={action.action}
-            />
-          ))}
-        </SpeedDial>
-      </Box>
+      <Typography variant="h4">Assets</Typography>
+      <Typography variant="body1">Asset management will be restored in the next update.</Typography>
     </DashboardLayout>
   );
 };
@@ -885,8 +453,9 @@ interface AssetCardProps {
   viewMode: 'grid' | 'list';
   isSelected: boolean;
   onSelect: () => void;
+  onDownload: () => void;
   onToggleFavorite: () => void;
-  onMenuClick: (event: React.MouseEvent<HTMLElement>) => void;
+  onDelete: () => void;
 }
 
 const AssetCard: React.FC<AssetCardProps> = ({
@@ -894,8 +463,9 @@ const AssetCard: React.FC<AssetCardProps> = ({
   viewMode,
   isSelected,
   onSelect,
+  onDownload,
   onToggleFavorite,
-  onMenuClick,
+  onDelete,
 }) => {
   const getAssetIcon = (type: string) => {
     switch (type) {
@@ -980,9 +550,11 @@ const AssetCard: React.FC<AssetCardProps> = ({
                 </Box>
               </Box>
               <Box display="flex" alignItems="center" gap={1}>
-                <IconButton onClick={onToggleFavorite} size="small" aria-label="Icon button">                  {asset.favorite ? <Favorite color="error" /> : <FavoriteBorder />}
+                <IconButton onClick={onToggleFavorite} size="small" aria-label="Toggle favorite">
+                  {asset.favorite ? <Favorite color="error" /> : <FavoriteBorder />}
                 </IconButton>
-                <IconButton onClick={onMenuClick} size="small" aria-label="Icon button">                  <MoreVert />
+                <IconButton onClick={onDelete} size="small" aria-label="Delete asset">
+                  <Delete />
                 </IconButton>
               </Box>
             </Box>
@@ -1024,12 +596,18 @@ const AssetCard: React.FC<AssetCardProps> = ({
         <IconButton
           onClick={onToggleFavorite}
           sx={{ position: 'absolute', top: 8, right: 40, zIndex: 1 }}
-          size="small" aria-label="Icon button">          {asset.favorite ? <Favorite color="error" /> : <FavoriteBorder />}
+          size="small"
+          aria-label="Toggle favorite"
+        >
+          {asset.favorite ? <Favorite color="error" /> : <FavoriteBorder />}
         </IconButton>
         <IconButton
-          onClick={onMenuClick}
+          onClick={onDelete}
           sx={{ position: 'absolute', top: 8, right: 8, zIndex: 1 }}
-          size="small" aria-label="Icon button">          <MoreVert />
+          size="small"
+          aria-label="Delete asset"
+        >
+          <Delete />
         </IconButton>
 
         {asset.thumbnailUrl || asset.type === 'image' ? (
