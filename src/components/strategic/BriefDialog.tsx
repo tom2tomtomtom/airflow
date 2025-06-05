@@ -170,7 +170,7 @@ const BriefDialog: React.FC<BriefDialogProps> = ({
                         label="Campaign"
                         onChange={(e) => setBriefForm({ ...briefForm, campaignId: e.target.value })}
                       >
-                        {campaigns?.map((campaign) => (
+                        {Array.isArray(campaigns) && campaigns.map((campaign) => (
                           <MenuItem key={campaign.id} value={campaign.id}>
                             {campaign.name}
                           </MenuItem>

@@ -111,7 +111,17 @@ const StrategicContent: React.FC = () => {
   const router = useRouter();
   const { activeClient } = useClient();
   const { showNotification } = useNotification();
-  const { data: campaigns } = useCampaigns(activeClient?.id);
+  const { data: campaigns, error: campaignsError } = useCampaigns(activeClient?.id);
+  
+  // Debug logging for campaigns data
+  React.useEffect(() => {
+    if (campaignsError) {
+      console.error('Error loading campaigns:', campaignsError);
+    }
+    if (campaigns !== undefined && !Array.isArray(campaigns)) {
+      console.warn('Campaigns data is not an array:', campaigns);
+    }
+  }, [campaigns, campaignsError]);
   
   const [strategicContent, setStrategicContent] = useState<StrategicContentItem[]>([]);
   const [briefs, setBriefs] = useState<Brief[]>([]);
@@ -483,7 +493,7 @@ const StrategicContent: React.FC = () => {
           setBriefForm={setBriefForm}
           activeStep={activeStep}
           setActiveStep={setActiveStep}
-          campaigns={campaigns || []}
+          campaigns={Array.isArray(campaigns) ? campaigns : []}
           onSubmit={handleSubmitBrief}
         />
 

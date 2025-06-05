@@ -104,6 +104,23 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
     if (!isAuthenticated || !activeClient || !enableNotifications) return;
 
     try {
+      // Get auth token from localStorage - using the correct key
+      const storedUser = localStorage.getItem('airwave_user');
+      if (!storedUser) {
+        console.warn('No authenticated user found for notifications');
+        setNotifications([]);
+        return;
+      }
+      
+      const user = JSON.parse(storedUser);
+      const token = user.token;
+      
+      if (!token) {
+        console.warn('No auth token found for notifications');
+        setNotifications([]);
+        return;
+      }
+
       const params = new URLSearchParams({
         client_id: activeClient.id,
         read: 'false',
@@ -116,16 +133,27 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
 
       const response = await fetch(`/api/notifications?${params}`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
       });
 
       if (response.ok) {
         const data = await response.json();
-        setNotifications(data.data || []);
+        setNotifications(Array.isArray(data.data) ? data.data : []);
+      } else if (response.status === 400) {
+        console.warn('Invalid notification request parameters:', response.statusText);
+        setNotifications([]);
+      } else if (response.status === 401) {
+        console.warn('Authentication failed for notifications');
+        setNotifications([]);
+      } else {
+        console.warn('Failed to fetch notifications:', response.status, response.statusText);
+        setNotifications([]);
       }
     } catch (err) {
       console.error('Error fetching notifications:', err);
+      setNotifications([]);
     }
   }, [isAuthenticated, activeClient, enableNotifications, categories]);
 
