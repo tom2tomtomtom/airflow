@@ -63,8 +63,8 @@ const navigation = [
   { divider: true },
   { name: 'Execute', href: '/execute', icon: ExecuteIcon },
   { name: 'Approvals', href: '/approvals', icon: ApprovalsIcon },
-  { name: 'Social Publishing', href: '/social-publishing', icon: SocialIcon },
-  { name: 'Analytics', href: '/analytics', icon: AnalyticsIcon },
+  { name: 'Social Publishing', href: '/social-publishing', icon: SocialIcon, disabled: true, comingSoon: true },
+  { name: 'Analytics', href: '/analytics', icon: AnalyticsIcon, disabled: true, comingSoon: true },
   { name: 'Webhooks', href: '/webhooks', icon: WebhookIcon },
   { name: 'Preview', href: '/preview', icon: PreviewIcon },
   { name: 'Sign Off', href: '/sign-off', icon: SignOffIcon },
@@ -142,10 +142,13 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
             <ListItem key={item.name} disablePadding>
               <ListItemButton
                 selected={isActive}
+                disabled={item.disabled}
                 onClick={() => {
-                  router.push(item.href!);
-                  if (isMobile) {
-                    setMobileOpen(false);
+                  if (!item.disabled) {
+                    router.push(item.href!);
+                    if (isMobile) {
+                      setMobileOpen(false);
+                    }
                   }
                 }}
                 className="floating-card"
@@ -153,8 +156,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
                   mx: 1,
                   borderRadius: 3,
                   transition: 'all 0.3s ease',
+                  opacity: item.disabled ? 0.5 : 1,
                   '&:hover': {
-                    paddingLeft: '20px',
+                    paddingLeft: item.disabled ? '16px' : '20px',
                   },
                   '&.Mui-selected': {
                     background: (theme) => 
@@ -169,6 +173,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
                       opacity: 0.9,
                     },
                   },
+                  '&.Mui-disabled': {
+                    opacity: 0.5,
+                    '& .MuiListItemIcon-root': {
+                      color: 'text.disabled',
+                    },
+                  },
                 }}
               >
                 <ListItemIcon sx={{ 
@@ -180,11 +190,28 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
                 </ListItemIcon>
                 <ListItemText 
                   primary={item.name}
+                  secondary={item.comingSoon ? 'Coming Soon' : undefined}
                   primaryTypographyProps={{
                     fontWeight: isActive ? 600 : 500,
                     fontSize: '0.95rem',
                   }}
+                  secondaryTypographyProps={{
+                    fontSize: '0.75rem',
+                    color: 'text.disabled',
+                  }}
                 />
+                {item.comingSoon && (
+                  <Chip
+                    label="Soon"
+                    size="small"
+                    sx={{
+                      height: 20,
+                      fontSize: '0.6rem',
+                      bgcolor: 'warning.light',
+                      color: 'warning.contrastText',
+                    }}
+                  />
+                )}
               </ListItemButton>
             </ListItem>
           );
