@@ -30,33 +30,22 @@ export default class MyDocument extends Document<MyDocumentProps> {
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
           
-          {/* Outfit Font - Primary Font */}
+          {/* Preload critical fonts */}
           <link
-            rel="stylesheet"
-            href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+            rel="preload"
+            href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap"
+            as="style"
           />
           
-          {/* Material UI Fonts - Fallback */}
+          {/* Outfit Font - Primary Font - Reduced weights for performance */}
           <link
             rel="stylesheet"
-            href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap"
           />
           
-          {/* Material Icons - Using different CDN approach */}
+          {/* Material Icons - Optimized single load */}
           <link
-            href="https://fonts.googleapis.com/icon?family=Material+Icons"
-            rel="stylesheet"
-          />
-          
-          {/* Alternative Material Icons CDN */}
-          <link
-            href="https://fonts.googleapis.com/css2?family=Material+Icons"
-            rel="stylesheet"
-          />
-          
-          {/* Material Icons Outlined */}
-          <link
-            href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined"
+            href="https://fonts.googleapis.com/icon?family=Material+Icons&display=swap"
             rel="stylesheet"
           />
           
@@ -67,6 +56,30 @@ export default class MyDocument extends Document<MyDocumentProps> {
           {this.props.emotionStyleTags}
         </Head>
         <body>
+          {/* Prevent theme flash by setting initial theme before render */}
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                (function() {
+                  function getInitialTheme() {
+                    try {
+                      const persistedTheme = localStorage.getItem('themeMode');
+                      if (persistedTheme) {
+                        return persistedTheme;
+                      }
+                      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                    } catch (e) {
+                      return 'light';
+                    }
+                  }
+                  
+                  const theme = getInitialTheme();
+                  document.documentElement.setAttribute('data-mui-color-scheme', theme);
+                  document.documentElement.style.colorScheme = theme;
+                })();
+              `,
+            }}
+          />
           <Main />
           <NextScript />
         </body>

@@ -21,19 +21,25 @@ interface ThemeModeProviderProps {
 }
 
 export const ThemeModeProvider: React.FC<ThemeModeProviderProps> = ({ children }) => {
-  const [mode, setMode] = useState<PaletteMode>('light');
+  // Initialize with the theme that's already set by the blocking script
+  const [mode, setMode] = useState<PaletteMode>(() => {
+    if (typeof window !== 'undefined') {
+      // Get the theme that was set by our blocking script
+      const currentTheme = document.documentElement.getAttribute('data-mui-color-scheme');
+      if (currentTheme === 'dark' || currentTheme === 'light') {
+        return currentTheme;
+      }
+    }
+    return 'light'; // Fallback for SSR
+  });
 
   useEffect(() => {
-    // Check for saved theme preference or default to 'light'
-    const savedMode = localStorage.getItem('themeMode') as PaletteMode | null;
-    if (savedMode) {
-      setMode(savedMode);
-    } else {
-      // Check system preference
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setMode(prefersDark ? 'dark' : 'light');
+    // Sync with any theme that might have been set by the blocking script
+    const currentTheme = document.documentElement.getAttribute('data-mui-color-scheme');
+    if (currentTheme && (currentTheme === 'dark' || currentTheme === 'light') && currentTheme !== mode) {
+      setMode(currentTheme);
     }
-  }, []);
+  }, [mode]);
 
   useEffect(() => {
     // Update data attribute for CSS variables

@@ -17,6 +17,7 @@ import { NotificationProvider } from '@/contexts/NotificationContext';
 import createEmotionCache from '@/lib/createEmotionCache';
 import { lightTheme, darkTheme } from '@/styles/theme';
 import { ThemeModeProvider, useThemeMode } from '@/contexts/ThemeContext';
+import { LoadingProvider } from '@/contexts/LoadingContext';
 
 // Import CSS files in the correct order
 import '@/styles/globals.css';
@@ -84,6 +85,21 @@ function MyApp(props: MyAppProps) {
     if (jssStyles) {
       jssStyles.parentElement?.removeChild(jssStyles);
     }
+    
+    // Performance optimization: Warm up the browser's DNS cache
+    if (typeof window !== 'undefined') {
+      const warmupUrls = [
+        'https://fonts.googleapis.com',
+        'https://fonts.gstatic.com'
+      ];
+      
+      warmupUrls.forEach(url => {
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = url;
+        document.head.appendChild(link);
+      });
+    }
   }, []);
 
   useEffect(() => {
@@ -125,7 +141,9 @@ function MyApp(props: MyAppProps) {
       </Head>
       <QueryClientProvider client={queryClient}>
         <ThemeModeProvider>
-          <AppWithTheme {...props} />
+          <LoadingProvider>
+            <AppWithTheme {...props} />
+          </LoadingProvider>
         </ThemeModeProvider>
       </QueryClientProvider>
     </CacheProvider>

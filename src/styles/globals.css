@@ -483,7 +483,7 @@ body {
   position: relative !important;
 }
 
-/* Background mesh overlay */
+/* Background mesh overlay - Optimized for performance */
 body::before {
   content: '';
   position: fixed;
@@ -495,6 +495,8 @@ body::before {
   opacity: 0.4;
   pointer-events: none;
   z-index: -1;
+  will-change: transform;
+  transform: translateZ(0); /* Force GPU acceleration */
 }
 
 /* Links */
@@ -535,15 +537,22 @@ img {
   background: transparent;
 }
 
-/* Premium Component Overrides - Material-UI */
+/* Premium Component Overrides - Material-UI - Performance Optimized */
 .MuiPaper-root {
   background: var(--panel-bg) !important;
-  backdrop-filter: var(--glass-blur) !important;
-  -webkit-backdrop-filter: var(--glass-blur) !important;
   border-radius: 20px !important;
   border: 1px solid var(--panel-border) !important;
   box-shadow: var(--panel-shadow) !important;
-  transition: all var(--transition-base) !important;
+  transition: transform var(--transition-base), box-shadow var(--transition-base) !important;
+  will-change: transform, box-shadow;
+}
+
+/* Only apply backdrop-filter on supported browsers and when needed */
+@supports (backdrop-filter: blur(10px)) {
+  .MuiPaper-root {
+    backdrop-filter: var(--glass-blur) !important;
+    -webkit-backdrop-filter: var(--glass-blur) !important;
+  }
 }
 
 .MuiPaper-root:hover {
@@ -938,9 +947,22 @@ img {
   transform: translateY(0);
 }
 
-/* Smooth theme transitions */
-* {
+/* Optimized theme transitions - only for elements that change */
+.MuiPaper-root,
+.MuiCard-root,
+.MuiButton-root,
+.MuiOutlinedInput-root,
+.MuiListItemButton-root {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Premium Grid and Layout */
