@@ -14,7 +14,6 @@ export default defineConfig({
         'src/test/',
         '**/*.d.ts',
         '**/*.config.*',
-        '**/mockData/**',
         'src/pages/api/**/*.test.ts',
         'src/**/__tests__/**',
       ],

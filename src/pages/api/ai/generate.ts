@@ -129,31 +129,25 @@ const enhanceImagePrompt = async (prompt: string, parameters?: Record<string, an
   }
 };
 
-const mockGenerateImage = (prompt: string): string => {
-  const width = 800;
-  const height = 600;
-  return `https://via.placeholder.com/${width}x${height}?text=${encodeURIComponent(prompt)}`;
-};
 
 const generateVideo = async (prompt: string, parameters?: Record<string, any>): Promise<string> => {
   if (!hasRunway) {
-    return mockGenerateVideo(prompt);
+    throw new Error('Video generation service not configured. Please set up Runway ML integration.');
   }
 
   try {
     // Implement Runway ML video generation
-    // For now, return mock until Runway integration is complete
     process.env.NODE_ENV === 'development' && console.log('Video generation with Runway ML:', prompt, parameters);
-    return mockGenerateVideo(prompt);
+    throw new Error('Runway ML integration not yet implemented');
   } catch (error) {
     console.error('Runway video generation error:', error);
-    return mockGenerateVideo(prompt);
+    throw error;
   }
 };
 
 const generateVoice = async (prompt: string, parameters?: Record<string, any>): Promise<string> => {
   if (!hasElevenLabs) {
-    return mockGenerateVoice(prompt);
+    throw new Error('Voice generation service not configured. Please set up ElevenLabs integration.');
   }
 
   try {
@@ -163,23 +157,13 @@ const generateVoice = async (prompt: string, parameters?: Record<string, any>): 
 
     process.env.NODE_ENV === 'development' && console.log('Voice generation with ElevenLabs:', prompt, { voice, language });
 
-    // For now, return mock until ElevenLabs integration is complete
-    return mockGenerateVoice(prompt);
+    throw new Error('ElevenLabs integration not yet implemented');
   } catch (error) {
     console.error('ElevenLabs voice generation error:', error);
-    return mockGenerateVoice(prompt);
+    throw error;
   }
 };
 
-const mockGenerateVideo = (_prompt: string): string => {
-  // In a real app, this would call a video generation API
-  return 'https://example.com/generated-videos/sample-video.mp4';
-};
-
-const mockGenerateVoice = (_prompt: string): string => {
-  // In a real app, this would call a voice generation API
-  return 'https://example.com/generated-audio/sample-audio.mp3';
-};
 
 export default async function handler(
   req: NextApiRequest,

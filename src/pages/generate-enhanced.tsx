@@ -41,18 +41,54 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useClient } from '@/contexts/ClientContext';
 import DashboardLayout from '@/components/DashboardLayout';
-import { 
-  mockMotivations, 
-  mockCopyVariations, 
-  mockGeneratedImages, 
-  mockGeneratedVideos, 
-  mockGeneratedVoices,
-  type Motivation,
-  type CopyVariation,
-  type GeneratedImage,
-  type GeneratedVideo,
-  type GeneratedVoice
-} from '@/lib/mockData';
+// Types for generate page
+interface Motivation {
+  id: string;
+  title: string;
+  description: string;
+  relevanceScore: number;
+  selected: boolean;
+}
+
+interface CopyVariation {
+  id: string;
+  text: string;
+  motivationId: string;
+  favorite: boolean;
+}
+
+interface GeneratedImage {
+  id: string;
+  url: string;
+  prompt: string;
+  style: string;
+  aspectRatio: string;
+  dateCreated: string;
+  favorite: boolean;
+}
+
+interface GeneratedVideo {
+  id: string;
+  url: string;
+  thumbnail: string;
+  prompt: string;
+  duration: string;
+  resolution: string;
+  dateCreated: string;
+  status: 'completed' | 'processing' | 'failed';
+  favorite: boolean;
+}
+
+interface GeneratedVoice {
+  id: string;
+  url: string;
+  text: string;
+  voice: string;
+  language: string;
+  duration: string;
+  dateCreated: string;
+  favorite: boolean;
+}
 
 // Lazy load heavy components
 const LazyImageGenerationTab = dynamic(
@@ -95,7 +131,7 @@ const GenerateEnhancedPage: React.FC = () => {
 
   // State
   const [activeTab, setActiveTab] = useState('strategy');
-  const [motivations, setMotivations] = useState<Motivation[]>(mockMotivations);
+  const [motivations, setMotivations] = useState<Motivation[]>([]);
   const [briefText, setBriefText] = useState('');
   const [briefContext, setBriefContext] = useState<any>(null);
   const [isGeneratingMotivations, setIsGeneratingMotivations] = useState(false);
@@ -106,7 +142,7 @@ const GenerateEnhancedPage: React.FC = () => {
     frameCount: 3,
     includeCta: true,
   });
-  const [copyVariations, setCopyVariations] = useState<CopyVariation[]>(mockCopyVariations);
+  const [copyVariations, setCopyVariations] = useState<CopyVariation[]>([]);
   const [isGeneratingCopy, setIsGeneratingCopy] = useState(false);
 
   // Image generation state
@@ -115,7 +151,7 @@ const GenerateEnhancedPage: React.FC = () => {
   const [imageAspectRatio, setImageAspectRatio] = useState('1:1');
   const [imageCount, setImageCount] = useState(4);
   const [isGeneratingImages, setIsGeneratingImages] = useState(false);
-  const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>(mockGeneratedImages);
+  const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
 
   // Video generation state
   const [videoPrompt, setVideoPrompt] = useState('');
@@ -123,7 +159,7 @@ const GenerateEnhancedPage: React.FC = () => {
   const [videoStyle, setVideoStyle] = useState('cinematic');
   const [videoResolution, setVideoResolution] = useState('1080p');
   const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
-  const [generatedVideos, setGeneratedVideos] = useState<GeneratedVideo[]>(mockGeneratedVideos);
+  const [generatedVideos, setGeneratedVideos] = useState<GeneratedVideo[]>([]);
 
   // Voice generation state
   const [voiceText, setVoiceText] = useState('');
@@ -131,7 +167,7 @@ const GenerateEnhancedPage: React.FC = () => {
   const [voiceLanguage, setVoiceLanguage] = useState('en-US');
   const [voiceSpeed, setVoiceSpeed] = useState(1.0);
   const [isGeneratingVoice, setIsGeneratingVoice] = useState(false);
-  const [generatedVoices, setGeneratedVoices] = useState<GeneratedVoice[]>(mockGeneratedVoices);
+  const [generatedVoices, setGeneratedVoices] = useState<GeneratedVoice[]>([]);
 
   // Notification state
   const [snackbarOpen, setSnackbarOpen] = useState(false);

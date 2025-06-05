@@ -32,7 +32,17 @@ import {
   Stop as StopIcon,
   PlayArrow as PlayArrowIcon,
 } from '@mui/icons-material';
-import { GeneratedVideo } from '@/lib/mockData';
+interface GeneratedVideo {
+  id: string;
+  url: string;
+  thumbnail: string;
+  prompt: string;
+  duration: string;
+  resolution: string;
+  dateCreated: string;
+  status: 'completed' | 'processing' | 'failed';
+  favorite: boolean;
+}
 
 interface LazyVideoGenerationSectionProps {
   videoPrompt: string;

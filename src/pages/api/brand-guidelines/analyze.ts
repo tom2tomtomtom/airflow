@@ -72,8 +72,7 @@ async function extractTextFromFile(file: formidable.File): Promise<string> {
 
 async function analyzeBrandGuidelines(text: string): Promise<BrandGuidelines> {
   if (!openai) {
-    // Fallback analysis for when OpenAI is not available
-    return mockAnalyzeBrandGuidelines(text);
+    throw new Error('OpenAI service not configured. Please set OPENAI_API_KEY environment variable.');
   }
 
   try {
@@ -138,91 +137,14 @@ async function analyzeBrandGuidelines(text: string): Promise<BrandGuidelines> {
       return JSON.parse(content);
     } catch (parseError) {
       console.error('Failed to parse OpenAI response as JSON:', content);
-      // Fallback to mock analysis
-      return mockAnalyzeBrandGuidelines(text);
+      throw new Error('Failed to parse AI response. Please try again.');
     }
   } catch (error) {
     console.error('OpenAI analysis error:', error);
-    return mockAnalyzeBrandGuidelines(text);
+    throw error;
   }
 }
 
-function mockAnalyzeBrandGuidelines(text: string): BrandGuidelines {
-  // Simple text analysis for fallback
-  const lowerText = text.toLowerCase();
-  
-  // Extract colors using basic pattern matching
-  const colorPatterns = [
-    /#[0-9a-f]{6}/gi,
-    /#[0-9a-f]{3}/gi,
-    /rgb\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)/gi
-  ];
-  
-  const foundColors: string[] = [];
-  colorPatterns.forEach(pattern => {
-    const matches = text.match(pattern);
-    if (matches) {
-      foundColors.push(...matches);
-    }
-  });
-
-  // Extract fonts
-  const fontKeywords = ['font', 'typeface', 'typography'];
-  const fonts: string[] = [];
-  fontKeywords.forEach(keyword => {
-    const regex = new RegExp(`${keyword}[:\\s]+([^\\n\\.]+)`, 'gi');
-    const matches = text.match(regex);
-    if (matches) {
-      matches.forEach(match => {
-        const fontName = match.replace(new RegExp(keyword, 'gi'), '').replace(/[:\s]+/, '').trim();
-        if (fontName) fonts.push(fontName);
-      });
-    }
-  });
-
-  // Analyze tone
-  const toneKeywords = {
-    professional: ['professional', 'formal', 'business', 'corporate'],
-    friendly: ['friendly', 'approachable', 'warm', 'welcoming'],
-    modern: ['modern', 'contemporary', 'cutting-edge', 'innovative'],
-    trustworthy: ['trustworthy', 'reliable', 'credible', 'authentic']
-  };
-
-  const toneTraits: string[] = [];
-  Object.entries(toneKeywords).forEach(([trait, keywords]) => {
-    if (keywords.some(keyword => lowerText.includes(keyword))) {
-      toneTraits.push(trait);
-    }
-  });
-
-  return {
-    colors: {
-      primary: foundColors.slice(0, 2),
-      secondary: foundColors.slice(2, 4),
-      accent: foundColors.slice(4, 6)
-    },
-    toneOfVoice: {
-      personality: toneTraits.length > 0 ? toneTraits : ['professional', 'trustworthy'],
-      communication_style: toneTraits.length > 0 ? toneTraits.join(', ') : 'Professional and trustworthy',
-      dos: ['Be clear and concise', 'Maintain brand voice'],
-      donts: ['Use jargon unnecessarily', 'Be overly casual']
-    },
-    typography: {
-      primary_font: fonts[0] || 'Not specified',
-      secondary_font: fonts[1] || 'Not specified',
-      font_weights: ['Regular', 'Bold']
-    },
-    logoGuidelines: {
-      usage_rules: ['Maintain clear space', 'Use approved colors only'],
-      spacing: 'Minimum clear space equal to logo height',
-      variations: ['Primary', 'Secondary', 'Monochrome']
-    },
-    imagery: {
-      style: 'Professional and on-brand',
-      guidelines: ['High quality images', 'Consistent style']
-    }
-  };
-}
 
 export default async function handler(
   req: NextApiRequest,
