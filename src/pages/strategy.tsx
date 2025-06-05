@@ -264,6 +264,32 @@ const StrategyPage: React.FC = () => {
     ));
   };
 
+  // Navigate to generate page with brief data
+  const generateContent = () => {
+    if (!briefData) {
+      showNotification('Please create a brief first', 'error');
+      return;
+    }
+
+    // Save brief data to localStorage for the generate page
+    const briefContext = {
+      briefData,
+      targetAudience,
+      campaignObjectives,
+      selectedPlatforms,
+      copyTone,
+      copyStyle,
+      motivations: motivations.filter(m => m.selected),
+      timestamp: Date.now()
+    };
+
+    localStorage.setItem('airwave_brief_context', JSON.stringify(briefContext));
+    showNotification('Brief data loaded for content generation', 'success');
+    
+    // Navigate to generate page
+    router.push('/generate-enhanced');
+  };
+
   // Create campaign with selected content
   const createCampaign = () => {
     const selectedCopy = copyVariations.filter(c => c.selected);
@@ -711,19 +737,31 @@ const StrategyPage: React.FC = () => {
                     into a matrix for video generation.
                   </Typography>
 
-                  <Box display="flex" justifyContent="space-between">
+                  <Box display="flex" justifyContent="space-between" alignItems="center">
                     <Button onClick={() => setActiveStep(2)} startIcon={<ArrowBack />}>
                       Back to Copy
                     </Button>
-                    <Button
-                      variant="contained"
-                      size="large"
-                      startIcon={<PlayArrow />}
-                      onClick={createCampaign}
-                      disabled={copyVariations.filter(c => c.selected).length === 0}
-                    >
-                      Create Campaign
-                    </Button>
+                    
+                    <Stack direction="row" spacing={2}>
+                      <Button
+                        variant="outlined"
+                        size="large"
+                        startIcon={<AutoAwesome />}
+                        onClick={generateContent}
+                        disabled={!briefData}
+                      >
+                        Generate Content
+                      </Button>
+                      <Button
+                        variant="contained"
+                        size="large"
+                        startIcon={<Campaign />}
+                        onClick={createCampaign}
+                        disabled={copyVariations.filter(c => c.selected).length === 0}
+                      >
+                        Create Campaign
+                      </Button>
+                    </Stack>
                   </Box>
                 </CardContent>
               </Card>

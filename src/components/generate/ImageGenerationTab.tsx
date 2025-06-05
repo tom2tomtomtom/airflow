@@ -95,7 +95,7 @@ const ImageGenerationTab: React.FC<ImageGenerationTabProps> = ({
                 variant="outlined"
                 placeholder="Describe the image you want to generate..."
                 value={imagePrompt}
-                onChange={(e: React.ChangeEvent<HTMLElement>) => setImagePrompt(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setImagePrompt(e.target.value)}
                 sx={{ mb: 1 }}
               />
               <Typography variant="caption" color="text.secondary">

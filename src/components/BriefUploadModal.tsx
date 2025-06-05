@@ -163,32 +163,86 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
     setProcessing(true);
     
     try {
-      // Simulate AI processing
-      setTimeout(() => {
-        const mockExtractedData = {
-          title: files[0]?.file.name.replace(/\.[^/.]+$/, '') || 'Campaign Brief',
-          objective: 'Increase brand awareness and drive engagement through strategic content marketing',
-          targetAudience: 'Young professionals aged 25-40 interested in technology and innovation',
-          keyMessages: [
-            'Innovation drives success',
-            'Quality and reliability matter',
-            'Customer-centric approach'
-          ],
-          platforms: ['Instagram', 'LinkedIn', 'Facebook'],
-          budget: '$50,000',
-          timeline: '3 months',
-          tone: 'Professional yet approachable',
-          deliverables: ['Social media posts', 'Blog articles', 'Video content']
+      console.log('Starting AI processing for brief:', brief);
+      
+      // Call the brief parsing API
+      const response = await fetch('/api/brief-parse', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          brief_id: brief.id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Parsing failed: ${response.status} ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      console.log('Brief parsing result:', result);
+
+      if (result.success && result.brief?.extracted_data) {
+        let parsedData;
+        try {
+          // Try to parse the extracted data as JSON
+          parsedData = typeof result.brief.extracted_data === 'string' 
+            ? JSON.parse(result.brief.extracted_data)
+            : result.brief.extracted_data;
+        } catch (parseError) {
+          console.error('Failed to parse extracted data:', parseError);
+          // Use fallback data if parsing fails
+          parsedData = {
+            title: files[0]?.file.name.replace(/\.[^/.]+$/, '') || 'Campaign Brief',
+            objective: 'Please review and update the campaign objectives',
+            targetAudience: 'Please define your target audience',
+            rawExtraction: result.brief.extracted_data
+          };
+        }
+
+        const extractedData = {
+          title: parsedData.title || files[0]?.file.name.replace(/\.[^/.]+$/, '') || 'Campaign Brief',
+          objective: parsedData.objectives || parsedData.objective || 'Please review and update the campaign objectives',
+          targetAudience: parsedData.target_audience || parsedData.targetAudience || 'Please define your target audience',
+          keyMessages: parsedData.key_messages || parsedData.keyMessages || [],
+          platforms: parsedData.platforms || ['Instagram', 'Facebook'],
+          budget: parsedData.budget || 'Not specified',
+          timeline: parsedData.timeline || 'Not specified',
+          tone: parsedData.tone || parsedData.voice_tone || 'Professional',
+          deliverables: parsedData.deliverables || [],
+          briefId: brief.id,
+          rawData: parsedData
         };
         
-        setExtractedData(mockExtractedData);
-        setProcessing(false);
+        setExtractedData(extractedData);
         setActiveStep(2);
-        showNotification('AI processing completed!', 'success');
-      }, 3000);
-    } catch (error) {
-      console.error('Processing error:', error);
-      showNotification('AI processing failed. Please try again.', 'error');
+        showNotification('AI processing completed successfully!', 'success');
+      } else {
+        throw new Error(result.message || 'Failed to parse brief content');
+      }
+    } catch (error: any) {
+      console.error('AI processing error:', error);
+      showNotification(`AI processing failed: ${error.message}`, 'error');
+      
+      // Provide fallback extracted data
+      const fallbackData = {
+        title: files[0]?.file.name.replace(/\.[^/.]+$/, '') || 'Campaign Brief',
+        objective: 'Please manually review and update the campaign objectives',
+        targetAudience: 'Please manually define your target audience',
+        keyMessages: [],
+        platforms: ['Instagram', 'Facebook'],
+        budget: 'Not specified',
+        timeline: 'Not specified', 
+        tone: 'Professional',
+        deliverables: [],
+        note: 'AI parsing failed - please review and update manually'
+      };
+      
+      setExtractedData(fallbackData);
+      setActiveStep(2);
+      showNotification('Using manual entry mode - please review the brief details', 'warning');
+    } finally {
       setProcessing(false);
     }
   };

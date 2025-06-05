@@ -251,6 +251,7 @@ const GenerateEnhancedPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('strategy');
   const [motivations, setMotivations] = useState<Motivation[]>(mockMotivations);
   const [briefText, setBriefText] = useState('');
+  const [briefContext, setBriefContext] = useState<any>(null);
   const [isGeneratingMotivations, setIsGeneratingMotivations] = useState(false);
   const [copySettings, setCopySettings] = useState({
     tone: 'professional',
@@ -297,6 +298,58 @@ const GenerateEnhancedPage: React.FC = () => {
       router.push('/login');
     }
   }, [isAuthenticated, authLoading, router]);
+
+  // Load brief context from localStorage when component mounts
+  useEffect(() => {
+    const loadBriefContext = () => {
+      try {
+        const storedContext = localStorage.getItem('airwave_brief_context');
+        if (storedContext) {
+          const context = JSON.parse(storedContext);
+          
+          // Check if the context is recent (within 1 hour)
+          const isRecent = context.timestamp && (Date.now() - context.timestamp) < 3600000;
+          
+          if (isRecent) {
+            setBriefContext(context);
+            setBriefText(context.briefData?.content || '');
+            
+            // Update copy settings from brief context
+            if (context.copyTone) {
+              setCopySettings(prev => ({ ...prev, tone: context.copyTone }));
+            }
+            if (context.copyStyle) {
+              setCopySettings(prev => ({ ...prev, style: context.copyStyle }));
+            }
+            
+            // Load motivations if available
+            if (context.motivations && context.motivations.length > 0) {
+              setMotivations(context.motivations);
+            }
+            
+            // Pre-populate image prompt with brief info
+            if (context.briefData?.content) {
+              const briefSnippet = context.briefData.content.substring(0, 100);
+              setImagePrompt(`Create marketing visuals for: ${briefSnippet}...`);
+            }
+            
+            console.log('Loaded brief context:', context);
+            setSnackbarMessage('Brief data loaded from strategy page');
+            setSnackbarSeverity('success');
+            setSnackbarOpen(true);
+          } else {
+            // Remove old context
+            localStorage.removeItem('airwave_brief_context');
+          }
+        }
+      } catch (error) {
+        console.error('Error loading brief context:', error);
+        localStorage.removeItem('airwave_brief_context');
+      }
+    };
+
+    loadBriefContext();
+  }, []);
 
   // Handle tab change
   const handleTabChange = (_event: React.SyntheticEvent, newValue: string) => {
@@ -549,42 +602,65 @@ const GenerateEnhancedPage: React.FC = () => {
       const newImages: GeneratedImage[] = [];
 
       for (let i = 0; i < Math.min(imageCount, 4); i++) { // Limit to 4 images
-        const response = await fetch('/api/ai/generate', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            prompt: imagePrompt,
-            type: 'image',
-            parameters: {
+        try {
+          console.log(`Generating image ${i + 1}/${Math.min(imageCount, 4)}...`);
+          
+          const response = await fetch('/api/dalle', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-user-id': user.id || user.user_id || 'unknown',
+            },
+            body: JSON.stringify({
+              prompt: imagePrompt,
+              client_id: activeClient.id,
+              model: 'dall-e-3',
               size: imageAspectRatio === '16:9' ? '1792x1024' :
                     imageAspectRatio === '9:16' ? '1024x1792' : '1024x1024',
               style: imageStyle === 'photorealistic' ? 'natural' : 'vivid',
               quality: 'hd',
-              enhance: true
-            },
-            clientId: activeClient.id,
-          }),
-        });
-
-        if (!response.ok) {
-          console.error(`Failed to generate image ${i + 1}`);
-          continue;
-        }
-
-        const result = await response.json();
-        if (result.success && result.result?.content) {
-          newImages.push({
-            id: `img-${Date.now()}-${i}`,
-            url: result.result.content,
-            prompt: imagePrompt,
-            style: imageStyle,
-            aspectRatio: imageAspectRatio,
-            dateCreated: new Date().toISOString(),
-            favorite: false,
+              enhance_prompt: true,
+              purpose: 'social',
+              tags: ['ai-generated', imageStyle],
+            }),
           });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            console.error(`Failed to generate image ${i + 1}:`, {
+              status: response.status,
+              statusText: response.statusText,
+              error: errorData
+            });
+            setSnackbarMessage(`Image ${i + 1} failed: ${errorData.message || 'Unknown error'}`);
+            setSnackbarSeverity('warning');
+            setSnackbarOpen(true);
+            continue;
+          }
+
+          const result = await response.json();
+          console.log(`Image ${i + 1} generation result:`, result);
+          
+          if (result.success && result.asset?.url) {
+            newImages.push({
+              id: result.asset.id || `img-${Date.now()}-${i}`,
+              url: result.asset.url,
+              prompt: imagePrompt,
+              style: imageStyle,
+              aspectRatio: imageAspectRatio,
+              dateCreated: new Date().toISOString(),
+              favorite: false,
+            });
+            
+            console.log(`Successfully generated image ${i + 1}: ${result.asset.url}`);
+          } else {
+            console.error(`Image ${i + 1} generation failed - no asset URL in response:`, result);
+          }
+        } catch (imageError) {
+          console.error(`Error generating image ${i + 1}:`, imageError);
+          setSnackbarMessage(`Image ${i + 1} failed: ${imageError instanceof Error ? imageError.message : 'Network error'}`);
+          setSnackbarSeverity('warning');
+          setSnackbarOpen(true);
         }
       }
 

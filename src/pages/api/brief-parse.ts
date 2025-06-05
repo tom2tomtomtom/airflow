@@ -11,36 +11,118 @@ const BriefParseSchema = z.object({
 });
 
 async function extractTextFromFile(fileUrl: string): Promise<string> {
-  // TODO: Use a real text extraction service or library for PDF/DOCX/TXT
-  // For now, just fetch the file (if TXT) as a placeholder
-  if (fileUrl.endsWith('.txt')) {
-    const res = await axios.get(fileUrl);
-    return res.data;
+  try {
+    console.log('Extracting text from file:', fileUrl);
+    
+    // Get the file from Supabase storage
+    const { data: fileData, error: downloadError } = await supabase.storage
+      .from(env.STORAGE_BUCKET)
+      .download(fileUrl);
+    
+    if (downloadError || !fileData) {
+      throw new Error(`Failed to download file: ${downloadError?.message}`);
+    }
+
+    // Convert to buffer
+    const buffer = await fileData.arrayBuffer();
+    const uint8Array = new Uint8Array(buffer);
+
+    // Determine file type and extract text
+    if (fileUrl.toLowerCase().endsWith('.txt')) {
+      // For TXT files, simply convert buffer to string
+      return new TextDecoder('utf-8').decode(uint8Array);
+    } else if (fileUrl.toLowerCase().endsWith('.pdf')) {
+      // For PDF files, try to extract text using pdf-parse
+      try {
+        const pdf = require('pdf-parse');
+        const data = await pdf(uint8Array);
+        return data.text;
+      } catch (pdfError) {
+        console.error('PDF parsing error:', pdfError);
+        throw new Error('Failed to parse PDF file. Please ensure it contains readable text.');
+      }
+    } else if (fileUrl.toLowerCase().endsWith('.docx')) {
+      // For DOCX files, try to extract text using mammoth
+      try {
+        const mammoth = require('mammoth');
+        const result = await mammoth.extractRawText({ buffer: uint8Array });
+        return result.value;
+      } catch (docxError) {
+        console.error('DOCX parsing error:', docxError);
+        throw new Error('Failed to parse DOCX file. Please ensure it contains readable text.');
+      }
+    } else {
+      throw new Error('Unsupported file type. Please upload TXT, PDF, or DOCX files only.');
+    }
+  } catch (error: any) {
+    console.error('Text extraction error:', error);
+    throw new Error(`Text extraction failed: ${error.message}`);
   }
-  // For PDF/DOCX, integrate with a 3rd party API or use server-side parsing
-  throw new Error('Text extraction for PDF/DOCX not implemented');
 }
 
-async function aiParseBrief(text: string): Promise<void> {
+async function aiParseBrief(text: string): Promise<string> {
   // Initialize OpenAI client
   const openai = new OpenAI({
     apiKey: env.OPENAI_API_KEY,
   });
 
   // Call OpenAI to extract structured info
-  const prompt = `Extract the following from the campaign brief:\n- Campaign objectives\n- Target audience\n- Brand guidelines\n- Key messaging\n- Platforms\nReturn a JSON object with confidence scores for each field.`;
+  const prompt = `Extract the following information from the campaign brief and return it as a valid JSON object:
+
+Required fields:
+- title: Brief title or campaign name
+- objectives: Campaign objectives/goals  
+- target_audience: Target audience description
+- key_messages: Array of key messaging points
+- platforms: Array of marketing platforms/channels
+- budget: Budget information (if mentioned)
+- timeline: Timeline/duration (if mentioned)  
+- tone: Brand voice/tone (if mentioned)
+- deliverables: Array of expected deliverables
+
+Return ONLY the JSON object, no additional text or formatting.`;
   
   const completion = await openai.chat.completions.create({
     model: 'gpt-4o',
     messages: [
-      { role: 'system', content: 'You are an expert campaign strategist.' },
-      { role: 'user', content: `${prompt}\n\nBrief:\n${text}` },
+      { 
+        role: 'system', 
+        content: 'You are an expert campaign strategist. Extract information from briefs and return it as valid JSON only.' 
+      },
+      { 
+        role: 'user', 
+        content: `${prompt}\n\nBrief Content:\n${text}` 
+      },
     ],
-    temperature: 0.2,
-    max_tokens: 800,
+    temperature: 0.1,
+    max_tokens: 1000,
   });
   
-  return completion.choices[0]?.message?.content;
+  const result = completion.choices[0]?.message?.content;
+  if (!result) {
+    throw new Error('No response from AI parsing');
+  }
+  
+  // Validate that we got valid JSON
+  try {
+    JSON.parse(result);
+    return result;
+  } catch (parseError) {
+    console.error('AI returned invalid JSON:', result);
+    // Return a minimal valid JSON structure
+    return JSON.stringify({
+      title: 'Extracted Brief',
+      objectives: text.substring(0, 200) + '...',
+      target_audience: 'Please define target audience',
+      key_messages: [],
+      platforms: ['Instagram', 'Facebook'],
+      budget: 'Not specified',
+      timeline: 'Not specified',
+      tone: 'Professional',
+      deliverables: [],
+      extraction_note: 'AI parsing returned invalid format, please review manually'
+    });
+  }
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
