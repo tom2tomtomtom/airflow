@@ -425,7 +425,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
                                 <LinearProgress
                                   variant="determinate"
                                   value={execution.progress}
-                                  size="small"
+                                  sx={{ height: 6 }}
                                 />
                                 <Typography variant="caption" color="text.secondary">
                                   {execution.progress}% complete

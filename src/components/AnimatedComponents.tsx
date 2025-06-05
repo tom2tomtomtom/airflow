@@ -9,11 +9,8 @@ import {
   Chip,
   Avatar,
   Typography,
-  Fade,
   Slide,
-  Grow,
   Zoom,
-  Collapse,
   styled,
   keyframes,
 } from '@mui/material';

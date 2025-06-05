@@ -187,7 +187,7 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
               fullWidth
               placeholder="Search clients..."
               value={searchTerm}
-              onChange={(e: React.ChangeEvent<HTMLElement>) => setSearchTerm(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">

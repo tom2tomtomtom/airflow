@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Grid2 as Grid,
+  Grid,
   Card,
   Typography,
   Button,
@@ -251,7 +251,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
       {/* Filters */}
       <Paper sx={{ p: 2, mb: 3 }}>
         <Grid container spacing={2} alignItems="center">
-          <Grid xs={12} md={3}>
+          <Grid item xs={12} md={3}>
             <FormControl fullWidth size="small">
               <InputLabel>Granularity</InputLabel>
               <Select
