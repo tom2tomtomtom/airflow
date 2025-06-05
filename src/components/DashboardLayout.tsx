@@ -325,7 +325,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
             >
               {mode === 'light' ? <DarkModeIcon /> : <LightModeIcon />}
             </IconButton>
-            <NotificationCenter />
+            {/* <NotificationCenter /> */}
             <UserMenu />
           </Box>
         </Toolbar>

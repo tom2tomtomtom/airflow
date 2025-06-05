@@ -207,20 +207,36 @@ export const useCampaigns = (clientId?: string) => {
   return useQuery({
     queryKey: ['campaigns', clientId],
     queryFn: async () => {
-      let query = supabase.from('campaigns').select('*');
-      
-      if (clientId) {
-        query = query.eq('client_id', clientId);
+      try {
+        let query = supabase.from('campaigns').select('*');
+        
+        if (clientId) {
+          query = query.eq('client_id', clientId);
+        }
+        
+        const { data, error } = await query.order('created_at', { ascending: false });
+        
+        if (error) {
+          console.warn('Error fetching campaigns:', error);
+          return []; // Return empty array on error
+        }
+        
+        // Convert to UI format - ensure data is array
+        const campaignsArray = Array.isArray(data) ? data : [];
+        return campaignsArray.map(campaignToUICampaign);
+      } catch (err) {
+        console.error('Failed to fetch campaigns:', err);
+        return []; // Return empty array on any error
       }
-      
-      const { data, error } = await query.order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      
-      // Convert to UI format
-      return (data || []).map(campaignToUICampaign);
     },
     staleTime: 5 * 60 * 1000,
+    retry: (failureCount, error) => {
+      // Don't retry on network errors to Supabase
+      if (error.message.includes('fetch')) {
+        return false;
+      }
+      return failureCount < 2;
+    },
   });
 };
 

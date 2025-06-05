@@ -5,11 +5,18 @@ export function withSecurityHeaders(handler: (req: NextApiRequest, res: NextApiR
     // Get Supabase URL from environment
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     
-    // Build CSP with dynamic Supabase URL
-    let csp = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'";
+    // Build CSP with proper font and connection sources
+    let csp = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "img-src 'self' data: https:",
+      "font-src 'self' data: https://fonts.gstatic.com",
+      "connect-src 'self'"
+    ];
     
     if (supabaseUrl) {
-      csp += ` ${supabaseUrl}`;
+      csp[csp.length - 1] += ` ${supabaseUrl}`;
     }
     
     // Add security headers
@@ -17,7 +24,7 @@ export function withSecurityHeaders(handler: (req: NextApiRequest, res: NextApiR
     res.setHeader('X-Frame-Options', 'DENY');
     res.setHeader('X-XSS-Protection', '1; mode=block');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-    res.setHeader('Content-Security-Policy', csp);
+    res.setHeader('Content-Security-Policy', csp.join('; '));
     
     // Call the handler
     return handler(req, res);
