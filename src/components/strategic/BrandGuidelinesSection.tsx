@@ -108,7 +108,7 @@ const BrandGuidelinesSection: React.FC<BrandGuidelinesProps> = ({
                     Primary
                   </Typography>
                   <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
-                    {brandGuidelines.colors.primary?.map((color: string, index: number) => (
+                    {Array.isArray(brandGuidelines.colors?.primary) && brandGuidelines.colors.primary.map((color: string, index: number) => (
                       <Box
                         key={index}
                         sx={{
@@ -126,7 +126,7 @@ const BrandGuidelinesSection: React.FC<BrandGuidelinesProps> = ({
                     Secondary
                   </Typography>
                   <Stack direction="row" spacing={1}>
-                    {brandGuidelines.colors.secondary?.map((color: string, index: number) => (
+                    {Array.isArray(brandGuidelines.colors?.secondary) && brandGuidelines.colors.secondary.map((color: string, index: number) => (
                       <Box
                         key={index}
                         sx={{
@@ -160,13 +160,13 @@ const BrandGuidelinesSection: React.FC<BrandGuidelinesProps> = ({
                     Primary Font
                   </Typography>
                   <Typography variant="body2" sx={{ mb: 1 }}>
-                    {brandGuidelines.typography.primary}
+                    {brandGuidelines.typography.primary_font}
                   </Typography>
                   <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                     Secondary Font
                   </Typography>
                   <Typography variant="body2">
-                    {brandGuidelines.typography.secondary}
+                    {brandGuidelines.typography.secondary_font}
                   </Typography>
                 </Box>
               )}
@@ -182,13 +182,13 @@ const BrandGuidelinesSection: React.FC<BrandGuidelinesProps> = ({
                 <VoiceOverOffIcon sx={{ mr: 1, color: 'primary.main' }} />
                 <Typography variant="h6">Voice & Tone</Typography>
               </Box>
-              {brandGuidelines.voice && (
+              {brandGuidelines.toneOfVoice && (
                 <Box>
                   <Typography variant="body2" color="text.secondary">
-                    {brandGuidelines.voice.description}
+                    {brandGuidelines.toneOfVoice.communication_style}
                   </Typography>
                   <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-                    {brandGuidelines.voice.keywords?.map((keyword: string, index: number) => (
+                    {Array.isArray(brandGuidelines.toneOfVoice?.personality) && brandGuidelines.toneOfVoice.personality.map((trait: string, index: number) => (
                       <Box
                         key={index}
                         sx={{
@@ -199,7 +199,7 @@ const BrandGuidelinesSection: React.FC<BrandGuidelinesProps> = ({
                           fontSize: '0.75rem',
                         }}
                       >
-                        {keyword}
+                        {trait}
                       </Box>
                     ))}
                   </Stack>
