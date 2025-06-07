@@ -70,7 +70,7 @@ const UserMenu: React.FC = () => {
         sx={{ ml: 2 }}
         aria-controls={open ? 'user-menu' : undefined}
         aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined} aria-label="Icon button">        <Avatar sx={{ width: 32, height: 32 }}>
+        aria-expanded={open ? 'true' : undefined} aria-label="User menu">        <Avatar sx={{ width: 32, height: 32 }}>
           {user?.name?.charAt(0).toUpperCase() || <PersonIcon />}
         </Avatar>
       </IconButton>

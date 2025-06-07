@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Grid2,
+  Grid,
   Card,
   Typography,
   Button,
@@ -250,8 +250,8 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
 
       {/* Filters */}
       <Paper sx={{ p: 2, mb: 3 }}>
-        <Grid2 container spacing={2} alignItems="center">
-          <Grid2 xs={12} md={3}>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={12} md={3}>
             <FormControl fullWidth size="small">
               <InputLabel>Granularity</InputLabel>
               <Select
@@ -265,8 +265,8 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                 <MenuItem value="month">Monthly</MenuItem>
               </Select>
             </FormControl>
-          </Grid2>
-          <Grid2 xs={12} md={3}>
+          </Grid>
+          <Grid item xs={12} md={3}>
             <FormControl fullWidth size="small">
               <InputLabel>Platform</InputLabel>
               <Select
@@ -282,8 +282,8 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                 <MenuItem value="linkedin">LinkedIn</MenuItem>
               </Select>
             </FormControl>
-          </Grid2>
-          <Grid2 xs={12} md={6}>
+          </Grid>
+          <Grid item xs={12} md={6}>
             <Stack direction="row" spacing={1} flexWrap="wrap">
               {['impressions', 'clicks', 'conversions', 'spend'].map((metric) => (
                 <Chip
@@ -301,8 +301,8 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                 />
               ))}
             </Stack>
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </Paper>
 
       {loading ? (
@@ -313,8 +313,8 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
         <CardContent>
           {/* KPI Cards */}
           {performanceData && (
-            <Grid2 container spacing={3} sx={{ mb: 4 }}>
-              <Grid2 xs={12} sm={6} md={3}>
+            <Grid container spacing={3} sx={{ mb: 4 }}>
+              <Grid item xs={12} sm={6} md={3}>
                 <Card>
                   <CardContent>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -342,9 +342,9 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                     </Box>
                   </CardContent>
                 </Card>
-              </Grid2>
+              </Grid>
 
-              <Grid2 xs={12} sm={6} md={3}>
+              <Grid item xs={12} sm={6} md={3}>
                 <Card>
                   <CardContent>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -372,9 +372,9 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                     </Box>
                   </CardContent>
                 </Card>
-              </Grid2>
+              </Grid>
 
-              <Grid2 xs={12} sm={6} md={3}>
+              <Grid item xs={12} sm={6} md={3}>
                 <Card>
                   <CardContent>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -402,9 +402,9 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                     </Box>
                   </CardContent>
                 </Card>
-              </Grid2>
+              </Grid>
 
-              <Grid2 xs={12} sm={6} md={3}>
+              <Grid item xs={12} sm={6} md={3}>
                 <Card>
                   <CardContent>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -432,14 +432,14 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                     </Box>
                   </CardContent>
                 </Card>
-              </Grid2>
-            </Grid2>
+              </Grid>
+            </Grid>
           )}
 
           {/* Performance Metrics Cards */}
           {performanceData && (
-            <Grid2 container spacing={3} sx={{ mb: 4 }}>
-              <Grid2 xs={12} sm={6} md={3}>
+            <Grid container spacing={3} sx={{ mb: 4 }}>
+              <Grid item xs={12} sm={6} md={3}>
                 <Card>
                   <CardContent sx={{ textAlign: 'center' }}>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -453,9 +453,9 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                     </Typography>
                   </CardContent>
                 </Card>
-              </Grid2>
+              </Grid>
 
-              <Grid2 xs={12} sm={6} md={3}>
+              <Grid item xs={12} sm={6} md={3}>
                 <Card>
                   <CardContent sx={{ textAlign: 'center' }}>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -469,9 +469,9 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                     </Typography>
                   </CardContent>
                 </Card>
-              </Grid2>
+              </Grid>
 
-              <Grid2 xs={12} sm={6} md={3}>
+              <Grid item xs={12} sm={6} md={3}>
                 <Card>
                   <CardContent sx={{ textAlign: 'center' }}>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -485,9 +485,9 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                     </Typography>
                   </CardContent>
                 </Card>
-              </Grid2>
+              </Grid>
 
-              <Grid2 xs={12} sm={6} md={3}>
+              <Grid item xs={12} sm={6} md={3}>
                 <Card>
                   <CardContent sx={{ textAlign: 'center' }}>
                     <Typography variant="body2" color="text.secondary" gutterBottom>
@@ -501,8 +501,8 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                     </Typography>
                   </CardContent>
                 </Card>
-              </Grid2>
-            </Grid2>
+              </Grid>
+            </Grid>
           )}
 
           {/* Main Content Tabs */}
@@ -562,9 +562,9 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                       <Typography variant="subtitle1" gutterBottom fontWeight={600}>
                         Performance Insights
                       </Typography>
-                      <Grid2 container spacing={2}>
+                      <Grid container spacing={2}>
                         {insights.performance_insights.map((insight: any, index: number) => (
-                          <Grid2 xs={12} md={6} key={index}>
+                          <Grid item xs={12} md={6} key={index}>
                             <Alert 
                               severity={insight.type}
                               icon={getInsightIcon(insight.type)}
@@ -582,9 +582,9 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                                 </Typography>
                               )}
                             </Alert>
-                          </Grid2>
+                          </Grid>
                         ))}
-                      </Grid2>
+                      </Grid>
                     </Box>
 
                     {/* Optimization Opportunities */}
@@ -632,8 +632,8 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                         <Typography variant="subtitle1" gutterBottom fontWeight={600}>
                           30-Day Predictions
                         </Typography>
-                        <Grid2 container spacing={3}>
-                          <Grid2 xs={12} sm={6} md={3}>
+                        <Grid container spacing={3}>
+                          <Grid item xs={12} sm={6} md={3}>
                             <Card>
                               <CardContent sx={{ textAlign: 'center' }}>
                                 <Typography variant="body2" color="text.secondary">
@@ -644,8 +644,8 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                                 </Typography>
                               </CardContent>
                             </Card>
-                          </Grid2>
-                          <Grid2 xs={12} sm={6} md={3}>
+                          </Grid>
+                          <Grid item xs={12} sm={6} md={3}>
                             <Card>
                               <CardContent sx={{ textAlign: 'center' }}>
                                 <Typography variant="body2" color="text.secondary">
@@ -656,8 +656,8 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                                 </Typography>
                               </CardContent>
                             </Card>
-                          </Grid2>
-                          <Grid2 xs={12} sm={6} md={3}>
+                          </Grid>
+                          <Grid item xs={12} sm={6} md={3}>
                             <Card>
                               <CardContent sx={{ textAlign: 'center' }}>
                                 <Typography variant="body2" color="text.secondary">
@@ -668,8 +668,8 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                                 </Typography>
                               </CardContent>
                             </Card>
-                          </Grid2>
-                          <Grid2 xs={12} sm={6} md={3}>
+                          </Grid>
+                          <Grid item xs={12} sm={6} md={3}>
                             <Card>
                               <CardContent sx={{ textAlign: 'center' }}>
                                 <Typography variant="body2" color="text.secondary">
@@ -680,8 +680,8 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                                 </Typography>
                               </CardContent>
                             </Card>
-                          </Grid2>
-                        </Grid2>
+                          </Grid>
+                        </Grid>
                       </Box>
                     )}
                   </Box>
@@ -695,9 +695,9 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                       Top Performers
                     </Typography>
                     
-                    <Grid2 container spacing={3}>
+                    <Grid container spacing={3}>
                       {/* Top Campaigns */}
-                      <Grid2 xs={12} md={4}>
+                      <Grid item xs={12} md={4}>
                         <Card>
                           <CardContent>
                             <Typography variant="subtitle1" gutterBottom fontWeight={600}>
@@ -715,10 +715,10 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                             </List>
                           </CardContent>
                         </Card>
-                      </Grid2>
+                      </Grid>
 
                       {/* Top Content */}
-                      <Grid2 xs={12} md={4}>
+                      <Grid item xs={12} md={4}>
                         <Card>
                           <CardContent>
                             <Typography variant="subtitle1" gutterBottom fontWeight={600}>
@@ -736,10 +736,10 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                             </List>
                           </CardContent>
                         </Card>
-                      </Grid2>
+                      </Grid>
 
                       {/* Top Platforms */}
-                      <Grid2 xs={12} md={4}>
+                      <Grid item xs={12} md={4}>
                         <Card>
                           <CardContent>
                             <Typography variant="subtitle1" gutterBottom fontWeight={600}>
@@ -757,8 +757,8 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                             </List>
                           </CardContent>
                         </Card>
-                      </Grid2>
-                    </Grid2>
+                      </Grid>
+                    </Grid>
                   </Box>
                 )}
               </TabPanel>
