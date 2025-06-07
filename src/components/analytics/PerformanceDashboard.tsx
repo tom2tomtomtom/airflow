@@ -44,7 +44,7 @@ import {
   Area,
   XAxis,
   YAxis,
-  CartesianGrid2,
+  CartesianGrid,
   Tooltip as Chart,
   Legend,
   ResponsiveContainer,
@@ -536,7 +536,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
                     </Typography>
                     <ResponsiveContainer width="100%" height={400}>
                       <AreaChart data={performanceData.timeSeriesData}>
-                        <CartesianGrid2 strokeDasharray="3 3" />
+                        <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="date" />
                         <YAxis />
                         <Chart />
