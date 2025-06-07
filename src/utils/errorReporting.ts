@@ -54,7 +54,7 @@ export class ErrorReporter {
           filename: event.filename,
           lineno: event.lineno,
           colno: event.colno,
-          source: event.source,
+          source: (event as any).source,
         },
       });
     });

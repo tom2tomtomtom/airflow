@@ -4,7 +4,7 @@ import {
   Box,
   Container,
   Typography,
-  Grid,
+  Grid2,
   Card,
   Button,
   Tabs,
@@ -321,8 +321,8 @@ const VideoStudioPage: React.FC = () => {
 
           {/* Stats Cards */}
           {stats && (
-            <Grid container spacing={3} sx={{ mb: 4 }}>
-              <Grid item xs={12} sm={6} md={2}>
+            <Grid2 container spacing={3} sx={{ mb: 4 }}>
+              <Grid2 xs={12} sm={6} md={2}>
                 <StatCard
                   title="Total Generations"
                   value={stats.total_generations}
@@ -330,8 +330,8 @@ const VideoStudioPage: React.FC = () => {
                   icon={<VideocamIcon />}
                   color="primary"
                 />
-              </Grid>
-              <Grid item xs={12} sm={6} md={2}>
+              </Grid2>
+              <Grid2 xs={12} sm={6} md={2}>
                 <StatCard
                   title="Active"
                   value={stats.active_generations}
@@ -339,8 +339,8 @@ const VideoStudioPage: React.FC = () => {
                   icon={<ScheduleIcon />}
                   color="warning"
                 />
-              </Grid>
-              <Grid item xs={12} sm={6} md={2}>
+              </Grid2>
+              <Grid2 xs={12} sm={6} md={2}>
                 <StatCard
                   title="Completed Today"
                   value={stats.completed_today}
@@ -348,8 +348,8 @@ const VideoStudioPage: React.FC = () => {
                   icon={<CheckIcon />}
                   color="success"
                 />
-              </Grid>
-              <Grid item xs={12} sm={6} md={2}>
+              </Grid2>
+              <Grid2 xs={12} sm={6} md={2}>
                 <StatCard
                   title="Success Rate"
                   value={`${stats.success_rate}%`}
@@ -357,8 +357,8 @@ const VideoStudioPage: React.FC = () => {
                   icon={<TrendingUpIcon />}
                   color="info"
                 />
-              </Grid>
-              <Grid item xs={12} sm={6} md={2}>
+              </Grid2>
+              <Grid2 xs={12} sm={6} md={2}>
                 <StatCard
                   title="Total Videos"
                   value={stats.total_videos_created}
@@ -366,8 +366,8 @@ const VideoStudioPage: React.FC = () => {
                   icon={<PlayArrowIcon />}
                   color="success"
                 />
-              </Grid>
-              <Grid item xs={12} sm={6} md={2}>
+              </Grid2>
+              <Grid2 xs={12} sm={6} md={2}>
                 <StatCard
                   title="Avg. Time"
                   value={`${stats.average_generation_time}m`}
@@ -375,8 +375,8 @@ const VideoStudioPage: React.FC = () => {
                   icon={<ScheduleIcon />}
                   color="info"
                 />
-              </Grid>
-            </Grid>
+              </Grid2>
+            </Grid2>
           )}
 
           {/* Active Generations Alert */}
@@ -443,8 +443,8 @@ const VideoStudioPage: React.FC = () => {
                   
                   {/* Filters */}
                   <Paper sx={{ p: 2, mb: 3 }}>
-                    <Grid container spacing={2} alignItems="center">
-                      <Grid item xs={12} md={3}>
+                    <Grid2 container spacing={2} alignItems="center">
+                      <Grid2 xs={12} md={3}>
                         <TextField
                           fullWidth
                           size="small"
@@ -459,8 +459,8 @@ const VideoStudioPage: React.FC = () => {
                             ),
                           }}
                         />
-                      </Grid>
-                      <Grid item xs={12} md={2}>
+                      </Grid2>
+                      <Grid2 xs={12} md={2}>
                         <FormControl fullWidth size="small">
                           <InputLabel>Status</InputLabel>
                           <Select
@@ -475,9 +475,9 @@ const VideoStudioPage: React.FC = () => {
                             <MenuItem value="failed">Failed</MenuItem>
                           </Select>
                         </FormControl>
-                      </Grid>
-                      <Grid item xs={12} md={2}>
-                        <
+                      </Grid2>
+                      <Grid2 xs={12} md={2}>
+                        <TextField
                           fullWidth
                           size="small"
                           type="date"
@@ -486,9 +486,9 @@ const VideoStudioPage: React.FC = () => {
                           onChange={(e) => setFilters({ ...filters, dateFrom: e.target.value })}
                           InputLabelProps={{ shrink: true }}
                         />
-                      </Grid>
-                      <Grid item xs={12} md={2}>
-                        <
+                      </Grid2>
+                      <Grid2 xs={12} md={2}>
+                        <TextField
                           fullWidth
                           size="small"
                           type="date"
@@ -497,8 +497,8 @@ const VideoStudioPage: React.FC = () => {
                           onChange={(e) => setFilters({ ...filters, dateTo: e.target.value })}
                           InputLabelProps={{ shrink: true }}
                         />
-                      </Grid>
-                      <Grid item xs={12} md={3}>
+                      </Grid2>
+                      <Grid2 xs={12} md={3}>
                         <Button
                           startIcon={<FilterIcon />}
                           onClick={loadRecentGenerations}
@@ -506,8 +506,8 @@ const VideoStudioPage: React.FC = () => {
                         >
                           Apply Filters
                         </Button>
-                      </Grid>
-                    </Grid>
+                      </Grid2>
+                    </Grid2>
                   </Paper>
 
                   {/* Recent Generations */}

@@ -1,4 +1,5 @@
-import { createBrowserClient, SupabaseClient } from '@supabase/ssr';
+import { createBrowserClient } from '@supabase/ssr';
+import { SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '@/types/database';
 
 // Singleton instance to prevent multiple GoTrueClient warnings

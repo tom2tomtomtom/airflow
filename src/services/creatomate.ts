@@ -201,20 +201,22 @@ class CreatomateService {
       
       // Vary text content
       Object.keys(variation).forEach(key => {
-        if (typeof variation[key] === 'object' && variation[key].text) {
+        const value = variation[key];
+        if (typeof value === 'object' && value !== null && 'text' in value && value.text) {
           variation[key] = {
-            ...variation[key],
-            text: this.generateTextVariation(variation[key].text as string, i),
+            ...value,
+            text: this.generateTextVariation(value.text as string, i),
           };
         }
       });
       
       // Vary colors
       Object.keys(variation).forEach(key => {
-        if (typeof variation[key] === 'object' && variation[key].color) {
+        const value = variation[key];
+        if (typeof value === 'object' && value !== null && 'color' in value && value.color) {
           variation[key] = {
-            ...variation[key],
-            color: this.generateColorVariation(variation[key].color as string, i),
+            ...value,
+            color: this.generateColorVariation(value.color as string, i),
           };
         }
       });

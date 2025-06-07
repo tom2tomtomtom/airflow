@@ -382,7 +382,8 @@ export default function AssetBrowser({ clientId, onAssetSelect, selectionMode = 
                         onClick={(e) => {
                           e.stopPropagation();
                           toggleFavorite(asset);
-                        } aria-label="Icon button"}
+                        }}
+                        aria-label="Icon button"
                       >
                         {asset.favorite ? <Favorite color="error" /> : <FavoriteBorder />}
                       </IconButton>
