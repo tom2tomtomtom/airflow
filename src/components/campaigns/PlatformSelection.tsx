@@ -45,17 +45,6 @@ const PlatformSelection: React.FC<PlatformSelectionProps> = ({
   onNext,
   onBack,
 }) => {
-  const handlePlatformChange = (platform: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    const platforms = event.target.checked
-      ? [...campaignData.platforms, platform]
-      : campaignData.platforms.filter((p: string) => p !== platform);
-    
-    setCampaignData({
-      ...campaignData,
-      platforms,
-    });
-  };
-
   const isValid = campaignData.platforms && campaignData.platforms.length > 0;
 
   return (
@@ -74,7 +63,7 @@ const PlatformSelection: React.FC<PlatformSelectionProps> = ({
         <FormGroup>
           <Grid container spacing={2}>
             {platformOptions.map((platform) => (
-              <Grid item xs={12} sm={6} md={4} key={platform.value}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={platform.value}>
                 <Card
                   variant="outlined"
                   sx={{
@@ -85,32 +74,30 @@ const PlatformSelection: React.FC<PlatformSelectionProps> = ({
                       borderColor: platform.color,
                     },
                   }}
+                  onClick={() => {
+                    const isSelected = campaignData.platforms?.includes(platform.value);
+                    const platforms = isSelected
+                      ? campaignData.platforms.filter((p: string) => p !== platform.value)
+                      : [...(campaignData.platforms || []), platform.value];
+                    
+                    setCampaignData({
+                      ...campaignData,
+                      platforms,
+                    });
+                  }}
                 >
                   <CardContent sx={{ textAlign: 'center', py: 2 }}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={campaignData.platforms?.includes(platform.value) || false}
-                          onChange={handlePlatformChange(platform.value)}
-                          sx={{ display: 'none' }}
-                        />
-                      }
-                      label={
-                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                          {platform.icon}
-                          <Typography variant="body2" sx={{ mt: 1 }}>
-                            {platform.label}
-                          </Typography>
-                        </Box>
-                      }
-                      sx={{ m: 0, width: '100%' }}
-                      onClick={(e) => {
-                        const checkbox = e.currentTarget.querySelector('input[type="checkbox"]') as HTMLInputElement;
-                        if (checkbox) {
-                          checkbox.click();
-                        }
-                      }}
-                    />
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      {platform.icon}
+                      <Typography variant="body2" sx={{ mt: 1 }}>
+                        {platform.label}
+                      </Typography>
+                      <Checkbox
+                        checked={campaignData.platforms?.includes(platform.value) || false}
+                        sx={{ mt: 1 }}
+                        readOnly
+                      />
+                    </Box>
                   </CardContent>
                 </Card>
               </Grid>

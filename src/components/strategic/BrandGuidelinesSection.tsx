@@ -95,7 +95,7 @@ const BrandGuidelinesSection: React.FC<BrandGuidelinesProps> = ({
       
       <Grid container spacing={3}>
         {/* Colors */}
-        <Grid item xs={12} md={3}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <Card>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -147,7 +147,7 @@ const BrandGuidelinesSection: React.FC<BrandGuidelinesProps> = ({
         </Grid>
 
         {/* Typography */}
-        <Grid item xs={12} md={3}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <Card>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -175,7 +175,7 @@ const BrandGuidelinesSection: React.FC<BrandGuidelinesProps> = ({
         </Grid>
 
         {/* Voice & Tone */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <Card>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>

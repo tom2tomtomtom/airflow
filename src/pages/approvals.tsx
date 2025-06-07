@@ -260,7 +260,7 @@ const ApprovalsPage: React.FC = () => {
           {/* Action Bar */}
           <Paper sx={{ p: 2, mb: 3 }}>
             <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} md={3}>
+              <Grid size={{ xs: 12, md: 3 }}>
                 <TextField
                   fullWidth
                   size="small"
@@ -276,7 +276,7 @@ const ApprovalsPage: React.FC = () => {
                   }}
                 />
               </Grid>
-              <Grid item xs={12} md={2}>
+              <Grid size={{ xs: 12, md: 2 }}>
                 <FormControl fullWidth size="small">
                   <InputLabel>Priority</InputLabel>
                   <Select
@@ -292,7 +292,7 @@ const ApprovalsPage: React.FC = () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} md={2}>
+              <Grid size={{ xs: 12, md: 2 }}>
                 <FormControl fullWidth size="small">
                   <InputLabel>Type</InputLabel>
                   <Select
@@ -308,7 +308,7 @@ const ApprovalsPage: React.FC = () => {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} md={5} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+              <Grid size={{ xs: 12, md: 5 }} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
                 <Button
                   startIcon={<FilterIcon />}
                   onClick={(e) => setFilterMenuAnchor(e.currentTarget)}
@@ -334,7 +334,7 @@ const ApprovalsPage: React.FC = () => {
           {loading ? (
             <Grid container spacing={3} sx={{ mb: 3 }}>
               {[1, 2, 3, 4].map((i) => (
-                <Grid item xs={12} sm={6} md={3} key={i}>
+                <Grid size={{ xs: 12, sm: 6, md: 3 }} key={i}>
                   <Card>
                     <CardContent>
                       <Box display="flex" justifyContent="center" alignItems="center" minHeight={120}>
@@ -347,7 +347,7 @@ const ApprovalsPage: React.FC = () => {
             </Grid>
           ) : stats ? (
             <Grid container spacing={3} sx={{ mb: 3 }}>
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                 <StatCard
                   title="Total Approvals"
                   value={stats.total_approvals}
@@ -356,7 +356,7 @@ const ApprovalsPage: React.FC = () => {
                   color="primary"
                 />
               </Grid>
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                 <StatCard
                   title="Pending"
                   value={stats.pending_count}
@@ -365,7 +365,7 @@ const ApprovalsPage: React.FC = () => {
                   color="warning"
                 />
               </Grid>
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                 <StatCard
                   title="Overdue"
                   value={stats.overdue_count}
@@ -374,7 +374,7 @@ const ApprovalsPage: React.FC = () => {
                   color="error"
                 />
               </Grid>
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                 <StatCard
                   title="Avg. Time"
                   value={`${stats.average_approval_time_hours.toFixed(1)}h`}
@@ -389,7 +389,7 @@ const ApprovalsPage: React.FC = () => {
           {/* Distribution Charts */}
           {stats && stats.total_approvals > 0 && (
             <Grid container spacing={3} sx={{ mb: 3 }}>
-              <Grid item xs={12} md={4}>
+              <Grid size={{ xs: 12, md: 4 }}>
                 <Card>
                   <CardContent>
                     <Typography variant="h6" gutterBottom>
@@ -418,7 +418,7 @@ const ApprovalsPage: React.FC = () => {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid size={{ xs: 12, md: 4 }}>
                 <Card>
                   <CardContent>
                     <Typography variant="h6" gutterBottom>
@@ -447,7 +447,7 @@ const ApprovalsPage: React.FC = () => {
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid size={{ xs: 12, md: 4 }}>
                 <Card>
                   <CardContent>
                     <Typography variant="h6" gutterBottom>
@@ -500,7 +500,7 @@ const ApprovalsPage: React.FC = () => {
 
           {/* Quick Actions */}
           <Grid container spacing={2} sx={{ mb: 4 }}>
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <Card sx={{ textAlign: 'center', py: 2 }}>
                 <CardContent>
                   <SpeedIcon sx={{ fontSize: 40, color: 'primary.main', mb: 1 }} />
@@ -516,7 +516,7 @@ const ApprovalsPage: React.FC = () => {
                 </CardContent>
               </Card>
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <Card sx={{ textAlign: 'center', py: 2 }}>
                 <CardContent>
                   <GroupIcon sx={{ fontSize: 40, color: 'info.main', mb: 1 }} />
@@ -532,7 +532,7 @@ const ApprovalsPage: React.FC = () => {
                 </CardContent>
               </Card>
             </Grid>
-            <Grid item xs={12} sm={4}>
+            <Grid size={{ xs: 12, sm: 4 }}>
               <Card sx={{ textAlign: 'center', py: 2 }}>
                 <CardContent>
                   <NotificationIcon sx={{ fontSize: 40, color: 'warning.main', mb: 1 }} />

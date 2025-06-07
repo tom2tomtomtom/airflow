@@ -1,6 +1,28 @@
 /* Import Outfit Font */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
+/* Theme Transition Styles - MUST BE FIRST */
+.theme-transitioning,
+.theme-transitioning *,
+.theme-transitioning *::before,
+.theme-transitioning *::after {
+  transition: background-color 0.3s ease, 
+              color 0.3s ease, 
+              border-color 0.3s ease,
+              background 0.3s ease,
+              box-shadow 0.3s ease !important;
+  transition-delay: 0s !important;
+}
+
+/* Prevent layout shifts during theme transitions */
+html {
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+body {
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
 /* CRITICAL: Premium Gradient Theme - Override ALL External Styles */
 html, body, #__next, div[data-reactroot] {
   min-height: 100vh !important;

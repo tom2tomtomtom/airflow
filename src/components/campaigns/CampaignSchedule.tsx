@@ -58,7 +58,7 @@ const CampaignSchedule: React.FC<CampaignScheduleProps> = ({
         </Typography>
 
         <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <DatePicker
               label="Start Date"
               value={campaignData.startDate}
@@ -68,7 +68,7 @@ const CampaignSchedule: React.FC<CampaignScheduleProps> = ({
               }}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <DatePicker
               label="End Date"
               value={campaignData.endDate}
@@ -78,7 +78,7 @@ const CampaignSchedule: React.FC<CampaignScheduleProps> = ({
               }}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <FormControl fullWidth>
               <InputLabel>Posting Frequency</InputLabel>
               <Select
@@ -94,7 +94,7 @@ const CampaignSchedule: React.FC<CampaignScheduleProps> = ({
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="Estimated Posts"

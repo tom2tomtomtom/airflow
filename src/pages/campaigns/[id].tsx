@@ -43,7 +43,7 @@ import { format } from 'date-fns';
 import DashboardLayout from '../../components/DashboardLayout';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import ErrorMessage from '../../components/ErrorMessage';
-import { useData } from '../../hooks/useData';
+import { useCampaign } from '../../hooks/useData';
 import { useNotification } from '../../contexts/NotificationContext';
 import type { Campaign } from '@/types/models';
 
@@ -100,7 +100,7 @@ export default function CampaignDetail() {
   const [tabValue, setTabValue] = useState(0);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   
-  const { data: campaign, loading, error } = useData('campaigns', id as string);
+  const { data: campaign, isLoading: loading, error } = useCampaign(id as string);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);

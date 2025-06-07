@@ -51,6 +51,7 @@ const MuiColorInput = dynamic(() => import('mui-color-input').then(mod => ({ def
 
 import DashboardLayout from '@/components/DashboardLayout';
 import { useNotification } from '@/contexts/NotificationContext';
+import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 
 interface Contact {
@@ -76,6 +77,7 @@ const voiceTones = [
 export default function CreateClient() {
   const router = useRouter();
   const { showNotification } = useNotification();
+  const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [loading, setLoading] = useState(false);
@@ -267,6 +269,9 @@ export default function CreateClient() {
         throw new Error(errorData.message || 'Failed to create client');
       }
 
+      // Invalidate and refetch clients query to show the new client
+      await queryClient.invalidateQueries({ queryKey: ['clients'] });
+      
       showNotification('Client created successfully!', 'success');
       router.push('/clients');
       
@@ -297,7 +302,7 @@ export default function CreateClient() {
       case 0:
         return (
           <Grid container spacing={3}>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <TextField
                 fullWidth
                 label="Client Name"
@@ -317,13 +322,31 @@ export default function CreateClient() {
               />
             </Grid>
             
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <FormControl fullWidth required error={!formData.industry && activeStep > 0}>
-                <InputLabel>Industry</InputLabel>
+                <InputLabel id="industry-label">Industry</InputLabel>
                 <Select
+                  labelId="industry-label"
                   name="industry"
                   value={formData.industry}
+                  label="Industry"
                   onChange={(e) => setFormData(prev => ({ ...prev, industry: e.target.value }))}
+                  sx={{
+                    minHeight: '56px',
+                    '& .MuiSelect-select': {
+                      minHeight: 'unset',
+                      paddingTop: '16.5px',
+                      paddingBottom: '16.5px',
+                      display: 'flex',
+                      alignItems: 'center',
+                    },
+                    '& .MuiInputLabel-root': {
+                      transform: 'translate(14px, 16px) scale(1)',
+                    },
+                    '& .MuiInputLabel-shrink': {
+                      transform: 'translate(14px, -9px) scale(0.75)',
+                    },
+                  }}
                 >
                   {industries.map((industry) => (
                     <MenuItem key={industry} value={industry}>
@@ -334,7 +357,7 @@ export default function CreateClient() {
               </FormControl>
             </Grid>
             
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField fullWidth
                 label="Website"
                 name="website"
@@ -352,7 +375,7 @@ export default function CreateClient() {
               />
             </Grid>
             
-            <Grid item xs={12}>
+            <Grid size={12}>
               <TextField fullWidth
                 multiline
                 rows={3}
@@ -369,14 +392,14 @@ export default function CreateClient() {
       case 1:
         return (
           <Grid container spacing={3}>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <PaletteIcon />
                 Brand Colors
               </Typography>
             </Grid>
             
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <MuiColorInput
                 format="hex"
                 value={formData.primaryColor}
@@ -386,7 +409,7 @@ export default function CreateClient() {
               />
             </Grid>
             
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <MuiColorInput
                 format="hex"
                 value={formData.secondaryColor}
@@ -396,14 +419,14 @@ export default function CreateClient() {
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 2 }}>
                 <UploadIcon />
                 Logo Upload
               </Typography>
             </Grid>
             
-            <Grid item xs={12}>
+            <Grid size={12}>
               <Card sx={{ p: 3, border: '2px dashed', borderColor: 'grey.300' }}>
                 <input
                   ref={fileInputRef}
@@ -592,11 +615,29 @@ export default function CreateClient() {
             
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth>
-                <InputLabel>Voice & Tone</InputLabel>
+                <InputLabel id="voice-tone-label">Voice & Tone</InputLabel>
                 <Select
+                  labelId="voice-tone-label"
                   name="voiceTone"
                   value={formData.voiceTone}
+                  label="Voice & Tone"
                   onChange={(e) => setFormData(prev => ({ ...prev, voiceTone: e.target.value }))}
+                  sx={{
+                    minHeight: '56px',
+                    '& .MuiSelect-select': {
+                      minHeight: 'unset',
+                      paddingTop: '16.5px',
+                      paddingBottom: '16.5px',
+                      display: 'flex',
+                      alignItems: 'center',
+                    },
+                    '& .MuiInputLabel-root': {
+                      transform: 'translate(14px, 16px) scale(1)',
+                    },
+                    '& .MuiInputLabel-shrink': {
+                      transform: 'translate(14px, -9px) scale(0.75)',
+                    },
+                  }}
                 >
                   {voiceTones.map((tone) => (
                     <MenuItem key={tone} value={tone}>

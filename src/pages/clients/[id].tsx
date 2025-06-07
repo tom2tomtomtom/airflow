@@ -77,14 +77,24 @@ const ClientDetailPage: React.FC = () => {
   const { data: client, isLoading, error, refetch } = useQuery({
     queryKey: ['client', id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('clients')
-        .select('*')
-        .eq('id', id)
-        .single();
+      // Use API endpoint instead of direct Supabase call to handle RLS properly
+      const response = await fetch(`/api/clients/${id}`, {
+        credentials: 'include',
+      });
 
-      if (error) throw error;
-      return data as Client;
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Client not found');
+        }
+        throw new Error(`Failed to fetch client: ${response.status}`);
+      }
+
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to fetch client');
+      }
+
+      return result.client as Client;
     },
     enabled: !!id,
   });

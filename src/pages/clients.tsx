@@ -139,7 +139,7 @@ const ClientsPage: React.FC = () => {
         {isLoading && (
           <Grid container spacing={3}>
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Grid item xs={12} sm={6} md={4} key={i}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={i}>
                 <CardSkeleton height={300} />
               </Grid>
             ))}
@@ -175,7 +175,7 @@ const ClientsPage: React.FC = () => {
 
         <Grid container spacing={3}>
           {filteredClients.map((client: Client) => (
-            <Grid item xs={12} sm={6} md={4} key={client.id}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={client.id}>
               <Card
                 sx={{
                   height: '100%',

@@ -78,7 +78,7 @@ const ImageGenerationTab: React.FC<ImageGenerationTabProps> = ({
       </Typography>
       
       <Grid container spacing={4}>
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Paper sx={{ p: 3, height: '100%' }}>
             <Typography variant="subtitle1" gutterBottom fontWeight={600}>
               Image Settings
@@ -175,7 +175,7 @@ const ImageGenerationTab: React.FC<ImageGenerationTabProps> = ({
           </Paper>
         </Grid>
         
-        <Grid item xs={12} md={8}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <Paper sx={{ p: 3 }}>
             <Typography variant="subtitle1" gutterBottom fontWeight={600}>
               Generated Images
@@ -192,7 +192,7 @@ const ImageGenerationTab: React.FC<ImageGenerationTabProps> = ({
             
             <Grid container spacing={2}>
               {generatedImages.map((image) => (
-                <Grid item key={image.id} xs={12} sm={6} md={imageCount > 2 ? 6 : 12}>
+                <Grid key={image.id} size={{ xs: 12, sm: 6, md: imageCount > 2 ? 6 : 12 }}>
                   <Card>
                     <Box sx={{ position: 'relative' }}>
                       <CardMedia

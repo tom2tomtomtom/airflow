@@ -310,7 +310,7 @@ const AnalyticsPage: React.FC = () => {
       <DashboardLayout title="Analytics">
         <Grid container spacing={3}>
           {[1, 2, 3, 4].map(i => (
-            <Grid item xs={12} sm={6} md={3} key={i}>
+            <Grid size={{ xs: 12, sm: 6, md: 3 }} key={i}>
               <LoadingSkeleton variant="card" />
             </Grid>
           ))}
@@ -337,7 +337,7 @@ const AnalyticsPage: React.FC = () => {
         {/* Filters */}
         <Paper sx={{ p: 2, mb: 3 }}>
           <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} md={3}>
+            <Grid size={{ xs: 12, md: 3 }}>
               <FormControl fullWidth size="small">
                 <InputLabel>Time Range</InputLabel>
                 <Select
@@ -353,7 +353,7 @@ const AnalyticsPage: React.FC = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid size={{ xs: 12, md: 3 }}>
               <FormControl fullWidth size="small">
                 <InputLabel>Campaign</InputLabel>
                 <Select
@@ -370,7 +370,7 @@ const AnalyticsPage: React.FC = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid size={{ xs: 12, md: 3 }}>
               <FormControl fullWidth size="small">
                 <InputLabel>Platform</InputLabel>
                 <Select
@@ -412,7 +412,7 @@ const AnalyticsPage: React.FC = () => {
           {analyticsLoading ? (
             // Loading skeletons
             [...Array(4)].map((_, index) => (
-              <Grid item xs={12} sm={6} md={3} key={index}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
                 <Card>
                   <CardContent>
                     <Box display="flex" justifyContent="center" alignItems="center" minHeight={120}>
@@ -424,7 +424,7 @@ const AnalyticsPage: React.FC = () => {
             ))
           ) : analyticsData ? (
             <>
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                 <StatCard
                   title="Total Impressions"
                   value={analyticsData.kpiSummary.totalImpressions.toLocaleString()}
@@ -433,7 +433,7 @@ const AnalyticsPage: React.FC = () => {
                   color="info.light"
                 />
               </Grid>
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                 <StatCard
                   title="CTR"
                   value={`${analyticsData.kpiSummary.averageCTR}%`}
@@ -442,7 +442,7 @@ const AnalyticsPage: React.FC = () => {
                   color="warning.light"
                 />
               </Grid>
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                 <StatCard
                   title="Conversions"
                   value={analyticsData.kpiSummary.totalConversions.toLocaleString()}
@@ -451,7 +451,7 @@ const AnalyticsPage: React.FC = () => {
                   color="success.light"
                 />
               </Grid>
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                 <StatCard
                   title="Total Spend"
                   value={`$${analyticsData.kpiSummary.totalSpend.toLocaleString()}`}

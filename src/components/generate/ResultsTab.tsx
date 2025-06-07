@@ -133,7 +133,7 @@ const ResultsTab: React.FC<ResultsTabProps> = ({
       
       <Paper sx={{ p: 2, mb: 3 }}>
         <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} md={8}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <Tabs
               value={resultType}
               onChange={(_, newValue) => setResultType(newValue)}
@@ -172,7 +172,7 @@ const ResultsTab: React.FC<ResultsTabProps> = ({
               />
             </Tabs>
           </Grid>
-          <Grid item xs={12} md={4} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Grid size={{ xs: 12, md: 4 }} sx={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button
               variant={showFavoritesOnly ? "contained" : "outlined"}
               startIcon={showFavoritesOnly ? <StarIcon /> : <StarBorderIcon />}
@@ -197,7 +197,7 @@ const ResultsTab: React.FC<ResultsTabProps> = ({
               
               <Grid container spacing={2}>
                 {filteredCopy.map(copy => (
-                  <Grid item key={copy.id} xs={12}>
+                  <Grid key={copy.id} size={{ xs: 12 }}>
                     <Paper
                       variant="outlined"
                       sx={{ 
@@ -257,7 +257,7 @@ const ResultsTab: React.FC<ResultsTabProps> = ({
               
               <Grid container spacing={2}>
                 {filteredImages.map(image => (
-                  <Grid item key={image.id} xs={12} sm={6} md={4}>
+                  <Grid key={image.id} size={{ xs: 12, sm: 6, md: 4 }}>
                     <Card>
                       <Box sx={{ position: 'relative' }}>
                         <CardMedia
@@ -331,10 +331,10 @@ const ResultsTab: React.FC<ResultsTabProps> = ({
               
               <Grid container spacing={2}>
                 {filteredVideos.map(video => (
-                  <Grid item key={video.id} xs={12}>
+                  <Grid key={video.id} size={{ xs: 12 }}>
                     <Card>
                       <Grid container>
-                        <Grid item xs={12} sm={4}>
+                        <Grid size={{ xs: 12, sm: 4 }}>
                           <Box sx={{ position: 'relative' }}>
                             <CardMedia
                               component="img"
@@ -375,7 +375,7 @@ const ResultsTab: React.FC<ResultsTabProps> = ({
                             </IconButton>
                           </Box>
                         </Grid>
-                        <Grid item xs={12} sm={8}>
+                        <Grid size={{ xs: 12, sm: 8 }}>
                           <CardContent>
                             <Typography variant="subtitle1" gutterBottom>
                               {video.prompt.length > 50 ? video.prompt.substring(0, 50) + '...' : video.prompt}
@@ -433,7 +433,7 @@ const ResultsTab: React.FC<ResultsTabProps> = ({
                   <Card key={voice.id} variant="outlined">
                     <CardContent>
                       <Grid container spacing={2}>
-                        <Grid item xs={12} sm={8}>
+                        <Grid size={{ xs: 12, sm: 8 }}>
                           <Typography variant="subtitle1" gutterBottom>
                             {voice.text.length > 100 ? voice.text.substring(0, 100) + '...' : voice.text}
                           </Typography>
@@ -441,7 +441,7 @@ const ResultsTab: React.FC<ResultsTabProps> = ({
                             {voice.text}
                           </Typography>
                         </Grid>
-                        <Grid item xs={12} sm={4}>
+                        <Grid size={{ xs: 12, sm: 4 }}>
                           <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                             <Box sx={{ mb: 2 }}>
                               <Stack direction="row" spacing={1} sx={{ mb: 1 }}>

@@ -40,7 +40,7 @@ const CampaignBasicInfo: React.FC<CampaignBasicInfoProps> = ({
       </Typography>
 
       <Grid container spacing={3}>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <TextField
             fullWidth
             label="Campaign Name"
@@ -50,7 +50,7 @@ const CampaignBasicInfo: React.FC<CampaignBasicInfoProps> = ({
             required
           />
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <TextField
             fullWidth
             multiline
@@ -62,7 +62,7 @@ const CampaignBasicInfo: React.FC<CampaignBasicInfoProps> = ({
             required
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <TextField
             fullWidth
             label="Target Audience"
@@ -71,7 +71,7 @@ const CampaignBasicInfo: React.FC<CampaignBasicInfoProps> = ({
             placeholder="Who is this campaign targeting?"
           />
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <TextField
             fullWidth
             label="Budget"

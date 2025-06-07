@@ -54,107 +54,89 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, campaignId: string): Promise<void> {
-  const { 
-    include_matrices = true,
-    include_analytics = true,
-    include_executions = true,
-    analytics_period = '30d'
-  } = req.query;
+  console.log('Individual campaign API called: GET ID:', campaignId, 'User:', user.id);
+  
+  // For now, return mock campaign data since campaigns table doesn't exist yet
+  // TODO: Implement actual database queries when campaigns table is ready
+  
+  const mockCampaign = {
+    id: campaignId,
+    name: campaignId.includes('test') ? 'Test Campaign' : 'Execute at the speed of AI',
+    slug: 'mock-campaign',
+    description: 'This is a mock campaign for development purposes.',
+    objective: 'Brand Awareness',
+    status: 'draft',
+    priority: 'medium',
+    campaign_type: 'awareness',
+    client_id: '75d19828-19c3-4aff-932a-b9049d564889', // Default client ID
+    start_date: new Date().toISOString(),
+    end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
+    budget: {
+      total: 5000,
+      spent: 1250
+    },
+    spent: 1250,
+    platforms: ['facebook', 'instagram', 'twitter'],
+    targeting: {
+      platforms: ['facebook', 'instagram', 'twitter'],
+      audience: 'Marketing professionals',
+      frequency: 'daily',
+      estimatedPosts: '10'
+    },
+    schedule: {
+      startDate: new Date().toISOString(),
+      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+    },
+    kpis: ['impressions', 'clicks', 'conversions'],
+    tags: ['ai', 'marketing', 'automation'],
+    creative_requirements: {},
+    approval_status: 'pending',
+    created_by: user.id,
+    dateCreated: new Date().toISOString(),
+    lastModified: new Date().toISOString(),
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    // Add mock client data
+    clients: {
+      name: 'Redbaez',
+      slug: 'redbaez',
+      primary_color: '#1976d2',
+      secondary_color: '#dc004e',
+      brand_guidelines: {
+        voiceTone: 'Friendly',
+        targetAudience: 'Marketers',
+        keyMessages: ['creative at the speed of ai']
+      }
+    },
+    // Add mock matrices and executions without database queries
+    matrices: [],
+    executions: [],
+    analytics: {
+      has_data: false,
+      summary: {
+        impressions: 0,
+        clicks: 0,
+        conversions: 0,
+        spend: 0,
+        ctr: 0,
+        cpc: 0,
+        roas: 0
+      }
+    },
+    health_score: {
+      score: 75,
+      grade: 'B',
+      issues: ['Missing campaign description'],
+      recommendations: ['Add detailed campaign description']
+    },
+    timeline: [],
+    insights: ['Campaign ready for launch']
+  };
 
-  // First verify user has access to this campaign
-  const { data: campaign, error } = await supabase
-    .from('campaigns')
-    .select(`
-      *,
-      clients(name, slug, primary_color, secondary_color, brand_guidelines),
-      briefs(id, name, title, objectives, target_audience),
-      profiles!campaigns_created_by_fkey(full_name, avatar_url),
-      profiles!campaigns_approved_by_fkey(full_name, avatar_url)
-    `)
-    .eq('id', campaignId)
-    .single();
-
-  if (error || !campaign) {
-    return res.status(404).json({ error: 'Campaign not found' });
-  }
-
-  // Verify user has access to the client
-  const { data: clientAccess } = await supabase
-    .from('user_clients')
-    .select('id')
-    .eq('user_id', user.id)
-    .eq('client_id', campaign.client_id)
-    .single();
-
-  if (!clientAccess) {
-    return res.status(403).json({ error: 'Access denied to this campaign' });
-  }
-
-  const enrichedCampaign = { ...campaign };
-
-  // Include matrices
-  if (include_matrices === 'true') {
-    const { data: matrices } = await supabase
-      .from('matrices')
-      .select(`
-        id,
-        name,
-        description,
-        status,
-        variations,
-        combinations,
-        field_assignments,
-        created_at,
-        templates(name, platform, aspect_ratio)
-      `)
-      .eq('campaign_id', campaignId)
-      .order('created_at', { ascending: false });
-
-    enrichedCampaign.matrices = matrices || [];
-  }
-
-  // Include executions
-  if (include_executions === 'true') {
-    const { data: executions } = await supabase
-      .from('executions')
-      .select(`
-        id,
-        combination_id,
-        content_type,
-        platform,
-        render_url,
-        status,
-        metadata,
-        created_at,
-        updated_at
-      `)
-      .eq('campaign_id', campaignId)
-      .order('created_at', { ascending: false })
-      .limit(50);
-
-    enrichedCampaign.executions = executions || [];
-  }
-
-  // Include analytics
-  if (include_analytics === 'true') {
-    const analytics = await getCampaignAnalytics(campaignId, analytics_period as string);
-    enrichedCampaign.analytics = analytics;
-  }
-
-  // Calculate campaign health score
-  const healthScore = calculateCampaignHealth(enrichedCampaign);
-  enrichedCampaign.health_score = healthScore;
-
-  // Get campaign timeline
-  const timeline = await getCampaignTimeline(campaignId);
-  enrichedCampaign.timeline = timeline;
-
-  // Get performance insights
-  const insights = await generateCampaignInsights(enrichedCampaign);
-  enrichedCampaign.insights = insights;
+  console.log('Individual campaign found:', mockCampaign.name);
 
   return res.json({
-    data: enrichedCampaign
+    data: mockCampaign
   });
 }
 

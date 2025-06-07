@@ -105,26 +105,63 @@ const NewCampaign: React.FC = () => {
     setIsSubmitting(true);
     
     try {
+      // Validate required fields before sending
+      if (!campaignData.name?.trim()) {
+        showNotification('Campaign name is required', 'error');
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Transform frontend data to API expected format
+      const apiData = {
+        name: campaignData.name.trim(),
+        objective: (campaignData.objective?.trim() || 'Brand Awareness'), // Ensure non-empty
+        description: campaignData.notes || '',
+        client_id: activeClient.id, // API expects client_id not clientId
+        platforms: campaignData.platforms || [],
+        budget: campaignData.budget ? parseFloat(campaignData.budget) : 0,
+        start_date: campaignData.startDate?.toISOString(),
+        end_date: campaignData.endDate?.toISOString(),
+        targeting: {
+          audience: campaignData.targetAudience || '',
+          frequency: campaignData.frequency || 'daily',
+          estimatedPosts: campaignData.estimatedPosts || ''
+        },
+        campaign_type: 'awareness', // Default type
+        priority: 'medium', // Default priority
+        kpis: [], // Empty for now
+        tags: [], // Empty for now
+        creative_requirements: {}
+      };
+
+      console.log('Sending campaign data:', apiData);
+      
       const response = await fetch('/api/campaigns', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...campaignData,
-          clientId: activeClient.id,
-          status: 'draft',
-        }),
+        body: JSON.stringify(apiData),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create campaign');
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('Campaign creation failed:', errorData);
+        
+        if (response.status === 400 && errorData.details) {
+          // Show validation errors
+          const validationErrors = errorData.details.map((issue: any) => issue.message).join(', ');
+          throw new Error(`Validation failed: ${validationErrors}`);
+        }
+        
+        throw new Error(errorData.error || 'Failed to create campaign');
       }
 
       const result = await response.json();
       
       showNotification('Campaign created successfully!', 'success');
-      router.push(`/campaigns/${result.campaign.id}`);
+      // API returns { data: campaign } not { campaign }
+      router.push(`/campaigns/${result.data.id}`);
     } catch (error) {
       console.error('Error creating campaign:', error);
       showNotification('Failed to create campaign. Please try again.', 'error');

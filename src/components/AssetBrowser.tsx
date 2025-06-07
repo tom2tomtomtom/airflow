@@ -230,7 +230,7 @@ export default function AssetBrowser({ clientId, onAssetSelect, selectionMode = 
         {/* Search and Filter Bar */}
         <Paper sx={{ p: 2, mb: 3 }}>
           <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4}>
               <TextField
                 fullWidth
                 placeholder="Search assets..."
@@ -246,7 +246,7 @@ export default function AssetBrowser({ clientId, onAssetSelect, selectionMode = 
               />
             </Grid>
             
-            <Grid item xs={6} md={2}>
+            <Grid size={{ xs: 6, md: 2}>
               <FormControl fullWidth>
                 <InputLabel>Type</InputLabel>
                 <Select
@@ -263,7 +263,7 @@ export default function AssetBrowser({ clientId, onAssetSelect, selectionMode = 
               </FormControl>
             </Grid>
             
-            <Grid item xs={6} md={2}>
+            <Grid size={{ xs: 6, md: 2}>
               <FormControl fullWidth>
                 <InputLabel>Sort By</InputLabel>
                 <Select
@@ -279,7 +279,7 @@ export default function AssetBrowser({ clientId, onAssetSelect, selectionMode = 
               </FormControl>
             </Grid>
             
-            <Grid item xs={12} md={3}>
+            <Grid size={{ xs: 12, md: 3}>
               <Autocomplete
                 multiple
                 options={availableTags}
@@ -300,7 +300,7 @@ export default function AssetBrowser({ clientId, onAssetSelect, selectionMode = 
               />
             </Grid>
             
-            <Grid item xs={12} md={1}>
+            <Grid size={{ xs: 12, md: 1}>
               <Box display="flex" gap={1}>
                 <IconButton onClick={handleClearFilters} title="Clear Filters" aria-label="Icon button">                  <Clear />
                 </IconButton>
@@ -313,7 +313,7 @@ export default function AssetBrowser({ clientId, onAssetSelect, selectionMode = 
           
           {/* Date Range Filters */}
           <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid item xs={6} md={2}>
+            <Grid size={{ xs: 6, md: 2}>
               <DatePicker
                 label="From Date"
                 value={dateFrom}
@@ -321,7 +321,7 @@ export default function AssetBrowser({ clientId, onAssetSelect, selectionMode = 
                 slotProps={{ textField: { fullWidth: true } }}
               />
             </Grid>
-            <Grid item xs={6} md={2}>
+            <Grid size={{ xs: 6, md: 2}>
               <DatePicker
                 label="To Date"
                 value={dateTo}
@@ -453,7 +453,7 @@ export default function AssetBrowser({ clientId, onAssetSelect, selectionMode = 
               </DialogTitle>
               <DialogContent>
                 <Grid container spacing={2}>
-                  <Grid item xs={12} md={6}>
+                  <Grid size={{ xs: 12, md: 6}>
                     {selectedAsset.type === 'image' ? (
                       <img
                         src={selectedAsset.url}
@@ -474,7 +474,7 @@ export default function AssetBrowser({ clientId, onAssetSelect, selectionMode = 
                       </Box>
                     )}
                   </Grid>
-                  <Grid item xs={12} md={6}>
+                  <Grid size={{ xs: 12, md: 6}>
                     <Typography variant="h6" gutterBottom>Details</Typography>
                     <Typography><strong>Type:</strong> {selectedAsset.type.toUpperCase()}</Typography>
                     <Typography><strong>Size:</strong> {formatFileSize(selectedAsset.size)}</Typography>

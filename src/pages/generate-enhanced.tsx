@@ -10,10 +10,13 @@ import {
   Paper,
   Card,
   CardContent,
+  CardMedia,
+  CardHeader,
   Tabs,
   Tab,
   TextField,
   CircularProgress,
+  LinearProgress,
   IconButton,
   Chip,
   Rating,
@@ -25,6 +28,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Tooltip,
 } from '@mui/material';
 import {
   Image as ImageIcon,
@@ -37,9 +41,21 @@ import {
   Check as CheckIcon,
   ContentCopy as ContentCopyIcon,
   AutoAwesome as AutoAwesomeIcon,
+  Videocam as VideocamIcon,
+  Collections as CollectionsIcon,
+  Style as StyleIcon,
+  AspectRatio as AspectRatioIcon,
+  Fullscreen as FullscreenIcon,
+  Add as AddIcon,
+  Edit as EditIcon,
+  Save as SaveIcon,
+  Download as DownloadIcon,
+  PlayArrow as PlayArrowIcon,
+  Stop as StopIcon,
 } from '@mui/icons-material';
 import { useAuth } from '@/contexts/AuthContext';
 import { useClient } from '@/contexts/ClientContext';
+import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
 import DashboardLayout from '@/components/DashboardLayout';
 // Types for generate page
 interface Motivation {
@@ -55,6 +71,11 @@ interface CopyVariation {
   text: string;
   motivationId: string;
   favorite: boolean;
+  settings?: {
+    tone?: string;
+    length?: string;
+    style?: string;
+  };
 }
 
 interface GeneratedImage {
@@ -126,8 +147,9 @@ const ResultsTab = dynamic(
 // Types and mock data are now imported from @/lib/mockData for better performance
 const GenerateEnhancedPage: React.FC = () => {
   const router = useRouter();
-  const { isAuthenticated, loading: authLoading } = useAuth();
+  const { user: currentUser, isAuthenticated, loading: authLoading } = useAuth();
   const { activeClient, loading: clientLoading } = useClient();
+  const { session } = useSupabaseAuth();
 
   // State
   const [activeTab, setActiveTab] = useState('strategy');
@@ -149,7 +171,7 @@ const GenerateEnhancedPage: React.FC = () => {
   const [imagePrompt, setImagePrompt] = useState('');
   const [imageStyle, setImageStyle] = useState('photorealistic');
   const [imageAspectRatio, setImageAspectRatio] = useState('1:1');
-  const [imageCount, setImageCount] = useState(4);
+  const [imageCount, setImageCount] = useState(1);
   const [isGeneratingImages, setIsGeneratingImages] = useState(false);
   const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
 
@@ -181,7 +203,7 @@ const GenerateEnhancedPage: React.FC = () => {
     }
   }, [isAuthenticated, authLoading, router]);
 
-  // Load brief context from localStorage when component mounts
+  // Load brief context and generated content from localStorage when component mounts
   useEffect(() => {
     const loadBriefContext = () => {
       try {
@@ -216,9 +238,6 @@ const GenerateEnhancedPage: React.FC = () => {
             }
             
             console.log('Loaded brief context:', context);
-            setSnackbarMessage('Brief data loaded from strategy page');
-            setSnackbarSeverity('success');
-            setSnackbarOpen(true);
           } else {
             // Remove old context
             localStorage.removeItem('airwave_brief_context');
@@ -230,8 +249,71 @@ const GenerateEnhancedPage: React.FC = () => {
       }
     };
 
+    const loadGeneratedContent = () => {
+      try {
+        // Load generated images
+        const storedImages = localStorage.getItem('airwave_generated_images');
+        if (storedImages) {
+          const images = JSON.parse(storedImages);
+          // Check if images are recent (within 24 hours)
+          const recentImages = images.filter((img: GeneratedImage) => {
+            const imgDate = new Date(img.dateCreated);
+            const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+            return imgDate > dayAgo;
+          });
+          if (recentImages.length > 0) {
+            setGeneratedImages(recentImages);
+          } else {
+            localStorage.removeItem('airwave_generated_images');
+          }
+        }
+
+        // Load copy variations
+        const storedCopy = localStorage.getItem('airwave_copy_variations');
+        if (storedCopy) {
+          const copyVars = JSON.parse(storedCopy);
+          setCopyVariations(copyVars);
+        }
+
+        // Load motivations
+        const storedMotivations = localStorage.getItem('airwave_motivations');
+        if (storedMotivations) {
+          const motis = JSON.parse(storedMotivations);
+          setMotivations(motis);
+        }
+      } catch (error) {
+        console.error('Error loading generated content:', error);
+        // Clear corrupted data
+        localStorage.removeItem('airwave_generated_images');
+        localStorage.removeItem('airwave_copy_variations');
+        localStorage.removeItem('airwave_motivations');
+      }
+    };
+
     loadBriefContext();
+    loadGeneratedContent();
   }, []);
+
+  // Save generated images to localStorage whenever they change
+  useEffect(() => {
+    if (generatedImages.length > 0) {
+      localStorage.setItem('airwave_generated_images', JSON.stringify(generatedImages));
+    }
+  }, [generatedImages]);
+
+  // Save copy variations to localStorage whenever they change
+  useEffect(() => {
+    if (copyVariations.length > 0) {
+      localStorage.setItem('airwave_copy_variations', JSON.stringify(copyVariations));
+    }
+  }, [copyVariations]);
+
+  // Save motivations to localStorage whenever they change
+  useEffect(() => {
+    if (motivations.length > 0) {
+      localStorage.setItem('airwave_motivations', JSON.stringify(motivations));
+    }
+  }, [motivations]);
 
   // Handle tab change
   const handleTabChange = (_event: React.SyntheticEvent, newValue: string) => {
@@ -268,18 +350,25 @@ const GenerateEnhancedPage: React.FC = () => {
     setIsGeneratingCopy(true);
 
     try {
-      // Get user from localStorage to access the token
-      const storedUser = localStorage.getItem('airwave_user');
-      if (!storedUser) {
+      // Use auth context for token access
+      if (!currentUser) {
         setSnackbarMessage('User not authenticated');
         setSnackbarSeverity('error');
         setSnackbarOpen(true);
         setIsGeneratingCopy(false);
         return;
       }
-      
-      const user = JSON.parse(storedUser);
-      const token = user.token;
+
+      // Get session token from Supabase
+      if (!session?.access_token) {
+        setSnackbarMessage('Authentication session expired');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+        setIsGeneratingCopy(false);
+        return;
+      }
+
+      const token = session.access_token;
 
       // Generate copy for each selected motivation
       const newVariations: CopyVariation[] = [];
@@ -359,18 +448,25 @@ const GenerateEnhancedPage: React.FC = () => {
     setIsGeneratingMotivations(true);
 
     try {
-      // Get user from localStorage to access the token
-      const storedUser = localStorage.getItem('airwave_user');
-      if (!storedUser) {
+      // Use auth context for token access
+      if (!currentUser) {
         setSnackbarMessage('User not authenticated');
         setSnackbarSeverity('error');
         setSnackbarOpen(true);
         setIsGeneratingMotivations(false);
         return;
       }
-      
-      const user = JSON.parse(storedUser);
-      const token = user.token;
+
+      // Get session token from Supabase
+      if (!session?.access_token) {
+        setSnackbarMessage('Authentication session expired');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+        setIsGeneratingMotivations(false);
+        return;
+      }
+
+      const token = session.access_token;
 
       const response = await fetch('/api/ai/generate', {
         method: 'POST',
@@ -448,6 +544,67 @@ const GenerateEnhancedPage: React.FC = () => {
     ));
   };
 
+  // Handle copy to clipboard
+  const handleCopyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setSnackbarMessage('Copied to clipboard');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
+    } catch (error) {
+      console.error('Copy error:', error);
+      setSnackbarMessage('Failed to copy to clipboard');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    }
+  };
+
+  // Handle save copy to assets
+  const handleSaveCopyToAssets = async (variation: CopyVariation) => {
+    if (!activeClient?.id) {
+      setSnackbarMessage('Please select a client first');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/save-content', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: `AI Copy: ${variation.text.substring(0, 50)}...`,
+          type: 'text',
+          content: variation.text,
+          client_id: activeClient.id,
+          tags: ['ai-generated', 'copy', variation.settings?.tone || 'unknown'],
+          metadata: {
+            ai_model: 'gpt-4',
+            settings: variation.settings,
+            generation_method: 'strategic_motivations',
+          },
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        setSnackbarMessage('Copy saved to assets successfully');
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
+      } else {
+        throw new Error(result.message || 'Failed to save to assets');
+      }
+    } catch (error) {
+      console.error('Save copy to assets error:', error);
+      setSnackbarMessage('Failed to save copy to assets');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    }
+  };
+
   // Handle image generation
   const handleGenerateImages = async () => {
     if (!imagePrompt.trim()) {
@@ -468,17 +625,25 @@ const GenerateEnhancedPage: React.FC = () => {
 
     try {
       // Get user from localStorage to access the token
-      const storedUser = localStorage.getItem('airwave_user');
-      if (!storedUser) {
+      // Use auth context for token access
+      if (!currentUser) {
         setSnackbarMessage('User not authenticated');
         setSnackbarSeverity('error');
         setSnackbarOpen(true);
         setIsGeneratingImages(false);
         return;
       }
-      
-      const user = JSON.parse(storedUser);
-      const token = user.token;
+
+      // Get session token from Supabase
+      if (!session?.access_token) {
+        setSnackbarMessage('Authentication session expired');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+        setIsGeneratingImages(false);
+        return;
+      }
+
+      const token = session.access_token;
 
       // Generate images sequentially (DALL-E API limit)
       const newImages: GeneratedImage[] = [];
@@ -491,7 +656,7 @@ const GenerateEnhancedPage: React.FC = () => {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'x-user-id': user.id || user.user_id || 'unknown',
+              'x-user-id': currentUser.id || 'unknown',
             },
             body: JSON.stringify({
               prompt: imagePrompt,
@@ -573,6 +738,43 @@ const GenerateEnhancedPage: React.FC = () => {
     ));
   };
 
+  // Handle image full size view
+  const handleViewImageFullSize = (image: GeneratedImage) => {
+    window.open(image.url, '_blank', 'noopener,noreferrer');
+  };
+
+  // Handle image download
+  const handleDownloadImage = async (image: GeneratedImage) => {
+    try {
+      const response = await fetch(image.url);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `airwave-generated-${image.id}.png`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      setSnackbarMessage('Image downloaded successfully');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
+    } catch (error) {
+      console.error('Download error:', error);
+      setSnackbarMessage('Failed to download image');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    }
+  };
+
+  // Handle save image to assets (images are auto-saved during generation)
+  const handleSaveImageToAssets = async (image: GeneratedImage) => {
+    setSnackbarMessage('Images are automatically saved to assets during generation');
+    setSnackbarSeverity('info');
+    setSnackbarOpen(true);
+  };
+
   // Handle video generation
   const handleGenerateVideo = async () => {
     if (!videoPrompt.trim()) {
@@ -592,18 +794,25 @@ const GenerateEnhancedPage: React.FC = () => {
     setIsGeneratingVideo(true);
 
     try {
-      // Get user from localStorage to access the token
-      const storedUser = localStorage.getItem('airwave_user');
-      if (!storedUser) {
+      // Use auth context for token access
+      if (!currentUser) {
         setSnackbarMessage('User not authenticated');
         setSnackbarSeverity('error');
         setSnackbarOpen(true);
         setIsGeneratingVideo(false);
         return;
       }
-      
-      const user = JSON.parse(storedUser);
-      const token = user.token;
+
+      // Get session token from Supabase
+      if (!session?.access_token) {
+        setSnackbarMessage('Authentication session expired');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+        setIsGeneratingVideo(false);
+        return;
+      }
+
+      const token = session.access_token;
 
       const response = await fetch('/api/ai/generate', {
         method: 'POST',
@@ -687,18 +896,25 @@ const GenerateEnhancedPage: React.FC = () => {
     setIsGeneratingVoice(true);
 
     try {
-      // Get user from localStorage to access the token
-      const storedUser = localStorage.getItem('airwave_user');
-      if (!storedUser) {
+      // Use auth context for token access
+      if (!currentUser) {
         setSnackbarMessage('User not authenticated');
         setSnackbarSeverity('error');
         setSnackbarOpen(true);
         setIsGeneratingVoice(false);
         return;
       }
-      
-      const user = JSON.parse(storedUser);
-      const token = user.token;
+
+      // Get session token from Supabase
+      if (!session?.access_token) {
+        setSnackbarMessage('Authentication session expired');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+        setIsGeneratingVoice(false);
+        return;
+      }
+
+      const token = session.access_token;
 
       const response = await fetch('/api/ai/generate', {
         method: 'POST',
@@ -761,6 +977,24 @@ const GenerateEnhancedPage: React.FC = () => {
     ));
   };
 
+  // Clear all generated content from session
+  const handleClearSession = () => {
+    setGeneratedImages([]);
+    setCopyVariations([]);
+    setGeneratedVideos([]);
+    setGeneratedVoices([]);
+    setMotivations([]);
+    
+    // Clear from localStorage
+    localStorage.removeItem('airwave_generated_images');
+    localStorage.removeItem('airwave_copy_variations');
+    localStorage.removeItem('airwave_motivations');
+    
+    setSnackbarMessage('Session cleared successfully');
+    setSnackbarSeverity('success');
+    setSnackbarOpen(true);
+  };
+
   if (authLoading || clientLoading || !activeClient) {
     return (
       <Box
@@ -782,13 +1016,26 @@ const GenerateEnhancedPage: React.FC = () => {
         <title>Generate Content | AIrWAVE</title>
       </Head>
       <DashboardLayout title="Generate Content">
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" component="h1" gutterBottom fontWeight={600}>
-            Content Generation
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Use AI to generate various content types for your campaign
-          </Typography>
+        <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <Box>
+            <Typography variant="h4" component="h1" gutterBottom fontWeight={600}>
+              Content Generation
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Use AI to generate various content types for your campaign
+            </Typography>
+          </Box>
+          {(generatedImages.length > 0 || copyVariations.length > 0 || motivations.length > 0) && (
+            <Button
+              variant="outlined"
+              color="secondary"
+              size="small"
+              onClick={handleClearSession}
+              sx={{ mt: 1 }}
+            >
+              Clear Session
+            </Button>
+          )}
         </Box>
 
         <Tabs
@@ -857,7 +1104,7 @@ const GenerateEnhancedPage: React.FC = () => {
                   variant="outlined"
                   placeholder="Enter client brief text or campaign objectives here..."
                   value={briefText}
-                  onChange={(e: React.ChangeEvent<HTMLElement>) => setBriefText(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setBriefText(e.target.value)}
                   sx={{ mb: 2 }}
                 />
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -1134,19 +1381,48 @@ const GenerateEnhancedPage: React.FC = () => {
                                       mt: 1,
                                     }}>
                                       <Tooltip title="Edit">
-                                        <IconButton size="small" aria-label="Icon button">                                          <EditIcon fontSize="small" />
+                                        <IconButton 
+                                          size="small" 
+                                          onClick={() => {
+                                            setSnackbarMessage('Edit functionality coming soon');
+                                            setSnackbarSeverity('info');
+                                            setSnackbarOpen(true);
+                                          }}
+                                          aria-label="Edit copy"
+                                        >
+                                          <EditIcon fontSize="small" />
                                         </IconButton>
                                       </Tooltip>
                                       <Tooltip title="Regenerate">
-                                        <IconButton size="small" aria-label="Icon button">                                          <RefreshIcon fontSize="small" />
+                                        <IconButton 
+                                          size="small" 
+                                          onClick={() => {
+                                            setSnackbarMessage('Regenerate functionality coming soon');
+                                            setSnackbarSeverity('info');
+                                            setSnackbarOpen(true);
+                                          }}
+                                          aria-label="Regenerate copy"
+                                        >
+                                          <RefreshIcon fontSize="small" />
                                         </IconButton>
                                       </Tooltip>
                                       <Tooltip title="Copy to clipboard">
-                                        <IconButton size="small" aria-label="Icon button">                                          <ContentCopyIcon fontSize="small" />
+                                        <IconButton 
+                                          size="small" 
+                                          onClick={() => handleCopyToClipboard(variation.text)}
+                                          aria-label="Copy to clipboard"
+                                        >
+                                          <ContentCopyIcon fontSize="small" />
                                         </IconButton>
                                       </Tooltip>
                                       <Tooltip title="Save to assets">
-                                        <IconButton size="small" color="primary" aria-label="Icon button">                                          <SaveIcon fontSize="small" />
+                                        <IconButton 
+                                          size="small" 
+                                          color="primary" 
+                                          onClick={() => handleSaveCopyToAssets(variation)}
+                                          aria-label="Save to assets"
+                                        >
+                                          <SaveIcon fontSize="small" />
                                         </IconButton>
                                       </Tooltip>
                                     </Box>
@@ -1190,7 +1466,7 @@ const GenerateEnhancedPage: React.FC = () => {
                         variant="outlined"
                         placeholder="Describe the image you want to generate..."
                         value={imagePrompt}
-                        onChange={(e: React.ChangeEvent<HTMLElement>) => setImagePrompt(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setImagePrompt(e.target.value)}
                         sx={{ mb: 1 }}
                       />
                       <Typography variant="caption" color="text.secondary">
@@ -1333,19 +1609,44 @@ const GenerateEnhancedPage: React.FC = () => {
                                 mt: 2,
                               }}>
                                 <Tooltip title="View full size">
-                                  <IconButton size="small" aria-label="Icon button">                                    <FullscreenIcon fontSize="small" />
+                                  <IconButton 
+                                    size="small" 
+                                    onClick={() => handleViewImageFullSize(image)}
+                                    aria-label="View full size"
+                                  >
+                                    <FullscreenIcon fontSize="small" />
                                   </IconButton>
                                 </Tooltip>
                                 <Tooltip title="Edit">
-                                  <IconButton size="small" aria-label="Icon button">                                    <EditIcon fontSize="small" />
+                                  <IconButton 
+                                    size="small" 
+                                    onClick={() => {
+                                      setSnackbarMessage('Edit functionality coming soon');
+                                      setSnackbarSeverity('info');
+                                      setSnackbarOpen(true);
+                                    }}
+                                    aria-label="Edit image"
+                                  >
+                                    <EditIcon fontSize="small" />
                                   </IconButton>
                                 </Tooltip>
                                 <Tooltip title="Download">
-                                  <IconButton size="small" aria-label="Icon button">                                    <DownloadIcon fontSize="small" />
+                                  <IconButton 
+                                    size="small" 
+                                    onClick={() => handleDownloadImage(image)}
+                                    aria-label="Download image"
+                                  >
+                                    <DownloadIcon fontSize="small" />
                                   </IconButton>
                                 </Tooltip>
                                 <Tooltip title="Save to assets">
-                                  <IconButton size="small" color="primary" aria-label="Icon button">                                    <SaveIcon fontSize="small" />
+                                  <IconButton 
+                                    size="small" 
+                                    color="primary" 
+                                    onClick={() => handleSaveImageToAssets(image)}
+                                    aria-label="Save to assets"
+                                  >
+                                    <SaveIcon fontSize="small" />
                                   </IconButton>
                                 </Tooltip>
                               </Box>
@@ -1399,7 +1700,7 @@ const GenerateEnhancedPage: React.FC = () => {
                         variant="outlined"
                         placeholder="Describe the video you want to generate..."
                         value={videoPrompt}
-                        onChange={(e: React.ChangeEvent<HTMLElement>) => setVideoPrompt(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setVideoPrompt(e.target.value)}
                         sx={{ mb: 1 }}
                       />
                       <Typography variant="caption" color="text.secondary">

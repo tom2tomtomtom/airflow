@@ -32,7 +32,7 @@ export const CardSkeleton: React.FC<{ height?: number }> = ({ height = 200 }) =>
 export const StatsSkeleton: React.FC = () => (
   <Grid container spacing={3}>
     {[...Array(6)].map((_, index) => (
-      <Grid item xs={12} sm={6} md={4} lg={2} key={index}>
+      <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2 }} key={index}>
         <Card>
           <CardContent>
             <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -166,10 +166,10 @@ export const WorkflowSkeleton: React.FC = () => (
 export const AnalyticsSkeleton: React.FC = () => (
   <Grid container spacing={3}>
     {/* KPI Cards */}
-    <Grid item xs={12}>
+    <Grid size={{ xs: 12 }}>
       <Grid container spacing={2}>
         {[...Array(4)].map((_, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
             <Card>
               <CardContent>
                 <Box textAlign="center">
@@ -185,7 +185,7 @@ export const AnalyticsSkeleton: React.FC = () => (
     </Grid>
     
     {/* Charts */}
-    <Grid item xs={12} md={8}>
+    <Grid size={{ xs: 12, md: 8 }}>
       <Card>
         <CardContent>
           <Skeleton variant="text" width="30%" height={24} sx={{ mb: 2 }} />
@@ -194,7 +194,7 @@ export const AnalyticsSkeleton: React.FC = () => (
       </Card>
     </Grid>
     
-    <Grid item xs={12} md={4}>
+    <Grid size={{ xs: 12, md: 4 }}>
       <Card>
         <CardContent>
           <Skeleton variant="text" width="40%" height={24} sx={{ mb: 2 }} />
@@ -209,7 +209,7 @@ export const AnalyticsSkeleton: React.FC = () => (
 export const AssetGridSkeleton: React.FC<{ items?: number }> = ({ items = 12 }) => (
   <Grid container spacing={2}>
     {[...Array(items)].map((_, index) => (
-      <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+      <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={index}>
         <Card>
           <Skeleton variant="rectangular" width="100%" height={160} />
           <CardContent>

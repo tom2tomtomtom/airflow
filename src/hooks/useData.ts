@@ -208,35 +208,55 @@ export const useCampaigns = (clientId?: string) => {
     queryKey: ['campaigns', clientId],
     queryFn: async () => {
       try {
-        let query = supabase.from('campaigns').select('*');
+        const response = await fetch('/api/campaigns', {
+          credentials: 'include',
+        });
         
-        if (clientId) {
-          query = query.eq('client_id', clientId);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch campaigns: ${response.status}`);
         }
         
-        const { data, error } = await query.order('created_at', { ascending: false });
-        
-        if (error) {
-          console.warn('Error fetching campaigns:', error);
-          return []; // Return empty array on error
-        }
-        
-        // Convert to UI format - ensure data is array
-        const campaignsArray = Array.isArray(data) ? data : [];
-        return campaignsArray.map(campaignToUICampaign);
-      } catch (err) {
-        console.error('Failed to fetch campaigns:', err);
-        return []; // Return empty array on any error
+        const result = await response.json();
+        return result.data || [];
+      } catch (error) {
+        console.error('Error fetching campaigns:', error);
+        return [];
       }
     },
     staleTime: 5 * 60 * 1000,
-    retry: (failureCount, error) => {
-      // Don't retry on network errors to Supabase
-      if (error.message.includes('fetch')) {
-        return false;
+    retry: false,
+  });
+};
+
+// Custom hook for fetching a single campaign
+export const useCampaign = (campaignId?: string) => {
+  return useQuery({
+    queryKey: ['campaign', campaignId],
+    queryFn: async () => {
+      if (!campaignId) return null;
+      
+      try {
+        const response = await fetch(`/api/campaigns/${campaignId}`, {
+          credentials: 'include',
+        });
+        
+        if (!response.ok) {
+          if (response.status === 404) {
+            throw new Error('Campaign not found');
+          }
+          throw new Error(`Failed to fetch campaign: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        return result.data || null;
+      } catch (error) {
+        console.error('Error fetching campaign:', error);
+        throw error;
       }
-      return failureCount < 2;
     },
+    enabled: !!campaignId,
+    staleTime: 5 * 60 * 1000,
+    retry: false,
   });
 };
 

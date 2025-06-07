@@ -392,7 +392,7 @@ const ExecutePage: React.FC = () => {
       <DashboardLayout title="Execute">
         <Grid container spacing={3}>
           {[1, 2, 3, 4].map(i => (
-            <Grid item xs={12} md={6} key={i}>
+            <Grid size={{ xs: 12, md: 6 }} key={i}>
               <LoadingSkeleton variant="card" />
             </Grid>
           ))}
@@ -418,7 +418,7 @@ const ExecutePage: React.FC = () => {
 
         {/* Quick Stats */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} md={3}>
+          <Grid size={{ xs: 12, md: 3 }}>
             <Card>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -437,7 +437,7 @@ const ExecutePage: React.FC = () => {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid size={{ xs: 12, md: 3 }}>
             <Card>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -456,7 +456,7 @@ const ExecutePage: React.FC = () => {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid size={{ xs: 12, md: 3 }}>
             <Card>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -475,7 +475,7 @@ const ExecutePage: React.FC = () => {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid size={{ xs: 12, md: 3 }}>
             <Card>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -498,7 +498,7 @@ const ExecutePage: React.FC = () => {
 
         <Grid container spacing={3}>
           {/* Campaign Selection & Execution */}
-          <Grid item xs={12} md={8}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <Paper sx={{ p: 3 }}>
               <Typography variant="h6" gutterBottom>
                 Execute New Campaign
@@ -509,7 +509,7 @@ const ExecutePage: React.FC = () => {
                   <StepContent>
                     <Grid container spacing={2}>
                       {readyCampaigns.map((campaign: Campaign) => (
-                        <Grid item xs={12} md={6} key={campaign.id}>
+                        <Grid size={{ xs: 12, md: 6 }} key={campaign.id}>
                           <Card
                             sx={{
                               cursor: 'pointer',
@@ -560,7 +560,7 @@ const ExecutePage: React.FC = () => {
                     <FormGroup>
                       <Grid container spacing={2}>
                         {platforms.map(platform => (
-                          <Grid item xs={6} md={4} key={platform.id}>
+                          <Grid size={{ xs: 6, md: 4 }} key={platform.id}>
                             <FormControlLabel
                               control={
                                 <Checkbox
@@ -651,7 +651,7 @@ const ExecutePage: React.FC = () => {
           </Grid>
 
           {/* Real-time Execution Monitor */}
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <ExecutionMonitor 
               maxHeight={500}
               showHeader={true}

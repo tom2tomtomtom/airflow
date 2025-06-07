@@ -1,7 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase';
+import { supabase, getServiceSupabase } from '@/lib/supabase';
 import { env, hasOpenAI } from '@/lib/env';
 import OpenAI from 'openai';
 import { z } from 'zod';
@@ -170,8 +170,9 @@ export default async function handler(
     const timestamp = Date.now();
     const filename = `dalle-${purpose || 'image'}-${timestamp}.png`;
     
-    // Upload to Supabase storage
-    const { data: _uploadData, error: uploadError } = await supabase.storage
+    // Upload to Supabase storage using service role (bypasses RLS)
+    const serviceSupabase = getServiceSupabase();
+    const { data: _uploadData, error: uploadError } = await serviceSupabase.storage
       .from('assets')
       .upload(`${client_id}/ai-generated/${filename}`, buffer, {
         contentType: 'image/png',
@@ -184,7 +185,7 @@ export default async function handler(
     }
 
     // Get public URL
-    const { data: urlData } = supabase.storage
+    const { data: urlData } = serviceSupabase.storage
       .from('assets')
       .getPublicUrl(`${client_id}/ai-generated/${filename}`);
 
@@ -193,8 +194,8 @@ export default async function handler(
     const width = parseInt(dimensions[0] || '1024');
     const height = parseInt(dimensions[1] || '1024');
 
-    // Create asset record
-    const { data: asset, error: assetError } = await supabase
+    // Create asset record using service role
+    const { data: asset, error: assetError } = await serviceSupabase
       .from('assets')
       .insert({
         name: `AI Generated: ${prompt.substring(0, 50)}...`,
