@@ -9,7 +9,6 @@ import {
   Typography,
   Card,
   CardContent,
-  Grid,
   Chip,
   LinearProgress,
   Alert,
@@ -26,6 +25,8 @@ import {
   DialogActions,
   useTheme,
   useMediaQuery,
+  TextField,
+  Grid,
 } from '@mui/material';
 import { SmartProgressIndicator, briefWorkflowSteps } from './SmartProgressIndicator';
 import { MobileOptimizedWorkflow } from './MobileOptimizedWorkflow';
@@ -41,6 +42,8 @@ import {
   CheckCircle,
   ArrowForward,
   Close,
+  Add as AddIcon,
+  Clear,
 } from '@mui/icons-material';
 import { useDropzone } from 'react-dropzone';
 import { useNotification } from '@/contexts/NotificationContext';
@@ -61,6 +64,13 @@ interface BriefData {
   platforms: string[];
   budget: string;
   timeline: string;
+  product?: string;
+  service?: string;
+  valueProposition?: string;
+  brandGuidelines?: string;
+  requirements?: string[];
+  industry?: string;
+  competitors?: string[];
 }
 
 interface Motivation {
@@ -103,6 +113,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [activeStep, setActiveStep] = useState(0);
   const [briefData, setBriefData] = useState<BriefData | null>(null);
+  const [originalBriefData, setOriginalBriefData] = useState<BriefData | null>(null);
   const [motivations, setMotivations] = useState<Motivation[]>([]);
   const [copyVariations, setCopyVariations] = useState<CopyVariation[]>([]);
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
@@ -110,8 +121,31 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
   const [processing, setProcessing] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [workflowSteps, setWorkflowSteps] = useState(briefWorkflowSteps);
+  const [showBriefReview, setShowBriefReview] = useState(false);
+  const [briefConfirmed, setBriefConfirmed] = useState(false);
 
   const { showNotification } = useNotification();
+
+  // Reset workflow state when dialog opens/closes
+  React.useEffect(() => {
+    if (!open) {
+      // Reset all state when dialog closes
+      console.log('Dialog closed, resetting workflow state');
+      setActiveStep(0);
+      setBriefData(null);
+      setOriginalBriefData(null);
+      setMotivations([]);
+      setCopyVariations([]);
+      setSelectedAssets([]);
+      setSelectedTemplate(null);
+      setProcessing(false);
+      setUploadedFile(null);
+      setShowBriefReview(false);
+      setBriefConfirmed(false);
+    } else {
+      console.log('Dialog opened, initializing workflow');
+    }
+  }, [open]);
 
   // Return mobile version for mobile devices
   if (isMobile) {
@@ -123,6 +157,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
       />
     );
   }
+  
   // Step 1: File Upload
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -164,10 +199,14 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
       const result = await response.json();
       
       if (result.success) {
+        console.log('Brief parsed successfully:', result.data);
         setBriefData(result.data);
+        setOriginalBriefData(result.data);
         setProcessing(false);
-        showNotification('Brief processed successfully!', 'success');
-        setActiveStep(1);
+        setShowBriefReview(true);
+        showNotification('Brief processed successfully! Please review and edit the parsed content.', 'success');
+        console.log('Brief parsed - showing review step');
+        // Don't change step until user confirms the brief
       } else {
         throw new Error(result.message || 'Failed to parse brief');
       }
@@ -234,6 +273,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
       showNotification('Please select at least 6 motivations', 'warning');
       return;
     }
+    console.log('Moving from motivations step to copy generation step');
     setActiveStep(2);
     handleGenerateCopy();
   };
@@ -350,6 +390,12 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
 
   const handleBack = () => {
     if (activeStep > 0) {
+      // If we're going back to step 0 and brief is confirmed, 
+      // show the brief review instead of upload interface
+      if (activeStep === 1 && briefConfirmed) {
+        setShowBriefReview(true);
+        setBriefConfirmed(false);
+      }
       setActiveStep(activeStep - 1);
     }
   };
@@ -372,7 +418,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
       case 0: // Upload Brief
         return (
           <Box>
-            {!uploadedFile ? (
+            {!uploadedFile && !briefConfirmed ? (
               <Box
                 {...getRootProps()}
                 sx={{
@@ -399,6 +445,13 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
                   Supports: PDF, Word (.docx), Text (.txt) • Max 10MB
                 </Typography>
               </Box>
+            ) : briefConfirmed ? (
+              <Alert severity="success" icon={<CheckCircle />}>
+                <Typography variant="h6">Brief Confirmed!</Typography>
+                <Typography variant="body2">
+                  {briefData?.title} - Brief has been confirmed and you can proceed to motivations step.
+                </Typography>
+              </Alert>
             ) : (
               <Box>
                 {processing ? (
@@ -406,12 +459,52 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
                     <LinearProgress sx={{ mb: 2 }} />
                     <Typography>Processing brief with AI...</Typography>
                   </Box>
+                ) : briefData && showBriefReview ? (
+                  <BriefReviewEditor
+                    briefData={briefData}
+                    onUpdate={setBriefData}
+                    onProceed={() => {
+                      console.log('BriefReviewEditor: onProceed called, moving to step 1');
+                      console.log('Current step before transition:', activeStep);
+                      console.log('Brief data being confirmed:', briefData?.title);
+                      
+                      // Ensure brief data is valid before proceeding
+                      if (!briefData || !briefData.title) {
+                        showNotification('Brief data is invalid. Please try uploading again.', 'error');
+                        return;
+                      }
+                      
+                      // Set brief as confirmed and hide review editor
+                      setBriefConfirmed(true);
+                      setShowBriefReview(false);
+                      
+                      // Force state update before proceeding
+                      setTimeout(() => {
+                        console.log('Setting activeStep to 1 for motivations');
+                        setActiveStep(1);
+                        showNotification('Brief confirmed! Ready to generate motivations.', 'success');
+                        
+                        // Auto-trigger motivation generation after state update
+                        setTimeout(() => {
+                          if (motivations.length === 0) {
+                            console.log('Auto-triggering motivation generation');
+                            handleGenerateMotivations();
+                          }
+                        }, 200);
+                      }, 50);
+                    }}
+                    onReset={() => {
+                      if (originalBriefData) {
+                        setBriefData(originalBriefData);
+                        showNotification('Brief data reset to original parsed values', 'info');
+                      }
+                    }}
+                  />
                 ) : briefData ? (
                   <Alert severity="success" icon={<CheckCircle />}>
-                    <Typography variant="h6">Brief Processed Successfully!</Typography>
+                    <Typography variant="h6">Brief Ready!</Typography>
                     <Typography variant="body2">
-                      Title: {briefData.title}<br/>
-                      Objective: {briefData.objective.substring(0, 100)}...
+                      {briefData.title} - Click "Generate Strategic Motivations" to continue
                     </Typography>
                   </Alert>
                 ) : null}
@@ -423,6 +516,10 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
       case 1: // Generate Motivations
         return (
           <Box>
+            <Typography variant="h6" gutterBottom>Step 2: Generate Strategic Motivations</Typography>
+            <Typography variant="body2" color="text.secondary" paragraph>
+              Generate AI-powered strategic motivations based on your brief content.
+            </Typography>
             {motivations.length === 0 ? (
               <Box textAlign="center" py={3}>
                 <Button
@@ -441,7 +538,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
                 <Typography variant="h6" gutterBottom>Select Strategic Motivations</Typography>
                 <Grid container spacing={2}>
                   {motivations.map((motivation) => (
-                    <Grid item xs={12} md={6} key={motivation.id}>
+                    <Grid xs={12} md={6} key={motivation.id}>
                       <Card 
                         sx={{ 
                           cursor: 'pointer',
@@ -496,7 +593,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
                 <Typography variant="h6" gutterBottom>Select Copy Variations</Typography>
                 <Grid container spacing={2}>
                   {copyVariations.map((copy) => (
-                    <Grid item xs={12} key={copy.id}>
+                    <Grid xs={12} key={copy.id}>
                       <Card
                         sx={{
                           cursor: 'pointer',
@@ -540,7 +637,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
           <Box>
             <Typography variant="h6" gutterBottom>Choose Your Assets</Typography>
             <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
+              <Grid xs={12} md={6}>
                 <Card>
                   <CardContent>
                     <Typography variant="h6" gutterBottom>Use Existing Assets</Typography>
@@ -553,7 +650,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid xs={12} md={6}>
                 <Card>
                   <CardContent>
                     <Typography variant="h6" gutterBottom>Generate New Assets</Typography>
@@ -586,7 +683,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
             <Typography variant="h6" gutterBottom>Select Video Template</Typography>
             <Grid container spacing={2}>
               {['Modern Slideshow', 'Dynamic Promo', 'Social Story', 'Product Showcase'].map((template, index) => (
-                <Grid item xs={12} md={6} key={template}>
+                <Grid xs={12} md={6} key={template}>
                   <Card
                     sx={{
                       cursor: 'pointer',
@@ -633,7 +730,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
               Your content matrix will be populated with the selected motivations, copy, and assets.
             </Alert>
             <Grid container spacing={2}>
-              <Grid item xs={12} md={4}>
+              <Grid xs={12} md={4}>
                 <Card>
                   <CardContent>
                     <Typography variant="h6" gutterBottom>Motivations</Typography>
@@ -643,7 +740,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid xs={12} md={4}>
                 <Card>
                   <CardContent>
                     <Typography variant="h6" gutterBottom>Copy Variations</Typography>
@@ -653,7 +750,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid xs={12} md={4}>
                 <Card>
                   <CardContent>
                     <Typography variant="h6" gutterBottom>Template</Typography>
@@ -728,12 +825,13 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
       <DialogTitle>
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <Typography variant="h5">Brief to Execution Workflow</Typography>
-          <IconButton onClick={onClose} aria-label="Icon button">            <Close />
+          <IconButton onClick={onClose} aria-label="Close dialog">
+            <Close />
           </IconButton>
         </Box>
       </DialogTitle>
       
-      <DialogContent>
+      <DialogContent sx={{ pb: 2 }}>
         <Box sx={{ mb: 4 }}>
           <Stepper activeStep={activeStep} orientation="horizontal">
             {workflowSteps.map((step, index) => (
@@ -746,7 +844,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
           </Stepper>
         </Box>
 
-        <Box sx={{ minHeight: 400 }}>
+        <Box sx={{ minHeight: 400, width: '100%', overflow: 'auto', maxHeight: '70vh' }}>
           {renderStepContent(activeStep)}
         </Box>
       </DialogContent>
@@ -762,5 +860,330 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
         ) : null}
       </DialogActions>
     </Dialog>
+  );
+};
+
+// Brief Review Editor Component
+interface BriefReviewEditorProps {
+  briefData: BriefData;
+  onUpdate: (data: BriefData) => void;
+  onProceed: () => void;
+  onReset: () => void;
+}
+
+const BriefReviewEditor: React.FC<BriefReviewEditorProps> = ({
+  briefData,
+  onUpdate,
+  onProceed,
+  onReset,
+}) => {
+  const [editedData, setEditedData] = useState<BriefData>(briefData);
+
+  // Sync state when briefData changes
+  React.useEffect(() => {
+    setEditedData(briefData);
+  }, [briefData]);
+
+  const handleFieldChange = (field: keyof BriefData, value: any) => {
+    // Ensure value is properly formatted and not an object
+    let cleanValue = value;
+    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+      // Convert object to string representation
+      cleanValue = JSON.stringify(value);
+      console.warn(`Field ${field} received object value, converting to string:`, cleanValue);
+    }
+    
+    const updated = { ...editedData, [field]: cleanValue };
+    setEditedData(updated);
+    onUpdate(updated);
+  };
+
+  const handleArrayFieldChange = (field: keyof BriefData, index: number, value: string) => {
+    const currentArray = editedData[field] as string[];
+    const updated = [...currentArray];
+    updated[index] = value;
+    handleFieldChange(field, updated);
+  };
+
+  const handleAddArrayItem = (field: keyof BriefData) => {
+    const currentArray = (editedData[field] as string[]) || [];
+    handleFieldChange(field, [...currentArray, '']);
+  };
+
+  const handleRemoveArrayItem = (field: keyof BriefData, index: number) => {
+    const currentArray = editedData[field] as string[];
+    const updated = currentArray.filter((_, i) => i !== index);
+    handleFieldChange(field, updated);
+  };
+
+  return (
+    <Box sx={{ width: '100%', maxWidth: '100%', p: 1 }}>
+      <Typography variant="h6" gutterBottom color="primary">
+        Review & Edit Brief Content
+      </Typography>
+      <Typography variant="body2" color="text.secondary" paragraph>
+        Please review the parsed content below and make any necessary adjustments before proceeding to generate motivations.
+      </Typography>
+      
+      <Box sx={{ width: '100%' }}>
+        <Grid container spacing={3}>
+          {/* Basic Information */}
+          <Grid xs={12}>
+            <Typography variant="h6" gutterBottom>Basic Information</Typography>
+          </Grid>
+          
+          <Grid xs={12} md={6}>
+            <TextField
+              fullWidth
+              label="Brief Title"
+              value={typeof editedData.title === 'string' ? editedData.title : String(editedData.title || '')}
+              onChange={(e) => handleFieldChange('title', e.target.value)}
+              variant="outlined"
+            />
+          </Grid>
+          
+          <Grid xs={12} md={6}>
+            <TextField
+              fullWidth
+              label="Industry"
+              value={editedData.industry || ''}
+              onChange={(e) => handleFieldChange('industry', e.target.value)}
+              variant="outlined"
+              placeholder="e.g., Technology, Healthcare, Retail"
+            />
+          </Grid>
+          
+          <Grid xs={12}>
+            <TextField
+              fullWidth
+              multiline
+              rows={3}
+              label="Objective"
+              value={typeof editedData.objective === 'string' ? editedData.objective : String(editedData.objective || '')}
+              onChange={(e) => handleFieldChange('objective', e.target.value)}
+              variant="outlined"
+            />
+          </Grid>
+          
+          <Grid xs={12} md={6}>
+            <TextField
+              fullWidth
+              multiline
+              rows={2}
+              label="Target Audience"
+              value={typeof editedData.targetAudience === 'string' ? editedData.targetAudience : String(editedData.targetAudience || '')}
+              onChange={(e) => handleFieldChange('targetAudience', e.target.value)}
+              variant="outlined"
+            />
+          </Grid>
+          
+          <Grid xs={12} md={6}>
+            <TextField
+              fullWidth
+              multiline
+              rows={2}
+              label="Value Proposition"
+              value={typeof editedData.valueProposition === 'string' ? editedData.valueProposition || '' : String(editedData.valueProposition || '')}
+              onChange={(e) => handleFieldChange('valueProposition', e.target.value)}
+              variant="outlined"
+              placeholder="What unique value does your product/service offer?"
+            />
+          </Grid>
+          
+          {/* Product & Service Details */}
+          <Grid xs={12}>
+            <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>Product & Service Details</Typography>
+          </Grid>
+          
+          <Grid xs={12} md={6}>
+            <TextField
+              fullWidth
+              multiline
+              rows={2}
+              label="Product/Service Description"
+              value={editedData.product || ''}
+              onChange={(e) => handleFieldChange('product', e.target.value)}
+              variant="outlined"
+              placeholder="Describe your main product or service"
+            />
+          </Grid>
+          
+          <Grid xs={12} md={6}>
+            <TextField
+              fullWidth
+              multiline
+              rows={2}
+              label="Service Offering"
+              value={editedData.service || ''}
+              onChange={(e) => handleFieldChange('service', e.target.value)}
+              variant="outlined"
+              placeholder="Additional services or support offered"
+            />
+          </Grid>
+          
+          {/* Campaign Details */}
+          <Grid xs={12}>
+            <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>Campaign Details</Typography>
+          </Grid>
+          
+          <Grid xs={12} md={4}>
+            <TextField
+              fullWidth
+              label="Budget"
+              value={editedData.budget}
+              onChange={(e) => handleFieldChange('budget', e.target.value)}
+              variant="outlined"
+            />
+          </Grid>
+          
+          <Grid xs={12} md={4}>
+            <TextField
+              fullWidth
+              label="Timeline"
+              value={editedData.timeline}
+              onChange={(e) => handleFieldChange('timeline', e.target.value)}
+              variant="outlined"
+            />
+          </Grid>
+          
+          <Grid xs={12} md={4}>
+            <TextField
+              fullWidth
+              multiline
+              rows={2}
+              label="Brand Guidelines"
+              value={editedData.brandGuidelines || ''}
+              onChange={(e) => handleFieldChange('brandGuidelines', e.target.value)}
+              variant="outlined"
+              placeholder="Key brand guidelines to follow"
+            />
+          </Grid>
+          
+          {/* Key Messages */}
+          <Grid xs={12}>
+            <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>Key Messages</Typography>
+            {editedData.keyMessages.map((message, index) => (
+              <Box key={index} display="flex" gap={1} mb={1}>
+                <TextField
+                  fullWidth
+                  label={`Key Message ${index + 1}`}
+                  value={message}
+                  onChange={(e) => handleArrayFieldChange('keyMessages', index, e.target.value)}
+                  variant="outlined"
+                  size="small"
+                />
+                <IconButton
+                  onClick={() => handleRemoveArrayItem('keyMessages', index)}
+                  color="error"
+                  size="small"
+                >
+                  <Close />
+                </IconButton>
+              </Box>
+            ))}
+            <Button
+              startIcon={<AddIcon />}
+              onClick={() => handleAddArrayItem('keyMessages')}
+              size="small"
+            >
+              Add Key Message
+            </Button>
+          </Grid>
+          
+          {/* Platforms */}
+          <Grid xs={12} md={6}>
+            <Typography variant="subtitle1" gutterBottom>Platforms</Typography>
+            {editedData.platforms.map((platform, index) => (
+              <Box key={index} display="flex" gap={1} mb={1}>
+                <TextField
+                  fullWidth
+                  label={`Platform ${index + 1}`}
+                  value={platform}
+                  onChange={(e) => handleArrayFieldChange('platforms', index, e.target.value)}
+                  variant="outlined"
+                  size="small"
+                />
+                <IconButton
+                  onClick={() => handleRemoveArrayItem('platforms', index)}
+                  color="error"
+                  size="small"
+                >
+                  <Close />
+                </IconButton>
+              </Box>
+            ))}
+            <Button
+              startIcon={<AddIcon />}
+              onClick={() => handleAddArrayItem('platforms')}
+              size="small"
+            >
+              Add Platform
+            </Button>
+          </Grid>
+          
+          {/* Competitors */}
+          <Grid xs={12} md={6}>
+            <Typography variant="subtitle1" gutterBottom>Competitors (Optional)</Typography>
+            {(editedData.competitors || []).map((competitor, index) => (
+              <Box key={index} display="flex" gap={1} mb={1}>
+                <TextField
+                  fullWidth
+                  label={`Competitor ${index + 1}`}
+                  value={competitor}
+                  onChange={(e) => {
+                    const competitors = editedData.competitors || [];
+                    const updated = [...competitors];
+                    updated[index] = e.target.value;
+                    handleFieldChange('competitors', updated);
+                  }}
+                  variant="outlined"
+                  size="small"
+                />
+                <IconButton
+                  onClick={() => {
+                    const competitors = editedData.competitors || [];
+                    const updated = competitors.filter((_, i) => i !== index);
+                    handleFieldChange('competitors', updated);
+                  }}
+                  color="error"
+                  size="small"
+                >
+                  <Close />
+                </IconButton>
+              </Box>
+            ))}
+            <Button
+              startIcon={<AddIcon />}
+              onClick={() => {
+                const competitors = editedData.competitors || [];
+                handleFieldChange('competitors', [...competitors, '']);
+              }}
+              size="small"
+            >
+              Add Competitor
+            </Button>
+          </Grid>
+        </Grid>
+      </Box>
+      
+      {/* Action Buttons */}
+      <Box sx={{ mt: 4, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+        <Button
+          variant="outlined"
+          onClick={onReset}
+          startIcon={<Clear />}
+        >
+          Reset to Original
+        </Button>
+        <Button
+          variant="contained"
+          onClick={onProceed}
+          startIcon={<ArrowForward />}
+          size="large"
+        >
+          Confirm & Generate Motivations
+        </Button>
+      </Box>
+    </Box>
   );
 };
