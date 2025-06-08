@@ -132,24 +132,51 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
     console.log('Current activeStep before processing:', activeStep);
     setProcessing(true);
     
-    try {
-      // Create FormData to send file to API
-      const formData = new FormData();
-      formData.append('file', file);
+    // Helper function to make API call with retry
+    const makeAPICall = async (retryCount = 0): Promise<any> => {
+      try {
+        // Create FormData to send file to API
+        const formData = new FormData();
+        formData.append('file', file);
 
-      console.log('Sending file to API...');
-      const response = await fetch('/api/flow/parse-brief', {
-        method: 'POST',
-        body: formData,
-        credentials: 'include',
-      });
+        console.log(`Sending file to API... (attempt ${retryCount + 1})`);
+        console.log('FormData contents:', formData.get('file'));
+        
+        const response = await fetch('/api/flow/parse-brief', {
+          method: 'POST',
+          body: formData,
+          credentials: 'include',
+          headers: {
+            // Don't set Content-Type header - let browser set it for FormData
+          }
+        });
+        
+        console.log('Response status:', response.status, response.statusText);
 
-      if (!response.ok) {
-        throw new Error('Failed to parse brief');
+        if (!response.ok) {
+          throw new Error(`API returned ${response.status}: ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        console.log('API response received:', result.success);
+        return result;
+        
+      } catch (error) {
+        console.error(`API call failed (attempt ${retryCount + 1}):`, error);
+        
+        // Retry up to 2 times for network errors
+        if (retryCount < 2 && (error instanceof TypeError || error.message.includes('Failed to fetch'))) {
+          console.log(`Retrying in 1 second... (attempt ${retryCount + 2})`);
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          return makeAPICall(retryCount + 1);
+        }
+        
+        throw error;
       }
-
-      const result = await response.json();
-      console.log('API response received:', result.success);
+    };
+    
+    try {
+      const result = await makeAPICall();
       
       if (result.success) {
         console.log('Brief parsed successfully:', result.data?.title);
