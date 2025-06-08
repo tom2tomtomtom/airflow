@@ -135,7 +135,7 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
   
-  // SECURITY: Removed production auth bypass - authentication is now enforced in all environments
+  // REMOVED: Temporary development bypass - auth is now restored
   
   // Update session and get response
   const { response: updatedResponse, user } = await updateSession(request);

@@ -145,9 +145,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
               <ListItemButton
                 selected={isActive}
                 disabled={item.disabled}
-                onClick={() => {
-                  if (!item.disabled) {
-                    router.push(item.href!);
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log(`Navigation clicked: ${item.name} -> ${item.href}`);
+                  if (!item.disabled && item.href) {
+                    router.push(item.href);
                     if (isMobile) {
                       setMobileOpen(false);
                     }

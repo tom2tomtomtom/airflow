@@ -165,13 +165,13 @@ const DashboardPage = () => {
 
         {/* Getting Started Section */}
         <Grid container spacing={3}>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Paper sx={{ p: 3 }}>
               <Typography variant="h6" gutterBottom>
                 Getting Started with AIrFLOW
               </Typography>
               <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="body2" color="text.secondary" paragraph>
                     New to AIrFLOW? Here's your simple workflow:
                   </Typography>
@@ -198,7 +198,7 @@ const DashboardPage = () => {
                     </Box>
                   </Box>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="subtitle2" gutterBottom>
                     Quick Tips
                   </Typography>

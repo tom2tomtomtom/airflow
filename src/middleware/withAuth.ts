@@ -25,6 +25,8 @@ export type AuthenticatedHandler = (
 // Middleware to require authentication
 export function withAuth(handler: AuthenticatedHandler) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
+    // REMOVED: Temporary development bypass - auth is now restored
+    
     try {
       // Create Supabase server client with proper cookie handling
       const supabase = createServerClient(
