@@ -126,49 +126,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
 
   const { showNotification } = useNotification();
 
-  // Reset workflow state when dialog opens/closes
-  React.useEffect(() => {
-    if (!open) {
-      // Reset all state when dialog closes
-      console.log('Dialog closed, resetting workflow state');
-      setActiveStep(0);
-      setBriefData(null);
-      setOriginalBriefData(null);
-      setMotivations([]);
-      setCopyVariations([]);
-      setSelectedAssets([]);
-      setSelectedTemplate(null);
-      setProcessing(false);
-      setUploadedFile(null);
-      setShowBriefReview(false);
-      setBriefConfirmed(false);
-    } else {
-      console.log('Dialog opened, initializing workflow');
-    }
-  }, [open]);
-
-  // Debug effect to track activeStep changes
-  React.useEffect(() => {
-    console.log('ActiveStep changed to:', activeStep);
-  }, [activeStep]);
-
-  // Debug effect to track open state changes
-  React.useEffect(() => {
-    console.log('Dialog open state changed to:', open);
-  }, [open]);
-
-  // Return mobile version for mobile devices
-  if (isMobile) {
-    return (
-      <MobileOptimizedWorkflow
-        open={open}
-        onClose={onClose}
-        onComplete={onComplete}
-      />
-    );
-  }
-  
-  // Step 1: File Upload - Define handleProcessBrief first
+  // Define handleProcessBrief first
   const handleProcessBrief = useCallback(async (file: File) => {
     console.log('handleProcessBrief called with file:', file.name);
     console.log('Current activeStep before processing:', activeStep);
@@ -214,6 +172,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
     }
   }, [activeStep, showNotification]);
 
+  // Dropzone configuration - defined after handleProcessBrief
   const onDrop = useCallback((acceptedFiles: File[]) => {
     console.log('File dropped:', acceptedFiles.length, 'files');
     console.log('Current state - activeStep:', activeStep, 'open:', open);
@@ -237,6 +196,50 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
     multiple: false,
     maxSize: 10 * 1024 * 1024,
   });
+
+  // Reset workflow state when dialog opens/closes
+  React.useEffect(() => {
+    if (!open) {
+      // Reset all state when dialog closes
+      console.log('Dialog closed, resetting workflow state');
+      setActiveStep(0);
+      setBriefData(null);
+      setOriginalBriefData(null);
+      setMotivations([]);
+      setCopyVariations([]);
+      setSelectedAssets([]);
+      setSelectedTemplate(null);
+      setProcessing(false);
+      setUploadedFile(null);
+      setShowBriefReview(false);
+      setBriefConfirmed(false);
+    } else {
+      console.log('Dialog opened, initializing workflow');
+    }
+  }, [open]);
+
+  // Debug effect to track activeStep changes
+  React.useEffect(() => {
+    console.log('ActiveStep changed to:', activeStep);
+  }, [activeStep]);
+
+  // Debug effect to track open state changes
+  React.useEffect(() => {
+    console.log('Dialog open state changed to:', open);
+  }, [open]);
+
+  // Return mobile version for mobile devices
+  if (isMobile) {
+    return (
+      <MobileOptimizedWorkflow
+        open={open}
+        onClose={onClose}
+        onComplete={onComplete}
+      />
+    );
+  }
+  
+
 
   // Step 2: Generate Motivations
   const handleGenerateMotivations = async () => {
