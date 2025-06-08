@@ -168,31 +168,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
     );
   }
   
-  // Step 1: File Upload
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    console.log('File dropped:', acceptedFiles.length, 'files');
-    console.log('Current state - activeStep:', activeStep, 'open:', open);
-    if (acceptedFiles.length > 0) {
-      const file = acceptedFiles[0];
-      console.log('Processing file:', file.name, 'size:', file.size);
-      setUploadedFile(file);
-      setProcessing(true); // Set processing immediately to prevent UI flash
-      handleProcessBrief(file);
-    }
-  }, [activeStep, open, handleProcessBrief]);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      'application/pdf': ['.pdf'],
-      'application/msword': ['.doc'],
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
-      'text/plain': ['.txt'],
-    },
-    multiple: false,
-    maxSize: 10 * 1024 * 1024,
-  });
-
+  // Step 1: File Upload - Define handleProcessBrief first
   const handleProcessBrief = useCallback(async (file: File) => {
     console.log('handleProcessBrief called with file:', file.name);
     console.log('Current activeStep before processing:', activeStep);
@@ -237,6 +213,30 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
       showNotification(error instanceof Error ? error.message : 'Failed to process brief', 'error');
     }
   }, [activeStep, showNotification]);
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    console.log('File dropped:', acceptedFiles.length, 'files');
+    console.log('Current state - activeStep:', activeStep, 'open:', open);
+    if (acceptedFiles.length > 0) {
+      const file = acceptedFiles[0];
+      console.log('Processing file:', file.name, 'size:', file.size);
+      setUploadedFile(file);
+      setProcessing(true); // Set processing immediately to prevent UI flash
+      handleProcessBrief(file);
+    }
+  }, [activeStep, open, handleProcessBrief]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'application/pdf': ['.pdf'],
+      'application/msword': ['.doc'],
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+      'text/plain': ['.txt'],
+    },
+    multiple: false,
+    maxSize: 10 * 1024 * 1024,
+  });
 
   // Step 2: Generate Motivations
   const handleGenerateMotivations = async () => {
