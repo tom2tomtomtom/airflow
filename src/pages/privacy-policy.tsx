@@ -5,8 +5,8 @@ export default function PrivacyPolicy() {
   return (
     <>
       <Head>
-        <title>Privacy Policy - AIrWAVE</title>
-        <meta name="description" content="AIrWAVE Privacy Policy - Learn how we collect, use, and protect your data" />
+        <title>Privacy Policy - AIrFLOW</title>
+        <meta name="description" content="AIrFLOW Privacy Policy - Learn how we collect, use, and protect your data" />
       </Head>
       
       <div className="min-h-screen bg-gray-50">
@@ -23,7 +23,7 @@ export default function PrivacyPolicy() {
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold text-gray-900 mb-4">1. Introduction</h2>
                 <p>
-                  AIrWAVE ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our digital advertising creation platform.
+                  AIrFLOW ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our digital advertising creation platform.
                 </p>
               </section>
               
@@ -204,7 +204,7 @@ export default function PrivacyPolicy() {
                 </p>
                 <div className="bg-gray-50 p-4 rounded-lg mt-4">
                   <p className="mb-2">
-                    <strong>AIrWAVE Privacy Team</strong>
+                    <strong>AIrFLOW Privacy Team</strong>
                   </p>
                   <p className="mb-2">
                     Email:{' '}

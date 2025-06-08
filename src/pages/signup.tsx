@@ -76,7 +76,7 @@ const SignupPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Sign Up | AIrWAVE</title>
+        <title>Sign Up | AIrFLOW</title>
       </Head>
       <Box
         sx={{
@@ -111,7 +111,7 @@ const SignupPage: React.FC = () => {
                 mb: 1,
               }}
             >
-              AIrWAVE
+              AIrFLOW
             </Typography>
             <Typography variant="h6" color="text.secondary">
               Create Your Account

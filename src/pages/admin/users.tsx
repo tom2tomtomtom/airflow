@@ -357,7 +357,7 @@ const UserManagementPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>User Management | AIrWAVE</title>
+        <title>User Management | AIrFLOW</title>
       </Head>
       <DashboardLayout title="User Management">
         <Box sx={{ mb: 4 }}>

@@ -327,7 +327,7 @@ const StrategyPage: React.FC = () => {
   return (
     <DashboardLayout>
       <Head>
-        <title>Strategy & Content Generation | AIrWAVE</title>
+        <title>Strategy & Content Generation | AIrFLOW</title>
       </Head>
 
       <Container maxWidth="lg">

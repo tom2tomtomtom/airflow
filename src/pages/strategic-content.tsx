@@ -47,13 +47,6 @@ const BriefDialog = dynamic(
   }
 );
 
-const UnifiedBriefWorkflow = dynamic(
-  () => import('@/components/UnifiedBriefWorkflow').then(mod => ({ default: mod.UnifiedBriefWorkflow })),
-  {
-    loading: () => <CircularProgress />,
-    ssr: false,
-  }
-);
 
 // Content type icons mapping
 const contentTypeIcons: Record<string, React.ReactNode> = {
@@ -128,7 +121,6 @@ const StrategicContent: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('All');
   const [openBriefDialog, setOpenBriefDialog] = useState(false);
-  const [openWorkflow, setOpenWorkflow] = useState(false);
   const [currentBrief, setCurrentBrief] = useState<Brief | null>(null);
   const [tabValue, setTabValue] = useState(0);
   const [generating, setGenerating] = useState(false);
@@ -275,22 +267,6 @@ const StrategicContent: React.FC = () => {
     }
   };
 
-  const handleWorkflowComplete = (data: any) => {
-    console.log('Workflow completed with data:', data);
-    setOpenWorkflow(false);
-    
-    if (data.briefContext) {
-      localStorage.setItem('airwave_brief_context', JSON.stringify({
-        ...data.briefContext,
-        timestamp: Date.now()
-      }));
-      
-      showNotification('Brief processed successfully! Navigate to Generate page to create content.', 'success');
-      setTimeout(() => {
-        router.push('/generate-enhanced');
-      }, 2000);
-    }
-  };
 
   const filteredBriefs = briefs.filter(brief => {
     const matchesSearch = brief.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -302,7 +278,7 @@ const StrategicContent: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Strategic Content | AIrWAVE</title>
+        <title>Strategic Content | AIrFLOW</title>
       </Head>
       <DashboardLayout title="Strategic Content">
         <Box sx={{ mb: 4 }}>
@@ -331,12 +307,6 @@ const StrategicContent: React.FC = () => {
             icon={<BriefIcon />}
             label="Strategic Briefs"
             value={1}
-            iconPosition="start"
-          />
-          <Tab
-            icon={<AIIcon />}
-            label="AI Content Generation"
-            value={2}
             iconPosition="start"
           />
         </Tabs>
@@ -462,27 +432,6 @@ const StrategicContent: React.FC = () => {
             </Box>
           )}
 
-          {tabValue === 2 && (
-            <Paper sx={{ p: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                AI Content Generation
-              </Typography>
-              <Typography variant="body2" color="text.secondary" paragraph>
-                Use our unified workflow to upload briefs and generate strategic content with AI.
-              </Typography>
-              
-              <Box sx={{ textAlign: 'center', py: 4 }}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  startIcon={<MagicIcon />}
-                  onClick={() => setOpenWorkflow(true)}
-                >
-                  Start AI Content Workflow
-                </Button>
-              </Box>
-            </Paper>
-          )}
         </Box>
 
         {/* Brief Dialog */}
@@ -497,12 +446,6 @@ const StrategicContent: React.FC = () => {
           onSubmit={handleSubmitBrief}
         />
 
-        {/* Unified Brief Workflow */}
-        <UnifiedBriefWorkflow
-          open={openWorkflow}
-          onClose={() => setOpenWorkflow(false)}
-          onComplete={handleWorkflowComplete}
-        />
       </DashboardLayout>
     </>
   );

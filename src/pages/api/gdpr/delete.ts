@@ -36,7 +36,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     if (userEmail) {
       await sendEmail({
         to: userEmail,
-        subject: 'Your AIrWAVE account has been deleted',
+        subject: 'Your AIrFLOW account has been deleted',
         template: 'account-deleted' as any,
         data: {
           deletedAt: new Date().toISOString(),

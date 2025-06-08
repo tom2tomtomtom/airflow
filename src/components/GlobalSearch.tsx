@@ -377,7 +377,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
                 <Box sx={{ p: 3, textAlign: 'center' }}>
                   <Search sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
                   <Typography variant="h6" gutterBottom>
-                    Search AIrWAVE
+                    Search AIrFLOW
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Find briefs, templates, assets, and more...

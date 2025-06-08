@@ -103,7 +103,7 @@ const LoginPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Login | AIrWAVE</title>
+        <title>Login | AIrFLOW</title>
       </Head>
       <Box
         sx={{
@@ -138,7 +138,7 @@ const LoginPage: React.FC = () => {
                 mb: 1,
               }}
             >
-              AIrWAVE
+              AIrFLOW
             </Typography>
             <Typography variant="h6" color="text.secondary">
               AI-Powered Digital Asset Production

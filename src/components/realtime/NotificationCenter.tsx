@@ -279,17 +279,18 @@ const NotificationCenter: React.FC = () => {
       >
         <Box sx={{ p: 2 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="h6">
-              Notifications
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography variant="h6" component="div">
+                Notifications
+              </Typography>
               {unreadNotifications.length > 0 && (
                 <Chip
                   label={`${unreadNotifications.length} unread`}
                   size="small"
                   color="primary"
-                  sx={{ ml: 1 }}
                 />
               )}
-            </Typography>
+            </Box>
             <Stack direction="row" spacing={1}>
               <Tooltip title="Refresh">
                 <IconButton size="small" onClick={refresh} disabled={loading} aria-label="Icon button">                  {loading ? <CircularProgress size={16} /> : <RefreshIcon />}

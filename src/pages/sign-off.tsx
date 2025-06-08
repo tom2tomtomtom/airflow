@@ -322,7 +322,7 @@ const SignOffPage: React.FC = () => {
   return (
     <DashboardLayout title="Sign Off">
       <Head>
-        <title>Sign Off - AIrWAVE</title>
+        <title>Sign Off - AIrFLOW</title>
       </Head>
 
       <Box>

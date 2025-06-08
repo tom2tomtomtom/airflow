@@ -80,7 +80,7 @@ const DashboardPage = () => {
     <ProtectedRoute>
       <DashboardLayout>
       <Head>
-        <title>Dashboard | AIrWAVE</title>
+        <title>Dashboard | AIrFLOW</title>
       </Head>
 
       <Container maxWidth="lg">
@@ -168,12 +168,12 @@ const DashboardPage = () => {
           <Grid item xs={12}>
             <Paper sx={{ p: 3 }}>
               <Typography variant="h6" gutterBottom>
-                Getting Started with AIrWAVE
+                Getting Started with AIrFLOW
               </Typography>
               <Grid container spacing={2}>
                 <Grid item xs={12} md={6}>
                   <Typography variant="body2" color="text.secondary" paragraph>
-                    New to AIrWAVE? Here's your simple workflow:
+                    New to AIrFLOW? Here's your simple workflow:
                   </Typography>
                   <Box component="ol" sx={{ pl: 2 }}>
                     <Box component="li" sx={{ mb: 1 }}>

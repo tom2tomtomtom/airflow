@@ -243,7 +243,7 @@ const ApprovalsPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Approvals | AIrWAVE</title>
+        <title>Approvals | AIrFLOW</title>
       </Head>
       <DashboardLayout title="Approvals">
         <Container maxWidth="xl">

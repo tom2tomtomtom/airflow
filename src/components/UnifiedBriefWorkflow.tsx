@@ -146,41 +146,80 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
   const handleProcessBrief = async (file: File) => {
     setProcessing(true);
     
-    // Simulate AI processing
-    setTimeout(() => {
-      const mockBriefData: BriefData = {
-        title: file.name.replace(/\.[^/.]+$/, ''),
-        objective: 'Increase brand awareness and drive engagement through strategic content marketing',
-        targetAudience: 'Young professionals aged 25-40 interested in technology',
-        keyMessages: ['Innovation drives success', 'Quality matters', 'Customer-first approach'],
-        platforms: ['Instagram', 'LinkedIn', 'Facebook'],
-        budget: '$50,000',
-        timeline: '3 months',
-      };
+    try {
+      // Create FormData to send file to API
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/flow/parse-brief', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to parse brief');
+      }
+
+      const result = await response.json();
       
-      setBriefData(mockBriefData);
+      if (result.success) {
+        setBriefData(result.data);
+        setProcessing(false);
+        showNotification('Brief processed successfully!', 'success');
+        setActiveStep(1);
+      } else {
+        throw new Error(result.message || 'Failed to parse brief');
+      }
+    } catch (error) {
+      console.error('Error processing brief:', error);
       setProcessing(false);
-      showNotification('Brief processed successfully!', 'success');
-      setActiveStep(1);
-    }, 2000);
+      showNotification(error instanceof Error ? error.message : 'Failed to process brief', 'error');
+    }
   };
 
   // Step 2: Generate Motivations
-  const handleGenerateMotivations = () => {
+  const handleGenerateMotivations = async () => {
+    if (!briefData) {
+      showNotification('Brief data is required to generate motivations', 'error');
+      return;
+    }
+
     setProcessing(true);
     
-    setTimeout(() => {
-      const mockMotivations: Motivation[] = [
-        { id: '1', title: 'Emotional Connection', description: 'Build trust through authentic storytelling', score: 92, selected: false },
-        { id: '2', title: 'Social Proof', description: 'Leverage customer testimonials and reviews', score: 88, selected: false },
-        { id: '3', title: 'Innovation Focus', description: 'Highlight cutting-edge features and benefits', score: 85, selected: false },
-        { id: '4', title: 'Community Building', description: 'Foster sense of belonging and shared values', score: 82, selected: false },
-      ];
+    try {
+      const response = await fetch('/api/flow/generate-motivations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ briefData }),
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate motivations');
+      }
+
+      const result = await response.json();
       
-      setMotivations(mockMotivations);
+      if (result.success) {
+        const motivationsWithSelection = result.data.map((motivation: any) => ({
+          ...motivation,
+          selected: false
+        }));
+        
+        setMotivations(motivationsWithSelection);
+        setProcessing(false);
+        showNotification(`Generated ${result.data.length} motivations!`, 'success');
+      } else {
+        throw new Error(result.message || 'Failed to generate motivations');
+      }
+    } catch (error) {
+      console.error('Error generating motivations:', error);
       setProcessing(false);
-      showNotification('Motivations generated!', 'success');
-    }, 2000);
+      showNotification(error instanceof Error ? error.message : 'Failed to generate motivations', 'error');
+    }
   };
 
   const handleSelectMotivation = (id: string) => {
@@ -191,8 +230,8 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
 
   const handleNextFromMotivations = () => {
     const selectedCount = motivations.filter(m => m.selected).length;
-    if (selectedCount === 0) {
-      showNotification('Please select at least one motivation', 'warning');
+    if (selectedCount < 6) {
+      showNotification('Please select at least 6 motivations', 'warning');
       return;
     }
     setActiveStep(2);
@@ -200,20 +239,56 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
   };
 
   // Step 3: Generate Copy
-  const handleGenerateCopy = () => {
+  const handleGenerateCopy = async () => {
+    if (!briefData) {
+      showNotification('Brief data is required to generate copy', 'error');
+      return;
+    }
+
+    const selectedMotivations = motivations.filter(m => m.selected);
+    if (selectedMotivations.length < 6) {
+      showNotification('Minimum 6 motivations required to generate copy', 'error');
+      return;
+    }
+
     setProcessing(true);
     
-    setTimeout(() => {
-      const mockCopy: CopyVariation[] = [
-        { id: '1', text: 'Transform your business with innovative solutions that put customers first. Join thousands who trust our quality.', platform: 'LinkedIn', selected: false },
-        { id: '2', text: '🚀 Innovation meets quality! Discover why customers choose us for their success journey. #Innovation #Quality', platform: 'Instagram', selected: false },
-        { id: '3', text: 'Ready to elevate your business? Our customer-first approach and innovative solutions deliver real results.', platform: 'Facebook', selected: false },
-      ];
+    try {
+      const response = await fetch('/api/flow/generate-copy', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          motivations: selectedMotivations, 
+          briefData 
+        }),
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate copy');
+      }
+
+      const result = await response.json();
       
-      setCopyVariations(mockCopy);
+      if (result.success) {
+        const copyWithSelection = result.data.map((copy: any) => ({
+          ...copy,
+          selected: false
+        }));
+        
+        setCopyVariations(copyWithSelection);
+        setProcessing(false);
+        showNotification(`Generated ${result.data.length} copy variations!`, 'success');
+      } else {
+        throw new Error(result.message || 'Failed to generate copy');
+      }
+    } catch (error) {
+      console.error('Error generating copy:', error);
       setProcessing(false);
-      showNotification('Copy variations generated!', 'success');
-    }, 2000);
+      showNotification(error instanceof Error ? error.message : 'Failed to generate copy', 'error');
+    }
   };
 
   const handleSelectCopy = (id: string) => {
@@ -222,13 +297,48 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
     ));
   };
 
-  const handleNextFromCopy = () => {
-    const selectedCount = copyVariations.filter(c => c.selected).length;
-    if (selectedCount === 0) {
+  const handleNextFromCopy = async () => {
+    const selectedCopy = copyVariations.filter(c => c.selected);
+    if (selectedCopy.length === 0) {
       showNotification('Please select at least one copy variation', 'warning');
       return;
     }
-    setActiveStep(3);
+
+    setProcessing(true);
+
+    try {
+      // Store selected copy variations in assets library
+      const response = await fetch('/api/flow/store-copy-assets', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          selectedCopy,
+          briefTitle: briefData?.title || 'Untitled Brief',
+          clientId: 'default-client' // TODO: Get actual client ID from context
+        }),
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to store copy assets');
+      }
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setProcessing(false);
+        showNotification(`${result.data.count} copy variations stored in assets library!`, 'success');
+        setActiveStep(3);
+      } else {
+        throw new Error(result.message || 'Failed to store copy assets');
+      }
+    } catch (error) {
+      console.error('Error storing copy assets:', error);
+      setProcessing(false);
+      showNotification(error instanceof Error ? error.message : 'Failed to store copy assets', 'error');
+    }
   };
 
   // Navigation helpers
@@ -415,8 +525,9 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
                     size="large"
                     endIcon={<ArrowForward />}
                     onClick={handleNextFromCopy}
+                    disabled={processing}
                   >
-                    Proceed to Asset Selection
+                    {processing ? 'Storing in Assets Library...' : 'Store Copy & Continue'}
                   </Button>
                 </Box>
               </Box>

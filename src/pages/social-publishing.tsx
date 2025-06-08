@@ -125,7 +125,7 @@ const SocialPublishingPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Social Publishing | AIrWAVE</title>
+        <title>Social Publishing | AIrFLOW</title>
       </Head>
       <DashboardLayout title="Social Publishing">
         <Box sx={{ mb: 4 }}>

@@ -1013,7 +1013,7 @@ const GenerateEnhancedPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Generate Content | AIrWAVE</title>
+        <title>Generate Content | AIrFLOW</title>
       </Head>
       <DashboardLayout title="Generate Content">
         <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>

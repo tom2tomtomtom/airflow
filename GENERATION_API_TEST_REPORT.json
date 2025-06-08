@@ -1,0 +1,47 @@
+{
+  "testType": "Generation API Test with Real Data",
+  "timestamp": "2025-06-05T03:39:35.261Z",
+  "testData": {
+    "briefsUsed": 2,
+    "promptsUsed": 5,
+    "scriptsUsed": 2
+  },
+  "summary": {
+    "totalTests": 0,
+    "totalPassed": 0,
+    "totalFailed": 0,
+    "successRate": "NaN%",
+    "apiCallsMade": 0,
+    "totalErrors": 1
+  },
+  "testResults": {
+    "strategy": {
+      "passed": 0,
+      "failed": 0,
+      "tests": []
+    },
+    "generate": {
+      "passed": 0,
+      "failed": 0,
+      "tests": []
+    },
+    "apis": {
+      "passed": 0,
+      "failed": 0,
+      "tests": []
+    }
+  },
+  "apiResponses": [],
+  "errors": [
+    {
+      "type": "test",
+      "message": "page.goto: net::ERR_CONNECTION_REFUSED at http://localhost:3000/login\nCall log:\n\u001b[2m  - navigating to \"http://localhost:3000/login\", waiting until \"load\"\u001b[22m\n",
+      "timestamp": "2025-06-05T03:39:35.046Z"
+    }
+  ],
+  "recommendations": [
+    "⚠️ Generation APIs need attention",
+    "ℹ️ Limited API testing - consider expanding coverage",
+    "⚠️ 1 errors found during testing"
+  ]
+}

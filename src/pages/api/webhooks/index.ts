@@ -279,13 +279,13 @@ async function testWebhookUrl(url: string, timeoutMs: number = 10000): Promise<{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'AIrWAVE-Webhook-Test/1.0',
-        'X-AIrWAVE-Test': 'true',
+        'User-Agent': 'AIrFLOW-Webhook-Test/1.0',
+        'X-AIrFLOW-Test': 'true',
       },
       body: JSON.stringify({
         event: 'webhook.test',
         timestamp: new Date().toISOString(),
-        data: { message: 'This is a webhook test from AIrWAVE' }
+        data: { message: 'This is a webhook test from AIrFLOW' }
       }),
       signal: controller.signal,
     });
@@ -417,10 +417,10 @@ export async function deliverWebhook(webhook: any, payload: any): Promise<{ succ
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      'User-Agent': 'AIrWAVE-Webhook/1.0',
-      'X-AIrWAVE-Signature': signature,
-      'X-AIrWAVE-Event': payload.event,
-      'X-AIrWAVE-Delivery': crypto.randomUUID(),
+      'User-Agent': 'AIrFLOW-Webhook/1.0',
+      'X-AIrFLOW-Signature': signature,
+      'X-AIrFLOW-Event': payload.event,
+      'X-AIrFLOW-Delivery': crypto.randomUUID(),
       ...webhook.headers,
     };
 

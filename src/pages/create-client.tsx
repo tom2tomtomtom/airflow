@@ -710,7 +710,7 @@ export default function CreateClient() {
   return (
     <DashboardLayout title="Create New Client">
       <Head>
-        <title>Create Client | AIrWAVE</title>
+        <title>Create Client | AIrFLOW</title>
       </Head>
       
       <Box sx={{ maxWidth: 900, mx: 'auto' }}>

@@ -1,0 +1,77 @@
+{
+  "testType": "Authenticated API Test",
+  "timestamp": "2025-06-05T03:50:09.448Z",
+  "summary": {
+    "apiCallsMade": 0,
+    "successfulCalls": 0,
+    "failedCalls": 0,
+    "totalErrors": 12
+  },
+  "apiResponses": [],
+  "errors": [
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 ()",
+      "timestamp": "2025-06-05T03:48:59.369Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 ()",
+      "timestamp": "2025-06-05T03:48:59.479Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 ()",
+      "timestamp": "2025-06-05T03:49:37.592Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 ()",
+      "timestamp": "2025-06-05T03:49:37.592Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 400 ()",
+      "timestamp": "2025-06-05T03:49:42.854Z"
+    },
+    {
+      "type": "console",
+      "message": "Login error: AuthApiError: Invalid login credentials\n    at handleError (webpack-internal:///(pages-dir-browser)/./node_modules/@supabase/auth-js/dist/module/lib/fetch.js:80:11)\n    at async _handleRequest (webpack-internal:///(pages-dir-browser)/./node_modules/@supabase/auth-js/dist/module/lib/fetch.js:123:9)\n    at async _request (webpack-internal:///(pages-dir-browser)/./node_modules/@supabase/auth-js/dist/module/lib/fetch.js:105:18)\n    at async SupabaseAuthClient.signInWithPassword (webpack-internal:///(pages-dir-browser)/./node_modules/@supabase/auth-js/dist/module/GoTrueClient.js:357:23)\n    at async login (webpack-internal:///(pages-dir-browser)/./src/contexts/SupabaseAuthContext.tsx:172:37)\n    at async handleSubmit (webpack-internal:///(pages-dir-browser)/./src/pages/login.tsx:65:28)",
+      "timestamp": "2025-06-05T03:49:42.857Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 400 ()",
+      "timestamp": "2025-06-05T03:49:56.536Z"
+    },
+    {
+      "type": "console",
+      "message": "Login error: AuthApiError: Invalid login credentials\n    at handleError (webpack-internal:///(pages-dir-browser)/./node_modules/@supabase/auth-js/dist/module/lib/fetch.js:80:11)\n    at async _handleRequest (webpack-internal:///(pages-dir-browser)/./node_modules/@supabase/auth-js/dist/module/lib/fetch.js:123:9)\n    at async _request (webpack-internal:///(pages-dir-browser)/./node_modules/@supabase/auth-js/dist/module/lib/fetch.js:105:18)\n    at async SupabaseAuthClient.signInWithPassword (webpack-internal:///(pages-dir-browser)/./node_modules/@supabase/auth-js/dist/module/GoTrueClient.js:357:23)\n    at async login (webpack-internal:///(pages-dir-browser)/./src/contexts/SupabaseAuthContext.tsx:172:37)\n    at async handleSubmit (webpack-internal:///(pages-dir-browser)/./src/pages/login.tsx:65:28)",
+      "timestamp": "2025-06-05T03:49:56.537Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 ()",
+      "timestamp": "2025-06-05T03:50:00.903Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 ()",
+      "timestamp": "2025-06-05T03:50:00.904Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 ()",
+      "timestamp": "2025-06-05T03:50:05.281Z"
+    },
+    {
+      "type": "console",
+      "message": "Failed to load resource: the server responded with a status of 404 ()",
+      "timestamp": "2025-06-05T03:50:05.404Z"
+    }
+  ],
+  "testData": {
+    "briefsUsed": 2,
+    "realContentLength": 889
+  }
+}

@@ -470,7 +470,7 @@ const StrategicContent: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Strategic Content | AIrWAVE</title>
+        <title>Strategic Content | AIrFLOW</title>
       </Head>
       <DashboardLayout title="Strategic Content">
         <Box sx={{ mb: 4 }}>

@@ -1,5 +1,5 @@
 {
-  "name": "airwave",
+  "name": "airflow",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -39,6 +39,7 @@
     "@mui/material": "^7.1.0",
     "@mui/x-date-pickers": "^8.5.0",
     "@mui/x-date-pickers-pro": "^8.5.0",
+    "@next/bundle-analyzer": "^15.1.2",
     "@sentry/nextjs": "^7.0.0",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/ssr": "^0.6.1",
@@ -96,8 +97,7 @@
     "typescript": "5.1.6",
     "vitest": "^3.1.4",
     "xlsx": "^0.18.5",
-    "zod": "^3.25.32",
-    "@next/bundle-analyzer": "^15.1.2"
+    "zod": "^3.25.32"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.8.0",

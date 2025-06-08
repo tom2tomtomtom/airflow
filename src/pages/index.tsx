@@ -55,7 +55,7 @@ const HomePage = () => {
             }}
           >
             <Typography variant="h2" gutterBottom sx={{ fontWeight: 'bold', color: 'var(--carbon-amber-main)' }}>
-              AIrWAVE
+              AIrFLOW
             </Typography>
             <Typography variant="h5" color="textSecondary" paragraph>
               AI-Powered Content Management Platform

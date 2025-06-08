@@ -194,7 +194,7 @@ const ClientDetailPage: React.FC = () => {
   return (
     <DashboardLayout>
       <Head>
-        <title>{client.name} | AIrWAVE</title>
+        <title>{client.name} | AIrFLOW</title>
       </Head>
 
       <Container maxWidth="lg">

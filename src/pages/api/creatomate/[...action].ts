@@ -45,7 +45,7 @@ export default async function handler(
         return res.status(200).json({ 
           success: true, 
           data: {
-            message: 'Creatomate integration is working perfectly! Ready for AIrWAVE video generation.',
+            message: 'Creatomate integration is working perfectly! Ready for AIrFLOW video generation.',
             templateCount: testResponse.data.length,
             rateLimitRemaining: testResponse.headers['x-ratelimit-remaining'] || 'Unknown'
           },

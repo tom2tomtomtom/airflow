@@ -69,7 +69,6 @@ const LiveCollaboration: React.FC<LiveCollaborationProps> = ({
       {
         id: '1',
         name: 'Sarah Chen',
-        avatar: '/avatars/sarah.jpg',
         status: 'online',
         last_seen: new Date().toISOString(),
         current_page: '/campaigns/create',
@@ -79,7 +78,6 @@ const LiveCollaboration: React.FC<LiveCollaborationProps> = ({
       {
         id: '2',
         name: 'Mike Rodriguez',
-        avatar: '/avatars/mike.jpg',
         status: 'online',
         last_seen: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
         current_page: '/analytics',
@@ -89,7 +87,6 @@ const LiveCollaboration: React.FC<LiveCollaborationProps> = ({
       {
         id: '3',
         name: 'Emma Thompson',
-        avatar: '/avatars/emma.jpg',
         status: 'away',
         last_seen: new Date(Date.now() - 15 * 60 * 1000).toISOString(),
         current_page: '/approvals',
@@ -99,7 +96,6 @@ const LiveCollaboration: React.FC<LiveCollaborationProps> = ({
       {
         id: '4',
         name: 'David Kim',
-        avatar: '/avatars/david.jpg',
         status: 'busy',
         last_seen: new Date(Date.now() - 2 * 60 * 1000).toISOString(),
         current_page: '/matrix/builder',

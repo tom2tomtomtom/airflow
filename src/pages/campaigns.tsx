@@ -113,7 +113,7 @@ const CampaignsPage: React.FC = () => {
   return (
     <DashboardLayout>
       <Head>
-        <title>Campaigns | AIrWAVE</title>
+        <title>Campaigns | AIrFLOW</title>
       </Head>
 
       <Container maxWidth="lg">

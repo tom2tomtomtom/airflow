@@ -148,7 +148,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
       {
         id: 'act-4',
         type: 'analytics_milestone',
-        user: { id: 'system', name: 'AIrWAVE System' },
+        user: { id: 'system', name: 'AIrFLOW System' },
         timestamp: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
         data: {
           message: 'Campaign "Spring Collection" reached 100K views! 🎉',

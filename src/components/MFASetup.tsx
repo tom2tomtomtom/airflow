@@ -192,7 +192,7 @@ export const MFASetup: React.FC = () => {
                   <ListItemText
                     primary="MFA Status"
                     secondary={
-                      <Box>
+                      <>
                         <Chip
                           label={status?.isEnabled ? 'Enabled' : 'Disabled'}
                           color={status?.isEnabled ? 'success' : 'warning'}
@@ -202,7 +202,7 @@ export const MFASetup: React.FC = () => {
                         {status?.isRequired && (
                           <Chip label="Required" color="error" size="small" />
                         )}
-                      </Box>
+                      </>
                     }
                   />
                 </ListItem>

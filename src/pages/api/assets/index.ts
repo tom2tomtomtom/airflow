@@ -1,7 +1,8 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabase, getUserFromToken, userHasClientAccess } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase/client';
+import { withAuth } from '@/middleware/withAuth';
+import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 
 export interface Asset {
   id: string;
@@ -30,34 +31,17 @@ type ResponseData = {
   asset?: Asset;
 };
 
-export default async function handler(
+async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ): Promise<void> {
-  // CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  const { method } = req;
+  const user = (req as any).user;
+  const { clientId } = req.query;
 
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
-
-  // Authentication required
-  const authHeader = req.headers.authorization;
-  const token = authHeader?.replace('Bearer ', '');
-  if (!token) {
-    return res.status(401).json({
-      success: false,
-      message: 'Authentication required'
-    });
-  }
+  console.log('Assets API called:', method, 'User:', user?.id, 'Client:', clientId);
 
   try {
-    // Get user from token
-    const user = await getUserFromToken(token);
-    const { clientId } = req.query;
 
     switch (req.method) {
       case 'GET':
@@ -89,6 +73,8 @@ async function getAssets(
   clientId?: string
 ): Promise<void> {
   try {
+    console.log('Assets API called - GET, User:', userId, 'Client:', clientId);
+    
     // Extract query parameters for search and filtering
     const {
       search,
@@ -109,14 +95,6 @@ async function getAssets(
     
     // Filter by client if provided
     if (clientId) {
-      // Check user has access to this client
-      const hasAccess = await userHasClientAccess(userId, clientId);
-      if (!hasAccess) {
-        return res.status(403).json({
-          success: false,
-          message: 'Access denied to this client'
-        });
-      }
       query = query.eq('client_id', clientId);
     } else {
       // Get all assets from clients the user has access to
@@ -162,7 +140,7 @@ async function getAssets(
     }
 
     // Apply sorting
-    const validSortFields = ['created_at', 'name', 'type', 'file_size'];
+    const validSortFields = ['created_at', 'name', 'type', 'size_bytes'];
     const sortField = validSortFields.includes(sortBy as string) ? sortBy as string : 'created_at';
     const ascending = sortOrder === 'asc';
     query = query.order(sortField, { ascending });
@@ -178,6 +156,8 @@ async function getAssets(
       console.error('Error fetching assets:', error);
       throw error;
     }
+    
+    console.log(`Fetched ${assets?.length || 0} assets from database`);
     
     // Transform assets to match expected format
     const transformedAssets = assets?.map(asset => ({
@@ -222,7 +202,10 @@ async function getAssets(
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Error fetching assets:', error);
-    throw error;
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch assets: ' + message
+    });
   }
 }
 
@@ -233,6 +216,8 @@ async function createAsset(
   userId: string
 ): Promise<void> {
   try {
+    console.log('Create asset called for user:', userId);
+    
     const { 
       name, type, url, thumbnailUrl, description, tags, clientId,
       metadata, size, mimeType, duration, width, height 
@@ -254,16 +239,7 @@ async function createAsset(
       });
     }
 
-    // Check user has access to the client
-    const hasAccess = await userHasClientAccess(userId, clientId);
-    if (!hasAccess) {
-      return res.status(403).json({
-        success: false,
-        message: 'Access denied to this client'
-      });
-    }
-
-    // Create new asset
+    // Create new asset in database
     const { data: newAsset, error } = await supabase
       .from('assets')
       .insert({
@@ -289,6 +265,8 @@ async function createAsset(
       console.error('Error creating asset:', error);
       throw error;
     }
+
+    console.log('Asset created in database:', newAsset.id);
 
     // Transform response
     const transformedAsset: Asset = {
@@ -318,7 +296,10 @@ async function createAsset(
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Error creating asset:', error);
-    throw error;
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to create asset: ' + message
+    });
   }
 }
 
@@ -329,6 +310,8 @@ async function updateAsset(
   userId: string
 ): Promise<void> {
   try {
+    console.log('Update asset called for user:', userId);
+    
     const { id } = req.query;
     const updates = req.body;
 
@@ -353,20 +336,14 @@ async function updateAsset(
       });
     }
 
-    // Check user has access to the client
-    const hasAccess = await userHasClientAccess(userId, asset.client_id);
-    if (!hasAccess) {
-      return res.status(403).json({
-        success: false,
-        message: 'Access denied to this asset'
-      });
-    }
-
     // Update the asset
     const { data: updatedAsset, error: updateError } = await supabase
       .from('assets')
       .update({
-        ...updates,
+        name: updates.name,
+        description: updates.description,
+        tags: updates.tags,
+        metadata: updates.metadata,
         updated_at: new Date().toISOString()
       })
       .eq('id', id)
@@ -377,6 +354,8 @@ async function updateAsset(
       console.error('Error updating asset:', updateError);
       throw updateError;
     }
+
+    console.log('Asset updated in database:', updatedAsset.id);
 
     // Transform response
     const transformedAsset: Asset = {
@@ -406,7 +385,10 @@ async function updateAsset(
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Error updating asset:', error);
-    throw error;
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update asset: ' + message
+    });
   }
 }
 
@@ -417,6 +399,8 @@ async function deleteAsset(
   userId: string
 ): Promise<void> {
   try {
+    console.log('Delete asset called for user:', userId);
+    
     const { id } = req.query;
 
     if (!id) {
@@ -440,15 +424,6 @@ async function deleteAsset(
       });
     }
 
-    // Check user has access to the client
-    const hasAccess = await userHasClientAccess(userId, asset.client_id);
-    if (!hasAccess) {
-      return res.status(403).json({
-        success: false,
-        message: 'Access denied to this asset'
-      });
-    }
-
     // Delete the asset
     const { error: deleteError } = await supabase
       .from('assets')
@@ -460,6 +435,8 @@ async function deleteAsset(
       throw deleteError;
     }
 
+    console.log('Asset deleted from database:', id);
+
     return res.status(200).json({
       success: true,
       message: 'Asset deleted successfully'
@@ -467,6 +444,11 @@ async function deleteAsset(
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Error deleting asset:', error);
-    throw error;
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to delete asset: ' + message
+    });
   }
 }
+
+export default withAuth(withSecurityHeaders(handler));

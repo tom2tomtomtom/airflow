@@ -322,7 +322,7 @@ const AnalyticsPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Analytics | AIrWAVE</title>
+        <title>Analytics | AIrFLOW</title>
       </Head>
       <DashboardLayout title="Analytics">
         <Box sx={{ mb: 4 }}>

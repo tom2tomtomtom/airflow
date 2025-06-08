@@ -1,5 +1,5 @@
 // Generated from Supabase schema
-// This file contains all database types for AIrWAVE
+// This file contains all database types for AIrFLOW
 
 export interface Database {
   public: {

@@ -189,17 +189,18 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
           {showHeader && (
             <CardContent sx={{ pb: 1 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="h6">
-                  Notifications
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography variant="h6" component="div">
+                    Notifications
+                  </Typography>
                   {unreadNotifications.length > 0 && (
                     <Chip
                       size="small"
                       label={unreadNotifications.length}
                       color="primary"
-                      sx={{ ml: 1 }}
                     />
                   )}
-                </Typography>
+                </Box>
                 <Stack direction="row" spacing={1}>
                   <Tooltip title="Refresh">
                     <IconButton size="small" onClick={refresh} disabled={loading}>

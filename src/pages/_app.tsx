@@ -105,7 +105,7 @@ function MyApp(props: MyAppProps) {
   useEffect(() => {
     // App initialization
     if (process.env.NODE_ENV === 'development') {
-      console.log('AIrWAVE App initialized', {
+      console.log('AIrFLOW App initialized', {
         version: process.env.NEXT_PUBLIC_APP_VERSION || '0.1.0',
         environment: process.env.NODE_ENV,
       });
@@ -136,7 +136,7 @@ function MyApp(props: MyAppProps) {
   return (
     <CacheProvider value={emotionCache}>
       <Head>
-        <title>AIrWAVE - AI-Powered Campaign Management</title>
+        <title>AIrFLOW - AI-Powered Campaign Management</title>
         <meta name="description" content="AI-powered campaign management platform for creating and managing digital marketing assets" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />

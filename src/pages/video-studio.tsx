@@ -285,7 +285,7 @@ const VideoStudioPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Video Studio | AIrWAVE</title>
+        <title>Video Studio | AIrFLOW</title>
       </Head>
       <DashboardLayout title="Video Studio">
         <Container maxWidth="xl">

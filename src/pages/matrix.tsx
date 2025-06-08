@@ -521,7 +521,7 @@ const MatrixPage: React.FC = () => {
   return (
     <DashboardLayout title="Matrix Editor">
       <Head>
-        <title>Matrix Editor | AIrWAVE</title>
+        <title>Matrix Editor | AIrFLOW</title>
       </Head>
 
       <Box>
@@ -531,13 +531,13 @@ const MatrixPage: React.FC = () => {
 
         <Grid container spacing={3}>
           {/* Template Selection */}
-          <Grid size={{ xs: 12, md: 3}>
+          <Grid xs={12} md={3}>
             <Paper sx={{ p: 2, height: '100%' }}>
               <TextField
                 fullWidth
                 placeholder="Search templates..."
                 value={searchTerm}
-                onChange={(e: React.ChangeEvent<HTMLElement>) => setSearchTerm(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -584,28 +584,28 @@ const MatrixPage: React.FC = () => {
           </Grid>
 
           {/* Matrix Editor */}
-          <Grid size={{ xs: 12, md: 9}>
+          <Grid size={{ xs: 12, md: 9 }}>
             {selectedTemplate ? (
               <Paper sx={{ p: 3 }}>
                 {/* Matrix Header */}
                 <Box sx={{ mb: 3 }}>
                   <Grid container spacing={2} alignItems="center">
-                    <Grid size={{ xs: 12, md: 4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                       <TextField
                         fullWidth
                         label="Matrix Name"
                         value={matrixName}
-                        onChange={(e: React.ChangeEvent<HTMLElement>) => setMatrixName(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMatrixName(e.target.value)}
                         required
                       />
                     </Grid>
-                    <Grid size={{ xs: 12, md: 4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                       <FormControl fullWidth>
                         <InputLabel>Link to Campaign</InputLabel>
                         <Select
                           value={selectedCampaign?.id || ''}
                           label="Link to Campaign"
-                          onChange={(e: React.ChangeEvent<HTMLElement>) => {
+                          onChange={(e: any) => {
                             const campaign = campaigns?.find((c: Campaign) => c.id === e.target.value);
                             setSelectedCampaign(campaign || null);
                           }}
@@ -619,7 +619,7 @@ const MatrixPage: React.FC = () => {
                         </Select>
                       </FormControl>
                     </Grid>
-                    <Grid size={{ xs: 12, md: 4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                       <Stack direction="row" spacing={1}>
                         <Button
                           variant="contained"
@@ -661,7 +661,7 @@ const MatrixPage: React.FC = () => {
                   {selectedTemplate && (
                     <Card sx={{ mt: 2, p: 2, bgcolor: 'background.default' }}>
                       <Grid container spacing={2} alignItems="center">
-                        <Grid size={{ xs: 12, md: 6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                             <Typography variant="h6">Matrix Quality</Typography>
                             <Chip 
@@ -684,7 +684,7 @@ const MatrixPage: React.FC = () => {
                             </Box>
                           )}
                         </Grid>
-                        <Grid size={{ xs: 12, md: 6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                           <Typography variant="subtitle2" gutterBottom>Insights</Typography>
                           {getMatrixInsights().slice(0, 3).map((insight, index) => (
                             <Typography key={index} variant="caption" color="text.secondary" display="block">
@@ -731,7 +731,7 @@ const MatrixPage: React.FC = () => {
                                   <TextField
                                     size="small"
                                     value={variation.name}
-                                    onChange={(e: React.ChangeEvent<HTMLElement>) => {
+                                    onChange={(e: any) => {
                                       setVariations(variations.map(v =>
                                         v.id === variation.id ? { ...v, name: e.target.value } : v
                                       ));
@@ -755,7 +755,7 @@ const MatrixPage: React.FC = () => {
                                     <Switch
                                       size="small"
                                       checked={variation.isActive}
-                                      onChange={(e: React.ChangeEvent<HTMLElement>) => {
+                                      onChange={(e: any) => {
                                         setVariations(variations.map(v =>
                                           v.id === variation.id ? { ...v, isActive: e.target.checked } : v
                                         ));
@@ -871,7 +871,7 @@ const MatrixPage: React.FC = () => {
                     ) : (
                       <Grid container spacing={2}>
                         {combinations.map(combo => (
-                          <Grid size={{ xs: 12, md: 6} key={combo.id}>
+                          <Grid size={{ xs: 12, md: 6 }} key={combo.id}>
                             <Card sx={{ position: 'relative' }}>
                               <CardContent>
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
@@ -880,7 +880,7 @@ const MatrixPage: React.FC = () => {
                                     control={
                                       <Checkbox
                                         checked={combo.isSelected}
-                                        onChange={(e: React.ChangeEvent<HTMLElement>) => {
+                                        onChange={(e: any) => {
                                           setCombinations(combinations.map(c =>
                                             c.id === combo.id ? { ...c, isSelected: e.target.checked } : c
                                           ));
@@ -935,7 +935,7 @@ const MatrixPage: React.FC = () => {
                     </Alert>
                     <Grid container spacing={2}>
                       {variations.map(variation => (
-                        <Grid size={{ xs: 12, md: 4} key={variation.id}>
+                        <Grid size={{ xs: 12, md: 4 }} key={variation.id}>
                           <Card>
                             <CardContent>
                               <Typography variant="h6" gutterBottom>
@@ -1041,7 +1041,7 @@ const MatrixPage: React.FC = () => {
             </Alert>
             <Grid container spacing={2}>
               {variations.filter(v => v.isActive).map(variation => (
-                <Grid size={{ xs: 12, md: 4} key={variation.id}>
+                <Grid size={{ xs: 12, md: 4 }} key={variation.id}>
                   <Card>
                     <Box
                       sx={{

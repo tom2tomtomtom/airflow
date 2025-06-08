@@ -19,7 +19,7 @@ export default function Custom404() {
   return (
     <>
       <Head>
-        <title>404 - Page Not Found | AIrWAVE</title>
+        <title>404 - Page Not Found | AIrFLOW</title>
       </Head>
       
       <Container maxWidth="md">

@@ -303,9 +303,9 @@ async function triggerWebhookNotifications(
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'AIrWAVE-Webhook/1.0',
+        'User-Agent': 'AIrFLOW-Webhook/1.0',
         ...(webhookSettings.secret && {
-          'X-AIrWAVE-Signature': generateWebhookSignature(webhookPayload, webhookSettings.secret)
+          'X-AIrFLOW-Signature': generateWebhookSignature(webhookPayload, webhookSettings.secret)
         })
       },
       body: JSON.stringify(webhookPayload)

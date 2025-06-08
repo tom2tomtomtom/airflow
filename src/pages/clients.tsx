@@ -106,7 +106,7 @@ const ClientsPage: React.FC = () => {
   return (
     <DashboardLayout>
       <Head>
-        <title>Clients | AIrWAVE</title>
+        <title>Clients | AIrFLOW</title>
       </Head>
 
       <Container maxWidth="lg">

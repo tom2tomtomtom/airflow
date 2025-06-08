@@ -404,7 +404,7 @@ const ExecutePage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Execute | AIrWAVE</title>
+        <title>Execute | AIrFLOW</title>
       </Head>
       <DashboardLayout title="Execute">
         <Box sx={{ mb: 4 }}>

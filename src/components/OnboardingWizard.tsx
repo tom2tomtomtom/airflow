@@ -65,7 +65,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
   const steps: OnboardingStep[] = [
     {
       id: 'welcome',
-      title: 'Welcome to AIrWAVE',
+      title: 'Welcome to AIrFLOW',
       description: 'Your AI-powered video creation platform',
       icon: <PlayArrow />,
       content: (
@@ -92,7 +92,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
             <PlayArrow sx={{ fontSize: 60, color: 'white' }} />
           </Box>
           <Typography variant="h4" gutterBottom fontWeight={600}>
-            Welcome to AIrWAVE! 🚀
+            Welcome to AIrFLOW! 🚀
           </Typography>
           <Typography variant="body1" color="text.secondary" paragraph>
             Transform your briefs into stunning videos with AI-powered workflows.
@@ -126,7 +126,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     },
     {
       id: 'workflow',
-      title: 'The AIrWAVE Workflow',
+      title: 'The AIrFLOW Workflow',
       description: 'See how easy it is to create amazing content',
       icon: <CloudUpload />,
       content: (
@@ -221,7 +221,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
     {
       id: 'features',
       title: 'Key Features',
-      description: 'Discover what makes AIrWAVE powerful',
+      description: 'Discover what makes AIrFLOW powerful',
       icon: <Lightbulb />,
       content: (
         <Grid container spacing={3}>
@@ -287,7 +287,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
             You're All Set! 🎉
           </Typography>
           <Typography variant="body1" color="text.secondary" paragraph>
-            You now know the basics of AIrWAVE. Ready to create your first video?
+            You now know the basics of AIrFLOW. Ready to create your first video?
           </Typography>
           
           <Grid container spacing={2} sx={{ mt: 3, maxWidth: 600, mx: 'auto' }}>

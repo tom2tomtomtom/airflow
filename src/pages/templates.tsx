@@ -411,7 +411,7 @@ const Templates: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Templates | AIrWAVE</title>
+        <title>Templates | AIrFLOW</title>
       </Head>
       <DashboardLayout title="Templates">
         <Box sx={{ mb: 4 }}>

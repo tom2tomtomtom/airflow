@@ -5,8 +5,8 @@ export default function TermsOfService() {
   return (
     <>
       <Head>
-        <title>Terms of Service - AIrWAVE</title>
-        <meta name="description" content="AIrWAVE Terms of Service - Legal terms and conditions for using our platform" />
+        <title>Terms of Service - AIrFLOW</title>
+        <meta name="description" content="AIrFLOW Terms of Service - Legal terms and conditions for using our platform" />
       </Head>
       
       <div className="min-h-screen bg-gray-50">
@@ -23,14 +23,14 @@ export default function TermsOfService() {
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold text-gray-900 mb-4">1. Agreement to Terms</h2>
                 <p>
-                  By accessing or using AIrWAVE ("the Service"), you agree to be bound by these Terms of Service ("Terms"). If you disagree with any part of these terms, you may not access the Service.
+                  By accessing or using AIrFLOW ("the Service"), you agree to be bound by these Terms of Service ("Terms"). If you disagree with any part of these terms, you may not access the Service.
                 </p>
               </section>
               
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold text-gray-900 mb-4">2. Description of Service</h2>
                 <p>
-                  AIrWAVE is a digital advertising creation platform that provides:
+                  AIrFLOW is a digital advertising creation platform that provides:
                 </p>
                 <ul className="list-disc pl-6 mb-4">
                   <li>AI-powered strategy and copy generation</li>
@@ -215,7 +215,7 @@ export default function TermsOfService() {
                 
                 <h3 className="text-xl font-semibold text-gray-800 mb-3">13.1 Entire Agreement</h3>
                 <p>
-                  These Terms constitute the entire agreement between you and AIrWAVE regarding the Service.
+                  These Terms constitute the entire agreement between you and AIrFLOW regarding the Service.
                 </p>
                 
                 <h3 className="text-xl font-semibold text-gray-800 mb-3">13.2 Severability</h3>
@@ -241,7 +241,7 @@ export default function TermsOfService() {
                 </p>
                 <div className="bg-gray-50 p-4 rounded-lg mt-4">
                   <p className="mb-2">
-                    <strong>AIrWAVE Legal Team</strong>
+                    <strong>AIrFLOW Legal Team</strong>
                   </p>
                   <p className="mb-2">
                     Email:{' '}

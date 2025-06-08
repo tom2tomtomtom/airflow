@@ -3,7 +3,7 @@ import { getErrorMessage } from '@/utils/errorUtils';
  * Multi-Factor Authentication (MFA) Implementation
  * 
  * This module provides TOTP (Time-based One-Time Password) support
- * for enhanced security in AIrWAVE platform.
+ * for enhanced security in AIrFLOW platform.
  */
 
 import crypto from 'crypto';
@@ -48,7 +48,7 @@ export function generateBackupCodes(count: number = 8): string[] {
 export async function generateQRCode(
   secret: string,
   userEmail: string,
-  issuer: string = 'AIrWAVE'
+  issuer: string = 'AIrFLOW'
 ): Promise<string> {
   const otpAuthUrl = authenticator.keyuri(userEmail, issuer, secret);
   return await QRCode.toDataURL(otpAuthUrl);

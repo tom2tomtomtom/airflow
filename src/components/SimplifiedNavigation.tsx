@@ -267,7 +267,7 @@ export const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
       {/* Header */}
       <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Typography variant="h6" fontWeight={600} color="primary">
-          AIrWAVE
+          AIrFLOW
         </Typography>
         {variant === 'temporary' && (
           <IconButton onClick={onClose} size="small" aria-label="Close navigation">            <Close />
@@ -287,7 +287,7 @@ export const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
       {/* Footer */}
       <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
         <Typography variant="caption" color="text.secondary" display="block">
-          AIrWAVE v2.0
+          AIrFLOW v2.0
         </Typography>
         <Typography variant="caption" color="text.secondary">
           Simplified Interface

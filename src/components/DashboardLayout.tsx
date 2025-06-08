@@ -32,6 +32,7 @@ import {
   Visibility as PreviewIcon,
   CheckCircle as SignOffIcon,
   AutoAwesome as GenerateIcon,
+  TrendingUp as FlowIcon,
   Assignment as ApprovalsIcon,
   Analytics as AnalyticsIcon,
   Webhook as WebhookIcon,
@@ -54,6 +55,7 @@ const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: DashboardIcon },
   { name: 'Clients', href: '/clients', icon: ClientsIcon },
   { name: 'Campaigns', href: '/campaigns', icon: CampaignIcon },
+  { name: 'Flow', href: '/flow', icon: FlowIcon },
   { divider: true },
   { name: 'Strategy', href: '/strategic-content', icon: StrategicIcon },
   { name: 'Generate', href: '/generate-enhanced', icon: GenerateIcon },
@@ -122,7 +124,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
             }}
             onClick={() => router.push('/dashboard')}
           >
-            AIrWAVE
+            AIrFLOW
           </Typography>
         </Box>
       </Toolbar>
@@ -255,7 +257,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 600, flexGrow: 1 }}>
-            {title || 'AIrWAVE Dashboard'}
+            {title || 'AIrFLOW Dashboard'}
           </Typography>
           
           {/* Global Search Button */}

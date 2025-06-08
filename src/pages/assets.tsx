@@ -193,13 +193,13 @@ const AssetsPage: React.FC = () => {
       queryParams.append('offset', ((page - 1) * 20).toString());
 
       const response = await fetch(`/api/assets?${queryParams}`, {
-        headers: {
-          'Authorization': `Bearer ${user.token}`,
-        },
+        credentials: 'include',
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch assets');
+        const errorData = await response.text();
+        console.error('Assets API error:', response.status, errorData);
+        throw new Error(`Failed to fetch assets: ${response.status} ${errorData}`);
       }
 
       const data = await response.json();
@@ -275,7 +275,7 @@ const AssetsPage: React.FC = () => {
   // Download single asset
   const handleDownloadAsset = async (asset: Asset) => {
     try {
-      const response = await fetch(asset.file_url);
+      const response = await fetch(asset.url);
       if (!response.ok) throw new Error('Failed to fetch asset');
       
       const blob = await response.blob();
@@ -317,10 +317,10 @@ const AssetsPage: React.FC = () => {
       // Add files to ZIP
       for (const asset of selectedAssetsList) {
         try {
-          const response = await fetch(asset.file_url);
+          const response = await fetch(asset.url);
           if (response.ok) {
             const blob = await response.blob();
-            const extension = asset.mime_type?.split('/')[1] || 'bin';
+            const extension = asset.mimeType?.split('/')[1] || 'bin';
             const fileName = `${asset.name || asset.id}.${extension}`;
             zip.file(fileName, blob);
           }
@@ -398,6 +398,25 @@ const AssetsPage: React.FC = () => {
     }
   };
 
+  const handleDeleteAsset = async (asset: Asset) => {
+    try {
+      const response = await fetch(`/api/assets/${asset.id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        showNotification(`Deleted ${asset.name}`, 'success');
+        fetchAssets();
+      } else {
+        throw new Error('Failed to delete asset');
+      }
+    } catch (error) {
+      console.error('Error deleting asset:', error);
+      showNotification('Failed to delete asset', 'error');
+    }
+  };
+
   const handleUploadComplete = () => {
     showNotification('Assets uploaded successfully!', 'success');
     fetchAssets();
@@ -436,13 +455,242 @@ const AssetsPage: React.FC = () => {
     return null; // Will redirect via useEffect
   }
 
+  const filteredAssets = useMemo(() => {
+    return assets.filter(asset => {
+      // Apply search filter
+      if (filters.search && !asset.name.toLowerCase().includes(filters.search.toLowerCase()) &&
+          !asset.description?.toLowerCase().includes(filters.search.toLowerCase())) {
+        return false;
+      }
+      
+      // Apply type filter
+      if (filters.type && asset.type !== filters.type) {
+        return false;
+      }
+      
+      // Apply tags filter
+      if (filters.tags.length > 0 && !filters.tags.some(tag => asset.tags.includes(tag))) {
+        return false;
+      }
+      
+      // Apply favorites filter
+      if (filters.favoritesOnly && !asset.favorite) {
+        return false;
+      }
+      
+      return true;
+    });
+  }, [assets, filters]);
+
+
+
+
   return (
     <DashboardLayout>
       <Head>
-        <title>Assets | AIrWAVE</title>
+        <title>Assets | AIrFLOW</title>
       </Head>
-      <Typography variant="h4">Assets</Typography>
-      <Typography variant="body1">Asset management will be restored in the next update.</Typography>
+      
+      {/* Header */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box>
+          <Typography variant="h4" gutterBottom>Assets</Typography>
+          <Typography variant="body2" color="text.secondary">
+            {filteredAssets.length} {filteredAssets.length === 1 ? 'asset' : 'assets'}
+            {activeClient && ` for ${activeClient.name}`}
+          </Typography>
+        </Box>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button
+            variant="contained"
+            startIcon={<Upload />}
+            onClick={() => setShowUploadModal(true)}
+          >
+            Upload Assets
+          </Button>
+        </Box>
+      </Box>
+
+      {/* Filters */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={12} md={4}>
+              <TextField
+                fullWidth
+                placeholder="Search assets..."
+                value={filters.search}
+                onChange={(e) => handleFilterChange({ search: e.target.value })}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} md={2}>
+              <FormControl fullWidth>
+                <InputLabel>Type</InputLabel>
+                <Select
+                  value={filters.type}
+                  onChange={(e) => handleFilterChange({ type: e.target.value })}
+                  label="Type"
+                >
+                  <MenuItem value="">All Types</MenuItem>
+                  <MenuItem value="image">Images</MenuItem>
+                  <MenuItem value="video">Videos</MenuItem>
+                  <MenuItem value="text">Text</MenuItem>
+                  <MenuItem value="voice">Voice</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <FormControl fullWidth>
+                <InputLabel>Sort By</InputLabel>
+                <Select
+                  value={filters.sortBy}
+                  onChange={(e) => handleFilterChange({ sortBy: e.target.value })}
+                  label="Sort By"
+                >
+                  <MenuItem value="created_at">Date Created</MenuItem>
+                  <MenuItem value="name">Name</MenuItem>
+                  <MenuItem value="type">Type</MenuItem>
+                  <MenuItem value="size_bytes">Size</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={2}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={filters.favoritesOnly}
+                    onChange={(e) => handleFilterChange({ favoritesOnly: e.target.checked })}
+                  />
+                }
+                label="Favorites Only"
+              />
+            </Grid>
+            <Grid item xs={12} md={1}>
+              <Tooltip title={viewMode === 'grid' ? 'Switch to List View' : 'Switch to Grid View'}>
+                <IconButton
+                  onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+                >
+                  {viewMode === 'grid' ? <ViewList /> : <ViewModule />}
+                </IconButton>
+              </Tooltip>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
+
+      {/* Bulk Actions */}
+      {selectedAssets.size > 0 && (
+        <Card sx={{ mb: 2 }}>
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Typography variant="body2">
+                {selectedAssets.size} asset{selectedAssets.size !== 1 ? 's' : ''} selected
+              </Typography>
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={handleBulkDownload}
+                startIcon={<Download />}
+              >
+                Download
+              </Button>
+              <Button
+                variant="outlined"
+                size="small"
+                color="error"
+                onClick={handleBulkDelete}
+                startIcon={<Delete />}
+              >
+                Delete
+              </Button>
+              <Button
+                variant="text"
+                size="small"
+                onClick={() => setSelectedAssets(new Set())}
+              >
+                Clear Selection
+              </Button>
+            </Box>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Content */}
+      {isLoading ? (
+        <AssetGridSkeleton />
+      ) : error ? (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      ) : filteredAssets.length === 0 ? (
+        <EmptyAssets onUpload={() => setShowUploadModal(true)} />
+      ) : (
+        <>
+          {viewMode === 'grid' ? (
+            <Grid container spacing={2}>
+              {filteredAssets.map((asset) => (
+                <Grid item xs={12} sm={6} md={4} lg={3} key={asset.id}>
+                  <AssetCard
+                    asset={asset}
+                    viewMode={viewMode}
+                    isSelected={selectedAssets.has(asset.id)}
+                    onSelect={() => handleSelectAsset(asset.id)}
+                    onDownload={() => handleDownloadAsset(asset)}
+                    onToggleFavorite={() => handleToggleFavorite(asset)}
+                    onDelete={() => handleDeleteAsset(asset)}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          ) : (
+            <Stack spacing={1}>
+              {filteredAssets.map((asset) => (
+                <AssetCard
+                  key={asset.id}
+                  asset={asset}
+                  viewMode={viewMode}
+                  isSelected={selectedAssets.has(asset.id)}
+                  onSelect={() => handleSelectAsset(asset.id)}
+                  onDownload={() => handleDownloadAsset(asset)}
+                  onToggleFavorite={() => handleToggleFavorite(asset)}
+                  onDelete={() => handleDeleteAsset(asset)}
+                />
+              ))}
+            </Stack>
+          )}
+          
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+              <Pagination
+                count={totalPages}
+                page={page}
+                onChange={(_, newPage) => setPage(newPage)}
+                color="primary"
+              />
+            </Box>
+          )}
+        </>
+      )}
+
+      {/* Upload Modal */}
+      {showUploadModal && (
+        <AssetUploadModal
+          open={showUploadModal}
+          onClose={() => setShowUploadModal(false)}
+          onUpload={() => {
+            setShowUploadModal(false);
+            fetchAssets(); // Refresh assets after upload
+          }}
+        />
+      )}
     </DashboardLayout>
   );
 };

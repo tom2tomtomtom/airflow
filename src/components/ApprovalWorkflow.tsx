@@ -337,18 +337,19 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
     <Box>
       {showHeader && (
         <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h6">
-            Approval Workflow
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant="h6" component="div">
+              Approval Workflow
+            </Typography>
             {overdueCount > 0 && (
               <Chip 
                 size="small" 
                 color="error" 
                 icon={<WarningIcon />}
-                label={`${overdueCount} overdue`} 
-                sx={{ ml: 1 }}
+                label={`${overdueCount} overdue`}
               />
             )}
-          </Typography>
+          </Box>
           <Stack direction="row" spacing={1}>
             {selectedCount > 0 && (
               <Button
