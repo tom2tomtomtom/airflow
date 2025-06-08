@@ -147,6 +147,16 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
     }
   }, [open]);
 
+  // Debug effect to track activeStep changes
+  React.useEffect(() => {
+    console.log('ActiveStep changed to:', activeStep);
+  }, [activeStep]);
+
+  // Debug effect to track open state changes
+  React.useEffect(() => {
+    console.log('Dialog open state changed to:', open);
+  }, [open]);
+
   // Return mobile version for mobile devices
   if (isMobile) {
     return (
@@ -160,11 +170,16 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
   
   // Step 1: File Upload
   const onDrop = useCallback((acceptedFiles: File[]) => {
+    console.log('File dropped:', acceptedFiles.length, 'files');
+    console.log('Current state - activeStep:', activeStep, 'open:', open);
     if (acceptedFiles.length > 0) {
-      setUploadedFile(acceptedFiles[0]);
-      handleProcessBrief(acceptedFiles[0]);
+      const file = acceptedFiles[0];
+      console.log('Processing file:', file.name, 'size:', file.size);
+      setUploadedFile(file);
+      setProcessing(true); // Set processing immediately to prevent UI flash
+      handleProcessBrief(file);
     }
-  }, []);
+  }, [activeStep, open, handleProcessBrief]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -178,7 +193,9 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
     maxSize: 10 * 1024 * 1024,
   });
 
-  const handleProcessBrief = async (file: File) => {
+  const handleProcessBrief = useCallback(async (file: File) => {
+    console.log('handleProcessBrief called with file:', file.name);
+    console.log('Current activeStep before processing:', activeStep);
     setProcessing(true);
     
     try {
@@ -186,6 +203,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
       const formData = new FormData();
       formData.append('file', file);
 
+      console.log('Sending file to API...');
       const response = await fetch('/api/flow/parse-brief', {
         method: 'POST',
         body: formData,
@@ -197,25 +215,28 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
       }
 
       const result = await response.json();
+      console.log('API response received:', result.success);
       
       if (result.success) {
-        console.log('Brief parsed successfully:', result.data);
+        console.log('Brief parsed successfully:', result.data?.title);
         setBriefData(result.data);
         setOriginalBriefData(result.data);
         setProcessing(false);
         setShowBriefReview(true);
         showNotification('Brief processed successfully! Please review and edit the parsed content.', 'success');
-        console.log('Brief parsed - showing review step');
-        // Don't change step until user confirms the brief
+        console.log('Brief parsed - showing review step, activeStep should remain:', activeStep);
+        // Don't change activeStep until user confirms the brief
       } else {
         throw new Error(result.message || 'Failed to parse brief');
       }
     } catch (error) {
       console.error('Error processing brief:', error);
       setProcessing(false);
+      // Reset upload state on error so user can try again
+      setUploadedFile(null);
       showNotification(error instanceof Error ? error.message : 'Failed to process brief', 'error');
     }
-  };
+  }, [activeStep, showNotification]);
 
   // Step 2: Generate Motivations
   const handleGenerateMotivations = async () => {
@@ -418,7 +439,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
       case 0: // Upload Brief
         return (
           <Box>
-            {!uploadedFile && !briefConfirmed ? (
+            {!uploadedFile && !briefConfirmed && !processing && !briefData ? (
               <Box
                 {...getRootProps()}
                 sx={{
