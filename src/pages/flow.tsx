@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import {
@@ -34,9 +34,25 @@ const FlowPage: React.FC = () => {
   const { activeClient } = useClient();
   const { showNotification } = useNotification();
 
+  // Debug effect to track workflow open state changes
+  React.useEffect(() => {
+    console.log('FlowPage: openWorkflow changed to:', openWorkflow);
+  }, [openWorkflow]);
+
   const handleWorkflowComplete = () => {
+    console.log('FlowPage: handleWorkflowComplete called, closing workflow');
     setOpenWorkflow(false);
     showNotification('Content workflow completed successfully!', 'success');
+  };
+
+  const handleOpenWorkflow = () => {
+    console.log('FlowPage: Opening workflow dialog');
+    setOpenWorkflow(true);
+  };
+
+  const handleCloseWorkflow = () => {
+    console.log('FlowPage: Closing workflow dialog');
+    setOpenWorkflow(false);
   };
 
   return (
@@ -84,7 +100,7 @@ const FlowPage: React.FC = () => {
                   variant="contained"
                   size="large"
                   startIcon={<MagicIcon />}
-                  onClick={() => setOpenWorkflow(true)}
+                  onClick={handleOpenWorkflow}
                   sx={{ 
                     py: 2, 
                     px: 4,
@@ -133,7 +149,7 @@ const FlowPage: React.FC = () => {
           {/* Unified Brief Workflow */}
           <UnifiedBriefWorkflow
             open={openWorkflow}
-            onClose={() => setOpenWorkflow(false)}
+            onClose={handleCloseWorkflow}
             onComplete={handleWorkflowComplete}
           />
         </Box>

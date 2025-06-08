@@ -844,12 +844,39 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
     }
   };
 
+  const handleDialogClose = (event: {}, reason: 'backdropClick' | 'escapeKeyDown') => {
+    // Prevent closing during processing to avoid losing state
+    if (processing) {
+      console.log('Dialog close prevented - processing in progress');
+      return;
+    }
+    
+    console.log('Dialog close triggered by:', reason);
+    onClose();
+  };
+
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
+    <Dialog 
+      open={open} 
+      onClose={handleDialogClose} 
+      maxWidth="lg" 
+      fullWidth
+      disableEscapeKeyDown={processing}
+    >
       <DialogTitle>
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <Typography variant="h5">Brief to Execution Workflow</Typography>
-          <IconButton onClick={onClose} aria-label="Close dialog">
+          <IconButton 
+            onClick={() => {
+              if (processing) {
+                console.log('Close button click prevented - processing in progress');
+                return;
+              }
+              onClose();
+            }} 
+            aria-label="Close dialog"
+            disabled={processing}
+          >
             <Close />
           </IconButton>
         </Box>
