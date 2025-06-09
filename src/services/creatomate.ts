@@ -1,10 +1,3 @@
-import { getErrorMessage } from '@/utils/errorUtils';
-// Creatomate Integration Service
-// This service handles video generation using the Creatomate API
-
-import axios from 'axios';
-import React from 'react';
-
 export interface CreatomateTemplate {
   id: string;
   name: string;
@@ -14,429 +7,189 @@ export interface CreatomateTemplate {
   frameRate: number;
   tags: string[];
   preview: string;
+  thumbnail: string;
+  description?: string;
+  elements: CreatomateElement[];
 }
 
-export interface CreatomateModification {
-  [elementName: string]: string | number | boolean | {
-    source?: string;
-    text?: string;
-    color?: string;
-    fontSize?: number;
-    [key: string]: any;
-  };
-}
-
-export interface CreatomateRenderOptions {
-  templateId: string;
-  modifications: CreatomateModification;
-  webhookUrl?: string;
-  metadata?: Record<string, any>;
+export interface CreatomateElement {
+  id: string;
+  name: string;
+  type: 'text' | 'image' | 'video' | 'audio';
+  source?: string;
+  text?: string;
+  modifiable: boolean;
 }
 
 export interface CreatomateRenderResponse {
   id: string;
-  status: 'pending' | 'rendering' | 'completed' | 'failed';
+  status: 'queued' | 'processing' | 'succeeded' | 'failed';
   url?: string;
+  thumbnail?: string;
+  created_at: string;
+  completed_at?: string;
   error?: string;
-  progress?: number;
-  createdAt: string;
-  completedAt?: string;
 }
 
-class CreatomateService {
-  private apiKey: string;
-  private baseUrl: string;
+export class CreatomateService {
+  private apiKey: string = '5ab32660fef044e5b135a646a78cff8ec7e2503b79e201bad7e566f4b24ec111f2fa7e01a824eaa77904c1783e083efa';
+  private baseUrl: string = 'https://api.creatomate.com/v1';
+  private defaultTemplateId: string = '374ee9e3-de75-4feb-bfae-5c5e11d88d80';
 
-  constructor() {
-    // Use server-side API key (not NEXT_PUBLIC_)
-    this.apiKey = process.env.CREATOMATE_API_KEY || '';
-    this.baseUrl = 'https://api.creatomate.com/v1';
-  }
-
-  /**
-   * Get all available templates
-   */
-  async getTemplates(): Promise<CreatomateTemplate[]> {
+  async getTemplate(templateId?: string): Promise<CreatomateTemplate> {
+    const id = templateId || this.defaultTemplateId;
+    
     try {
-      // In demo mode, return mock templates
-      if (!this.apiKey || this.apiKey === 'demo') {
-        return this.getMockTemplates();
-      }
-
-      const response = await axios.get(`${this.baseUrl}/templates`, {
+      const response = await fetch(`${this.baseUrl}/templates/${id}`, {
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
         },
       });
 
-      return response.data;
-    } catch (error) {
-    const message = getErrorMessage(error);
-      if (process.env.NODE_ENV === 'development') {
-
-        console.error('Error fetching Creatomate templates:', error);
-
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-      return this.getMockTemplates();
+
+      const data = await response.json();
+      return this.mapCreatomateTemplate(data);
+    } catch (error) {
+      console.error(`Error fetching template ${id}:`, error);
+      return this.getDefaultTemplate();
     }
   }
 
-  /**
-   * Get a specific template by ID
-   */
-  async getTemplate(templateId: string): Promise<CreatomateTemplate | null> {
+  async renderVideo(modifications: Record<string, any>, templateId?: string): Promise<CreatomateRenderResponse> {
+    const id = templateId || this.defaultTemplateId;
+    
     try {
-      if (!this.apiKey || this.apiKey === 'demo') {
-        const templates = this.getMockTemplates();
-        return templates.find(t => t.id === templateId) || null;
-      }
-
-      const response = await axios.get(`${this.baseUrl}/templates/${templateId}`, {
+      const response = await fetch(`${this.baseUrl}/renders`, {
+        method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          template_id: id,
+          modifications,
+          output_format: 'mp4',
+        }),
       });
 
-      return response.data;
-    } catch (error) {
-    const message = getErrorMessage(error);
-      if (process.env.NODE_ENV === 'development') {
-
-        console.error('Error fetching Creatomate template:', error);
-
-      }
-      return null;
-    }
-  }
-
-  /**
-   * Render a video using a template
-   */
-  async renderVideo(options: CreatomateRenderOptions): Promise<CreatomateRenderResponse> {
-    try {
-      if (!this.apiKey || this.apiKey === 'demo') {
-        return this.mockRenderVideo(options);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const response = await axios.post(
-        `${this.baseUrl}/renders`,
-        {
-          template_id: options.templateId,
-          modifications: options.modifications,
-          webhook_url: options.webhookUrl,
-          metadata: options.metadata,
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${this.apiKey}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
+      const data = await response.json();
       return {
-        id: response.data.id,
-        status: response.data.status,
-        createdAt: response.data.created_at,
+        id: data.id,
+        status: data.status,
+        url: data.url,
+        thumbnail: data.thumbnail,
+        created_at: data.created_at,
+        completed_at: data.completed_at,
+        error: data.error,
       };
     } catch (error) {
-    const message = getErrorMessage(error);
-      if (process.env.NODE_ENV === 'development') {
-
-        console.error('Error rendering video:', error);
-
-      }
-      throw new Error('Failed to start video rendering');
+      console.error('Error rendering video:', error);
+      throw new Error(`Failed to render video: ${error}`);
     }
   }
 
-  /**
-   * Get render status
-   */
   async getRenderStatus(renderId: string): Promise<CreatomateRenderResponse> {
     try {
-      if (!this.apiKey || this.apiKey === 'demo') {
-        return this.mockGetRenderStatus(renderId);
-      }
-
-      const response = await axios.get(`${this.baseUrl}/renders/${renderId}`, {
+      const response = await fetch(`${this.baseUrl}/renders/${renderId}`, {
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
         },
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
       return {
-        id: response.data.id,
-        status: response.data.status,
-        url: response.data.url,
-        progress: response.data.progress,
-        error: response.data.error,
-        createdAt: response.data.created_at,
-        completedAt: response.data.completed_at,
+        id: data.id,
+        status: data.status,
+        url: data.url,
+        thumbnail: data.thumbnail,
+        created_at: data.created_at,
+        completed_at: data.completed_at,
+        error: data.error,
       };
     } catch (error) {
-    const message = getErrorMessage(error);
-      if (process.env.NODE_ENV === 'development') {
-
-        console.error('Error getting render status:', error);
-
-      }
+      console.error(`Error getting render status ${renderId}:`, error);
       throw new Error('Failed to get render status');
     }
   }
 
-  /**
-   * Create AI-powered video variations
-   */
-  async generateVideoVariations(
-    _templateId: string,
-    baseModifications: CreatomateModification,
-    variationCount: number = 3
-  ): Promise<CreatomateModification[]> {
-    const variations: CreatomateModification[] = [];
-    
-    // Generate variations based on the base modifications
-    for (let i = 0; i < variationCount; i++) {
-      const variation: CreatomateModification = { ...baseModifications };
-      
-      // Vary text content
-      Object.keys(variation).forEach(key => {
-        const value = variation[key];
-        if (typeof value === 'object' && value !== null && 'text' in value && value.text) {
-          variation[key] = {
-            ...value,
-            text: this.generateTextVariation(value.text as string, i),
-          };
-        }
-      });
-      
-      // Vary colors
-      Object.keys(variation).forEach(key => {
-        const value = variation[key];
-        if (typeof value === 'object' && value !== null && 'color' in value && value.color) {
-          variation[key] = {
-            ...value,
-            color: this.generateColorVariation(value.color as string, i),
-          };
-        }
-      });
-      
-      variations.push(variation);
-    }
-    
-    return variations;
-  }
-
-  /**
-   * Mock templates for demo mode
-   */
-  private getMockTemplates(): CreatomateTemplate[] {
-    return [
-      {
-        id: 'template-1',
-        name: 'Instagram Story - Product Showcase',
-        width: 1080,
-        height: 1920,
-        duration: 15,
-        frameRate: 30,
-        tags: ['instagram', 'story', 'product', 'vertical'],
-        preview: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=540&h=960&fit=crop',
-      },
-      {
-        id: 'template-2',
-        name: 'Facebook Ad - Sales Promotion',
-        width: 1200,
-        height: 628,
-        duration: 10,
-        frameRate: 30,
-        tags: ['facebook', 'ad', 'promotion', 'horizontal'],
-        preview: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=314&fit=crop',
-      },
-      {
-        id: 'template-3',
-        name: 'YouTube Intro - Brand Animation',
-        width: 1920,
-        height: 1080,
-        duration: 5,
-        frameRate: 60,
-        tags: ['youtube', 'intro', 'brand', 'animation'],
-        preview: 'https://images.unsplash.com/photo-1626903264858-be7b5b3e2e18?w=960&h=540&fit=crop',
-      },
-      {
-        id: 'template-4',
-        name: 'TikTok Video - Fitness Challenge',
-        width: 1080,
-        height: 1920,
-        duration: 30,
-        frameRate: 30,
-        tags: ['tiktok', 'fitness', 'challenge', 'vertical'],
-        preview: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=540&h=960&fit=crop',
-      },
-      {
-        id: 'template-5',
-        name: 'LinkedIn Post - Company Update',
-        width: 1200,
-        height: 1200,
-        duration: 20,
-        frameRate: 24,
-        tags: ['linkedin', 'corporate', 'update', 'square'],
-        preview: 'https://images.unsplash.com/photo-1553877522-43269d4ea984?w=600&h=600&fit=crop',
-      },
-    ];
-  }
-
-  /**
-   * Mock render video for demo mode
-   */
-  private async mockRenderVideo(_options: CreatomateRenderOptions): Promise<CreatomateRenderResponse> {
-    // Simulate async render initiation
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
+  private getDefaultTemplate(): CreatomateTemplate {
     return {
-      id: `render-${Date.now()}`,
-      status: 'pending',
-      createdAt: new Date().toISOString(),
+      id: this.defaultTemplateId,
+      name: 'Social Media Automation Template',
+      width: 1080,
+      height: 1920,
+      duration: 15,
+      frameRate: 30,
+      tags: ['social', 'automation'],
+      preview: 'https://via.placeholder.com/1080x1920/4f46e5/ffffff?text=Template',
+      thumbnail: 'https://via.placeholder.com/300x533/4f46e5/ffffff?text=Template',
+      description: 'Professional social media video template',
+      elements: [
+        {
+          id: 'Music',
+          name: 'Background Music',
+          type: 'audio',
+          source: 'https://creatomate.com/files/assets/b5dc815e-dcc9-4c62-9405-f94913936bf5',
+          modifiable: true,
+        },
+        {
+          id: 'Text-1',
+          name: 'Main Text',
+          type: 'text',
+          text: 'Welcome to AIrWAVE! 🚀',
+          modifiable: true,
+        },
+      ],
     };
   }
 
-  /**
-   * Mock get render status for demo mode
-   */
-  private async mockGetRenderStatus(renderId: string): Promise<CreatomateRenderResponse> {
-    // Simulate different stages based on time
-    const renderIdParts = renderId.split('-');
-    const createdAt = renderIdParts.length > 1 ? parseInt(renderIdParts[1] || '0') : 0;
-    const elapsed = Date.now() - createdAt;
-    
-    if (elapsed < 5000) {
-      return {
-        id: renderId,
-        status: 'rendering',
-        progress: Math.min(90, (elapsed / 5000) * 100),
-        createdAt: new Date(createdAt).toISOString(),
-      };
-    } else {
-      return {
-        id: renderId,
-        status: 'completed',
-        url: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
-        progress: 100,
-        createdAt: new Date(createdAt).toISOString(),
-        completedAt: new Date().toISOString(),
-      };
+  private mapCreatomateTemplate(data: any): CreatomateTemplate {
+    return {
+      id: data.id,
+      name: data.name || 'Untitled Template',
+      width: data.width || 1080,
+      height: data.height || 1920,
+      duration: data.duration || 15,
+      frameRate: data.frame_rate || 30,
+      tags: data.tags || [],
+      preview: data.preview || data.thumbnail || '',
+      thumbnail: data.thumbnail || '',
+      description: data.description || '',
+      elements: (data.elements || []).map((element: any) => ({
+        id: element.id || element.name,
+        name: element.name || element.id,
+        type: this.getElementType(element),
+        source: element.source,
+        text: element.text,
+        modifiable: element.modifiable !== false,
+      })),
+    };
+  }
+
+  private getElementType(element: any): 'text' | 'image' | 'video' | 'audio' {
+    if (element.type) return element.type;
+    if (element.text !== undefined) return 'text';
+    if (element.source) {
+      const source = element.source.toLowerCase();
+      if (source.includes('audio') || source.includes('music')) return 'audio';
+      if (source.includes('video') || source.includes('.mp4')) return 'video';
+      return 'image';
     }
-  }
-
-  /**
-   * Generate text variations
-   */
-  private generateTextVariation(baseText: string, index: number): string {
-    const variations = [
-      baseText,
-      `${baseText} - Limited Time`,
-      `Don't Miss: ${baseText}`,
-      `🔥 ${baseText} 🔥`,
-      `NEW: ${baseText}`,
-    ];
-    
-    return variations[index % variations.length] || baseText;
-  }
-
-  /**
-   * Generate color variations
-   */
-  private generateColorVariation(baseColor: string, index: number): string {
-    const variations = [
-      baseColor,
-      '#FF6B6B', // Red
-      '#4ECDC4', // Teal
-      '#45B7D1', // Blue
-      '#F7DC6F', // Yellow
-    ];
-    
-    return variations[index % variations.length] || baseColor;
+    return 'text';
   }
 }
 
-// Export singleton instance
 export const creatomateService = new CreatomateService();
-
-// Export hooks for React components
-export const useCreatomateTemplates = () => {
-  const [templates, setTemplates] = React.useState<CreatomateTemplate[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState<string | null>(null);
-
-  React.useEffect(() => {
-    const fetchTemplates = async () => {
-      try {
-        setLoading(true);
-        const data = await creatomateService.getTemplates();
-        setTemplates(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch templates');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTemplates();
-  }, []);
-
-  return { templates, loading, error };
-};
-
-export const useCreatomateRender = () => {
-  const [rendering, setRendering] = React.useState(false);
-  const [progress, setProgress] = React.useState(0);
-  const [error, setError] = React.useState<string | null>(null);
-
-  const renderVideo = async (options: CreatomateRenderOptions): Promise<CreatomateRenderResponse> => {
-    try {
-      setRendering(true);
-      setError(null);
-      setProgress(0);
-
-      // Start render
-      const render = await creatomateService.renderVideo(options);
-
-      // Poll for status
-      return new Promise((resolve, reject) => {
-        const pollInterval = setInterval(async () => {
-          try {
-            const status = await creatomateService.getRenderStatus(render.id);
-            
-            if (status.progress) {
-              setProgress(status.progress);
-            }
-
-            if (status.status === 'completed') {
-              clearInterval(pollInterval);
-              setRendering(false);
-              resolve(status);
-            } else if (status.status === 'failed') {
-              clearInterval(pollInterval);
-              const errorMessage = status.error || 'Render failed';
-              setError(errorMessage);
-              setRendering(false);
-              reject(new Error(errorMessage));
-            }
-          } catch (err) {
-            clearInterval(pollInterval);
-            const errorMessage = err instanceof Error ? err.message : 'Failed to check render status';
-            setError(errorMessage);
-            setRendering(false);
-            reject(new Error(errorMessage));
-          }
-        }, 2000);
-      });
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to start render';
-      setError(errorMessage);
-      setRendering(false);
-      throw new Error(errorMessage);
-    }
-  };
-
-  return { renderVideo, rendering, progress, error };
-};
