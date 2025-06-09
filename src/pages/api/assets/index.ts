@@ -8,7 +8,7 @@ export interface Asset {
   id: string;
   name: string;
   type: 'image' | 'video' | 'text' | 'voice';
-  url: string;
+  url: string; // This will be mapped from file_url
   thumbnailUrl?: string;
   description?: string;
   tags: string[];
@@ -29,70 +29,117 @@ type ResponseData = {
   message?: string;
   assets?: Asset[];
   asset?: Asset;
+  total?: number;
+  page?: number;
+  limit?: number;
 };
+
+// Map database row to Asset interface (fixing schema mismatch)
+function mapDatabaseRowToAsset(row: any): Asset {
+  return {
+    id: row.id,
+    name: row.name,
+    type: row.type,
+    url: row.file_url, // Map file_url to url for frontend
+    thumbnailUrl: row.thumbnail_url,
+    description: row.description,
+    tags: Array.isArray(row.tags) ? row.tags : [],
+    dateCreated: row.created_at,
+    clientId: row.client_id,
+    userId: row.created_by,
+    favorite: row.is_favorite || false,
+    metadata: row.metadata || {},
+    size: row.file_size,
+    mimeType: row.mime_type,
+    duration: row.duration,
+    width: row.dimensions?.width,
+    height: row.dimensions?.height,
+  };
+}
 
 async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ): Promise<void> {
-  const { method } = req;
-  const user = (req as any).user;
-  const { clientId } = req.query;
-
-  console.log('Assets API called:', method, 'User:', user?.id, 'Client:', clientId);
-
   try {
+    const user = (req as any).user;
+    const userId = user?.id;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required'
+      });
+    }
 
     switch (req.method) {
       case 'GET':
-        return await getAssets(req, res, user.id, clientId as string | undefined);
+        return await getAssets(req, res, userId);
       case 'POST':
-        return await createAsset(req, res, user.id);
+        return await createAsset(req, res, userId);
       case 'PUT':
-        return await updateAsset(req, res, user.id);
+        return await updateAsset(req, res, userId);
       case 'DELETE':
-        return await deleteAsset(req, res, user.id);
+        return await deleteAsset(req, res, userId);
       default:
-        return res.status(405).json({ success: false, message: 'Method not allowed' });
+        return res.status(405).json({
+          success: false,
+          message: 'Method not allowed'
+        });
     }
   } catch (error) {
     const message = getErrorMessage(error);
-    console.error('API error:', error);
+    console.error('Assets API error:', error);
     return res.status(500).json({
       success: false,
-      message: error instanceof Error ? error.message : 'Internal server error'
+      message: 'Internal server error'
     });
   }
 }
 
-// GET - Retrieve assets for a user, optionally filtered by client
+// GET - Fetch assets with proper schema mapping
 async function getAssets(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>,
-  userId: string,
-  clientId?: string
+  userId: string
 ): Promise<void> {
   try {
-    console.log('Assets API called - GET, User:', userId, 'Client:', clientId);
-    
-    // Extract query parameters for search and filtering
     const {
-      search,
-      type,
-      tags,
-      dateFrom,
-      dateTo,
+      page = '1',
+      limit = '20',
+      search = '',
+      type = '',
+      clientId = '',
       sortBy = 'created_at',
-      sortOrder = 'desc',
-      limit = 50,
-      offset = 0
+      sortOrder = 'desc'
     } = req.query;
 
-    // Build query
+    const pageNum = parseInt(page as string, 10);
+    const limitNum = parseInt(limit as string, 10);
+    const offset = (pageNum - 1) * limitNum;
+
+    // Build query with proper field selection
     let query = supabase
       .from('assets')
-      .select('*');
-    
+      .select(`
+        id,
+        name,
+        type,
+        file_url,
+        thumbnail_url,
+        description,
+        tags,
+        client_id,
+        created_by,
+        metadata,
+        file_size,
+        mime_type,
+        duration,
+        dimensions,
+        created_at,
+        updated_at
+      `, { count: 'exact' });
+
     // Filter by client if provided
     if (clientId) {
       query = query.eq('client_id', clientId);
@@ -102,132 +149,86 @@ async function getAssets(
         .from('user_clients')
         .select('client_id')
         .eq('user_id', userId);
-      
-      const clientIds = userClients?.map(uc => uc.client_id) || [];
-      if (clientIds.length > 0) {
+
+      if (userClients && userClients.length > 0) {
+        const clientIds = userClients.map(uc => uc.client_id);
         query = query.in('client_id', clientIds);
       } else {
-        // User has no client access
+        // User has no clients, return empty result
         return res.status(200).json({
           success: true,
           assets: [],
+          total: 0,
+          page: pageNum,
+          limit: limitNum
         });
       }
     }
 
-    // Apply search filter
-    if (search && typeof search === 'string') {
-      query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%`);
+    // Apply filters
+    if (search) {
+      query = query.ilike('name', `%${search}%`);
     }
 
-    // Apply type filter
-    if (type && typeof type === 'string') {
+    if (type) {
       query = query.eq('type', type);
     }
 
-    // Apply tags filter
-    if (tags && typeof tags === 'string') {
-      const tagArray = tags.split(',').map(tag => tag.trim());
-      query = query.overlaps('tags', tagArray);
-    }
-
-    // Apply date range filters
-    if (dateFrom && typeof dateFrom === 'string') {
-      query = query.gte('created_at', dateFrom);
-    }
-    if (dateTo && typeof dateTo === 'string') {
-      query = query.lte('created_at', dateTo);
-    }
-
     // Apply sorting
-    const validSortFields = ['created_at', 'name', 'type', 'size_bytes'];
-    const sortField = validSortFields.includes(sortBy as string) ? sortBy as string : 'created_at';
     const ascending = sortOrder === 'asc';
-    query = query.order(sortField, { ascending });
+    query = query.order(sortBy as string, { ascending });
 
     // Apply pagination
-    const limitNum = Math.min(Number(limit) || 50, 100); // Max 100 items
-    const offsetNum = Number(offset) || 0;
-    query = query.range(offsetNum, offsetNum + limitNum - 1);
-    
-    const { data: assets, error } = await query;
-    
+    query = query.range(offset, offset + limitNum - 1);
+
+    const { data, error, count } = await query;
+
     if (error) {
-      console.error('Error fetching assets:', error);
-      throw error;
+      console.error('Database error fetching assets:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to fetch assets'
+      });
     }
-    
-    console.log(`Fetched ${assets?.length || 0} assets from database`);
-    
-    // Transform assets to match expected format
-    const transformedAssets = assets?.map(asset => ({
-      id: asset.id,
-      name: asset.name,
-      type: asset.type as 'image' | 'video' | 'text' | 'voice',
-      url: asset.url,
-      thumbnailUrl: asset.thumbnail_url || undefined,
-      description: asset.description || undefined,
-      tags: asset.tags || [],
-      dateCreated: asset.created_at?.split('T')[0] || new Date().toISOString().split('T')[0],
-      clientId: asset.client_id,
-      userId: asset.created_by || userId,
-      favorite: asset.metadata?.favorite || false,
-      metadata: asset.metadata,
-      size: asset.size_bytes || undefined,
-      mimeType: asset.mime_type || undefined,
-      duration: asset.duration_seconds || undefined,
-      width: asset.width || undefined,
-      height: asset.height || undefined,
-    })) || [];
-    
+
+    // Map database rows to Asset interface
+    const assets = (data || []).map(mapDatabaseRowToAsset);
+
     return res.status(200).json({
       success: true,
-      assets: transformedAssets,
-      pagination: {
-        limit: limitNum,
-        offset: offsetNum,
-        total: assets?.length || 0,
-        hasMore: (assets?.length || 0) === limitNum
-      },
-      filters: {
-        search: search || null,
-        type: type || null,
-        tags: tags || null,
-        dateFrom: dateFrom || null,
-        dateTo: dateTo || null,
-        sortBy: sortField,
-        sortOrder: ascending ? 'asc' : 'desc'
-      }
+      assets,
+      total: count || 0,
+      page: pageNum,
+      limit: limitNum
     });
+
   } catch (error) {
     const message = getErrorMessage(error);
-    console.error('Error fetching assets:', error);
+    console.error('Get assets error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to fetch assets: ' + message
+      message: 'Failed to fetch assets'
     });
   }
 }
 
-// POST - Create a new asset
+// POST - Create a new asset with proper field mapping
 async function createAsset(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>,
   userId: string
 ): Promise<void> {
   try {
-    console.log('Create asset called for user:', userId);
-    
     const { 
       name, type, url, thumbnailUrl, description, tags, clientId,
       metadata, size, mimeType, duration, width, height 
     } = req.body;
 
-    // Basic validation
-    if (!name || !type || !url || !clientId) {
+    // Validate required fields
+    if (!name || !type || !url) {
       return res.status(400).json({ 
         success: false, 
-        message: 'Name, type, URL, and client ID are required' 
+        message: 'Name, type, and URL are required' 
       });
     }
 
@@ -239,66 +240,70 @@ async function createAsset(
       });
     }
 
-    // Create new asset in database
-    const { data: newAsset, error } = await supabase
+    // Prepare data for database (map to correct field names)
+    const assetData = {
+      name,
+      type,
+      file_url: url, // Map url to file_url for database
+      thumbnail_url: thumbnailUrl,
+      description,
+      tags: Array.isArray(tags) ? tags : [],
+      client_id: clientId,
+      created_by: userId,
+      metadata: metadata || {},
+      file_size: size,
+      mime_type: mimeType,
+      duration,
+      dimensions: width && height ? { width, height } : null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+
+    const { data, error } = await supabase
       .from('assets')
-      .insert({
+      .insert(assetData)
+      .select(`
+        id,
         name,
         type,
-        url,
-        thumbnail_url: thumbnailUrl || null,
-        description: description || null,
-        tags: tags || [],
-        client_id: clientId,
-        created_by: userId,
-        metadata: { ...metadata, favorite: false },
-        size_bytes: size || null,
-        mime_type: mimeType || null,
-        duration_seconds: duration || null,
-        width: width || null,
-        height: height || null,
-      })
-      .select()
+        file_url,
+        thumbnail_url,
+        description,
+        tags,
+        client_id,
+        created_by,
+        metadata,
+        file_size,
+        mime_type,
+        duration,
+        dimensions,
+        created_at
+      `)
       .single();
 
     if (error) {
-      console.error('Error creating asset:', error);
-      throw error;
+      console.error('Database error creating asset:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to create asset'
+      });
     }
 
-    console.log('Asset created in database:', newAsset.id);
-
-    // Transform response
-    const transformedAsset: Asset = {
-      id: newAsset.id,
-      name: newAsset.name,
-      type: newAsset.type,
-      url: newAsset.url,
-      thumbnailUrl: newAsset.thumbnail_url || undefined,
-      description: newAsset.description || undefined,
-      tags: newAsset.tags || [],
-      dateCreated: newAsset.created_at.split('T')[0],
-      clientId: newAsset.client_id,
-      userId: newAsset.created_by,
-      favorite: false,
-      metadata: newAsset.metadata,
-      size: newAsset.size_bytes || undefined,
-      mimeType: newAsset.mime_type || undefined,
-      duration: newAsset.duration_seconds || undefined,
-      width: newAsset.width || undefined,
-      height: newAsset.height || undefined,
-    };
+    // Map database row to Asset interface
+    const asset = mapDatabaseRowToAsset(data);
 
     return res.status(201).json({
       success: true,
-      asset: transformedAsset,
+      message: 'Asset created successfully',
+      asset
     });
+
   } catch (error) {
     const message = getErrorMessage(error);
-    console.error('Error creating asset:', error);
+    console.error('Create asset error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to create asset: ' + message
+      message: 'Failed to create asset'
     });
   }
 }
@@ -310,8 +315,6 @@ async function updateAsset(
   userId: string
 ): Promise<void> {
   try {
-    console.log('Update asset called for user:', userId);
-    
     const { id } = req.query;
     const updates = req.body;
 
@@ -322,72 +325,74 @@ async function updateAsset(
       });
     }
 
-    // Get the asset to check access
-    const { data: asset, error: fetchError } = await supabase
+    // Map frontend fields to database fields
+    const dbUpdates: any = {
+      updated_at: new Date().toISOString()
+    };
+
+    if (updates.name) dbUpdates.name = updates.name;
+    if (updates.type) dbUpdates.type = updates.type;
+    if (updates.url) dbUpdates.file_url = updates.url; // Map url to file_url
+    if (updates.thumbnailUrl) dbUpdates.thumbnail_url = updates.thumbnailUrl;
+    if (updates.description !== undefined) dbUpdates.description = updates.description;
+    if (updates.tags) dbUpdates.tags = Array.isArray(updates.tags) ? updates.tags : [];
+    if (updates.metadata) dbUpdates.metadata = updates.metadata;
+
+    const { data, error } = await supabase
       .from('assets')
-      .select('client_id')
+      .update(dbUpdates)
       .eq('id', id)
+      .eq('created_by', userId) // Ensure user owns the asset
+      .select(`
+        id,
+        name,
+        type,
+        file_url,
+        thumbnail_url,
+        description,
+        tags,
+        client_id,
+        created_by,
+        metadata,
+        file_size,
+        mime_type,
+        duration,
+        dimensions,
+        created_at,
+        updated_at
+      `)
       .single();
 
-    if (fetchError || !asset) {
-      return res.status(404).json({
+    if (error) {
+      console.error('Database error updating asset:', error);
+      return res.status(500).json({
         success: false,
-        message: 'Asset not found'
+        message: 'Failed to update asset'
       });
     }
 
-    // Update the asset
-    const { data: updatedAsset, error: updateError } = await supabase
-      .from('assets')
-      .update({
-        name: updates.name,
-        description: updates.description,
-        tags: updates.tags,
-        metadata: updates.metadata,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (updateError) {
-      console.error('Error updating asset:', updateError);
-      throw updateError;
+    if (!data) {
+      return res.status(404).json({
+        success: false,
+        message: 'Asset not found or access denied'
+      });
     }
 
-    console.log('Asset updated in database:', updatedAsset.id);
-
-    // Transform response
-    const transformedAsset: Asset = {
-      id: updatedAsset.id,
-      name: updatedAsset.name,
-      type: updatedAsset.type,
-      url: updatedAsset.url,
-      thumbnailUrl: updatedAsset.thumbnail_url || undefined,
-      description: updatedAsset.description || undefined,
-      tags: updatedAsset.tags || [],
-      dateCreated: updatedAsset.created_at.split('T')[0],
-      clientId: updatedAsset.client_id,
-      userId: updatedAsset.created_by,
-      favorite: updatedAsset.metadata?.favorite || false,
-      metadata: updatedAsset.metadata,
-      size: updatedAsset.size_bytes || undefined,
-      mimeType: updatedAsset.mime_type || undefined,
-      duration: updatedAsset.duration_seconds || undefined,
-      width: updatedAsset.width || undefined,
-      height: updatedAsset.height || undefined,
-    };
+    // Map database row to Asset interface
+    const asset = mapDatabaseRowToAsset(data);
 
     return res.status(200).json({
       success: true,
-      asset: transformedAsset,
+      message: 'Asset updated successfully',
+      asset
     });
+
   } catch (error) {
     const message = getErrorMessage(error);
-    console.error('Error updating asset:', error);
+    console.error('Update asset error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to update asset: ' + message
+      message: 'Failed to update asset'
     });
   }
 }
@@ -399,8 +404,6 @@ async function deleteAsset(
   userId: string
 ): Promise<void> {
   try {
-    console.log('Delete asset called for user:', userId);
-    
     const { id } = req.query;
 
     if (!id) {
@@ -410,45 +413,49 @@ async function deleteAsset(
       });
     }
 
-    // Get the asset to check access
+    // Get the asset to check ownership
     const { data: asset, error: fetchError } = await supabase
       .from('assets')
-      .select('client_id')
+      .select('id, file_url, created_by, metadata')
       .eq('id', id)
+      .eq('created_by', userId)
       .single();
 
     if (fetchError || !asset) {
       return res.status(404).json({
         success: false,
-        message: 'Asset not found'
+        message: 'Asset not found or access denied'
       });
     }
 
-    // Delete the asset
+    // Delete from database
     const { error: deleteError } = await supabase
       .from('assets')
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .eq('created_by', userId);
 
     if (deleteError) {
-      console.error('Error deleting asset:', deleteError);
-      throw deleteError;
+      console.error('Database error deleting asset:', deleteError);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to delete asset'
+      });
     }
-
-    console.log('Asset deleted from database:', id);
 
     return res.status(200).json({
       success: true,
       message: 'Asset deleted successfully'
     });
+
   } catch (error) {
     const message = getErrorMessage(error);
-    console.error('Error deleting asset:', error);
+    console.error('Delete asset error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to delete asset: ' + message
+      message: 'Failed to delete asset'
     });
   }
 }
 
-export default withAuth(withSecurityHeaders(handler));
+export default withSecurityHeaders(withAuth(handler));
