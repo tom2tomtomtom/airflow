@@ -1,10 +1,10 @@
-import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase/client';
 import formidable from 'formidable';
 import fs from 'fs';
 import path from 'path';
+import { withAuth } from '@/middleware/withAuth';
+import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 
 export const config = {
   api: {
@@ -14,19 +14,12 @@ export const config = {
 
 interface UploadResponse {
   success: boolean;
-  assets?: Array<{
-    id: string;
-    name: string;
-    type: string;
-    size: number;
-    url: string;
-    storage_path: string;
-  }>;
+  assets?: any[];
   error?: string;
   message?: string;
 }
 
-export default async function handler(
+async function handler(
   req: NextApiRequest,
   res: NextApiResponse<UploadResponse>
 ): Promise<void> {
@@ -35,138 +28,236 @@ export default async function handler(
   }
 
   try {
-    // Get user from headers (set by middleware)
-    const userId = req.headers['x-user-id'] as string;
-    const clientId = req.headers['x-client-id'] as string;
-    
+    const user = (req as any).user;
+    const userId = user?.id;
+    const clientId = req.headers['x-client-id'] as string || req.query.clientId as string;
+
     if (!userId) {
       return res.status(401).json({ success: false, error: 'Authentication required' });
     }
 
-    // Parse the multipart form data
+    console.log(`📤 File upload initiated by user: ${user.email}`);
+
+    // Parse the multipart form data with enhanced error handling
     const form = formidable({
       maxFileSize: 100 * 1024 * 1024, // 100MB
       maxFiles: 10,
+      keepExtensions: true,
+      multiples: true,
     });
 
-    const [fields, files] = await form.parse(req);
-    const fileArray = Array.isArray(files.files) ? files.files : [files.files].filter(Boolean);
+    let fields: any;
+    let files: any;
+
+    try {
+      [fields, files] = await form.parse(req);
+      console.log('📋 Form parsed successfully');
+    } catch (parseError) {
+      console.error('❌ Form parsing error:', parseError);
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Failed to parse upload data' 
+      });
+    }
+
+    // Handle both single and multiple files
+    const fileArray = files.files ? (Array.isArray(files.files) ? files.files : [files.files]) : [];
     
-    if (!fileArray.length) {
+    if (!fileArray.length || fileArray.every(f => !f)) {
       return res.status(400).json({ success: false, error: 'No files provided' });
     }
 
-    const uploadedAssets = [];
+    console.log(`📁 Processing ${fileArray.length} files`);
 
-    for (const file of fileArray) {
-      if (!file) continue;
+    const uploadedAssets = [];
+    const errors = [];
+
+    for (const [index, file] of fileArray.entries()) {
+      if (!file || !file.filepath) {
+        errors.push(`File ${index + 1}: Invalid file data`);
+        continue;
+      }
 
       try {
+        console.log(`🔄 Processing file ${index + 1}: ${file.originalFilename}`);
+
+        // Validate file
+        if (!file.originalFilename) {
+          errors.push(`File ${index + 1}: File must have a name`);
+          continue;
+        }
+
         // Read file content
         const fileContent = fs.readFileSync(file.filepath);
+        console.log(`�� File read: ${fileContent.length} bytes`);
         
         // Generate unique filename
         const timestamp = Date.now();
         const randomId = Math.random().toString(36).substring(7);
-        const ext = path.extname(file.originalFilename || '');
+        const ext = path.extname(file.originalFilename);
         const filename = `${timestamp}_${randomId}${ext}`;
         const storagePath = `${userId}/${filename}`;
+
+        // Determine asset type from MIME type
+        const mimeType = file.mimetype || 'application/octet-stream';
+        let assetType = 'text'; // default
+        
+        if (mimeType.startsWith('image/')) {
+          assetType = 'image';
+        } else if (mimeType.startsWith('video/')) {
+          assetType = 'video';
+        } else if (mimeType.startsWith('audio/')) {
+          assetType = 'voice';
+        }
+
+        console.log(`🏷️ Asset type determined: ${assetType} (${mimeType})`);
 
         // Upload to Supabase Storage
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from('assets')
           .upload(storagePath, fileContent, {
-            contentType: file.mimetype || 'application/octet-stream',
+            contentType: mimeType,
             cacheControl: '3600',
             upsert: false
           });
 
         if (uploadError) {
-          console.error('Storage upload error:', uploadError);
+          console.error('❌ Storage upload error:', uploadError);
+          errors.push(`${file.originalFilename}: Upload failed - ${uploadError.message}`);
           continue;
         }
+
+        console.log('✅ File uploaded to storage:', storagePath);
 
         // Get public URL
         const { data: urlData } = supabase.storage
           .from('assets')
           .getPublicUrl(storagePath);
 
-        // Determine asset type
-        let assetType = 'other';
-        if (file.mimetype?.startsWith('image/')) assetType = 'image';
-        else if (file.mimetype?.startsWith('video/')) assetType = 'video';
-        else if (file.mimetype?.startsWith('audio/')) assetType = 'audio';
-        else if (file.mimetype?.includes('text')) assetType = 'text';
-
-        // Save asset metadata to database
-        const { data: assetData, error: dbError } = await supabase
-          .from('assets')
-          .insert({
-            name: file.originalFilename || filename,
-            type: assetType,
-            mime_type: file.mimetype || 'application/octet-stream',
-            file_size: file.size,
-            file_url: urlData.publicUrl,
-            client_id: clientId || null,
-            created_by: userId,
-            metadata: {
-              original_filename: file.originalFilename,
-              uploaded_at: new Date().toISOString(),
-              storage_path: storagePath
-            }
-          })
-          .select()
-          .single();
-
-        if (dbError) {
-          console.error('Database error:', dbError);
-          // Try to clean up uploaded file
+        if (!urlData.publicUrl) {
+          errors.push(`${file.originalFilename}: Failed to get public URL`);
           await supabase.storage.from('assets').remove([storagePath]);
           continue;
         }
 
-        uploadedAssets.push({
-          id: assetData.id,
-          name: assetData.name,
-          type: assetData.type,
-          size: assetData.file_size,
-          url: assetData.file_url,
-          storage_path: storagePath,
-        });
+        console.log('🔗 Public URL generated:', urlData.publicUrl);
 
-      } catch (error) {
-    const message = getErrorMessage(error);
-        console.error('Error processing file:', file.originalFilename, error);
-        continue;
+        // Save asset metadata to database with proper field mapping
+        const assetData = {
+          name: file.originalFilename,
+          type: assetType,
+          file_url: urlData.publicUrl, // Use file_url to match database schema
+          mime_type: mimeType,
+          file_size: file.size,
+          client_id: clientId || null,
+          created_by: userId,
+          metadata: {
+            original_filename: file.originalFilename,
+            uploaded_at: new Date().toISOString(),
+            storage_path: storagePath,
+            upload_method: 'web_interface',
+          },
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+
+        const { data: assetRecord, error: dbError } = await supabase
+          .from('assets')
+          .insert(assetData)
+          .select(`
+            id,
+            name,
+            type,
+            file_url,
+            thumbnail_url,
+            description,
+            tags,
+            client_id,
+            created_by,
+            metadata,
+            file_size,
+            mime_type,
+            duration,
+            dimensions,
+            created_at
+          `)
+          .single();
+
+        if (dbError) {
+          console.error('❌ Database error:', dbError);
+          errors.push(`${file.originalFilename}: Database save failed - ${dbError.message}`);
+          await supabase.storage.from('assets').remove([storagePath]);
+          continue;
+        }
+
+        console.log('✅ Asset saved to database:', assetRecord.id);
+
+        // Map database record to frontend format
+        const asset = {
+          id: assetRecord.id,
+          name: assetRecord.name,
+          type: assetRecord.type,
+          url: assetRecord.file_url, // Map file_url to url for frontend
+          thumbnailUrl: assetRecord.thumbnail_url,
+          description: assetRecord.description,
+          tags: assetRecord.tags || [],
+          dateCreated: assetRecord.created_at,
+          clientId: assetRecord.client_id,
+          userId: assetRecord.created_by,
+          metadata: assetRecord.metadata,
+          size: assetRecord.file_size,
+          mimeType: assetRecord.mime_type,
+          duration: assetRecord.duration,
+          width: assetRecord.dimensions?.width,
+          height: assetRecord.dimensions?.height,
+        };
+
+        uploadedAssets.push(asset);
+        console.log(`✅ File ${index + 1} processed successfully`);
+
+      } catch (fileError) {
+        console.error(`❌ File processing error for ${file.originalFilename}:`, fileError);
+        errors.push(`${file.originalFilename}: Processing failed - ${fileError.message}`);
       } finally {
         // Clean up temporary file
         try {
-          fs.unlinkSync(file.filepath);
+          if (file.filepath && fs.existsSync(file.filepath)) {
+            fs.unlinkSync(file.filepath);
+          }
         } catch (cleanupError) {
-          console.warn('Failed to cleanup temp file:', cleanupError);
+          console.warn('⚠️ Failed to clean up temp file:', cleanupError);
         }
       }
     }
 
+    // Return results
     if (uploadedAssets.length === 0) {
-      return res.status(500).json({ 
-        success: false, 
-        error: 'Failed to upload any files' 
+      return res.status(400).json({
+        success: false,
+        error: 'No files were uploaded successfully',
+        message: errors.join('; ')
       });
     }
 
-    return res.status(200).json({
+    const response: UploadResponse = {
       success: true,
-      assets: uploadedAssets,
-      message: `Successfully uploaded ${uploadedAssets.length} file(s)`
-    });
+      assets: uploadedAssets
+    };
+
+    if (errors.length > 0) {
+      response.message = `Some files failed to upload: ${errors.join('; ')}`;
+    }
+
+    console.log(`✅ Upload complete: ${uploadedAssets.length} files uploaded successfully`);
+    return res.status(200).json(response);
 
   } catch (error) {
-    const message = getErrorMessage(error);
-    console.error('Upload API error:', error);
+    console.error('❌ Upload handler error:', error);
     return res.status(500).json({
       success: false,
-      error: 'Internal server error'
+      error: 'Internal server error during upload'
     });
   }
 }
+
+export default withSecurityHeaders(withAuth(handler));
