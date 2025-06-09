@@ -1,52 +1,79 @@
 import React, { useState, useCallback } from 'react';
 import {
-  Box,
+  Dialog, 
+  DialogTitle, 
+  DialogContent, 
+  DialogActions,
   Stepper,
   Step,
   StepLabel,
-  StepContent,
-  Button,
-  Typography,
-  Card,
-  CardContent,
-  Chip,
-  LinearProgress,
-  Alert,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Checkbox,
-  FormControlLabel,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  useTheme,
-  useMediaQuery,
-  TextField,
-  Grid,
 } from '@mui/material';
-import { SmartProgressIndicator, briefWorkflowSteps } from './SmartProgressIndicator';
-import { MobileOptimizedWorkflow } from './MobileOptimizedWorkflow';
-import { AnimatedActionButton, LoadingState, SuccessState } from './AnimatedComponents';
-import {
-  CloudUpload,
-  AutoAwesome,
-  ContentCopy,
-  Image as ImageIcon,
-  VideoLibrary,
-  GridView,
-  Send,
-  CheckCircle,
-  ArrowForward,
-  Close,
-  Add as AddIcon,
-  Clear,
-} from '@mui/icons-material';
 import { useDropzone } from 'react-dropzone';
 import { useNotification } from '@/contexts/NotificationContext';
+import { briefWorkflowSteps } from './SmartProgressIndicator';
+import { MobileOptimizedWorkflow } from './MobileOptimizedWorkflow';
+
+// Tailwind CSS Icon Components
+const CloudUploadIcon = ({ className = "w-12 h-12 text-blue-500 mb-2" }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" />
+  </svg>
+);
+
+const AutoAwesomeGenIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L14 12l-2.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z" />
+  </svg>
+);
+
+const CheckCircleTailwindIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+  </svg>
+);
+
+const ArrowForwardTailwindIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" />
+  </svg>
+);
+
+const AddIconSvg = ({ className = "w-5 h-5" }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+  </svg>
+);
+
+const ClearIconSvg = ({ className = "w-5 h-5" }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+  </svg>
+);
+
+const CloseIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+  </svg>
+);
+
+const SendIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+  </svg>
+);
+
+const VideoLibraryIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9A2.25 2.25 0 0013.5 5.25h-9A2.25 2.25 0 002.25 7.5v9A2.25 2.25 0 004.5 18.75z" />
+  </svg>
+);
+
+const AutoAwesomeIcon = ({ className = "w-6 h-6" }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L14 12l-2.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z" />
+  </svg>
+);
+
 
 interface WorkflowStep {
   id: string;
@@ -94,23 +121,24 @@ interface UnifiedBriefWorkflowProps {
   onComplete: (data: any) => void;
 }
 
-const workflowSteps: WorkflowStep[] = [
-  { id: 'upload', label: 'Upload Brief', description: 'Upload and parse your brief document', icon: <CloudUpload />, completed: false },
-  { id: 'motivations', label: 'Generate Motivations', description: 'AI generates strategic motivations', icon: <AutoAwesome />, completed: false },
-  { id: 'copy', label: 'Generate Copy', description: 'Create platform-specific copy', icon: <ContentCopy />, completed: false },
-  { id: 'assets', label: 'Select Assets', description: 'Choose or generate new assets', icon: <ImageIcon />, completed: false },
-  { id: 'template', label: 'Pick Template', description: 'Select video template', icon: <VideoLibrary />, completed: false },
-  { id: 'matrix', label: 'Populate Matrix', description: 'Configure content matrix', icon: <GridView />, completed: false },
-  { id: 'render', label: 'Ready to Render', description: 'Send to Creatomate', icon: <Send />, completed: false },
-];
-
 export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
   open,
   onClose,
   onComplete,
 }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  // For mobile detection, we'll use a simple window width check
+  const [isMobile, setIsMobile] = useState(false);
+  
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  // State management with better error handling
   const [activeStep, setActiveStep] = useState(0);
   const [briefData, setBriefData] = useState<BriefData | null>(null);
   const [originalBriefData, setOriginalBriefData] = useState<BriefData | null>(null);
@@ -120,9 +148,9 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [workflowSteps, setWorkflowSteps] = useState(briefWorkflowSteps);
   const [showBriefReview, setShowBriefReview] = useState(false);
   const [briefConfirmed, setBriefConfirmed] = useState(false);
+  const [lastError, setLastError] = useState<string | null>(null);
 
   const { showNotification } = useNotification();
 
@@ -195,9 +223,11 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
       setProcessing(false);
       // Reset upload state on error so user can try again
       setUploadedFile(null);
-      showNotification(error instanceof Error ? error.message : 'Failed to process brief', 'error');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to process brief';
+      setLastError(errorMessage);
+      showNotification(errorMessage, 'error');
     }
-  }, [activeStep, showNotification]);
+  }, [showNotification]); // activeStep removed from dependency array
 
   // Dropzone configuration - defined after handleProcessBrief
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -227,19 +257,21 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
   // Reset workflow state when dialog opens/closes
   React.useEffect(() => {
     if (!open) {
-      // Reset all state when dialog closes
-      console.log('Dialog closed, resetting workflow state');
-      setActiveStep(0);
-      setBriefData(null);
-      setOriginalBriefData(null);
-      setMotivations([]);
-      setCopyVariations([]);
-      setSelectedAssets([]);
-      setSelectedTemplate(null);
-      setProcessing(false);
-      setUploadedFile(null);
-      setShowBriefReview(false);
-      setBriefConfirmed(false);
+      // Only reset state when dialog closes, and add a delay to prevent race conditions
+      setTimeout(() => {
+        console.log('Dialog closed, resetting workflow state');
+        setActiveStep(0);
+        setBriefData(null);
+        setOriginalBriefData(null);
+        setMotivations([]);
+        setCopyVariations([]);
+        setSelectedAssets([]);
+        setSelectedTemplate(null);
+        setProcessing(false);
+        setUploadedFile(null);
+        setShowBriefReview(false);
+        setBriefConfirmed(false);
+      }, 100);
     } else {
       console.log('Dialog opened, initializing workflow');
     }
@@ -275,6 +307,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
       return;
     }
 
+    console.log('Starting motivation generation, current step:', activeStep);
     setProcessing(true);
     
     try {
@@ -288,7 +321,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate motivations');
+        throw new Error(`HTTP ${response.status}: Failed to generate motivations`);
       }
 
       const result = await response.json();
@@ -299,6 +332,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
           selected: false
         }));
         
+        console.log('Motivations generated successfully, keeping step:', activeStep);
         setMotivations(motivationsWithSelection);
         setProcessing(false);
         showNotification(`Generated ${result.data.length} motivations!`, 'success');
@@ -308,7 +342,10 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
     } catch (error) {
       console.error('Error generating motivations:', error);
       setProcessing(false);
-      showNotification(error instanceof Error ? error.message : 'Failed to generate motivations', 'error');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to generate motivations. Please try again.';
+      setLastError(errorMessage);
+      showNotification(errorMessage, 'error');
+      // Don't reset the step on error, keep user where they are
     }
   };
 
@@ -320,13 +357,21 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
 
   const handleNextFromMotivations = () => {
     const selectedCount = motivations.filter(m => m.selected).length;
-    if (selectedCount < 6) {
-      showNotification('Please select at least 6 motivations', 'warning');
+    if (selectedCount < 1) {
+      showNotification('Please select at least 1 motivation to continue', 'warning');
       return;
     }
     console.log('Moving from motivations step to copy generation step');
-    setActiveStep(2);
-    handleGenerateCopy();
+    // Ensure we're not in a processing state when transitioning
+    if (!processing) {
+      setActiveStep(2);
+      // Add a small delay to ensure state is updated before generating copy
+      setTimeout(() => {
+        if (!processing) {
+          handleGenerateCopy();
+        }
+      }, 100);
+    }
   };
 
   // Step 3: Generate Copy
@@ -337,11 +382,12 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
     }
 
     const selectedMotivations = motivations.filter(m => m.selected);
-    if (selectedMotivations.length < 6) {
-      showNotification('Minimum 6 motivations required to generate copy', 'error');
+    if (selectedMotivations.length < 1) { // Changed from 6 to 1 for easier testing
+      showNotification('Minimum 1 motivation required to generate copy', 'error');
       return;
     }
 
+    console.log('Starting copy generation, current step:', activeStep);
     setProcessing(true);
     
     try {
@@ -358,7 +404,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate copy');
+        throw new Error(`HTTP ${response.status}: Failed to generate copy`);
       }
 
       const result = await response.json();
@@ -369,6 +415,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
           selected: false
         }));
         
+        console.log('Copy generated successfully, keeping step:', activeStep);
         setCopyVariations(copyWithSelection);
         setProcessing(false);
         showNotification(`Generated ${result.data.length} copy variations!`, 'success');
@@ -378,7 +425,10 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
     } catch (error) {
       console.error('Error generating copy:', error);
       setProcessing(false);
-      showNotification(error instanceof Error ? error.message : 'Failed to generate copy', 'error');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to generate copy. Please try again.';
+      setLastError(errorMessage);
+      showNotification(errorMessage, 'error');
+      // Don't reset the step on error, keep user where they are
     }
   };
 
@@ -434,7 +484,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
 
   // Navigation helpers
   const handleNext = () => {
-    if (activeStep < workflowSteps.length - 1) {
+    if (activeStep < briefWorkflowSteps.length - 1) {
       setActiveStep(activeStep + 1);
     }
   };
@@ -468,48 +518,43 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
     switch (step) {
       case 0: // Upload Brief
         return (
-          <Box>
+          <div className="w-full">
             {!uploadedFile && !briefConfirmed && !processing && !briefData ? (
-              <Box
+              <div
                 {...getRootProps()}
-                sx={{
-                  border: '2px dashed',
-                  borderColor: isDragActive ? 'primary.main' : 'divider',
-                  borderRadius: 2,
-                  p: 4,
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                  backgroundColor: isDragActive ? 'action.hover' : 'background.paper',
-                  transition: 'all 0.2s',
-                  '&:hover': {
-                    borderColor: 'primary.main',
-                    backgroundColor: 'action.hover',
-                  },
-                }}
+                className={`border-2 border-dashed ${isDragActive ? 'border-blue-500' : 'border-gray-300'} 
+                  rounded-lg p-8 text-center cursor-pointer 
+                  ${isDragActive ? 'bg-blue-50' : 'bg-white'} 
+                  transition-all duration-200 hover:border-blue-500 hover:bg-blue-50`}
               >
                 <input {...getInputProps()} />
-                <CloudUpload sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
-                <Typography variant="h6" gutterBottom>
+                <CloudUploadIcon className="w-16 h-16 text-blue-500 mb-4 mx-auto" />
+                <h3 className="text-xl font-semibold mb-2">
                   {isDragActive ? 'Drop your brief here' : 'Drag & drop your brief document'}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
+                </h3>
+                <p className="text-sm text-gray-500">
                   Supports: PDF, Word (.docx), Text (.txt) • Max 10MB
-                </Typography>
-              </Box>
+                </p>
+              </div>
             ) : briefConfirmed ? (
-              <Alert severity="success" icon={<CheckCircle />}>
-                <Typography variant="h6">Brief Confirmed!</Typography>
-                <Typography variant="body2">
-                  {briefData?.title} - Brief has been confirmed and you can proceed to motivations step.
-                </Typography>
-              </Alert>
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start">
+                <CheckCircleTailwindIcon className="w-6 h-6 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                <div>
+                  <h3 className="text-lg font-semibold text-green-800">Brief Confirmed!</h3>
+                  <p className="text-sm text-green-700">
+                    {briefData?.title} - Brief has been confirmed and you can proceed to motivations step.
+                  </p>
+                </div>
+              </div>
             ) : (
-              <Box>
+              <div>
                 {processing ? (
-                  <Box textAlign="center" py={3}>
-                    <LinearProgress sx={{ mb: 2 }} />
-                    <Typography>Processing brief with AI...</Typography>
-                  </Box>
+                  <div className="text-center py-6">
+                    <div className="h-1 w-full bg-gray-200 rounded overflow-hidden mb-4">
+                      <div className="h-full bg-blue-500 animate-pulse" style={{ width: '100%' }}></div>
+                    </div>
+                    <p className="text-gray-700">Processing brief with AI...</p>
+                  </div>
                 ) : briefData && showBriefReview ? (
                   <BriefReviewEditor
                     briefData={briefData}
@@ -537,11 +582,11 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
                         
                         // Auto-trigger motivation generation after state update
                         setTimeout(() => {
-                          if (motivations.length === 0) {
+                          if (motivations.length === 0 && !processing) {
                             console.log('Auto-triggering motivation generation');
                             handleGenerateMotivations();
                           }
-                        }, 200);
+                        }, 300);
                       }, 50);
                     }}
                     onReset={() => {
@@ -552,321 +597,314 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
                     }}
                   />
                 ) : briefData ? (
-                  <Alert severity="success" icon={<CheckCircle />}>
-                    <Typography variant="h6">Brief Ready!</Typography>
-                    <Typography variant="body2">
-                      {briefData.title} - Click "Generate Strategic Motivations" to continue
-                    </Typography>
-                  </Alert>
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-start">
+                    <CheckCircleTailwindIcon className="w-6 h-6 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <h3 className="text-lg font-semibold text-green-800">Brief Ready!</h3>
+                      <p className="text-sm text-green-700">
+                        {briefData.title} - Click "Generate Strategic Motivations" to continue
+                      </p>
+                    </div>
+                  </div>
                 ) : null}
-              </Box>
+              </div>
             )}
-          </Box>
+          </div>
         );
 
       case 1: // Generate Motivations
         return (
-          <Box>
-            <Typography variant="h6" gutterBottom>Step 2: Generate Strategic Motivations</Typography>
-            <Typography variant="body2" color="text.secondary" paragraph>
+          <div className="w-full">
+            <h2 className="text-xl font-semibold mb-2">Step 2: Generate Strategic Motivations</h2>
+            <p className="text-gray-600 mb-4">
               Generate AI-powered strategic motivations based on your brief content.
-            </Typography>
+            </p>
             {motivations.length === 0 ? (
-              <Box textAlign="center" py={3}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  startIcon={<AutoAwesome />}
+              <div className="text-center py-6">
+                <button
+                  className={`flex items-center justify-center mx-auto px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm transition-colors ${processing ? 'opacity-70 cursor-not-allowed' : ''}`}
                   onClick={handleGenerateMotivations}
                   disabled={processing}
                 >
-                  {processing ? 'Generating...' : 'Generate Strategic Motivations'}
-                </Button>
-                {processing && <LinearProgress sx={{ mt: 2 }} />}
-              </Box>
+                  <AutoAwesomeGenIcon className="mr-2" />
+                  <span>{processing ? 'Generating...' : 'Generate Strategic Motivations'}</span>
+                </button>
+                {processing && <div className="mt-4 w-full h-1 bg-gray-200 rounded overflow-hidden"><div className="h-full bg-blue-600 animate-pulse" style={{width: '100%'}}></div></div>}
+              </div>
             ) : (
-              <Box>
-                <Typography variant="h6" gutterBottom>Select Strategic Motivations</Typography>
-                <Grid container spacing={2}>
+              <div>
+                <h3 className="text-lg font-semibold mb-3">Select Strategic Motivations</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {motivations.map((motivation) => (
-                    <Grid xs={12} md={6} key={motivation.id}>
-                      <Card 
-                        sx={{ 
-                          cursor: 'pointer',
-                          border: motivation.selected ? 2 : 1,
-                          borderColor: motivation.selected ? 'primary.main' : 'divider',
-                        }}
-                        onClick={() => handleSelectMotivation(motivation.id)}
-                      >
-                        <CardContent>
-                          <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-                            <Typography variant="h6">{motivation.title}</Typography>
-                            <Chip label={`${motivation.score}%`} color="primary" size="small" />
-                          </Box>
-                          <Typography variant="body2" color="text.secondary">
-                            {motivation.description}
-                          </Typography>
-                          <FormControlLabel
-                            control={<Checkbox checked={motivation.selected} />}
-                            label="Select this motivation"
-                            sx={{ mt: 1 }}
+                    <div key={motivation.id} 
+                      className={`border rounded-lg cursor-pointer transition-all hover:shadow-md ${motivation.selected ? 'border-2 border-blue-500' : 'border-gray-200'}`}
+                      onClick={() => handleSelectMotivation(motivation.id)}
+                    >
+                      <div className="p-4">
+                        <div className="flex justify-between items-center mb-2">
+                          <h4 className="text-lg font-medium">{motivation.title}</h4>
+                          <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">{motivation.score}%</span>
+                        </div>
+                        <p className="text-gray-600 mb-3">
+                          {motivation.description}
+                        </p>
+                        <div className="flex items-center mt-2">
+                          <input 
+                            type="checkbox" 
+                            checked={motivation.selected} 
+                            onChange={() => handleSelectMotivation(motivation.id)}
+                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                           />
-                        </CardContent>
-                      </Card>
-                    </Grid>
+                          <label className="ml-2 text-sm font-medium text-gray-700">Select this motivation</label>
+                        </div>
+                      </div>
+                    </div>
                   ))}
-                </Grid>
-                <Box mt={3} textAlign="center">
-                  <Button
-                    variant="contained"
-                    size="large"
-                    endIcon={<ArrowForward />}
+                </div>
+                <div className="mt-6 text-center">
+                  <button
+                    className="inline-flex items-center px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm transition-colors"
                     onClick={handleNextFromMotivations}
                   >
-                    Generate Copy from Selected Motivations
-                  </Button>
-                </Box>
-              </Box>
+                    <span>Generate Copy from Selected Motivations</span>
+                    <ArrowForwardTailwindIcon className="ml-2" />
+                  </button>
+                </div>
+              </div>
             )}
-          </Box>
+          </div>
         );
 
       case 2: // Generate Copy
         return (
-          <Box>
+          <div className="w-full">
             {copyVariations.length === 0 && processing ? (
-              <Box textAlign="center" py={3}>
-                <LinearProgress sx={{ mb: 2 }} />
-                <Typography>Generating copy variations...</Typography>
-              </Box>
+              <div className="text-center py-6">
+                <div className="mb-4 w-full h-1 bg-gray-200 rounded overflow-hidden"><div className="h-full bg-blue-600 animate-pulse" style={{width: '100%'}}></div></div>
+                <p className="text-gray-700">Generating copy variations...</p>
+              </div>
             ) : copyVariations.length > 0 ? (
-              <Box>
-                <Typography variant="h6" gutterBottom>Select Copy Variations</Typography>
-                <Grid container spacing={2}>
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Select Copy Variations</h2>
+                <div className="space-y-4">
                   {copyVariations.map((copy) => (
-                    <Grid xs={12} key={copy.id}>
-                      <Card
-                        sx={{
-                          cursor: 'pointer',
-                          border: copy.selected ? 2 : 1,
-                          borderColor: copy.selected ? 'primary.main' : 'divider',
-                        }}
-                        onClick={() => handleSelectCopy(copy.id)}
-                      >
-                        <CardContent>
-                          <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-                            <Chip label={copy.platform} color="secondary" size="small" />
-                            <FormControlLabel
-                              control={<Checkbox checked={copy.selected} />}
-                              label="Select"
+                    <div 
+                      key={copy.id}
+                      className={`border rounded-lg cursor-pointer transition-all hover:shadow-md ${copy.selected ? 'border-2 border-blue-500' : 'border-gray-200'}`}
+                      onClick={() => handleSelectCopy(copy.id)}
+                    >
+                      <div className="p-4">
+                        <div className="flex justify-between items-center mb-3">
+                          <span className="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full">{copy.platform}</span>
+                          <div className="flex items-center">
+                            <input 
+                              type="checkbox" 
+                              checked={copy.selected} 
+                              onChange={() => handleSelectCopy(copy.id)}
+                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                             />
-                          </Box>
-                          <Typography variant="body1">{copy.text}</Typography>
-                        </CardContent>
-                      </Card>
-                    </Grid>
+                            <label className="ml-2 text-sm font-medium text-gray-700">Select</label>
+                          </div>
+                        </div>
+                        <p className="text-gray-800">{copy.text}</p>
+                      </div>
+                    </div>
                   ))}
-                </Grid>
-                <Box mt={3} textAlign="center">
-                  <Button
-                    variant="contained"
-                    size="large"
-                    endIcon={<ArrowForward />}
+                </div>
+                <div className="mt-6 text-center">
+                  <button
+                    className={`inline-flex items-center px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm transition-colors ${processing ? 'opacity-70 cursor-not-allowed' : ''}`}
                     onClick={handleNextFromCopy}
                     disabled={processing}
                   >
-                    {processing ? 'Storing in Assets Library...' : 'Store Copy & Continue'}
-                  </Button>
-                </Box>
-              </Box>
+                    <span>{processing ? 'Storing in Assets Library...' : 'Store Copy & Continue'}</span>
+                    <ArrowForwardTailwindIcon className="ml-2" />
+                  </button>
+                </div>
+              </div>
             ) : null}
-          </Box>
+          </div>
         );
 
       case 3: // Select Assets
         return (
-          <Box>
-            <Typography variant="h6" gutterBottom>Choose Your Assets</Typography>
-            <Grid container spacing={3}>
-              <Grid xs={12} md={6}>
-                <Card>
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>Use Existing Assets</Typography>
-                    <Typography variant="body2" color="text.secondary" paragraph>
-                      Select from your asset library
-                    </Typography>
-                    <Button variant="outlined" fullWidth>
-                      Browse Asset Library
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Grid>
-              <Grid xs={12} md={6}>
-                <Card>
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>Generate New Assets</Typography>
-                    <Typography variant="body2" color="text.secondary" paragraph>
-                      Create AI-generated images and videos
-                    </Typography>
-                    <Button variant="contained" fullWidth startIcon={<AutoAwesome />}>
-                      Generate Assets
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
-            <Box mt={3} textAlign="center">
-              <Button
-                variant="contained"
-                size="large"
-                endIcon={<ArrowForward />}
+          <div className="w-full">
+            <h2 className="text-xl font-semibold mb-4">Choose Your Assets</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+                <div className="p-6">
+                  <h3 className="text-lg font-semibold mb-2">Use Existing Assets</h3>
+                  <p className="text-gray-600 mb-4">
+                    Select from your asset library
+                  </p>
+                  <button className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    Browse Asset Library
+                  </button>
+                </div>
+              </div>
+              <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+                <div className="p-6">
+                  <h3 className="text-lg font-semibold mb-2">Generate New Assets</h3>
+                  <p className="text-gray-600 mb-4">
+                    Create AI-generated images and videos
+                  </p>
+                  <button className="w-full flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    <AutoAwesomeIcon className="w-5 h-5 mr-2" />
+                    Generate Assets
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="mt-6 text-center">
+              <button
+                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white text-lg rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 onClick={handleNext}
               >
-                Continue to Template Selection
-              </Button>
-            </Box>
-          </Box>
+                <span>Continue to Template Selection</span>
+                <ArrowForwardTailwindIcon className="ml-2" />
+              </button>
+            </div>
+          </div>
         );
 
       case 4: // Pick Template
         return (
-          <Box>
-            <Typography variant="h6" gutterBottom>Select Video Template</Typography>
-            <Grid container spacing={2}>
+          <div className="w-full">
+            <h2 className="text-xl font-semibold mb-4">Select Video Template</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {['Modern Slideshow', 'Dynamic Promo', 'Social Story', 'Product Showcase'].map((template, index) => (
-                <Grid xs={12} md={6} key={template}>
-                  <Card
-                    sx={{
-                      cursor: 'pointer',
-                      border: selectedTemplate === template ? 2 : 1,
-                      borderColor: selectedTemplate === template ? 'primary.main' : 'divider',
-                    }}
-                    onClick={() => setSelectedTemplate(template)}
-                  >
-                    <CardContent>
-                      <Box display="flex" alignItems="center" gap={2}>
-                        <VideoLibrary color="primary" />
-                        <Box>
-                          <Typography variant="h6">{template}</Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Perfect for {briefData?.platforms.join(', ')} campaigns
-                          </Typography>
-                        </Box>
-                        {selectedTemplate === template && <CheckCircle color="primary" />}
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
+                <div
+                  key={template}
+                  className={`bg-white border rounded-lg shadow-sm cursor-pointer transition-all hover:shadow-md ${
+                    selectedTemplate === template 
+                      ? 'border-2 border-blue-500' 
+                      : 'border border-gray-200'
+                  }`}
+                  onClick={() => setSelectedTemplate(template)}
+                >
+                  <div className="p-4">
+                    <div className="flex items-center gap-3">
+                      <VideoLibraryIcon className="w-8 h-8 text-blue-600" />
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold">{template}</h3>
+                        <p className="text-sm text-gray-600">
+                          Perfect for {briefData?.platforms.join(', ')} campaigns
+                        </p>
+                      </div>
+                      {selectedTemplate === template && (
+                        <CheckCircleTailwindIcon className="w-6 h-6 text-blue-600" />
+                      )}
+                    </div>
+                  </div>
+                </div>
               ))}
-            </Grid>
-            <Box mt={3} textAlign="center">
-              <Button
-                variant="contained"
-                size="large"
-                endIcon={<ArrowForward />}
+            </div>
+            <div className="mt-6 text-center">
+              <button
+                className={`inline-flex items-center px-6 py-3 bg-blue-600 text-white text-lg rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                  !selectedTemplate ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
                 onClick={handleNext}
                 disabled={!selectedTemplate}
               >
-                Configure Content Matrix
-              </Button>
-            </Box>
-          </Box>
+                <span>Configure Content Matrix</span>
+                <ArrowForwardTailwindIcon className="ml-2" />
+              </button>
+            </div>
+          </div>
         );
 
       case 5: // Populate Matrix
         return (
-          <Box>
-            <Typography variant="h6" gutterBottom>Content Matrix Configuration</Typography>
-            <Alert severity="info" sx={{ mb: 3 }}>
-              Your content matrix will be populated with the selected motivations, copy, and assets.
-            </Alert>
-            <Grid container spacing={2}>
-              <Grid xs={12} md={4}>
-                <Card>
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>Motivations</Typography>
-                    <Typography variant="body2">
-                      {motivations.filter(m => m.selected).length} selected
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-              <Grid xs={12} md={4}>
-                <Card>
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>Copy Variations</Typography>
-                    <Typography variant="body2">
-                      {copyVariations.filter(c => c.selected).length} selected
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-              <Grid xs={12} md={4}>
-                <Card>
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>Template</Typography>
-                    <Typography variant="body2">
-                      {selectedTemplate || 'None selected'}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
-            <Box mt={3} textAlign="center">
-              <Button
-                variant="contained"
-                size="large"
-                endIcon={<ArrowForward />}
+          <div className="w-full">
+            <h2 className="text-xl font-semibold mb-4">Content Matrix Configuration</h2>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+              <p className="text-blue-800">
+                Your content matrix will be populated with the selected motivations, copy, and assets.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold mb-2">Motivations</h3>
+                  <p className="text-gray-600">
+                    {motivations.filter(m => m.selected).length} selected
+                  </p>
+                </div>
+              </div>
+              <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold mb-2">Copy Variations</h3>
+                  <p className="text-gray-600">
+                    {copyVariations.filter(c => c.selected).length} selected
+                  </p>
+                </div>
+              </div>
+              <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold mb-2">Template</h3>
+                  <p className="text-gray-600">
+                    {selectedTemplate || 'None selected'}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="mt-6 text-center">
+              <button
+                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white text-lg rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 onClick={handleNext}
               >
-                Ready for Rendering
-              </Button>
-            </Box>
-          </Box>
+                <span>Ready for Rendering</span>
+                <ArrowForwardTailwindIcon className="ml-2" />
+              </button>
+            </div>
+          </div>
         );
 
       case 6: // Ready to Render
         return (
-          <Box textAlign="center" py={4}>
-            <CheckCircle sx={{ fontSize: 64, color: 'success.main', mb: 2 }} />
-            <Typography variant="h4" gutterBottom>Ready to Render!</Typography>
-            <Typography variant="body1" color="text.secondary" paragraph>
+          <div className="w-full text-center py-8">
+            <CheckCircleTailwindIcon className="w-16 h-16 text-green-500 mb-4 mx-auto" />
+            <h1 className="text-3xl font-bold mb-4">Ready to Render!</h1>
+            <p className="text-gray-600 mb-6">
               Your content is configured and ready to be sent to Creatomate for rendering.
-            </Typography>
-            <Box sx={{ bgcolor: 'background.paper', p: 3, borderRadius: 2, mb: 3 }}>
-              <Typography variant="h6" gutterBottom>Summary:</Typography>
-              <Typography variant="body2">
-                • Brief: {briefData?.title}<br/>
-                • Motivations: {motivations.filter(m => m.selected).length} selected<br/>
-                • Copy: {copyVariations.filter(c => c.selected).length} variations<br/>
-                • Template: {selectedTemplate}<br/>
-                • Platforms: {briefData?.platforms.join(', ')}
-              </Typography>
-            </Box>
-            <Button
-              variant="contained"
-              size="large"
-              startIcon={<Send />}
+            </p>
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6 text-left max-w-md mx-auto">
+              <h3 className="text-lg font-semibold mb-3">Summary:</h3>
+              <div className="text-sm space-y-1">
+                <p>• Brief: {briefData?.title}</p>
+                <p>• Motivations: {motivations.filter(m => m.selected).length} selected</p>
+                <p>• Copy: {copyVariations.filter(c => c.selected).length} variations</p>
+                <p>• Template: {selectedTemplate}</p>
+                <p>• Platforms: {briefData?.platforms.join(', ')}</p>
+              </div>
+            </div>
+            <button
+              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white text-lg rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               onClick={handleComplete}
             >
+              <SendIcon className="w-5 h-5 mr-2" />
               Send to Creatomate for Rendering
-            </Button>
-          </Box>
+            </button>
+          </div>
         );
 
       default:
         return (
-          <Box textAlign="center" py={4}>
-            <Typography variant="h6" gutterBottom>
-              {workflowSteps[step]?.label}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" paragraph>
-              {workflowSteps[step]?.description}
-            </Typography>
-            <Button variant="contained" onClick={handleNext}>
+          <div className="w-full text-center py-8">
+            <h2 className="text-xl font-semibold mb-2">
+              {briefWorkflowSteps[step]?.label}
+            </h2>
+            <p className="text-gray-600 mb-4">
+              {briefWorkflowSteps[step]?.description}
+            </p>
+            <button
+              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              onClick={handleNext}
+            >
               Continue to Next Step
-            </Button>
-          </Box>
+            </button>
+          </div>
         );
     }
   };
@@ -878,6 +916,12 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
       return;
     }
     
+    // Prevent accidental closure during brief editing or motivation generation
+    if (reason === 'backdropClick' && (showBriefReview || motivations.length > 0 || copyVariations.length > 0)) {
+      console.log('Dialog close prevented - user has work in progress');
+      return;
+    }
+    
     console.log('Dialog close triggered by:', reason);
     onClose();
   };
@@ -886,55 +930,93 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
     <Dialog 
       open={open} 
       onClose={handleDialogClose} 
-      maxWidth="lg" 
+      maxWidth={false}
       fullWidth
       disableEscapeKeyDown={processing}
+      PaperProps={{
+        sx: {
+          width: '95vw',
+          maxWidth: '1400px',
+          height: '90vh',
+          maxHeight: '900px',
+          margin: '2.5vh auto'
+        }
+      }}
     >
       <DialogTitle>
-        <Box display="flex" alignItems="center" justifyContent="space-between">
-          <Typography variant="h5">Brief to Execution Workflow</Typography>
-          <IconButton 
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Brief to Execution Workflow</h1>
+          <button
             onClick={() => {
               if (processing) {
                 console.log('Close button click prevented - processing in progress');
                 return;
               }
               onClose();
-            }} 
+            }}
             aria-label="Close dialog"
             disabled={processing}
+            className={`p-2 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-500 ${
+              processing ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
           >
-            <Close />
-          </IconButton>
-        </Box>
+            <CloseIcon className="w-6 h-6" />
+          </button>
+        </div>
       </DialogTitle>
       
       <DialogContent sx={{ pb: 2 }}>
-        <Box sx={{ mb: 4 }}>
+        <div className="mb-6">
           <Stepper activeStep={activeStep} orientation="horizontal">
-            {workflowSteps.map((step, index) => (
+            {briefWorkflowSteps.map((step, index) => (
               <Step key={step.id}>
                 <StepLabel icon={step.icon}>
-                  <Typography variant="caption">{step.label}</Typography>
+                  <span className="text-xs">{step.label}</span>
                 </StepLabel>
               </Step>
             ))}
           </Stepper>
-        </Box>
+        </div>
 
-        <Box sx={{ minHeight: 400, width: '100%', overflow: 'auto', maxHeight: '70vh' }}>
+        <div className="min-h-96 w-full overflow-auto max-h-[70vh]">
+          {lastError && (
+            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-center">
+                <div className="w-4 h-4 bg-red-500 rounded-full mr-3 flex-shrink-0"></div>
+                <div>
+                  <h4 className="font-medium text-red-800">Error occurred</h4>
+                  <p className="text-red-700 text-sm">{lastError}</p>
+                  <button 
+                    onClick={() => setLastError(null)}
+                    className="mt-2 text-xs text-red-600 hover:text-red-800 underline"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           {renderStepContent(activeStep)}
-        </Box>
+        </div>
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={handleBack} disabled={activeStep === 0}>
+        <button
+          onClick={handleBack}
+          disabled={activeStep === 0}
+          className={`px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+            activeStep === 0 ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+        >
           Back
-        </Button>
-        {activeStep === workflowSteps.length - 1 ? (
-          <Button variant="contained" onClick={handleComplete}>
+        </button>
+        {activeStep === briefWorkflowSteps.length - 1 ? (
+          <button
+            onClick={handleComplete}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
             Complete & Send to Render
-          </Button>
+          </button>
         ) : null}
       </DialogActions>
     </Dialog>
@@ -995,273 +1077,277 @@ const BriefReviewEditor: React.FC<BriefReviewEditorProps> = ({
   };
 
   return (
-    <Box sx={{ width: '100%', maxWidth: '100%', p: 1 }}>
-      <Typography variant="h6" gutterBottom color="primary">
-        Review & Edit Brief Content
-      </Typography>
-      <Typography variant="body2" color="text.secondary" paragraph>
-        Please review the parsed content below and make any necessary adjustments before proceeding to generate motivations.
-      </Typography>
+    <div className="w-full p-6 bg-white">
+      <div className="border-l-4 border-blue-500 pl-6 mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          Review & Edit Brief Content
+        </h2>
+        <p className="text-gray-600 text-lg">
+          Please review the parsed content below and make any necessary adjustments before proceeding to generate motivations.
+        </p>
+      </div>
       
-      <Box sx={{ width: '100%' }}>
-        <Grid container spacing={3}>
-          {/* Basic Information */}
-          <Grid xs={12}>
-            <Typography variant="h6" gutterBottom>Basic Information</Typography>
-          </Grid>
+      <div className="space-y-8">
+        {/* Basic Information Section */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+          <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+            <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+            Basic Information
+          </h3>
           
-          <Grid xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Brief Title"
-              value={typeof editedData.title === 'string' ? editedData.title : String(editedData.title || '')}
-              onChange={(e) => handleFieldChange('title', e.target.value)}
-              variant="outlined"
-            />
-          </Grid>
-          
-          <Grid xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Industry"
-              value={editedData.industry || ''}
-              onChange={(e) => handleFieldChange('industry', e.target.value)}
-              variant="outlined"
-              placeholder="e.g., Technology, Healthcare, Retail"
-            />
-          </Grid>
-          
-          <Grid xs={12}>
-            <TextField
-              fullWidth
-              multiline
-              rows={3}
-              label="Objective"
-              value={typeof editedData.objective === 'string' ? editedData.objective : String(editedData.objective || '')}
-              onChange={(e) => handleFieldChange('objective', e.target.value)}
-              variant="outlined"
-            />
-          </Grid>
-          
-          <Grid xs={12} md={6}>
-            <TextField
-              fullWidth
-              multiline
-              rows={2}
-              label="Target Audience"
-              value={typeof editedData.targetAudience === 'string' ? editedData.targetAudience : String(editedData.targetAudience || '')}
-              onChange={(e) => handleFieldChange('targetAudience', e.target.value)}
-              variant="outlined"
-            />
-          </Grid>
-          
-          <Grid xs={12} md={6}>
-            <TextField
-              fullWidth
-              multiline
-              rows={2}
-              label="Value Proposition"
-              value={typeof editedData.valueProposition === 'string' ? editedData.valueProposition || '' : String(editedData.valueProposition || '')}
-              onChange={(e) => handleFieldChange('valueProposition', e.target.value)}
-              variant="outlined"
-              placeholder="What unique value does your product/service offer?"
-            />
-          </Grid>
-          
-          {/* Product & Service Details */}
-          <Grid xs={12}>
-            <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>Product & Service Details</Typography>
-          </Grid>
-          
-          <Grid xs={12} md={6}>
-            <TextField
-              fullWidth
-              multiline
-              rows={2}
-              label="Product/Service Description"
-              value={editedData.product || ''}
-              onChange={(e) => handleFieldChange('product', e.target.value)}
-              variant="outlined"
-              placeholder="Describe your main product or service"
-            />
-          </Grid>
-          
-          <Grid xs={12} md={6}>
-            <TextField
-              fullWidth
-              multiline
-              rows={2}
-              label="Service Offering"
-              value={editedData.service || ''}
-              onChange={(e) => handleFieldChange('service', e.target.value)}
-              variant="outlined"
-              placeholder="Additional services or support offered"
-            />
-          </Grid>
-          
-          {/* Campaign Details */}
-          <Grid xs={12}>
-            <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>Campaign Details</Typography>
-          </Grid>
-          
-          <Grid xs={12} md={4}>
-            <TextField
-              fullWidth
-              label="Budget"
-              value={editedData.budget}
-              onChange={(e) => handleFieldChange('budget', e.target.value)}
-              variant="outlined"
-            />
-          </Grid>
-          
-          <Grid xs={12} md={4}>
-            <TextField
-              fullWidth
-              label="Timeline"
-              value={editedData.timeline}
-              onChange={(e) => handleFieldChange('timeline', e.target.value)}
-              variant="outlined"
-            />
-          </Grid>
-          
-          <Grid xs={12} md={4}>
-            <TextField
-              fullWidth
-              multiline
-              rows={2}
-              label="Brand Guidelines"
-              value={editedData.brandGuidelines || ''}
-              onChange={(e) => handleFieldChange('brandGuidelines', e.target.value)}
-              variant="outlined"
-              placeholder="Key brand guidelines to follow"
-            />
-          </Grid>
-          
-          {/* Key Messages */}
-          <Grid xs={12}>
-            <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>Key Messages</Typography>
-            {editedData.keyMessages.map((message, index) => (
-              <Box key={index} display="flex" gap={1} mb={1}>
-                <TextField
-                  fullWidth
-                  label={`Key Message ${index + 1}`}
-                  value={message}
-                  onChange={(e) => handleArrayFieldChange('keyMessages', index, e.target.value)}
-                  variant="outlined"
-                  size="small"
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-800 mb-2">Brief Title</label>
+              <input
+                type="text"
+                className="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-lg shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-300"
+                value={typeof editedData.title === 'string' ? editedData.title : String(editedData.title || '')}
+                onChange={(e) => handleFieldChange('title', e.target.value)}
+                placeholder="Enter your brief title..."
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+              <div>
+                <label className="block text-sm font-semibold text-gray-800 mb-2">Industry</label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-lg shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-300"
+                  value={editedData.industry || ''}
+                  onChange={(e) => handleFieldChange('industry', e.target.value)}
+                  placeholder="e.g., Technology, Healthcare, Retail"
                 />
-                <IconButton
-                  onClick={() => handleRemoveArrayItem('keyMessages', index)}
-                  color="error"
-                  size="small"
-                >
-                  <Close />
-                </IconButton>
-              </Box>
-            ))}
-            <Button
-              startIcon={<AddIcon />}
-              onClick={() => handleAddArrayItem('keyMessages')}
-              size="small"
-            >
-              Add Key Message
-            </Button>
-          </Grid>
-          
-          {/* Platforms */}
-          <Grid xs={12} md={6}>
-            <Typography variant="subtitle1" gutterBottom>Platforms</Typography>
-            {editedData.platforms.map((platform, index) => (
-              <Box key={index} display="flex" gap={1} mb={1}>
-                <TextField
-                  fullWidth
-                  label={`Platform ${index + 1}`}
-                  value={platform}
-                  onChange={(e) => handleArrayFieldChange('platforms', index, e.target.value)}
-                  variant="outlined"
-                  size="small"
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-800 mb-2">Product/Service</label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-lg shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-300"
+                  value={editedData.product || editedData.service || ''}
+                  onChange={(e) => handleFieldChange('product', e.target.value)}
+                  placeholder="Describe your product or service"
                 />
-                <IconButton
-                  onClick={() => handleRemoveArrayItem('platforms', index)}
-                  color="error"
-                  size="small"
-                >
-                  <Close />
-                </IconButton>
-              </Box>
-            ))}
-            <Button
-              startIcon={<AddIcon />}
-              onClick={() => handleAddArrayItem('platforms')}
-              size="small"
-            >
-              Add Platform
-            </Button>
-          </Grid>
-          
-          {/* Competitors */}
-          <Grid xs={12} md={6}>
-            <Typography variant="subtitle1" gutterBottom>Competitors (Optional)</Typography>
-            {(editedData.competitors || []).map((competitor, index) => (
-              <Box key={index} display="flex" gap={1} mb={1}>
-                <TextField
-                  fullWidth
-                  label={`Competitor ${index + 1}`}
-                  value={competitor}
-                  onChange={(e) => {
-                    const competitors = editedData.competitors || [];
-                    const updated = [...competitors];
-                    updated[index] = e.target.value;
-                    handleFieldChange('competitors', updated);
-                  }}
-                  variant="outlined"
-                  size="small"
+              </div>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-semibold text-gray-800 mb-2">Objective</label>
+              <textarea
+                className="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-lg shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-300 resize-none"
+                rows={6}
+                value={typeof editedData.objective === 'string' ? editedData.objective : String(editedData.objective || '')}
+                onChange={(e) => handleFieldChange('objective', e.target.value)}
+                placeholder="Describe the main objective of your campaign..."
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+              <div>
+                <label className="block text-sm font-semibold text-gray-800 mb-2">Target Audience</label>
+                <textarea
+                  className="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-lg shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-300 resize-none"
+                  rows={6}
+                  value={typeof editedData.targetAudience === 'string' ? editedData.targetAudience : String(editedData.targetAudience || '')}
+                  onChange={(e) => handleFieldChange('targetAudience', e.target.value)}
+                  placeholder="Describe your target audience in detail..."
                 />
-                <IconButton
-                  onClick={() => {
-                    const competitors = editedData.competitors || [];
-                    const updated = competitors.filter((_, i) => i !== index);
-                    handleFieldChange('competitors', updated);
-                  }}
-                  color="error"
-                  size="small"
-                >
-                  <Close />
-                </IconButton>
-              </Box>
-            ))}
-            <Button
-              startIcon={<AddIcon />}
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-gray-800 mb-2">Value Proposition</label>
+                <textarea
+                  className="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-lg shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-300 resize-none"
+                  rows={6}
+                  value={typeof editedData.valueProposition === 'string' ? editedData.valueProposition || '' : String(editedData.valueProposition || '')}
+                  onChange={(e) => handleFieldChange('valueProposition', e.target.value)}
+                  placeholder="What unique value does your product/service offer?"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+          
+        {/* Product & Service Details Section */}
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">
+          <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+            <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+            Product & Service Details
+          </h3>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div>
+              <label className="block text-sm font-semibold text-gray-800 mb-3">Key Messages</label>
+              <div className="space-y-3">
+                {editedData.keyMessages.map((message, index) => (
+                  <div key={index} className="flex items-start gap-3">
+                    <textarea
+                      className="flex-1 px-4 py-3 text-base border-2 border-gray-200 rounded-lg shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-300 resize-none"
+                      placeholder={`Key Message ${index + 1}`}
+                      value={message}
+                      rows={3}
+                      onChange={(e) => handleArrayFieldChange('keyMessages', index, e.target.value)}
+                    />
+                    <button
+                      onClick={() => handleRemoveArrayItem('keyMessages', index)}
+                      className="mt-2 p-2 rounded-lg text-red-600 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+                      type="button"
+                    >
+                      <ClearIconSvg className="w-5 h-5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={() => handleAddArrayItem('keyMessages')}
+                className="mt-4 flex items-center px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg transition-colors"
+                type="button"
+              >
+                <AddIconSvg className="w-4 h-4 mr-2" />
+                Add Key Message
+              </button>
+            </div>
+            
+            {/* Platforms */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-800 mb-3">Platforms</label>
+              <div className="space-y-3">
+                {editedData.platforms.map((platform, index) => (
+                  <div key={index} className="flex items-center gap-3">
+                    <input
+                      type="text"
+                      className="flex-1 px-4 py-3 text-base border-2 border-gray-200 rounded-lg shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-300"
+                      placeholder={`Platform ${index + 1}`}
+                      value={platform}
+                      onChange={(e) => handleArrayFieldChange('platforms', index, e.target.value)}
+                    />
+                    <button
+                      onClick={() => handleRemoveArrayItem('platforms', index)}
+                      className="p-2 rounded-lg text-red-600 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+                      type="button"
+                    >
+                      <ClearIconSvg className="w-5 h-5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button
+                onClick={() => handleAddArrayItem('platforms')}
+                className="mt-4 flex items-center px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg transition-colors"
+                type="button"
+              >
+                <AddIconSvg className="w-4 h-4 mr-2" />
+                Add Platform
+              </button>
+            </div>
+          </div>
+        </div>
+          
+        {/* Competitors Section */}
+        <div className="bg-gradient-to-r from-purple-50 to-violet-50 rounded-xl p-6 border border-purple-200">
+          <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+            <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
+            Competitive Landscape
+          </h3>
+          
+          <div>
+            <label className="block text-sm font-semibold text-gray-800 mb-3">Competitors</label>
+            <div className="space-y-3">
+              {(editedData.competitors || []).map((competitor, index) => (
+                <div key={index} className="flex items-center gap-3">
+                  <input
+                    type="text"
+                    className="flex-1 px-4 py-3 text-base border-2 border-gray-200 rounded-lg shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-300"
+                    placeholder={`Competitor ${index + 1}`}
+                    value={competitor}
+                    onChange={(e) => {
+                      const competitors = editedData.competitors || [];
+                      const updated = [...competitors];
+                      updated[index] = e.target.value;
+                      handleFieldChange('competitors', updated);
+                    }}
+                  />
+                  <button
+                    onClick={() => {
+                      const competitors = editedData.competitors || [];
+                      const updated = competitors.filter((_, i) => i !== index);
+                      handleFieldChange('competitors', updated);
+                    }}
+                    className="p-2 rounded-lg text-red-600 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+                    type="button"
+                  >
+                    <ClearIconSvg className="w-5 h-5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <button
               onClick={() => {
                 const competitors = editedData.competitors || [];
                 handleFieldChange('competitors', [...competitors, '']);
               }}
-              size="small"
+              className="mt-4 flex items-center px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg transition-colors"
+              type="button"
             >
+              <AddIconSvg className="w-4 h-4 mr-2" />
               Add Competitor
-            </Button>
-          </Grid>
-        </Grid>
-      </Box>
+            </button>
+          </div>
+        </div>
+          
+        {/* Budget & Timeline Section */}
+        <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-6 border border-orange-200">
+          <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+            <div className="w-2 h-2 bg-orange-500 rounded-full mr-3"></div>
+            Budget & Timeline
+          </h3>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-800 mb-2">Budget</label>
+              <input
+                type="text"
+                className="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-lg shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-300"
+                placeholder="e.g., $50,000 or TBD"
+                value={editedData.budget || ''}
+                onChange={(e) => handleFieldChange('budget', e.target.value)}
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-semibold text-gray-800 mb-2">Timeline</label>
+              <input
+                type="text"
+                className="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-lg shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-300"
+                placeholder="e.g., 3 months or Q1 2024"
+                value={editedData.timeline || ''}
+                onChange={(e) => handleFieldChange('timeline', e.target.value)}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
       
       {/* Action Buttons */}
-      <Box sx={{ mt: 4, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-        <Button
-          variant="outlined"
+      <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-end bg-gray-50 rounded-xl p-6">
+        <button
+          className="flex items-center justify-center px-6 py-3 border-2 border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-100 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
           onClick={onReset}
-          startIcon={<Clear />}
+          type="button"
         >
+          <ClearIconSvg className="w-5 h-5 mr-2" />
           Reset to Original
-        </Button>
-        <Button
-          variant="contained"
+        </button>
+        <button
+          className="flex items-center justify-center px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
           onClick={onProceed}
-          startIcon={<ArrowForward />}
-          size="large"
+          type="button"
         >
+          <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z" />
+          </svg>
           Confirm & Generate Motivations
-        </Button>
-      </Box>
-    </Box>
+        </button>
+      </div>
+    </div>
   );
 };
