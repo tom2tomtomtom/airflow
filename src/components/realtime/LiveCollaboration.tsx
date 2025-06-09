@@ -332,7 +332,8 @@ const LiveCollaboration: React.FC<LiveCollaborationProps> = ({
               startIcon={<MessageIcon />}
               onClick={() => {
                 // Implement team chat or collaboration features
-                process.env.NODE_ENV === 'development' &&               }}
+                process.env.NODE_ENV === 'development' && console.log('Team chat clicked');
+              }}
             >
               Team Chat
             </Button>

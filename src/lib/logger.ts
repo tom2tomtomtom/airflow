@@ -49,7 +49,8 @@ class Logger {
         break;
       case 'info':
         if (process.env.NODE_ENV === 'development') {
-          process.env.NODE_ENV === 'development' &&         }
+          console.info(formattedMessage);
+        }
         break;
       case 'warn':
         console.warn(formattedMessage);

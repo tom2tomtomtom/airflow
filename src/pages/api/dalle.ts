@@ -134,7 +134,8 @@ export default async function handler(
     finalPrompt = `${safetyPrefix} ${finalPrompt}`;
 
     if (process.env.NODE_ENV === 'development') {
-      process.env.NODE_ENV === 'development' &&     }
+      console.log('Starting DALL-E image generation with prompt:', prompt);
+    }
 
     // Generate image with DALL-E
     const imageResponse = await openai.images.generate({

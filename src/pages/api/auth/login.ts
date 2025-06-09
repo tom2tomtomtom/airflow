@@ -88,7 +88,8 @@ export default async function handler(
     // If profile doesn't exist, create it with the current schema
     if (profileError && profileError.code === 'PGRST116') {
       if (process.env.NODE_ENV === 'development') {
-        process.env.NODE_ENV === 'development' &&       }
+        console.log('Creating new user profile...');
+      }
       
       // Determine the correct schema to use based on existing table structure
       // Try to create with the detected schema

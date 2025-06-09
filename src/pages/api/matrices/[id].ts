@@ -606,7 +606,8 @@ async function createMatrixVersionEntry(matrixId: string, changes: any, userId: 
   try {
     // In a full implementation, this would create entries in a matrix_versions table
     // For now, we'll just log the change
-    process.env.NODE_ENV === 'development' &&   } catch (error) {
+    process.env.NODE_ENV === 'development' && console.log('Creating matrix version entry for:', matrixId);
+  } catch (error) {
     const message = getErrorMessage(error);
     console.error('Error creating matrix version entry:', error);
   }

@@ -39,10 +39,12 @@ export function AuthRefreshHandler() {
     process.env.NODE_ENV === 'development' && console.log(`Scheduling token refresh in ${Math.round(refreshTime / 1000 / 60)} minutes`);
     
     refreshTimerRef.current = setTimeout(async () => {
-      process.env.NODE_ENV === 'development' &&       const result = await refreshSession();
+      process.env.NODE_ENV === 'development' && console.log('Refreshing session...');
+      const result = await refreshSession();
       
       if (result.success) {
-        process.env.NODE_ENV === 'development' &&       } else {
+        process.env.NODE_ENV === 'development' && console.log('Session refreshed successfully');
+      } else {
         console.error('Failed to refresh token:', result.error);
       }
     }, refreshTime);

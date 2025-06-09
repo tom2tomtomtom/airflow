@@ -499,7 +499,8 @@ async function triggerPostDecisionWorkflow(approval: any, decision: any): Promis
   try {
     if (decision.action === 'approve') {
       if (approval.item_type === 'execution') {
-        process.env.NODE_ENV === 'development' &&       }
+        process.env.NODE_ENV === 'development' && console.log('Triggering execution pipeline for bulk approval:', approval.item_id);
+      }
       
       if (approval.item_type === 'campaign') {
         await supabase
@@ -527,7 +528,8 @@ async function logBulkApprovalDecision(approvalIds: string[], action: string, us
 
 async function triggerBulkNotification(userId: string, approvals: any[], action: string): Promise<void> {
   try {
-    process.env.NODE_ENV === 'development' &&   } catch (error) {
+    process.env.NODE_ENV === 'development' && console.log('Triggering bulk notification for', approvals.length, 'approvals with action:', action);
+  } catch (error) {
     const message = getErrorMessage(error);
     console.error('Error triggering bulk notification:', error);
   }

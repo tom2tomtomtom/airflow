@@ -104,7 +104,8 @@ const parseEnv = () => {
   // During build context or client-side, skip strict validation entirely
   if (isEdgeBuild || isBuildTime || isBuildContext || isClientSide) {
     if (!isClientSide) {
-      process.env.NODE_ENV === 'development' &&     }
+      process.env.NODE_ENV === 'development' && console.log('Using fallback env config');
+    }
     return {
       ...process.env,
       NODE_ENV: process.env.NODE_ENV || 'production',
