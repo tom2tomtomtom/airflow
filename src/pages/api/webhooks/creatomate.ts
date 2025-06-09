@@ -45,9 +45,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   
   const payload: CreatomateWebhookPayload = req.body;
   
-  process.env.NODE_ENV === 'development' && process.env.NODE_ENV === 'development' && console.log('Received Creatomate webhook:', payload);
-  
-  try {
+  process.env.NODE_ENV === 'development' && process.env.NODE_ENV === 'development' &&   try {
     // Handle different event types
     switch (payload.event) {
       case 'render.completed':
@@ -59,8 +57,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
         break;
       
       default:
-        process.env.NODE_ENV === 'development' && process.env.NODE_ENV === 'development' && console.log(`Unhandled Creatomate event: ${payload.event}`);
-    }
+        process.env.NODE_ENV === 'development' && process.env.NODE_ENV === 'development' &&     }
     
     res.status(200).json({ success: true });
   } catch (error) {

@@ -137,8 +137,7 @@ const generateVideo = async (prompt: string, parameters?: Record<string, any>): 
 
   try {
     // Implement Runway ML video generation
-    process.env.NODE_ENV === 'development' && console.log('Video generation with Runway ML:', prompt, parameters);
-    throw new Error('Runway ML integration not yet implemented');
+    process.env.NODE_ENV === 'development' &&     throw new Error('Runway ML integration not yet implemented');
   } catch (error) {
     console.error('Runway video generation error:', error);
     throw error;
@@ -155,9 +154,7 @@ const generateVoice = async (prompt: string, parameters?: Record<string, any>): 
     const voice = parameters?.voice || 'alloy';
     const language = parameters?.language || 'en';
 
-    process.env.NODE_ENV === 'development' && console.log('Voice generation with ElevenLabs:', prompt, { voice, language });
-
-    throw new Error('ElevenLabs integration not yet implemented');
+    process.env.NODE_ENV === 'development' &&     throw new Error('ElevenLabs integration not yet implemented');
   } catch (error) {
     console.error('ElevenLabs voice generation error:', error);
     throw error;

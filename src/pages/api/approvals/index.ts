@@ -423,8 +423,7 @@ async function triggerApprovalNotification(approval: any, action: string): Promi
   try {
     // In a full implementation, this would trigger real-time notifications
     // via WebSocket, email, or push notifications
-    process.env.NODE_ENV === 'development' && console.log(`Approval ${approval.id} ${action} - triggering notifications to ${approval.assigned_to}`);
-  } catch (error) {
+    process.env.NODE_ENV === 'development' &&   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Error triggering approval notification:', error);
   }

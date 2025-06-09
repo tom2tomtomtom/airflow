@@ -94,13 +94,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
 
   const campaignData = validationResult.data;
 
-  console.log('Campaign creation request:', { 
-    user_id: user.id, 
-    client_id: campaignData.client_id,
-    name: campaignData.name
-  });
-
-  // For now, create a mock campaign since the campaigns table doesn't exist
+    // For now, create a mock campaign since the campaigns table doesn't exist
   // TODO: Implement actual database integration when campaigns table is ready
   
   const slug = generateCampaignSlug(campaignData.name);
@@ -122,9 +116,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
     }
   };
 
-  console.log('Mock campaign created:', mockCampaign.id);
-  
-  return res.status(201).json({ 
+    return res.status(201).json({ 
     data: mockCampaign,
     message: 'Campaign created successfully (mock implementation)'
   });

@@ -455,11 +455,9 @@ export default function AssetBrowser({ clientId, onAssetSelect, selectionMode = 
                 <Grid container spacing={2}>
                   <Grid size={{ xs: 12, md: 6}>
                     {selectedAsset.type === 'image' ? (
-                      <img
-                        src={selectedAsset.url}
+                      <img src={selectedAsset.url}
                         alt={selectedAsset.name}
-                        style={{ width: '100%', height: 'auto', maxHeight: '400px', objectFit: 'contain' }}
-                      />
+                        style={{ width: '100%', height: 'auto', maxHeight: '400px', objectFit: 'contain' }} alt="" />
                     ) : (
                       <Box
                         height="400px"

@@ -36,23 +36,19 @@ const FlowPage: React.FC = () => {
 
   // Debug effect to track workflow open state changes
   React.useEffect(() => {
-    console.log('FlowPage: openWorkflow changed to:', openWorkflow);
-  }, [openWorkflow]);
+      }, [openWorkflow]);
 
   const handleWorkflowComplete = () => {
-    console.log('FlowPage: handleWorkflowComplete called, closing workflow');
-    setOpenWorkflow(false);
+        setOpenWorkflow(false);
     showNotification('Content workflow completed successfully!', 'success');
   };
 
   const handleOpenWorkflow = () => {
-    console.log('FlowPage: Opening workflow dialog');
-    setOpenWorkflow(true);
+        setOpenWorkflow(true);
   };
 
   const handleCloseWorkflow = () => {
-    console.log('FlowPage: Closing workflow dialog');
-    setOpenWorkflow(false);
+        setOpenWorkflow(false);
   };
 
   return (

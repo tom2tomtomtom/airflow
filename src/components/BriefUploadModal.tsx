@@ -163,9 +163,7 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
     setProcessing(true);
     
     try {
-      console.log('Starting AI processing for brief:', brief);
-      
-      // Call the brief parsing API
+            // Call the brief parsing API
       const response = await fetch('/api/brief-parse', {
         method: 'POST',
         headers: {
@@ -181,9 +179,7 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
       }
 
       const result = await response.json();
-      console.log('Brief parsing result:', result);
-
-      if (result.success && result.brief?.extracted_data) {
+            if (result.success && result.brief?.extracted_data) {
         let parsedData;
         try {
           // Try to parse the extracted data as JSON

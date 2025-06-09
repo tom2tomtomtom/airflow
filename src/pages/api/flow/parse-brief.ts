@@ -103,20 +103,15 @@ function chunkDocument(content: string, maxChunkSize: number = 6000): string[] {
     chunks.push(currentChunk);
   }
   
-  console.log(`Document split into ${chunks.length} chunks`);
-  return chunks;
+    return chunks;
 }
 
 // Function to parse chunked documents by extracting info from each chunk and merging
 async function parseChunkedDocument(chunks: string[], title: string): Promise<BriefData | null> {
-  console.log('Processing chunked document...');
-  
-  const chunkResults: Partial<BriefData>[] = [];
+    const chunkResults: Partial<BriefData>[] = [];
   
   for (let i = 0; i < chunks.length; i++) {
-    console.log(`Processing chunk ${i + 1}/${chunks.length}...`);
-    
-    try {
+        try {
       const chunkPrompt = `You are an expert marketing strategist. Analyze this section of a creative brief and extract any relevant information. This is part ${i + 1} of ${chunks.length} parts.
 
 BRIEF SECTION:
@@ -173,8 +168,7 @@ Return only the JSON object.`;
           
           const chunkData = JSON.parse(cleanedResponse);
           chunkResults.push(chunkData);
-          console.log(`Successfully processed chunk ${i + 1}`);
-        } catch (parseError) {
+                  } catch (parseError) {
           console.warn(`Failed to parse chunk ${i + 1} response:`, parseError);
           console.warn(`Raw response was:`, responseText.substring(0, 200) + '...');
         }
@@ -186,12 +180,10 @@ Return only the JSON object.`;
   
   // Merge results from all chunks
   if (chunkResults.length === 0) {
-    console.log('No chunks processed successfully, returning null');
-    return null;
+        return null;
   }
   
-  console.log(`Merging results from ${chunkResults.length} processed chunks...`);
-  return mergeChunkResults(chunkResults, title);
+    return mergeChunkResults(chunkResults, title);
 }
 
 // Function to merge results from multiple chunks into a single BriefData object
@@ -268,24 +260,19 @@ function mergeChunkResults(chunkResults: Partial<BriefData>[], fallbackTitle: st
     merged.platforms = ['Meta', 'Instagram', 'Facebook'];
   }
   
-  console.log('Successfully merged chunk results');
-  return merged;
+    return merged;
 }
 
 async function parseWithOpenAI(content: string, title: string): Promise<BriefData | null> {
   if (!process.env.OPENAI_API_KEY) {
-    console.log('OpenAI API key not configured, skipping AI parsing and using pattern matching');
-    return null;
+        return null;
   }
 
-  console.log('Starting OpenAI parsing...');
-  
-  // Check if document needs chunking
+    // Check if document needs chunking
   const chunks = chunkDocument(content, 6000); // Leave room for prompt and response
   
   if (chunks.length > 1) {
-    console.log(`Processing large document in ${chunks.length} chunks...`);
-    return await parseChunkedDocument(chunks, title);
+        return await parseChunkedDocument(chunks, title);
   }
   
   try {
@@ -348,9 +335,7 @@ Respond ONLY with the JSON object, no additional text or explanation.`;
       throw new Error('No response from OpenAI');
     }
 
-    console.log('OpenAI parsing response:', responseText);
-    
-    // Parse the JSON response
+        // Parse the JSON response
     const parsedData = JSON.parse(responseText);
     
     // Validate the parsed data has required fields
@@ -392,9 +377,7 @@ Respond ONLY with the JSON object, no additional text or explanation.`;
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-  console.log('Parse brief handler called with method:', req.method);
-  
-  if (req.method !== 'POST') {
+    if (req.method !== 'POST') {
     return res.status(405).json({ success: false, message: 'Method not allowed' });
   }
 
@@ -411,9 +394,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     };
   }
   
-  console.log('User authenticated:', user ? user.email : 'No user');
-  
-  try {
+    try {
     // Parse the uploaded file
     const form = formidable({
       uploadDir: '/tmp',
@@ -422,8 +403,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       multiples: false,
     });
 
-    console.log('Starting file upload parsing...');
-    const [fields, files] = await form.parse(req);
+        const [fields, files] = await form.parse(req);
     console.log('File upload parsing completed. Files:', Object.keys(files));
     const uploadedFile = Array.isArray(files.file) ? files.file[0] : files.file;
 
@@ -431,66 +411,47 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       return res.status(400).json({ success: false, message: 'No file uploaded' });
     }
 
-    console.log('Processing brief file:', uploadedFile.originalFilename);
-
-    // Read the file content based on file type
+        // Read the file content based on file type
     let fileContent = '';
     const fileExtension = path.extname(uploadedFile.originalFilename || '').toLowerCase();
     
-    console.log('File extension:', fileExtension);
-    
-    try {
+        try {
       if (fileExtension === '.txt' || fileExtension === '.md') {
         // Read text files directly
         fileContent = fs.readFileSync(uploadedFile.filepath, 'utf8');
-        console.log('Successfully read text file');
-        
-      } else if (fileExtension === '.docx') {
+              } else if (fileExtension === '.docx') {
         // Use mammoth to extract text from .docx files
-        console.log('Parsing .docx file with mammoth...');
-        const buffer = fs.readFileSync(uploadedFile.filepath);
+                const buffer = fs.readFileSync(uploadedFile.filepath);
         const result = await mammoth.extractRawText({ buffer });
         fileContent = result.value;
         if (result.messages && result.messages.length > 0) {
-          console.log('Mammoth parsing messages:', result.messages);
-        }
-        console.log('Successfully extracted text from .docx file');
-        
-      } else if (fileExtension === '.doc') {
+                  }
+              } else if (fileExtension === '.doc') {
         // .doc files are more complex, try mammoth but with fallback
-        console.log('Attempting to parse .doc file...');
-        try {
+                try {
           const buffer = fs.readFileSync(uploadedFile.filepath);
           const result = await mammoth.extractRawText({ buffer });
           fileContent = result.value;
-          console.log('Successfully extracted text from .doc file');
-        } catch (docError) {
+                  } catch (docError) {
           console.warn('.doc parsing failed, this format may not be fully supported');
           fileContent = `Document: ${uploadedFile.originalFilename}\nNote: .doc format may require conversion to .docx for best results.`;
         }
         
       } else if (fileExtension === '.pdf') {
         // Use pdf-parse to extract text from PDF files
-        console.log('Parsing PDF file...');
-        const buffer = fs.readFileSync(uploadedFile.filepath);
+                const buffer = fs.readFileSync(uploadedFile.filepath);
         const pdfData = await pdfParse(buffer);
         fileContent = pdfData.text;
-        console.log('Successfully extracted text from PDF file');
-        
-      } else {
+              } else {
         // Try to read as text for unknown formats
-        console.log('Unknown file type, attempting to read as text...');
-        fileContent = fs.readFileSync(uploadedFile.filepath, 'utf8');
-        console.log('Successfully read unknown file type as text');
-      }
+                fileContent = fs.readFileSync(uploadedFile.filepath, 'utf8');
+              }
     } catch (error) {
       console.error('Error reading file:', error);
       throw new Error(`Failed to read file: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
     
-    console.log('File content length:', fileContent.length);
-    
-    // Extract basic information from filename and content
+        // Extract basic information from filename and content
     const fileName = uploadedFile.originalFilename || 'Untitled Brief';
     const briefTitle = fileName.replace(/\.[^/.]+$/, '');
 
@@ -500,9 +461,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     // Clean up uploaded file
     fs.unlinkSync(uploadedFile.filepath);
 
-    console.log('Brief parsed successfully:', parsedBrief.title);
-
-    return res.status(200).json({
+        return res.status(200).json({
       success: true,
       data: parsedBrief,
       message: 'Brief parsed successfully'
@@ -537,16 +496,14 @@ async function parseDocumentContent(content: string, title: string): Promise<Bri
   try {
     const aiParsedData = await parseWithOpenAI(content, title);
     if (aiParsedData) {
-      console.log('Successfully parsed brief with OpenAI');
-      return aiParsedData;
+            return aiParsedData;
     }
   } catch (error) {
     console.warn('OpenAI parsing failed, falling back to pattern matching:', error);
   }
 
   // Fallback to basic pattern matching
-  console.log('Using pattern matching fallback for parsing...');
-  const contentLower = content.toLowerCase();
+    const contentLower = content.toLowerCase();
   
   // Extract objective
   let objective = '';

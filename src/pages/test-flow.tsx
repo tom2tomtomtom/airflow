@@ -10,8 +10,7 @@ const TestFlowPage: React.FC = () => {
 
   const handleWorkflowComplete = (data: any) => {
     setOpenWorkflow(false);
-    console.log('Workflow completed with data:', data);
-  };
+      };
 
   return (
     <ThemeProvider theme={theme}>

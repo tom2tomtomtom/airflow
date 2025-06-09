@@ -23,9 +23,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
   const { method } = req;
   const user = (req as any).user;
 
-  console.log('🎯 Clients API called:', method, 'User:', user?.id, user?.email);
-
-  // Create Supabase server client with proper cookie handling
+    // Create Supabase server client with proper cookie handling
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -53,23 +51,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
       });
     }
 
-    console.log('✅ User authenticated:', {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      clientIds: user.clientIds?.length || 0
-    });
-
-    switch (method) {
+        switch (method) {
       case 'GET':
-        console.log('📋 Calling handleGet...');
-        return handleGet(req, res, user, supabase);
+                return handleGet(req, res, user, supabase);
       case 'POST':
-        console.log('✏️ Calling handlePost...');
-        return handlePost(req, res, user, supabase);
+                return handlePost(req, res, user, supabase);
       default:
-        console.log('❌ Method not allowed:', method);
-        return res.status(405).json({ 
+                return res.status(405).json({ 
           success: false, 
           message: 'Method not allowed' 
         });
@@ -90,9 +78,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>, user: any, supabase: any): Promise<void> {
-  console.log('📊 handleGet started for user:', user.id);
-  
-  try {
+    try {
     const { 
       search,
       industry,
@@ -103,19 +89,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
       include_stats = false,
     } = req.query;
 
-    console.log('🔍 Query parameters:', {
-      search,
-      industry,
-      limit,
-      offset,
-      sort_by,
-      sort_order,
-      include_stats
-    });
-
-    // Test basic connection first
-    console.log('🧪 Testing Supabase connection...');
-    const { data: testData, error: testError } = await supabase
+        // Test basic connection first
+        const { data: testData, error: testError } = await supabase
       .from('clients')
       .select('count(*)', { count: 'exact', head: true });
 
@@ -124,9 +99,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
       throw new Error(`Database connection failed: ${testError.message}`);
     }
 
-    console.log('✅ Supabase connection test passed');
-
-    // Get all clients (RLS policies will handle access control)
+        // Get all clients (RLS policies will handle access control)
     let query = supabase
       .from('clients')
       .select(`
@@ -140,46 +113,38 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
 
     // Apply search filter
     if (search && typeof search === 'string') {
-      console.log('🔍 Applying search filter:', search);
-      query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%,industry.ilike.%${search}%`);
+            query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%,industry.ilike.%${search}%`);
     }
 
     // Apply industry filter
     if (industry && typeof industry === 'string') {
-      console.log('🏭 Applying industry filter:', industry);
-      query = query.eq('industry', industry);
+            query = query.eq('industry', industry);
     }
 
     // Apply sorting
     const validSortFields = ['name', 'industry', 'created_at', 'updated_at'];
     const sortField = validSortFields.includes(sort_by as string) ? sort_by as string : 'name';
     const ascending = sort_order === 'asc';
-    console.log('📈 Applying sort:', sortField, ascending ? 'ascending' : 'descending');
-    query = query.order(sortField, { ascending });
+        query = query.order(sortField, { ascending });
 
     // Apply pagination
     const limitNum = Math.min(Number(limit) || 50, 100);
     const offsetNum = Number(offset) || 0;
-    console.log('📄 Applying pagination:', { limit: limitNum, offset: offsetNum });
-    query = query.range(offsetNum, offsetNum + limitNum - 1);
+        query = query.range(offsetNum, offsetNum + limitNum - 1);
 
-    console.log('🚀 Executing clients query...');
-    const { data: clients, error, count } = await query;
+        const { data: clients, error, count } = await query;
 
     if (error) {
       console.error('❌ Error fetching clients:', error);
       throw new Error(`Failed to fetch clients: ${error.message}`);
     }
 
-    console.log('✅ Clients fetched successfully:', clients?.length || 0, 'records');
-
-    // Fetch contacts separately for each client
+        // Fetch contacts separately for each client
     const clientIds = clients?.map(c => c.id) || [];
     let contactsMap: Record<string, any[]> = {};
     
     if (clientIds.length > 0) {
-      console.log('👥 Fetching contacts for', clientIds.length, 'clients');
-      const { data: contacts, error: contactsError } = await supabase
+            const { data: contacts, error: contactsError } = await supabase
         .from('client_contacts')
         .select('*')
         .in('client_id', clientIds)
@@ -188,8 +153,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
       if (contactsError) {
         console.error('⚠️ Error fetching contacts (non-fatal):', contactsError);
       } else if (contacts) {
-        console.log('✅ Contacts fetched:', contacts.length, 'records');
-        // Group contacts by client_id
+                // Group contacts by client_id
         contactsMap = contacts.reduce((acc, contact) => {
           if (!acc[contact.client_id]) {
             acc[contact.client_id] = [];
@@ -227,9 +191,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
       })
     })) || [];
 
-    console.log('✅ handleGet completed successfully');
-
-    return res.json({
+        return res.json({
       success: true,
       clients: transformedClients,
       pagination: {
@@ -248,9 +210,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
 }
 
 async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData>, user: any, supabase: any): Promise<void> {
-  console.log('✏️ handlePost started for user:', user.id);
-  
-  try {
+    try {
     console.log('📝 Request body:', JSON.stringify(req.body, null, 2));
     
     const {
@@ -275,13 +235,9 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
       });
     }
 
-    console.log('✅ Basic validation passed');
-
-    // Generate slug from name
+        // Generate slug from name
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-    console.log('🔗 Generated slug:', slug);
-
-    // Check if slug already exists
+        // Check if slug already exists
     const { data: existingClient, error: slugCheckError } = await supabase
       .from('clients')
       .select('id')
@@ -301,9 +257,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
       });
     }
 
-    console.log('✅ Slug is unique');
-
-    // Prepare client data
+        // Prepare client data
     const clientData = {
       name,
       slug,
@@ -322,11 +276,8 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
       is_active: true,
     };
 
-    console.log('📋 Client data prepared:', clientData);
-
-    // Create client in Supabase
-    console.log('🚀 Creating client in database...');
-    const { data: client, error } = await supabase
+        // Create client in Supabase
+        const { data: client, error } = await supabase
       .from('clients')
       .insert(clientData)
       .select()
@@ -337,12 +288,9 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
       throw new Error(`Failed to create client: ${error.message}`);
     }
 
-    console.log('✅ Client created successfully:', client.id);
-
-    // Add contacts if provided
+        // Add contacts if provided
     if (contacts && Array.isArray(contacts) && contacts.length > 0) {
-      console.log('👥 Adding', contacts.length, 'contacts...');
-      const contactInserts = contacts.map((contact: any) => ({
+            const contactInserts = contacts.map((contact: any) => ({
         client_id: client.id,
         name: contact.name,
         role: contact.role || null,
@@ -360,8 +308,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
         console.error('⚠️ Error creating contacts (non-fatal):', contactError);
         // Don't fail the whole operation for contact errors, just log it
       } else {
-        console.log('✅ Contacts created successfully');
-      }
+              }
     }
 
     // Transform response
@@ -383,9 +330,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
       contacts: contacts || [], // Include the contacts in response
     };
 
-    console.log('✅ handlePost completed successfully');
-
-    return res.status(201).json({
+        return res.status(201).json({
       success: true,
       client: transformedClient,
     });

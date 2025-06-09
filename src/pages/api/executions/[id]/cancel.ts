@@ -260,9 +260,7 @@ async function cancelCreatomateJob(jobId: string): Promise<{ success: boolean; e
   try {
     // In a real implementation, this would call Creatomate API
     // For now, simulate the cancellation
-    process.env.NODE_ENV === 'development' && console.log(`Simulating Creatomate job cancellation: ${jobId}`);
-    
-    // Mock API call delay
+    process.env.NODE_ENV === 'development' &&     // Mock API call delay
     await new Promise(resolve => setTimeout(resolve, 100));
     
     return { success: true };
@@ -282,8 +280,7 @@ async function cancelPendingWebhooks(webhookIds: string[]): Promise<{ cleaned: a
   for (const webhookId of webhookIds) {
     try {
       // Simulate webhook cancellation
-      process.env.NODE_ENV === 'development' && console.log(`Cancelling webhook: ${webhookId}`);
-      cleaned.push({
+      process.env.NODE_ENV === 'development' &&       cleaned.push({
         type: 'webhook',
         resource_id: webhookId,
         status: 'cancelled'
@@ -304,8 +301,7 @@ async function cancelPendingWebhooks(webhookIds: string[]): Promise<{ cleaned: a
 async function cleanupTempFiles(tempFiles: string[]): Promise<{ success: boolean; files_cleaned: number }> {
   try {
     // Simulate file cleanup
-    process.env.NODE_ENV === 'development' && console.log(`Cleaning up ${tempFiles.length} temporary files`);
-    return { success: true, files_cleaned: tempFiles.length };
+    process.env.NODE_ENV === 'development' &&     return { success: true, files_cleaned: tempFiles.length };
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Error cleaning up temp files:', error);
@@ -397,8 +393,7 @@ async function triggerCancellationNotification(execution: any, user: any): Promi
   try {
     // In a full implementation, this would trigger real-time notifications
     // via WebSocket or Server-Sent Events to relevant stakeholders
-    process.env.NODE_ENV === 'development' && console.log(`Execution ${execution.id} cancelled by ${user.full_name || user.id} - triggering notifications`);
-  } catch (error) {
+    process.env.NODE_ENV === 'development' &&   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Error triggering cancellation notification:', error);
   }

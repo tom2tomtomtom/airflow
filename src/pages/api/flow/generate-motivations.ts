@@ -58,14 +58,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   try {
-    console.log('Generating motivations for brief:', briefData.title);
-
-    // Generate motivations based on brief analysis
+        // Generate motivations based on brief analysis
     const motivations = await generateMotivationsFromBrief(briefData);
 
-    console.log(`Generated ${motivations.length} motivations`);
-
-    return res.status(200).json({
+        return res.status(200).json({
       success: true,
       data: motivations,
       message: 'Motivations generated successfully'
@@ -84,19 +80,16 @@ async function generateMotivationsFromBrief(briefData: BriefData): Promise<Motiv
   // Try AI-powered generation first
   if (process.env.OPENAI_API_KEY) {
     try {
-      console.log('Generating motivations with OpenAI...');
-      const aiMotivations = await generateMotivationsWithAI(briefData);
+            const aiMotivations = await generateMotivationsWithAI(briefData);
       if (aiMotivations && aiMotivations.length > 0) {
-        console.log(`OpenAI generated ${aiMotivations.length} motivations`);
-        return aiMotivations;
+                return aiMotivations;
       }
     } catch (error) {
       console.warn('OpenAI motivation generation failed, falling back to templates:', error);
     }
   }
 
-  console.log('Using template-based motivation generation...');
-  return generateMotivationsWithTemplates(briefData);
+    return generateMotivationsWithTemplates(briefData);
 }
 
 async function generateMotivationsWithAI(briefData: BriefData): Promise<Motivation[]> {
@@ -156,9 +149,7 @@ Respond ONLY with the JSON array, no additional text.`;
     throw new Error('No response from OpenAI');
   }
 
-  console.log('OpenAI motivations response received');
-  
-  try {
+    try {
     // Clean up markdown formatting that OpenAI sometimes adds
     let cleanedResponse = responseText;
     if (cleanedResponse.includes('```json')) {

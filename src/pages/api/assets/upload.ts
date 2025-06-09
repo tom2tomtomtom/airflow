@@ -36,9 +36,7 @@ async function handler(
       return res.status(401).json({ success: false, error: 'Authentication required' });
     }
 
-    console.log(`📤 File upload initiated by user: ${user.email}`);
-
-    // Parse the multipart form data with enhanced error handling
+        // Parse the multipart form data with enhanced error handling
     const form = formidable({
       maxFileSize: 100 * 1024 * 1024, // 100MB
       maxFiles: 10,
@@ -51,8 +49,7 @@ async function handler(
 
     try {
       [fields, files] = await form.parse(req);
-      console.log('📋 Form parsed successfully');
-    } catch (parseError) {
+          } catch (parseError) {
       console.error('❌ Form parsing error:', parseError);
       return res.status(400).json({ 
         success: false, 
@@ -67,9 +64,7 @@ async function handler(
       return res.status(400).json({ success: false, error: 'No files provided' });
     }
 
-    console.log(`📁 Processing ${fileArray.length} files`);
-
-    const uploadedAssets = [];
+        const uploadedAssets = [];
     const errors = [];
 
     for (const [index, file] of fileArray.entries()) {
@@ -79,9 +74,7 @@ async function handler(
       }
 
       try {
-        console.log(`🔄 Processing file ${index + 1}: ${file.originalFilename}`);
-
-        // Validate file
+                // Validate file
         if (!file.originalFilename) {
           errors.push(`File ${index + 1}: File must have a name`);
           continue;
@@ -89,9 +82,7 @@ async function handler(
 
         // Read file content
         const fileContent = fs.readFileSync(file.filepath);
-        console.log(`�� File read: ${fileContent.length} bytes`);
-        
-        // Generate unique filename
+                // Generate unique filename
         const timestamp = Date.now();
         const randomId = Math.random().toString(36).substring(7);
         const ext = path.extname(file.originalFilename);
@@ -127,9 +118,7 @@ async function handler(
           continue;
         }
 
-        console.log('✅ File uploaded to storage:', storagePath);
-
-        // Get public URL
+                // Get public URL
         const { data: urlData } = supabase.storage
           .from('assets')
           .getPublicUrl(storagePath);
@@ -140,9 +129,7 @@ async function handler(
           continue;
         }
 
-        console.log('🔗 Public URL generated:', urlData.publicUrl);
-
-        // Save asset metadata to database with proper field mapping
+                // Save asset metadata to database with proper field mapping
         const assetData = {
           name: file.originalFilename,
           type: assetType,
@@ -190,9 +177,7 @@ async function handler(
           continue;
         }
 
-        console.log('✅ Asset saved to database:', assetRecord.id);
-
-        // Map database record to frontend format
+                // Map database record to frontend format
         const asset = {
           id: assetRecord.id,
           name: assetRecord.name,
@@ -213,9 +198,7 @@ async function handler(
         };
 
         uploadedAssets.push(asset);
-        console.log(`✅ File ${index + 1} processed successfully`);
-
-      } catch (fileError) {
+              } catch (fileError) {
         console.error(`❌ File processing error for ${file.originalFilename}:`, fileError);
         errors.push(`${file.originalFilename}: Processing failed - ${fileError.message}`);
       } finally {
@@ -248,8 +231,7 @@ async function handler(
       response.message = `Some files failed to upload: ${errors.join('; ')}`;
     }
 
-    console.log(`✅ Upload complete: ${uploadedAssets.length} files uploaded successfully`);
-    return res.status(200).json(response);
+        return res.status(200).json(response);
 
   } catch (error) {
     console.error('❌ Upload handler error:', error);

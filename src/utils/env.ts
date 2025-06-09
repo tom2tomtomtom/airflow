@@ -174,35 +174,28 @@ export function logEnvironmentStatus(): void {
   try {
     const env = validateEnv()
     process.env.NODE_ENV === 'development' && if (process.env.NODE_ENV === 'development') {
-   process.env.NODE_ENV === 'development' && console.log('✅ Environment validation passed');
- }
+   process.env.NODE_ENV === 'development' &&  }
     
     if (env.NODE_ENV === 'production') {
       const readiness = checkProductionReadiness()
       if (readiness.isReady) {
         process.env.NODE_ENV === 'development' && if (process.env.NODE_ENV === 'development') {
-   process.env.NODE_ENV === 'development' && console.log('🚀 Production environment is ready!');
- }
+   process.env.NODE_ENV === 'development' &&  }
       } else {
         process.env.NODE_ENV === 'development' && if (process.env.NODE_ENV === 'development') {
-   process.env.NODE_ENV === 'development' && console.log('⚠️  Production environment issues:');
- }
+   process.env.NODE_ENV === 'development' &&  }
         readiness.missingVars.forEach(v => {
           if (process.env.NODE_ENV === 'development') {
             if (process.env.NODE_ENV === 'development') {
 
-              process.env.NODE_ENV === 'development' && console.log(`  ❌ Missing: ${v}`);
-
-            }
+              process.env.NODE_ENV === 'development' &&             }
           }
         });
         readiness.warnings.forEach(w => {
           if (process.env.NODE_ENV === 'development') {
             if (process.env.NODE_ENV === 'development') {
 
-              process.env.NODE_ENV === 'development' && console.log(`  ⚠️  ${w}`);
-
-            }
+              process.env.NODE_ENV === 'development' &&             }
           }
         });
       }

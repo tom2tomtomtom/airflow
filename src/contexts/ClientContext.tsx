@@ -48,8 +48,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           // Get user from localStorage
           const storedUser = localStorage.getItem("airwave_user");
           if (!storedUser) {
-            process.env.NODE_ENV === 'development' && console.log('No stored user found, skipping client fetch');
-            setLoading(false);
+            process.env.NODE_ENV === 'development' &&             setLoading(false);
             return;
           }
           
@@ -57,8 +56,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           
           // Check if we have a valid token
           if (!user.token || user.token === "mock_token") {
-            process.env.NODE_ENV === 'development' && console.log('No valid token found, skipping client fetch');
-            setLoading(false);
+            process.env.NODE_ENV === 'development' &&             setLoading(false);
             return;
           }
           

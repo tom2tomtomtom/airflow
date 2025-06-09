@@ -46,10 +46,7 @@ export default async function handler(
   try {
     // Debug logging
     if (process.env.NODE_ENV === 'development') {
-      process.env.NODE_ENV === 'development' && console.log('Signup attempt for:', email);
-      process.env.NODE_ENV === 'development' && console.log('Supabase URL exists:', !!process.env.NEXT_PUBLIC_SUPABASE_URL);
-      process.env.NODE_ENV === 'development' && console.log('Supabase Anon Key exists:', !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-    }
+      process.env.NODE_ENV === 'development' &&       process.env.NODE_ENV === 'development' &&       process.env.NODE_ENV === 'development' &&     }
 
     // Check if Supabase is properly configured
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
@@ -62,8 +59,7 @@ export default async function handler(
 
     // Use Supabase authentication
     if (process.env.NODE_ENV === 'development') {
-      process.env.NODE_ENV === 'development' && console.log('Attempting Supabase signup...');
-    }
+      process.env.NODE_ENV === 'development' &&     }
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
@@ -103,21 +99,16 @@ export default async function handler(
       });
     }
 
-    process.env.NODE_ENV === 'development' && console.log('Supabase signup successful, user created:', authData.user.id);
-
-    // Check if email confirmation is required
+    process.env.NODE_ENV === 'development' &&     // Check if email confirmation is required
     if (!authData.session) {
-      process.env.NODE_ENV === 'development' && console.log('Email confirmation required');
-      return res.status(200).json({
+      process.env.NODE_ENV === 'development' &&       return res.status(200).json({
         success: true,
         message: 'Please check your email for a confirmation link before logging in.',
       });
     }
 
     // If no email confirmation required, create user profile
-    process.env.NODE_ENV === 'development' && console.log('Creating user profile...');
-    
-    // First check if profiles table exists by attempting to query it
+    process.env.NODE_ENV === 'development' &&     // First check if profiles table exists by attempting to query it
     const { data: existingProfile, error: profileCheckError } = await supabase
       .from('profiles')
       .select('id')

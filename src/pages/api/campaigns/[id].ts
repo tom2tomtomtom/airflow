@@ -54,9 +54,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, campaignId: string): Promise<void> {
-  console.log('Individual campaign API called: GET ID:', campaignId, 'User:', user.id);
-  
-  // For now, return mock campaign data since campaigns table doesn't exist yet
+    // For now, return mock campaign data since campaigns table doesn't exist yet
   // TODO: Implement actual database queries when campaigns table is ready
   
   const mockCampaign = {
@@ -133,9 +131,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, c
     insights: ['Campaign ready for launch']
   };
 
-  console.log('Individual campaign found:', mockCampaign.name);
-
-  return res.json({
+    return res.json({
     data: mockCampaign
   });
 }

@@ -52,8 +52,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
     // Check active session
     const checkSession = async () => {
       try {
-        console.log('🔍 Checking active session...');
-        const { data: { session }, error } = await supabaseClient.auth.getSession();
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
         
         if (error) {
           console.error('❌ Error getting session:', error);
@@ -67,8 +66,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         }
 
         if (session) {
-          console.log('✅ Session found for user:', session.user.email);
-          setAuthState({
+                    setAuthState({
             user: session.user,
             session,
             loading: false,
@@ -85,11 +83,9 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
               role: session.user.user_metadata?.role || 'user',
             };
             localStorage.setItem('airwave_user', JSON.stringify(userData));
-            console.log('💾 User data stored in localStorage');
-          }
+                      }
         } else {
-          console.log('❌ No active session found');
-          setAuthState({
+                    setAuthState({
             user: null,
             session: null,
             loading: false,
@@ -117,9 +113,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
     // Listen for auth state changes
     const { data: { subscription } } = supabaseClient.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('🔄 Auth state changed:', event, session?.user?.email);
-        
-        if (session) {
+                if (session) {
           setAuthState({
             user: session.user,
             session,
@@ -137,8 +131,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
               role: session.user.user_metadata?.role || 'user',
             };
             localStorage.setItem('airwave_user', JSON.stringify(userData));
-            console.log('💾 User data updated in localStorage');
-          }
+                      }
         } else {
           setAuthState({
             user: null,
@@ -150,21 +143,16 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
           // Clear localStorage when logged out
           if (typeof window !== 'undefined') {
             localStorage.removeItem('airwave_user');
-            console.log('🗑️ User data cleared from localStorage');
-          }
+                      }
         }
 
         // Handle auth events
         if (event === 'SIGNED_OUT') {
-          console.log('👋 User signed out, redirecting to login...');
-          router.push('/login');
+                    router.push('/login');
         } else if (event === 'TOKEN_REFRESHED') {
-          console.log('🔄 Token refreshed successfully');
-        } else if (event === 'USER_UPDATED') {
-          console.log('👤 User data updated');
-        } else if (event === 'SIGNED_IN') {
-          console.log('🎉 User signed in successfully');
-        }
+                  } else if (event === 'USER_UPDATED') {
+                  } else if (event === 'SIGNED_IN') {
+                  }
       }
     );
 
@@ -175,8 +163,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const login = async (email: string, password: string) => {
     try {
-      console.log('🔐 Attempting login for:', email);
-      const { data, error } = await supabaseClient.auth.signInWithPassword({
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
         email,
         password,
       });
@@ -187,8 +174,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
 
       if (data.session) {
-        console.log('✅ Login successful');
-        // Force a session refresh to ensure cookies are properly set
+                // Force a session refresh to ensure cookies are properly set
         await supabaseClient.auth.refreshSession();
         
         // The onAuthStateChange listener will update the state
@@ -205,8 +191,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const signup = async (email: string, password: string, name: string) => {
     try {
-      console.log('📝 Attempting signup for:', email);
-      const { data, error } = await supabaseClient.auth.signUp({
+            const { data, error } = await supabaseClient.auth.signUp({
         email,
         password,
         options: {
@@ -222,8 +207,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         throw error;
       }
 
-      console.log('✅ Signup successful');
-      return { success: true, user: data.user };
+            return { success: true, user: data.user };
     } catch (error: any) {
       console.error('💥 Signup error:', error);
       return { success: false, error: error.message };
@@ -232,15 +216,13 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const logout = async () => {
     try {
-      console.log('👋 Attempting logout...');
-      const { error } = await supabaseClient.auth.signOut();
+            const { error } = await supabaseClient.auth.signOut();
       if (error) {
         console.error('❌ Logout error:', error);
         throw error;
       }
       
-      console.log('✅ Logout successful');
-      // The onAuthStateChange listener will handle the state update and redirect
+            // The onAuthStateChange listener will handle the state update and redirect
     } catch (error) {
       console.error('💥 Logout error:', error);
     }
@@ -248,8 +230,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const refreshSession = async () => {
     try {
-      console.log('🔄 Refreshing session...');
-      const { data: { session }, error } = await supabaseClient.auth.refreshSession();
+            const { data: { session }, error } = await supabaseClient.auth.refreshSession();
       
       if (error) {
         console.error('❌ Session refresh error:', error);
@@ -257,12 +238,10 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
       
       if (session) {
-        console.log('✅ Session refreshed successfully');
-        return { success: true };
+                return { success: true };
       }
       
-      console.log('❌ No session returned from refresh');
-      return { success: false };
+            return { success: false };
     } catch (error: any) {
       console.error('💥 Session refresh error:', error);
       return { success: false, error: error.message };

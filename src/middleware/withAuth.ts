@@ -51,14 +51,11 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
     const { data: { user: cookieUser }, error: cookieError } = await supabase.auth.getUser();
     
     if (cookieUser && !cookieError) {
-      console.log('✅ Auth Method 1: Cookie-based auth successful');
-      return { user: cookieUser, supabase };
+            return { user: cookieUser, supabase };
     }
     
-    console.log('⚠️ Auth Method 1: Cookie auth failed:', cookieError?.message);
-  } catch (cookieErr) {
-    console.log('⚠️ Auth Method 1: Cookie auth exception:', cookieErr);
-  }
+      } catch (cookieErr) {
+      }
 
   // Method 2: Try Authorization header (Bearer token)
   try {
@@ -81,15 +78,12 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
       const { data: { user: headerUser }, error: headerError } = await supabase.auth.getUser(token);
       
       if (headerUser && !headerError) {
-        console.log('✅ Auth Method 2: Bearer token auth successful');
-        return { user: headerUser, supabase };
+                return { user: headerUser, supabase };
       }
       
-      console.log('⚠️ Auth Method 2: Bearer token auth failed:', headerError?.message);
-    }
+          }
   } catch (headerErr) {
-    console.log('⚠️ Auth Method 2: Bearer token auth exception:', headerErr);
-  }
+      }
 
   // Method 3: Try custom auth headers (fallback for API clients)
   try {
@@ -110,19 +104,15 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
       const { data: { user: customUser }, error: customError } = await supabase.auth.getUser(customToken);
       
       if (customUser && !customError) {
-        console.log('✅ Auth Method 3: Custom token auth successful');
-        return { user: customUser, supabase };
+                return { user: customUser, supabase };
       }
       
-      console.log('⚠️ Auth Method 3: Custom token auth failed:', customError?.message);
-    }
+          }
   } catch (customErr) {
-    console.log('⚠️ Auth Method 3: Custom token auth exception:', customErr);
-  }
+      }
 
   // All methods failed
-  console.log('❌ All authentication methods failed');
-  return { user: null, supabase: null };
+    return { user: null, supabase: null };
 }
 
 // Enhanced user profile handling with better error recovery
@@ -135,13 +125,9 @@ async function getUserProfile(supabase: any, user: any): Promise<any> {
       .single();
 
     if (profileError) {
-      console.log('Profile error:', profileError.message, 'Code:', profileError.code);
-      
-      // If profile doesn't exist, create a basic one
+            // If profile doesn't exist, create a basic one
       if (profileError.code === 'PGRST116') {
-        console.log('Profile does not exist, creating one...');
-        
-        const userName = user.user_metadata?.name || user.email?.split('@')[0] || 'User';
+                const userName = user.user_metadata?.name || user.email?.split('@')[0] || 'User';
         const nameParts = userName.split(' ');
         
         const { data: newProfile, error: createError } = await supabase
@@ -163,8 +149,7 @@ async function getUserProfile(supabase: any, user: any): Promise<any> {
           return createFallbackProfile(user);
         }
         
-        console.log('✅ Profile created successfully');
-        return newProfile;
+                return newProfile;
       }
       
       // For other errors, return fallback profile
@@ -218,8 +203,7 @@ export function withAuth(handler: AuthenticatedHandler) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     // TEMPORARY: Bypass auth for Flow APIs in development for testing drag/drop
     if (process.env.NODE_ENV === 'development' && req.url?.includes('/api/flow/')) {
-      console.log('Bypassing auth for Flow API:', req.url);
-      const mockUser = {
+            const mockUser = {
         id: '354d56b0-440b-403e-b207-7038fb8b00d7',
         email: 'tomh@redbaez.com',
         role: 'admin' as UserRole,
@@ -235,14 +219,11 @@ export function withAuth(handler: AuthenticatedHandler) {
     }
     
     try {
-      console.log(`🔐 Authenticating request: ${req.method} ${req.url}`);
-      
-      // Enhanced token validation with multiple methods
+            // Enhanced token validation with multiple methods
       const { user, supabase } = await validateUserToken(req);
 
       if (!user || !supabase) {
-        console.log('❌ Authentication failed - no valid token found');
-        return errorResponse(
+                return errorResponse(
           res,
           ErrorCode.UNAUTHORIZED,
           'Authentication required',
@@ -250,9 +231,7 @@ export function withAuth(handler: AuthenticatedHandler) {
         );
       }
 
-      console.log('✅ User authenticated:', user.id, user.email);
-
-      // Get user profile with enhanced error handling
+            // Get user profile with enhanced error handling
       const profile = await getUserProfile(supabase, user);
 
       // Get user's client access with error handling

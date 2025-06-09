@@ -134,9 +134,7 @@ const NewCampaign: React.FC = () => {
         creative_requirements: {}
       };
 
-      console.log('Sending campaign data:', apiData);
-      
-      const response = await fetch('/api/campaigns', {
+            const response = await fetch('/api/campaigns', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

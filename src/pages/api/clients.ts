@@ -23,9 +23,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
   const { method } = req;
   const user = (req as any).user;
 
-  console.log('Clients API called:', method, 'User:', user?.id, user?.email);
-
-  // Create Supabase server client with proper cookie handling
+    // Create Supabase server client with proper cookie handling
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -55,11 +53,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
 
     switch (method) {
       case 'GET':
-        console.log('Calling handleGet...');
-        return handleGet(req, res, user, supabase);
+                return handleGet(req, res, user, supabase);
       case 'POST':
-        console.log('Calling handlePost...');
-        return handlePost(req, res, user, supabase);
+                return handlePost(req, res, user, supabase);
       default:
         return res.status(405).json({ 
           success: false, 
@@ -78,9 +74,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>, user: any, supabase: any): Promise<void> {
-  console.log('handleGet started for user:', user.id);
-  
-  // Check if RLS might be blocking access - try service role as fallback
+    // Check if RLS might be blocking access - try service role as fallback
   const serviceSupabase = getServiceSupabase();
   
   try {
@@ -149,8 +143,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
 
     // If RLS blocks regular query, try with service role
     if (error && error.code === '42501') {
-      console.log('RLS blocking client retrieval, trying service role...');
-      const serviceQuery = serviceSupabase
+            const serviceQuery = serviceSupabase
         .from('clients')
         .select(`
           id,
@@ -195,8 +188,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
         
       // If RLS blocks contacts, try service role
       if (contactsError && contactsError.code === '42501') {
-        console.log('RLS blocking contacts, trying service role...');
-        const serviceContactsResult = await serviceSupabase
+                const serviceContactsResult = await serviceSupabase
           .from('client_contacts')
           .select('*')
           .in('client_id', clientIds)
@@ -277,9 +269,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
       contacts
     } = req.body;
 
-    console.log('handlePost user data:', { userId: user.id, userEmail: user.email });
-
-    // Basic validation
+        // Basic validation
     if (!name || !industry) {
       return res.status(400).json({
         success: false,
@@ -302,9 +292,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
       });
     }
 
-    console.log('Profile verified:', profileData);
-
-    // Generate slug from name
+        // Generate slug from name
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
     // Create client in Supabase
@@ -328,9 +316,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
       created_by: user.id,  // Required for RLS policy
     };
 
-    console.log('Attempting to insert client with data:', clientData);
-
-    // Try using service role to bypass RLS for the insert if regular insert fails
+        // Try using service role to bypass RLS for the insert if regular insert fails
     let { data: client, error } = await supabase
       .from('clients')
       .insert(clientData)
@@ -339,8 +325,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
 
     // If RLS fails, try with service role
     if (error && error.code === '42501') {
-      console.log('RLS failed, trying with service role...');
-      const serviceSupabase = getServiceSupabase();
+            const serviceSupabase = getServiceSupabase();
       
       const serviceResult = await serviceSupabase
         .from('clients')

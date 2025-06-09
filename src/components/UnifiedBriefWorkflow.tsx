@@ -156,9 +156,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
 
   // Define handleProcessBrief first
   const handleProcessBrief = useCallback(async (file: File) => {
-    console.log('handleProcessBrief called with file:', file.name);
-    console.log('Current activeStep before processing:', activeStep);
-    setProcessing(true);
+            setProcessing(true);
     
     // Helper function to make API call with retry
     const makeAPICall = async (retryCount = 0): Promise<any> => {
@@ -179,15 +177,12 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
           }
         });
         
-        console.log('Response status:', response.status, response.statusText);
-
-        if (!response.ok) {
+                if (!response.ok) {
           throw new Error(`API returned ${response.status}: ${response.statusText}`);
         }
 
         const result = await response.json();
-        console.log('API response received:', result.success);
-        return result;
+                return result;
         
       } catch (error) {
         console.error(`API call failed (attempt ${retryCount + 1}):`, error);
@@ -207,14 +202,12 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
       const result = await makeAPICall();
       
       if (result.success) {
-        console.log('Brief parsed successfully:', result.data?.title);
-        setBriefData(result.data);
+                setBriefData(result.data);
         setOriginalBriefData(result.data);
         setProcessing(false);
         setShowBriefReview(true);
         showNotification('Brief processed successfully! Please review and edit the parsed content.', 'success');
-        console.log('Brief parsed - showing review step, activeStep should remain:', activeStep);
-        // Don't change activeStep until user confirms the brief
+                // Don't change activeStep until user confirms the brief
       } else {
         throw new Error(result.message || 'Failed to parse brief');
       }
@@ -231,12 +224,9 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
 
   // Dropzone configuration - defined after handleProcessBrief
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    console.log('File dropped:', acceptedFiles.length, 'files');
-    console.log('Current state - activeStep:', activeStep, 'open:', open);
-    if (acceptedFiles.length > 0) {
+            if (acceptedFiles.length > 0) {
       const file = acceptedFiles[0];
-      console.log('Processing file:', file.name, 'size:', file.size);
-      setUploadedFile(file);
+            setUploadedFile(file);
       setProcessing(true); // Set processing immediately to prevent UI flash
       handleProcessBrief(file);
     }
@@ -259,8 +249,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
     if (!open) {
       // Only reset state when dialog closes, and add a delay to prevent race conditions
       setTimeout(() => {
-        console.log('Dialog closed, resetting workflow state');
-        setActiveStep(0);
+                setActiveStep(0);
         setBriefData(null);
         setOriginalBriefData(null);
         setMotivations([]);
@@ -273,19 +262,16 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
         setBriefConfirmed(false);
       }, 100);
     } else {
-      console.log('Dialog opened, initializing workflow');
-    }
+          }
   }, [open]);
 
   // Debug effect to track activeStep changes
   React.useEffect(() => {
-    console.log('ActiveStep changed to:', activeStep);
-  }, [activeStep]);
+      }, [activeStep]);
 
   // Debug effect to track open state changes
   React.useEffect(() => {
-    console.log('Dialog open state changed to:', open);
-  }, [open]);
+      }, [open]);
 
   // Return mobile version for mobile devices
   if (isMobile) {
@@ -307,8 +293,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
       return;
     }
 
-    console.log('Starting motivation generation, current step:', activeStep);
-    setProcessing(true);
+        setProcessing(true);
     
     try {
       const response = await fetch('/api/flow/generate-motivations', {
@@ -332,8 +317,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
           selected: false
         }));
         
-        console.log('Motivations generated successfully, keeping step:', activeStep);
-        setMotivations(motivationsWithSelection);
+                setMotivations(motivationsWithSelection);
         setProcessing(false);
         showNotification(`Generated ${result.data.length} motivations!`, 'success');
       } else {
@@ -361,8 +345,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
       showNotification('Please select at least 1 motivation to continue', 'warning');
       return;
     }
-    console.log('Moving from motivations step to copy generation step');
-    // Ensure we're not in a processing state when transitioning
+        // Ensure we're not in a processing state when transitioning
     if (!processing) {
       setActiveStep(2);
       // Add a small delay to ensure state is updated before generating copy
@@ -387,8 +370,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
       return;
     }
 
-    console.log('Starting copy generation, current step:', activeStep);
-    setProcessing(true);
+        setProcessing(true);
     
     try {
       const response = await fetch('/api/flow/generate-copy', {
@@ -415,8 +397,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
           selected: false
         }));
         
-        console.log('Copy generated successfully, keeping step:', activeStep);
-        setCopyVariations(copyWithSelection);
+                setCopyVariations(copyWithSelection);
         setProcessing(false);
         showNotification(`Generated ${result.data.length} copy variations!`, 'success');
       } else {
@@ -560,11 +541,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
                     briefData={briefData}
                     onUpdate={setBriefData}
                     onProceed={() => {
-                      console.log('BriefReviewEditor: onProceed called, moving to step 1');
-                      console.log('Current step before transition:', activeStep);
-                      console.log('Brief data being confirmed:', briefData?.title);
-                      
-                      // Ensure brief data is valid before proceeding
+                                                                                        // Ensure brief data is valid before proceeding
                       if (!briefData || !briefData.title) {
                         showNotification('Brief data is invalid. Please try uploading again.', 'error');
                         return;
@@ -576,15 +553,13 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
                       
                       // Force state update before proceeding
                       setTimeout(() => {
-                        console.log('Setting activeStep to 1 for motivations');
-                        setActiveStep(1);
+                                                setActiveStep(1);
                         showNotification('Brief confirmed! Ready to generate motivations.', 'success');
                         
                         // Auto-trigger motivation generation after state update
                         setTimeout(() => {
                           if (motivations.length === 0 && !processing) {
-                            console.log('Auto-triggering motivation generation');
-                            handleGenerateMotivations();
+                                                        handleGenerateMotivations();
                           }
                         }, 300);
                       }, 50);
@@ -912,18 +887,15 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
   const handleDialogClose = (event: {}, reason: 'backdropClick' | 'escapeKeyDown') => {
     // Prevent closing during processing to avoid losing state
     if (processing) {
-      console.log('Dialog close prevented - processing in progress');
-      return;
+            return;
     }
     
     // Prevent accidental closure during brief editing or motivation generation
     if (reason === 'backdropClick' && (showBriefReview || motivations.length > 0 || copyVariations.length > 0)) {
-      console.log('Dialog close prevented - user has work in progress');
-      return;
+            return;
     }
     
-    console.log('Dialog close triggered by:', reason);
-    onClose();
+        onClose();
   };
 
   return (
@@ -949,8 +921,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
           <button
             onClick={() => {
               if (processing) {
-                console.log('Close button click prevented - processing in progress');
-                return;
+                                return;
               }
               onClose();
             }}

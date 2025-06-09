@@ -35,9 +35,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   try {
-    console.log(`Storing ${selectedCopy.length} copy variations as assets`);
-
-    // Store each copy variation as a text asset
+        // Store each copy variation as a text asset
     const storedAssets = [];
     
     for (const copy of selectedCopy) {
@@ -91,9 +89,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       });
     }
 
-    console.log(`Successfully stored ${storedAssets.length} copy assets`);
-
-    return res.status(200).json({
+        return res.status(200).json({
       success: true,
       data: {
         storedAssets,

@@ -26,9 +26,7 @@ export type AuthenticatedHandler = (
 export function withAuth(handler: AuthenticatedHandler) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     try {
-      console.log('🔐 withAuth: Starting authentication check...');
-      
-      // Create Supabase server client with proper cookie handling
+            // Create Supabase server client with proper cookie handling
       const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -51,8 +49,7 @@ export function withAuth(handler: AuthenticatedHandler) {
       const { data: { user }, error } = await supabase.auth.getUser();
 
       if (error || !user) {
-        console.log('❌ withAuth: Supabase auth error:', error?.message || 'No user found');
-        return errorResponse(
+                return errorResponse(
           res,
           ErrorCode.UNAUTHORIZED,
           'Authentication required',
@@ -60,9 +57,7 @@ export function withAuth(handler: AuthenticatedHandler) {
         );
       }
 
-      console.log('✅ withAuth: Authenticated user:', user.id, user.email);
-
-      // Try to get user profile from Supabase
+            // Try to get user profile from Supabase
       let profile = null;
       try {
         const { data: profileData, error: profileError } = await supabase
@@ -72,13 +67,9 @@ export function withAuth(handler: AuthenticatedHandler) {
           .single();
 
         if (profileError) {
-          console.log('⚠️ withAuth: Profile error:', profileError.message, 'Code:', profileError.code);
-          
-          // If profile doesn't exist, create a basic one
+                    // If profile doesn't exist, create a basic one
           if (profileError.code === 'PGRST116') {
-            console.log('🔨 withAuth: Profile does not exist, creating one...');
-            
-            const userName = user.user_metadata?.name || user.email?.split('@')[0] || 'User';
+                        const userName = user.user_metadata?.name || user.email?.split('@')[0] || 'User';
             const nameParts = userName.split(' ');
             
             const profileData = {
@@ -114,8 +105,7 @@ export function withAuth(handler: AuthenticatedHandler) {
                 is_active: true,
               };
             } else {
-              console.log('✅ withAuth: Profile created successfully:', newProfile.id);
-              profile = newProfile;
+                            profile = newProfile;
             }
           } else {
             console.error('💥 withAuth: Unexpected profile error:', profileError);
@@ -134,8 +124,7 @@ export function withAuth(handler: AuthenticatedHandler) {
             };
           }
         } else {
-          console.log('✅ withAuth: Profile found:', profileData.id);
-          profile = profileData;
+                    profile = profileData;
         }
       } catch (profileException) {
         console.error('💥 withAuth: Profile creation exception:', profileException);
@@ -181,9 +170,7 @@ export function withAuth(handler: AuthenticatedHandler) {
         tenantId: profile?.tenant_id || ''
       };
 
-      console.log('🎯 withAuth: Authentication successful for user:', user.email);
-
-      // Call the handler
+            // Call the handler
       return await handler(req as AuthenticatedRequest, res);
     } catch (error) {
       const message = getErrorMessage(error);

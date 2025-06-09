@@ -12,9 +12,7 @@ const BriefParseSchema = z.object({
 
 async function extractTextFromFile(fileUrl: string): Promise<string> {
   try {
-    console.log('Extracting text from file:', fileUrl);
-    
-    // Get the file from Supabase storage
+        // Get the file from Supabase storage
     const { data: fileData, error: downloadError } = await supabase.storage
       .from(env.STORAGE_BUCKET)
       .download(fileUrl);

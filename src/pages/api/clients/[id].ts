@@ -17,9 +17,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
   const { id } = query;
   const user = (req as any).user;
 
-  console.log('Individual client API called:', method, 'ID:', id, 'User:', user?.id);
-
-  if (method !== 'GET') {
+    if (method !== 'GET') {
     return res.status(405).json({ 
       success: false, 
       message: 'Method not allowed' 
@@ -64,8 +62,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
     const serviceSupabase = getServiceSupabase();
 
     // Use service role directly since we know RLS is blocking regular queries
-    console.log('Using service role for individual client retrieval');
-    const { data: client, error } = await serviceSupabase
+        const { data: client, error } = await serviceSupabase
       .from('clients')
       .select(`
         id,
@@ -132,9 +129,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
       contacts: contacts || [],
     };
 
-    console.log('Individual client found:', transformedClient.name);
-
-    return res.json({
+        return res.json({
       success: true,
       client: transformedClient,
     });

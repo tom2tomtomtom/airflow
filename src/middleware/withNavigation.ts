@@ -72,8 +72,7 @@ export function withAuthRedirect(redirectTo: string = '/login') {
             });
           }
 
-          console.log('🔐 Redirecting unauthenticated user to:', redirectTo);
-          return res.redirect(302, redirectTo);
+                    return res.redirect(302, redirectTo);
         }
 
         return await handler(req, res);

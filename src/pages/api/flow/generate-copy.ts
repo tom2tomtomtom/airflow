@@ -76,14 +76,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 
   try {
-    console.log(`Generating copy variations for ${motivations.length} motivations`);
-
-    // Generate 5 copy variations per motivation (max 10 words each)
+        // Generate 5 copy variations per motivation (max 10 words each)
     const copyVariations = await generateCopyFromMotivations(motivations, briefData);
 
-    console.log(`Generated ${copyVariations.length} copy variations`);
-
-    return res.status(200).json({
+        return res.status(200).json({
       success: true,
       data: copyVariations,
       message: 'Copy variations generated successfully'
@@ -102,19 +98,16 @@ async function generateCopyFromMotivations(motivations: Motivation[], briefData:
   // Try AI-powered generation first
   if (process.env.OPENAI_API_KEY) {
     try {
-      console.log('Generating copy with OpenAI...');
-      const aiCopy = await generateCopyWithAI(motivations, briefData);
+            const aiCopy = await generateCopyWithAI(motivations, briefData);
       if (aiCopy && aiCopy.length > 0) {
-        console.log(`OpenAI generated ${aiCopy.length} copy variations`);
-        return aiCopy;
+                return aiCopy;
       }
     } catch (error) {
       console.warn('OpenAI copy generation failed, falling back to templates:', error);
     }
   }
 
-  console.log('Using template-based copy generation...');
-  return generateCopyWithTemplates(motivations, briefData);
+    return generateCopyWithTemplates(motivations, briefData);
 }
 
 async function generateCopyWithAI(motivations: Motivation[], briefData: BriefData): Promise<CopyVariation[]> {
@@ -182,9 +175,7 @@ Respond with a JSON array of copy variations. Generate exactly 5 variations per 
     throw new Error('No response from OpenAI');
   }
 
-  console.log('OpenAI copy response received');
-  
-  try {
+    try {
     // Clean up markdown formatting that OpenAI sometimes adds
     let cleanedResponse = responseText;
     if (cleanedResponse.includes('```json')) {
