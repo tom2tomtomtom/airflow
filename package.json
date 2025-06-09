@@ -69,6 +69,7 @@
     "eslint": "8.46.0",
     "eslint-config-next": "13.4.12",
     "eslint-plugin-unused-imports": "^3.0.0",
+    "form-data": "^4.0.3",
     "formidable": "^3.5.4",
     "glob": "^10.3.10",
     "ioredis": "^5.6.1",
