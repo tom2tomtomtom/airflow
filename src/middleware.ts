@@ -14,6 +14,7 @@ const publicRoutes = [
   '/verify-success',
   '/unauthorized',
   '/test-auth',
+  '/test-flow',
   '/api/auth/csrf-token',
   '/api/auth/login',
   '/api/auth/signup',

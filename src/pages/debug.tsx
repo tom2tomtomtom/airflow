@@ -21,7 +21,7 @@ export default function DebugPage() {
         </Typography>
         <Grid container spacing={2}>
           {Object.entries(envVars).map(([key, value]) => (
-            <Grid item xs={12} key={key}>
+            <Grid size={{ xs: 12 }} key={key}>
               <Typography>
                 <strong>{key}:</strong> {value || 'NOT SET'}
               </Typography>

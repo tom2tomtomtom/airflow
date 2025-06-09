@@ -4,7 +4,6 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import {
   Box,
-  Grid,
   Paper,
   Typography,
   Card,
@@ -42,6 +41,7 @@ import {
   List,
   Switch,
   Slider,
+  Grid,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -161,7 +161,7 @@ const MatrixPage: React.FC = () => {
       isDefault: false,
     };
     setVariations([...variations, newVariation]);
-    
+
     // Add field values for new variation
     if (selectedTemplate) {
       const newFieldValues: FieldValue[] = [];
@@ -177,12 +177,12 @@ const MatrixPage: React.FC = () => {
   };
 
   const handleDuplicateVariation = (variationId: string) => {
-    const sourcevVariation = variations.find(v => v.id === variationId);
-    if (!sourcevVariation) return;
+    const sourceVariation = variations.find(v => v.id === variationId);
+    if (!sourceVariation) return;
 
     const newVariation: Variation = {
       id: `var-${Date.now()}`,
-      name: `${sourcevVariation.name} (Copy)`,
+      name: `${sourceVariation.name} (Copy)`,
       isActive: true,
       isDefault: false,
     };
@@ -195,7 +195,6 @@ const MatrixPage: React.FC = () => {
       variationId: newVariation.id,
     }));
     setFieldValues([...fieldValues, ...newFieldValues]);
-
     showNotification('Variation duplicated successfully', 'success');
   };
 
@@ -204,7 +203,6 @@ const MatrixPage: React.FC = () => {
       showNotification('Cannot delete the last variation', 'error');
       return;
     }
-
     setVariations(variations.filter(v => v.id !== variationId));
     setFieldValues(fieldValues.filter(fv => fv.variationId !== variationId));
     showNotification('Variation deleted', 'info');
@@ -232,11 +230,7 @@ const MatrixPage: React.FC = () => {
           return fv;
         });
       } else {
-        const newFieldValue: FieldValue = { 
-          fieldId, 
-          variationId, 
-          value: value || ''
-        };
+        const newFieldValue: FieldValue = { fieldId, variationId, value: value || '' };
         if (assetId !== undefined) {
           newFieldValue.assetId = assetId;
         }
@@ -261,12 +255,12 @@ const MatrixPage: React.FC = () => {
     // Generate strategic combinations based on active variations
     const activeVariations = variations.filter(v => v.isActive);
     const newCombinations: Combination[] = [];
-    
+
     if (activeVariations.length === 0) {
       showNotification('Please create and activate variations first', 'warning');
       return;
     }
-    
+
     // Single variation tests (for baseline performance)
     activeVariations.forEach((variation, index) => {
       newCombinations.push({
@@ -277,7 +271,7 @@ const MatrixPage: React.FC = () => {
         performanceScore: 75 + Math.random() * 20, // Simulated score
       });
     });
-    
+
     // A/B test combinations (pairs)
     if (activeVariations.length >= 2) {
       for (let i = 0; i < activeVariations.length - 1; i++) {
@@ -292,7 +286,7 @@ const MatrixPage: React.FC = () => {
         }
       }
     }
-    
+
     // Multi-variant tests (3+ variations)
     if (activeVariations.length >= 3) {
       // Full test with all variations
@@ -303,7 +297,7 @@ const MatrixPage: React.FC = () => {
         isSelected: false,
         performanceScore: 65 + Math.random() * 20,
       });
-      
+
       // Subset tests (75% of variations)
       const subsetSize = Math.max(3, Math.floor(activeVariations.length * 0.75));
       if (subsetSize < activeVariations.length) {
@@ -316,7 +310,7 @@ const MatrixPage: React.FC = () => {
         });
       }
     }
-    
+
     // Performance-based combination (select top performing if available)
     const hasPerformanceData = variations.some(v => v.performance?.score);
     if (hasPerformanceData && activeVariations.length >= 2) {
@@ -324,7 +318,7 @@ const MatrixPage: React.FC = () => {
         .filter(v => v.performance?.score)
         .sort((a, b) => (b.performance?.score || 0) - (a.performance?.score || 0))
         .slice(0, 3);
-      
+
       if (topPerformers.length >= 2) {
         newCombinations.push({
           id: `top-performers`,
@@ -414,23 +408,23 @@ const MatrixPage: React.FC = () => {
   const getMatrixQualityScore = () => {
     let score = 100;
     const issues: string[] = [];
-    
+
     // Check basic requirements
     if (!matrixName || matrixName.length < 3) {
       score -= 20;
       issues.push('Matrix needs a descriptive name');
     }
-    
+
     if (!matrixDescription || matrixDescription.length < 10) {
       score -= 15;
       issues.push('Add a detailed description');
     }
-    
+
     if (!selectedCampaign) {
       score -= 20;
       issues.push('Link matrix to a campaign');
     }
-    
+
     // Check variations
     const activeVariations = variations.filter(v => v.isActive);
     if (activeVariations.length === 0) {
@@ -440,7 +434,7 @@ const MatrixPage: React.FC = () => {
       score -= 10;
       issues.push('Add more variations for A/B testing');
     }
-    
+
     // Check field completeness
     if (selectedTemplate) {
       const totalFields = selectedTemplate.dynamicFields.length;
@@ -450,7 +444,7 @@ const MatrixPage: React.FC = () => {
           return fv && (fv.value || fv.assetId);
         });
       }).length;
-      
+
       const completionRatio = totalFields > 0 ? completedFields / totalFields : 1;
       if (completionRatio < 0.5) {
         score -= 15;
@@ -460,13 +454,13 @@ const MatrixPage: React.FC = () => {
         issues.push('Fill remaining template fields');
       }
     }
-    
+
     // Check combinations
     if (combinations.length === 0) {
       score -= 10;
       issues.push('Generate test combinations');
     }
-    
+
     return {
       score: Math.max(0, score),
       grade: score >= 90 ? 'A' : score >= 80 ? 'B' : score >= 70 ? 'C' : score >= 60 ? 'D' : 'F',
@@ -478,26 +472,26 @@ const MatrixPage: React.FC = () => {
   const getMatrixInsights = () => {
     const insights: string[] = [];
     const activeVariations = variations.filter(v => v.isActive);
-    
+
     if (activeVariations.length === 2) {
       insights.push('Perfect setup for A/B testing');
     } else if (activeVariations.length > 4) {
       insights.push('High variation count enables comprehensive testing');
     }
-    
+
     if (selectedTemplate?.platform) {
       insights.push(`Optimized for ${selectedTemplate.platform} platform`);
     }
-    
+
     if (combinations.filter(c => c.isSelected).length > 0) {
       insights.push('Test combinations selected and ready');
     }
-    
+
     const totalAssets = fieldValues.filter(fv => fv.assetId).length;
     if (totalAssets > 0) {
       insights.push(`${totalAssets} assets assigned to variations`);
     }
-    
+
     return insights;
   };
 
@@ -523,12 +517,10 @@ const MatrixPage: React.FC = () => {
       <Head>
         <title>Matrix Editor | AIrFLOW</title>
       </Head>
-
       <Box>
         <Typography variant="h4" gutterBottom>
           Campaign Matrix System
         </Typography>
-
         <Grid container spacing={3}>
           {/* Template Selection */}
           <Grid xs={12} md={3}>
@@ -547,11 +539,9 @@ const MatrixPage: React.FC = () => {
                 }}
                 sx={{ mb: 2 }}
               />
-              
               <Typography variant="h6" gutterBottom>
                 Select Template
               </Typography>
-              
               {isLoading ? (
                 <LoadingSkeleton variant="list" />
               ) : (
@@ -584,13 +574,13 @@ const MatrixPage: React.FC = () => {
           </Grid>
 
           {/* Matrix Editor */}
-          <Grid size={{ xs: 12, md: 9 }}>
+          <Grid xs={12} md={9}>
             {selectedTemplate ? (
               <Paper sx={{ p: 3 }}>
                 {/* Matrix Header */}
                 <Box sx={{ mb: 3 }}>
                   <Grid container spacing={2} alignItems="center">
-                    <Grid size={{ xs: 12, md: 4 }}>
+                    <Grid xs={12} md={4}>
                       <TextField
                         fullWidth
                         label="Matrix Name"
@@ -599,7 +589,7 @@ const MatrixPage: React.FC = () => {
                         required
                       />
                     </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
+                    <Grid xs={12} md={4}>
                       <FormControl fullWidth>
                         <InputLabel>Link to Campaign</InputLabel>
                         <Select
@@ -619,7 +609,7 @@ const MatrixPage: React.FC = () => {
                         </Select>
                       </FormControl>
                     </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
+                    <Grid xs={12} md={4}>
                       <Stack direction="row" spacing={1}>
                         <Button
                           variant="contained"
@@ -651,23 +641,22 @@ const MatrixPage: React.FC = () => {
                     fullWidth
                     label="Description"
                     value={matrixDescription}
-                    onChange={(e: React.ChangeEvent<HTMLElement>) => setMatrixDescription(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMatrixDescription(e.target.value)}
                     multiline
                     rows={2}
                     sx={{ mt: 2 }}
                   />
-                  
+
                   {/* Matrix Quality Indicator */}
                   {selectedTemplate && (
                     <Card sx={{ mt: 2, p: 2, bgcolor: 'background.default' }}>
                       <Grid container spacing={2} alignItems="center">
-                        <Grid size={{ xs: 12, md: 6 }}>
+                        <Grid xs={12} md={6}>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                             <Typography variant="h6">Matrix Quality</Typography>
-                            <Chip 
-                              label={`Grade ${getMatrixQualityScore().grade}`} 
-                              color={getMatrixQualityScore().score >= 80 ? 'success' : 
-                                     getMatrixQualityScore().score >= 60 ? 'warning' : 'error'}
+                            <Chip
+                              label={`Grade ${getMatrixQualityScore().grade}`}
+                              color={getMatrixQualityScore().score >= 80 ? 'success' : getMatrixQualityScore().score >= 60 ? 'warning' : 'error'}
                               variant="outlined"
                             />
                             <Typography variant="body2" color="text.secondary">
@@ -684,7 +673,7 @@ const MatrixPage: React.FC = () => {
                             </Box>
                           )}
                         </Grid>
-                        <Grid size={{ xs: 12, md: 6 }}>
+                        <Grid xs={12} md={6}>
                           <Typography variant="subtitle2" gutterBottom>Insights</Typography>
                           {getMatrixInsights().slice(0, 3).map((insight, index) => (
                             <Typography key={index} variant="caption" color="text.secondary" display="block">
@@ -719,7 +708,6 @@ const MatrixPage: React.FC = () => {
                         Add Variation
                       </Button>
                     </Box>
-
                     <TableContainer>
                       <Table>
                         <TableHead>
@@ -739,12 +727,15 @@ const MatrixPage: React.FC = () => {
                                   />
                                   <IconButton
                                     size="small"
-                                    onClick={() => handleDuplicateVariation(variation.id)} aria-label="Icon button">
+                                    onClick={() => handleDuplicateVariation(variation.id)}
+                                    aria-label="Duplicate variation"
+                                  >
                                     <DuplicateIcon fontSize="small" />
                                   </IconButton>
                                   <IconButton
                                     size="small"
-                                    onClick={() => handleDeleteVariation(variation.id)} aria-label="Icon button"
+                                    onClick={() => handleDeleteVariation(variation.id)}
+                                    aria-label="Delete variation"
                                     disabled={variations.length === 1}
                                   >
                                     <DeleteIcon fontSize="small" />
@@ -796,7 +787,8 @@ const MatrixPage: React.FC = () => {
                                         multiline={!!(field.constraints?.maxLength && field.constraints.maxLength > 50)}
                                         rows={field.constraints?.maxLength && field.constraints.maxLength > 50 ? 2 : 1}
                                         value={fieldValue?.value || ''}
-                                        onChange={(e: React.ChangeEvent<HTMLElement>) => handleFieldUpdate(field.id, variation.id, e.target.value)}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                          handleFieldUpdate(field.id, variation.id, e.target.value)}
                                         placeholder={field.defaultValue || 'Enter text...'}
                                       />
                                     ) : field.type === 'color' ? (
@@ -804,12 +796,18 @@ const MatrixPage: React.FC = () => {
                                         size="small"
                                         type="color"
                                         value={fieldValue?.value || '#000000'}
-                                        onChange={(e: React.ChangeEvent<HTMLElement>) => handleFieldUpdate(field.id, variation.id, e.target.value)}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                          handleFieldUpdate(field.id, variation.id, e.target.value)}
                                       />
                                     ) : fieldValue?.asset ? (
                                       <Box>
                                         {field.type === 'image' && (
-                                          <Image src={fieldValue.asset.url} alt={fieldValue.asset.name} width={500} height={300} />
+                                          <Image
+                                            src={fieldValue.asset.url}
+                                            alt={fieldValue.asset.name}
+                                            width={100}
+                                            height={60}
+                                          />
                                         )}
                                         <Typography variant="caption" display="block">
                                           {fieldValue.asset.name}
@@ -863,15 +861,14 @@ const MatrixPage: React.FC = () => {
                         Generate Combinations
                       </Button>
                     </Box>
-
                     {combinations.length === 0 ? (
                       <Alert severity="info">
-                        No combinations generated yet. Click &quot;Generate Combinations&quot; to create optimized variation sets.
+                        No combinations generated yet. Click "Generate Combinations" to create optimized variation sets.
                       </Alert>
                     ) : (
                       <Grid container spacing={2}>
                         {combinations.map(combo => (
-                          <Grid size={{ xs: 12, md: 6 }} key={combo.id}>
+                          <Grid xs={12} md={6} key={combo.id}>
                             <Card sx={{ position: 'relative' }}>
                               <CardContent>
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
@@ -904,13 +901,9 @@ const MatrixPage: React.FC = () => {
                                       Performance Score
                                     </Typography>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                      <Slider
-                                        value={combo.performanceScore}
-                                        disabled
-                                        sx={{ flex: 1 }}
-                                      />
+                                      <Slider value={combo.performanceScore} disabled sx={{ flex: 1 }} />
                                       <Typography variant="body2">
-                                        {combo.performanceScore}%
+                                        {Math.round(combo.performanceScore)}%
                                       </Typography>
                                     </Box>
                                   </Box>
@@ -935,7 +928,7 @@ const MatrixPage: React.FC = () => {
                     </Alert>
                     <Grid container spacing={2}>
                       {variations.map(variation => (
-                        <Grid size={{ xs: 12, md: 4 }} key={variation.id}>
+                        <Grid xs={12} md={4} key={variation.id}>
                           <Card>
                             <CardContent>
                               <Typography variant="h6" gutterBottom>
@@ -1001,8 +994,8 @@ const MatrixPage: React.FC = () => {
                 }).map((asset: Asset) => (
                   <ListItem
                     key={asset.id}
-                    button
                     onClick={() => handleAssetSelect(asset)}
+                    sx={{ cursor: 'pointer' }}
                   >
                     <ListItemAvatar>
                       {asset.type === 'image' && asset.thumbnail ? (
@@ -1041,7 +1034,7 @@ const MatrixPage: React.FC = () => {
             </Alert>
             <Grid container spacing={2}>
               {variations.filter(v => v.isActive).map(variation => (
-                <Grid size={{ xs: 12, md: 4 }} key={variation.id}>
+                <Grid xs={12} md={4} key={variation.id}>
                   <Card>
                     <Box
                       sx={{

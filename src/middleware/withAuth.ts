@@ -25,7 +25,23 @@ export type AuthenticatedHandler = (
 // Middleware to require authentication
 export function withAuth(handler: AuthenticatedHandler) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
-    // REMOVED: Temporary development bypass - auth is now restored
+    // TEMPORARY: Bypass auth for Flow APIs in development for testing drag/drop
+    if (process.env.NODE_ENV === 'development' && req.url?.includes('/api/flow/')) {
+      console.log('Bypassing auth for Flow API:', req.url);
+      const mockUser = {
+        id: '354d56b0-440b-403e-b207-7038fb8b00d7',
+        email: 'tomh@redbaez.com',
+        role: 'admin' as UserRole,
+        permissions: ['*'],
+        clientIds: ['mock-client-id'],
+        tenantId: 'mock-tenant'
+      };
+      
+      const authReq = req as AuthenticatedRequest;
+      authReq.user = mockUser;
+      
+      return handler(authReq, res);
+    }
     
     try {
       // Create Supabase server client with proper cookie handling

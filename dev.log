@@ -1,487 +1,726 @@
 
-> airwave@1.0.0 dev
+> airflow@1.0.0 dev
 > next dev
 
    ▲ Next.js 15.3.2
-   - Local:        http://localhost:3003
-   - Network:      http://192.168.68.117:3003
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.20.24:3000
    - Environments: .env.local, .env
    - Experiments (use with caution):
      ✓ optimizeCss
 
  ✓ Starting...
- ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
- ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
- ✓ Ready in 1385ms
- ✓ Compiled /middleware in 215ms (246 modules)
- ○ Compiling / ...
- ✓ Compiled / in 1027ms (1498 modules)
-(node:28655) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+ ✓ Ready in 1617ms
+ ○ Compiling /404 ...
+ ✓ Compiled /404 in 1015ms (1529 modules)
+(node:95199) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
 (Use `node --trace-deprecation ...` to show where the warning was created)
-Time 2.919208
- GET / 200 in 1952ms
-Time 1.415083
- GET / 200 in 219ms
-Time 1.032625
- GET / 200 in 216ms
- ○ Compiling /login ...
- ✓ Compiled /login in 647ms (1673 modules)
-Time 1.342958
- GET /login 200 in 1008ms
-Time 1.362292
- GET /_next/data/development/login.json?from=%2Fdashboard 200 in 231ms
-Time 1.142084
- GET / 200 in 229ms
-Time 0.868958
- GET / 200 in 215ms
-Time 1.608625
- GET /login 200 in 232ms
-Time 1.564625
- GET /_next/data/development/login.json?from=%2Fdashboard 200 in 329ms
-Time 1.285459
- GET /login? 200 in 252ms
-Time 1.170834
- GET / 200 in 230ms
-Time 0.625917
- GET / 200 in 212ms
-Time 0.956625
- GET /login 200 in 221ms
-Time 2.843667
- GET /_next/data/development/login.json?from=%2Fdashboard 200 in 234ms
- ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
- ✓ Compiled in 363ms (1673 modules)
-Time 1.641042
- GET / 200 in 390ms
-Time 0.564833
- GET / 200 in 209ms
-Time 2.151
- GET /login 200 in 278ms
-Time 1.642166
- GET /_next/data/development/login.json?from=%2Fdashboard 200 in 238ms
-Time 1.323708
- GET / 200 in 232ms
-Time 0.657166
- GET / 200 in 211ms
-Time 0.9235
- GET /login 200 in 346ms
-Time 1.124458
- GET /_next/data/development/login.json?from=%2Fdashboard 200 in 231ms
-Time 1.316166
- GET /login?from=%2Fdashboard 200 in 237ms
-Time 0.968042
- GET /login?from=%2Fclients 200 in 220ms
-Time 2.266459
- GET /login?from=%2Fassets 200 in 242ms
-Time 1.311375
- GET /login?from=%2Fgenerate-enhanced 200 in 236ms
- ✓ Compiled in 217ms (1667 modules)
- ✓ Compiled in 690ms (1679 modules)
- ✓ Compiled in 101ms (106 modules)
- ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
- ✓ Compiled in 207ms (177 modules)
- ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
- ✓ Compiled in 117ms (177 modules)
- ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
- ✓ Compiled in 206ms (177 modules)
- ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
- ✓ Compiled in 368ms (1605 modules)
- ✓ Compiled in 212ms (1679 modules)
- ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
- ✓ Compiled in 583ms (177 modules)
- ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
- ✓ Compiled in 303ms (178 modules)
- ✓ Compiled in 698ms (178 modules)
- ✓ Compiled in 179ms (178 modules)
- ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
- ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
- ✓ Compiled in 886ms (178 modules)
- ✓ Compiled in 62ms (178 modules)
- ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
- ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
- ✓ Compiled in 88ms (178 modules)
- ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
- ○ Compiling / ...
- ✓ Compiled / in 1094ms (1685 modules)
-Time 0.627
- GET / 200 in 1419ms
-Time 1.07325
- GET / 200 in 212ms
-Time 4.916834
- GET /login 200 in 308ms
+Time 2.858209
+ GET /_next/static/webpack/63d06c9dbd668e1f.webpack.hot-update.json 404 in 1798ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled /middleware in 114ms (178 modules)
+Time 0.851792
+ GET /_next/static/webpack/63d06c9dbd668e1f.webpack.hot-update.json 404 in 218ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ⨯ ./src/pages/dashboard.tsx
+Error:   [31mx[0m Expected '}', got '<eof>'
+   ,-[[36;1;4m/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/src/pages/dashboard.tsx[0m:1:1]
+ [2m1[0m | import React, { useEffect, useState } from 'react'; import { useRouter } from 'next/router'; import Head from 'next/head'; import { Box, Container, Paper, Typography, Button, Card, CardContent, CardActions, IconButton, Chip, CircularProgress, Alert, Grid, } from '@mui/material'; import { Image as ImageIcon, Description as DescriptionIcon, Campaign as CampaignIcon, AutoAwesome as AIIcon, ArrowForward, Add, Business as BusinessIcon, } from '@mui/icons-material'; import DashboardLayout from '@/components/DashboardLayout'; import { AnimatedActionButton } from '@/components/AnimatedComponents'; import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext'; import { useClient } from '@/contexts/ClientContext'; import { ProtectedRoute } from '@/components/ProtectedRoute'; interface QuickAction { title: string; description: string; icon: React.ReactNode; color: string; href: string; } const DashboardPage = () => { const router = useRouter(); const { user } = useSupabaseAuth(); const { activeClient } = useClient(); // Quick actions for easy navigation const quickActions: QuickAction[] = [ { title: 'Generate AI Content', description: 'Create images, copy, and videos with AI', icon: <AIIcon />, color: '#9c27b0', href: '/generate-enhanced', }, { title: 'Browse Templates', description: 'Start from pre-built templates', icon: <DescriptionIcon />, color: '#2196f3', href: '/templates', }, { title: 'Content Matrix', description: 'Plan your content strategy', icon: <CampaignIcon />, color: '#4caf50', href: '/matrix', }, { title: 'Asset Library', description: 'Manage your digital assets', icon: <ImageIcon />, color: '#ff9800', href: '/assets', }, ]; return ( <ProtectedRoute> <DashboardLayout> <Head> <title>Dashboard | AIrFLOW</title> </Head> <Container maxWidth="lg"> {/* Welcome Section */} <Box mb={4}> <Typography variant="h4" gutterBottom> Welcome back, {user?.user_metadata?.name || user?.email || 'User'}! </Typography> <Typography variant="body1" color="text.secondary"> {activeClient ? ( <>Working on: <Chip label={activeClient.name} size="small" /></> ) : ( 'Select a client to get started' )} </Typography> </Box> {/* No Client Selected */} {!activeClient && ( <Alert severity="info" sx={{ mb: 4 }}> <Box display="flex" justifyContent="space-between" alignItems="center"> <Typography>Please select a client to access the full dashboard features</Typography> <AnimatedActionButton onClick={() => router.push('/clients')}> <BusinessIcon sx={{ mr: 1 }} /> View Clients </AnimatedActionButton> </Box> </Alert> )} {/* Quick Actions */} <Typography variant="h5" gutterBottom mb={2}> Quick Actions </Typography> <Grid container spacing={3} mb={4}> {quickActions.map((action, index) => ( <Grid sm={6} md={3} key={index} xs={12} sm={6} md={3}> <Card sx={{ height: '100%', cursor: 'pointer', transition: 'transform 0.2s', '&:hover': { transform: 'translateY(-4px)', boxShadow: 3, }, }} onClick={() => router.push(action.href)} > <CardContent> <Box sx={{ width: 48, height: 48, borderRadius: 2, backgroundColor: action.color, display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2, }} > {React.cloneElement(action.icon as React.ReactElement, { sx: { color: 'white' }, })} </Box> <Typography variant="h6" gutterBottom> {action.title} </Typography> <Typography variant="body2" color="text.secondary"> {action.description} </Typography> </CardContent> <CardActions> <IconButton size="small" color="primary" aria-label="Icon button"> <ArrowForward /> </IconButton> </CardActions> </Card> </Grid> ))} </Grid> {/* Getting Started Section */} <Grid container spacing={3}> <Grid xs={12}> <Paper sx={{ p: 3 }}> <Typography variant="h6" gutterBottom> Getting Started with AIrFLOW </Typography> <Grid container spacing={2}> <Grid md={6} xs={12} md={6}> <Typography variant="body2" color="text.secondary" paragraph> New to AIrFLOW? Here's your simple workflow: </Typography> <Box component="ol" sx={{ pl: 2 }}> <Box component="li" sx={{ mb: 1 }}> <Typography variant="body2"> <strong>Create/Select Client:</strong> Start by setting up your client </Typography> </Box> <Box component="li" sx={{ mb: 1 }}> <Typography variant="body2"> <strong>Generate Content:</strong> Use AI to create images, copy, and videos </Typography> </Box> <Box component="li" sx={{ mb: 1 }}> <Typography variant="body2"> <strong>Organize Assets:</strong> Build your content library </Typography> </Box> <Box component="li" sx={{ mb: 1 }}> <Typography variant="body2"> <strong>Plan Campaigns:</strong> Create content matrices and campaigns </Typography> </Box> </Box> </Grid> <Grid md={6} xs={12} md={6}> <Typography variant="subtitle2" gutterBottom> Quick Tips </Typography> <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}> <Chip label="Press Cmd+K for quick search" size="small" variant="outlined" /> <Chip label="Start with templates for faster creation" size="small" variant="outlined" /> <Chip label="Use AI generation for unique content" size="small" variant="outlined" /> </Box> <Button variant="contained" fullWidth startIcon={<Add />} onClick={() => router.push(activeClient ? '/generate-enhanced' : '/clients')} > {activeClient ? 'Start Creating Content' : 'Create Your First Client'} </Button> </Grid> </Grid> </Paper> </Grid> </Grid> </Container> </DashboardLayout> </ProtectedRoute> ); }; export default DashboardPage;
+   : [35;1m                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ^[0m
+   `----
+
+Caused by:
+    Syntax Error
  ○ Compiling /dashboard ...
- ✓ Compiled /dashboard in 2.2s (2151 modules)
-Time 0.689458
- GET /_next/data/development/dashboard.json 200 in 2616ms
- ○ Compiling /clients ...
- ✓ Compiled /clients in 1343ms (2236 modules)
-Time 0.663041
-Time 0.367417
- GET /avatars/mike.jpg 404 in 1771ms
- GET /avatars/sarah.jpg 404 in 1761ms
-MUI Grid: The `item` prop has been removed and is no longer necessary. You can safely remove it.
+ ⨯ ./src/pages/dashboard.tsx
+Error:   [31mx[0m Expected '}', got '<eof>'
+   ,-[[36;1;4m/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/src/pages/dashboard.tsx[0m:1:1]
+ [2m1[0m | import React, { useEffect, useState } from 'react'; import { useRouter } from 'next/router'; import Head from 'next/head'; import { Box, Container, Paper, Typography, Button, Card, CardContent, CardActions, IconButton, Chip, CircularProgress, Alert, Grid, } from '@mui/material'; import { Image as ImageIcon, Description as DescriptionIcon, Campaign as CampaignIcon, AutoAwesome as AIIcon, ArrowForward, Add, Business as BusinessIcon, } from '@mui/icons-material'; import DashboardLayout from '@/components/DashboardLayout'; import { AnimatedActionButton } from '@/components/AnimatedComponents'; import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext'; import { useClient } from '@/contexts/ClientContext'; import { ProtectedRoute } from '@/components/ProtectedRoute'; interface QuickAction { title: string; description: string; icon: React.ReactNode; color: string; href: string; } const DashboardPage = () => { const router = useRouter(); const { user } = useSupabaseAuth(); const { activeClient } = useClient(); // Quick actions for easy navigation const quickActions: QuickAction[] = [ { title: 'Generate AI Content', description: 'Create images, copy, and videos with AI', icon: <AIIcon />, color: '#9c27b0', href: '/generate-enhanced', }, { title: 'Browse Templates', description: 'Start from pre-built templates', icon: <DescriptionIcon />, color: '#2196f3', href: '/templates', }, { title: 'Content Matrix', description: 'Plan your content strategy', icon: <CampaignIcon />, color: '#4caf50', href: '/matrix', }, { title: 'Asset Library', description: 'Manage your digital assets', icon: <ImageIcon />, color: '#ff9800', href: '/assets', }, ]; return ( <ProtectedRoute> <DashboardLayout> <Head> <title>Dashboard | AIrFLOW</title> </Head> <Container maxWidth="lg"> {/* Welcome Section */} <Box mb={4}> <Typography variant="h4" gutterBottom> Welcome back, {user?.user_metadata?.name || user?.email || 'User'}! </Typography> <Typography variant="body1" color="text.secondary"> {activeClient ? ( <>Working on: <Chip label={activeClient.name} size="small" /></> ) : ( 'Select a client to get started' )} </Typography> </Box> {/* No Client Selected */} {!activeClient && ( <Alert severity="info" sx={{ mb: 4 }}> <Box display="flex" justifyContent="space-between" alignItems="center"> <Typography>Please select a client to access the full dashboard features</Typography> <AnimatedActionButton onClick={() => router.push('/clients')}> <BusinessIcon sx={{ mr: 1 }} /> View Clients </AnimatedActionButton> </Box> </Alert> )} {/* Quick Actions */} <Typography variant="h5" gutterBottom mb={2}> Quick Actions </Typography> <Grid container spacing={3} mb={4}> {quickActions.map((action, index) => ( <Grid sm={6} md={3} key={index} xs={12} sm={6} md={3}> <Card sx={{ height: '100%', cursor: 'pointer', transition: 'transform 0.2s', '&:hover': { transform: 'translateY(-4px)', boxShadow: 3, }, }} onClick={() => router.push(action.href)} > <CardContent> <Box sx={{ width: 48, height: 48, borderRadius: 2, backgroundColor: action.color, display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2, }} > {React.cloneElement(action.icon as React.ReactElement, { sx: { color: 'white' }, })} </Box> <Typography variant="h6" gutterBottom> {action.title} </Typography> <Typography variant="body2" color="text.secondary"> {action.description} </Typography> </CardContent> <CardActions> <IconButton size="small" color="primary" aria-label="Icon button"> <ArrowForward /> </IconButton> </CardActions> </Card> </Grid> ))} </Grid> {/* Getting Started Section */} <Grid container spacing={3}> <Grid xs={12}> <Paper sx={{ p: 3 }}> <Typography variant="h6" gutterBottom> Getting Started with AIrFLOW </Typography> <Grid container spacing={2}> <Grid md={6} xs={12} md={6}> <Typography variant="body2" color="text.secondary" paragraph> New to AIrFLOW? Here's your simple workflow: </Typography> <Box component="ol" sx={{ pl: 2 }}> <Box component="li" sx={{ mb: 1 }}> <Typography variant="body2"> <strong>Create/Select Client:</strong> Start by setting up your client </Typography> </Box> <Box component="li" sx={{ mb: 1 }}> <Typography variant="body2"> <strong>Generate Content:</strong> Use AI to create images, copy, and videos </Typography> </Box> <Box component="li" sx={{ mb: 1 }}> <Typography variant="body2"> <strong>Organize Assets:</strong> Build your content library </Typography> </Box> <Box component="li" sx={{ mb: 1 }}> <Typography variant="body2"> <strong>Plan Campaigns:</strong> Create content matrices and campaigns </Typography> </Box> </Box> </Grid> <Grid md={6} xs={12} md={6}> <Typography variant="subtitle2" gutterBottom> Quick Tips </Typography> <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}> <Chip label="Press Cmd+K for quick search" size="small" variant="outlined" /> <Chip label="Start with templates for faster creation" size="small" variant="outlined" /> <Chip label="Use AI generation for unique content" size="small" variant="outlined" /> </Box> <Button variant="contained" fullWidth startIcon={<Add />} onClick={() => router.push(activeClient ? '/generate-enhanced' : '/clients')} > {activeClient ? 'Start Creating Content' : 'Create Your First Client'} </Button> </Grid> </Grid> </Paper> </Grid> </Grid> </Container> </DashboardLayout> </ProtectedRoute> ); }; export default DashboardPage;
+   : [35;1m                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ^[0m
+   `----
 
-MUI Grid: The `xs` prop has been removed. See https://mui.com/material-ui/migration/upgrade-to-grid-v2/ for migration instructions.
-
-MUI Grid: The `sm` prop has been removed. See https://mui.com/material-ui/migration/upgrade-to-grid-v2/ for migration instructions.
-
-MUI Grid: The `md` prop has been removed. See https://mui.com/material-ui/migration/upgrade-to-grid-v2/ for migration instructions.
-
-Time 1.492125
- GET /clients 200 in 1637ms
-Time 0.5465
-Time 0.372542
- GET /avatars/mike.jpg 404 in 222ms
- GET /avatars/sarah.jpg 404 in 219ms
- ○ Compiling /generate-enhanced ...
- ✓ Compiled /generate-enhanced in 1855ms (2328 modules)
-Time 1.065333
- GET /generate-enhanced 200 in 2273ms
-Time 1.045292
- GET /_next/data/development/login.json 200 in 246ms
- ○ Compiling /assets ...
- ✓ Compiled /assets in 1313ms (2596 modules)
-Time 1.644959
- GET /assets 200 in 1870ms
-Time 1.513958
- GET /_next/data/development/login.json 200 in 238ms
-Time 1.093958
- GET / 200 in 236ms
-Time 2.01875
- GET / 200 in 212ms
-Time 2.065667
- GET /login 200 in 267ms
-Time 1.210916
- GET /_next/data/development/dashboard.json 200 in 291ms
-Time 0.954041
-Time 0.357917
- GET /avatars/mike.jpg 404 in 240ms
- GET /avatars/sarah.jpg 404 in 239ms
-Time 1.525042
- GET /clients 200 in 278ms
-Time 1.607084
-Time 0.397708
- GET /avatars/mike.jpg 404 in 229ms
- GET /avatars/sarah.jpg 404 in 229ms
- ○ Compiling /create-client ...
- ✓ Compiled /create-client in 2.7s (2323 modules)
-Time 0.685792
-Time 2.11425
- GET /briefs 404 in 1163ms
- GET /_next/data/development/create-client.json 200 in 3239ms
- ✓ Compiled /generate-enhanced in 310ms (2404 modules)
-Time 0.517959
-Time 0.285958
- GET /briefs 404 in 296ms
-Time 3.4105
- GET / 200 in 322ms
-Time 0.6505
- GET / 200 in 210ms
-Time 1.9975
- GET /login 200 in 260ms
-Time 1.081458
- GET /_next/data/development/dashboard.json 200 in 322ms
-Time 1.173833
-Time 0.642583
- GET /avatars/mike.jpg 404 in 269ms
- GET /avatars/sarah.jpg 404 in 257ms
-Time 0.818
- GET /generate-enhanced 200 in 229ms
- ○ Compiling /assets ...
- ✓ Compiled /assets in 698ms (2570 modules)
-Time 1.380875
-Time 0.614916
- GET /assets 200 in 1229ms
- GET /_next/data/development/login.json 200 in 1130ms
- ✓ Compiled /clients in 451ms (2596 modules)
-Time 1.561583
-Time 0.448875
- GET /clients 200 in 847ms
- GET /_next/data/development/login.json 200 in 826ms
-Time 1.189583
-Time 22.432
- ○ Compiling /templates ...
- GET /avatars/mike.jpg 404 in 1075ms
- GET /avatars/sarah.jpg 404 in 1091ms
- ✓ Compiled /templates in 6.9s (2618 modules)
-Time 1.47475
- GET /templates 200 in 7372ms
-Time 0.491792
-Time 0.393375
- GET /avatars/mike.jpg 404 in 477ms
- GET /avatars/sarah.jpg 404 in 473ms
- ○ Compiling /campaigns ...
- ✓ Compiled /campaigns in 4.3s (2632 modules)
-Time 1.619291
- GET /campaigns 200 in 4797ms
-Time 0.647042
-Time 0.333666
- GET /avatars/mike.jpg 404 in 284ms
- GET /avatars/sarah.jpg 404 in 280ms
- ○ Compiling /matrix ...
- ✓ Compiled /matrix in 4.5s (2710 modules)
-Time 1.604208
- GET /matrix 200 in 4967ms
-Time 4.176542
-Time 0.41225
- GET /avatars/mike.jpg 404 in 433ms
- GET /avatars/sarah.jpg 404 in 431ms
-Time 1.271417
- GET /dashboard 200 in 489ms
-Time 0.451708
-Time 0.442625
- GET /avatars/mike.jpg 404 in 221ms
- GET /avatars/sarah.jpg 404 in 219ms
-Time 0.807958
-Time 1.128958
- GET /_next/data/development/generate-enhanced.json 200 in 385ms
- GET /assets 200 in 368ms
-Time 1.064292
- GET /_next/data/development/login.json 200 in 235ms
-Time 2.0855
- GET /clients 200 in 374ms
-Time 1.121708
-Time 0.348167
- GET /avatars/mike.jpg 404 in 245ms
- GET /avatars/sarah.jpg 404 in 243ms
-Time 0.983958
- GET /dashboard 200 in 239ms
-Time 1.466667
-Time 0.847542
- GET /avatars/mike.jpg 404 in 300ms
- GET /avatars/sarah.jpg 404 in 267ms
-Time 0.4075
- GET / 200 in 219ms
-Time 0.502291
- GET / 200 in 208ms
-Time 1.103625
- GET /login 200 in 266ms
-Time 17.289125
- GET /_next/data/development/dashboard.json 200 in 279ms
-Time 1.058583
-Time 0.288917
- GET /avatars/mike.jpg 404 in 234ms
- GET /avatars/sarah.jpg 404 in 232ms
-Time 0.529292
- GET /generate-enhanced 200 in 257ms
-Time 0.634208
- GET /_next/data/development/login.json 200 in 226ms
-Time 38.597333
- GET / 200 in 508ms
-Time 0.474542
- GET / 200 in 216ms
-Time 1.440792
- GET /login 200 in 244ms
-Time 1.450875
- GET /_next/data/development/dashboard.json 200 in 242ms
-Time 3.244041
-Time 0.384708
- GET /avatars/mike.jpg 404 in 228ms
- GET /avatars/sarah.jpg 404 in 223ms
-Time 0.326333
- GET /generate-enhanced 200 in 211ms
-Time 1.424291
- GET /_next/data/development/login.json 200 in 235ms
-Time 1.463625
- GET / 200 in 230ms
-Time 0.696833
- GET / 200 in 211ms
-Time 2.374416
- GET /login 200 in 228ms
-Time 2.821
- GET /_next/data/development/dashboard.json 200 in 228ms
-Time 0.345167
-Time 0.873958
- GET /avatars/mike.jpg 404 in 222ms
- GET /avatars/sarah.jpg 404 in 220ms
-Time 0.341833
- GET /generate-enhanced 200 in 209ms
-Time 3.330125
- GET /_next/data/development/login.json 200 in 347ms
-Time 9.212166
- GET / 200 in 275ms
-Time 0.306042
- GET / 200 in 230ms
-Time 69.874875
- GET /login 200 in 326ms
-Time 0.996458
- GET /_next/data/development/dashboard.json 200 in 283ms
-Time 0.731542
-Time 0.353584
- GET /avatars/mike.jpg 404 in 232ms
- GET /avatars/sarah.jpg 404 in 228ms
-Time 0.235875
- GET /generate-enhanced 200 in 225ms
-Time 1.500041
- GET /_next/data/development/login.json 200 in 254ms
-Time 4.420083
- GET / 200 in 255ms
-Time 0.461167
- GET / 200 in 214ms
-Time 16.365792
- GET /login 200 in 303ms
-Time 0.8695
- GET /_next/data/development/dashboard.json 200 in 238ms
-Time 1.0975
-Time 0.315417
-Time 0.301083
- GET /avatars/mike.jpg 404 in 378ms
- GET /avatars/sarah.jpg 404 in 262ms
- GET /dashboard 200 in 254ms
-Time 0.33025
-Time 0.281292
- GET /avatars/mike.jpg 404 in 222ms
- GET /avatars/sarah.jpg 404 in 221ms
-Time 2.542541
- GET /clients 200 in 487ms
-Time 0.440584
-Time 4.548125
- GET /avatars/mike.jpg 404 in 248ms
- GET /avatars/sarah.jpg 404 in 245ms
-Time 1.940375
- GET /assets 200 in 280ms
-Time 2.481375
- GET /_next/data/development/login.json 200 in 231ms
-Time 0.668625
- GET /generate-enhanced 200 in 226ms
-Time 0.936541
- GET /_next/data/development/login.json 200 in 244ms
-Time 1.488667
- GET /campaigns 200 in 275ms
-Time 0.854291
-Time 0.314083
- GET /avatars/mike.jpg 404 in 216ms
- GET /avatars/sarah.jpg 404 in 214ms
-Time 1.723833
- GET /templates 200 in 317ms
-Time 0.898959
-Time 0.284291
- GET /avatars/sarah.jpg 404 in 226ms
- GET /avatars/mike.jpg 404 in 229ms
-Time 1.217667
- GET /matrix 200 in 246ms
-Time 2.369958
-Time 0.341875
- GET /avatars/mike.jpg 404 in 229ms
- GET /avatars/sarah.jpg 404 in 227ms
-Time 0.6005
- GET /api/auth/me 404 in 215ms
-Time 2.2375
- GET / 200 in 226ms
-Time 0.584041
- GET / 200 in 243ms
-Time 0.961375
- GET /login 200 in 234ms
-Time 1.740208
- GET /_next/data/development/dashboard.json 200 in 233ms
-Time 0.3325
-Time 0.2695
- GET /avatars/mike.jpg 404 in 224ms
- GET /avatars/sarah.jpg 404 in 223ms
-Time 0.229625
- GET /generate-enhanced 200 in 209ms
-Time 2.8145
- GET /_next/data/development/login.json 200 in 233ms
-Time 1.034042
- GET / 200 in 248ms
-Time 0.506541
- GET / 200 in 212ms
-Time 1.856083
- GET /login 200 in 245ms
-Time 2.616167
- GET /_next/data/development/dashboard.json 200 in 246ms
-Time 0.290417
-Time 0.2365
- GET /avatars/mike.jpg 404 in 258ms
- GET /avatars/sarah.jpg 404 in 240ms
-Time 0.340708
- GET /generate-enhanced 200 in 214ms
-Time 3.006333
- GET /_next/data/development/login.json 200 in 411ms
-Time 0.935125
- GET /_next/data/development/dashboard.json 200 in 283ms
-Time 1.412625
-Time 0.275375
- GET /avatars/mike.jpg 404 in 378ms
- GET /avatars/sarah.jpg 404 in 376ms
-Time 1.721708
- GET / 200 in 410ms
-Time 0.331083
- GET / 200 in 221ms
-Time 6.933667
- GET /login 200 in 260ms
-Time 4.267708
- GET /_next/data/development/dashboard.json 200 in 381ms
-Time 6.447542
-Time 0.291708
- GET /avatars/mike.jpg 404 in 282ms
- GET /avatars/sarah.jpg 404 in 263ms
-Time 3.047583
- GET /_next/data/development/generate-enhanced.json 200 in 442ms
-Time 5.866458
- GET /_next/data/development/login.json 200 in 259ms
-Time 1.377834
- GET /dashboard 200 in 232ms
-Time 1.348375
-Time 0.427333
- GET /avatars/mike.jpg 404 in 257ms
- GET /avatars/sarah.jpg 404 in 253ms
-Time 5.963292
- GET /_next/data/development/templates.json 200 in 548ms
-Time 0.35925
-Time 0.284208
- GET /avatars/mike.jpg 404 in 226ms
- GET /avatars/sarah.jpg 404 in 225ms
-Time 1.287083
+Caused by:
+    Syntax Error
+Time 0.587792
+ GET /dashboard 500 in 1914ms
+Time 0.39575
+ GET /dashboard 500 in 19ms
+Time 0.772334
+ GET /.well-known/appspecific/com.chrome.devtools.json 500 in 10ms
+ ✓ Compiled /_error in 826ms (2086 modules)
+Time 1.022459
+ GET /_next/static/webpack/08d2f69c567b88bb.webpack.hot-update.json 500 in 360ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+Time 0.765125
+ GET /_next/static/webpack/08d2f69c567b88bb.webpack.hot-update.json 404 in 307ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /dashboard 200 in 56ms
+Time 0.440125
+Time 1.059417
  GET /dashboard 200 in 231ms
-Time 1.659209
-Time 1.610375
- GET /avatars/mike.jpg 404 in 380ms
- GET /avatars/sarah.jpg 404 in 361ms
-Time 1.884
- GET /_next/data/development/matrix.json 200 in 258ms
-Time 0.487417
-Time 0.709958
- GET /avatars/mike.jpg 404 in 241ms
- GET /avatars/sarah.jpg 404 in 239ms
-Time 0.865292
+Time 1.205292
+ GET /_next/static/webpack/08d2f69c567b88bb.webpack.hot-update.json 404 in 210ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /dashboard 200 in 109ms
+Time 0.625625
+Time 0.845625
+ GET /dashboard 200 in 223ms
+Time 0.934375
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 218ms
+ ✓ Compiled /api/clients in 274ms (630 modules)
+Authenticated user: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Time 0.50375
+ GET /dashboard 200 in 386ms
+Clients API called: GET User: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Calling handleGet...
+handleGet started for user: 354d56b0-440b-403e-b207-7038fb8b00d7
+Time 0.756542
  GET /dashboard 200 in 235ms
-Time 1.376125
-Time 0.350916
- GET /avatars/mike.jpg 404 in 255ms
- GET /avatars/sarah.jpg 404 in 253ms
-Time 1.6185
- GET /_next/data/development/assets.json 200 in 240ms
-Time 1.707125
- GET /_next/data/development/login.json 200 in 242ms
- ✓ Compiled in 4.9s (2294 modules)
- ✓ Compiled in 4.6s (2294 modules)
- ✓ Compiled in 1724ms (2294 modules)
- ✓ Compiled in 278ms (2294 modules)
- ✓ Compiled in 256ms (2294 modules)
- ✓ Compiled in 256ms (2294 modules)
- ✓ Compiled in 391ms (2294 modules)
- ✓ Compiled in 306ms (2294 modules)
- ✓ Compiled in 253ms (2294 modules)
- ✓ Compiled in 239ms (2294 modules)
- ✓ Compiled in 435ms (2294 modules)
- ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
- ✓ Compiled in 36.6s (2293 modules)
- ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
- ✓ Compiled in 1022ms (2293 modules)
- ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
- ✓ Compiled in 4.3s (2296 modules)
- ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
- ✓ Compiled in 358ms (2296 modules)
- ✓ Compiled in 3.4s (2296 modules)
- ✓ Compiled in 387ms (2296 modules)
- ✓ Compiled in 301ms (2296 modules)
- ✓ Compiled in 955ms (2300 modules)
- ✓ Compiled in 490ms (2300 modules)
- ✓ Compiled in 261ms (2300 modules)
- ✓ Compiled in 1026ms (2300 modules)
- ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
- ✓ Compiled in 790ms (729 modules)
- ✓ Compiled in 159ms (729 modules)
- ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
- ✓ Compiled in 143ms (729 modules)
- ⚠ Duplicate page detected. src/pages/api/notifications.ts and src/pages/api/notifications/index.ts resolve to /api/notifications
+ GET /api/clients 200 in 1321ms
+Time 0.476708
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 228ms
+Authenticated user: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Clients API called: GET User: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Calling handleGet...
+handleGet started for user: 354d56b0-440b-403e-b207-7038fb8b00d7
+ GET /api/clients 200 in 959ms
+ ○ Compiling /flow ...
+ ✓ Compiled /flow in 899ms (2213 modules)
+Time 3.629792
+ GET /_next/data/development/flow.json 200 in 1383ms
+Time 1.346
+ GET /dashboard 200 in 277ms
+Time 0.426625
+ GET /dashboard 200 in 216ms
+ ✓ Compiled /404 in 219ms (2221 modules)
+Time 0.822833
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 511ms
+ ✓ Compiled /api/clients in 89ms (694 modules)
+Authenticated user: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+ ✓ Compiled /matrix in 181ms (2249 modules)
+ ⨯ [Error: The default export is not a React Component in page: "/matrix"]
+ ⨯ [Error: The default export is not a React Component in page: "/matrix"] {
+  page: '/matrix'
+}
+Clients API called: GET User: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Calling handleGet...
+handleGet started for user: 354d56b0-440b-403e-b207-7038fb8b00d7
+Time 0.292084
+ GET /_next/data/development/matrix.json 500 in 794ms
+ GET /api/clients 200 in 1118ms
+ ⨯ [Error: The default export is not a React Component in page: "/matrix"]
+ ⨯ [Error: The default export is not a React Component in page: "/matrix"] {
+  page: '/matrix'
+}
+Time 0.9575
+ GET /matrix 500 in 498ms
+Time 0.96475
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 221ms
+ ✓ Compiled /api/errors in 204ms (698 modules)
+Client Error Report: {
+  errorId: 'ERR_1749386497273_y4qb9d7hr',
+  message: 'Uncaught Error: The default export is not a React Component in page: "/matrix"',
+  url: 'http://localhost:3000/matrix',
+  timestamp: '2025-06-08T12:41:37.273Z',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36'
+}
+ POST /api/errors 200 in 218ms
+Time 0.547291
+ ⨯ [Error: The default export is not a React Component in page: "/matrix"]
+ ⨯ [Error: The default export is not a React Component in page: "/matrix"] {
+  page: '/matrix'
+}
+ GET /dashboard 200 in 417ms
+Time 0.536792
+ GET /matrix 500 in 571ms
+Time 0.845209
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 239ms
+Client Error Report: {
+  errorId: 'ERR_1749386499497_hmarde2wy',
+  message: 'Uncaught Error: The default export is not a React Component in page: "/matrix"',
+  url: 'http://localhost:3000/matrix',
+  timestamp: '2025-06-08T12:41:39.497Z',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36'
+}
+ POST /api/errors 200 in 5ms
+ ✓ Compiled in 345ms (2078 modules)
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+Time 0.80025
+ GET /dashboard 200 in 434ms
+ ○ Compiling /matrix ...
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled /matrix in 1765ms (2277 modules)
+Time 2.751584
+Time 1.248708
+ GET /matrix 200 in 773ms
+ ✓ Compiled /404 in 111ms (2285 modules)
+Time 0.621708
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 415ms
+ ✓ Compiled /api/campaigns in 120ms (723 modules)
+Authenticated user: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+ ✓ Compiled /api/clients in 424ms (2310 modules)
+Authenticated user: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Time 0.813125
+Time 1.181417
+ GET /dashboard 200 in 673ms
+Campaigns GET request - returning empty data (campaigns table not implemented)
+ GET /api/campaigns 200 in 1114ms
+ GET /matrix 200 in 673ms
+ GET /api/clients 200 in 885ms
+Clients API called: GET User: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Calling handleGet...
+handleGet started for user: 354d56b0-440b-403e-b207-7038fb8b00d7
+Time 0.465041
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 221ms
+Authenticated user: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Authenticated user: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Clients API called: GET User: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Calling handleGet...
+handleGet started for user: 354d56b0-440b-403e-b207-7038fb8b00d7
+Campaigns GET request - returning empty data (campaigns table not implemented)
+ GET /api/campaigns 200 in 826ms
+ GET /api/clients 200 in 1204ms
+Authenticated user: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Campaigns GET request - returning empty data (campaigns table not implemented)
+ GET /api/campaigns 200 in 566ms
+ ○ Compiling /flow ...
+ ✓ Compiled /flow in 664ms (2409 modules)
+Time 3.295959
+ GET /_next/data/development/flow.json 200 in 1099ms
+ ✓ Compiled /api/flow/parse-brief in 102ms (779 modules)
+Parse brief handler called with method: POST
+User authenticated: tomh@redbaez.com
+Starting file upload parsing...
+File upload parsing completed. Files: [ 'file' ]
+Processing brief file: redbaez airwave brief.pdf
+File extension: .pdf
+Parsing PDF file...
+Successfully extracted text from PDF file
+File content length: 7015
+Starting OpenAI parsing...
+OpenAI parsing response: {
+  "title": "AIrWAVE 2.0 Global Launch: Scale Creative, Unleash Impact",
+  "objective": "Position AIrWAVE 2.0 as the game-changing tool for brands and agencies worldwide, enabling them to create high-performing, scalable ad executions tailored to customer motivations at lightning speed. The campaign should educate, inspire, and excite target audiences about AIrWAVE 2.0’s transformative potential while driving adoption through Meta platforms.",
+  "targetAudience": "Primary: Digital marketers, creative agencies, and in-house teams in the ecommerce and retail sectors. Mid-to-senior decision-makers (CMOs, creative directors, media planners). Industries struggling to meet the demand for scalable, cost-effective ad content. Secondary: Tech-savvy entrepreneurs and SMEs looking to leverage AI for competitive advantage. Broader tech enthusiasts curious about AI-driven creative innovation.",
+  "keyMessages": ["The future of creative scalability is here: AIrWAVE 2.0.", "Create. Test. Iterate. At Scale. AIrWAVE 2.0 empowers you to deliver more personalized ads, faster, without compromising on quality.", "Generates ad variations tailored to different customer motivations. AI-powered insights and creative assets ready to deploy. Seamless integration with Meta platforms to supercharge campaign performance.", "Discover how AIrWAVE 2.0 can transform your ad strategy today."],
+  "platforms": ["Meta", "TikTok", "Snapchat", "YouTube", "Pinterest"],
+  "budget": "TBD",
+  "timeline": "TBD",
+  "product": "AIrWAVE 2.0",
+  "service": "The Redbaez tool is an advanced AI-powered platform designed to streamline the creation and scaling of digital advertising executions.",
+  "valueProposition": "AIrWAVE 2.0 changes the game by delivering creativity and efficiency, making it possible to test and iterate at scale without breaking budgets or timelines.",
+  "brandGuidelines": "Conversational, inspiring, and confident—balancing technical expertise with a sense of creativity and possibility. It should feel like you’re hearing from a trusted expert who understands the industry’s challenges and offers a solution that’s both practical and innovative.",
+  "requirements": ["3x Video Ads (15-30 seconds each)", "4x Carousel Ads", "5x Interactive Story Ads", "2x Educational Reels (60 seconds)", "1x Lead Magnet (E-book or Whitepaper)", "Meta Pixels and UTM tracking for campaign optimization"],
+  "industry": "Digital marketing, ecommerce and retail sectors",
+  "competitors": []
+}
+Successfully parsed brief with OpenAI
+Brief parsed successfully: AIrWAVE 2.0 Global Launch: Scale Creative, Unleash Impact
+ POST /api/flow/parse-brief 200 in 19758ms
+ ✓ Compiled in 1194ms (2340 modules)
+ ✓ Compiled /dashboard in 311ms (2376 modules)
+Time 0.987417
+Time 2.681
+ GET /dashboard 200 in 770ms
+ GET /flow 200 in 600ms
+ ✓ Compiled /404 in 202ms (2384 modules)
+Time 1.746125
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 539ms
+ ✓ Compiled /api/clients in 218ms (770 modules)
+Authenticated user: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Clients API called: GET User: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Calling handleGet...
+handleGet started for user: 354d56b0-440b-403e-b207-7038fb8b00d7
+ GET /api/clients 200 in 1213ms
+ ✓ Compiled in 947ms (2406 modules)
+ ✓ Compiled /api/flow/parse-brief in 190ms (776 modules)
+Parse brief handler called with method: POST
+User authenticated: tomh@redbaez.com
+Starting file upload parsing...
+File upload parsing completed. Files: [ 'file' ]
+Processing brief file: redbaez airwave brief.pdf
+File extension: .pdf
+Parsing PDF file...
+Successfully extracted text from PDF file
+File content length: 7015
+Starting OpenAI parsing...
+Time 0.711833
+Time 1.638917
+ GET /dashboard 200 in 409ms
+ GET /flow 200 in 345ms
+ POST /api/flow/parse-brief 200 in 1081ms
+Time 1.029916
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 227ms
+Authenticated user: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Clients API called: GET User: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Calling handleGet...
+handleGet started for user: 354d56b0-440b-403e-b207-7038fb8b00d7
+ GET /api/clients 200 in 1256ms
+ ⨯ ./src/components/UnifiedBriefWorkflow.tsx
+Error:   [31mx[0m Unexpected token `Box`. Expected jsx identifier
+     ,-[[36;1;4m/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/src/components/UnifiedBriefWorkflow.tsx[0m:887:1]
+ [2m884[0m |   };
+ [2m885[0m | 
+ [2m886[0m |   return (
+ [2m887[0m |     <Box sx={{ width: '100%', maxWidth: '100%', p: 1 }}>
+     : [35;1m     ^^^[0m
+ [2m888[0m |       <Typography variant="h6" gutterBottom color="primary">
+ [2m889[0m |         Review & Edit Brief Content
+ [2m890[0m |       </Typography>
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/components/UnifiedBriefWorkflow.tsx
+ ✓ Compiled in 348ms (2412 modules)
+OpenAI parsing response: {
+  "title": "AIrWAVE 2.0 Global Launch: Scale Creative, Unleash Impact",
+  "objective": "Position AIrWAVE 2.0 as the game-changing tool for brands and agencies worldwide, enabling them to create high-performing, scalable ad executions tailored to customer motivations at lightning speed. The campaign should educate, inspire, and excite target audiences about AIrWAVE 2.0’s transformative potential while driving adoption through Meta platforms.",
+  "targetAudience": "Primary: Digital marketers, creative agencies, and in-house teams in the ecommerce and retail sectors. Mid-to-senior decision-makers (CMOs, creative directors, media planners). Industries struggling to meet the demand for scalable, cost-effective ad content. Secondary: Tech-savvy entrepreneurs and SMEs looking to leverage AI for competitive advantage. Broader tech enthusiasts curious about AI-driven creative innovation.",
+  "keyMessages": ["The future of creative scalability is here: AIrWAVE 2.0.", "Create. Test. Iterate. At Scale. AIrWAVE 2.0 empowers you to deliver more personalized ads, faster, without compromising on quality.", "Generates ad variations tailored to different customer motivations. AI-powered insights and creative assets ready to deploy. Seamless integration with Meta platforms to supercharge campaign performance.", "Discover how AIrWAVE 2.0 can transform your ad strategy today."],
+  "platforms": ["Meta", "TikTok", "Snapchat", "YouTube", "Pinterest"],
+  "budget": "TBD",
+  "timeline": "TBD",
+  "product": "AIrWAVE 2.0 by Redbaez",
+  "service": "AI-powered platform designed to streamline the creation and scaling of digital advertising executions.",
+  "valueProposition": "AIrWAVE 2.0 changes the game by delivering creativity and efficiency, making it possible to test and iterate at scale without breaking budgets or timelines.",
+  "brandGuidelines": "Conversational, inspiring, and confident—balancing technical expertise with a sense of creativity and possibility. It should feel like you’re hearing from a trusted expert who understands the industry’s challenges and offers a solution that’s both practical and innovative.",
+  "requirements": ["Redbaez and AIrWAVE 2.0 branding.", "Clear, simple messaging highlighting benefits.", "Emphasis on creative scalability and ROI."],
+  "industry": "Digital Marketing",
+  "competitors": []
+}
+Successfully parsed brief with OpenAI
+Brief parsed successfully: AIrWAVE 2.0 Global Launch: Scale Creative, Unleash Impact
+ ✓ Compiled in 369ms (2412 modules)
+ ✓ Compiled in 457ms (2412 modules)
+Parse brief handler called with method: POST
+User authenticated: tomh@redbaez.com
+Starting file upload parsing...
+File upload parsing completed. Files: [ 'file' ]
+Processing brief file: redbaez airwave brief.pdf
+File extension: .pdf
+Parsing PDF file...
+Successfully extracted text from PDF file
+File content length: 7015
+Starting OpenAI parsing...
+OpenAI parsing response: {
+  "title": "AIrWAVE 2.0 Global Launch: Scale Creative, Unleash Impact",
+  "objective": "Position AIrWAVE 2.0 as the game-changing tool for brands and agencies worldwide, enabling them to create high-performing, scalable ad executions tailored to customer motivations at lightning speed. The campaign should educate, inspire, and excite target audiences about AIrWAVE 2.0’s transformative potential while driving adoption through Meta platforms.",
+  "targetAudience": "Primary: Digital marketers, creative agencies, and in-house teams in the ecommerce and retail sectors. Mid-to-senior decision-makers (CMOs, creative directors, media planners). Industries struggling to meet the demand for scalable, cost-effective ad content. Secondary: Tech-savvy entrepreneurs and SMEs looking to leverage AI for competitive advantage. Broader tech enthusiasts curious about AI-driven creative innovation.",
+  "keyMessages": ["The future of creative scalability is here: AIrWAVE 2.0.", "Create. Test. Iterate. At Scale. AIrWAVE 2.0 empowers you to deliver more personalized ads, faster, without compromising on quality.", "Generates ad variations tailored to different customer motivations. AI-powered insights and creative assets ready to deploy. Seamless integration with Meta platforms to supercharge campaign performance.", "Discover how AIrWAVE 2.0 can transform your ad strategy today."],
+  "platforms": ["Meta", "TikTok", "Snapchat", "YouTube", "Pinterest"],
+  "budget": "TBD",
+  "timeline": "TBD",
+  "product": "AIrWAVE 2.0",
+  "service": "AI-powered platform designed to streamline the creation and scaling of digital advertising executions.",
+  "valueProposition": "AIrWAVE 2.0 changes the game by delivering creativity and efficiency, making it possible to test and iterate at scale without breaking budgets or timelines.",
+  "brandGuidelines": "Conversational, inspiring, and confident—balancing technical expertise with a sense of creativity and possibility. It should feel like you’re hearing from a trusted expert who understands the industry’s challenges and offers a solution that’s both practical and innovative.",
+  "requirements": ["3x Video Ads (15-30 seconds each)", "4x Carousel Ads", "5x Interactive Story Ads", "2x Educational Reels (60 seconds)", "1x Lead Magnet (E-book or Whitepaper)", "Meta Pixels and UTM tracking for campaign optimization"],
+  "industry": "Digital marketing, ecommerce and retail sectors",
+  "competitors": []
+}
+Successfully parsed brief with OpenAI
+Brief parsed successfully: AIrWAVE 2.0 Global Launch: Scale Creative, Unleash Impact
+ POST /api/flow/parse-brief 200 in 17727ms
+ ✓ Compiled /api/flow/generate-motivations in 367ms (746 modules)
+Generating motivations for brief: AIrWAVE 2.0 Global Launch: Scale Creative, Unleash Impact
+Generating motivations with OpenAI...
+ ✓ Compiled /dashboard in 172ms (2396 modules)
+Time 0.882792
+Time 2.1885
+ GET /dashboard 200 in 636ms
+ GET /flow 200 in 359ms
+ POST /api/flow/generate-motivations 200 in 1384ms
+ ✓ Compiled /404 in 112ms (2404 modules)
+Time 1.137041
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 386ms
+ ✓ Compiled /api/clients in 60ms (773 modules)
+Authenticated user: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Time 1.159417
+Time 0.238917
+ GET /dashboard 200 in 316ms
+ GET /flow 200 in 400ms
+ GET /api/clients 200 in 683ms
+Clients API called: GET User: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Calling handleGet...
+handleGet started for user: 354d56b0-440b-403e-b207-7038fb8b00d7
+Time 0.676375
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 224ms
+Authenticated user: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Clients API called: GET User: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Calling handleGet...
+handleGet started for user: 354d56b0-440b-403e-b207-7038fb8b00d7
+ GET /api/clients 200 in 992ms
+OpenAI motivations response received
+OpenAI generated 12 motivations
+Generated 12 motivations
+ ✓ Compiled in 455ms (2409 modules)
+ ✓ Compiled in 299ms (2409 modules)
+ ✓ Compiled in 162ms (2409 modules)
+ ✓ Compiled in 397ms (2340 modules)
+Time 1.318709
+ GET /flow 200 in 464ms
+ ⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+ ✓ Compiled /dashboard in 436ms (2376 modules)
+ ✓ Compiled /404 in 116ms (2384 modules)
+Time 0.313458
+ GET /dashboard 200 in 736ms
+Time 0.394333
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 369ms
+ ✓ Compiled /api/clients in 108ms (770 modules)
+Authenticated user: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Clients API called: GET User: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Calling handleGet...
+handleGet started for user: 354d56b0-440b-403e-b207-7038fb8b00d7
+ GET /api/clients 200 in 1109ms
+ ✓ Compiled in 297ms (2406 modules)
+ ✓ Compiled in 259ms (2406 modules)
+ ✓ Compiled in 347ms (2340 modules)
+ ✓ Compiled /dashboard in 135ms (2376 modules)
+Time 0.99425
+ GET /dashboard 200 in 482ms
+ ✓ Compiled /api/flow/parse-brief in 326ms (749 modules)
+Parse brief handler called with method: POST
+User authenticated: tomh@redbaez.com
+Starting file upload parsing...
+File upload parsing completed. Files: [ 'file' ]
+Processing brief file: redbaez airwave brief.pdf
+File extension: .pdf
+Parsing PDF file...
+Successfully extracted text from PDF file
+File content length: 7015
+Starting OpenAI parsing...
+OpenAI parsing response: {
+  "title": "AIrWAVE 2.0 Global Launch: Scale Creative, Unleash Impact",
+  "objective": "Position AIrWAVE 2.0 as the game-changing tool for brands and agencies worldwide, enabling them to create high-performing, scalable ad executions tailored to customer motivations at lightning speed. The campaign should educate, inspire, and excite target audiences about AIrWAVE 2.0’s transformative potential while driving adoption through Meta platforms.",
+  "targetAudience": "Primary audience includes digital marketers, creative agencies, and in-house teams in the ecommerce and retail sectors, mid-to-senior decision-makers (CMOs, creative directors, media planners), and industries struggling to meet the demand for scalable, cost-effective ad content. Secondary audience includes tech-savvy entrepreneurs and SMEs looking to leverage AI for competitive advantage, and broader tech enthusiasts curious about AI-driven creative innovation.",
+  "keyMessages": ["The future of creative scalability is here: AIrWAVE 2.0.", "Create. Test. Iterate. At Scale. AIrWAVE 2.0 empowers you to deliver more personalized ads, faster, without compromising on quality.", "Generates ad variations tailored to different customer motivations.", "AI-powered insights and creative assets ready to deploy.", "Seamless integration with Meta platforms to supercharge campaign performance.", "Discover how AIrWAVE 2.0 can transform your ad strategy today."],
+  "platforms": ["Meta", "TikTok", "Snapchat", "YouTube", "Pinterest"],
+  "budget": "TBD",
+  "timeline": "TBD",
+  "product": "AIrWAVE 2.0 by Redbaez",
+  "service": "AI-powered platform designed to streamline the creation and scaling of digital advertising executions.",
+  "valueProposition": "AIrWAVE 2.0 delivers creativity and efficiency, making it possible to test and iterate at scale without breaking budgets or timelines. It combines data insights with AI to produce content that genuinely resonates with audiences, automates labor-intensive creative processes, and feeds platform algorithms with diverse, high-quality content to enhance ad performance.",
+  "brandGuidelines": "Conversational, inspiring, and confident tone of voice—balancing technical expertise with a sense of creativity and possibility. Creative mandatories include Redbaez and AIrWAVE 2.0 branding, clear, simple messaging highlighting benefits, and emphasis on creative scalability and ROI.",
+  "requirements": ["3x Video Ads (15-30 seconds each)", "4x Carousel Ads", "5x Interactive Story Ads", "2x Educational Reels (60 seconds)", "1x Lead Magnet (E-book or Whitepaper)", "Meta Pixels and UTM tracking for campaign optimization"],
+  "industry": "Digital Marketing, Ecommerce, Retail",
+  "competitors": []
+}
+Successfully parsed brief with OpenAI
+Brief parsed successfully: AIrWAVE 2.0 Global Launch: Scale Creative, Unleash Impact
+ POST /api/flow/parse-brief 200 in 17651ms
+ ✓ Compiled /api/flow/generate-motivations in 365ms (751 modules)
+Generating motivations for brief: AIrWAVE 2.0 Global Launch: Scale Creative, Unleash Impact
+Generating motivations with OpenAI...
+ ✓ Compiled /dashboard in 296ms (2401 modules)
+Time 0.662125
+Time 2.108583
+ GET /dashboard 200 in 652ms
+ GET /flow 200 in 653ms
+ POST /api/flow/generate-motivations 200 in 1373ms
+ ○ Compiling /404 ...
+ ✓ Compiled /api/clients in 1268ms (2409 modules)
+ ✓ Compiled (2414 modules)
+Time 0.723083
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 1662ms
+Authenticated user: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Clients API called: GET User: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Calling handleGet...
+handleGet started for user: 354d56b0-440b-403e-b207-7038fb8b00d7
+ GET /api/clients 200 in 1534ms
+OpenAI motivations response received
+OpenAI generated 12 motivations
+Generated 12 motivations
+ ○ Compiling / ...
+ ✓ Compiled / in 2.1s (2346 modules)
+Time 0.50875
+ GET / 200 in 2629ms
+Time 0.47325
+ GET / 200 in 225ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 517ms (2382 modules)
+Time 0.707208
+Time 1.456292
+ GET /dashboard 200 in 1154ms
+ GET /flow 200 in 1139ms
+ ✓ Compiled /404 in 280ms (2388 modules)
+Time 0.801
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 729ms
+ ○ Compiling /api/clients ...
+ ✓ Compiled /api/clients in 1612ms (2410 modules)
+Authenticated user: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Time 0.719666
+Time 0.254083
+ GET / 200 in 945ms
+ GET / 200 in 945ms
+Clients API called: GET User: 354d56b0-440b-403e-b207-7038fb8b00d7 tomh@redbaez.com
+Calling handleGet...
+handleGet started for user: 354d56b0-440b-403e-b207-7038fb8b00d7
+ GET /api/clients 200 in 3348ms
+Time 1.725125
+ HEAD / 200 in 265ms
+ ✓ Compiled /_error in 431ms (2267 modules)
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'
+}
+Time 0.656209
+ GET / 500 in 472ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'
+}
+Time 0.589375
+ GET / 500 in 25ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'
+}
+Time 0.200417
+ GET / 500 in 14ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'
+}
+Time 0.232667
+ GET / 500 in 12ms
+ ✓ Compiled /dashboard in 175ms (2303 modules)
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js',
+  page: '/dashboard'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'
+}
+Time 0.270708
+ GET /dashboard 500 in 190ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'
+}
+Time 0.213
+ GET / 500 in 13ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'
+}
+Time 0.544292
+ GET /_next/static/chunks/fallback/webpack.js 500 in 10ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'
+}
+Time 0.483958
+Time 0.283
+ GET /_next/static/chunks/fallback/main.js 500 in 14ms
+ GET /_next/static/chunks/fallback/react-refresh.js 500 in 14ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'
+}
+Time 0.191417
+ GET /_next/static/chunks/fallback/pages/_app.js 500 in 7ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages/_document.js'
+}
+Time 0.141791
+ GET /_next/static/chunks/fallback/pages/_error.js 500 in 7ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages-manifest.json',
+  page: '/'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages-manifest.json'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/pages-manifest.json'
+}
+Time 0.196084
+ GET / 500 in 12ms
+ GET / 404 in 9ms
+ GET / 404 in 5ms
+ GET / 404 in 6ms
+ GET / 404 in 7ms
+ GET / 404 in 6ms
+ GET / 404 in 8ms
+ GET / 404 in 6ms
+ GET / 404 in 4ms
+ GET / 404 in 7ms
+ GET / 404 in 8ms
+ GET / 404 in 5ms
+ GET / 404 in 6ms
+ GET / 404 in 6ms
+ GET / 404 in 8ms
+ GET / 404 in 5ms
+ GET / 404 in 7ms
+ GET / 404 in 7ms
+ GET / 404 in 7ms
+ GET / 404 in 5ms
+ GET / 404 in 7ms
+ GET / 404 in 7ms
+ GET / 404 in 8ms
+ GET / 404 in 4ms
+ GET / 404 in 7ms
+ GET / 404 in 24ms
+ GET / 404 in 7ms
+ GET / 404 in 8ms
+ GET / 404 in 8ms
+ GET / 404 in 11ms
+ GET / 404 in 7ms
+ GET / 404 in 8ms
+ GET / 404 in 7ms
+ GET / 404 in 9ms
+ GET / 404 in 10ms
+ GET / 404 in 6ms
+ GET / 404 in 7ms
+ GET / 404 in 10ms
+ GET / 404 in 7ms
+ GET / 404 in 6ms
+ GET / 404 in 7ms
+ GET / 404 in 9ms
+ GET / 404 in 6ms
+ GET / 404 in 7ms
+ GET / 404 in 6ms
+ GET / 404 in 8ms
+ GET / 404 in 7ms
+ GET / 404 in 7ms
+ GET / 404 in 6ms
+ GET / 404 in 5ms
+ GET / 404 in 7ms
+ GET / 404 in 8ms
+ GET / 404 in 9ms
+ GET / 404 in 5ms
+ GET / 404 in 6ms
+ GET / 404 in 6ms
+ GET / 404 in 4ms
+ GET / 404 in 11ms
+ GET / 404 in 4ms
+ GET / 404 in 7ms
+ GET / 404 in 10ms
+ GET / 404 in 7ms
+ GET / 404 in 7ms
+ GET / 404 in 6ms
+ GET / 404 in 7ms
+ GET / 404 in 10ms
+ GET / 404 in 7ms
+ GET / 404 in 5ms
+ GET / 404 in 7ms
+ GET / 404 in 18ms
+ GET / 404 in 8ms
+ GET / 404 in 4ms
+ GET / 404 in 7ms
+ GET / 404 in 8ms
+ GET / 404 in 6ms
+ GET / 404 in 6ms
+ GET / 404 in 8ms
+ GET / 404 in 7ms
+ GET / 404 in 7ms
+ GET / 404 in 5ms
+ GET / 404 in 8ms
+ GET / 404 in 9ms
+ GET / 404 in 7ms
+ GET / 404 in 6ms
+ GET / 404 in 6ms
+ GET / 404 in 9ms
+ GET / 404 in 7ms
+ GET / 404 in 7ms
+ GET / 404 in 7ms
+ GET / 404 in 9ms
+ GET / 404 in 9ms
+ GET / 404 in 4ms
+ GET / 404 in 11ms
+ GET / 404 in 10ms
+ GET / 404 in 7ms
+ GET / 404 in 4ms
+ GET / 404 in 10ms
+ GET / 404 in 20ms
+ GET / 404 in 8ms
+ GET / 404 in 8ms
+ GET / 404 in 7ms
+ GET / 404 in 7ms
+ GET / 404 in 6ms
+ GET / 404 in 7ms
+ GET / 404 in 7ms
+ GET / 404 in 7ms
+ GET / 404 in 7ms
+ GET / 404 in 6ms
+ GET / 404 in 7ms
+ GET / 404 in 4ms
+ GET / 404 in 6ms
+ GET / 404 in 6ms
+ GET / 404 in 6ms
+ GET / 404 in 4ms
+ ✓ Compiled in 4.5s (2261 modules)
+ ✓ Compiled in 343ms (2261 modules)
+ ✓ Compiled in 433ms (2261 modules)
+ ✓ Compiled in 290ms (2261 modules)
+ ✓ Compiled in 331ms (2261 modules)
+ ✓ Compiled in 241ms (2261 modules)
+ ✓ Compiled in 137ms (2261 modules)
+ ✓ Compiled in 349ms (2261 modules)
+ ✓ Compiled in 392ms (2261 modules)
+[?25h
