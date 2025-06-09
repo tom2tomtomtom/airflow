@@ -22,6 +22,197 @@ export type AuthenticatedHandler = (
   res: NextApiResponse
 ) => Promise<void> | void;
 
+// Enhanced token validation with multiple fallback methods
+async function validateUserToken(req: NextApiRequest): Promise<any> {
+  let supabase;
+  let user = null;
+  let error = null;
+
+  // Method 1: Try Supabase SSR with cookies (primary method)
+  try {
+    supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return req.cookies[name];
+          },
+          set(name: string, value: string, options: any) {
+            // We don't need to set cookies in API routes
+          },
+          remove(name: string, options: any) {
+            // We don't need to remove cookies in API routes
+          },
+        },
+      }
+    );
+
+    const { data: { user: cookieUser }, error: cookieError } = await supabase.auth.getUser();
+    
+    if (cookieUser && !cookieError) {
+      console.log('✅ Auth Method 1: Cookie-based auth successful');
+      return { user: cookieUser, supabase };
+    }
+    
+    console.log('⚠️ Auth Method 1: Cookie auth failed:', cookieError?.message);
+  } catch (cookieErr) {
+    console.log('⚠️ Auth Method 1: Cookie auth exception:', cookieErr);
+  }
+
+  // Method 2: Try Authorization header (Bearer token)
+  try {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.substring(7);
+      
+      supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+          cookies: {
+            get: () => undefined,
+            set: () => {},
+            remove: () => {},
+          },
+        }
+      );
+
+      const { data: { user: headerUser }, error: headerError } = await supabase.auth.getUser(token);
+      
+      if (headerUser && !headerError) {
+        console.log('✅ Auth Method 2: Bearer token auth successful');
+        return { user: headerUser, supabase };
+      }
+      
+      console.log('⚠️ Auth Method 2: Bearer token auth failed:', headerError?.message);
+    }
+  } catch (headerErr) {
+    console.log('⚠️ Auth Method 2: Bearer token auth exception:', headerErr);
+  }
+
+  // Method 3: Try custom auth headers (fallback for API clients)
+  try {
+    const customToken = req.headers['x-auth-token'] as string;
+    if (customToken) {
+      supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+          cookies: {
+            get: () => undefined,
+            set: () => {},
+            remove: () => {},
+          },
+        }
+      );
+
+      const { data: { user: customUser }, error: customError } = await supabase.auth.getUser(customToken);
+      
+      if (customUser && !customError) {
+        console.log('✅ Auth Method 3: Custom token auth successful');
+        return { user: customUser, supabase };
+      }
+      
+      console.log('⚠️ Auth Method 3: Custom token auth failed:', customError?.message);
+    }
+  } catch (customErr) {
+    console.log('⚠️ Auth Method 3: Custom token auth exception:', customErr);
+  }
+
+  // All methods failed
+  console.log('❌ All authentication methods failed');
+  return { user: null, supabase: null };
+}
+
+// Enhanced user profile handling with better error recovery
+async function getUserProfile(supabase: any, user: any): Promise<any> {
+  try {
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+
+    if (profileError) {
+      console.log('Profile error:', profileError.message, 'Code:', profileError.code);
+      
+      // If profile doesn't exist, create a basic one
+      if (profileError.code === 'PGRST116') {
+        console.log('Profile does not exist, creating one...');
+        
+        const userName = user.user_metadata?.name || user.email?.split('@')[0] || 'User';
+        const nameParts = userName.split(' ');
+        
+        const { data: newProfile, error: createError } = await supabase
+          .from('profiles')
+          .insert({
+            id: user.id,
+            first_name: nameParts[0] || userName,
+            last_name: nameParts.slice(1).join(' ') || '',
+            role: 'user',
+            email: user.email,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          })
+          .select()
+          .single();
+
+        if (createError) {
+          console.error('Error creating profile:', createError);
+          return createFallbackProfile(user);
+        }
+        
+        console.log('✅ Profile created successfully');
+        return newProfile;
+      }
+      
+      // For other errors, return fallback profile
+      return createFallbackProfile(user);
+    }
+
+    return profile;
+  } catch (err) {
+    console.error('Profile handling exception:', err);
+    return createFallbackProfile(user);
+  }
+}
+
+// Create fallback profile when database operations fail
+function createFallbackProfile(user: any): any {
+  return {
+    id: user.id,
+    email: user.email || '',
+    first_name: user.user_metadata?.name?.split(' ')[0] || user.email?.split('@')[0] || 'User',
+    last_name: user.user_metadata?.name?.split(' ').slice(1).join(' ') || '',
+    role: 'user',
+    permissions: [],
+    tenant_id: null,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
+}
+
+// Enhanced client access fetching with error handling
+async function getUserClients(supabase: any, userId: string): Promise<string[]> {
+  try {
+    const { data: userClients, error: clientsError } = await supabase
+      .from('user_clients')
+      .select('client_id')
+      .eq('user_id', userId);
+
+    if (clientsError) {
+      console.error('Error fetching user clients:', clientsError);
+      return [];
+    }
+
+    return userClients?.map((uc: { client_id: string }) => uc.client_id) || [];
+  } catch (err) {
+    console.error('Client access exception:', err);
+    return [];
+  }
+}
+
 // Middleware to require authentication
 export function withAuth(handler: AuthenticatedHandler) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
@@ -44,30 +235,13 @@ export function withAuth(handler: AuthenticatedHandler) {
     }
     
     try {
-      // Create Supabase server client with proper cookie handling
-      const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-          cookies: {
-            get(name: string) {
-              return req.cookies[name];
-            },
-            set(name: string, value: string, options: any) {
-              // We don't need to set cookies in API routes
-            },
-            remove(name: string, options: any) {
-              // We don't need to remove cookies in API routes
-            },
-          },
-        }
-      );
+      console.log(`🔐 Authenticating request: ${req.method} ${req.url}`);
+      
+      // Enhanced token validation with multiple methods
+      const { user, supabase } = await validateUserToken(req);
 
-      // Get user from Supabase using cookies
-      const { data: { user }, error } = await supabase.auth.getUser();
-
-      if (error || !user) {
-        console.log('Supabase auth error:', error?.message || 'No user found');
+      if (!user || !supabase) {
+        console.log('❌ Authentication failed - no valid token found');
         return errorResponse(
           res,
           ErrorCode.UNAUTHORIZED,
@@ -76,84 +250,13 @@ export function withAuth(handler: AuthenticatedHandler) {
         );
       }
 
-      console.log('Authenticated user:', user.id, user.email);
+      console.log('✅ User authenticated:', user.id, user.email);
 
-      // Get user profile from Supabase
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
+      // Get user profile with enhanced error handling
+      const profile = await getUserProfile(supabase, user);
 
-      if (profileError) {
-        console.log('Profile error:', profileError.message, 'Code:', profileError.code);
-        // If profile doesn't exist, create a basic one or use defaults
-        if (profileError.code === 'PGRST116') {
-          console.log('Profile does not exist, creating one...');
-          try {
-            const userName = user.user_metadata?.name || user.email?.split('@')[0] || 'User';
-            const nameParts = userName.split(' ');
-            
-            const { data: newProfile, error: createError } = await supabase
-              .from('profiles')
-              .insert({
-                id: user.id,
-                first_name: nameParts[0] || userName,
-                last_name: nameParts.slice(1).join(' ') || '',
-                role: 'user',
-              })
-              .select()
-              .single();
-
-            if (createError) {
-              console.error('Error creating profile:', createError);
-              // If profile creation fails, use a minimal profile for API access
-              profile = {
-                id: user.id,
-                email: user.email || '',
-                full_name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
-                role: 'user',
-                permissions: [],
-                tenant_id: null
-              };
-            } else {
-              profile = newProfile;
-            }
-          } catch (err) {
-            console.error('Profile creation exception:', err);
-            // Use minimal profile as fallback
-            profile = {
-              id: user.id,
-              email: user.email || '',
-              full_name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
-              role: 'user',
-              permissions: [],
-              tenant_id: null
-            };
-          }
-        } else {
-          console.error('Unexpected profile error:', profileError);
-          // Use minimal profile as fallback
-          profile = {
-            id: user.id,
-            email: user.email || '',
-            full_name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
-            role: 'user',
-            permissions: [],
-            tenant_id: null
-          };
-        }
-      }
-
-      // Get user's client access
-      const { data: userClients, error: clientsError } = await supabase
-        .from('user_clients')
-        .select('client_id')
-        .eq('user_id', user.id);
-
-      if (clientsError) {
-        console.error('Error fetching user clients:', clientsError);
-      }
+      // Get user's client access with error handling
+      const clientIds = await getUserClients(supabase, user.id);
 
       // Add user info to request
       (req as AuthenticatedRequest).user = {
@@ -161,19 +264,21 @@ export function withAuth(handler: AuthenticatedHandler) {
         email: user.email || '',
         role: (profile?.role as UserRole) || UserRole.VIEWER,
         permissions: profile?.permissions || [],
-        clientIds: userClients?.map((uc: { client_id: string }) => uc.client_id) || [],
+        clientIds,
         tenantId: profile?.tenant_id || ''
       };
+
+      console.log(`✅ Request authenticated for user: ${user.email} (${profile?.role})`);
 
       // Call the handler
       return await handler(req as AuthenticatedRequest, res);
     } catch (error) {
       const message = getErrorMessage(error);
-      console.error('Authentication error:', error);
+      console.error('❌ Authentication error:', error);
       return errorResponse(
         res,
         ErrorCode.INTERNAL_SERVER_ERROR,
-        'Internal server error',
+        'Authentication service error',
         500
       );
     }
@@ -222,7 +327,7 @@ export function withPermissions(requiredPermissions: string | string[]) {
         : [requiredPermissions];
 
       const hasAllPermissions = permissions.every(permission =>
-        userPermissions.includes(permission)
+        userPermissions.includes(permission) || userPermissions.includes('*')
       );
 
       if (!hasAllPermissions) {
@@ -253,7 +358,8 @@ export function withClientAccess(clientIdParam: string = 'clientId') {
 
       // Get client ID from request
       const clientId = req.query[clientIdParam] as string ||
-                      req.body[clientIdParam] as string;
+                      req.body[clientIdParam] as string ||
+                      req.headers['x-client-id'] as string;
 
       if (!clientId) {
         return errorResponse(
