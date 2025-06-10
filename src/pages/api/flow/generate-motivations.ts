@@ -77,19 +77,20 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 }
 
 async function generateMotivationsFromBrief(briefData: BriefData): Promise<Motivation[]> {
-  // Try AI-powered generation first
-  if (process.env.OPENAI_API_KEY) {
+  // Try AI-powered generation first, but with quick fallback
+  if (process.env.OPENAI_API_KEY && process.env.NODE_ENV !== 'production') {
     try {
-            const aiMotivations = await generateMotivationsWithAI(briefData);
+      const aiMotivations = await generateMotivationsWithAI(briefData);
       if (aiMotivations && aiMotivations.length > 0) {
-                return aiMotivations;
+        return aiMotivations;
       }
     } catch (error) {
       console.warn('OpenAI motivation generation failed, falling back to templates:', error);
     }
   }
 
-    return generateMotivationsWithTemplates(briefData);
+  // Use template-based generation for production reliability
+  return generateMotivationsWithTemplates(briefData);
 }
 
 async function generateMotivationsWithAI(briefData: BriefData): Promise<Motivation[]> {
@@ -137,10 +138,10 @@ Respond ONLY with the JSON array, no additional text.`;
         }
       ],
       temperature: 0.7,
-      max_tokens: 2000, // Reduce tokens for faster response
+      max_tokens: 1500, // Reduce tokens for faster response
     }),
     new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('OpenAI request timeout')), 45000) // Longer timeout
+      setTimeout(() => reject(new Error('OpenAI request timeout')), 8000) // 8 second timeout for Netlify
     )
   ]);
 
