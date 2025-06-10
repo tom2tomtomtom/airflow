@@ -1,0 +1,84 @@
+/**
+ * Webhook management utilities
+ */
+
+export interface WebhookEvent {
+  id: string;
+  type: string;
+  data: any;
+  timestamp: string;
+}
+
+export interface WebhookEndpoint {
+  url: string;
+  secret?: string;
+  events: string[];
+}
+
+/**
+ * Send webhook event to endpoint
+ */
+export async function sendWebhook(
+  endpoint: WebhookEndpoint,
+  event: WebhookEvent
+): Promise<{ success: boolean; status?: number; error?: string }> {
+  try {
+    const response = await fetch(endpoint.url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'User-Agent': 'AIrWAVE-Webhook/1.0',
+        ...(endpoint.secret && {
+          'X-Webhook-Signature': generateSignature(JSON.stringify(event), endpoint.secret),
+        }),
+      },
+      body: JSON.stringify(event),
+    });
+
+    return {
+      success: response.ok,
+      status: response.status,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
+ * Generate webhook signature for verification
+ */
+function generateSignature(payload: string, secret: string): string {
+  // Placeholder implementation - in production, use proper HMAC
+  return `sha256=${Buffer.from(payload + secret).toString('base64')}`;
+}
+
+/**
+ * Verify webhook signature
+ */
+export function verifyWebhookSignature(
+  payload: string,
+  signature: string,
+  secret: string
+): boolean {
+  const expectedSignature = generateSignature(payload, secret);
+  return signature === expectedSignature;
+}
+
+/**
+ * Process incoming webhook from external service
+ */
+export async function processIncomingWebhook(
+  payload: any,
+  headers: Record<string, string>
+): Promise<{ success: boolean; message: string }> {
+  // Placeholder implementation for processing incoming webhooks
+  console.log('Processing incoming webhook:', { payload, headers });
+  
+  return {
+    success: true,
+    message: 'Webhook processed successfully',
+  };
+}
