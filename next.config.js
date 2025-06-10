@@ -180,11 +180,13 @@ const nextConfig = {
     return config;
   },
   
+  // Performance optimizations  
+  skipMiddlewareUrlNormalize: true,
+  skipTrailingSlashRedirect: true,
+  
   // Experimental features
   experimental: {
     optimizeCss: true, // Enable CSS optimization
-    skipMiddlewareUrlNormalize: true,
-    skipTrailingSlashRedirect: true,
     // instrumentationHook: true, // Removed - instrumentation.js is available by default
   },
 };

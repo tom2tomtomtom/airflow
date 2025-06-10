@@ -196,14 +196,14 @@ const AssetsPage: React.FC = () => {
           throw new Error(data.message || 'Failed to fetch assets');
         }
       } else if (response.status === 401) {
-        // Show mock data for development/demo
+        // Use lightweight mock data for development - NO external URLs
         setAssets([
           {
             id: '1',
             name: 'Sample Image.jpg',
             type: 'image',
-            url: 'https://picsum.photos/400/300',
-            thumbnailUrl: 'https://picsum.photos/200/150',
+            url: '/favicon.ico', // Use local file instead of external
+            thumbnailUrl: '/favicon.ico',
             description: 'A sample image for testing',
             tags: ['sample', 'test'],
             dateCreated: '2024-01-15T10:00:00Z',
@@ -219,7 +219,7 @@ const AssetsPage: React.FC = () => {
             id: '2',
             name: 'Demo Video.mp4',
             type: 'video',
-            url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
+            url: '#', // No external video loading
             description: 'A demo video file',
             tags: ['demo', 'video'],
             dateCreated: '2024-01-16T14:30:00Z',
@@ -245,7 +245,7 @@ const AssetsPage: React.FC = () => {
             mimeType: 'application/pdf'
           }
         ]);
-        console.log('Using demo data due to authentication');
+        console.log('Using lightweight demo data (no external resources)');
       } else {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
@@ -253,14 +253,14 @@ const AssetsPage: React.FC = () => {
       console.error('Error fetching assets:', err);
       setError(err.message || 'Failed to load assets');
       
-      // Fall back to mock data on error
+      // Fall back to lightweight mock data on error - NO external URLs
       setAssets([
         {
           id: '1',
           name: 'Sample Image.jpg',
           type: 'image',
-          url: 'https://picsum.photos/400/300',
-          thumbnailUrl: 'https://picsum.photos/200/150',
+          url: '/favicon.ico', // Use local file instead of external
+          thumbnailUrl: '/favicon.ico',
           description: 'A sample image for testing',
           tags: ['sample', 'test'],
           dateCreated: '2024-01-15T10:00:00Z',
@@ -278,9 +278,14 @@ const AssetsPage: React.FC = () => {
     }
   };
 
-  // Initial load and reload when dependencies change
+  // Initial load and reload when dependencies change with debouncing
   useEffect(() => {
-    fetchAssets();
+    // Debounce API calls to prevent excessive requests
+    const timeoutId = setTimeout(() => {
+      fetchAssets();
+    }, 300); // 300ms debounce
+
+    return () => clearTimeout(timeoutId);
   }, [isAuthenticated, activeClient, page, filters]);
 
   // Move useMemo BEFORE any conditional returns to follow Rules of Hooks

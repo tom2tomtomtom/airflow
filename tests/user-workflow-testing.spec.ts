@@ -48,8 +48,15 @@ class UserWorkflowTester {
         const passwordField = this.page.locator('input[type="password"], input[name="password"], [data-testid*="password"]').first();
 
         if (await nameField.count() > 0) {
-          await nameField.fill('Test User');
-          console.log('    ✅ Name field filled');
+          // Get the actual input element, not the wrapper
+          const actualInput = nameField.locator('input').first();
+          if (await actualInput.count() > 0) {
+            await actualInput.fill('Test User');
+            console.log('    ✅ Name field filled');
+          } else {
+            await nameField.fill('Test User');
+            console.log('    ✅ Name field filled (direct)');
+          }
         } else {
           errors.push('Name field not found');
         }
