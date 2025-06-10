@@ -23,10 +23,6 @@
   external_node_modules = ["openai"]
   node_bundler = "esbuild"
 
-[[functions]]
-  path = "api/flow/*"
-  included_files = ["src/**/*"]
-
 [[headers]]
   for = "/api/*"
   [headers.values]
