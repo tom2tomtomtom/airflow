@@ -133,8 +133,8 @@ const SignupPage: React.FC = () => {
               onChange={(e: React.ChangeEvent<HTMLElement>) => setName(e.target.value)}
               disabled={loading}
               sx={{ mb: 2 }}
-              data-testid="name-input"
               InputProps={{
+                'data-testid': 'name-input',
                 startAdornment: (
                   <InputAdornment position="start">
                     <PersonIcon color="action" />
@@ -151,8 +151,8 @@ const SignupPage: React.FC = () => {
               onChange={(e: React.ChangeEvent<HTMLElement>) => setEmail(e.target.value)}
               disabled={loading}
               sx={{ mb: 2 }}
-              data-testid="email-input"
               InputProps={{
+                'data-testid': 'email-input',
                 startAdornment: (
                   <InputAdornment position="start">
                     <EmailIcon color="action" />
@@ -169,9 +169,9 @@ const SignupPage: React.FC = () => {
               onChange={(e: React.ChangeEvent<HTMLElement>) => setPassword(e.target.value)}
               disabled={loading}
               sx={{ mb: 2 }}
-              data-testid="password-input"
               helperText="Must be at least 8 characters long"
               InputProps={{
+                'data-testid': 'password-input',
                 startAdornment: (
                   <InputAdornment position="start">
                     <LockIcon color="action" />
@@ -198,8 +198,8 @@ const SignupPage: React.FC = () => {
               onChange={(e: React.ChangeEvent<HTMLElement>) => setConfirmPassword(e.target.value)}
               disabled={loading}
               sx={{ mb: 3 }}
-              data-testid="confirm-password-input"
               InputProps={{
+                'data-testid': 'confirm-password-input',
                 startAdornment: (
                   <InputAdornment position="start">
                     <LockIcon color="action" />

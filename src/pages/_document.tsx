@@ -26,28 +26,7 @@ export default class MyDocument extends Document<MyDocumentProps> {
           <meta name="theme-color" content={lightTheme.palette.primary.main} />
           <link rel="shortcut icon" href="/favicon.ico" />
           
-          {/* Preconnect to Google Fonts */}
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-          
-          {/* Preload critical fonts */}
-          <link
-            rel="preload"
-            href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap"
-            as="style"
-          />
-          
-          {/* Outfit Font - Primary Font - Reduced weights for performance */}
-          <link
-            rel="stylesheet"
-            href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap"
-          />
-          
-          {/* Material Icons - Optimized single load */}
-          <link
-            href="https://fonts.googleapis.com/icon?family=Material+Icons&display=swap"
-            rel="stylesheet"
-          />
+          {/* Using system fonts only - no external font loading for performance */}
           
           {/* Emotion insertion point */}
           <meta name="emotion-insertion-point" content="" />
