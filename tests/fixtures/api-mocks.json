@@ -1,0 +1,36 @@
+{
+  "creatomate": {
+    "baseUrl": "https://api.creatomate.com",
+    "endpoints": {
+      "/v1/renders": {
+        "status": "queued",
+        "id": "test-render-id"
+      },
+      "/v1/templates": {
+        "data": []
+      }
+    }
+  },
+  "openai": {
+    "baseUrl": "https://api.openai.com",
+    "endpoints": {
+      "/v1/chat/completions": {
+        "choices": [
+          {
+            "message": {
+              "content": "Test response"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "elevenlabs": {
+    "baseUrl": "https://api.elevenlabs.io",
+    "endpoints": {
+      "/v1/text-to-speech": {
+        "audio_url": "test-audio-url"
+      }
+    }
+  }
+}

@@ -1,0 +1,787 @@
+
+> airflow@1.0.0 dev
+> next dev
+
+   ▲ Next.js 15.3.2
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.68.117:3000
+   - Environments: .env
+   - Experiments (use with caution):
+     ✓ optimizeCss
+
+ ✓ Starting...
+ ⚠ Invalid next.config.js options detected: 
+ ⚠     Unrecognized key(s) in object: 'skipMiddlewareUrlNormalize', 'skipTrailingSlashRedirect' at "experimental"
+ ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+ ⚠ `experimental.skipMiddlewareUrlNormalize` has been moved to `skipMiddlewareUrlNormalize`. Please update your next.config.js file accordingly.
+ ⚠ `experimental.skipTrailingSlashRedirect` has been moved to `skipTrailingSlashRedirect`. Please update your next.config.js file accordingly.
+ ✓ Ready in 1383ms
+ ✓ Compiled /middleware in 393ms (178 modules)
+ ○ Compiling /assets ...
+ ✓ Compiled /assets in 4s (2154 modules)
+(node:39411) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+Time 6.44875
+ HEAD /assets 200 in 5525ms
+ ✓ Compiled /api/assets/upload in 252ms (669 modules)
+ POST /api/assets/upload 401 in 284ms
+Time 1.899792
+ GET /assets 200 in 406ms
+Time 18.052125
+ GET /assets 200 in 278ms
+ ✓ Compiled /api/assets in 202ms (361 modules)
+ GET /api/assets 401 in 221ms
+ ✓ Compiled /api/assets/upload in 25ms (365 modules)
+ POST /api/assets/upload 401 in 32ms
+ ✓ Compiled /assets in 147ms (2178 modules)
+Time 4.005792
+ GET /assets 200 in 732ms
+ ✓ Compiled in 1510ms (1519 modules)
+ ✓ Compiled / in 455ms (1525 modules)
+Time 1.886
+ GET / 200 in 777ms
+Time 0.883917
+ GET / 200 in 228ms
+Time 1.473167
+ GET / 200 in 228ms
+Time 1.139458
+ GET / 200 in 222ms
+Time 3.225417
+ GET / 200 in 235ms
+Time 1.112917
+ GET / 200 in 211ms
+Time 1.379375
+ GET / 200 in 218ms
+Time 4.980334
+ GET / 200 in 255ms
+Time 2.186791
+ GET / 200 in 234ms
+Time 1.620542
+ GET / 200 in 230ms
+Time 0.5855
+ GET / 200 in 219ms
+ ○ Compiling /login ...
+ ✓ Compiled /login in 696ms (1721 modules)
+Time 0.836584
+ GET /login?from=%2Fthis-page-does-not-exist 200 in 1067ms
+Time 2.305875
+ GET / 200 in 259ms
+Time 1.0475
+ GET / 200 in 217ms
+ ○ Compiling /flow ...
+ ✓ Compiled /flow in 1686ms (2150 modules)
+Time 2.254125
+ GET /flow 200 in 2144ms
+ ✓ Compiled /api/flow/parse-brief in 210ms (657 modules)
+ ⨯ Error: The OPENAI_API_KEY environment variable is missing or empty; either provide it, or instantiate the OpenAI client with an apiKey option, like new OpenAI({ apiKey: 'My API Key' }).
+    at eval (src/pages/api/flow/parse-brief.ts:35:15)
+  33 |
+  34 | // Initialize OpenAI client
+> 35 | const openai = new OpenAI({
+     |               ^
+  36 |   apiKey: process.env.OPENAI_API_KEY,
+  37 | });
+  38 |
+ ✓ Compiled /_error in 158ms (2173 modules)
+Time 0.408916
+ POST /api/flow/parse-brief 500 in 990ms
+Time 1.596709
+ GET /flow 200 in 326ms
+ ✓ Compiled /assets in 404ms (2280 modules)
+Time 1.521792
+ GET /assets 200 in 879ms
+ ✓ Compiled /api/errors in 237ms (725 modules)
+ ✓ Compiled in 149ms (2286 modules)
+Client Error Report: {
+  errorId: 'ERR_1749526446924_p7h39h83u',
+  message: 'Uncaught Error: Rendered more hooks than during the previous render.',
+  url: 'http://localhost:3000/assets',
+  timestamp: '2025-06-10T03:34:06.924Z',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.7103.25 Safari/537.36'
+}
+Client Error Report: {
+  errorId: 'ERR_1749526446931_kro9gjacz',
+  message: 'Uncaught Error: Rendered more hooks than during the previous render.',
+  url: 'http://localhost:3000/assets',
+  timestamp: '2025-06-10T03:34:06.931Z',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.7103.25 Safari/537.36'
+}
+ POST /api/errors 200 in 317ms
+ POST /api/errors 200 in 317ms
+ GET /api/assets?page=1&limit=20&search=&type=&sortBy=created_at&sortOrder=desc 401 in 449ms
+ GET /api/assets?page=1&limit=20&search=&type=&sortBy=created_at&sortOrder=desc 401 in 1ms
+Time 1.618375
+ GET /assets 200 in 596ms
+ GET /api/assets?page=1&limit=20&search=&type=&sortBy=created_at&sortOrder=desc 401 in 5ms
+ GET /api/assets?page=1&limit=20&search=&type=&sortBy=created_at&sortOrder=desc 401 in 3ms
+Client Error Report: {
+  errorId: 'ERR_1749526448035_tnlk83mse',
+  message: 'Uncaught Error: Rendered more hooks than during the previous render.',
+  url: 'http://localhost:3000/assets',
+  timestamp: '2025-06-10T03:34:08.035Z',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.7103.25 Safari/537.36'
+}
+ POST /api/errors 200 in 6ms
+Client Error Report: {
+  errorId: 'ERR_1749526448040_0uylqd62x',
+  message: 'Uncaught Error: Rendered more hooks than during the previous render.',
+  url: 'http://localhost:3000/assets',
+  timestamp: '2025-06-10T03:34:08.040Z',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.7103.25 Safari/537.36'
+}
+ POST /api/errors 200 in 2ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 554ms (2318 modules)
+Time 0.879
+ GET /dashboard 200 in 942ms
+ ✓ Compiled /login in 336ms (2341 modules)
+Time 1.288291
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 727ms
+Time 5.467417
+ GET /login 200 in 279ms
+Time 0.416708
+ GET /dashboard 200 in 284ms
+Time 0.965625
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 218ms
+Time 2.099083
+ GET /login 200 in 265ms
+Time 0.676541
+ GET /dashboard 200 in 213ms
+Time 1.543458
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 238ms
+Time 2.490167
+ GET /login 200 in 254ms
+Time 1.022625
+ GET /dashboard 200 in 217ms
+Time 1.596291
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 221ms
+Time 1.689666
+ GET /login 200 in 237ms
+Time 1.194167
+ GET /dashboard 200 in 233ms
+Time 0.790833
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 219ms
+Time 2.769291
+ GET /login 200 in 275ms
+Time 1.437166
+ GET /dashboard 200 in 260ms
+Time 0.667667
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 218ms
+Time 1.778959
+ GET /login 200 in 253ms
+Time 0.8175
+ GET /dashboard 200 in 213ms
+Time 1.22575
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 231ms
+Time 1.501292
+ GET /login 200 in 257ms
+Time 1.455833
+ GET /dashboard 200 in 225ms
+Time 1.833292
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 246ms
+Time 1.960042
+ GET /login 200 in 264ms
+Time 0.50775
+ GET /dashboard 200 in 214ms
+Time 1.343625
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 226ms
+Time 1.296541
+ GET /login 200 in 235ms
+Time 0.751584
+ GET / 200 in 233ms
+Time 0.800291
+ GET / 200 in 215ms
+Time 4.64725
+ GET / 200 in 245ms
+Time 1.256958
+ GET / 200 in 218ms
+Time 5.2235
+Time 1.701792
+Time 0.316125
+Time 0.309917
+ GET /flow 200 in 819ms
+ GET /flow 200 in 825ms
+ GET /dashboard 200 in 822ms
+ GET /dashboard 200 in 824ms
+Time 10.403375
+ GET /assets 200 in 2446ms
+Time 21.109792
+Time 2.750041
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 1166ms
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 1174ms
+ GET /api/assets?page=1&limit=20&search=&type=&sortBy=created_at&sortOrder=desc 401 in 190ms
+Client Error Report: {
+  errorId: 'ERR_1749526664583_wpjdivwak',
+  message: 'Uncaught Error: Rendered more hooks than during the previous render.',
+  url: 'http://localhost:3000/assets',
+  timestamp: '2025-06-10T03:37:44.583Z',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.7103.25 Safari/537.36'
+}
+Client Error Report: {
+  errorId: 'ERR_1749526664567_x4c35q18u',
+  message: 'Uncaught Error: Rendered more hooks than during the previous render.',
+  url: 'http://localhost:3000/assets',
+  timestamp: '2025-06-10T03:37:44.567Z',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.7103.25 Safari/537.36'
+}
+ POST /api/errors 200 in 281ms
+ POST /api/errors 200 in 281ms
+ GET /api/assets?page=1&limit=20&search=&type=&sortBy=created_at&sortOrder=desc 401 in 9ms
+ ⨯ Error: The OPENAI_API_KEY environment variable is missing or empty; either provide it, or instantiate the OpenAI client with an apiKey option, like new OpenAI({ apiKey: 'My API Key' }).
+    at eval (src/pages/api/flow/parse-brief.ts:35:15)
+  33 |
+  34 | // Initialize OpenAI client
+> 35 | const openai = new OpenAI({
+     |               ^
+  36 |   apiKey: process.env.OPENAI_API_KEY,
+  37 | });
+  38 |
+Time 4.000125
+ POST /api/flow/parse-brief 500 in 429ms
+Time 24.7425
+Time 0.861333
+ GET /login 200 in 1401ms
+ GET /login 200 in 1402ms
+Time 1.745084
+ GET /dashboard 200 in 215ms
+Time 7.410833
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 501ms
+Time 1.978709
+Time 0.4875
+ GET /dashboard 200 in 287ms
+ GET /dashboard 200 in 247ms
+Time 9.056042
+Time 1.9725
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 391ms
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 399ms
+Time 1.639334
+ GET /login 200 in 252ms
+Time 2.537667
+Time 0.660958
+Time 0.875416
+ GET /login 200 in 307ms
+ GET /login 200 in 310ms
+ GET /dashboard 200 in 264ms
+Time 10.204166
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 921ms
+Time 4.356
+Time 0.500375
+ GET /dashboard 200 in 263ms
+ GET /dashboard 200 in 263ms
+Time 20.855958
+ GET /login 200 in 376ms
+Time 3.650125
+Time 1.218709
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 331ms
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 332ms
+Time 1.236708
+ GET /dashboard 200 in 227ms
+Time 1.2015
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 252ms
+Time 2.358125
+Time 1.712917
+ GET /login 200 in 349ms
+ GET /login 200 in 360ms
+Time 33.136333
+ GET /login 200 in 374ms
+Time 1.0205
+ GET /dashboard 200 in 226ms
+Time 0.474708
+ GET /dashboard 200 in 235ms
+Time 1.323833
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 283ms
+Time 1.665
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 317ms
+Time 1.557542
+ GET /login 200 in 236ms
+Time 1.596042
+ GET /login 200 in 630ms
+Time 0.631875
+ GET /login 200 in 255ms
+Time 1.954083
+ GET /login 200 in 264ms
+Time 0.54125
+ GET /login 200 in 225ms
+Time 2.401125
+ GET /login 200 in 269ms
+Time 3.011458
+ GET /login 200 in 303ms
+ ○ Compiling /signup ...
+ ✓ Compiled /signup in 9.5s (2314 modules)
+Time 4.014458
+Time 0.624958
+Time 0.50225
+ GET /signup 200 in 7447ms
+ GET /signup 200 in 10272ms
+ GET /login 200 in 367ms
+Time 26.388084
+ GET /login 200 in 893ms
+Time 14.624084
+ GET /login 200 in 363ms
+Time 5.083
+ GET /login 200 in 343ms
+Time 10.759417
+ GET /login 200 in 307ms
+Time 3.25375
+ GET /login 200 in 249ms
+Time 1.617459
+ GET /login 200 in 242ms
+Time 1.765875
+ GET /login 200 in 243ms
+ ○ Compiling / ...
+ ✓ Compiled / in 5.9s (2229 modules)
+Time 0.724584
+Time 0.183375
+Time 0.177833
+ GET / 200 in 6366ms
+ GET / 200 in 662ms
+ GET / 200 in 6367ms
+Time 1.406666
+ GET / 200 in 239ms
+Time 0.380459
+ GET / 200 in 212ms
+Time 1.127792
+ GET / 200 in 221ms
+Time 1.218917
+ GET / 200 in 222ms
+Time 2.189666
+ GET / 200 in 235ms
+Time 0.783833
+ GET / 200 in 225ms
+Time 1.074042
+ GET / 200 in 247ms
+Time 1.98725
+ GET /login?from=%2Fthis-page-does-not-exist 200 in 335ms
+ ✓ Compiled in 237ms (1726 modules)
+Time 2.73725
+ GET / 200 in 395ms
+Time 3.243291
+ GET / 200 in 217ms
+Time 0.882
+ GET / 200 in 214ms
+Time 1.686083
+ GET / 200 in 218ms
+Time 1.953791
+ GET / 200 in 220ms
+Time 1.23175
+ GET / 200 in 217ms
+Time 0.868959
+ GET / 200 in 215ms
+Time 1.164125
+ GET /login?from=%2Fthis-page-does-not-exist 200 in 291ms
+Time 2.710625
+ GET / 200 in 225ms
+Time 1.1765
+ GET / 200 in 217ms
+ ✓ Compiled /flow in 270ms (2199 modules)
+Time 1.336833
+ GET /flow 200 in 690ms
+ ✓ Compiled /api/flow/parse-brief in 319ms (684 modules)
+ ⨯ Error: The OPENAI_API_KEY environment variable is missing or empty; either provide it, or instantiate the OpenAI client with an apiKey option, like new OpenAI({ apiKey: 'My API Key' }).
+    at eval (src/pages/api/flow/parse-brief.ts:35:15)
+  33 |
+  34 | // Initialize OpenAI client
+> 35 | const openai = new OpenAI({
+     |               ^
+  36 |   apiKey: process.env.OPENAI_API_KEY,
+  37 | });
+  38 |
+ ✓ Compiled /_error in 273ms (2222 modules)
+Time 0.50175
+ POST /api/flow/parse-brief 500 in 961ms
+Time 1.651292
+ GET /flow 200 in 349ms
+ ○ Compiling /assets ...
+ ✓ Compiled /assets in 955ms (2303 modules)
+Time 2.681084
+ GET /assets 200 in 1439ms
+ ✓ Compiled /api/errors in 288ms (737 modules)
+ ✓ Compiled in 197ms (2309 modules)
+Client Error Report: {
+  errorId: 'ERR_1749526858776_mcyr4irqa',
+  message: 'Uncaught Error: Rendered more hooks than during the previous render.',
+  url: 'http://localhost:3000/assets',
+  timestamp: '2025-06-10T03:40:58.776Z',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.7103.25 Safari/537.36'
+}
+Client Error Report: {
+  errorId: 'ERR_1749526858787_4pbcbc0n2',
+  message: 'Uncaught Error: Rendered more hooks than during the previous render.',
+  url: 'http://localhost:3000/assets',
+  timestamp: '2025-06-10T03:40:58.787Z',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.7103.25 Safari/537.36'
+}
+ POST /api/errors 200 in 363ms
+ POST /api/errors 200 in 363ms
+ GET /api/assets?page=1&limit=20&search=&type=&sortBy=created_at&sortOrder=desc 401 in 554ms
+ GET /api/assets?page=1&limit=20&search=&type=&sortBy=created_at&sortOrder=desc 401 in 2ms
+Time 4.904083
+ GET /assets 200 in 630ms
+ GET /api/assets?page=1&limit=20&search=&type=&sortBy=created_at&sortOrder=desc 401 in 7ms
+Client Error Report: {
+  errorId: 'ERR_1749526859963_9trzj6mb2',
+  message: 'Uncaught Error: Rendered more hooks than during the previous render.',
+  url: 'http://localhost:3000/assets',
+  timestamp: '2025-06-10T03:40:59.963Z',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.7103.25 Safari/537.36'
+}
+ POST /api/errors 200 in 36ms
+ GET /api/assets?page=1&limit=20&search=&type=&sortBy=created_at&sortOrder=desc 401 in 6ms
+Client Error Report: {
+  errorId: 'ERR_1749526859968_dfb9vo06t',
+  message: 'Uncaught Error: Rendered more hooks than during the previous render.',
+  url: 'http://localhost:3000/assets',
+  timestamp: '2025-06-10T03:40:59.968Z',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.7103.25 Safari/537.36'
+}
+ POST /api/errors 200 in 30ms
+ ○ Compiling /dashboard ...
+ ✓ Compiled /dashboard in 566ms (2341 modules)
+Time 1.088625
+ GET /dashboard 200 in 914ms
+Time 2.715167
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 246ms
+Time 1.743667
+ GET /login 200 in 253ms
+Time 2.035459
+ GET /dashboard 200 in 223ms
+Time 0.984917
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 224ms
+Time 2.023625
+ GET /login 200 in 242ms
+Time 0.648291
+ GET /dashboard 200 in 213ms
+Time 1.193834
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 230ms
+Time 1.337209
+ GET /login 200 in 234ms
+Time 1.782042
+ GET /dashboard 200 in 224ms
+Time 0.598667
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 216ms
+Time 2.335833
+ GET /login 200 in 259ms
+Time 0.962583
+ GET /dashboard 200 in 217ms
+Time 0.675875
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 220ms
+Time 2.391375
+ GET /login 200 in 248ms
+Time 1.752708
+ GET /dashboard 200 in 236ms
+Time 0.698
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 223ms
+Time 2.090167
+ GET /login 200 in 239ms
+Time 1.299166
+ GET /dashboard 200 in 215ms
+Time 2.315375
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 232ms
+Time 0.716666
+ GET /login 200 in 238ms
+Time 0.309417
+ GET /dashboard 200 in 216ms
+Time 2.328542
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 234ms
+Time 1.783125
+ GET /login 200 in 265ms
+Time 1.104292
+ GET /dashboard 200 in 218ms
+Time 1.148667
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 223ms
+Time 1.47675
+ GET /login 200 in 248ms
+Time 0.975208
+ GET /dashboard 200 in 216ms
+Time 0.7515
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 219ms
+ ✓ Compiled in 7.2s (2225 modules)
+ ✓ Compiled / in 248ms (2231 modules)
+Time 0.845542
+ GET / 200 in 611ms
+Time 0.660125
+ GET / 200 in 216ms
+Time 1.398291
+ GET / 200 in 224ms
+Time 0.773334
+ GET / 200 in 214ms
+Time 0.983584
+ GET / 200 in 237ms
+Time 4.063916
+ GET / 200 in 221ms
+Time 4.828958
+ GET / 200 in 280ms
+Time 4.99725
+ GET /login 200 in 1097ms
+ ○ Compiling /signup ...
+ ✓ Compiled /assets in 31.7s (2229 modules)
+Time 36.766084
+Time 7.733041
+Time 9.074875
+Time 7.000375
+ GET /login 200 in 853ms
+ ○ Compiling /api/health ...
+ ✓ Compiled /api/health in 3.1s (704 modules)
+ GET /api/health 503 in 4851ms
+ ○ Compiling /404 ...
+ ✓ Compiled /404 in 608ms (2254 modules)
+Time 1.518375
+ GET /api/auth/session 404 in 937ms
+ ✓ Compiled /api/assets in 178ms (714 modules)
+ GET /api/assets 401 in 215ms
+ ✓ Compiled /api/clients in 132ms (719 modules)
+ GET /api/clients 401 in 162ms
+ ○ Compiling /api/flow/parse-brief ...
+ ✓ Compiled /api/flow/parse-brief in 2.1s (725 modules)
+ ⨯ Error: The OPENAI_API_KEY environment variable is missing or empty; either provide it, or instantiate the OpenAI client with an apiKey option, like new OpenAI({ apiKey: 'My API Key' }).
+    at eval (src/pages/api/flow/parse-brief.ts:35:15)
+  33 |
+  34 | // Initialize OpenAI client
+> 35 | const openai = new OpenAI({
+     |               ^
+  36 |   apiKey: process.env.OPENAI_API_KEY,
+  37 | });
+  38 |
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 4.9s (2272 modules)
+Time 3.168667
+ POST /api/flow/parse-brief 500 in 7607ms
+Time 14.783291
+ GET / 200 in 613ms
+Time 1.467583
+ GET / 200 in 223ms
+Time 3.798375
+ GET / 200 in 313ms
+Time 2.983542
+ GET /login 200 in 537ms
+Time 15.756916
+ GET /signup 200 in 311ms
+Time 2.260958
+ GET /dashboard 200 in 491ms
+Time 1.849208
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 262ms
+Time 2.541667
+ GET /assets 200 in 520ms
+ GET /api/assets?page=1&limit=20&search=&type=&sortBy=created_at&sortOrder=desc 401 in 100ms
+ ○ Compiling /api/errors ...
+ ✓ Compiled /api/errors in 4.2s (707 modules)
+Client Error Report: {
+  errorId: 'ERR_1749535799735_3yo5l389v',
+  message: 'Uncaught Error: Rendered more hooks than during the previous render.',
+  url: 'http://localhost:3000/assets',
+  timestamp: '2025-06-10T06:09:59.735Z',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.7103.25 Safari/537.36'
+}
+Client Error Report: {
+  errorId: 'ERR_1749535799723_rch7o4c02',
+  message: 'Uncaught Error: Rendered more hooks than during the previous render.',
+  url: 'http://localhost:3000/assets',
+  timestamp: '2025-06-10T06:09:59.723Z',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.7103.25 Safari/537.36'
+}
+ POST /api/errors 200 in 4538ms
+ POST /api/errors 200 in 4538ms
+ GET /api/assets?page=1&limit=20&search=&type=&sortBy=created_at&sortOrder=desc 401 in 4225ms
+ ○ Compiling /flow ...
+ ✓ Compiled /flow in 8.1s (2342 modules)
+Time 6.509875
+ GET /flow 200 in 8832ms
+Time 9.003375
+ GET /login 200 in 311ms
+ ✓ Compiled /api/health in 307ms (758 modules)
+ GET /api/health 503 in 948ms
+ ○ Compiling /404 ...
+ ✓ Compiled /404 in 1456ms (2354 modules)
+Time 0.952917
+ GET /api/auth/session 404 in 1874ms
+ GET /api/assets 401 in 37ms
+ ✓ Compiled /api/clients in 198ms (766 modules)
+ GET /api/clients 401 in 221ms
+ ○ Compiling /api/flow/parse-brief ...
+ ✓ Compiled /api/flow/parse-brief in 1630ms (772 modules)
+ ⨯ Error: The OPENAI_API_KEY environment variable is missing or empty; either provide it, or instantiate the OpenAI client with an apiKey option, like new OpenAI({ apiKey: 'My API Key' }).
+    at eval (src/pages/api/flow/parse-brief.ts:35:15)
+  33 |
+  34 | // Initialize OpenAI client
+> 35 | const openai = new OpenAI({
+     |               ^
+  36 |   apiKey: process.env.OPENAI_API_KEY,
+  37 | });
+  38 |
+ ✓ Compiled /_error in 396ms (2365 modules)
+Time 1.9985
+ POST /api/flow/parse-brief 500 in 2414ms
+Time 16.912417
+ GET / 200 in 1583ms
+Time 1.543708
+ GET / 200 in 228ms
+Time 4.695792
+ GET / 200 in 272ms
+Time 5.4475
+ GET / 200 in 257ms
+Time 22.500959
+ GET / 200 in 291ms
+Time 1.711291
+ GET / 200 in 236ms
+Time 2.315792
+ GET / 200 in 334ms
+Time 8.492916
+ GET /login?from=%2Fthis-page-does-not-exist 200 in 727ms
+Time 15.368709
+ GET / 200 in 265ms
+Time 1.289542
+ GET / 200 in 215ms
+Time 1.874542
+ GET / 200 in 272ms
+Time 4.874958
+ GET /login 200 in 386ms
+Time 10.972125
+ GET /signup 200 in 863ms
+Time 5.91225
+ GET /dashboard 200 in 908ms
+Time 6.528
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 421ms
+Time 10.058208
+ GET /assets 200 in 686ms
+ GET /api/assets?page=1&limit=20&search=&type=&sortBy=created_at&sortOrder=desc 401 in 487ms
+Client Error Report: {
+  errorId: 'ERR_1749536083352_ye0mk9c25',
+  message: 'Uncaught Error: Rendered more hooks than during the previous render.',
+  url: 'http://localhost:3000/assets',
+  timestamp: '2025-06-10T06:14:43.352Z',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.7103.25 Safari/537.36'
+}
+Client Error Report: {
+  errorId: 'ERR_1749536083332_nv9rdl2u8',
+  message: 'Uncaught Error: Rendered more hooks than during the previous render.',
+  url: 'http://localhost:3000/assets',
+  timestamp: '2025-06-10T06:14:43.332Z',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.7103.25 Safari/537.36'
+}
+ POST /api/errors 200 in 597ms
+ POST /api/errors 200 in 597ms
+ GET /api/assets?page=1&limit=20&search=&type=&sortBy=created_at&sortOrder=desc 401 in 161ms
+Time 38.307667
+Time 43.327416
+ GET /login 200 in 1663ms
+ GET /api/health 503 in 1526ms
+Time 2.624125
+ GET /api/auth/session 404 in 316ms
+ GET /api/assets 401 in 18ms
+ GET /api/clients 401 in 49ms
+ ⨯ Error: The OPENAI_API_KEY environment variable is missing or empty; either provide it, or instantiate the OpenAI client with an apiKey option, like new OpenAI({ apiKey: 'My API Key' }).
+    at eval (src/pages/api/flow/parse-brief.ts:35:15)
+  33 |
+  34 | // Initialize OpenAI client
+> 35 | const openai = new OpenAI({
+     |               ^
+  36 |   apiKey: process.env.OPENAI_API_KEY,
+  37 | });
+  38 |
+Time 0.317792
+ POST /api/flow/parse-brief 500 in 341ms
+Time 11.412542
+ GET /flow 200 in 465ms
+ ⨯ Error: The OPENAI_API_KEY environment variable is missing or empty; either provide it, or instantiate the OpenAI client with an apiKey option, like new OpenAI({ apiKey: 'My API Key' }).
+    at eval (src/pages/api/flow/parse-brief.ts:35:15)
+  33 |
+  34 | // Initialize OpenAI client
+> 35 | const openai = new OpenAI({
+     |               ^
+  36 |   apiKey: process.env.OPENAI_API_KEY,
+  37 | });
+  38 |
+Time 5.930542
+ POST /api/flow/parse-brief 500 in 333ms
+Time 3.957208
+ GET /flow 200 in 355ms
+Time 1.811792
+ GET /assets 200 in 858ms
+ GET /api/assets?page=1&limit=20&search=&type=&sortBy=created_at&sortOrder=desc 401 in 394ms
+Client Error Report: {
+  errorId: 'ERR_1749536162252_k975ycurt',
+  message: 'Uncaught Error: Rendered more hooks than during the previous render.',
+  url: 'http://localhost:3000/assets',
+  timestamp: '2025-06-10T06:16:02.252Z',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.7103.25 Safari/537.36'
+}
+Client Error Report: {
+  errorId: 'ERR_1749536162309_gni0g1wah',
+  message: 'Uncaught Error: Rendered more hooks than during the previous render.',
+  url: 'http://localhost:3000/assets',
+  timestamp: '2025-06-10T06:16:02.309Z',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.7103.25 Safari/537.36'
+}
+ POST /api/errors 200 in 664ms
+ POST /api/errors 200 in 599ms
+ GET /api/assets?page=1&limit=20&search=&type=&sortBy=created_at&sortOrder=desc 401 in 99ms
+ ○ Compiling / ...
+ ✓ Compiled / in 40.2s (2269 modules)
+Time 5.865292
+ GET / 200 in 18987ms
+Time 1.468792
+ GET / 200 in 222ms
+ ○ Compiling /login ...
+ ✓ Compiled /login in 1087ms (2284 modules)
+Time 3.054042
+ GET /login 200 in 1789ms
+ ○ Compiling /signup ...
+ ✓ Compiled /dashboard in 30.5s (2293 modules)
+Time 5.570667
+Time 2.067
+ ✓ Compiled in 6s (707 modules)
+   Reload env: .env
+ ✓ Compiled in 2.1s (2420 modules)
+ ✓ Compiled in 13.8s (2242 modules)
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 351.2s (2242 modules)
+ ⨯ Error: ENOENT: no such file or directory, open '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/webpack-runtime.js'
+    at <unknown> (.next/server/pages/_document.js:260:27)
+    at Object.<anonymous> (.next/server/pages/_document.js:266:3) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/webpack-runtime.js'
+}
+ ⨯ Error: ENOENT: no such file or directory, open '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/webpack-runtime.js'
+    at <unknown> (.next/server/pages/_document.js:260:27)
+    at Object.<anonymous> (.next/server/pages/_document.js:266:3) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/webpack-runtime.js'
+}
+ ⨯ Error: ENOENT: no such file or directory, open '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/webpack-runtime.js'
+    at <unknown> (.next/server/pages/_document.js:260:27)
+    at Object.<anonymous> (.next/server/pages/_document.js:266:3) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/webpack-runtime.js'
+}
+ ⨯ Error: ENOENT: no such file or directory, open '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/webpack-runtime.js'
+    at <unknown> (.next/server/pages/_document.js:260:27)
+    at Object.<anonymous> (.next/server/pages/_document.js:266:3) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/webpack-runtime.js'
+}
+ ⨯ Error: ENOENT: no such file or directory, open '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/webpack-runtime.js'
+    at <unknown> (.next/server/pages/_document.js:260:27)
+    at Object.<anonymous> (.next/server/pages/_document.js:266:3) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/server/webpack-runtime.js'
+}
+Time 13.228959
+Time 8.212667
+Time 7.781208
+Time 7.396666
+Time 6.910958
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/cache/webpack/client-development-fallback/0.pack.gz_' -> '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/cache/webpack/client-development-fallback/0.pack.gz'
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/cache/webpack/client-development-fallback/0.pack.gz_' -> '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/cache/webpack/client-development-fallback/0.pack.gz'
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/cache/webpack/client-development-fallback/0.pack.gz_' -> '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/cache/webpack/client-development-fallback/0.pack.gz'
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/cache/webpack/client-development-fallback/0.pack.gz_' -> '/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/.next/cache/webpack/client-development-fallback/0.pack.gz'
+[?25h

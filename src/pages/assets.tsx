@@ -122,6 +122,8 @@ const sortOptions = [
 ];
 
 const AssetsPage: React.FC = () => {
+  // CRITICAL: ALL HOOKS MUST BE CALLED BEFORE ANY CONDITIONAL RETURNS
+  // This ensures hooks are called in the same order on every render
   const [assets, setAssets] = useState<Asset[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -281,6 +283,42 @@ const AssetsPage: React.FC = () => {
     fetchAssets();
   }, [isAuthenticated, activeClient, page, filters]);
 
+  // Move useMemo BEFORE any conditional returns to follow Rules of Hooks
+  const filteredAssets = useMemo(() => {
+    return assets.filter(asset => {
+      if (filters.search && !asset.name.toLowerCase().includes(filters.search.toLowerCase()) &&
+          !asset.description?.toLowerCase().includes(filters.search.toLowerCase())) {
+        return false;
+      }
+      if (filters.type && asset.type !== filters.type) {
+        return false;
+      }
+      if (filters.tags.length > 0 && !filters.tags.some(tag => asset.tags.includes(tag))) {
+        return false;
+      }
+      if (filters.favoritesOnly && !asset.favorite) {
+        return false;
+      }
+      return true;
+    });
+  }, [assets, filters]);
+
+  // CONDITIONAL RETURNS - Must come AFTER all hooks are declared
+  // This ensures hooks are called in the same order every render
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+          <CircularProgress />
+        </Box>
+      </DashboardLayout>
+    );
+  }
+
+  if (!isAuthenticated && process.env.NODE_ENV === 'production') {
+    return null;
+  }
+
   const handleFilterChange = (newFilters: Partial<AssetFilters>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
     setPage(1);
@@ -329,40 +367,7 @@ const AssetsPage: React.FC = () => {
     showNotification(`Deleted ${asset.name}`, 'success');
   };
 
-  // Show loading if not authenticated in production
-  if (loading) {
-    return (
-      <DashboardLayout>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
-          <CircularProgress />
-        </Box>
-      </DashboardLayout>
-    );
-  }
-
-  if (!isAuthenticated && process.env.NODE_ENV === 'production') {
-    return null;
-  }
-
-  const filteredAssets = useMemo(() => {
-    return assets.filter(asset => {
-      if (filters.search && !asset.name.toLowerCase().includes(filters.search.toLowerCase()) &&
-          !asset.description?.toLowerCase().includes(filters.search.toLowerCase())) {
-        return false;
-      }
-      if (filters.type && asset.type !== filters.type) {
-        return false;
-      }
-      if (filters.tags.length > 0 && !filters.tags.some(tag => asset.tags.includes(tag))) {
-        return false;
-      }
-      if (filters.favoritesOnly && !asset.favorite) {
-        return false;
-      }
-      return true;
-    });
-  }, [assets, filters]);
-
+  // Main component render - all hooks called before this point
   return (
     <DashboardLayout>
       <Head>

@@ -165,7 +165,7 @@ const LoginPage: React.FC = () => {
               error={!!emailError}
               helperText={emailError}
               sx={{ mb: 2 }}
-              data-testid="email-input"
+              inputProps={{ 'data-testid': 'email-input' }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -188,7 +188,7 @@ const LoginPage: React.FC = () => {
               error={!!passwordError}
               helperText={passwordError}
               sx={{ mb: 2 }}
-              data-testid="password-input"
+              inputProps={{ 'data-testid': 'password-input' }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">

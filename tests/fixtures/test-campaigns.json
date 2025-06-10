@@ -1,0 +1,18 @@
+{
+  "simple": {
+    "name": "Simple Campaign",
+    "assets": [
+      "test-image.jpg"
+    ],
+    "combinations": 1
+  },
+  "complex": {
+    "name": "Complex Campaign",
+    "assets": [
+      "test-image.jpg",
+      "test-video.mp4",
+      "test-audio.mp3"
+    ],
+    "combinations": 24
+  }
+}

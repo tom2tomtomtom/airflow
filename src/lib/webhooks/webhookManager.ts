@@ -82,3 +82,23 @@ export async function processIncomingWebhook(
     message: 'Webhook processed successfully',
   };
 }
+
+/**
+ * Webhook manager class for compatibility
+ */
+export class WebhookManager {
+  async sendWebhook(endpoint: WebhookEndpoint, event: WebhookEvent) {
+    return sendWebhook(endpoint, event);
+  }
+
+  async processIncomingWebhook(payload: any, headers: Record<string, string>) {
+    return processIncomingWebhook(payload, headers);
+  }
+
+  verifySignature(payload: string, signature: string, secret: string) {
+    return verifyWebhookSignature(payload, signature, secret);
+  }
+}
+
+// Default instance for backwards compatibility
+export const webhookManager = new WebhookManager();

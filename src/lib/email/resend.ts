@@ -53,3 +53,30 @@ export async function sendDataDeletionEmail(to: string): Promise<void> {
     `,
   });
 }
+
+/**
+ * Send render completion email notification
+ */
+export async function sendRenderCompleteEmail(
+  to: string,
+  renderDetails: {
+    id: string;
+    name: string;
+    downloadUrl?: string;
+    status: string;
+  }
+): Promise<void> {
+  await sendEmail({
+    to,
+    subject: `Render Complete: ${renderDetails.name}`,
+    html: `
+      <h1>Your Render is Complete</h1>
+      <p>Your render "${renderDetails.name}" has finished processing.</p>
+      <p>Status: ${renderDetails.status}</p>
+      ${renderDetails.downloadUrl ? `
+        <p><a href="${renderDetails.downloadUrl}">Download your render</a></p>
+      ` : ''}
+      <p>Render ID: ${renderDetails.id}</p>
+    `,
+  });
+}

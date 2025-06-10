@@ -1,103 +1,166 @@
 import { defineConfig, devices } from '@playwright/test';
+import path from 'path';
 
 /**
- * @see https://playwright.dev/docs/test-configuration
+ * Comprehensive Playwright configuration for AIrWAVE testing
+ * Supports multiple browsers, devices, and testing scenarios
  */
 export default defineConfig({
-  testDir: './tests/e2e',
-  /* Run tests in files in parallel */
-  fullyParallel: false,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
+  // Test directory structure
+  testDir: './tests',
+  
+  // Global test configuration
+  fullyParallel: true,
   forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
-  retries: process.env.CI ? 2 : 1,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : 2,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [
-    ['html', { outputFolder: 'comprehensive-test-results', open: 'never' }],
-    ['json', { outputFile: 'comprehensive-test-results.json' }],
-    ['list']
-  ],
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  
+  // Test timeouts
+  timeout: 60 * 1000, // 1 minute per test
+  expect: {
+    timeout: 10 * 1000, // 10 seconds for assertions
+  },
+  
+  // Global setup and teardown
+  globalSetup: require.resolve('./tests/utils/global-setup.ts'),
+  globalTeardown: require.resolve('./tests/utils/global-teardown.ts'),
+  
+  // Test data and reporting
   use: {
-    /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'https://airwave-complete.netlify.app',
-
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+    // Base URL for testing
+    baseURL: process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3000',
+    
+    // Global test settings
     trace: 'on-first-retry',
-    
-    /* Take screenshot on failure */
     screenshot: 'only-on-failure',
-    
-    /* Record video on failure */
     video: 'retain-on-failure',
     
-    /* Global timeout for each test */
-    actionTimeout: 30000,
-    navigationTimeout: 30000,
+    // Browser settings
+    headless: process.env.CI ? true : false,
+    viewport: { width: 1280, height: 720 },
+    ignoreHTTPSErrors: true,
+    
+    // Authentication storage
+    storageState: {
+      cookies: [],
+      origins: []
+    }
   },
 
-  /* Configure projects for major browsers */
+  // Test projects for different browsers and scenarios
   projects: [
+    // Setup project for authentication
     {
-      name: 'chromium',
+      name: 'setup',
+      testMatch: /.*\.setup\.ts/,
+    },
+    
+    // Desktop Chrome - Primary testing
+    {
+      name: 'chrome-desktop',
       use: { 
         ...devices['Desktop Chrome'],
-        viewport: { width: 1920, height: 1080 },
-        // Enable slower interactions for better stability
-        actionTimeout: 30000,
+        viewport: { width: 1920, height: 1080 }
       },
+      dependencies: ['setup'],
     },
-
+    
+    // Desktop Firefox
     {
-      name: 'firefox',
+      name: 'firefox-desktop',
       use: { 
         ...devices['Desktop Firefox'],
-        viewport: { width: 1920, height: 1080 },
+        viewport: { width: 1920, height: 1080 }
       },
+      dependencies: ['setup'],
     },
-
+    
+    // Desktop Safari
     {
-      name: 'webkit',
+      name: 'safari-desktop',
       use: { 
         ...devices['Desktop Safari'],
-        viewport: { width: 1920, height: 1080 },
+        viewport: { width: 1920, height: 1080 }
       },
+      dependencies: ['setup'],
     },
-
-    /* Test against mobile viewports. */
+    
+    // Mobile Chrome
     {
-      name: 'Mobile Chrome',
-      use: { 
-        ...devices['Pixel 5'],
-        actionTimeout: 30000,
-      },
+      name: 'mobile-chrome',
+      use: { ...devices['Pixel 5'] },
+      dependencies: ['setup'],
     },
+    
+    // Mobile Safari
     {
-      name: 'Mobile Safari',
-      use: { 
-        ...devices['iPhone 12'],
-        actionTimeout: 30000,
-      },
+      name: 'mobile-safari',
+      use: { ...devices['iPhone 12'] },
+      dependencies: ['setup'],
     },
+    
+    // Tablet
+    {
+      name: 'tablet',
+      use: { ...devices['iPad Pro'] },
+      dependencies: ['setup'],
+    },
+    
+    // Performance testing
+    {
+      name: 'performance',
+      testMatch: /.*\.perf\.spec\.ts/,
+      use: { 
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1920, height: 1080 }
+      },
+      dependencies: ['setup'],
+    },
+    
+    // Visual regression testing
+    {
+      name: 'visual',
+      testMatch: /.*\.visual\.spec\.ts/,
+      use: { 
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1920, height: 1080 }
+      },
+      dependencies: ['setup'],
+    },
+    
+    // API testing
+    {
+      name: 'api',
+      testMatch: /.*\.api\.spec\.ts/,
+      use: {
+        baseURL: process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3000',
+      }
+    }
   ],
 
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://127.0.0.1:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
-
-  /* Global setup and teardown */
-  globalSetup: require.resolve('./tests/global-setup.ts'),
-  
-  /* Test timeout */
-  timeout: 60000,
-  
-  /* Expect timeout */
-  expect: {
-    timeout: 10000,
+  // Local development server
+  webServer: {
+    command: 'npm run dev',
+    url: 'http://localhost:3000',
+    reuseExistingServer: !process.env.CI,
+    timeout: 120 * 1000, // 2 minutes
   },
+
+  // Reporting configuration
+  reporter: [
+    ['html', { 
+      outputFolder: 'test-results/html-report',
+      open: 'never'
+    }],
+    ['json', { 
+      outputFile: 'test-results/results.json' 
+    }],
+    ['junit', { 
+      outputFile: 'test-results/junit.xml' 
+    }],
+    process.env.CI ? ['github'] : ['list']
+  ],
+
+  // Output directories
+  outputDir: 'test-results/artifacts',
 });

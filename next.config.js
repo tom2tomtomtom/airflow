@@ -22,6 +22,7 @@ try {
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  output: 'standalone',
   // swcMinify: true, // Removed - enabled by default in Next.js 13+
   
   // Ignore TypeScript errors during build for deployment
@@ -33,6 +34,7 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  
   
   // Image optimization
   images: {
@@ -181,6 +183,8 @@ const nextConfig = {
   // Experimental features
   experimental: {
     optimizeCss: true, // Enable CSS optimization
+    skipMiddlewareUrlNormalize: true,
+    skipTrailingSlashRedirect: true,
     // instrumentationHook: true, // Removed - instrumentation.js is available by default
   },
 };

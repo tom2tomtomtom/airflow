@@ -1,5 +1,5 @@
-/* Import Outfit Font */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+/* Use system fonts to avoid external font loading issues in development */
+/* In production, use a proper font CDN or local fonts */
 
 /* Theme Transition Styles - MUST BE FIRST */
 .theme-transitioning,

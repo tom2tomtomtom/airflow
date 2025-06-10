@@ -133,7 +133,6 @@ const createAirwaveTheme = (mode: PaletteMode = 'light') => {
     },
     typography: {
       fontFamily: [
-        'Outfit',
         '-apple-system',
         'BlinkMacSystemFont',
         '"Segoe UI"',

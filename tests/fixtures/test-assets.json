@@ -1,0 +1,20 @@
+[
+  {
+    "name": "test-image.jpg",
+    "type": "image",
+    "size": 1024000,
+    "content": "base64-encoded-image-data"
+  },
+  {
+    "name": "test-video.mp4",
+    "type": "video",
+    "size": 5120000,
+    "content": "base64-encoded-video-data"
+  },
+  {
+    "name": "test-audio.mp3",
+    "type": "audio",
+    "size": 2048000,
+    "content": "base64-encoded-audio-data"
+  }
+]
