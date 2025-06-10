@@ -95,19 +95,23 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 }
 
 async function generateCopyFromMotivations(motivations: Motivation[], briefData: BriefData): Promise<CopyVariation[]> {
-  // Try AI-powered generation first
-  if (process.env.OPENAI_API_KEY) {
+  // Start with template generation for fast response
+  const templateCopy = generateCopyWithTemplates(motivations, briefData);
+  
+  // Try AI-powered generation if API key is available and we have time
+  if (process.env.OPENAI_API_KEY && templateCopy.length < 9) {
     try {
-            const aiCopy = await generateCopyWithAI(motivations, briefData);
+      const aiCopy = await generateCopyWithAI(motivations, briefData);
       if (aiCopy && aiCopy.length > 0) {
-                return aiCopy;
+        // Merge template and AI copy for best of both
+        return [...templateCopy, ...aiCopy].slice(0, 15);
       }
     } catch (error) {
-      console.warn('OpenAI copy generation failed, falling back to templates:', error);
+      console.warn('OpenAI copy generation failed, using templates:', error);
     }
   }
 
-    return generateCopyWithTemplates(motivations, briefData);
+  return templateCopy;
 }
 
 async function generateCopyWithAI(motivations: Motivation[], briefData: BriefData): Promise<CopyVariation[]> {
@@ -127,7 +131,7 @@ Brand Guidelines: ${briefData.brandGuidelines || 'Not specified'}
 SELECTED MOTIVATIONS:
 ${motivations.map((m, i) => `${i + 1}. ${m.title}: ${m.description}`).join('\n')}
 
-Generate 5 copy variations for EACH motivation and EACH platform combination. Each copy should be:
+Generate 3 copy variations for the TOP 3 motivations and the PRIMARY platform. Each copy should be:
 - Maximum 10 words for social media optimization
 - Platform-appropriate in tone and style
 - Aligned with the specific motivation
@@ -151,7 +155,7 @@ Platform-specific guidelines:
 - YouTube: Educational, engaging, longer form allowed
 - Pinterest: Aspirational, visual, lifestyle-focused
 
-Respond with a JSON array of copy variations. Generate exactly 5 variations per motivation per platform.`;
+Respond with a JSON array of copy variations. Generate exactly 9 variations total (3 motivations x 3 variations each). Focus on quality over quantity.`;
 
   const response = await Promise.race([
     openai.chat.completions.create({
@@ -163,10 +167,10 @@ Respond with a JSON array of copy variations. Generate exactly 5 variations per 
         }
       ],
       temperature: 0.8,
-      max_tokens: 3000, // Reduce tokens for faster response
+      max_tokens: 2000, // Reduce tokens for faster response
     }),
     new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('OpenAI request timeout')), 60000) // Longer timeout for copy
+      setTimeout(() => reject(new Error('OpenAI request timeout')), 20000) // Shorter timeout for Netlify compatibility
     )
   ]);
 
@@ -208,7 +212,7 @@ Respond with a JSON array of copy variations. Generate exactly 5 variations per 
   }
 }
 
-async function generateCopyWithTemplates(motivations: Motivation[], briefData: BriefData): Promise<CopyVariation[]> {
+function generateCopyWithTemplates(motivations: Motivation[], briefData: BriefData): CopyVariation[] {
   const copyVariations: CopyVariation[] = [];
   
   // Copy templates for different tones and styles
@@ -319,33 +323,34 @@ async function generateCopyWithTemplates(motivations: Motivation[], briefData: B
     }
   };
 
-  // Generate copy for each motivation
-  motivations.forEach((motivation, motivationIndex) => {
+  // Generate copy for top 3 motivations only for faster processing
+  const topMotivations = motivations.slice(0, 3);
+  const primaryPlatform = briefData.platforms[0] || 'Meta';
+  
+  topMotivations.forEach((motivation, motivationIndex) => {
     const motivationType = getMotivationType(motivation.title);
     const templates = copyTemplates[motivationType] || copyTemplates.emotional;
+    const platformConfig = platformAdaptations[primaryPlatform] || platformAdaptations.Facebook;
     
-    // Generate 5 variations per motivation
-    for (let i = 0; i < 5; i++) {
-      briefData.platforms.forEach(platform => {
-        const platformConfig = platformAdaptations[platform] || platformAdaptations.Facebook;
-        const template = templates[i % templates.length];
-        
-        // Generate copy text based on template and brief data
-        const copyText = generateCopyText(template, briefData, motivation, platformConfig);
-        
-        // Ensure word count is within limit (max 10 words)
-        const words = copyText.split(' ');
-        const finalText = words.slice(0, Math.min(words.length, 10)).join(' ');
-        
-        copyVariations.push({
-          id: `copy_${motivationIndex}_${i}_${platform.toLowerCase()}`,
-          text: finalText,
-          platform: platform,
-          motivation: motivation.title,
-          wordCount: finalText.split(' ').length,
-          tone: getToneFromMotivation(motivation.title),
-          cta: generateCTA(motivation, platform)
-        });
+    // Generate 3 variations per motivation for faster processing
+    for (let i = 0; i < 3; i++) {
+      const template = templates[i % templates.length];
+      
+      // Generate copy text based on template and brief data
+      const copyText = generateCopyText(template, briefData, motivation, platformConfig);
+      
+      // Ensure word count is within limit (max 10 words)
+      const words = copyText.split(' ');
+      const finalText = words.slice(0, Math.min(words.length, 10)).join(' ');
+      
+      copyVariations.push({
+        id: `copy_${motivationIndex}_${i}_${primaryPlatform.toLowerCase()}`,
+        text: finalText,
+        platform: primaryPlatform,
+        motivation: motivation.title,
+        wordCount: finalText.split(' ').length,
+        tone: getToneFromMotivation(motivation.title),
+        cta: generateCTA(motivation, primaryPlatform)
       });
     }
   });

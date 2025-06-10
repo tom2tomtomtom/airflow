@@ -158,10 +158,100 @@ const AssetsPage: React.FC = () => {
     }
   }, [loading, isAuthenticated, router]);
 
-  // Initialize with sample data for testing
-  useEffect(() => {
-    if (!isAuthenticated || process.env.NODE_ENV !== 'production') {
-      // Mock data for testing
+  // Fetch assets from API
+  const fetchAssets = async () => {
+    if (!isAuthenticated && process.env.NODE_ENV === 'production') {
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const queryParams = new URLSearchParams({
+        page: page.toString(),
+        limit: '20',
+        search: filters.search,
+        type: filters.type,
+        sortBy: filters.sortBy,
+        sortOrder: filters.sortOrder,
+        ...(activeClient?.id && { clientId: activeClient.id }),
+      });
+
+      const response = await fetch(`/api/assets?${queryParams}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setAssets(data.assets || []);
+          setTotalPages(Math.ceil((data.total || 0) / 20));
+        } else {
+          throw new Error(data.message || 'Failed to fetch assets');
+        }
+      } else if (response.status === 401) {
+        // Show mock data for development/demo
+        setAssets([
+          {
+            id: '1',
+            name: 'Sample Image.jpg',
+            type: 'image',
+            url: 'https://picsum.photos/400/300',
+            thumbnailUrl: 'https://picsum.photos/200/150',
+            description: 'A sample image for testing',
+            tags: ['sample', 'test'],
+            dateCreated: '2024-01-15T10:00:00Z',
+            clientId: 'test-client',
+            userId: 'test-user',
+            favorite: false,
+            size: 245760,
+            mimeType: 'image/jpeg',
+            width: 400,
+            height: 300
+          },
+          {
+            id: '2',
+            name: 'Demo Video.mp4',
+            type: 'video',
+            url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
+            description: 'A demo video file',
+            tags: ['demo', 'video'],
+            dateCreated: '2024-01-16T14:30:00Z',
+            clientId: 'test-client',
+            userId: 'test-user',
+            favorite: true,
+            size: 1048576,
+            mimeType: 'video/mp4',
+            duration: 30
+          },
+          {
+            id: '3',
+            name: 'Brand Guidelines.pdf',
+            type: 'text',
+            url: '#',
+            description: 'Brand guidelines document',
+            tags: ['brand', 'guidelines'],
+            dateCreated: '2024-01-17T09:15:00Z',
+            clientId: 'test-client',
+            userId: 'test-user',
+            favorite: false,
+            size: 512000,
+            mimeType: 'application/pdf'
+          }
+        ]);
+        console.log('Using demo data due to authentication');
+      } else {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+    } catch (err: any) {
+      console.error('Error fetching assets:', err);
+      setError(err.message || 'Failed to load assets');
+      
+      // Fall back to mock data on error
       setAssets([
         {
           id: '1',
@@ -179,40 +269,17 @@ const AssetsPage: React.FC = () => {
           mimeType: 'image/jpeg',
           width: 400,
           height: 300
-        },
-        {
-          id: '2',
-          name: 'Demo Video.mp4',
-          type: 'video',
-          url: 'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
-          description: 'A demo video file',
-          tags: ['demo', 'video'],
-          dateCreated: '2024-01-16T14:30:00Z',
-          clientId: 'test-client',
-          userId: 'test-user',
-          favorite: true,
-          size: 1048576,
-          mimeType: 'video/mp4',
-          duration: 30
-        },
-        {
-          id: '3',
-          name: 'Brand Guidelines.pdf',
-          type: 'text',
-          url: '#',
-          description: 'Brand guidelines document',
-          tags: ['brand', 'guidelines'],
-          dateCreated: '2024-01-17T09:15:00Z',
-          clientId: 'test-client',
-          userId: 'test-user',
-          favorite: false,
-          size: 512000,
-          mimeType: 'application/pdf'
         }
       ]);
+    } finally {
       setIsLoading(false);
     }
-  }, [isAuthenticated]);
+  };
+
+  // Initial load and reload when dependencies change
+  useEffect(() => {
+    fetchAssets();
+  }, [isAuthenticated, activeClient, page, filters]);
 
   const handleFilterChange = (newFilters: Partial<AssetFilters>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));

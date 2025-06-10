@@ -23,6 +23,9 @@
   external_node_modules = ["openai"]
   node_bundler = "esbuild"
 
+[functions."api/flow/generate-copy"]
+  timeout = 26
+
 [[headers]]
   for = "/api/*"
   [headers.values]

@@ -132,3 +132,6 @@ export function withRateLimit(
     return handler(request);
   };
 }
+
+// Alias for compatibility  
+export const withRateLimitedRoute = withRateLimit;

@@ -98,3 +98,30 @@ export const createValidationError = (message: string) =>
 
 export const createRateLimitError = (message = 'Rate limit exceeded') =>
   new AppError(message, 429, ErrorCodes.RATE_LIMIT_EXCEEDED);
+
+// Additional specific error types for GDPR endpoints
+export class AuthorizationError extends AppError {
+  constructor(message = 'Authorization failed') {
+    super(message, 403, ErrorCodes.FORBIDDEN);
+  }
+}
+
+export class ValidationError extends AppError {
+  constructor(message: string) {
+    super(message, 400, ErrorCodes.VALIDATION_ERROR);
+  }
+}
+
+// Error handler wrapper for API routes
+export function withErrorHandler<T extends any[], R>(
+  handler: (...args: T) => Promise<R>
+): (...args: T) => Promise<R> {
+  return async (...args: T): Promise<R> => {
+    try {
+      return await handler(...args);
+    } catch (error) {
+      const appError = handleError(error);
+      throw appError;
+    }
+  };
+}
