@@ -11,7 +11,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "type-check": "tsc --noEmit",
-    "postinstall": "prisma generate || true",
+    "postinstall": "echo 'Install complete'",
     "workers": "tsx workers/index.ts",
     "worker:render": "tsx workers/index.ts --only=render",
     "worker:email": "tsx workers/index.ts --only=email",
