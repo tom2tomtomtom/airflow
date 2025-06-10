@@ -79,8 +79,8 @@ class WebSocketService extends EventEmitter {
       
       ws.onopen = () => {
         if (process.env.NODE_ENV === 'development') {
-
-          process.env.NODE_ENV === 'development' &&         }
+          console.log('WebSocket connected');
+        }
         this.emit('connected');
         this.startHeartbeat(ws);
       };
@@ -101,8 +101,8 @@ class WebSocketService extends EventEmitter {
 
       ws.onclose = (event) => {
         if (process.env.NODE_ENV === 'development') {
-
-          process.env.NODE_ENV === 'development' &&         }
+          console.log('WebSocket disconnected:', event.code);
+        }
         this.emit('disconnected');
         
         // Reconnect after delay if not intentional close

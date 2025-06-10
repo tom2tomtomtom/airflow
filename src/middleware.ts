@@ -15,6 +15,8 @@ const publicRoutes = [
   '/unauthorized',
   '/test-auth',
   '/test-flow',
+  // Testing routes for UI tests
+  ...(process.env.NODE_ENV !== 'production' ? ['/flow', '/assets', '/dashboard', '/clients', '/strategic-content', '/matrix', '/campaigns', '/templates', '/analytics', '/ai-tools'] : []),
   '/api/auth/csrf-token',
   '/api/auth/login',
   '/api/auth/signup',

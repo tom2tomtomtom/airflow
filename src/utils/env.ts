@@ -173,29 +173,28 @@ export function getValidatedEnv(): Env {
 export function logEnvironmentStatus(): void {
   try {
     const env = validateEnv()
-    process.env.NODE_ENV === 'development' && if (process.env.NODE_ENV === 'development') {
-   process.env.NODE_ENV === 'development' &&  }
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Environment validated successfully');
+    }
     
     if (env.NODE_ENV === 'production') {
-      const readiness = checkProductionReadiness()
+      const readiness = checkProductionReadiness();
       if (readiness.isReady) {
-        process.env.NODE_ENV === 'development' && if (process.env.NODE_ENV === 'development') {
-   process.env.NODE_ENV === 'development' &&  }
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Production environment ready');
+        }
       } else {
-        process.env.NODE_ENV === 'development' && if (process.env.NODE_ENV === 'development') {
-   process.env.NODE_ENV === 'development' &&  }
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Production environment not ready');
+        }
         readiness.missingVars.forEach(v => {
           if (process.env.NODE_ENV === 'development') {
-            if (process.env.NODE_ENV === 'development') {
-
-              process.env.NODE_ENV === 'development' &&             }
+            console.error(`Missing required variable: ${v}`);
           }
         });
         readiness.warnings.forEach(w => {
           if (process.env.NODE_ENV === 'development') {
-            if (process.env.NODE_ENV === 'development') {
-
-              process.env.NODE_ENV === 'development' &&             }
+            console.warn(w);
           }
         });
       }

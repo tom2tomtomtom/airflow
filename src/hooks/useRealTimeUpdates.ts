@@ -108,7 +108,10 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
           ...prev,
           lastConnected: new Date(),
         }));
-        process.env.NODE_ENV === 'development' &&       };
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Real-time connection established');
+        }
+      };
 
       eventSource.onerror = (event) => {
         setConnected(false);

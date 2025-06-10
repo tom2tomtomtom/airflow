@@ -21,7 +21,6 @@ import {
   DialogActions,
   CircularProgress,
   Alert,
-  Autocomplete,
   InputAdornment,
 } from '@mui/material';
 import {
@@ -37,9 +36,6 @@ import {
   TextFields,
   Refresh,
 } from '@mui/icons-material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 interface Asset {
   id: string;
@@ -81,7 +77,11 @@ const assetTypeColors = {
   text: '#9C27B0',
 };
 
-export default function AssetBrowser({ clientId, onAssetSelect, selectionMode = false }: AssetBrowserProps) {
+export default function AssetBrowser({ 
+  clientId, 
+  onAssetSelect, 
+  selectionMode = false 
+}: AssetBrowserProps) {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -89,64 +89,33 @@ export default function AssetBrowser({ clientId, onAssetSelect, selectionMode = 
   // Search and filter state
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<string>('');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [dateFrom, setDateFrom] = useState<Date | null>(null);
-  const [dateTo, setDateTo] = useState<Date | null>(null);
   const [sortBy, setSortBy] = useState('created_at');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  
-  // Pagination
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
-  
-  // Available tags for autocomplete
-  const [availableTags, setAvailableTags] = useState<string[]>([]);
   
   // Dialog state
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
 
-  const itemsPerPage = 20;
-
-  const loadAssets = useCallback(async (resetPage = false) => {
+  const loadAssets = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      
-      const currentPage = resetPage ? 1 : page;
-      const offset = (currentPage - 1) * itemsPerPage;
-      
+
       const params = new URLSearchParams({
-        limit: itemsPerPage.toString(),
-        offset: offset.toString(),
+        limit: '20',
         sortBy,
         sortOrder,
       });
-      
+
       if (searchTerm) params.append('search', searchTerm);
       if (selectedType) params.append('type', selectedType);
-      if (selectedTags.length > 0) params.append('tags', selectedTags.join(','));
-      if (dateFrom) params.append('dateFrom', dateFrom.toISOString().split('T')[0]);
-      if (dateTo) params.append('dateTo', dateTo.toISOString().split('T')[0]);
       if (clientId) params.append('clientId', clientId);
 
       const response = await fetch(`/api/assets?${params}`);
       const data = await response.json();
 
       if (data.success) {
-        setAssets(resetPage ? data.assets : [...assets, ...data.assets]);
-        setHasMore(data.pagination?.hasMore || false);
-        setTotalPages(Math.ceil((data.pagination?.total || 0) / itemsPerPage));
-        
-        // Extract unique tags for autocomplete
-        const allTags = data.assets.flatMap((asset: Asset) => asset.tags);
-        const uniqueTags = Array.from(new Set(allTags));
-        setAvailableTags(uniqueTags);
-        
-        if (resetPage) {
-          setPage(1);
-        }
+        setAssets(data.assets || []);
       } else {
         setError(data.message || 'Failed to load assets');
       }
@@ -155,11 +124,11 @@ export default function AssetBrowser({ clientId, onAssetSelect, selectionMode = 
     } finally {
       setLoading(false);
     }
-  }, [searchTerm, selectedType, selectedTags, dateFrom, dateTo, sortBy, sortOrder, clientId, page, assets]);
+  }, [searchTerm, selectedType, sortBy, sortOrder, clientId]);
 
   useEffect(() => {
-    loadAssets(true);
-  }, [searchTerm, selectedType, selectedTags, dateFrom, dateTo, sortBy, sortOrder, clientId]);
+    loadAssets();
+  }, [loadAssets]);
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
@@ -168,9 +137,6 @@ export default function AssetBrowser({ clientId, onAssetSelect, selectionMode = 
   const handleClearFilters = () => {
     setSearchTerm('');
     setSelectedType('');
-    setSelectedTags([]);
-    setDateFrom(null);
-    setDateTo(null);
     setSortBy('created_at');
     setSortOrder('desc');
   };
@@ -187,7 +153,6 @@ export default function AssetBrowser({ clientId, onAssetSelect, selectionMode = 
   const toggleFavorite = async (asset: Asset) => {
     try {
       const newFavoriteStatus = !asset.favorite;
-      
       const response = await fetch(`/api/assets/${asset.id}`, {
         method: 'PUT',
         headers: {
@@ -203,17 +168,11 @@ export default function AssetBrowser({ clientId, onAssetSelect, selectionMode = 
 
       if (response.ok) {
         setAssets(assets.map(a => 
-          a.id === asset.id 
-            ? { ...a, favorite: newFavoriteStatus }
-            : a
+          a.id === asset.id ? { ...a, favorite: newFavoriteStatus } : a
         ));
       }
     } catch (err) {
-      if (process.env.NODE_ENV === 'development') {
-
-        console.error('Failed to toggle favorite:', err);
-
-      }
+      console.error('Failed to toggle favorite:', err);
     }
   };
 
@@ -225,293 +184,248 @@ export default function AssetBrowser({ clientId, onAssetSelect, selectionMode = 
   };
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Box>
-        {/* Search and Filter Bar */}
-        <Paper sx={{ p: 2, mb: 3 }}>
-          <Grid container spacing={2} alignItems="center">
-            <Grid size={{ xs: 12, md: 4}>
-              <TextField
-                fullWidth
-                placeholder="Search assets..."
-                value={searchTerm}
-                onChange={(e) => handleSearch(e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Search />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            
-            <Grid size={{ xs: 6, md: 2}>
-              <FormControl fullWidth>
-                <InputLabel>Type</InputLabel>
-                <Select
-                  value={selectedType}
-                  label="Type"
-                  onChange={(e) => setSelectedType(e.target.value)}
-                >
-                  <MenuItem value="">All Types</MenuItem>
-                  <MenuItem value="image">Images</MenuItem>
-                  <MenuItem value="video">Videos</MenuItem>
-                  <MenuItem value="voice">Audio</MenuItem>
-                  <MenuItem value="text">Text</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            
-            <Grid size={{ xs: 6, md: 2}>
-              <FormControl fullWidth>
-                <InputLabel>Sort By</InputLabel>
-                <Select
-                  value={sortBy}
-                  label="Sort By"
-                  onChange={(e) => setSortBy(e.target.value)}
-                >
-                  <MenuItem value="created_at">Date Created</MenuItem>
-                  <MenuItem value="name">Name</MenuItem>
-                  <MenuItem value="type">Type</MenuItem>
-                  <MenuItem value="file_size">Size</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            
-            <Grid size={{ xs: 12, md: 3}>
-              <Autocomplete
-                multiple
-                options={availableTags}
-                value={selectedTags}
-                onChange={(_, newValue) => setSelectedTags(newValue)}
-                renderTags={(value, getTagProps) =>
-                  value.map((option, index) => (
-                    <Chip variant="outlined" label={option} {...getTagProps({ index })} />
-                  ))
-                }
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Tags"
-                    placeholder="Select tags..."
-                  />
-                )}
-              />
-            </Grid>
-            
-            <Grid size={{ xs: 12, md: 1}>
-              <Box display="flex" gap={1}>
-                <IconButton onClick={handleClearFilters} title="Clear Filters" aria-label="Icon button">                  <Clear />
-                </IconButton>
-                <IconButton onClick={() => loadAssets(true)} aria-label="Icon button" title="Refresh">
-                  <Refresh />
-                </IconButton>
-              </Box>
-            </Grid>
+    <Box>
+      {/* Search and Filter Bar */}
+      <Paper sx={{ p: 2, mb: 3 }}>
+        <Grid container spacing={2} alignItems="center">
+          <Grid xs={12} md={4}>
+            <TextField
+              fullWidth
+              placeholder="Search assets..."
+              value={searchTerm}
+              onChange={(e) => handleSearch(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search />
+                  </InputAdornment>
+                ),
+              }}
+            />
           </Grid>
           
-          {/* Date Range Filters */}
-          <Grid container spacing={2} sx={{ mt: 1 }}>
-            <Grid size={{ xs: 6, md: 2}>
-              <DatePicker
-                label="From Date"
-                value={dateFrom}
-                onChange={setDateFrom}
-                slotProps={{ textField: { fullWidth: true } }}
-              />
-            </Grid>
-            <Grid size={{ xs: 6, md: 2}>
-              <DatePicker
-                label="To Date"
-                value={dateTo}
-                onChange={setDateTo}
-                slotProps={{ textField: { fullWidth: true } }}
-              />
-            </Grid>
+          <Grid xs={6} md={2}>
+            <FormControl fullWidth>
+              <InputLabel>Type</InputLabel>
+              <Select
+                value={selectedType}
+                label="Type"
+                onChange={(e) => setSelectedType(e.target.value)}
+              >
+                <MenuItem value="">All Types</MenuItem>
+                <MenuItem value="image">Images</MenuItem>
+                <MenuItem value="video">Videos</MenuItem>
+                <MenuItem value="voice">Audio</MenuItem>
+                <MenuItem value="text">Text</MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
-        </Paper>
+          
+          <Grid xs={6} md={2}>
+            <FormControl fullWidth>
+              <InputLabel>Sort By</InputLabel>
+              <Select
+                value={sortBy}
+                label="Sort By"
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <MenuItem value="created_at">Date Created</MenuItem>
+                <MenuItem value="name">Name</MenuItem>
+                <MenuItem value="type">Type</MenuItem>
+                <MenuItem value="file_size">Size</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          
+          <Grid xs={12} md={2}>
+            <Box display="flex" gap={1}>
+              <IconButton onClick={handleClearFilters} title="Clear Filters">
+                <Clear />
+              </IconButton>
+              <IconButton onClick={loadAssets} title="Refresh">
+                <Refresh />
+              </IconButton>
+            </Box>
+          </Grid>
+        </Grid>
+      </Paper>
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
 
-        {/* Assets Grid */}
-        {loading && assets.length === 0 ? (
-          <Box display="flex" justifyContent="center" p={4}>
-            <CircularProgress />
-          </Box>
-        ) : (
-          <>
-            <Grid container spacing={2}>
-              {assets.map((asset) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={asset.id}>
-                  <Card 
-                    sx={{ 
-                      cursor: 'pointer',
-                      '&:hover': { transform: 'translateY(-2px)' },
-                      transition: 'transform 0.2s',
-                    }}
-                    onClick={() => handleAssetClick(asset)}
-                  >
-                    <Box position="relative">
-                      {asset.type === 'image' && asset.thumbnailUrl ? (
-                        <CardMedia
-                          component="img"
-                          height="200"
-                          image={asset.thumbnailUrl}
-                          alt={asset.name}
-                          sx={{ objectFit: 'cover' }}
-                        />
-                      ) : (
-                        <Box
-                          height="200"
-                          display="flex"
-                          alignItems="center"
-                          justifyContent="center"
-                          bgcolor={assetTypeColors[asset.type]}
-                          color="white"
-                        >
-                          {assetTypeIcons[asset.type]}
-                        </Box>
-                      )}
-                      <IconButton
-                        sx={{ position: 'absolute', top: 8, right: 8 }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleFavorite(asset);
-                        }}
-                        aria-label="Icon button"
-                      >
-                        {asset.favorite ? <Favorite color="error" /> : <FavoriteBorder />}
-                      </IconButton>
+      {/* Assets Grid */}
+      {loading ? (
+        <Box display="flex" justifyContent="center" p={4}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <Grid container spacing={2}>
+          {assets.map((asset) => (
+            <Grid xs={12} sm={6} md={4} lg={3} key={asset.id}>
+              <Card
+                sx={{
+                  cursor: 'pointer',
+                  '&:hover': { transform: 'translateY(-2px)' },
+                  transition: 'transform 0.2s',
+                }}
+                onClick={() => handleAssetClick(asset)}
+              >
+                <Box position="relative">
+                  {asset.type === 'image' && asset.thumbnailUrl ? (
+                    <CardMedia
+                      component="img"
+                      height="200"
+                      image={asset.thumbnailUrl}
+                      alt={asset.name}
+                      sx={{ objectFit: 'cover' }}
+                    />
+                  ) : (
+                    <Box
+                      height="200"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      bgcolor={assetTypeColors[asset.type]}
+                      color="white"
+                    >
+                      {assetTypeIcons[asset.type]}
                     </Box>
-                    
-                    <CardContent>
-                      <Typography variant="h6" noWrap>
-                        {asset.name}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {asset.type.toUpperCase()} • {formatFileSize(asset.size)}
-                      </Typography>
-                      {asset.tags.length > 0 && (
-                        <Box mt={1}>
-                          {asset.tags.slice(0, 2).map((tag) => (
-                            <Chip
-                              key={tag}
-                              label={tag}
-                              size="small"
-                              sx={{ mr: 0.5, mb: 0.5 }}
-                            />
-                          ))}
-                          {asset.tags.length > 2 && (
-                            <Chip
-                              label={`+${asset.tags.length - 2} more`}
-                              size="small"
-                              variant="outlined"
-                            />
-                          )}
-                        </Box>
+                  )}
+                  <IconButton
+                    sx={{ position: 'absolute', top: 8, right: 8 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(asset);
+                    }}
+                  >
+                    {asset.favorite ? <Favorite color="error" /> : <FavoriteBorder />}
+                  </IconButton>
+                </Box>
+                <CardContent>
+                  <Typography variant="h6" noWrap>
+                    {asset.name}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {asset.type.toUpperCase()} • {formatFileSize(asset.size)}
+                  </Typography>
+                  {asset.tags.length > 0 && (
+                    <Box mt={1}>
+                      {asset.tags.slice(0, 2).map((tag) => (
+                        <Chip
+                          key={tag}
+                          label={tag}
+                          size="small"
+                          sx={{ mr: 0.5, mb: 0.5 }}
+                        />
+                      ))}
+                      {asset.tags.length > 2 && (
+                        <Chip
+                          label={`+${asset.tags.length - 2} more`}
+                          size="small"
+                          variant="outlined"
+                        />
                       )}
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
+                    </Box>
+                  )}
+                </CardContent>
+              </Card>
             </Grid>
+          ))}
+        </Grid>
+      )}
 
-            {/* Load More / Pagination */}
-            {hasMore && (
-              <Box display="flex" justifyContent="center" mt={3}>
-                <Button
-                  variant="outlined"
-                  onClick={() => {
-                    setPage(page + 1);
-                    loadAssets();
-                  }}
-                  disabled={loading}
-                >
-                  {loading ? <CircularProgress size={20} /> : 'Load More'}
-                </Button>
-              </Box>
-            )}
+      {/* Asset Details Dialog */}
+      <Dialog
+        open={detailsOpen}
+        onClose={() => setDetailsOpen(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        {selectedAsset && (
+          <>
+            <DialogTitle>
+              {selectedAsset.name}
+              <IconButton
+                sx={{ position: 'absolute', right: 8, top: 8 }}
+                onClick={() => toggleFavorite(selectedAsset)}
+              >
+                {selectedAsset.favorite ? <Favorite color="error" /> : <FavoriteBorder />}
+              </IconButton>
+            </DialogTitle>
+            <DialogContent>
+              <Grid container spacing={2}>
+                <Grid xs={12} md={6}>
+                  {selectedAsset.type === 'image' ? (
+                    <img
+                      src={selectedAsset.url}
+                      alt={selectedAsset.name}
+                      style={{
+                        width: '100%',
+                        height: 'auto',
+                        maxHeight: '400px',
+                        objectFit: 'contain'
+                      }}
+                    />
+                  ) : (
+                    <Box
+                      height="400px"
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      bgcolor={assetTypeColors[selectedAsset.type]}
+                      color="white"
+                      borderRadius={1}
+                    >
+                      {assetTypeIcons[selectedAsset.type]}
+                    </Box>
+                  )}
+                </Grid>
+                <Grid xs={12} md={6}>
+                  <Typography variant="h6" gutterBottom>Details</Typography>
+                  <Typography><strong>Type:</strong> {selectedAsset.type.toUpperCase()}</Typography>
+                  <Typography><strong>Size:</strong> {formatFileSize(selectedAsset.size)}</Typography>
+                  <Typography><strong>Created:</strong> {selectedAsset.dateCreated}</Typography>
+                  {selectedAsset.width && selectedAsset.height && (
+                    <Typography><strong>Dimensions:</strong> {selectedAsset.width} × {selectedAsset.height}</Typography>
+                  )}
+                  {selectedAsset.duration && (
+                    <Typography><strong>Duration:</strong> {selectedAsset.duration}s</Typography>
+                  )}
+                  {selectedAsset.description && (
+                    <Typography><strong>Description:</strong> {selectedAsset.description}</Typography>
+                  )}
+                  {selectedAsset.tags.length > 0 && (
+                    <Box mt={2}>
+                      <Typography variant="subtitle2" gutterBottom>Tags</Typography>
+                      {selectedAsset.tags.map((tag) => (
+                        <Chip
+                          key={tag}
+                          label={tag}
+                          sx={{ mr: 0.5, mb: 0.5 }}
+                        />
+                      ))}
+                    </Box>
+                  )}
+                </Grid>
+              </Grid>
+            </DialogContent>
+            <DialogActions>
+              <Button startIcon={<Download />} href={selectedAsset.url} target="_blank">
+                Download
+              </Button>
+              <Button startIcon={<Share />}>
+                Share
+              </Button>
+              <Button onClick={() => setDetailsOpen(false)}>
+                Close
+              </Button>
+            </DialogActions>
           </>
         )}
-
-        {/* Asset Details Dialog */}
-        <Dialog open={detailsOpen} onClose={() => setDetailsOpen(false)} maxWidth="md" fullWidth>
-          {selectedAsset && (
-            <>
-              <DialogTitle>
-                {selectedAsset.name}
-                <IconButton
-                  sx={{ position: 'absolute', right: 8, top: 8 }}
-                  onClick={() => toggleFavorite(selectedAsset)} aria-label="Icon button">
-                  {selectedAsset.favorite ? <Favorite color="error" /> : <FavoriteBorder />}
-                </IconButton>
-              </DialogTitle>
-              <DialogContent>
-                <Grid container spacing={2}>
-                  <Grid size={{ xs: 12, md: 6}>
-                    {selectedAsset.type === 'image' ? (
-                      <img src={selectedAsset.url}
-                        alt={selectedAsset.name}
-                        style={{ width: '100%', height: 'auto', maxHeight: '400px', objectFit: 'contain' }} alt="" />
-                    ) : (
-                      <Box
-                        height="400px"
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="center"
-                        bgcolor={assetTypeColors[selectedAsset.type]}
-                        color="white"
-                        borderRadius={1}
-                      >
-                        {assetTypeIcons[selectedAsset.type]}
-                      </Box>
-                    )}
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 6}>
-                    <Typography variant="h6" gutterBottom>Details</Typography>
-                    <Typography><strong>Type:</strong> {selectedAsset.type.toUpperCase()}</Typography>
-                    <Typography><strong>Size:</strong> {formatFileSize(selectedAsset.size)}</Typography>
-                    <Typography><strong>Created:</strong> {selectedAsset.dateCreated}</Typography>
-                    {selectedAsset.width && selectedAsset.height && (
-                      <Typography><strong>Dimensions:</strong> {selectedAsset.width} × {selectedAsset.height}</Typography>
-                    )}
-                    {selectedAsset.duration && (
-                      <Typography><strong>Duration:</strong> {selectedAsset.duration}s</Typography>
-                    )}
-                    {selectedAsset.description && (
-                      <Typography><strong>Description:</strong> {selectedAsset.description}</Typography>
-                    )}
-                    {selectedAsset.tags.length > 0 && (
-                      <Box mt={2}>
-                        <Typography variant="subtitle2" gutterBottom>Tags</Typography>
-                        {selectedAsset.tags.map((tag) => (
-                          <Chip key={tag} label={tag} sx={{ mr: 0.5, mb: 0.5 }} />
-                        ))}
-                      </Box>
-                    )}
-                  </Grid>
-                </Grid>
-              </DialogContent>
-              <DialogActions>
-                <Button startIcon={<Download />} href={selectedAsset.url} target="_blank">
-                  Download
-                </Button>
-                <Button startIcon={<Share />}>
-                  Share
-                </Button>
-                <Button onClick={() => setDetailsOpen(false)}>
-                  Close
-                </Button>
-              </DialogActions>
-            </>
-          )}
-        </Dialog>
-      </Box>
-    </LocalizationProvider>
+      </Dialog>
+    </Box>
   );
 }

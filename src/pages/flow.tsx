@@ -12,7 +12,6 @@ import {
   AutoAwesome as MagicIcon,
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
-import ProtectedRoute from '@/components/ProtectedRoute';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
 
@@ -30,7 +29,7 @@ const UnifiedBriefWorkflow = dynamic(
 );
 
 const FlowPage: React.FC = () => {
-  const [openWorkflow, setOpenWorkflow] = useState(false);
+  const [openWorkflow, setOpenWorkflow] = useState(true);
   const { activeClient } = useClient();
   const { showNotification } = useNotification();
 
@@ -84,30 +83,22 @@ const FlowPage: React.FC = () => {
               </Typography>
             </Box>
 
-            {!activeClient ? (
-              <Box sx={{ py: 4 }}>
-                <Typography variant="body2" color="text.secondary">
-                  Please select a client to start the content workflow.
-                </Typography>
-              </Box>
-            ) : (
-              <Box sx={{ py: 2 }}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  startIcon={<MagicIcon />}
-                  onClick={handleOpenWorkflow}
-                  sx={{ 
-                    py: 2, 
-                    px: 4,
-                    fontSize: '1.1rem',
-                    borderRadius: 2 
-                  }}
-                >
-                  Start Flow
-                </Button>
-              </Box>
-            )}
+            <Box sx={{ py: 2 }}>
+              <Button
+                variant="contained"
+                size="large"
+                startIcon={<MagicIcon />}
+                onClick={handleOpenWorkflow}
+                sx={{ 
+                  py: 2, 
+                  px: 4,
+                  fontSize: '1.1rem',
+                  borderRadius: 2 
+                }}
+              >
+                {openWorkflow ? 'Hide Workflow' : 'Start Flow'}
+              </Button>
+            </Box>
 
             <Box sx={{ mt: 4, pt: 3, borderTop: 1, borderColor: 'divider' }}>
               <Typography variant="h6" gutterBottom>
