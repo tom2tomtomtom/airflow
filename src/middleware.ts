@@ -93,7 +93,7 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
   // Content Security Policy - Improved security
   const cspBase = [
     "default-src 'self'",
-    "font-src 'self' https://fonts.gstatic.com",
+    "font-src 'self'",
     "img-src 'self' data: https: blob:",
     "object-src 'none'",
     "base-uri 'self'",
@@ -110,14 +110,14 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
   if (process.env.NODE_ENV === 'development') {
     cspBase.push(
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'unsafe-hashes' https://cdn.jsdelivr.net",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "style-src 'self' 'unsafe-inline'",
       "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.openai.com https://api.elevenlabs.io https://api.creatomate.com https://graph.facebook.com https://api.twitter.com https://api.linkedin.com ws://localhost:* http://localhost:*"
     );
   } else {
     // Production CSP - Allow unsafe-inline for Material-UI emotion styles and unsafe-hashes for event handlers
     cspBase.push(
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'unsafe-hashes'",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "style-src 'self' 'unsafe-inline'",
       "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.openai.com https://api.elevenlabs.io https://api.creatomate.com https://graph.facebook.com https://api.twitter.com https://api.linkedin.com"
     );
   }

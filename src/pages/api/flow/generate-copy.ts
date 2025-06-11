@@ -67,8 +67,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(400).json({ success: false, message: 'Selected motivations are required' });
   }
 
-  if (motivations.length < 6) {
-    return res.status(400).json({ success: false, message: 'Minimum 6 motivations required' });
+  if (motivations.length < 1) {
+    return res.status(400).json({ success: false, message: 'At least 1 motivation is required' });
   }
 
   if (!briefData) {
@@ -131,7 +131,7 @@ Brand Guidelines: ${briefData.brandGuidelines || 'Not specified'}
 SELECTED MOTIVATIONS:
 ${motivations.map((m, i) => `${i + 1}. ${m.title}: ${m.description}`).join('\n')}
 
-Generate 3 copy variations for the TOP 3 motivations and the PRIMARY platform. Each copy should be:
+Generate 3 copy variations for each available motivation (up to 3 motivations) and the PRIMARY platform. Each copy should be:
 - Maximum 10 words for social media optimization
 - Platform-appropriate in tone and style
 - Aligned with the specific motivation
@@ -155,7 +155,7 @@ Platform-specific guidelines:
 - YouTube: Educational, engaging, longer form allowed
 - Pinterest: Aspirational, visual, lifestyle-focused
 
-Respond with a JSON array of copy variations. Generate exactly 9 variations total (3 motivations x 3 variations each). Focus on quality over quantity.`;
+Respond with a JSON array of copy variations. Generate 3 variations per available motivation (up to 9 total if 3 motivations are provided). Focus on quality over quantity.`;
 
   const response = await Promise.race([
     openai.chat.completions.create({
@@ -323,8 +323,8 @@ function generateCopyWithTemplates(motivations: Motivation[], briefData: BriefDa
     }
   };
 
-  // Generate copy for top 3 motivations only for faster processing
-  const topMotivations = motivations.slice(0, 3);
+  // Generate copy for available motivations (at least 1, up to 3 for performance)
+  const topMotivations = motivations.slice(0, Math.min(motivations.length, 3));
   const primaryPlatform = briefData.platforms[0] || 'Meta';
   
   topMotivations.forEach((motivation, motivationIndex) => {
