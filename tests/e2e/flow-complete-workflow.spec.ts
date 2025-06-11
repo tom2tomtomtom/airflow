@@ -24,7 +24,7 @@ test.describe('Complete Flow Workflow Test', () => {
     console.log('🚀 Starting complete workflow test...');
     
     // Navigate to flow page  
-    await page.goto('/flow', { timeout: 60000 });
+    await page.goto('http://localhost:3000/flow', { timeout: 60000 });
     await page.waitForLoadState('networkidle', { timeout: 60000 });
     
     await page.screenshot({ 
@@ -80,8 +80,8 @@ test.describe('Complete Flow Workflow Test', () => {
     const stepIndicators = page.locator('.MuiStepper-root, .step-indicator');
     await expect(stepIndicators).toBeVisible();
     
-    // Check that we're on step 1 (Processing Brief)
-    const activeStep = page.locator(':has-text("Processing Brief")');
+    // Check that we're on step 1 (Processing Brief) - use first match to avoid strict mode violation
+    const activeStep = page.locator(':has-text("Processing Brief")').first();
     await expect(activeStep).toBeVisible();
     
     console.log('✅ Step indicators visible, currently on "Processing Brief"');
@@ -141,33 +141,64 @@ test.describe('Complete Flow Workflow Test', () => {
       fullPage: true 
     });
     
-    // Look for and click submit/process button
-    const submitButtons = [
-      'button:has-text("Process")',
-      'button:has-text("Parse")',
-      'button:has-text("Submit")',
-      'button:has-text("Upload")',
-      'button:has-text("Continue")',
-      'button:has-text("Next")'
-    ];
-    
+    // Check if AI is already processing (which it should be after file upload)
     let buttonClicked = false;
-    for (const buttonSelector of submitButtons) {
-      const button = page.locator(buttonSelector);
-      if (await button.isVisible() && await button.isEnabled()) {
-        console.log(`🔘 Clicking: ${buttonSelector}`);
-        await button.click();
-        buttonClicked = true;
-        break;
+    const processingText = await page.locator(':has-text("Processing brief with AI")').count();
+    if (processingText > 0) {
+      console.log('🤖 AI is already processing the brief automatically!');
+      buttonClicked = true;
+    } else {
+      // Look for and click submit/process button
+      const submitButtons = [
+        'button:has-text("Process")',
+        'button:has-text("Parse")',
+        'button:has-text("Submit")',
+        'button:has-text("Upload")',
+        'button:has-text("Continue")',
+        'button:has-text("Next")'
+      ];
+      
+      for (const buttonSelector of submitButtons) {
+        const button = page.locator(buttonSelector);
+        if (await button.isVisible() && await button.isEnabled()) {
+          console.log(`🔘 Clicking: ${buttonSelector}`);
+          await button.click();
+          buttonClicked = true;
+          break;
+        }
       }
     }
     
     if (buttonClicked) {
-      console.log('⏳ Waiting for brief processing...');
-      await page.waitForTimeout(5000);
+      console.log('⏳ Waiting for AI brief processing to complete...');
+      
+      // Wait for processing to complete - monitor the workflow stepper
+      let processingComplete = false;
+      let attempts = 0;
+      const maxAttempts = 20; // Wait up to 60 seconds
+      
+      while (!processingComplete && attempts < maxAttempts) {
+        await page.waitForTimeout(3000);
+        attempts++;
+        
+        // Check if we've moved to the next step (Generating Motivations)
+        const motivationsStep = await page.locator(':has-text("Generating Motivations")').count();
+        const processingStill = await page.locator(':has-text("Processing brief with AI")').count();
+        
+        console.log(`   Attempt ${attempts}: Motivations step visible: ${motivationsStep > 0}, Still processing: ${processingStill > 0}`);
+        
+        if (motivationsStep > 0 || processingStill === 0) {
+          processingComplete = true;
+          console.log('✅ AI processing completed - moved to next step!');
+        }
+        
+        if (attempts % 5 === 0) {
+          console.log(`   ⏳ Still waiting for AI processing... (${attempts * 3}s elapsed)`);
+        }
+      }
       
       await page.screenshot({ 
-        path: 'screenshots/workflow-full-3-after-submit.png',
+        path: 'screenshots/workflow-full-3-after-processing.png',
         fullPage: true 
       });
       

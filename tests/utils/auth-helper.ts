@@ -86,7 +86,7 @@ export class AuthHelper {
   }
 
   async login(email: string, password: string): Promise<void> {
-    await this.page.goto('/login');
+    await this.page.goto('http://localhost:3000/login');
     await this.page.waitForLoadState('networkidle');
 
     // Fill login form
