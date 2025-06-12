@@ -20,13 +20,24 @@ const getSupabaseConfig = () => {
   const defaultSupabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkc2psdXRtZmFhdHNsem5qeGl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc1NzQyMTQsImV4cCI6MjA2MzE1MDIxNH0.wO2DjC0Y2lRQj9lzMJ-frqlMXuC-r5TM-wwmRQXN5Fg';
 
   // Get environment variables with guaranteed fallbacks
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || defaultSupabaseUrl;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || defaultSupabaseAnonKey;
+  let supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || defaultSupabaseUrl;
+  let supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || defaultSupabaseAnonKey;
+
+  // Validate and clean the values
+  if (!supabaseUrl || !supabaseUrl.startsWith('https://')) {
+    console.warn('Invalid Supabase URL, using default');
+    supabaseUrl = defaultSupabaseUrl;
+  }
+  
+  if (!supabaseAnonKey || supabaseAnonKey.length < 50) {
+    console.warn('Invalid Supabase anon key, using default');
+    supabaseAnonKey = defaultSupabaseAnonKey;
+  }
 
   // Always return valid values to prevent Supabase client creation errors
   return { 
-    supabaseUrl: supabaseUrl || defaultSupabaseUrl, 
-    supabaseAnonKey: supabaseAnonKey || defaultSupabaseAnonKey 
+    supabaseUrl: supabaseUrl.trim(), 
+    supabaseAnonKey: supabaseAnonKey.trim() 
   };
 };
 
@@ -44,15 +55,22 @@ export const supabase = (() => {
       {
         auth: {
           autoRefreshToken: true,
-          persistSession: true,
-          detectSessionInUrl: true,
-          storageKey: 'airwave-auth-token', // Use a specific storage key to avoid conflicts
+          persistSession: typeof window !== 'undefined',
+          detectSessionInUrl: typeof window !== 'undefined',
+          storageKey: 'airwave-auth-token',
           storage: typeof window !== 'undefined' ? window.localStorage : undefined,
         },
         global: {
           headers: {
-            'x-application-name': 'airwave'
+            'x-application-name': 'airwave',
+            'apikey': supabaseAnonKey
           }
+        },
+        db: {
+          schema: 'public',
+        },
+        realtime: {
+          disabled: true // Disable realtime to prevent connection issues
         }
       }
     );
