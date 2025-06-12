@@ -2,28 +2,32 @@ import { getErrorMessage } from '@/utils/errorUtils';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '@/types/database';
 
-// Build-safe environment variable access
+// Build-safe environment variable access with Vercel support
 const getSupabaseConfig = () => {
   // Check if we're in build context
   const isBuildContext = typeof EdgeRuntime !== 'undefined' || 
                         process.env.NETLIFY || 
                         process.env.VERCEL ||
+                        process.env.VERCEL_ENV ||
                         process.env.CI === 'true' ||
                         process.env.BUILD_ID ||
                         process.env.NETLIFY_BUILD_BASE ||
                         process.env.NODE_PHASE === 'phase-production-build' ||
                         process.env.NEXT_PHASE === 'phase-production-build';
 
-  // Get environment variables directly for build safety
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://fdsjlutmfaatslznjxiv.supabase.co';
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkc2psdXRtZmFhdHNsem5qeGl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc1NzQyMTQsImV4cCI6MjA2MzE1MDIxNH0.wO2DjC0Y2lRQj9lzMJ-frqlMXuC-r5TM-wwmRQXN5Fg';
+  // Default Supabase configuration (always available as fallback)
+  const defaultSupabaseUrl = 'https://fdsjlutmfaatslznjxiv.supabase.co';
+  const defaultSupabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkc2psdXRtZmFhdHNsem5qeGl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc1NzQyMTQsImV4cCI6MjA2MzE1MDIxNH0.wO2DjC0Y2lRQj9lzMJ-frqlMXuC-r5TM-wwmRQXN5Fg';
 
-  // During build, validate that required values exist
-  if (isBuildContext && (!supabaseUrl || !supabaseAnonKey)) {
-    throw new Error('@supabase/ssr: Your project\'s URL and API key are required to create a Supabase client!');
-  }
+  // Get environment variables with guaranteed fallbacks
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || defaultSupabaseUrl;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || defaultSupabaseAnonKey;
 
-  return { supabaseUrl, supabaseAnonKey };
+  // Always return valid values to prevent Supabase client creation errors
+  return { 
+    supabaseUrl: supabaseUrl || defaultSupabaseUrl, 
+    supabaseAnonKey: supabaseAnonKey || defaultSupabaseAnonKey 
+  };
 };
 
 // Singleton instance to prevent multiple GoTrueClient warnings
