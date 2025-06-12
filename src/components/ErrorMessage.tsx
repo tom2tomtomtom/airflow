@@ -19,7 +19,29 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
   variant = 'inline',
   showDetails = false,
 }) => {
-  const errorMessage = message || (error instanceof Error ? error.message : error) || 'An unexpected error occurred';
+  // Handle different error types including Supabase errors
+  const getErrorMessage = (err: any): string => {
+    if (message) return message;
+    
+    // Handle Supabase-style errors (objects with code, message, details, hint)
+    if (err && typeof err === 'object' && !Array.isArray(err) && !(err instanceof Error)) {
+      if (err.message) return err.message;
+      if (err.error_description) return err.error_description;
+      if (err.code) return `Error ${err.code}: ${err.details || 'An error occurred'}`;
+      // If it's an object without clear message properties, stringify it safely
+      return JSON.stringify(err);
+    }
+    
+    // Handle Error instances
+    if (err instanceof Error) return err.message;
+    
+    // Handle string errors
+    if (typeof err === 'string') return err;
+    
+    return 'An unexpected error occurred';
+  };
+
+  const errorMessage = getErrorMessage(error);
   
   if (variant === 'inline') {
     return (
@@ -88,6 +110,7 @@ export default ErrorMessage;
 
 // Utility function to get user-friendly error messages
 export const getUserFriendlyErrorMessage = (error: any): string => {
+  // Handle HTTP response errors
   if (error?.response?.status === 401) {
     return 'You need to be logged in to perform this action';
   }
@@ -103,11 +126,37 @@ export const getUserFriendlyErrorMessage = (error: any): string => {
   if (error?.response?.status >= 500) {
     return 'Server error. Please try again later';
   }
+  
+  // Handle Supabase errors
+  if (error?.code === 'PGRST116') {
+    return 'The table or column does not exist. Please check your database schema';
+  }
+  if (error?.code?.startsWith('PGRST')) {
+    return `Database error: ${error.details || error.message || 'An error occurred'}`;
+  }
+  
+  // Handle network errors
   if (error?.code === 'NETWORK_ERROR' || !navigator.onLine) {
     return 'Network error. Please check your internet connection';
   }
+  
+  // Handle API key errors
   if (error?.message?.includes('API key')) {
     return 'API configuration error. Please contact support';
   }
-  return error?.message || 'An unexpected error occurred';
+  
+  // Handle Supabase-style errors (objects with code, message, details, hint)
+  if (error && typeof error === 'object' && !Array.isArray(error) && !(error instanceof Error)) {
+    if (error.message) return error.message;
+    if (error.error_description) return error.error_description;
+    if (error.code) return `Error ${error.code}: ${error.details || 'An error occurred'}`;
+  }
+  
+  // Handle Error instances
+  if (error instanceof Error) return error.message;
+  
+  // Handle string errors
+  if (typeof error === 'string') return error;
+  
+  return 'An unexpected error occurred';
 };

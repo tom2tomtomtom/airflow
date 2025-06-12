@@ -61,6 +61,7 @@ import {
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
 import { useTemplates, useAssets, useCreateMatrix, useCampaigns } from '@/hooks/useData';
@@ -140,7 +141,9 @@ const MatrixPage: React.FC = () => {
     // Initialize field values when template is selected
     if (selectedTemplate && variations.length > 0) {
       const initialValues: FieldValue[] = [];
-      selectedTemplate.dynamicFields.forEach(field => {
+      // TEMPORARY FIX: Check if dynamicFields exists (missing in current schema)
+      const dynamicFields = selectedTemplate.dynamicFields || [];
+      dynamicFields.forEach(field => {
         variations.forEach(variation => {
           initialValues.push({
             fieldId: field.id,
@@ -165,7 +168,7 @@ const MatrixPage: React.FC = () => {
     // Add field values for new variation
     if (selectedTemplate) {
       const newFieldValues: FieldValue[] = [];
-      selectedTemplate.dynamicFields.forEach(field => {
+      (selectedTemplate.dynamicFields || []).forEach(field => {
         newFieldValues.push({
           fieldId: field.id,
           variationId: newVariation.id,
@@ -352,7 +355,7 @@ const MatrixPage: React.FC = () => {
       template_id: selectedTemplate.id,
       variations,
       combinations,
-      field_assignments: selectedTemplate.dynamicFields.reduce((acc, field) => {
+      field_assignments: (selectedTemplate.dynamicFields || []).reduce((acc, field) => {
         acc[field.id] = {
           status: 'completed',
           content: variations.map(v => {
@@ -437,8 +440,8 @@ const MatrixPage: React.FC = () => {
 
     // Check field completeness
     if (selectedTemplate) {
-      const totalFields = selectedTemplate.dynamicFields.length;
-      const completedFields = selectedTemplate.dynamicFields.filter(field => {
+      const totalFields = (selectedTemplate.dynamicFields || []).length;
+      const completedFields = (selectedTemplate.dynamicFields || []).filter(field => {
         return variations.some(variation => {
           const fv = getFieldValue(field.id, variation.id);
           return fv && (fv.value || fv.assetId);
@@ -513,11 +516,12 @@ const MatrixPage: React.FC = () => {
   }
 
   return (
-    <DashboardLayout title="Matrix Editor">
-      <Head>
-        <title>Matrix Editor | AIrFLOW</title>
-      </Head>
-      <Box>
+    <ErrorBoundary>
+      <DashboardLayout title="Matrix Editor">
+        <Head>
+          <title>Matrix Editor | AIrFLOW</title>
+        </Head>
+        <Box>
         <Typography variant="h4" gutterBottom>
           Campaign Matrix System
         </Typography>
@@ -760,7 +764,7 @@ const MatrixPage: React.FC = () => {
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {selectedTemplate.dynamicFields.map((field) => (
+                          {(selectedTemplate.dynamicFields || []).map((field) => (
                             <TableRow key={field.id}>
                               <TableCell>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -989,7 +993,7 @@ const MatrixPage: React.FC = () => {
               />
               <List>
                 {assets?.filter((asset: Asset) => {
-                  const field = selectedField ? selectedTemplate?.dynamicFields.find(f => f.id === selectedField) : null;
+                  const field = selectedField ? (selectedTemplate?.dynamicFields || []).find(f => f.id === selectedField) : null;
                   return !field || asset.type === field.type;
                 }).map((asset: Asset) => (
                   <ListItem
@@ -1064,8 +1068,9 @@ const MatrixPage: React.FC = () => {
             <Button onClick={() => setPreviewOpen(false)}>Close</Button>
           </DialogActions>
         </Dialog>
-      </Box>
-    </DashboardLayout>
+        </Box>
+      </DashboardLayout>
+    </ErrorBoundary>
   );
 };
 

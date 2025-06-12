@@ -44,6 +44,7 @@ import { useRouter } from 'next/router';
 import DashboardLayout from '@/components/DashboardLayout';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
 import ErrorMessage from '@/components/ErrorMessage';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import { EmptyTemplates } from '@/components/EmptyStates';
 import { CardSkeleton } from '@/components/SkeletonLoaders';
 import { AnimatedActionButton } from '@/components/AnimatedComponents';
@@ -383,9 +384,16 @@ const Templates: React.FC = () => {
   }
 
   if (error) {
+    // PRODUCTION FIX: Handle error objects that might be rendered as React children
+    console.error('Templates error:', error);
     return (
       <DashboardLayout title="Templates">
-        <ErrorMessage error={error} onRetry={refetch} />
+        <ErrorMessage 
+          title="Unable to load templates"
+          message="There was an issue loading templates. Please try again."
+          error={error} 
+          onRetry={refetch} 
+        />
       </DashboardLayout>
     );
   }
@@ -395,7 +403,8 @@ const Templates: React.FC = () => {
       <Head>
         <title>Templates | AIRFLOW</title>
       </Head>
-      <DashboardLayout title="Templates">
+      <ErrorBoundary>
+        <DashboardLayout title="Templates">
         <Box sx={{ mb: 4 }}>
           <Typography variant="h4" component="h1" gutterBottom fontWeight={600}>
             Templates
@@ -564,7 +573,8 @@ const Templates: React.FC = () => {
             </Button>
           </DialogActions>
         </Dialog>
-      </DashboardLayout>
+        </DashboardLayout>
+      </ErrorBoundary>
     </>
   );
 };
