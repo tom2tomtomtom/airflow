@@ -15,9 +15,12 @@
   ENABLE_AI_FEATURES = "true"
   ENABLE_VIDEO_GENERATION = "true"
   ENABLE_SOCIAL_PUBLISHING = "true"
-  # JWT_SECRET will be provided via Netlify environment variables at runtime
-  # Setting a build-time placeholder to prevent Edge Functions build errors
-  JWT_SECRET = "${JWT_SECRET:-build-time-placeholder-will-be-replaced-at-runtime}"
+  # Provide a default JWT secret for build time
+  JWT_SECRET = "build-time-jwt-secret-placeholder"
+  # Essential API keys - these should be set in Netlify UI
+  OPENAI_API_KEY = "placeholder-for-build"
+  NEXT_PUBLIC_SUPABASE_URL = "https://fdsjlutmfaatslznjxiv.supabase.co"
+  NEXT_PUBLIC_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkc2psdXRtZmFhdHNsem5qeGl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc1NzQyMTQsImV4cCI6MjA2MzE1MDIxNH0.wO2DjC0Y2lRQj9lzMJ-frqlMXuC-r5TM-wwmRQXN5Fg"
 
 [functions]
   external_node_modules = ["openai"]

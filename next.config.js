@@ -22,7 +22,8 @@ try {
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: 'standalone',
+  // Remove standalone output for Netlify deployment
+  // output: 'standalone', // This breaks Netlify deployments
   // swcMinify: true, // Removed - enabled by default in Next.js 13+
   
   // Ignore TypeScript errors during build for deployment
