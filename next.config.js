@@ -80,10 +80,6 @@ const nextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=(), payment=()',
           },
-          {
-            key: 'Content-Security-Policy',
-            value: "default-src 'self'; font-src 'self' https://fonts.gstatic.com data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; connect-src 'self' https://*.supabase.co https://api.openai.com https://api.elevenlabs.io https://api.creatomate.com wss://*.supabase.co; script-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: https: blob:; media-src 'self' data: https: blob:; frame-src 'self' https:; worker-src 'self' blob:;",
-          },
           // Add HSTS in production
           ...(process.env.NODE_ENV === 'production' ? [{
             key: 'Strict-Transport-Security',

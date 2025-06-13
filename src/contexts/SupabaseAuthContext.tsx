@@ -165,26 +165,37 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const login = async (email: string, password: string) => {
     try {
+      // Validate inputs before making the call
+      if (!email || !password) {
+        throw new Error('Email and password are required');
+      }
+
+      if (!email.includes('@')) {
+        throw new Error('Invalid email format');
+      }
+
       const { data, error } = await supabaseClient.auth.signInWithPassword({
-        email,
-        password,
+        email: email.trim(),
+        password: password,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase auth error:', error);
+        throw error;
+      }
 
       if (data.session) {
-        // Force a session refresh to ensure cookies are properly set
-        await supabaseClient.auth.refreshSession();
-        
-        // The onAuthStateChange listener will update the state
-        // Just return success here
+        // Don't force refresh - let the auth state change handler manage it
         return { success: true };
       }
 
       throw new Error('No session returned from login');
     } catch (error: any) {
       console.error('Login error:', error);
-      return { success: false, error: error.message };
+      return { 
+        success: false, 
+        error: error.message || 'Login failed. Please try again.' 
+      };
     }
   };
 
