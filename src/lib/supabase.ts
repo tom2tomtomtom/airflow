@@ -29,15 +29,23 @@ const getSupabaseConfig = () => {
     supabaseUrl = defaultSupabaseUrl;
   }
   
-  if (!supabaseAnonKey || supabaseAnonKey.length < 50) {
-    console.warn('Invalid Supabase anon key, using default');
+  // Clean the anon key - remove all whitespace, newlines, and invalid characters
+  if (supabaseAnonKey) {
+    supabaseAnonKey = supabaseAnonKey.replace(/\s+/g, '').replace(/[\r\n\t]/g, '').trim();
+  }
+  
+  // Validate the token format (should be a JWT with 3 parts separated by dots)
+  const jwtPattern = /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/;
+  
+  if (!supabaseAnonKey || supabaseAnonKey.length < 50 || !jwtPattern.test(supabaseAnonKey)) {
+    console.warn('Invalid Supabase anon key format, using default');
     supabaseAnonKey = defaultSupabaseAnonKey;
   }
 
   // Always return valid values to prevent Supabase client creation errors
   return { 
     supabaseUrl: supabaseUrl.trim(), 
-    supabaseAnonKey: supabaseAnonKey.trim() 
+    supabaseAnonKey: supabaseAnonKey.trim().replace(/\s+/g, '') 
   };
 };
 
