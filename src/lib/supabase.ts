@@ -47,33 +47,49 @@ let supabaseInstance: SupabaseClient<Database> | null = null;
 // Create Supabase client with build-safe configuration (singleton pattern)
 export const supabase = (() => {
   if (!supabaseInstance) {
-    const { supabaseUrl, supabaseAnonKey } = getSupabaseConfig();
-    
-    supabaseInstance = createClient<Database>(
-      supabaseUrl,
-      supabaseAnonKey,
-      {
-        auth: {
-          autoRefreshToken: true,
-          persistSession: typeof window !== 'undefined',
-          detectSessionInUrl: typeof window !== 'undefined',
-          storageKey: 'airwave-auth-token',
-          storage: typeof window !== 'undefined' ? window.localStorage : undefined,
-        },
-        global: {
-          headers: {
-            'x-application-name': 'airwave',
-            'apikey': supabaseAnonKey
-          }
-        },
-        db: {
-          schema: 'public',
-        },
-        realtime: {
-          disabled: true // Disable realtime to prevent connection issues
-        }
+    try {
+      const { supabaseUrl, supabaseAnonKey } = getSupabaseConfig();
+      
+      // Additional validation before creating client
+      if (!supabaseUrl || !supabaseAnonKey) {
+        throw new Error('Supabase configuration is invalid');
       }
-    );
+      
+      supabaseInstance = createClient<Database>(
+        supabaseUrl,
+        supabaseAnonKey,
+        {
+          auth: {
+            autoRefreshToken: typeof window !== 'undefined',
+            persistSession: typeof window !== 'undefined',
+            detectSessionInUrl: typeof window !== 'undefined',
+            storageKey: 'airwave-auth-token',
+            storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+          },
+          global: {
+            headers: {
+              'x-application-name': 'airwave',
+            }
+          },
+          db: {
+            schema: 'public',
+          },
+          realtime: {
+            disabled: true // Disable realtime to prevent connection issues
+          }
+        }
+      );
+    } catch (error) {
+      console.error('Failed to create Supabase client:', error);
+      // Create a minimal fallback client
+      const defaultUrl = 'https://fdsjlutmfaatslznjxiv.supabase.co';
+      const defaultKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkc2psdXRtZmFhdHNsem5qeGl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc1NzQyMTQsImV4cCI6MjA2MzE1MDIxNH0.wO2DjC0Y2lRQj9lzMJ-frqlMXuC-r5TM-wwmRQXN5Fg';
+      
+      supabaseInstance = createClient<Database>(defaultUrl, defaultKey, {
+        auth: { autoRefreshToken: false, persistSession: false },
+        realtime: { disabled: true }
+      });
+    }
   }
   return supabaseInstance;
 })();
