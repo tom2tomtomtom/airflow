@@ -23,7 +23,7 @@ const CampaignCreateSchema = z.object({
   creative_requirements: z.any().default({}),
 });
 
-const CampaignUpdateSchema = CampaignCreateSchema.partial().omit(['client_id']);
+const CampaignUpdateSchema = CampaignCreateSchema.partial().omit(['client_id'] as any);
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -43,7 +43,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Campaigns API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
     });
   }
 }
@@ -154,7 +154,7 @@ async function getCampaignStats(campaignId: string): Promise<any> {
       acc.conversions += record.conversions || 0;
       acc.spend += parseFloat(record.spend) || 0;
       return acc;
-    }, { impressions: 0, clicks: 0, conversions: 0, spend: 0 }) || {};
+    }, { impressions: 0, clicks: 0, conversions: 0, spend: 0 }) || { impressions: 0, clicks: 0, conversions: 0, spend: 0 };
 
     return {
       matrices_count: matricesCount || 0,

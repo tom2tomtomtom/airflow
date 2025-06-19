@@ -224,7 +224,7 @@ export const AdvancedAnalytics: React.FC = () => {
       {/* Key Metrics */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {metrics.map((metric) => (
-          <Grid item xs={12} sm={6} md={4} lg={2} key={metric.id}>
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2 }} key={metric.id}>
             <Card>
               <CardContent>
                 <Box display="flex" alignItems="center" justifyContent="between" mb={1}>
@@ -325,7 +325,7 @@ export const AdvancedAnalytics: React.FC = () => {
           </Typography>
           <Grid container spacing={2}>
             {topPerformingContent.map((content, index) => (
-              <Grid item xs={12} md={6} key={index}>
+              <Grid size={{ xs: 12, md: 6 }} key={index}>
                 <Card variant="outlined">
                   <CardContent>
                     <Box display="flex" justifyContent="between" alignItems="start" mb={2}>
@@ -335,7 +335,7 @@ export const AdvancedAnalytics: React.FC = () => {
                       <Chip label={content.platform} size="small" color="primary" />
                     </Box>
                     <Grid container spacing={2}>
-                      <Grid item xs={6}>
+                      <Grid size={{ xs: 6 }}>
                         <Typography variant="body2" color="text.secondary">
                           Views
                         </Typography>
@@ -343,7 +343,7 @@ export const AdvancedAnalytics: React.FC = () => {
                           {content.views}
                         </Typography>
                       </Grid>
-                      <Grid item xs={6}>
+                      <Grid size={{ xs: 6 }}>
                         <Typography variant="body2" color="text.secondary">
                           Engagement
                         </Typography>
@@ -365,14 +365,14 @@ export const AdvancedAnalytics: React.FC = () => {
             Audience Demographics
           </Typography>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Box sx={{ height: 250, bgcolor: 'grey.50', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Typography color="text.secondary">
                   🥧 Age Distribution Chart
                 </Typography>
               </Box>
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Box sx={{ height: 250, bgcolor: 'grey.50', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Typography color="text.secondary">
                   🌍 Geographic Distribution
@@ -388,9 +388,9 @@ export const AdvancedAnalytics: React.FC = () => {
             Return on Investment Analysis
           </Typography>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <Card variant="outlined">
-                <CardContent textAlign="center">
+                <CardContent sx={{ textAlign: 'center' }}>
                   <Typography variant="h3" color="success.main" fontWeight={600}>
                     340%
                   </Typography>
@@ -400,9 +400,9 @@ export const AdvancedAnalytics: React.FC = () => {
                 </CardContent>
               </Card>
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <Card variant="outlined">
-                <CardContent textAlign="center">
+                <CardContent sx={{ textAlign: 'center' }}>
                   <Typography variant="h3" color="primary.main" fontWeight={600}>
                     $2.40
                   </Typography>
@@ -412,9 +412,9 @@ export const AdvancedAnalytics: React.FC = () => {
                 </CardContent>
               </Card>
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <Card variant="outlined">
-                <CardContent textAlign="center">
+                <CardContent sx={{ textAlign: 'center' }}>
                   <Typography variant="h3" color="warning.main" fontWeight={600}>
                     45 days
                   </Typography>

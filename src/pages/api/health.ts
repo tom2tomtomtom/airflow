@@ -192,7 +192,7 @@ async function checkCreatomate(): Promise<ServiceCheck> {
   } catch (error) {
     const message = getErrorMessage(error);
     return {
-      status: error.name === 'AbortError' ? 'timeout' : 'error',
+      status: (error as any).name === 'AbortError' ? 'timeout' : 'error',
       message: error instanceof Error ? error.message : 'Unknown error',
       latency: Date.now() - start,
     };

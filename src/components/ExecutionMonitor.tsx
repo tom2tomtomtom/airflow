@@ -328,7 +328,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
           { label: 'Completed', count: executions.filter(e => e.status === 'completed').length, color: 'success' },
           { label: 'Failed', count: executions.filter(e => e.status === 'failed').length, color: 'error' },
         ].map((stat) => (
-          <Grid item xs={3} key={stat.label}>
+          <Grid size={{ xs: 3 }} key={stat.label}>
             <Card variant="outlined" sx={{ textAlign: 'center', py: 1 }}>
               <Typography variant="h6" color={`${stat.color}.main`}>
                 {stat.count}

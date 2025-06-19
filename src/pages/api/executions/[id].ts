@@ -38,7 +38,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Execution API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
     });
   }
 }
@@ -139,7 +139,7 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, e
     return res.status(404).json({ error: 'Execution not found' });
   }
 
-  const clientId = existingExecution.matrices?.campaigns?.clients?.id;
+  const clientId = (existingExecution as any).matrices?.campaigns?.clients?.id;
   if (!clientId) {
     return res.status(404).json({ error: 'Execution data incomplete' });
   }
@@ -217,7 +217,7 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
     return res.status(404).json({ error: 'Execution not found' });
   }
 
-  const clientId = existingExecution.matrices?.campaigns?.clients?.id;
+  const clientId = (existingExecution as any).matrices?.campaigns?.clients?.id;
   if (!clientId) {
     return res.status(404).json({ error: 'Execution data incomplete' });
   }
@@ -247,7 +247,7 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
     .update({
       status: 'cancelled',
       metadata: {
-        ...existingExecution.metadata,
+        ...(existingExecution as any).metadata,
         deleted_at: new Date().toISOString(),
         deleted_by: user.id,
       },

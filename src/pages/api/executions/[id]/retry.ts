@@ -34,7 +34,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Execution Retry API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
     });
   }
 }
@@ -345,7 +345,7 @@ async function triggerRetryExecution(retryExecution: any, delaySeconds: number):
       success: false,
       type: 'error',
       message: 'Error triggering retry execution',
-      error: error.message,
+      error: getErrorMessage(error),
     };
   }
 }
@@ -378,7 +378,7 @@ async function triggerExecutionPipeline(execution: any): Promise<any> {
     const message = getErrorMessage(error);
     return {
       success: false,
-      error: error.message,
+      error: getErrorMessage(error),
     };
   }
 }

@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withErrorHandler } from '@/lib/errors/errorHandler';
 import { withRateLimitedRoute } from '@/middleware/rateLimiter';
-import { webhookManager } from '@/lib/webhooks/webhookManager';
+import { WebhookManager } from '@/lib/webhooks/webhookManager';
 import { AuthorizationError, ValidationError } from '@/lib/errors/errorHandler';
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
@@ -35,11 +35,12 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse): Promise<voi
   
   if (event && typeof event === 'string') {
     // Get subscriptions for a specific event
+    const webhookManager = WebhookManager.getInstance();
     const subscriptions = await webhookManager.getSubscriptionsForEvent(
       event,
       client_id as string
     );
-    
+
     return res.status(200).json({ subscriptions });
   }
   
@@ -56,6 +57,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, userId: str
   }
   
   // Create subscription
+  const webhookManager = WebhookManager.getInstance();
   const subscription = await webhookManager.createSubscription(
     url,
     events,
@@ -78,6 +80,7 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, userId: stri
   }
   
   // Update subscription
+  const webhookManager = WebhookManager.getInstance();
   const subscription = await webhookManager.updateSubscription(id, {
     url,
     events,
@@ -100,6 +103,7 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, userId: s
   }
   
   // Delete subscription
+  const webhookManager = WebhookManager.getInstance();
   await webhookManager.deleteSubscription(id);
   
   res.status(204).end();

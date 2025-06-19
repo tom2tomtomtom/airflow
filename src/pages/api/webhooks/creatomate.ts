@@ -1,7 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@supabase/supabase-js';
-import { webhookManager, WebhookManager } from '@/lib/webhooks/webhookManager';
+import { WebhookManager } from '@/lib/webhooks/webhookManager';
 import { withErrorHandler } from '@/lib/errors/errorHandler';
 import { sendRenderCompleteEmail } from '@/lib/email/resend';
 
@@ -32,12 +32,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   // Verify webhook signature (if Creatomate provides one)
   const signature = req.headers['x-creatomate-signature'] as string;
   if (signature && process.env.CREATOMATE_WEBHOOK_SECRET) {
+    const webhookManager = WebhookManager.getInstance();
     const isValid = webhookManager.verifySignature(
       signature,
       req.body,
       process.env.CREATOMATE_WEBHOOK_SECRET
     );
-    
+
     if (!isValid) {
       return res.status(401).json({ error: 'Invalid signature' });
     }
@@ -100,6 +101,7 @@ async function handleRenderCompleted(payload: CreatomateWebhookPayload): Promise
   }
   
   // Trigger our own webhook event
+  const webhookManager = WebhookManager.getInstance();
   await webhookManager.triggerEvent(
     {
       type: WebhookManager.EVENTS.RENDER_COMPLETED,
@@ -159,6 +161,7 @@ async function handleRenderFailed(payload: CreatomateWebhookPayload): Promise<vo
     .eq('id', metadata.execution_id);
   
   // Trigger our own webhook event
+  const webhookManager = WebhookManager.getInstance();
   await webhookManager.triggerEvent(
     {
       type: WebhookManager.EVENTS.RENDER_FAILED,

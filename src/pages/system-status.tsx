@@ -79,7 +79,7 @@ export default function SystemStatusPage() {
         <Chip 
           label={status.status === 'ready' ? 'System Ready' : 'Configuration Incomplete'}
           color={status.status === 'ready' ? 'success' : 'warning'}
-          size="large"
+          size="medium"
         />
         <Typography variant="caption" display="block" sx={{ mt: 1 }}>
           Last checked: {new Date(status.timestamp).toLocaleString()}

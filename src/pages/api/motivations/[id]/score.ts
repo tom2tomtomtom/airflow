@@ -42,9 +42,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Motivation Score API error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? message : undefined
     });
   }
 }
@@ -167,7 +167,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
       relevance_score: autoScoring.overall_score,
       effectiveness_rating: autoScoring.effectiveness_rating,
       generation_context: {
-        ...motivation.generation_context,
+        ...(motivation as any).generation_context,
         auto_scoring: {
           timestamp: new Date().toISOString(),
           scores: autoScoring.detailed_scores,
@@ -327,7 +327,7 @@ async function calculateComprehensiveScoring(motivation: any): Promise<any> {
   };
 
   // Calculate overall score
-  const weights = {
+  const weights: Record<string, number> = {
     keyword_relevance: 0.3,
     category_effectiveness: 0.25,
     content_quality: 0.25,
@@ -335,7 +335,7 @@ async function calculateComprehensiveScoring(motivation: any): Promise<any> {
   };
 
   const overall = Object.entries(scores).reduce((sum, [key, score]) => {
-    return sum + (score * weights[key]);
+    return sum + (score * (weights[key] || 0));
   }, 0);
 
   // Calculate effectiveness rating (1-5 scale)

@@ -174,7 +174,7 @@ Respond with a JSON array of copy variations. Generate 3 variations per availabl
     )
   ]);
 
-  const responseText = response.choices[0]?.message?.content?.trim();
+  const responseText = (response as any).choices[0]?.message?.content?.trim();
   if (!responseText) {
     throw new Error('No response from OpenAI');
   }
@@ -216,7 +216,7 @@ function generateCopyWithTemplates(motivations: Motivation[], briefData: BriefDa
   const copyVariations: CopyVariation[] = [];
   
   // Copy templates for different tones and styles
-  const copyTemplates = {
+  const copyTemplates: Record<string, string[]> = {
     emotional: [
       'Transform your {goal} with {solution}',
       'Discover the {benefit} you deserve',
@@ -290,7 +290,7 @@ function generateCopyWithTemplates(motivations: Motivation[], briefData: BriefDa
   };
 
   // Platform-specific adaptations
-  const platformAdaptations = {
+  const platformAdaptations: Record<string, { maxWords: number; style: string; emojis: boolean; hashtags: boolean }> = {
     Instagram: {
       maxWords: 8,
       style: 'visual',
@@ -448,7 +448,7 @@ function getToneFromMotivation(motivationTitle: string): string {
 }
 
 function generateCTA(motivation: Motivation, platform: string): string {
-  const ctas = {
+  const ctas: Record<string, string[]> = {
     emotional: ['Join us', 'Start now', 'Connect today'],
     social_proof: ['See why', 'Join thousands', 'Learn more'],
     innovation: ['Try now', 'Discover', 'Experience'],
@@ -460,7 +460,7 @@ function generateCTA(motivation: Motivation, platform: string): string {
     transformation: ['Start today', 'Transform', 'Begin change'],
     value: ['Save now', 'Get deal', 'Compare']
   };
-  
+
   const motivationType = getMotivationType(motivation.title);
   const typeCTAs = ctas[motivationType] || ctas.emotional;
   

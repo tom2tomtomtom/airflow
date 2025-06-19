@@ -374,7 +374,7 @@ const Templates: React.FC = () => {
       <DashboardLayout title="Templates">
         <Grid container spacing={3}>
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Grid item xs={12} sm={6} md={4} key={i}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={i}>
               <CardSkeleton height={300} />
             </Grid>
           ))}
@@ -416,7 +416,7 @@ const Templates: React.FC = () => {
 
         <Paper sx={{ p: 2, mb: 4 }}>
           <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextField
                 fullWidth
                 placeholder="Search templates..."
@@ -425,7 +425,7 @@ const Templates: React.FC = () => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid size={{ xs: 12, md: 3 }}>
               <FormControl fullWidth size="small">
                 <InputLabel id="platform-filter-label">Platform</InputLabel>
                 <Select
@@ -446,7 +446,7 @@ const Templates: React.FC = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} md={5} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', md: 'flex-end' } }}>
+            <Grid size={{ xs: 12, md: 5 }} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', md: 'flex-end' } }}>
               <AnimatedActionButton onClick={handleAddTemplate}>
                 <AddIcon sx={{ mr: 1 }} />
                 Create Template
@@ -458,7 +458,7 @@ const Templates: React.FC = () => {
         <Grid container spacing={3}>
           {filteredTemplates.length > 0 ? (
             filteredTemplates.map((template: any) => (
-              <Grid item xs={12} sm={6} md={4} key={template.id}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={template.id}>
                 <TemplateCard
                   template={template}
                   onEdit={handleEditTemplate}
@@ -469,7 +469,7 @@ const Templates: React.FC = () => {
               </Grid>
             ))
           ) : searchQuery || platformFilter !== 'All' ? (
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <Box textAlign="center" py={8}>
                 <Typography variant="h6" color="text.secondary" gutterBottom>
                   No templates found
@@ -486,8 +486,11 @@ const Templates: React.FC = () => {
               </Box>
             </Grid>
           ) : (
-            <Grid item xs={12}>
-              <EmptyTemplates onAddTemplate={handleAddTemplate} />
+            <Grid size={{ xs: 12 }}>
+              <EmptyTemplates
+                onBrowseTemplates={() => {}}
+                onCreateTemplate={handleAddTemplate}
+              />
             </Grid>
           )}
         </Grid>

@@ -116,7 +116,7 @@ const CampaignsPage: React.FC = () => {
             </Box>
             <AnimatedActionButton
               onClick={handleCreateCampaign}
-              disabled={!activeClient}
+              loading={false}
             >
               <AddIcon sx={{ mr: 1 }} />
               Create Campaign
@@ -150,7 +150,7 @@ const CampaignsPage: React.FC = () => {
         {activeClient && isLoading && (
           <Grid container spacing={3}>
             {[1, 2, 3].map((i) => (
-              <Grid item xs={12} sm={6} md={4} key={i}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={i}>
                 <CardSkeleton height={300} />
               </Grid>
             ))}
@@ -177,10 +177,15 @@ const CampaignsPage: React.FC = () => {
                 : 'Create your first campaign to get started'}
             </Typography>
             {!searchTerm && (
-              <AnimatedActionButton onClick={handleCreateCampaign} sx={{ mt: 2 }}>
-                <AddIcon sx={{ mr: 1 }} />
-                Create First Campaign
-              </AnimatedActionButton>
+              <Box sx={{ mt: 2 }}>
+                <AnimatedActionButton
+                  onClick={handleCreateCampaign}
+                  loading={false}
+                >
+                  <AddIcon sx={{ mr: 1 }} />
+                  Create First Campaign
+                </AnimatedActionButton>
+              </Box>
             )}
           </Box>
         )}
@@ -188,7 +193,7 @@ const CampaignsPage: React.FC = () => {
         {activeClient && (
           <Grid container spacing={3}>
             {filteredCampaigns.map((campaign: any) => (
-              <Grid item xs={12} sm={6} md={4} key={campaign.id}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={campaign.id}>
                 <Card
                   sx={{
                     height: '100%',

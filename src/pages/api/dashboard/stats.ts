@@ -268,10 +268,10 @@ async function getRecentActivities(clientIds: string[], userId: string): Promise
         id: `campaign-${campaign.id}`,
         type: 'campaign',
         title: `Campaign Created: ${campaign.name}`,
-        description: `New campaign created for ${campaign.clients?.name}`,
+        description: `New campaign created for ${(campaign as any).clients?.name}`,
         timestamp: campaign.created_at,
         user: 'User', // TODO: Get actual user name
-        client: campaign.clients?.name
+        client: (campaign as any).clients?.name
       });
     });
 
@@ -284,7 +284,7 @@ async function getRecentActivities(clientIds: string[], userId: string): Promise
         description: `New ${asset.type} asset added`,
         timestamp: asset.created_at,
         user: 'User',
-        client: asset.clients?.name
+        client: (asset as any).clients?.name
       });
     });
 
@@ -294,10 +294,10 @@ async function getRecentActivities(clientIds: string[], userId: string): Promise
         id: `matrix-${matrix.id}`,
         type: 'matrix',
         title: `Matrix Created: ${matrix.name}`,
-        description: `New matrix for ${matrix.campaigns?.clients?.name}`,
+        description: `New matrix for ${(matrix as any).campaigns?.clients?.name}`,
         timestamp: matrix.created_at,
         user: 'User',
-        client: matrix.campaigns?.clients?.name
+        client: (matrix as any).campaigns?.clients?.name
       });
     });
 

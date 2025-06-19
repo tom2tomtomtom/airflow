@@ -40,9 +40,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Matrix API error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? message : undefined
     });
   }
 }
@@ -181,7 +181,7 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, m
     .from('user_clients')
     .select('id')
     .eq('user_id', user.id)
-    .eq('client_id', existingMatrix.campaigns.clients.id)
+    .eq('client_id', (existingMatrix as any).campaigns.clients.id)
     .single();
 
   if (!clientAccess) {
@@ -205,8 +205,8 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, m
 
     // Add approval fields if approved
     if (updateData.status === 'approved') {
-      updateData.approved_by = user.id;
-      updateData.approval_date = new Date().toISOString();
+      (updateData as any).approved_by = user.id;
+      (updateData as any).approval_date = new Date().toISOString();
     }
   }
 
@@ -259,7 +259,7 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
     .from('user_clients')
     .select('id')
     .eq('user_id', user.id)
-    .eq('client_id', existingMatrix.campaigns.clients.id)
+    .eq('client_id', (existingMatrix as any).campaigns.clients.id)
     .single();
 
   if (!clientAccess) {

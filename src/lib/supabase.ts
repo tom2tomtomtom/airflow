@@ -83,10 +83,10 @@ export const supabase = (() => {
             schema: 'public',
           },
           realtime: {
-            disabled: true // Disable realtime to prevent connection issues
-          }
+            disabled: true
+          } as any
         }
-      );
+      ) as any;
     } catch (error) {
       console.error('Failed to create Supabase client:', error);
       // Re-throw the error instead of creating a fallback with hardcoded credentials

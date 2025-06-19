@@ -49,9 +49,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Social Posts API error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? message : undefined
     });
   }
 }

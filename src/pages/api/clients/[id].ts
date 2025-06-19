@@ -111,7 +111,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
       .eq('is_active', true);
 
     // Transform client to match expected format
-    const transformedClient: Client = {
+    const transformedClient = {
       id: client.id,
       name: client.name,
       slug: client.slug,
@@ -127,7 +127,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
       dateCreated: client.created_at,
       lastModified: client.updated_at,
       contacts: contacts || [],
-    };
+    } as Client;
 
         return res.json({
       success: true,

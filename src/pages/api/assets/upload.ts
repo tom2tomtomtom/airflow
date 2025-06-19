@@ -60,7 +60,7 @@ async function handler(
     // Handle both single and multiple files
     const fileArray = files.files ? (Array.isArray(files.files) ? files.files : [files.files]) : [];
     
-    if (!fileArray.length || fileArray.every(f => !f)) {
+    if (!fileArray.length || fileArray.every((f: any) => !f)) {
       return res.status(400).json({ success: false, error: 'No files provided' });
     }
 
@@ -200,7 +200,7 @@ async function handler(
         uploadedAssets.push(asset);
               } catch (fileError) {
         console.error(`❌ File processing error for ${file.originalFilename}:`, fileError);
-        errors.push(`${file.originalFilename}: Processing failed - ${fileError.message}`);
+        errors.push(`${file.originalFilename}: Processing failed - ${fileError instanceof Error ? fileError.message : String(fileError)}`);
       } finally {
         // Clean up temporary file
         try {

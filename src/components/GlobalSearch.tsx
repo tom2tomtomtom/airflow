@@ -73,10 +73,10 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
       return [];
     }
 
-    const filtered = mockData.filter(item => 
+    const filtered = mockData.filter(item =>
       item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.metadata?.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+      item.metadata?.tags?.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
     // Sort by relevance (exact matches first, then partial matches)
@@ -88,8 +88,8 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
       if (!aExact && bExact) return 1;
       
       // Then by type priority (actions first, then pages, then content)
-      const typePriority = { action: 0, page: 1, brief: 2, template: 3, asset: 4, campaign: 5, client: 6 };
-      return typePriority[a.type] - typePriority[b.type];
+      const typePriority: Record<string, number> = { action: 0, page: 1, brief: 2, template: 3, asset: 4, campaign: 5, client: 6 };
+      return (typePriority[a.type] || 99) - (typePriority[b.type] || 99);
     });
   }, []);
 

@@ -230,7 +230,7 @@ const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
 
       <Grid container spacing={4}>
         {showSettings && (
-          <Grid xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Paper sx={{ p: 3, height: 'fit-content' }}>
               <Typography variant="subtitle1" gutterBottom fontWeight={600}>
                 Image Settings
@@ -328,7 +328,7 @@ const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
           </Grid>
         )}
 
-        <Grid xs={12} md={showSettings ? 8 : 12}>
+        <Grid size={{ xs: 12 }} md={showSettings ? 8 : 12}>
           <Paper sx={{ p: 3 }}>
             <Typography variant="subtitle1" gutterBottom fontWeight={600}>
               Generated Images
@@ -345,10 +345,7 @@ const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
 
             <Grid container spacing={2}>
               {generatedImages.map((image) => (
-                <Grid
-                  xs={12}
-                  sm={6}
-                  md={imageCount > 2 ? 6 : 12}
+                <Grid size={{ xs: 12, sm: 6 }} md={imageCount> 2 ? 6 : 12}
                   key={image.id}
                 >
                   <Card>

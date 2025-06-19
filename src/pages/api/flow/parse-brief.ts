@@ -154,7 +154,7 @@ Return only the JSON object.`;
         )
       ]);
 
-      const responseText = response.choices[0]?.message?.content?.trim();
+      const responseText = (response as any).choices[0]?.message?.content?.trim();
       if (responseText) {
         try {
           // Clean up potential markdown formatting from OpenAI
@@ -330,7 +330,7 @@ Respond ONLY with the JSON object, no additional text or explanation.`;
       )
     ]);
 
-    const responseText = response.choices[0]?.message?.content?.trim();
+    const responseText = (response as any).choices[0]?.message?.content?.trim();
     if (!responseText) {
       throw new Error('No response from OpenAI');
     }

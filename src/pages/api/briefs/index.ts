@@ -39,7 +39,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Briefs API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
     });
   }
 }

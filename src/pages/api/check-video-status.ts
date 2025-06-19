@@ -1,5 +1,4 @@
 import { getErrorMessage } from '@/utils/errorUtils';
-import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
 import { hasCreatomate } from '@/lib/env';
@@ -72,14 +71,14 @@ export default async function handler(
       job: {
         id: job.id,
         status: job.status,
-        progress: job.progress || 0,
+        progress: (job as any).progress || 0,
         created_at: job.createdAt,
         completed_at: job.completedAt,
         url: job.url,
         error: job.error,
       },
       asset,
-      message: getStatusMessage(job.status, job.progress),
+      message: getStatusMessage(job.status, (job as any).progress),
     });
 
   } catch (error) {

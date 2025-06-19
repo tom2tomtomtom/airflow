@@ -660,7 +660,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
             <Select
               value={decisionData.action}
               label="Action"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDecisionData({ ...decisionData, action: e.target.value as any })}
+              onChange={(e) => setDecisionData({ ...decisionData, action: e.target.value as any })}
             >
               <MenuItem value="approve">Approve All</MenuItem>
               <MenuItem value="reject">Reject All</MenuItem>

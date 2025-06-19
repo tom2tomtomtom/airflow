@@ -1,5 +1,4 @@
 import { getErrorMessage } from '@/utils/errorUtils';
-import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase, getServiceSupabase } from '@/lib/supabase';
 import { env, hasOpenAI } from '@/lib/env';

@@ -78,13 +78,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     case 'DELETE': {
       // Delete a template (expects id in body)
       const { id } = req.body as { id?: string };
-      if (!id) return res.status(400).json({ error: 'Missing template id' });
+      if (!id) {
+        res.status(400).json({ error: 'Missing template id' });
+        return;
+      }
       const { error } = await supabase.from('templates').delete().eq('id', id);
-      if (error) return res.status(500).json({ error: error.message });
-      return res.status(204).end();
+      if (error) {
+        res.status(500).json({ error: error.message });
+        return;
+      }
+      res.status(204).end();
+      return;
     }
     default:
       res.setHeader('Allow', ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']);
-      return res.status(405).end(`Method ${req.method} Not Allowed`);
+      res.status(405).end(`Method ${req.method} Not Allowed`);
+      return;
   }
 }

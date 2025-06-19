@@ -300,8 +300,8 @@ function generateHashtags(motivations: any[]): string[] {
       hashtags.add(`#${motivation.category.toLowerCase().replace(/\s+/g, '')}`);
     }
     if (motivation.title) {
-      const words = motivation.title.split(' ').filter(word => word.length > 3);
-      words.slice(0, 2).forEach(word => {
+      const words = motivation.title.split(' ').filter((word: string) => word.length > 3);
+      words.slice(0, 2).forEach((word: string) => {
         hashtags.add(`#${word.toLowerCase()}`);
       });
     }

@@ -342,7 +342,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
 
       {/* Quick Stats */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid xs={3}>
+        <Grid size={{ xs: 3 }}>
           <Card>
             <CardContent sx={{ textAlign: 'center', py: 2 }}>
               <Typography variant="h4" color="primary.main">
@@ -354,7 +354,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
             </CardContent>
           </Card>
         </Grid>
-        <Grid xs={3}>
+        <Grid size={{ xs: 3 }}>
           <Card>
             <CardContent sx={{ textAlign: 'center', py: 2 }}>
               <Typography variant="h4" color="success.main">
@@ -366,7 +366,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
             </CardContent>
           </Card>
         </Grid>
-        <Grid xs={3}>
+        <Grid size={{ xs: 3 }}>
           <Card>
             <CardContent sx={{ textAlign: 'center', py: 2 }}>
               <Typography variant="h4" color="error.main">
@@ -378,7 +378,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
             </CardContent>
           </Card>
         </Grid>
-        <Grid xs={3}>
+        <Grid size={{ xs: 3 }}>
           <Card>
             <CardContent sx={{ textAlign: 'center', py: 2 }}>
               <Typography variant="h4" color="text.primary">
@@ -404,7 +404,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
 
           <Grid container spacing={2}>
             {combinations.map((combination) => (
-              <Grid xs={12} sm={6} md={4} key={combination.id}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={combination.id}>
                 <Card
                   variant="outlined"
                   sx={{

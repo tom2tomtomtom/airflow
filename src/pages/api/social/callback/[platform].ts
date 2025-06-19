@@ -180,12 +180,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Handle OAuth errors
     if (oauthError) {
       console.error('OAuth error:', oauthError);
-      return res.redirect('/social-publishing?error=oauth_failed');
+      res.redirect('/social-publishing?error=oauth_failed');
+      return;
     }
 
     // Validate required parameters
     if (typeof platform !== 'string' || !code || !state) {
-      return res.redirect('/social-publishing?error=invalid_callback');
+      res.redirect('/social-publishing?error=invalid_callback');
+      return;
     }
 
     // Parse and validate state
@@ -194,14 +196,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       stateData = JSON.parse(atob(state as string));
     } catch (error) {
       console.error('Invalid state parameter:', error);
-      return res.redirect('/social-publishing?error=invalid_state');
+      res.redirect('/social-publishing?error=invalid_state');
+      return;
     }
 
     const { userId, clientId, timestamp } = stateData;
 
     // Check state freshness (15 minutes max)
     if (Date.now() - timestamp > 15 * 60 * 1000) {
-      return res.redirect('/social-publishing?error=expired_state');
+      res.redirect('/social-publishing?error=expired_state');
+      return;
     }
 
     // Exchange code for access token
@@ -259,11 +263,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Redirect back to social publishing page with success
-    return res.redirect(`/social-publishing?success=${platform}&connected=true`);
+    res.redirect(`/social-publishing?success=${platform}&connected=true`);
+    return;
 
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('OAuth callback error:', error);
-    return res.redirect(`/social-publishing?error=connection_failed&platform=${platform}`);
+    res.redirect(`/social-publishing?error=connection_failed&platform=${platform}`);
+    return;
   }
 }

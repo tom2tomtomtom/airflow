@@ -20,7 +20,7 @@ const MotivationCreateSchema = z.object({
   effectiveness_rating: z.number().min(1).max(5).optional(),
 });
 
-const MotivationUpdateSchema = MotivationCreateSchema.partial().omit(['client_id']);
+const MotivationUpdateSchema = MotivationCreateSchema.partial().omit(['client_id'] as any);
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -38,9 +38,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Motivations API error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? message : undefined
     });
   }
 }

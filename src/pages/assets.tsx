@@ -404,7 +404,7 @@ const AssetsPage: React.FC = () => {
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <TextField
                 fullWidth
                 placeholder="Search assets..."
@@ -420,7 +420,7 @@ const AssetsPage: React.FC = () => {
                 data-testid="search-assets"
               />
             </Grid>
-            <Grid item xs={12} md={2}>
+            <Grid size={{ xs: 12, md: 2 }}>
               <FormControl fullWidth>
                 <InputLabel>Type</InputLabel>
                 <Select
@@ -436,7 +436,7 @@ const AssetsPage: React.FC = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid size={{ xs: 12, md: 3 }}>
               <FormControl fullWidth>
                 <InputLabel>Sort By</InputLabel>
                 <Select
@@ -451,7 +451,7 @@ const AssetsPage: React.FC = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} md={2}>
+            <Grid size={{ xs: 12, md: 2 }}>
               <FormControlLabel
                 control={
                   <Checkbox
@@ -462,7 +462,7 @@ const AssetsPage: React.FC = () => {
                 label="Favorites Only"
               />
             </Grid>
-            <Grid item xs={12} md={1}>
+            <Grid size={{ xs: 12, md: 1 }}>
               <Tooltip title={viewMode === 'grid' ? 'Switch to List View' : 'Switch to Grid View'}>
                 <IconButton
                   onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
@@ -484,13 +484,19 @@ const AssetsPage: React.FC = () => {
           {error}
         </Alert>
       ) : filteredAssets.length === 0 ? (
-        <EmptyAssets onUpload={() => setShowUploadModal(true)} />
+        <EmptyAssets
+          onUploadAssets={() => setShowUploadModal(true)}
+          onGenerateAssets={() => {
+            // TODO: Implement AI asset generation
+            console.log('Generate assets with AI');
+          }}
+        />
       ) : (
         <>
           {viewMode === 'grid' ? (
             <Grid container spacing={2}>
               {filteredAssets.map((asset) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={asset.id}>
+                <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={asset.id}>
                   <AssetCard
                     asset={asset}
                     viewMode={viewMode}
@@ -527,7 +533,7 @@ const AssetsPage: React.FC = () => {
         <AssetUploadModal
           open={showUploadModal}
           onClose={() => setShowUploadModal(false)}
-          onUpload={() => {
+          onUploadComplete={() => {
             setShowUploadModal(false);
             showNotification('Assets uploaded successfully!', 'success');
           }}

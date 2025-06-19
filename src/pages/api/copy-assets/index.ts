@@ -26,7 +26,7 @@ const CopyAssetCreateSchema = z.object({
   brand_compliance_score: z.number().min(0).max(100).optional(),
 });
 
-const CopyAssetUpdateSchema = CopyAssetCreateSchema.partial().omit(['client_id']);
+const CopyAssetUpdateSchema = CopyAssetCreateSchema.partial().omit(['client_id'] as any);
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -46,7 +46,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Copy Assets API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
     });
   }
 }
@@ -251,7 +251,7 @@ function generateTitleFromContent(content: string, type: string): string {
   const firstLine = content.split('\n')[0].trim();
   const preview = firstLine.length > 50 ? firstLine.substring(0, 47) + '...' : firstLine;
   
-  const typeLabels = {
+  const typeLabels: Record<string, string> = {
     headline: 'Headline',
     body: 'Body Copy',
     cta: 'Call to Action',
@@ -261,7 +261,7 @@ function generateTitleFromContent(content: string, type: string): string {
     script: 'Script',
     other: 'Copy'
   };
-  
+
   return `${typeLabels[type] || 'Copy'}: ${preview}`;
 }
 

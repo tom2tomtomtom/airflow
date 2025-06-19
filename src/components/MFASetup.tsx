@@ -177,7 +177,7 @@ export const MFASetup: React.FC = () => {
       )}
 
       <Grid container spacing={3}>
-        <Grid item xs={12} md={8}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -267,7 +267,7 @@ export const MFASetup: React.FC = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -328,7 +328,7 @@ export const MFASetup: React.FC = () => {
                 fullWidth
                 label="Verification Code"
                 value={verificationCode}
-                onChange={(e: React.ChangeEvent<HTMLElement>) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                 placeholder="000000"
                 inputProps={{ maxLength: 6 }}
                 sx={{ mb: 2 }}
@@ -351,7 +351,7 @@ export const MFASetup: React.FC = () => {
 
               <Grid container spacing={1} sx={{ mb: 2 }}>
                 {setupData?.backupCodes.map((code, index) => (
-                  <Grid item xs={6} key={index}>
+                  <Grid size={{ xs: 6 }} key={index}>
                     <Box
                       p={1}
                       border={1}

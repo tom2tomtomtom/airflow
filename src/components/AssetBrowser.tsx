@@ -188,7 +188,7 @@ export default function AssetBrowser({
       {/* Search and Filter Bar */}
       <Paper sx={{ p: 2, mb: 3 }}>
         <Grid container spacing={2} alignItems="center">
-          <Grid xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <TextField
               fullWidth
               placeholder="Search assets..."
@@ -204,7 +204,7 @@ export default function AssetBrowser({
             />
           </Grid>
           
-          <Grid xs={6} md={2}>
+          <Grid size={{ xs: 6, md: 2 }}>
             <FormControl fullWidth>
               <InputLabel>Type</InputLabel>
               <Select
@@ -221,7 +221,7 @@ export default function AssetBrowser({
             </FormControl>
           </Grid>
           
-          <Grid xs={6} md={2}>
+          <Grid size={{ xs: 6, md: 2 }}>
             <FormControl fullWidth>
               <InputLabel>Sort By</InputLabel>
               <Select
@@ -237,7 +237,7 @@ export default function AssetBrowser({
             </FormControl>
           </Grid>
           
-          <Grid xs={12} md={2}>
+          <Grid size={{ xs: 12, md: 2 }}>
             <Box display="flex" gap={1}>
               <IconButton onClick={handleClearFilters} title="Clear Filters">
                 <Clear />
@@ -264,7 +264,7 @@ export default function AssetBrowser({
       ) : (
         <Grid container spacing={2}>
           {assets.map((asset) => (
-            <Grid xs={12} sm={6} md={4} lg={3} key={asset.id}>
+            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={asset.id}>
               <Card
                 sx={{
                   cursor: 'pointer',
@@ -357,7 +357,7 @@ export default function AssetBrowser({
             </DialogTitle>
             <DialogContent>
               <Grid container spacing={2}>
-                <Grid xs={12} md={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   {selectedAsset.type === 'image' ? (
                     <img
                       src={selectedAsset.url}
@@ -383,7 +383,7 @@ export default function AssetBrowser({
                     </Box>
                   )}
                 </Grid>
-                <Grid xs={12} md={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                   <Typography variant="h6" gutterBottom>Details</Typography>
                   <Typography><strong>Type:</strong> {selectedAsset.type.toUpperCase()}</Typography>
                   <Typography><strong>Size:</strong> {formatFileSize(selectedAsset.size)}</Typography>

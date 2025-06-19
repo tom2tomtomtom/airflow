@@ -49,9 +49,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Notifications API error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? message : undefined
     });
   }
 }
@@ -243,12 +243,11 @@ async function handleBulkUpdate(req: NextApiRequest, res: NextApiResponse, user:
   }
 
   try {
-    let query = supabase
-      .from('notifications')
-      .eq('user_id', user.id);
+    // Build filter conditions
+    let baseQuery = supabase.from('notifications').eq('user_id', user.id);
 
     if (notification_ids && Array.isArray(notification_ids) && notification_ids.length > 0) {
-      query = query.in('id', notification_ids);
+      // Will apply .in('id', notification_ids) to each operation
     } else if (client_id) {
       // Verify user has access to client
       const { data: clientAccess } = await supabase
@@ -261,8 +260,7 @@ async function handleBulkUpdate(req: NextApiRequest, res: NextApiResponse, user:
       if (!clientAccess) {
         return res.status(403).json({ error: 'Access denied to this client' });
       }
-
-      query = query.eq('client_id', client_id);
+      // Will apply .eq('client_id', client_id) to each operation
     } else {
       return res.status(400).json({ error: 'Must provide notification_ids or client_id' });
     }
@@ -271,21 +269,45 @@ async function handleBulkUpdate(req: NextApiRequest, res: NextApiResponse, user:
 
     switch (action) {
       case 'mark_read':
-        result = await query.update({ 
-          read: true, 
-          read_at: new Date().toISOString() 
-        }).select();
+        let updateReadQuery = supabase.from('notifications').update({
+          read: true,
+          read_at: new Date().toISOString()
+        }).eq('user_id', user.id);
+
+        if (notification_ids && Array.isArray(notification_ids) && notification_ids.length > 0) {
+          updateReadQuery = updateReadQuery.in('id', notification_ids);
+        } else if (client_id) {
+          updateReadQuery = updateReadQuery.eq('client_id', client_id);
+        }
+
+        result = await updateReadQuery.select();
         break;
-      
+
       case 'mark_unread':
-        result = await query.update({ 
-          read: false, 
-          read_at: null 
-        }).select();
+        let updateUnreadQuery = supabase.from('notifications').update({
+          read: false,
+          read_at: null
+        }).eq('user_id', user.id);
+
+        if (notification_ids && Array.isArray(notification_ids) && notification_ids.length > 0) {
+          updateUnreadQuery = updateUnreadQuery.in('id', notification_ids);
+        } else if (client_id) {
+          updateUnreadQuery = updateUnreadQuery.eq('client_id', client_id);
+        }
+
+        result = await updateUnreadQuery.select();
         break;
-      
+
       case 'delete':
-        result = await query.delete().select();
+        let deleteQuery = supabase.from('notifications').delete().eq('user_id', user.id);
+
+        if (notification_ids && Array.isArray(notification_ids) && notification_ids.length > 0) {
+          deleteQuery = deleteQuery.in('id', notification_ids);
+        } else if (client_id) {
+          deleteQuery = deleteQuery.eq('client_id', client_id);
+        }
+
+        result = await deleteQuery.select();
         break;
     }
 
@@ -411,7 +433,7 @@ export async function createExecutionNotification(
 
     if (!execution) return;
 
-    const campaignName = execution.matrices?.campaigns?.name || 'Unknown Campaign';
+    const campaignName = (execution as any).matrices?.campaigns?.name || 'Unknown Campaign';
     const statusMessages = {
       completed: { title: 'Execution Completed', type: 'success' },
       failed: { title: 'Execution Failed', type: 'error' },

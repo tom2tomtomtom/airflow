@@ -119,7 +119,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
         return res.status(500).json({ 
           error: 'Failed to extract document content for reparsing',
-          details: extractError.message
+          details: extractError instanceof Error ? extractError.message : String(extractError)
         });
       }
     }
@@ -167,7 +167,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
       return res.status(500).json({ 
         error: 'Failed to initiate brief reparsing',
-        details: parseError.message
+        details: parseError instanceof Error ? parseError.message : String(parseError)
       });
     }
 
@@ -176,7 +176,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Brief reparse API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
     });
   }
 }

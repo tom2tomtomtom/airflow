@@ -140,7 +140,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
     }
 
         // Fetch contacts separately for each client
-    const clientIds = clients?.map(c => c.id) || [];
+    const clientIds = clients?.map((c: any) => c.id) || [];
     let contactsMap: Record<string, any[]> = {};
     
     if (clientIds.length > 0) {
@@ -154,7 +154,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
         console.error('⚠️ Error fetching contacts (non-fatal):', contactsError);
       } else if (contacts) {
                 // Group contacts by client_id
-        contactsMap = contacts.reduce((acc, contact) => {
+        contactsMap = contacts.reduce((acc: Record<string, any[]>, contact: any) => {
           if (!acc[contact.client_id]) {
             acc[contact.client_id] = [];
           }
@@ -165,7 +165,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
     }
 
     // Transform clients to match expected format
-    const transformedClients = clients?.map(client => ({
+    const transformedClients = clients?.map((client: any) => ({
       id: client.id,
       name: client.name,
       slug: client.slug,
@@ -312,7 +312,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
     }
 
     // Transform response
-    const transformedClient: Client = {
+    const transformedClient = {
       id: client.id,
       name: client.name,
       slug: client.slug,
@@ -328,7 +328,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
       dateCreated: client.created_at,
       lastModified: client.updated_at,
       contacts: contacts || [], // Include the contacts in response
-    };
+    } as Client;
 
         return res.status(201).json({
       success: true,

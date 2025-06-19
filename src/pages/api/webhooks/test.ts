@@ -2,7 +2,7 @@ import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withErrorHandler } from '@/lib/errors/errorHandler';
 import { withRateLimitedRoute } from '@/middleware/rateLimiter';
-import { webhookManager, WebhookManager } from '@/lib/webhooks/webhookManager';
+import { WebhookManager } from '@/lib/webhooks/webhookManager';
 import { ValidationError } from '@/lib/errors/errorHandler';
 
 /**
@@ -33,6 +33,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   
   try {
     // Trigger the webhook event
+    const webhookManager = WebhookManager.getInstance();
     await webhookManager.triggerEvent(
       {
         type: event,

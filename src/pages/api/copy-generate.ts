@@ -72,7 +72,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     }
 
     // Platform-specific requirements
-    const platformSpecs = {
+    const platformSpecs: Record<string, { maxLength: number; format: string }> = {
       'Instagram': { maxLength: 2200, format: 'Social media post with hashtags' },
       'Facebook': { maxLength: 63206, format: 'Engaging social media post' },
       'LinkedIn': { maxLength: 3000, format: 'Professional social media post' },

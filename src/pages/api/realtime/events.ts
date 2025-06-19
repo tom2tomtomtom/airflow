@@ -1,5 +1,4 @@
 import { getErrorMessage } from '@/utils/errorUtils';
-import { NextApiRequest, NextApiResponse } from 'next';
 // Server-Sent Events (SSE) API for Real-Time Updates
 // Alternative to WebSocket that works with Next.js deployment on Netlify
 

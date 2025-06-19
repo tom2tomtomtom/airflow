@@ -48,7 +48,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Approvals API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
     });
   }
 }
@@ -322,13 +322,13 @@ async function getApprovalItemDetails(itemType: string, itemId: string): Promise
     switch (itemType) {
       case 'motivation':
       case 'content_variation':
-        clientId = data.briefs?.client_id;
+        clientId = (data as any).briefs?.client_id;
         break;
       case 'execution':
-        clientId = data.matrices?.campaigns?.client_id;
+        clientId = (data as any).matrices?.campaigns?.client_id;
         break;
       case 'campaign':
-        clientId = data.client_id;
+        clientId = (data as any).client_id;
         break;
     }
 
@@ -362,7 +362,7 @@ async function determineApprovalAssignee(clientId: string, approvalType: string,
     }
 
     // Get users with appropriate roles for this client
-    const roleMapping = {
+    const roleMapping: Record<string, string[]> = {
       content: ['content_reviewer', 'manager'],
       legal: ['legal_reviewer', 'manager'],
       brand: ['brand_manager', 'manager'],

@@ -104,7 +104,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               { icon: <AutoAwesome />, label: 'AI-Powered', desc: 'Smart automation' },
               { icon: <Group />, label: 'Team Ready', desc: 'Collaborate seamlessly' }
             ].map((feature, index) => (
-              <Grid item xs={12} md={4} key={index}>
+              <Grid size={{ xs: 12, md: 4 }} key={index}>
                 <Card variant="outlined">
                   <CardContent sx={{ textAlign: 'center', py: 2 }}>
                     <Avatar sx={{ bgcolor: 'primary.light', mx: 'auto', mb: 1 }}>
@@ -165,7 +165,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 color: '#4CAF50'
               }
             ].map((item, index) => (
-              <Grid item xs={12} sm={6} key={index}>
+              <Grid size={{ xs: 12, sm: 6 }} key={index}>
                 <Card 
                   sx={{ 
                     height: '100%',
@@ -245,7 +245,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               benefits: ['Platform optimized', 'Customizable designs', 'Regular updates']
             }
           ].map((feature, index) => (
-            <Grid item xs={12} md={4} key={index}>
+            <Grid size={{ xs: 12, md: 4 }} key={index}>
               <Card sx={{ height: '100%' }}>
                 <CardContent>
                   <Avatar sx={{ bgcolor: 'primary.light', mb: 2 }}>
@@ -291,7 +291,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           </Typography>
           
           <Grid container spacing={2} sx={{ mt: 3, maxWidth: 600, mx: 'auto' }}>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <Button
                 variant="contained"
                 fullWidth
@@ -305,7 +305,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 Start with Brief
               </Button>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <Button
                 variant="outlined"
                 fullWidth

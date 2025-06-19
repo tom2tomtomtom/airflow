@@ -145,7 +145,7 @@ Respond ONLY with the JSON array, no additional text.`;
     )
   ]);
 
-  const responseText = response.choices[0]?.message?.content?.trim();
+  const responseText = (response as any).choices[0]?.message?.content?.trim();
   if (!responseText) {
     throw new Error('No response from OpenAI');
   }

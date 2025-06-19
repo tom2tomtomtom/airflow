@@ -268,7 +268,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
       
       // For now, create variations based on different assets
       for (let i = 0; i < Math.min(maxCombinations, unlockedRows.length * 3); i++) {
-        const combination = {
+        const combination: { id: string; name: string; fields: Record<string, any> } = {
           id: `combo-${Date.now()}-${i}`,
           name: `Combination ${i + 1}`,
           fields: {}
@@ -277,7 +277,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
         // Copy from a random unlocked row or use locked row data
         const sourceRow = unlockedRows[i % unlockedRows.length] || rows[0];
         fields.forEach(field => {
-          combination.fields[field.id] = sourceRow.cells[field.id];
+          combination.fields[field.id] = sourceRow.cells[field.id] || { type: field.type, value: '' };
         });
 
         newCombinations.push(combination);
@@ -608,7 +608,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
                   true
                 )
                 .map(asset => (
-                  <Grid item xs={6} md={4} key={asset.id}>
+                  <Grid size={{ xs: 6, md: 4 }} key={asset.id}>
                     <Card 
                       sx={{ cursor: 'pointer' }}
                       onClick={() => selectAsset(asset)}

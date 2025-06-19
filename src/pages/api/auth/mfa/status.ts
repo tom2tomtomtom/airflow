@@ -1,5 +1,4 @@
 import { getErrorMessage } from '@/utils/errorUtils';
-import { NextApiResponse } from 'next';
 import type { NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
 import { withAuth } from '@/middleware/withAuth';

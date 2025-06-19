@@ -44,7 +44,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Copy Asset API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
     });
   }
 }
@@ -113,7 +113,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
   const analytics = {
     character_count: asset.content.length,
     word_count: asset.content.split(/\s+/).length,
-    sentence_count: asset.content.split(/[.!?]+/).filter(s => s.trim().length > 0).length,
+    sentence_count: asset.content.split(/[.!?]+/).filter((s: string) => s.trim().length > 0).length,
     readability_score: calculateReadabilityScore(asset.content),
     sentiment: analyzeSentiment(asset.content),
     keyword_density: calculateKeywordDensity(asset.content),
@@ -183,8 +183,8 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, a
 
   // Update content metrics if content changed
   if (updateData.content && updateData.content !== existingAsset.content) {
-    updateData.character_count = updateData.content.length;
-    updateData.word_count = updateData.content.split(/\s+/).length;
+    (updateData as any).character_count = updateData.content.length;
+    (updateData as any).word_count = updateData.content.split(/\s+/).length;
     
     // Update metadata with new analytics
     updateData.metadata = {

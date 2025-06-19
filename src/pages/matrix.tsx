@@ -527,7 +527,7 @@ const MatrixPage: React.FC = () => {
         </Typography>
         <Grid container spacing={3}>
           {/* Template Selection */}
-          <Grid xs={12} md={3}>
+          <Grid size={{ xs: 12, md: 3 }}>
             <Paper sx={{ p: 2, height: '100%' }}>
               <TextField
                 fullWidth
@@ -578,13 +578,13 @@ const MatrixPage: React.FC = () => {
           </Grid>
 
           {/* Matrix Editor */}
-          <Grid xs={12} md={9}>
+          <Grid size={{ xs: 12, md: 9 }}>
             {selectedTemplate ? (
               <Paper sx={{ p: 3 }}>
                 {/* Matrix Header */}
                 <Box sx={{ mb: 3 }}>
                   <Grid container spacing={2} alignItems="center">
-                    <Grid xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                       <TextField
                         fullWidth
                         label="Matrix Name"
@@ -593,7 +593,7 @@ const MatrixPage: React.FC = () => {
                         required
                       />
                     </Grid>
-                    <Grid xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                       <FormControl fullWidth>
                         <InputLabel>Link to Campaign</InputLabel>
                         <Select
@@ -613,7 +613,7 @@ const MatrixPage: React.FC = () => {
                         </Select>
                       </FormControl>
                     </Grid>
-                    <Grid xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                       <Stack direction="row" spacing={1}>
                         <Button
                           variant="contained"
@@ -655,7 +655,7 @@ const MatrixPage: React.FC = () => {
                   {selectedTemplate && (
                     <Card sx={{ mt: 2, p: 2, bgcolor: 'background.default' }}>
                       <Grid container spacing={2} alignItems="center">
-                        <Grid xs={12} md={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                             <Typography variant="h6">Matrix Quality</Typography>
                             <Chip
@@ -677,7 +677,7 @@ const MatrixPage: React.FC = () => {
                             </Box>
                           )}
                         </Grid>
-                        <Grid xs={12} md={6}>
+                        <Grid size={{ xs: 12, md: 6 }}>
                           <Typography variant="subtitle2" gutterBottom>Insights</Typography>
                           {getMatrixInsights().slice(0, 3).map((insight, index) => (
                             <Typography key={index} variant="caption" color="text.secondary" display="block">
@@ -872,7 +872,7 @@ const MatrixPage: React.FC = () => {
                     ) : (
                       <Grid container spacing={2}>
                         {combinations.map(combo => (
-                          <Grid xs={12} md={6} key={combo.id}>
+                          <Grid size={{ xs: 12, md: 6 }} key={combo.id}>
                             <Card sx={{ position: 'relative' }}>
                               <CardContent>
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
@@ -932,7 +932,7 @@ const MatrixPage: React.FC = () => {
                     </Alert>
                     <Grid container spacing={2}>
                       {variations.map(variation => (
-                        <Grid xs={12} md={4} key={variation.id}>
+                        <Grid size={{ xs: 12, md: 4 }} key={variation.id}>
                           <Card>
                             <CardContent>
                               <Typography variant="h6" gutterBottom>
@@ -1038,7 +1038,7 @@ const MatrixPage: React.FC = () => {
             </Alert>
             <Grid container spacing={2}>
               {variations.filter(v => v.isActive).map(variation => (
-                <Grid xs={12} md={4} key={variation.id}>
+                <Grid size={{ xs: 12, md: 4 }} key={variation.id}>
                   <Card>
                     <Box
                       sx={{

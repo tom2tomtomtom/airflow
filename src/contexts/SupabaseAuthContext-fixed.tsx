@@ -207,7 +207,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         throw error;
       }
 
-            return { success: true, user: data.user };
+            return { success: true, user: data.user || undefined };
     } catch (error: any) {
       console.error('💥 Signup error:', error);
       return { success: false, error: error.message };

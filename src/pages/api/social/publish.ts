@@ -145,7 +145,7 @@ async function publishToLinkedIn(accessToken: string, profileId: string, content
     // If there's a link, add it as media
     if (content.link) {
       postData.specificContent['com.linkedin.ugc.ShareContent'].shareMediaCategory = 'ARTICLE';
-      postData.specificContent['com.linkedin.ugc.ShareContent'].media = [{
+      (postData.specificContent['com.linkedin.ugc.ShareContent'] as any).media = [{
         status: 'READY',
         originalUrl: content.link,
       }];

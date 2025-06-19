@@ -71,7 +71,10 @@ const EditCampaign: React.FC = () => {
   const router = useRouter();
   const { id } = router.query;
   const { showNotification } = useNotification();
-  const { campaigns, loading, error, updateCampaign, deleteCampaign } = useData();
+  const { data, loading, error } = useData();
+  const campaigns = (data as any)?.campaigns;
+  const updateCampaign = (data as any)?.updateCampaign;
+  const deleteCampaign = (data as any)?.deleteCampaign;
 
   const [campaign, setCampaign] = useState<any>(null);
   const [activeTab, setActiveTab] = useState(0);

@@ -48,7 +48,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Campaign API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
     });
   }
 }
@@ -182,8 +182,8 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, c
   // Handle approval status changes
   if (updateData.approval_status && updateData.approval_status !== existingCampaign.approval_status) {
     if (updateData.approval_status === 'approved') {
-      updateData.approved_by = user.id;
-      updateData.approval_date = new Date().toISOString();
+      (updateData as any).approved_by = user.id;
+      (updateData as any).approval_date = new Date().toISOString();
     }
   }
 
@@ -464,7 +464,7 @@ async function getCampaignTimeline(campaignId: string): Promise<any[]> {
         date: campaign.created_at,
         event: 'Campaign Created',
         description: 'Campaign was created',
-        user: campaign.profiles?.full_name,
+        user: (campaign.profiles as any)?.[0]?.full_name,
         type: 'creation',
       });
 
@@ -491,7 +491,7 @@ async function getCampaignTimeline(campaignId: string): Promise<any[]> {
         date: matrix.created_at,
         event: 'Matrix Created',
         description: `Matrix "${matrix.name}" was created`,
-        user: matrix.profiles?.full_name,
+        user: (matrix.profiles as any)?.[0]?.full_name,
         type: 'matrix',
       });
     });

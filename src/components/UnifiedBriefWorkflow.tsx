@@ -188,7 +188,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
         console.error(`API call failed (attempt ${retryCount + 1}):`, error);
         
         // Retry up to 2 times for network errors
-        if (retryCount < 2 && (error instanceof TypeError || error.message.includes('Failed to fetch'))) {
+        if (retryCount < 2 && (error instanceof TypeError || (error instanceof Error && error.message.includes('Failed to fetch')))) {
           console.log(`Retrying in 1 second... (attempt ${retryCount + 2})`);
           await new Promise(resolve => setTimeout(resolve, 1000));
           return makeAPICall(retryCount + 1);

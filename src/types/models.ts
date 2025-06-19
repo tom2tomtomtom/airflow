@@ -251,26 +251,31 @@ export interface Template extends BaseModel {
   name: string;
   platform: string;
   aspectRatio: string;
-  description: string;
-  thumbnail: string;
-  category: string;
-  industry: string;
-  contentType: string;
-  dimensions: string;
-  recommendedUsage: string;
-  usageCount: number;
-  performance: {
+  description?: string;
+  thumbnail?: string;
+  category?: string;
+  industry?: string;
+  contentType?: string;
+  dimensions?: string;
+  recommendedUsage?: string;
+  usageCount?: number;
+  performance?: {
     views: number;
     engagement: number;
     conversion: number;
     score: number;
   };
-  dynamicFields: DynamicField[];
-  isCreatomate: boolean;
+  dynamicFields?: DynamicField[];
+  isCreatomate?: boolean;
   creatomateId?: string;
   isOwner?: boolean;
   isShared?: boolean;
-  clientId: string;
+  clientId?: string;
+  // Additional properties for compatibility
+  width?: number;
+  height?: number;
+  structure?: any;
+  aspect_ratio?: string;
 }
 
 // Dynamic Field Model

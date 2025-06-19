@@ -90,9 +90,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
 
     // Get all clients (RLS policies will handle access control)
     // Test with service role to bypass RLS temporarily
-    let query = serviceSupabase
-      .from('clients')
-      .select(`
+    const baseSelect = `
         id,
         name,
         slug,
@@ -108,12 +106,17 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
         created_at,
         updated_at,
         created_by
-        ${include_stats === 'true' ? `,
+      `;
+
+    const statsSelect = include_stats === 'true' ? `,
           campaigns(count),
           assets(count),
           matrices(count)
-        ` : ''}
-      `);
+        ` : '';
+
+    let query = serviceSupabase
+      .from('clients')
+      .select(baseSelect + statsSelect);
 
     // Apply search filter
     if (search && typeof search === 'string') {
@@ -165,7 +168,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
         .eq('created_by', user.id);
         
       const serviceResult = await serviceQuery;
-      clients = serviceResult.data;
+      clients = serviceResult.data as any;
       error = serviceResult.error;
     }
 
@@ -175,7 +178,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
     }
 
     // Fetch contacts separately for each client
-    const clientIds = clients?.map(c => c.id) || [];
+    const clientIds = (clients as any[])?.map(c => c.id) || [];
     let contactsMap: Record<string, any[]> = {};
     
     if (clientIds.length > 0) {
@@ -199,7 +202,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
       
       if (!contactsError && contacts) {
         // Group contacts by client_id
-        contactsMap = contacts.reduce((acc, contact) => {
+        contactsMap = contacts.reduce((acc: Record<string, any[]>, contact: any) => {
           if (!acc[contact.client_id]) {
             acc[contact.client_id] = [];
           }
@@ -210,7 +213,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
     }
 
     // Transform clients to match expected format
-    const transformedClients = clients?.map(client => ({
+    const transformedClients = (clients as any[])?.map(client => ({
       id: client.id,
       name: client.name,
       slug: client.slug,
@@ -238,7 +241,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>
 
     return res.json({
       success: true,
-      clients: transformedClients,
+      clients: transformedClients as any,
       pagination: {
         total: clients?.length || 0,
         limit: limitNum,
@@ -371,7 +374,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
     }
 
     // Transform response using proper database columns
-    const transformedClient: Client = {
+    const transformedClient = {
       id: client.id,
       name: client.name,
       slug: client.slug,
@@ -387,7 +390,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
       dateCreated: client.created_at,
       lastModified: client.updated_at,
       contacts: contacts || [], // Include the contacts in response
-    };
+    } as Client;
 
     return res.status(201).json({
       success: true,

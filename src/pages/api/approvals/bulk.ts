@@ -46,7 +46,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Bulk Approvals API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
     });
   }
 }
@@ -128,7 +128,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
   await updateItemsApprovalStatus(items, 'pending_approval');
 
   // Trigger notifications for each unique assignee
-  const assigneeNotifications = {};
+  const assigneeNotifications: Record<string, any[]> = {};
   createdApprovals.forEach(approval => {
     if (!assigneeNotifications[approval.assigned_to]) {
       assigneeNotifications[approval.assigned_to] = [];
@@ -260,7 +260,7 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any): 
   ));
 
   // Group notifications by affected users
-  const notificationGroups = {};
+  const notificationGroups: Record<string, any[]> = {};
   updatedApprovals.forEach(approval => {
     const key = approval.created_by; // Notify creators
     if (!notificationGroups[key]) {
@@ -339,13 +339,13 @@ async function validateBulkItems(items: any[], clientId: string): Promise<any[]>
       switch (item.item_type) {
         case 'motivation':
         case 'content_variation':
-          itemClientId = data.briefs?.client_id;
+          itemClientId = (data as any).briefs?.client_id;
           break;
         case 'execution':
-          itemClientId = data.matrices?.campaigns?.client_id;
+          itemClientId = (data as any).matrices?.campaigns?.client_id;
           break;
         case 'campaign':
-          itemClientId = data.client_id;
+          itemClientId = (data as any).client_id;
           break;
       }
 
@@ -401,7 +401,7 @@ async function determineApprovalAssignee(clientId: string, approvalType: string,
       return workflowSettings[approvalType].assigned_to;
     }
 
-    const roleMapping = {
+    const roleMapping: Record<string, string[]> = {
       content: ['content_reviewer', 'manager'],
       legal: ['legal_reviewer', 'manager'],
       brand: ['brand_manager', 'manager'],
@@ -446,9 +446,9 @@ async function updateItemsApprovalStatus(items: any[], status: string): Promise<
 }
 
 async function updateItemsStatusAfterDecision(items: any[], decision: string): Promise<void> {
-  const statusMapping = {
+  const statusMapping: Record<string, string> = {
     approve: 'approved',
-    reject: 'rejected', 
+    reject: 'rejected',
     request_changes: 'changes_requested'
   };
 
@@ -483,7 +483,7 @@ async function verifyApprovalPermission(approval: any, userId: string, action: s
 
     if (!userClient) return false;
 
-    const permissions = {
+    const permissions: Record<string, boolean> = {
       decide: approval.assigned_to === userId || ['manager', 'director'].includes(userClient.role),
     };
 

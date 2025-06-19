@@ -258,10 +258,9 @@ export const SmartProgressIndicator: React.FC<SmartProgressIndicatorProps> = ({
                         {step.description}
                       </Typography>
                       {step.status === 'active' && (
-                        <LinearProgress 
-                          variant="determinate" 
+                        <LinearProgress
+                          variant="determinate"
                           value={stepProgress[step.id] || 0}
-                          size="small"
                           sx={{ mt: 0.5, height: 4, borderRadius: 1 }}
                         />
                       )}

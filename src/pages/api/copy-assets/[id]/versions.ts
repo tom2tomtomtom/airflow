@@ -34,7 +34,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Copy Asset Versions API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
     });
   }
 }
@@ -365,8 +365,8 @@ function analyzeTone(text: string): string {
   const casualScore = casualWords.filter(word => lowerText.includes(word)).length;
   const urgentScore = urgentWords.filter(word => lowerText.includes(word)).length;
   
-  const scores = { excitement: excitementScore, professional: professionalScore, casual: casualScore, urgent: urgentScore };
-  const maxTone = Object.entries(scores).reduce((a, b) => scores[a[0]] > scores[b[0]] ? a : b);
+  const scores: Record<string, number> = { excitement: excitementScore, professional: professionalScore, casual: casualScore, urgent: urgentScore };
+  const maxTone = Object.entries(scores).reduce((a, b) => (scores[a[0]] || 0) > (scores[b[0]] || 0) ? a : b);
   
   return maxTone[1] > 0 ? maxTone[0] : 'neutral';
 }

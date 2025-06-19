@@ -369,13 +369,6 @@ export const useWebSocket = () => {
   };
 };
 
-// Export types for external use
-export type {
-  WebSocketMessage,
-  RenderProgressData,
-  RenderCompleteData,
-  NotificationData,
-  ActivityData,
-};
+// Types are already exported above as interfaces
 
 export default webSocketService;

@@ -61,9 +61,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Video Generate API error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? message : undefined
     });
   }
 }
@@ -373,7 +373,7 @@ async function processVideoGeneration(jobsData: any): Promise<any> {
         results.push({
           job_id: job.id,
           status: 'failed',
-          error: error.message,
+          error: message,
         });
         continue;
       }
@@ -408,7 +408,7 @@ async function processVideoGeneration(jobsData: any): Promise<any> {
       results.push({
         job_id: job.id,
         status: 'failed',
-        error: error.message,
+        error: message,
       });
     }
   }
@@ -527,7 +527,7 @@ async function startVideoRender(job: any): Promise<any> {
     console.error('Error starting video render:', error);
     return {
       success: false,
-      error: error.message,
+      error: message,
     };
   }
 }
