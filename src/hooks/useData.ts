@@ -58,15 +58,13 @@ export function useData<T extends keyof EntityTypes>(
 
         // Supabase data fetching
         if (id) {
-          let query = supabase.from(entityType).eq('id', id).single();
-          
+          let query = supabase.from(entityType as any).select('*').eq('id', id).single();
+
           // Use specific column selection for clients to avoid schema issues
           if (entityType === 'clients') {
-            query = query.select('id, name, description, industry, logo_url, primary_color, secondary_color, brand_guidelines, created_at, updated_at');
-          } else {
-            query = query.select('*');
+            query = supabase.from(entityType as any).select('id, name, description, industry, logo_url, primary_color, secondary_color, brand_guidelines, created_at, updated_at').eq('id', id).single();
           }
-          
+
           const { data, error } = await query;
           
           if (error) throw error;
@@ -78,15 +76,13 @@ export function useData<T extends keyof EntityTypes>(
             result = data;
           }
         } else {
-          let query = supabase.from(entityType).order('created_at', { ascending: false });
-          
+          let query = supabase.from(entityType as any).select('*').order('created_at', { ascending: false });
+
           // Use specific column selection for clients to avoid schema issues
           if (entityType === 'clients') {
-            query = query.select('id, name, description, industry, logo_url, primary_color, secondary_color, brand_guidelines, created_at, updated_at');
-          } else {
-            query = query.select('*');
+            query = supabase.from(entityType as any).select('id, name, description, industry, logo_url, primary_color, secondary_color, brand_guidelines, created_at, updated_at').order('created_at', { ascending: false });
           }
-          
+
           const { data, error } = await query;
           
           if (error) throw error;
@@ -231,7 +227,7 @@ export const useTemplates = () => {
     staleTime: 10 * 60 * 1000, // 10 minutes
     retry: (failureCount, error) => {
       // Don't retry on schema errors
-      if (error?.code === 'PGRST116' || error?.code === '42703') {
+      if ((error as any)?.code === 'PGRST116' || (error as any)?.code === '42703') {
         return false;
       }
       return failureCount < 2;
@@ -304,14 +300,14 @@ export const useMatrices = (clientId?: string) => {
   return useQuery({
     queryKey: ['matrices', clientId],
     queryFn: async () => {
-      let query = supabase.from('matrices').select('*');
-      
+      let query = supabase.from('matrices' as any).select('*');
+
       if (clientId) {
         query = query.eq('client_id', clientId);
       }
-      
+
       const { data, error } = await query.order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return data || [];
     },
@@ -417,16 +413,17 @@ export const useFileUpload = () => {
       const fileName = `${Date.now()}-${file.name}`;
       const filePath = path ? `${path}/${fileName}` : `${clientId}/${fileName}`;
 
+      // Set progress to 50% while uploading (since Supabase doesn't support progress tracking)
+      setUploadProgress(50);
+
       const { data: _data, error } = await supabase.storage
         .from('assets')
-        .upload(filePath, file, {
-          onUploadProgress: (progress: { loaded: number; total: number }) => {
-            const percentComplete = (progress.loaded / progress.total) * 100;
-            setUploadProgress(Math.round(percentComplete));
-          },
-        });
+        .upload(filePath, file);
 
       if (error) throw error;
+
+      // Set progress to 100% after successful upload
+      setUploadProgress(100);
 
       const { data: urlData } = supabase.storage
         .from('assets')

@@ -52,7 +52,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Approval API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
     });
   }
 }
@@ -407,7 +407,7 @@ async function getApprovalHistory(approvalId: string): Promise<any[]> {
 
     if (!approval) return [];
 
-    const history = [
+    const history: Array<{ timestamp: any; action: string; description: string; details?: any }> = [
       {
         timestamp: approval.created_at,
         action: 'created',
@@ -479,7 +479,7 @@ async function verifyApprovalPermission(approval: any, userId: string, action: s
 
     if (!userClient) return false;
 
-    const permissions = {
+    const permissions: Record<string, boolean> = {
       view: true,
       decide: approval.assigned_to === userId || ['manager', 'director'].includes(userClient.role),
       update: approval.created_by === userId || approval.assigned_to === userId || ['manager', 'director'].includes(userClient.role),
@@ -496,9 +496,9 @@ async function verifyApprovalPermission(approval: any, userId: string, action: s
 
 async function updateItemStatusAfterDecision(itemType: string, itemId: string, decision: string): Promise<void> {
   try {
-    const statusMapping = {
+    const statusMapping: Record<string, string> = {
       approve: 'approved',
-      reject: 'rejected', 
+      reject: 'rejected',
       request_changes: 'changes_requested'
     };
 

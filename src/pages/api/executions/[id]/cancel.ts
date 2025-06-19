@@ -31,7 +31,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Execution Cancel API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
     });
   }
 }
@@ -196,8 +196,8 @@ function checkCancellability(execution: any, force: boolean): { canCancel: boole
 async function cleanupExternalResources(execution: any): Promise<any> {
   const cleanupResult = {
     success: false,
-    resources_cleaned: [],
-    errors: [],
+    resources_cleaned: [] as any[],
+    errors: [] as any[],
     timestamp: new Date().toISOString(),
   };
 
@@ -250,7 +250,7 @@ async function cleanupExternalResources(execution: any): Promise<any> {
     console.error('Error cleaning up external resources:', error);
     cleanupResult.errors.push({
       type: 'general_cleanup',
-      error: error.message
+      error: error instanceof Error ? error.message : String(error)
     });
     return cleanupResult;
   }
@@ -269,14 +269,14 @@ async function cancelCreatomateJob(jobId: string): Promise<{ success: boolean; e
     const message = getErrorMessage(error);
     return { 
       success: false, 
-      error: `Failed to cancel Creatomate job: ${error.message}` 
+      error: `Failed to cancel Creatomate job: ${error instanceof Error ? error.message : String(error)}`
     };
   }
 }
 
 async function cancelPendingWebhooks(webhookIds: string[]): Promise<{ cleaned: any[]; errors: any[] }> {
-  const cleaned = [];
-  const errors = [];
+  const cleaned: any[] = [];
+  const errors: any[] = [];
 
   for (const webhookId of webhookIds) {
     try {
@@ -292,7 +292,7 @@ async function cancelPendingWebhooks(webhookIds: string[]): Promise<{ cleaned: a
       errors.push({
         type: 'webhook',
         resource_id: webhookId,
-        error: error.message
+        error: error instanceof Error ? error.message : String(error)
       });
     }
   }
@@ -326,7 +326,7 @@ async function handleRelatedExecutions(execution: any, force: boolean): Promise<
       return { affected_count: 0, actions: [] };
     }
 
-    const actions = [];
+    const actions: any[] = [];
     
     // Check if any related executions depend on this one
     for (const related of relatedExecutions) {

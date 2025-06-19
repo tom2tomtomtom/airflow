@@ -37,10 +37,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       await sendEmail({
         to: userEmail,
         subject: 'Your AIrFLOW account has been deleted',
-        template: 'account-deleted' as any,
-        data: {
-          deletedAt: new Date().toISOString(),
-        },
+        html: `
+          <h1>Account Deletion Confirmation</h1>
+          <p>Your AIrFLOW account and all associated data have been permanently deleted.</p>
+          <p>Deletion completed at: ${new Date().toISOString()}</p>
+          <p>If you have any questions, please contact our support team.</p>
+        `,
       });
     }
     
@@ -62,7 +64,7 @@ export default withRateLimitedRoute(
   withErrorHandler(handler),
   'api',
   { 
-    customIdentifier: (req) => `gdpr_delete_${(req as any).userId}`,
+    customIdentifier: (req: any) => `gdpr_delete_${(req as any).userId}`,
     costFunction: () => 10, // High cost to prevent abuse
   }
 );

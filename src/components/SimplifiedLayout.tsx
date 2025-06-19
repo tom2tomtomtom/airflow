@@ -97,7 +97,7 @@ export const SimplifiedLayout: React.FC<SimplifiedLayoutProps> = ({
     const path = router.pathname;
     const segments = path.split('/').filter(Boolean);
     
-    const crumbs = [{ label: 'Dashboard', href: '/dashboard' }];
+    const crumbs: Array<{ label: string; href?: string }> = [{ label: 'Dashboard', href: '/dashboard' }];
     
     let currentPath = '';
     segments.forEach((segment, index) => {
@@ -107,10 +107,11 @@ export const SimplifiedLayout: React.FC<SimplifiedLayoutProps> = ({
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
       
-      crumbs.push({
-        label,
-        href: index === segments.length - 1 ? undefined : currentPath
-      });
+      const crumb: { label: string; href?: string } = { label };
+      if (index !== segments.length - 1) {
+        crumb.href = currentPath;
+      }
+      crumbs.push(crumb);
     });
     
     return crumbs;

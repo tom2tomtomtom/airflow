@@ -39,9 +39,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Matrix Execute API error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? message : undefined
     });
   }
 }
@@ -120,8 +120,8 @@ async function handleExecute(req: NextApiRequest, res: NextApiResponse, user: an
   }
 
   // Validate platforms
-  const platformsToExecute = executeData.platforms?.length > 0 
-    ? executeData.platforms 
+  const platformsToExecute: string[] = executeData.platforms?.length > 0
+    ? executeData.platforms
     : [matrix.templates.platform];
 
   // Check execution limits
@@ -342,12 +342,12 @@ async function executeImmediate(executionPlan: any): Promise<any> {
       });
 
     } catch (error) {
-    const message = getErrorMessage(error);
+      const message = getErrorMessage(error);
       console.error('Error executing:', error);
       results.push({
         execution_id: execution.id,
         status: 'failed',
-        error: error.message,
+        error: message,
       });
     }
   }
@@ -462,7 +462,7 @@ async function triggerRenderJob(execution: any): Promise<any> {
     console.error('Error triggering render job:', error);
     return {
       success: false,
-      error: error.message,
+      error: message,
     };
   }
 }
