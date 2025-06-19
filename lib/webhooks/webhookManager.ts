@@ -1,8 +1,17 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
-import { addWebhookJob } from '@/lib/queue/bullQueue';
 import { AppError } from '@/lib/errors/errorHandler';
+
+// Conditionally import bullQueue only on server side
+let addWebhookJob: any = null;
+if (typeof window === 'undefined') {
+  try {
+    addWebhookJob = require('@/lib/queue/bullQueue').addWebhookJob;
+  } catch (error) {
+    console.warn('BullQueue not available:', error);
+  }
+}
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -261,17 +270,22 @@ export class WebhookManager {
       console.log(`Triggering ${subscriptions.length} webhooks for event: ${event.type}`);
       
       // Queue webhook jobs for each subscription
-      const jobs = subscriptions.map(subscription => 
-        addWebhookJob({
-          url: subscription.url,
-          event: event.type,
-          data: {
-            ...event.data,
-            metadata: event.metadata,
-          },
-          secret: subscription.secret,
-        })
-      );
+      const jobs = subscriptions.map(subscription => {
+        if (addWebhookJob) {
+          return addWebhookJob({
+            url: subscription.url,
+            event: event.type,
+            data: {
+              ...event.data,
+              metadata: event.metadata,
+            },
+            secret: subscription.secret,
+          });
+        } else {
+          console.warn('BullQueue not available, webhook job not queued');
+          return Promise.resolve();
+        }
+      });
       
       await Promise.all(jobs);
       
