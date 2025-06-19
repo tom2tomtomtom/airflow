@@ -27,7 +27,8 @@ import DashboardLayout from '@/components/DashboardLayout';
 import AssetCard from '@/components/AssetCard';
 import { LoadingSpinner, AssetGridSkeleton } from '@/components/LoadingSpinner';
 import { demoAssets } from '@/utils/demoData';
-import { Asset } from '@/types/models';
+import { Asset as ModelAsset } from '@/types/models';
+import { Asset as CardAsset } from '@/components/AssetCard';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -47,7 +48,7 @@ function TabPanel(props: TabPanelProps) {
 export default function EnhancedAssetsPage() {
   const [tabValue, setTabValue] = useState(0);
   const [showAIGenerator, setShowAIGenerator] = useState(false);
-  const [assets, setAssets] = useState<Asset[]>([]);
+  const [assets, setAssets] = useState<ModelAsset[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -74,7 +75,7 @@ export default function EnhancedAssetsPage() {
       // In demo mode, use demo data
       if (isDemoMode) {
         await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate loading
-        setAssets(demoAssets as Asset[]);
+        setAssets(demoAssets as unknown as ModelAsset[]);
       } else {
         // TODO: Fetch real assets from API
         // const response = await assetQueries.getAssets(clientId);
@@ -130,9 +131,36 @@ export default function EnhancedAssetsPage() {
     },
   ];
 
-  const handleImageGenerated = (newAsset: Asset) => {
+  const handleImageGenerated = (newAsset: ModelAsset) => {
     setAssets([newAsset, ...assets]);
     setShowAIGenerator(false);
+  };
+
+  // Convert ModelAsset to CardAsset for compatibility
+  const convertToCardAsset = (asset: ModelAsset): CardAsset => {
+    return {
+      id: asset.id,
+      name: asset.name,
+      type: asset.type as 'image' | 'video' | 'audio' | 'document' | 'other',
+      url: asset.url,
+      description: String(asset.metadata?.description || ''),
+      tags: Array.isArray(asset.tags) ? asset.tags : [],
+      categories: Array.isArray(asset.metadata?.categories) ? asset.metadata.categories : [],
+      dateAdded: asset.dateCreated,
+      dateModified: asset.lastModified,
+      isFavorite: Boolean(asset.metadata?.isFavorite),
+      metadata: {
+        fileSize: String(asset.metadata?.fileSize || 'Unknown'),
+        dimensions: String(asset.metadata?.dimensions || ''),
+        duration: String(asset.metadata?.duration || ''),
+        format: String(asset.metadata?.format || 'Unknown'),
+        creator: String(asset.metadata?.creator || 'Unknown'),
+        source: String(asset.metadata?.source || 'Unknown'),
+        license: String(asset.metadata?.license || 'Unknown'),
+        usageRights: String(asset.metadata?.usageRights || 'Unknown'),
+        expirationDate: asset.metadata?.expiryDate ? String(asset.metadata.expiryDate) : undefined,
+      },
+    };
   };
 
   // Filter assets based on active tab
@@ -191,9 +219,9 @@ export default function EnhancedAssetsPage() {
               {filteredAssets.map((asset) => (
                 <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={asset.id}>
                   <AssetCard
-                    asset={asset}
-                    onSelect={() => console.log('Selected asset:', asset)}
-                    onDelete={() => console.log('Delete asset:', asset)}
+                    asset={convertToCardAsset(asset)}
+                    onClick={() => console.log('Selected asset:', asset)}
+                    onMenuClick={() => console.log('Delete asset:', asset)}
                   />
                 </Grid>
               ))}
@@ -236,9 +264,9 @@ export default function EnhancedAssetsPage() {
               {filteredAssets.map((asset) => (
                 <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={asset.id}>
                   <AssetCard
-                    asset={asset}
-                    onSelect={() => console.log('Selected asset:', asset)}
-                    onDelete={() => console.log('Delete asset:', asset)}
+                    asset={convertToCardAsset(asset)}
+                    onClick={() => console.log('Selected asset:', asset)}
+                    onMenuClick={() => console.log('Delete asset:', asset)}
                   />
                 </Grid>
               ))}
@@ -274,9 +302,9 @@ export default function EnhancedAssetsPage() {
               {filteredAssets.map((asset) => (
                 <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={asset.id}>
                   <AssetCard
-                    asset={asset}
-                    onSelect={() => console.log('Selected asset:', asset)}
-                    onDelete={() => console.log('Delete asset:', asset)}
+                    asset={convertToCardAsset(asset)}
+                    onClick={() => console.log('Selected asset:', asset)}
+                    onMenuClick={() => console.log('Delete asset:', asset)}
                   />
                 </Grid>
               ))}

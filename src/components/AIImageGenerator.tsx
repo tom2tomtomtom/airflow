@@ -130,7 +130,7 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
             ai_prompt: prompt,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
-          } as Asset,
+          } as unknown as Asset,
           generation_details: {
             original_prompt: prompt,
             enhanced_prompt: isDemoMode ? `[DEMO MODE] Enhanced: ${prompt}` : undefined,

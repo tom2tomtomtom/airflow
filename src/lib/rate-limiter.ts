@@ -99,7 +99,7 @@ export const rateLimitMiddleware = (limiterName: keyof typeof rateLimiters) => {
       }
       
       next();
-    } catch (error) {
+    } catch (error: any) {
       // Rate limit exceeded
       res.setHeader('Retry-After', String(Math.round(error.msBeforeNext / 1000)) || '60');
       res.status(429).json({

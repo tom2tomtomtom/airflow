@@ -198,7 +198,7 @@ export async function trackQueryPerformance<T>(
 }
 
 // Response size optimization
-export function optimizeResponse<T>(
+export function optimizeResponse<T extends object>(
   data: T,
   fields?: string[]
 ): Partial<T> {
@@ -215,7 +215,7 @@ export function optimizeResponse<T>(
   return pickFields(data, fields);
 }
 
-function pickFields<T>(obj: T, fields: string[]): Partial<T> {
+function pickFields<T extends object>(obj: T, fields: string[]): Partial<T> {
   const result: any = {};
   
   for (const field of fields) {

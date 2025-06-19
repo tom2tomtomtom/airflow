@@ -32,7 +32,7 @@ export const VERSION_CHANGES = {
 export function getApiVersion(req: NextApiRequest): ApiVersion {
   // Check header first (preferred method)
   const headerVersion = req.headers['x-api-version'] || req.headers['api-version'];
-  if (headerVersion && isValidVersion(headerVersion)) {
+  if (headerVersion && typeof headerVersion === 'string' && isValidVersion(headerVersion)) {
     return headerVersion as ApiVersion;
   }
 

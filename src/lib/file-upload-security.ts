@@ -340,7 +340,7 @@ export class FileUploadSecurity {
   // Get file type from extension
   private getFileType(extension: string): keyof typeof ALLOWED_FILE_TYPES | null {
     for (const [type, extensions] of Object.entries(ALLOWED_FILE_TYPES)) {
-      if (extensions.includes(extension)) {
+      if ((extensions as readonly string[]).includes(extension)) {
         return type as keyof typeof ALLOWED_FILE_TYPES;
       }
     }

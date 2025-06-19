@@ -25,10 +25,9 @@ const AIToolsPage: React.FC = () => {
         </Box>
 
         <Paper sx={{ p: 3 }}>
-          <AIImageGenerator 
+          <AIImageGenerator
+            clientId="demo-client"
             onImageGenerated={handleImageGenerated}
-            showSettings={true}
-            maxImages={4}
           />
         </Paper>
       </DashboardLayout>
