@@ -470,22 +470,37 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   } catch (error) {
     console.error('Error parsing brief:', error);
     console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
-    
+
+    // Generate error ID for tracking
+    const errorId = `ERR_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    console.error(`Error ID: ${errorId}`);
+
     // Provide more specific error messages
     let errorMessage = 'Failed to parse brief';
+    let statusCode = 500;
+
     if (error instanceof Error) {
       if (error.message.includes('MultipartParser')) {
         errorMessage = 'File upload parsing failed - please try uploading the file again';
+        statusCode = 400;
       } else if (error.message.includes('OpenAI')) {
         errorMessage = 'AI parsing failed - using fallback parsing method';
+        statusCode = 503;
+      } else if (error.message.includes('timeout')) {
+        errorMessage = 'Request timed out - please try again with a smaller file';
+        statusCode = 408;
+      } else if (error.message.includes('Failed to read file')) {
+        errorMessage = 'Unable to read the uploaded file - please check the file format';
+        statusCode = 400;
       } else {
         errorMessage = error.message;
       }
     }
-    
-    return res.status(500).json({
+
+    return res.status(statusCode).json({
       success: false,
       message: errorMessage,
+      errorId,
       error: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : error) : undefined
     });
   }

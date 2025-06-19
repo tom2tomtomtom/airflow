@@ -107,13 +107,13 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
     if (files.length === 0) return;
 
     setUploading(true);
+    setProcessing(true);
     setUploadProgress(0);
+    setActiveStep(1);
 
     try {
       const formData = new FormData();
       formData.append('file', files[0].file);
-      formData.append('name', files[0].file.name);
-      formData.append('description', 'Uploaded brief document');
 
       // Simulate upload progress
       const progressInterval = setInterval(() => {
@@ -124,9 +124,9 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
           }
           return prev + 10;
         });
-      }, 200);
+      }, 500);
 
-      const response = await fetch('/api/briefs/upload', {
+      const response = await fetch('/api/flow/parse-brief', {
         method: 'POST',
         body: formData,
       });
@@ -134,114 +134,35 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
       clearInterval(progressInterval);
       setUploadProgress(100);
 
-      if (!response.ok) {
-        throw new Error('Upload failed');
-      }
-
       const result = await response.json();
-      
-      if (result.success) {
-        setActiveStep(1);
-        showNotification('Brief uploaded successfully!', 'success');
-        
-        // Start AI processing
-        setTimeout(() => {
-          handleAIProcessing(result.brief);
-        }, 1000);
-      } else {
-        throw new Error(result.message || 'Upload failed');
-      }
-    } catch (error) {
-      console.error('Upload error:', error);
-      showNotification('Upload failed. Please try again.', 'error');
-    } finally {
-      setUploading(false);
-    }
-  };
 
-  const handleAIProcessing = async (brief: any) => {
-    setProcessing(true);
-    
-    try {
-            // Call the brief parsing API
-      const response = await fetch('/api/brief-parse', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          brief_id: brief.id,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Parsing failed: ${response.status} ${response.statusText}`);
-      }
-
-      const result = await response.json();
-            if (result.success && result.brief?.extracted_data) {
-        let parsedData;
-        try {
-          // Try to parse the extracted data as JSON
-          parsedData = typeof result.brief.extracted_data === 'string' 
-            ? JSON.parse(result.brief.extracted_data)
-            : result.brief.extracted_data;
-        } catch (parseError) {
-          console.error('Failed to parse extracted data:', parseError);
-          // Use fallback data if parsing fails
-          parsedData = {
-            title: files[0]?.file.name.replace(/\.[^/.]+$/, '') || 'Campaign Brief',
-            objective: 'Please review and update the campaign objectives',
-            targetAudience: 'Please define your target audience',
-            rawExtraction: result.brief.extracted_data
-          };
-        }
-
-        const extractedData = {
-          title: parsedData.title || files[0]?.file.name.replace(/\.[^/.]+$/, '') || 'Campaign Brief',
-          objective: parsedData.objectives || parsedData.objective || 'Please review and update the campaign objectives',
-          targetAudience: parsedData.target_audience || parsedData.targetAudience || 'Please define your target audience',
-          keyMessages: parsedData.key_messages || parsedData.keyMessages || [],
-          platforms: parsedData.platforms || ['Instagram', 'Facebook'],
-          budget: parsedData.budget || 'Not specified',
-          timeline: parsedData.timeline || 'Not specified',
-          tone: parsedData.tone || parsedData.voice_tone || 'Professional',
-          deliverables: parsedData.deliverables || [],
-          briefId: brief.id,
-          rawData: parsedData
-        };
-        
-        setExtractedData(extractedData);
+      if (result.success && result.data) {
         setActiveStep(2);
-        showNotification('AI processing completed successfully!', 'success');
+        setExtractedData(result.data);
+        showNotification('Brief processed successfully!', 'success');
       } else {
-        throw new Error(result.message || 'Failed to parse brief content');
+        throw new Error(result.message || result.errorId ? `Upload failed (Error ID: ${result.errorId})` : 'Upload failed');
       }
     } catch (error: any) {
-      console.error('AI processing error:', error);
-      showNotification(`AI processing failed: ${error.message}`, 'error');
-      
-      // Provide fallback extracted data
-      const fallbackData = {
-        title: files[0]?.file.name.replace(/\.[^/.]+$/, '') || 'Campaign Brief',
-        objective: 'Please manually review and update the campaign objectives',
-        targetAudience: 'Please manually define your target audience',
-        keyMessages: [],
-        platforms: ['Instagram', 'Facebook'],
-        budget: 'Not specified',
-        timeline: 'Not specified', 
-        tone: 'Professional',
-        deliverables: [],
-        note: 'AI parsing failed - please review and update manually'
-      };
-      
-      setExtractedData(fallbackData);
-      setActiveStep(2);
-      showNotification('Using manual entry mode - please review the brief details', 'warning');
+      console.error('Upload error:', error);
+
+      // Show more specific error message
+      let errorMessage = 'Upload failed. Please try again.';
+      if (error.message) {
+        errorMessage = error.message;
+      }
+
+      showNotification(errorMessage, 'error');
+
+      // Reset to step 0 on error
+      setActiveStep(0);
     } finally {
+      setUploading(false);
       setProcessing(false);
     }
   };
+
+
 
   const handleConfirm = () => {
     if (extractedData && onUploadComplete) {
@@ -383,10 +304,13 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
                     Extracted Information
                   </Typography>
                   <Box display="flex" flexWrap="wrap" gap={1} mb={2}>
-                    <Chip label={`Objective: ${extractedData.objective.substring(0, 30)}...`} />
-                    <Chip label={`Audience: ${extractedData.targetAudience.substring(0, 30)}...`} />
-                    <Chip label={`Budget: ${extractedData.budget}`} />
-                    <Chip label={`Timeline: ${extractedData.timeline}`} />
+                    <Chip label={`Objective: ${extractedData.objective?.substring(0, 30) || 'Not specified'}...`} />
+                    <Chip label={`Audience: ${extractedData.targetAudience?.substring(0, 30) || 'Not specified'}...`} />
+                    <Chip label={`Budget: ${extractedData.budget || 'Not specified'}`} />
+                    <Chip label={`Timeline: ${extractedData.timeline || 'Not specified'}`} />
+                    {extractedData.platforms && extractedData.platforms.length > 0 && (
+                      <Chip label={`Platforms: ${extractedData.platforms.slice(0, 2).join(', ')}${extractedData.platforms.length > 2 ? '...' : ''}`} />
+                    )}
                   </Box>
                   <Alert severity="info">
                     Review the extracted information. You can edit details after confirmation.
