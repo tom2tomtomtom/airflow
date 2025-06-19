@@ -141,9 +141,9 @@ export default function EnhancedAssetsPage() {
       case 0: // All Assets
         return assets;
       case 1: // AI Generated
-        return assets.filter(asset => asset.ai_generated);
+        return assets.filter(asset => asset.metadata?.aiGenerated);
       case 2: // Uploaded
-        return assets.filter(asset => !asset.ai_generated);
+        return assets.filter(asset => !asset.metadata?.aiGenerated);
       case 3: // Templates
         return []; // TODO: Implement templates
       default:
@@ -176,8 +176,8 @@ export default function EnhancedAssetsPage() {
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={tabValue} onChange={handleTabChange}>
             <Tab label={`All Assets (${assets.length})`} />
-            <Tab label={`AI Generated (${assets.filter(a => a.ai_generated).length})`} />
-            <Tab label={`Uploaded (${assets.filter(a => !a.ai_generated).length})`} />
+            <Tab label={`AI Generated (${assets.filter(a => a.metadata?.aiGenerated).length})`} />
+            <Tab label={`Uploaded (${assets.filter(a => !a.metadata?.aiGenerated).length})`} />
             <Tab label="Templates" />
           </Tabs>
         </Box>
@@ -189,8 +189,8 @@ export default function EnhancedAssetsPage() {
           ) : filteredAssets.length > 0 ? (
             <Grid container spacing={3}>
               {filteredAssets.map((asset) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={asset.id}>
-                  <AssetCard 
+                <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={asset.id}>
+                  <AssetCard
                     asset={asset}
                     onSelect={() => console.log('Selected asset:', asset)}
                     onDelete={() => console.log('Delete asset:', asset)}
@@ -234,8 +234,8 @@ export default function EnhancedAssetsPage() {
           ) : filteredAssets.length > 0 ? (
             <Grid container spacing={3}>
               {filteredAssets.map((asset) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={asset.id}>
-                  <AssetCard 
+                <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={asset.id}>
+                  <AssetCard
                     asset={asset}
                     onSelect={() => console.log('Selected asset:', asset)}
                     onDelete={() => console.log('Delete asset:', asset)}
@@ -272,8 +272,8 @@ export default function EnhancedAssetsPage() {
           ) : filteredAssets.length > 0 ? (
             <Grid container spacing={3}>
               {filteredAssets.map((asset) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={asset.id}>
-                  <AssetCard 
+                <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={asset.id}>
+                  <AssetCard
                     asset={asset}
                     onSelect={() => console.log('Selected asset:', asset)}
                     onDelete={() => console.log('Delete asset:', asset)}

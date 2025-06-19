@@ -2,7 +2,7 @@ import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
-import { AuthenticationError, RateLimitError } from '@/lib/errors/errorHandler';
+import { AuthorizationError, createRateLimitError } from '@/lib/errors/errorHandler';
 
 // Initialize Redis client
 const redis = new Redis({

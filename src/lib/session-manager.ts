@@ -1,7 +1,7 @@
 import Redis from 'ioredis';
 import crypto from 'crypto';
 import { env } from './env';
-import { logger } from './logger';
+import { loggers } from './logger';
 
 // Session configuration
 const SESSION_PREFIX = 'session:';
@@ -51,7 +51,7 @@ class SessionManager {
     this.memorySessions = new Map();
     
     if (this.useMemoryFallback) {
-      logger.warn('Using in-memory session storage - not recommended for production');
+      loggers.auth.warn('Using in-memory session storage - not recommended for production');
       
       // Clean up expired sessions every hour
       setInterval(() => this.cleanupMemorySessions(), 60 * 60 * 1000);
@@ -146,7 +146,7 @@ class SessionManager {
       }
     }
 
-    logger.info('Session created', {
+    loggers.auth.info('Session created', {
       sessionId,
       userId: data.userId,
       role: data.role,
@@ -233,7 +233,7 @@ class SessionManager {
     
     await pipeline.exec();
 
-    logger.info('Session deleted', {
+    loggers.auth.info('Session deleted', {
       sessionId,
       userId: session.userId,
     });
@@ -274,7 +274,7 @@ class SessionManager {
           try {
             sessions.push(JSON.parse(result[1] as string));
           } catch (error) {
-            logger.error('Failed to parse session data', error, {
+            loggers.auth.error('Failed to parse session data', error, {
               sessionId: sessionIds[index],
             });
           }
@@ -315,7 +315,7 @@ class SessionManager {
     
     await pipeline.exec();
 
-    logger.info('User sessions deleted', {
+    loggers.auth.info('User sessions deleted', {
       userId,
       count: sessionIds.length,
     });
@@ -366,7 +366,7 @@ class SessionManager {
       await redis!.del(...userKeys);
     }
 
-    logger.info('All sessions invalidated', {
+    loggers.auth.info('All sessions invalidated', {
       sessionCount: keys.length,
     });
   }

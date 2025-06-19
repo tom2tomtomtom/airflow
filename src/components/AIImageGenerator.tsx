@@ -208,9 +208,9 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
   };
 
   const handleDownload = async () => {
-    if (generatedImage?.asset?.file_url) {
+    if (generatedImage?.asset?.url) {
       const link = document.createElement('a');
-      link.href = generatedImage.asset.file_url;
+      link.href = generatedImage.asset.url;
       link.download = `ai-generated-${Date.now()}.png`;
       document.body.appendChild(link);
       link.click();
@@ -252,7 +252,7 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
         )}
 
         <Grid container spacing={3}>
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <TextField
               fullWidth
               multiline
@@ -270,12 +270,12 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
             />
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <FormControl fullWidth>
               <InputLabel>Image Size</InputLabel>
               <Select
                 value={options.size}
-                onChange={(e) => setOptions({ ...options, size: e.target.value })}
+                onChange={(e) => setOptions({ ...options, size: e.target.value as string })}
                 disabled={loading}
               >
                 <MenuItem value="1024x1024">Square (1024×1024)</MenuItem>
@@ -286,12 +286,12 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
             </FormControl>
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <FormControl fullWidth>
               <InputLabel>Purpose</InputLabel>
               <Select
                 value={options.purpose}
-                onChange={(e) => setOptions({ ...options, purpose: e.target.value })}
+                onChange={(e) => setOptions({ ...options, purpose: e.target.value as string })}
                 disabled={loading}
               >
                 <MenuItem value="general">General</MenuItem>
@@ -306,12 +306,12 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
             </FormControl>
           </Grid>
 
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <FormControl fullWidth>
               <InputLabel>Quality</InputLabel>
               <Select
                 value={options.quality}
-                onChange={(e) => setOptions({ ...options, quality: e.target.value })}
+                onChange={(e) => setOptions({ ...options, quality: e.target.value as string })}
                 disabled={loading}
               >
                 <MenuItem value="standard">Standard</MenuItem>
@@ -320,12 +320,12 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
             </FormControl>
           </Grid>
 
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <FormControl fullWidth>
               <InputLabel>Style</InputLabel>
               <Select
                 value={options.style}
-                onChange={(e) => setOptions({ ...options, style: e.target.value })}
+                onChange={(e) => setOptions({ ...options, style: e.target.value as string })}
                 disabled={loading}
               >
                 <MenuItem value="vivid">Vivid (More artistic)</MenuItem>
@@ -334,7 +334,7 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
             </FormControl>
           </Grid>
 
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <FormControlLabel
               control={
                 <Switch
@@ -348,14 +348,14 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
           </Grid>
 
           {error && (
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <Alert severity="error" onClose={() => setError(null)}>
                 {error}
               </Alert>
             </Grid>
           )}
 
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Button
               variant="contained"
               size="large"
@@ -389,7 +389,7 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
               <Box>
                 <Box
                   component="img"
-                  src={generatedImage.asset.file_url}
+                  src={generatedImage.asset.url}
                   alt="Generated image"
                   sx={{
                     width: '100%',

@@ -1,7 +1,7 @@
 import Redis from 'ioredis';
 import { RateLimiterRedis, RateLimiterMemory } from 'rate-limiter-flexible';
 import { env } from './env';
-import { logger } from './logger';
+import { loggers } from './logger';
 
 // Initialize Redis client
 const redis = env.REDIS_URL 
@@ -17,11 +17,11 @@ const redis = env.REDIS_URL
 // Redis health check
 if (redis) {
   redis.on('error', (error) => {
-    logger.error('Redis connection error:', error);
+    loggers.general.error('Redis connection error:', error);
   });
-  
+
   redis.on('connect', () => {
-    logger.info('Redis connected successfully');
+    loggers.general.info('Redis connected successfully');
   });
 }
 
@@ -42,7 +42,7 @@ export const createRateLimiter = (options: {
   }
   
   // Fallback to memory rate limiter if Redis is not available
-  logger.warn(`Using in-memory rate limiter for ${options.keyPrefix} - Redis not available`);
+  loggers.general.warn(`Using in-memory rate limiter for ${options.keyPrefix} - Redis not available`);
   return new RateLimiterMemory({
     points: options.points,
     duration: options.duration,
@@ -132,7 +132,7 @@ export const checkRateLimit = async (
       resetAt: new Date(Date.now() + rateLimiterRes.msBeforeNext),
     };
   } catch (error) {
-    logger.error('Rate limit check error:', error);
+    loggers.general.error('Rate limit check error:', error);
     return { allowed: true }; // Fail open in case of errors
   }
 };

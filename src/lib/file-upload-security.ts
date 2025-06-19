@@ -3,7 +3,7 @@ import { promisify } from 'util';
 import { exec } from 'child_process';
 import path from 'path';
 import fs from 'fs';
-import { logger } from './logger';
+import { loggers } from './logger';
 import { env } from './env';
 
 const execAsync = promisify(exec);
@@ -87,10 +87,10 @@ export class FileUploadSecurity {
     try {
       await execAsync('clamscan --version');
       this.clamAvAvailable = true;
-      logger.info('ClamAV is available for virus scanning');
+      loggers.general.info('ClamAV is available for virus scanning');
     } catch (error) {
       this.clamAvAvailable = false;
-      logger.warn('ClamAV not available - virus scanning disabled');
+      loggers.general.warn('ClamAV not available - virus scanning disabled');
     }
   }
 
@@ -160,7 +160,7 @@ export class FileUploadSecurity {
     const startTime = Date.now();
 
     if (!this.clamAvAvailable) {
-      logger.debug('Virus scanning skipped - ClamAV not available');
+      loggers.general.debug('Virus scanning skipped - ClamAV not available');
       return {
         clean: true,
         infected: false,
@@ -187,9 +187,9 @@ export class FileUploadSecurity {
           });
         }
 
-        logger.warn('Virus detected in uploaded file', {
+        loggers.general.warn('Virus detected in uploaded file', {
           filePath,
-          threats,
+          threats: threats.join(', '),
           scanTime,
         });
 
@@ -197,7 +197,7 @@ export class FileUploadSecurity {
         try {
           await fsUnlink(filePath);
         } catch (error) {
-          logger.error('Failed to delete infected file', error, { filePath });
+          loggers.general.error('Failed to delete infected file', error, { filePath });
         }
 
         return {
@@ -208,7 +208,7 @@ export class FileUploadSecurity {
         };
       }
 
-      logger.debug('File scan completed - no threats found', {
+      loggers.general.debug('File scan completed - no threats found', {
         filePath,
         scanTime,
       });
@@ -219,7 +219,7 @@ export class FileUploadSecurity {
         scanTime,
       };
     } catch (error) {
-      logger.error('Virus scan failed', error, { filePath });
+      loggers.general.error('Virus scan failed', error, { filePath });
       
       return {
         clean: false,

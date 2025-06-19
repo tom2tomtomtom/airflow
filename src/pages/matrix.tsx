@@ -295,7 +295,7 @@ const MatrixPage: React.FC = () => {
 
         <Grid container spacing={3}>
           {/* Template Selection */}
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Paper sx={{ p: 2, mb: 2 }}>
               <TextField
                 fullWidth
@@ -391,7 +391,7 @@ const MatrixPage: React.FC = () => {
           </Grid>
 
           {/* Field Assignment */}
-          <Grid item xs={12} md={8}>
+          <Grid size={{ xs: 12, md: 8 }}>
             {selectedTemplate ? (
               <Paper sx={{ p: 3 }}>
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>

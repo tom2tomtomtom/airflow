@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { logger } from './logger';
+import { loggers } from './logger';
 
 // API Version configuration
 export const API_VERSIONS = {
@@ -94,7 +94,7 @@ export function withApiVersion<T = any>(
     }
 
     // Log API version usage
-    logger.debug('API request', {
+    loggers.api.debug('API request', {
       version,
       versionNumber,
       method: req.method,
