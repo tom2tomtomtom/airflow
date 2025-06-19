@@ -32,15 +32,15 @@
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "strictBindCallApply": true,
-    "strictPropertyInitialization": false, // Disabled for MUI compatibility
+    "strictPropertyInitialization": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
-    "noUnusedLocals": false, // Disabled during cleanup phase
-    "noUnusedParameters": false, // Disabled during cleanup phase
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": false, // Disabled to reduce complexity
-    "exactOptionalPropertyTypes": false, // Disabled for MUI compatibility
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
     "baseUrl": ".",
     "typeRoots": ["./node_modules/@types", "./types"],
     "declaration": false,

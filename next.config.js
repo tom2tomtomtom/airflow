@@ -21,19 +21,24 @@ try {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  // Remove standalone output for Netlify deployment
-  // output: 'standalone', // This breaks Netlify deployments
-  // swcMinify: true, // Removed - enabled by default in Next.js 13+
-  
-  // Ignore TypeScript errors during build for deployment
+  // Allow dev server resources from local proxy ports used by Windsurf browser preview
+  allowedDevOrigins: [
+    '127.0.0.1:53040', // Previous proxy example – adjust dynamically if needed
+    '127.0.0.1:54278', // Windsurf proxy
+    'localhost:3002',  // Dev server port
+    'localhost:3001',  // Fallback port
+  ],
+  reactStrictMode: true, // Re-enabled for better development debugging
+
+  // TypeScript configuration - Temporarily allow errors during cleanup phase
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: true, // Temporarily ignore during builds while we fix issues
   },
-  
-  // Ignore ESLint errors during build for deployment  
+
+  // ESLint configuration - Temporarily allow warnings during cleanup phase
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: true, // Temporarily ignore during builds while we fix issues
+    dirs: ['src'], // Only lint src directory to avoid checking test files
   },
   
   

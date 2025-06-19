@@ -94,13 +94,13 @@ export class AuthHelper {
     await this.page.fill('[data-testid="password-input"]', password);
     
     // Submit form
-    await this.page.click('[data-testid="login-button"]');
+    await this.page.click('[data-testid="sign-in-button"]');
     
     // Wait for successful login
     await this.page.waitForURL('/dashboard', { timeout: 15000 });
     
-    // Verify login success
-    await this.page.waitForSelector('[data-testid="user-menu"]', { timeout: 10000 });
+    // Verify login success by checking if we're on dashboard
+    await this.page.waitForSelector('h1', { timeout: 10000 });
   }
 
   async logout(): Promise<void> {

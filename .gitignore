@@ -47,11 +47,48 @@ Thumbs.db
 temp.txt
 *.tmp
 
+# Debug and test artifacts
+debug-*.png
+debug-*.js
+debug-*.html
+test-*.png
+test-*.js
+test-*.txt
+test-*.json
+*.spec.js
+*-test.js
+*-debug.*
+screenshots/
+test-videos/
+test-results/
+playwright-report/
+
 # Fix scripts (should be removed after use)
 fix_*.js
+fix_*.sh
+setup-*.sh
+create-*.js
+verify-*.js
+cleanup-*.js
+
+# Documentation artifacts
+*_REPORT.md
+*_GUIDE.md
+*_PLAN.md
+*_STRATEGY.md
+*_RESULTS.md
+*_ANALYSIS.md
+*_FIXES.md
+*_IMPLEMENTATION.md
+*_EXECUTION.md
+*_SUMMARY.md
+*_STATUS.md
+*_CHECKLIST.md
 
 # Test files
 test.php
+*.test.ts
+*.test.js
 
 # Husky
 .husky/_

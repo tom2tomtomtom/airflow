@@ -89,18 +89,16 @@ export const supabase = (() => {
       );
     } catch (error) {
       console.error('Failed to create Supabase client:', error);
-      // Create a minimal fallback client
-      const defaultUrl = 'https://fdsjlutmfaatslznjxiv.supabase.co';
-      const defaultKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZkc2psdXRtZmFhdHNsem5qeGl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc1NzQyMTQsImV4cCI6MjA2MzE1MDIxNH0.wO2DjC0Y2lRQj9lzMJ-frqlMXuC-r5TM-wwmRQXN5Fg';
-      
-      supabaseInstance = createClient<Database>(defaultUrl, defaultKey, {
-        auth: { autoRefreshToken: false, persistSession: false },
-        realtime: { disabled: true }
-      });
+      // Re-throw the error instead of creating a fallback with hardcoded credentials
+      // This ensures the application fails fast if configuration is incorrect
+      throw new Error(
+        `Supabase client initialization failed: ${error instanceof Error ? error.message : 'Unknown error'}. ` +
+        'Please check your NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables.'
+      );
     }
   }
-  return supabaseInstance;
-})();
+  return supabaseInstance!; // Non-null assertion since we throw if creation fails
+})() as SupabaseClient<Database>;
 
 // Create service role client for server-side operations (when available)
 let serviceSupabaseInstance: SupabaseClient<Database> | null = null;

@@ -63,9 +63,10 @@ function AppWithTheme(props: MyAppProps) {
                 <NotificationProvider>
                   <AuthRefreshHandler />
                   <Component {...pageProps} />
-                  {process.env.NODE_ENV === 'development' && (
+                  {/* Temporarily disable React Query DevTools to fix chunk loading errors */}
+                  {/* {process.env.NODE_ENV === 'development' && (
                     <ReactQueryDevtools initialIsOpen={false} />
-                  )}
+                  )} */}
                 </NotificationProvider>
               </ClientProvider>
             </SupabaseAuthProvider>
