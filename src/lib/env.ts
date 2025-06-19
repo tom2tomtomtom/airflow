@@ -2,9 +2,9 @@ import { getErrorMessage } from '@/utils/errorUtils';
 import { z } from 'zod';
 
 // Helper to check if we're in build context or client-side
-const isBuildContext = typeof EdgeRuntime !== 'undefined' || 
+const isBuildContext = (typeof globalThis !== 'undefined' && 'EdgeRuntime' in globalThis) ||
                       typeof window !== 'undefined' || // Client-side
-                      process.env.NETLIFY || 
+                      process.env.NETLIFY ||
                       process.env.VERCEL ||
                       process.env.CI === 'true' ||
                       process.env.BUILD_ID ||
@@ -24,10 +24,11 @@ const envSchema = z.object({
     'Supabase anon key is required in production mode'
   ),
   NEXT_PUBLIC_API_URL: z.string().url().optional().default(
-    process.env.NODE_ENV === 'production' 
+    process.env.NODE_ENV === 'production'
       ? 'https://api.airwave.app' // Update this to your production URL
       : 'http://localhost:3000'
   ).describe('API base URL'),
+  NEXT_PUBLIC_DEMO_MODE: z.enum(['true', 'false']).optional().default('false'),
   
   // Server-only environment variables
   SUPABASE_SERVICE_ROLE_KEY: z.string().optional().refine(
@@ -91,8 +92,8 @@ const envSchema = z.object({
 // Parse and validate environment variables
 const parseEnv = () => {
   // Check if we're in Edge Functions build context or Netlify build
-  const isEdgeBuild = typeof EdgeRuntime !== 'undefined' || 
-                     process.env.NETLIFY || 
+  const isEdgeBuild = (typeof globalThis !== 'undefined' && 'EdgeRuntime' in globalThis) ||
+                     process.env.NETLIFY ||
                      process.env.VERCEL ||
                      process.env.CI === 'true' ||
                      process.env.BUILD_ID ||
@@ -201,6 +202,9 @@ export const isProduction = env.NODE_ENV === 'production';
 
 // Helper to check if we're in development
 export const isDevelopment = env.NODE_ENV === 'development';
+
+// Helper to check if demo mode is enabled
+export const isDemo = env.NEXT_PUBLIC_DEMO_MODE === 'true';
 
 
 // Helper to check if email is configured

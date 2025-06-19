@@ -568,7 +568,7 @@ async function logApprovalUpdate(approvalId: string, updateData: any, userId: st
 async function triggerApprovalNotification(approval: any, action: string): Promise<void> {
   try {
     // In a full implementation, this would trigger real-time notifications
-    process.env.NODE_ENV === 'development' && console.log('Triggering approval notification for:', approvalId);
+    process.env.NODE_ENV === 'development' && console.log('Triggering approval notification for:', approval.id);
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Error triggering approval notification:', error);

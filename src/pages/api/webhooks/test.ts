@@ -60,4 +60,4 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   }
 }
 
-export default withRateLimitedRoute(withErrorHandler(handler));
+export default withRateLimitedRoute(withErrorHandler(handler), 'api');

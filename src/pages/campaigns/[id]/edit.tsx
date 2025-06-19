@@ -28,7 +28,7 @@ import DashboardLayout from '../../../components/DashboardLayout';
 import LoadingSpinner from '../../../components/LoadingSpinner';
 import ErrorMessage from '../../../components/ErrorMessage';
 import { useNotification } from '../../../contexts/NotificationContext';
-import { useData } from '../../../hooks/useData';
+import { useCampaigns } from '../../../hooks/useData';
 
 // Lazy load heavy components for better performance
 const CampaignBasicInfo = dynamic(
@@ -71,10 +71,18 @@ const EditCampaign: React.FC = () => {
   const router = useRouter();
   const { id } = router.query;
   const { showNotification } = useNotification();
-  const { data, loading, error } = useData();
-  const campaigns = (data as any)?.campaigns;
-  const updateCampaign = (data as any)?.updateCampaign;
-  const deleteCampaign = (data as any)?.deleteCampaign;
+  const { data: campaigns, isLoading: loading, error } = useCampaigns();
+
+  // Mock functions for now - these would need to be implemented
+  const updateCampaign = async (id: string, updates: any) => {
+    // TODO: Implement campaign update API call
+    console.log('Update campaign:', id, updates);
+  };
+
+  const deleteCampaign = async (id: string) => {
+    // TODO: Implement campaign delete API call
+    console.log('Delete campaign:', id);
+  };
 
   const [campaign, setCampaign] = useState<any>(null);
   const [activeTab, setActiveTab] = useState(0);

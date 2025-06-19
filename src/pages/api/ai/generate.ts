@@ -72,6 +72,11 @@ const mockGenerateText = (prompt: string): string[] => {
   return [];
 };
 
+const mockGenerateImage = (prompt: string): string => {
+  // Cleaned: was mock AI responses
+  return '';
+};
+
 const generateImage = async (prompt: string, parameters?: Record<string, any>): Promise<string> => {
   if (!openai) {
     return mockGenerateImage(prompt);

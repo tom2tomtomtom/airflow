@@ -108,6 +108,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
       setResults([]);
       setSelectedIndex(0);
       setLoading(false);
+      return undefined;
     }
   }, [query, searchData]);
 

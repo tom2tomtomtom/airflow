@@ -62,8 +62,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
 export default withRateLimitedRoute(
   withErrorHandler(handler),
-  'api',
-  { 
+  {
+    limiterName: 'api',
     customIdentifier: (req: any) => `gdpr_delete_${(req as any).userId}`,
     costFunction: () => 10, // High cost to prevent abuse
   }

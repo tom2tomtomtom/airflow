@@ -124,15 +124,15 @@ async function handleRenderCompleted(payload: CreatomateWebhookPayload): Promise
       .single();
     
     if (user && user.email) {
-      await sendRenderCompleteEmail({
-        to: user.email,
-        campaignName: execution.name || 'Untitled Campaign',
-        renderCount: 1,
-        successCount: 1,
-        failedCount: 0,
-        downloadUrl: url!,
-        completedAt: new Date().toISOString(),
-      });
+      await sendRenderCompleteEmail(
+        user.email,
+        {
+          id: render_id,
+          name: execution.name || 'Untitled Campaign',
+          downloadUrl: url!,
+          status: 'completed',
+        }
+      );
     }
   }
 }

@@ -280,6 +280,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
       const interval = setInterval(fetchExecutions, 10000); // Refresh every 10 seconds
       return () => clearInterval(interval);
     }
+    return undefined;
   }, [realtime, fetchExecutions]);
 
   if (!activeClient) {

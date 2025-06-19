@@ -103,6 +103,7 @@ export const SmartProgressIndicator: React.FC<SmartProgressIndicatorProps> = ({
 
       return () => clearInterval(interval);
     }
+    return undefined;
   }, [currentStep, steps, onStepComplete]);
 
   const formatTime = (seconds: number) => {

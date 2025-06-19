@@ -107,6 +107,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
       const interval = setInterval(fetchJobUpdates, 5000);
       return () => clearInterval(interval);
     }
+    return undefined;
   }, [jobs]);
 
   const fetchJobUpdates = async () => {

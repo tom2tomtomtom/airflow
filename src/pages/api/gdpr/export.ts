@@ -38,6 +38,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
 export default withRateLimitedRoute(
   withErrorHandler(handler),
-  'api', // Use standard API rate limit
-  { customIdentifier: (req: any) => `gdpr_export_${(req as any).userId}` }
+  {
+    limiterName: 'api', // Use standard API rate limit
+    customIdentifier: (req: any) => `gdpr_export_${(req as any).userId}`
+  }
 );

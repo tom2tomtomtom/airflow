@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { env } from '@/lib/env';
+import { env, isDemo } from '@/lib/env';
 
 export function EnvironmentDebug() {
   const [showDebug, setShowDebug] = useState(false);

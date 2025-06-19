@@ -373,7 +373,7 @@ async function processVideoGeneration(jobsData: any): Promise<any> {
         results.push({
           job_id: job.id,
           status: 'failed',
-          error: message,
+          error: getErrorMessage(error),
         });
         continue;
       }
