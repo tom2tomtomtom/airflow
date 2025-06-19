@@ -55,18 +55,18 @@ export class AuthPage {
     
     // Login elements
     this.loginForm = page.locator('[data-testid="login-form"]');
-    this.emailInput = page.locator('[data-testid="email-input"]');
-    this.passwordInput = page.locator('[data-testid="password-input"]');
-    this.loginButton = page.locator('[data-testid="login-button"]');
+    this.emailInput = page.locator('[data-testid="email-input"] input');
+    this.passwordInput = page.locator('[data-testid="password-input"] input');
+    this.loginButton = page.locator('[data-testid="sign-in-button"]');
     this.forgotPasswordLink = page.locator('[data-testid="forgot-password-link"]');
     this.signupLink = page.locator('[data-testid="signup-link"]');
     this.rememberMeCheckbox = page.locator('[data-testid="remember-me-checkbox"]');
     
     // Signup elements
     this.signupForm = page.locator('[data-testid="signup-form"]');
-    this.nameInput = page.locator('[data-testid="name-input"]');
-    this.confirmPasswordInput = page.locator('[data-testid="confirm-password-input"]');
-    this.signupButton = page.locator('[data-testid="signup-button"]');
+    this.nameInput = page.locator('[data-testid="name-input"] input');
+    this.confirmPasswordInput = page.locator('[data-testid="confirm-password-input"] input');
+    this.signupButton = page.locator('[data-testid="sign-up-button"]');
     this.loginLinkFromSignup = page.locator('[data-testid="login-link"]');
     this.termsCheckbox = page.locator('[data-testid="terms-checkbox"]');
     

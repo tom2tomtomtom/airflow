@@ -363,9 +363,10 @@ test.describe('AIRWAVE Complete UI Workflow Testing', () => {
     
     console.log('✅ Test completed - detailed report saved to localStorage');
   });
+});
 
-  // Helper method to interact with current workflow step
-  async interactWithCurrentStep(page: Page, step: number) {
+// Helper function to interact with current workflow step
+async function interactWithCurrentStep(page: Page, step: number) {
     try {
       switch (step) {
         case 0: // File upload
@@ -428,10 +429,10 @@ test.describe('AIRWAVE Complete UI Workflow Testing', () => {
     } catch (error) {
       console.log(`⚠️ Error interacting with step ${step}:`, error.message);
     }
-  }
+}
 
-  // Helper method to analyze issues in the report
-  analyzeIssues(report: any) {
+// Helper function to analyze issues in the report
+function analyzeIssues(report: any) {
     const issues = [];
     
     // Check for multiple component instances
@@ -462,5 +463,4 @@ test.describe('AIRWAVE Complete UI Workflow Testing', () => {
     }
     
     return issues;
-  }
-});
+}

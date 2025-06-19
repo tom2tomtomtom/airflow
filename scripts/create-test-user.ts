@@ -1,6 +1,7 @@
-import { getErrorMessage } from '@/utils/errorUtils';
 #!/usr/bin/env tsx
 // Script to create a test user in Supabase for testing purposes
+
+import { getErrorMessage } from '@/utils/errorUtils';
 
 import { config } from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
