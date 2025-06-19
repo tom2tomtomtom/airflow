@@ -90,7 +90,7 @@ const generateImage = async (prompt: string, parameters?: Record<string, any>): 
       n: 1,
     });
 
-    const imageUrl = response.data[0]?.url;
+    const imageUrl = response.data?.[0]?.url;
     if (!imageUrl) throw new Error('No image URL returned');
 
     return imageUrl;

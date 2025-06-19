@@ -108,19 +108,19 @@ async function handleExecute(req: NextApiRequest, res: NextApiResponse, user: an
   }
 
   // Validate combinations
-  const combinationsToExecute = executeData.combinations?.length > 0 
-    ? matrix.combinations.filter((combo: any) => executeData.combinations.includes(combo.id))
+  const combinationsToExecute = (executeData.combinations?.length ?? 0) > 0
+    ? matrix.combinations.filter((combo: any) => executeData.combinations?.includes(combo.id))
     : matrix.combinations.filter((combo: any) => combo.isSelected);
 
   if (combinationsToExecute.length === 0) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'No valid combinations found for execution',
       details: 'Select combinations or ensure matrix has active combinations'
     });
   }
 
   // Validate platforms
-  const platformsToExecute: string[] = executeData.platforms?.length > 0
+  const platformsToExecute: string[] = (executeData.platforms?.length ?? 0) > 0
     ? executeData.platforms
     : [matrix.templates.platform];
 

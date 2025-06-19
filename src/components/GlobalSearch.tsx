@@ -245,12 +245,12 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
               {results.map((result, index) => (
                 <ListItem
                   key={result.id}
-                  button
-                  selected={index === selectedIndex}
                   onClick={() => handleSelectResult(result)}
                   sx={{
-                    '&.Mui-selected': {
-                      backgroundColor: 'action.selected',
+                    cursor: 'pointer',
+                    backgroundColor: index === selectedIndex ? 'action.selected' : 'transparent',
+                    '&:hover': {
+                      backgroundColor: 'action.hover',
                     }
                   }}
                 >
@@ -330,8 +330,8 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
                     {quickActions.map((action) => (
                       <ListItem
                         key={action.id}
-                        button
                         onClick={() => handleSelectResult(action)}
+                        sx={{ cursor: 'pointer', '&:hover': { backgroundColor: 'action.hover' } }}
                       >
                         <ListItemIcon>
                           <Avatar sx={{ bgcolor: 'primary.light', width: 32, height: 32 }}>
@@ -360,8 +360,8 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
                     {recentSearches.map((search, index) => (
                       <ListItem
                         key={index}
-                        button
                         onClick={() => setQuery(search)}
+                        sx={{ cursor: 'pointer', '&:hover': { backgroundColor: 'action.hover' } }}
                       >
                         <ListItemIcon>
                           <History color="action" />

@@ -237,16 +237,16 @@ function mergeChunkResults(chunkResults: Partial<BriefData>[], fallbackTitle: st
     
     if (chunk.requirements && Array.isArray(chunk.requirements)) {
       chunk.requirements.forEach(req => {
-        if (req && !merged.requirements.includes(req)) {
-          merged.requirements.push(req);
+        if (req && !merged.requirements?.includes(req)) {
+          merged.requirements?.push(req);
         }
       });
     }
-    
+
     if (chunk.competitors && Array.isArray(chunk.competitors)) {
       chunk.competitors.forEach(comp => {
-        if (comp && !merged.competitors.includes(comp)) {
-          merged.competitors.push(comp);
+        if (comp && !merged.competitors?.includes(comp)) {
+          merged.competitors?.push(comp);
         }
       });
     }

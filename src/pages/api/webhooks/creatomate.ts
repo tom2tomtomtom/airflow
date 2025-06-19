@@ -1,7 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@supabase/supabase-js';
-import { WebhookManager } from '@/lib/webhooks/webhookManager';
+import { WebhookManager } from '../../../../lib/webhooks/webhookManager';
 import { withErrorHandler } from '@/lib/errors/errorHandler';
 import { sendRenderCompleteEmail } from '@/lib/email/resend';
 

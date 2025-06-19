@@ -90,7 +90,7 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {template.dynamicFields.map((field) => {
+              {template.dynamicFields?.map((field) => {
                 const key = `${template.id}-${field.id}`;
                 const assignment = project.fieldAssignments[key];
                 const asset = assignment?.assetId

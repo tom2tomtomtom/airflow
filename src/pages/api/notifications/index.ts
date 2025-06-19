@@ -243,8 +243,8 @@ async function handleBulkUpdate(req: NextApiRequest, res: NextApiResponse, user:
   }
 
   try {
-    // Build filter conditions
-    let baseQuery = supabase.from('notifications').eq('user_id', user.id);
+    // Build filter conditions - baseQuery is for reference only
+    // Each operation will build its own query with proper filters
 
     if (notification_ids && Array.isArray(notification_ids) && notification_ids.length > 0) {
       // Will apply .in('id', notification_ids) to each operation
@@ -311,14 +311,14 @@ async function handleBulkUpdate(req: NextApiRequest, res: NextApiResponse, user:
         break;
     }
 
-    if (result.error) {
+    if (result?.error) {
       console.error(`Error performing bulk ${action}:`, result.error);
       return res.status(500).json({ error: `Failed to ${action} notifications` });
     }
 
-    return res.json({ 
+    return res.json({
       message: `Notifications ${action} successfully`,
-      updated_count: result.data?.length || 0
+      updated_count: result?.data?.length || 0
     });
   } catch (error) {
     const message = getErrorMessage(error);

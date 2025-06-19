@@ -246,7 +246,6 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
                   <React.Fragment key={notification.id}>
                     {index > 0 && <Divider />}
                     <ListItem
-                      button
                       onClick={() => handleNotificationClick(notification)}
                       sx={{
                         backgroundColor: notification.read ? 'transparent' : 'action.hover',
