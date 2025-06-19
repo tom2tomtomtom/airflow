@@ -134,7 +134,7 @@ const AssetCard: React.FC<AssetCardProps> = ({
             height: compact ? 100 : 140,
             objectFit: 'cover',
           }}
-          onError={(e: React.ErrorEvent<HTMLElement>) => {
+          onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
             // Fallback to icon if image fails to load
             e.currentTarget.style.display = 'none';
           }}

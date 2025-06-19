@@ -117,13 +117,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     // Determine next steps
     const nextSteps: string[] = [];
     if (brief.parsing_status === 'completed') {
-      if (motivationsCount === 0) {
+      if ((motivationsCount || 0) === 0) {
         nextSteps.push('Generate strategic motivations');
       }
-      if (contentVariationsCount === 0 && motivationsCount > 0) {
+      if ((contentVariationsCount || 0) === 0 && (motivationsCount || 0) > 0) {
         nextSteps.push('Generate content variations');
       }
-      if (motivationsCount > 0 && contentVariationsCount > 0) {
+      if ((motivationsCount || 0) > 0 && (contentVariationsCount || 0) > 0) {
         nextSteps.push('Create campaign matrix');
       }
     } else if (brief.parsing_status === 'error') {

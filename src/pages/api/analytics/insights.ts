@@ -440,7 +440,7 @@ function generateTrendAnalysis(data: any): any {
 }
 
 function generateAnomalyDetection(data: any): any[] {
-  const anomalies = [];
+  const anomalies: any[] = [];
 
   // Simulate anomaly detection based on data patterns
   const recentAnalytics = data.analytics.slice(0, 7); // Last 7 days

@@ -316,8 +316,8 @@ async function generateMatrixContent(matrixData: any, template: any, userId: str
     // This is a simplified auto-generation
     // In a real implementation, this would use AI to generate optimal combinations
     
-    const variations = [];
-    const combinations = [];
+    const variations: any[] = [];
+    const combinations: any[] = [];
     const fieldAssignments: any = {};
 
     // Generate basic variations

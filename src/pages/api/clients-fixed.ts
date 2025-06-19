@@ -328,7 +328,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData
       dateCreated: client.created_at,
       lastModified: client.updated_at,
       contacts: contacts || [], // Include the contacts in response
-    } as Client;
+    } as unknown as Client;
 
         return res.status(201).json({
       success: true,

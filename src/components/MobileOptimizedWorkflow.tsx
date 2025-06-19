@@ -204,7 +204,6 @@ export const MobileOptimizedWorkflow: React.FC<MobileOptimizedWorkflowProps> = (
 
         {/* Content Area */}
         <Box
-          ref={containerRef}
           {...swipeHandlers}
           sx={{
             flex: 1,
@@ -216,7 +215,6 @@ export const MobileOptimizedWorkflow: React.FC<MobileOptimizedWorkflowProps> = (
             direction="left"
             in={true}
             key={activeStep}
-            container={containerRef.current}
           >
             <Box sx={{ height: '100%', p: 2 }}>
               {/* Step Description */}

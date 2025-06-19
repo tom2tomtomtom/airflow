@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withErrorHandler } from '@/lib/errors/errorHandler';
-import { withRateLimitedRoute } from '@/middleware/rateLimiter';
+import { withRateLimitedRoute } from '../../../../middleware/rateLimiter';
 import { WebhookManager } from '../../../../lib/webhooks/webhookManager';
 import { AuthorizationError, ValidationError } from '@/lib/errors/errorHandler';
 

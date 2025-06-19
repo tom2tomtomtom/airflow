@@ -1,5 +1,6 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { isDemo } from '@/lib/env';
 
 // This endpoint helps verify the deployment configuration
 export default async function handler(
@@ -69,7 +70,7 @@ export default async function handler(
       url: process.env.NEXT_PUBLIC_SUPABASE_URL ? process.env.NEXT_PUBLIC_SUPABASE_URL.replace(/https:\/\/(.+?)\.supabase\.co.*/, 'https://***.supabase.co') : 'not set',
     },
     configuration: {
-      isDemoMode,
+      isDemoMode: isDemo,
       isConfigured,
       missingRequired: missingRequired.length > 0 ? missingRequired : null,
     },

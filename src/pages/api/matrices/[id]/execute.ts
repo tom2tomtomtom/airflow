@@ -121,7 +121,7 @@ async function handleExecute(req: NextApiRequest, res: NextApiResponse, user: an
 
   // Validate platforms
   const platformsToExecute: string[] = (executeData.platforms?.length ?? 0) > 0
-    ? executeData.platforms
+    ? executeData.platforms || []
     : [matrix.templates.platform];
 
   // Check execution limits

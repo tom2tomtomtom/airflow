@@ -313,7 +313,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
                             <Tooltip title="Mark as read">
                               <IconButton
                                 size="small"
-                                onClick={(e: React.ClickEvent<HTMLElement>) => {
+                                onClick={(e: React.MouseEvent<HTMLElement>) => {
                                   e.stopPropagation();
                                   markAsRead(notification.id);
                                 }}
@@ -325,7 +325,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
                           <Tooltip title="Dismiss">
                             <IconButton
                               size="small"
-                              onClick={(e: React.ClickEvent<HTMLElement>) => handleDismiss(notification.id, e)}
+                              onClick={(e: React.MouseEvent<HTMLElement>) => handleDismiss(notification.id, e)}
                             >
                               <DeleteIcon fontSize="small" />
                             </IconButton>

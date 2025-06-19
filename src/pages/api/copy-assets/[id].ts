@@ -79,7 +79,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
   }
 
   // Get related motivations if any
-  let relatedMotivations = [];
+  let relatedMotivations: any[] = [];
   if (asset.motivation_ids && asset.motivation_ids.length > 0) {
     const { data: motivations } = await supabase
       .from('motivations')

@@ -127,7 +127,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
       dateCreated: client.created_at,
       lastModified: client.updated_at,
       contacts: contacts || [],
-    } as Client;
+    } as unknown as Client;
 
         return res.json({
       success: true,

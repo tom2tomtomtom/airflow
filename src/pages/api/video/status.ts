@@ -82,11 +82,11 @@ async function handleGenerationStatus(req: NextApiRequest, res: NextApiResponse,
               updated_at: new Date().toISOString(),
             };
 
-            if (renderStatus.status === 'completed' && renderStatus.url) {
+            if (renderStatus.status === 'succeeded' && renderStatus.url) {
               updateData.output_url = renderStatus.url;
               updateData.metadata = {
                 ...generation.metadata,
-                completed_at: renderStatus.completedAt,
+                completed_at: renderStatus.completed_at,
                 render_url: renderStatus.url,
               };
 
@@ -188,11 +188,11 @@ async function handleJobStatus(req: NextApiRequest, res: NextApiResponse, user: 
           updated_at: new Date().toISOString(),
         };
 
-        if (renderStatus.status === 'completed' && renderStatus.url) {
+        if (renderStatus.status === 'succeeded' && renderStatus.url) {
           updateData.output_url = renderStatus.url;
           updateData.metadata = {
             ...generation.metadata,
-            completed_at: renderStatus.completedAt,
+            completed_at: renderStatus.completed_at,
             render_url: renderStatus.url,
           };
 

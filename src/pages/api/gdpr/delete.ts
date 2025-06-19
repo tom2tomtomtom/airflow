@@ -1,7 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withErrorHandler } from '@/lib/errors/errorHandler';
-import { withRateLimitedRoute } from '@/middleware/rateLimiter';
+import { withRateLimitedRoute } from '../../../../middleware/rateLimiter';
 import { deleteUserData } from '@/lib/gdpr/dataExport';
 import { AuthorizationError, ValidationError } from '@/lib/errors/errorHandler';
 import { sendEmail } from '@/lib/email/resend';
@@ -62,8 +62,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
 export default withRateLimitedRoute(
   withErrorHandler(handler),
+  'api',
   {
-    limiterName: 'api',
     customIdentifier: (req: any) => `gdpr_delete_${(req as any).userId}`,
     costFunction: () => 10, // High cost to prevent abuse
   }

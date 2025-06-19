@@ -301,7 +301,7 @@ export const MFASetup: React.FC = () => {
               
               {setupData?.qrCodeUrl && (
                 <Box display="flex" justifyContent="center" mb={2}>
-                  <img src={setupData.qrCodeUrl} alt="MFA QR Code" style={{ maxWidth: 256 }} alt="" />
+                  <img src={setupData.qrCodeUrl} alt="MFA QR Code" style={{ maxWidth: 256 }} />
                 </Box>
               )}
 

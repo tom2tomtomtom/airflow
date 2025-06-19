@@ -1,12 +1,12 @@
 import dynamic from 'next/dynamic';
 import { ComponentProps } from 'react';
-import { SkeletonLoaders } from './SkeletonLoaders';
+import { AnalyticsSkeleton } from './SkeletonLoaders';
 
 // Dynamically import the AnalyticsDashboard with loading state
 const AnalyticsDashboard = dynamic(
   () => import('./analytics/PerformanceDashboard'),
   {
-    loading: () => <SkeletonLoaders variant="analytics" />,
+    loading: () => <AnalyticsSkeleton />,
     ssr: false, // Analytics components often use client-side data
   }
 );
