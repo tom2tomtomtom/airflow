@@ -46,8 +46,7 @@ const fixes: Fix[] = [
   // Fix error handling with proper typing
   {
     pattern: /catch\s*\(\s*error\s*\)\s*{(?![^}]*const message = getErrorMessage)/g,
-    replacement: 'catch (error) {
-    const message = getErrorMessage(error);\n    const message = getErrorMessage(error);',
+    replacement: 'catch (error) {\n    const message = getErrorMessage(error);',
     description: 'Fix error handling with proper typing'
   },
   

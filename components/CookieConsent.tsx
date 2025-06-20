@@ -10,7 +10,7 @@ interface CookiePreferences {
   timestamp: string;
 }
 
-export default function CookieConsent(: { req: NextApiRequest; res: NextApiResponse }) {
+export default function CookieConsent() {
   const [showBanner, setShowBanner] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [preferences, setPreferences] = useState<CookiePreferences>({

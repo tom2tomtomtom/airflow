@@ -46,14 +46,10 @@ const queryClient = new QueryClient({
   },
 });
 
-// Inner component that uses the theme mode
-function AppWithTheme(props: MyAppProps) {
-  const { Component, pageProps } = props;
-  const { mode } = useThemeMode();
-  const theme = mode === 'light' ? lightTheme : darkTheme;
-
+// Component that provides all the context providers
+function AppProviders({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <CssBaseline />
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <ErrorBoundary>
@@ -62,7 +58,7 @@ function AppWithTheme(props: MyAppProps) {
               <ClientProvider>
                 <NotificationProvider>
                   <AuthRefreshHandler />
-                  <Component {...pageProps} />
+                  {children}
                   {/* Temporarily disable React Query DevTools to fix chunk loading errors */}
                   {/* {process.env.NODE_ENV === 'development' && (
                     <ReactQueryDevtools initialIsOpen={false} />
@@ -73,6 +69,21 @@ function AppWithTheme(props: MyAppProps) {
           </AuthProvider>
         </ErrorBoundary>
       </LocalizationProvider>
+    </>
+  );
+}
+
+// Inner component that uses the theme mode (now safely inside ThemeModeProvider)
+function ThemedApp(props: MyAppProps) {
+  const { Component, pageProps } = props;
+  const { mode } = useThemeMode();
+  const theme = mode === 'light' ? lightTheme : darkTheme;
+
+  return (
+    <ThemeProvider theme={theme}>
+      <AppProviders>
+        <Component {...pageProps} />
+      </AppProviders>
     </ThemeProvider>
   );
 }
@@ -141,7 +152,7 @@ function MyApp(props: MyAppProps) {
       <QueryClientProvider client={queryClient}>
         <ThemeModeProvider>
           <LoadingProvider>
-            <AppWithTheme {...props} />
+            <ThemedApp {...props} />
           </LoadingProvider>
         </ThemeModeProvider>
       </QueryClientProvider>

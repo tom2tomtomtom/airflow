@@ -1,5 +1,6 @@
-import { getErrorMessage } from '@/utils/errorUtils';
 #!/usr/bin/env tsx
+
+import { getErrorMessage } from '@/utils/errorUtils';
 // Script to get existing test users from Supabase
 
 import { config } from 'dotenv';
