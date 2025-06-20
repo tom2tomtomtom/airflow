@@ -107,7 +107,7 @@ Value Proposition: ${briefData.valueProposition || 'Not specified'}
 Industry: ${briefData.industry || 'Not specified'}
 Brand Guidelines: ${briefData.brandGuidelines || 'Not specified'}
 
-Generate 12 consumer motivations as a JSON array. Each motivation should include:
+Generate 8-10 consumer motivations as a JSON array that are SPECIFICALLY tailored to this brief. Each motivation should include:
 - id: unique identifier (motivation_1, motivation_2, etc.)
 - title: Clear, compelling motivation title (2-4 words)
 - description: Detailed explanation of how this motivation drives consumer behavior (2-3 sentences)
@@ -117,14 +117,14 @@ Generate 12 consumer motivations as a JSON array. Each motivation should include
 - platforms: Array of platforms where this motivation would be most effective
 
 Focus on:
-1. Deep consumer psychology insights
-2. Emotional triggers specific to the target audience
-3. Motivations that align with the campaign objectives
-4. Platform-appropriate motivation strategies
-5. Industry-specific consumer drivers
-6. Cultural and behavioral trends
+1. Deep consumer psychology insights SPECIFIC to the product/service mentioned
+2. Emotional triggers that directly relate to the target audience described in the brief
+3. Motivations that align with the exact campaign objectives stated
+4. Platform-appropriate strategies for the specific platforms mentioned
+5. Industry-specific consumer drivers relevant to the industry in the brief
+6. Cultural and behavioral trends that affect the specific target audience
 
-Ensure motivations are diverse, covering emotional, rational, social, and aspirational drivers. Make them specific to this brief, not generic templates.
+CRITICAL: Ensure motivations are diverse, covering emotional, rational, social, and aspirational drivers, but ALL must be contextually relevant to this specific brief. Do NOT use generic motivations like "Fear of Missing Out" unless they directly relate to the specific product/service and audience described. Instead, create motivations that are unique to this campaign's context.
 
 Respond ONLY with the JSON array, no additional text.`;
 
