@@ -30,9 +30,9 @@ const nextConfig = {
   ],
   reactStrictMode: true, // Re-enabled for better development debugging
 
-  // TypeScript configuration - Temporarily allow errors during cleanup phase
+  // TypeScript configuration - Production ready
   typescript: {
-    ignoreBuildErrors: true, // Temporarily ignore during builds while we fix issues
+    ignoreBuildErrors: false, // Enforce TypeScript safety in production
   },
 
   // ESLint configuration - Temporarily allow warnings during cleanup phase

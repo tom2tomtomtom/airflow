@@ -256,7 +256,7 @@ export class AICacheUtils {
   // Get AI cache statistics
   static async getCacheStats() {
     const stats = await cacheManager.getStats();
-    loggers.ai.debug('AI cache stats retrieved', stats);
+    loggers.ai.debug('AI cache stats retrieved', stats as any);
     return stats;
   }
 

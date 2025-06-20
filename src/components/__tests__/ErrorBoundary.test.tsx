@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+// Jest test - no imports needed for basic Jest functions
 import { render } from '@testing-library/react';
 import { screen } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
@@ -7,7 +7,7 @@ import ErrorBoundary from '../ErrorBoundary';
 // Mock console methods to avoid noise in test output
 const originalError = console.error;
 beforeEach(() => {
-  console.error = vi.fn();
+  console.error = jest.fn();
 });
 
 afterEach(() => {
@@ -42,7 +42,7 @@ describe('ErrorBoundary', () => {
 
     expect(screen.getByText('Oops! Something went wrong')).toBeInTheDocument();
     expect(
-      screen.getByText('We\'re sorry for the inconvenience. An unexpected error occurred.')
+      screen.getByText('We\'re sorry for the inconvenience. The application encountered an unexpected error.')
     ).toBeInTheDocument();
   });
 
@@ -107,7 +107,7 @@ describe('ErrorBoundary', () => {
 
   it('should reload page when reload button is clicked', async () => {
     const user = userEvent.setup();
-    const reloadMock = vi.fn();
+    const reloadMock = jest.fn();
     Object.defineProperty(window, 'location', {
       value: { reload: reloadMock },
       writable: true,
@@ -119,7 +119,7 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>
     );
 
-    const reloadButton = screen.getByText('Reload Page');
+    const reloadButton = screen.getByText('Go to Home');
     await user.click(reloadButton);
 
     expect(reloadMock).toHaveBeenCalled();

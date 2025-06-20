@@ -299,7 +299,7 @@ export class DBCacheUtils {
   // Get database cache statistics
   static async getCacheStats() {
     const stats = await cacheManager.getStats();
-    loggers.db.debug('Database cache stats retrieved', stats);
+    loggers.db.debug('Database cache stats retrieved', stats as any);
     return stats;
   }
 

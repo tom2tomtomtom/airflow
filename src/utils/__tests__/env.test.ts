@@ -1,4 +1,3 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { validateEnv, getEnvVar, checkProductionReadiness, getValidatedEnv, logEnvironmentStatus } from '../env';
 
 describe('env utilities', () => {
@@ -7,7 +6,7 @@ describe('env utilities', () => {
 
   beforeEach(() => {
     // Reset environment for each test
-    vi.resetModules();
+    jest.resetModules();
     process.env = { ...originalEnv };
   });
 
@@ -207,8 +206,8 @@ describe('env utilities', () => {
 
   describe('logEnvironmentStatus', () => {
     it('should log success for valid environment', () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-      
+      const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+
       process.env = {
         ...process.env,
         NODE_ENV: 'development',
@@ -223,24 +222,26 @@ describe('env utilities', () => {
       };
 
       logEnvironmentStatus();
-      
-      expect(consoleSpy).toHaveBeenCalledWith('✅ Environment validation passed');
+
+      expect(consoleSpy).toHaveBeenCalledWith('Environment validated successfully');
       consoleSpy.mockRestore();
     });
 
     it('should exit process on validation failure', () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => {
         throw new Error('Process exit');
       });
-      
+
+      // Set NODE_ENV to development so error logging is enabled, but make JWT_SECRET invalid
       Object.assign(process.env, {
-        NODE_ENV: 'invalid' as any, // Intentionally invalid for testing
+        NODE_ENV: 'development',
+        JWT_SECRET: 'too-short', // This will cause validation to fail
       });
 
       expect(() => logEnvironmentStatus()).toThrow('Process exit');
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Environment validation failed'), expect.any(Error));
-      
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('❌ Environment validation failed'), expect.any(Error));
+
       consoleSpy.mockRestore();
       exitSpy.mockRestore();
     });

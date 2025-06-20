@@ -2,7 +2,8 @@ import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase/client';
 import { withAuth } from '@/middleware/withAuth';
-import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
+import { withAPIRateLimit } from '@/lib/rate-limiter';
+import { successResponse, errorResponse, handleApiError, methodNotAllowed, validateRequiredFields, createPaginationMeta, ApiErrorCode } from '@/lib/api-response';
 
 export interface Asset {
   id: string;
@@ -24,15 +25,7 @@ export interface Asset {
   height?: number;
 }
 
-type ResponseData = {
-  success: boolean;
-  message?: string;
-  assets?: Asset[];
-  asset?: Asset;
-  total?: number;
-  page?: number;
-  limit?: number;
-};
+// Remove custom ResponseData type - using standardized API responses
 
 // Map database row to Asset interface (fixing schema mismatch)
 function mapDatabaseRowToAsset(row: any): Asset {
@@ -57,53 +50,39 @@ function mapDatabaseRowToAsset(row: any): Asset {
   };
 }
 
-async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
-): Promise<void> {
+async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+  const user = (req as any).user;
+
   try {
-    const user = (req as any).user;
-    const userId = user?.id;
-
-    if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: 'Authentication required'
-      });
-    }
-
     switch (req.method) {
       case 'GET':
-        return await getAssets(req, res, userId);
+        return await getAssets(req, res, user);
       case 'POST':
-        return await createAsset(req, res, userId);
+        return await createAsset(req, res, user);
       case 'PUT':
-        return await updateAsset(req, res, userId);
+        return await updateAsset(req, res, user);
       case 'DELETE':
-        return await deleteAsset(req, res, userId);
+        return await deleteAsset(req, res, user);
       default:
-        return res.status(405).json({
-          success: false,
-          message: 'Method not allowed'
-        });
+        return methodNotAllowed(res, ['GET', 'POST', 'PUT', 'DELETE']);
     }
   } catch (error) {
-    const message = getErrorMessage(error);
-    console.error('Assets API error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Internal server error'
-    });
+    return handleApiError(res, error, 'assets handler');
   }
 }
 
 // GET - Fetch assets with proper schema mapping
 async function getAssets(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>,
-  userId: string
+  res: NextApiResponse,
+  user: any
 ): Promise<void> {
   try {
+    const userId = user?.id;
+    if (!userId) {
+      return errorResponse(res, ApiErrorCode.UNAUTHORIZED, 'Authentication required', 401);
+    }
+
     const {
       page = '1',
       limit = '20',
@@ -115,7 +94,7 @@ async function getAssets(
     } = req.query;
 
     const pageNum = parseInt(page as string, 10);
-    const limitNum = parseInt(limit as string, 10);
+    const limitNum = Math.min(parseInt(limit as string, 10), 100); // Cap at 100
     const offset = (pageNum - 1) * limitNum;
 
     // Build query with proper field selection
@@ -155,12 +134,10 @@ async function getAssets(
         query = query.in('client_id', clientIds);
       } else {
         // User has no clients, return empty result
-        return res.status(200).json({
-          success: true,
-          assets: [],
-          total: 0,
-          page: pageNum,
-          limit: limitNum
+        const paginationMeta = createPaginationMeta(pageNum, limitNum, 0);
+        return successResponse(res, [], 200, {
+          pagination: paginationMeta,
+          timestamp: new Date().toISOString()
         });
       }
     }
@@ -184,52 +161,51 @@ async function getAssets(
     const { data, error, count } = await query;
 
     if (error) {
-      console.error('Database error fetching assets:', error);
-      return res.status(500).json({
-        success: false,
-        message: 'Failed to fetch assets'
-      });
+      throw new Error(`Failed to fetch assets: ${error.message}`);
     }
 
     // Map database rows to Asset interface
     const assets = (data || []).map(mapDatabaseRowToAsset);
 
-    return res.status(200).json({
-      success: true,
-      assets,
-      total: count || 0,
-      page: pageNum,
-      limit: limitNum
+    // Create pagination metadata
+    const paginationMeta = createPaginationMeta(pageNum, limitNum, count || 0);
+
+    return successResponse(res, assets, 200, {
+      pagination: paginationMeta,
+      timestamp: new Date().toISOString()
     });
 
   } catch (error) {
-    const message = getErrorMessage(error);
-    console.error('Get assets error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Failed to fetch assets'
-    });
+    return handleApiError(res, error, 'getAssets');
   }
 }
 
 // POST - Create a new asset with proper field mapping
 async function createAsset(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>,
-  userId: string
+  res: NextApiResponse,
+  user: any
 ): Promise<void> {
   try {
-    const { 
+    const userId = user?.id;
+    if (!userId) {
+      return errorResponse(res, ApiErrorCode.UNAUTHORIZED, 'Authentication required', 401);
+    }
+
+    const {
       name, type, url, thumbnailUrl, description, tags, clientId,
-      metadata, size, mimeType, duration, width, height 
+      metadata, size, mimeType, duration, width, height
     } = req.body;
 
     // Validate required fields
-    if (!name || !type || !url) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Name, type, and URL are required' 
-      });
+    const missingFields = validateRequiredFields(req.body, ['name', 'type', 'url']);
+    if (missingFields.length > 0) {
+      return errorResponse(
+        res,
+        ApiErrorCode.VALIDATION_ERROR,
+        `Missing required fields: ${missingFields.join(', ')}`,
+        400
+      );
     }
 
     // Validate asset type
@@ -311,18 +287,20 @@ async function createAsset(
 // PUT - Update an asset
 async function updateAsset(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>,
-  userId: string
+  res: NextApiResponse,
+  user: any
 ): Promise<void> {
   try {
+    const userId = user?.id;
+    if (!userId) {
+      return errorResponse(res, ApiErrorCode.UNAUTHORIZED, 'Authentication required', 401);
+    }
+
     const { id } = req.query;
     const updates = req.body;
 
     if (!id) {
-      return res.status(400).json({
-        success: false,
-        message: 'Asset ID is required'
-      });
+      return errorResponse(res, ApiErrorCode.VALIDATION_ERROR, 'Asset ID is required', 400);
     }
 
     // Map frontend fields to database fields
@@ -400,17 +378,19 @@ async function updateAsset(
 // DELETE - Delete an asset
 async function deleteAsset(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>,
-  userId: string
+  res: NextApiResponse,
+  user: any
 ): Promise<void> {
   try {
+    const userId = user?.id;
+    if (!userId) {
+      return errorResponse(res, ApiErrorCode.UNAUTHORIZED, 'Authentication required', 401);
+    }
+
     const { id } = req.query;
 
     if (!id) {
-      return res.status(400).json({
-        success: false,
-        message: 'Asset ID is required'
-      });
+      return errorResponse(res, ApiErrorCode.VALIDATION_ERROR, 'Asset ID is required', 400);
     }
 
     // Get the asset to check ownership
@@ -458,4 +438,4 @@ async function deleteAsset(
   }
 }
 
-export default withSecurityHeaders(withAuth(handler));
+export default withAuth(withAPIRateLimit(handler));

@@ -13,10 +13,8 @@ const publicRoutes = [
   '/reset-password',
   '/verify-success',
   '/unauthorized',
-  '/test-auth',
-  '/test-flow',
-  // Testing routes for UI tests
-  ...(process.env.NODE_ENV !== 'production' ? ['/flow', '/assets', '/dashboard', '/clients', '/strategic-content', '/matrix', '/campaigns', '/templates', '/analytics', '/ai-tools'] : []),
+  // Debug routes removed for production security
+  // Testing routes for UI tests - REMOVED FOR PRODUCTION SECURITY
   '/api/auth/csrf-token',
   '/api/auth/login',
   '/api/auth/signup',
@@ -29,14 +27,8 @@ const publicRoutes = [
   // Health check endpoints
   '/api/health',
   '/api/status',
-  // Testing endpoints
-  '/api/test/openai',
-  '/api/test/integration-suite',
-  // AI generation endpoints for testing
-  '/api/ai/generate',
+  // Production endpoints only
   '/api/check-video-status',
-  '/api/creatomate/test',
-  '/api/creatomate/templates',
   // Real-time updates
   '/api/realtime/events',
 ];

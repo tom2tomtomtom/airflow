@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+// Simple Jest test - no imports needed for basic Jest functions
 
 function hello(name: string) {
   return `Hello, ${name}!`;
