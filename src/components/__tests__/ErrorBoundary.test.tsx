@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import * as userEvent from '@testing-library/user-event';
+import userEvent from '@testing-library/user-event';
 import ErrorBoundary from '../ErrorBoundary';
 
 // Mock console methods to avoid noise in test output
@@ -47,7 +47,6 @@ describe('ErrorBoundary', () => {
 
   it('should show error details in development mode', () => {
     const originalEnv = process.env.NODE_ENV;
-    // @ts-expect-error - process.env is readonly in TypeScript but we need to mock it for testing
     process.env.NODE_ENV = 'development';
 
     render(
@@ -58,13 +57,11 @@ describe('ErrorBoundary', () => {
 
     expect(screen.getByText(/Error: Test error/)).toBeInTheDocument();
 
-    // @ts-expect-error - process.env is readonly in TypeScript but we need to mock it for testing
     process.env.NODE_ENV = originalEnv;
   });
 
   it('should not show error details in production mode', () => {
     const originalEnv = process.env.NODE_ENV;
-    // @ts-expect-error - process.env is readonly in TypeScript but we need to mock it for testing
     process.env.NODE_ENV = 'production';
 
     render(
@@ -75,7 +72,6 @@ describe('ErrorBoundary', () => {
 
     expect(screen.queryByText(/Error: Test error/)).not.toBeInTheDocument();
 
-    // @ts-expect-error - process.env is readonly in TypeScript but we need to mock it for testing
     process.env.NODE_ENV = originalEnv;
   });
 
@@ -93,7 +89,7 @@ describe('ErrorBoundary', () => {
   });
 
   it('should reload page when reload button is clicked', async () => {
-    const user = userEvent.default.setup();
+    const user = userEvent.setup();
     const reloadMock = vi.fn();
     Object.defineProperty(window, 'location', {
       value: { reload: reloadMock },
@@ -113,7 +109,7 @@ describe('ErrorBoundary', () => {
   });
 
   it('should reset error boundary when try again is clicked', async () => {
-    const user = userEvent.default.setup();
+    const user = userEvent.setup();
     let shouldThrow = true;
 
     const { rerender } = render(
