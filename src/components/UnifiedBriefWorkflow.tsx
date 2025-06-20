@@ -590,7 +590,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
                 </Typography>
                 <Grid container spacing={2}>
                   {motivations.map((motivation) => (
-                    <Grid size={{ xs: 12, md: 6 }} key={motivation.id}>
+                    <Grid item xs={12} md={6} key={motivation.id}>
                       <Card
                         sx={{
                           cursor: 'pointer',
@@ -725,7 +725,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
               Choose Your Assets
             </Typography>
             <Grid container spacing={3}>
-              <Grid size={{ xs: 12, md: 6 }}>
+              <Grid item xs={12} md={6}>
                 <Card sx={{ height: '100%' }}>
                   <CardContent sx={{ p: 3 }}>
                     <Typography variant="h6" gutterBottom>
@@ -744,7 +744,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid size={{ xs: 12, md: 6 }}>
+              <Grid item xs={12} md={6}>
                 <Card sx={{ height: '100%' }}>
                   <CardContent sx={{ p: 3 }}>
                     <Typography variant="h6" gutterBottom>
@@ -786,7 +786,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
             </Typography>
             <Grid container spacing={2}>
               {['Modern Slideshow', 'Dynamic Promo', 'Social Story', 'Product Showcase'].map((template) => (
-                <Grid size={{ xs: 12, md: 6 }} key={template}>
+                <Grid item xs={12} md={6} key={template}>
                   <Card
                     sx={{
                       cursor: 'pointer',
@@ -843,7 +843,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
               Your content matrix will be populated with the selected motivations, copy, and assets.
             </Alert>
             <Grid container spacing={2}>
-              <Grid size={{ xs: 12, md: 4 }}>
+              <Grid item xs={12} md={4}>
                 <Card>
                   <CardContent>
                     <Typography variant="h6" gutterBottom>
@@ -855,7 +855,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid size={{ xs: 12, md: 4 }}>
+              <Grid item xs={12} md={4}>
                 <Card>
                   <CardContent>
                     <Typography variant="h6" gutterBottom>
@@ -867,7 +867,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid size={{ xs: 12, md: 4 }}>
+              <Grid item xs={12} md={4}>
                 <Card>
                   <CardContent>
                     <Typography variant="h6" gutterBottom>
@@ -1224,7 +1224,7 @@ const BriefReviewEditor: React.FC<BriefReviewEditorProps> = ({
                       className="mt-2 p-2 rounded-lg text-red-600 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
                       type="button"
                     >
-                      <ClearIcon className="w-5 h-5" />
+                      <ClearIconSvg className="w-5 h-5" />
                     </button>
                   </div>
                 ))}
@@ -1234,7 +1234,7 @@ const BriefReviewEditor: React.FC<BriefReviewEditorProps> = ({
                 className="mt-4 flex items-center px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg transition-colors"
                 type="button"
               >
-                <AddIcon className="w-4 h-4 mr-2" />
+                <AddIconSvg className="w-4 h-4 mr-2" />
                 Add Key Message
               </button>
             </div>
@@ -1257,7 +1257,7 @@ const BriefReviewEditor: React.FC<BriefReviewEditorProps> = ({
                       className="p-2 rounded-lg text-red-600 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
                       type="button"
                     >
-                      <ClearIcon className="w-5 h-5" />
+                      <ClearIconSvg className="w-5 h-5" />
                     </button>
                   </div>
                 ))}
@@ -1267,7 +1267,7 @@ const BriefReviewEditor: React.FC<BriefReviewEditorProps> = ({
                 className="mt-4 flex items-center px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg transition-colors"
                 type="button"
               >
-                <AddIcon className="w-4 h-4 mr-2" />
+                <AddIconSvg className="w-4 h-4 mr-2" />
                 Add Platform
               </button>
             </div>
@@ -1307,7 +1307,7 @@ const BriefReviewEditor: React.FC<BriefReviewEditorProps> = ({
                     className="p-2 rounded-lg text-red-600 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
                     type="button"
                   >
-                    <ClearIcon className="w-5 h-5" />
+                    <ClearIconSvg className="w-5 h-5" />
                   </button>
                 </div>
               ))}
@@ -1320,7 +1320,7 @@ const BriefReviewEditor: React.FC<BriefReviewEditorProps> = ({
               className="mt-4 flex items-center px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg transition-colors"
               type="button"
             >
-              <AddIcon className="w-4 h-4 mr-2" />
+              <AddIconSvg className="w-4 h-4 mr-2" />
               Add Competitor
             </button>
           </div>
@@ -1366,7 +1366,7 @@ const BriefReviewEditor: React.FC<BriefReviewEditorProps> = ({
           onClick={onReset}
           type="button"
         >
-          <ClearIcon className="w-5 h-5 mr-2" />
+          <ClearIconSvg className="w-5 h-5 mr-2" />
           Reset to Original
         </button>
         <button
