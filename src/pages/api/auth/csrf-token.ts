@@ -4,15 +4,8 @@
  */
 
 import { NextApiRequest, NextApiResponse } from 'next';
-import { handleCSRFTokenRequest } from '@/utils/csrf';
-import { rateLimiters } from '@/utils/rateLimit';
+import { handleCSRFToken } from '@/lib/csrf';
+import { withAPIRateLimit } from '@/lib/rate-limiter';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  // Apply rate limiting
-  await new Promise<void>((resolve, reject) => {
-    rateLimiters.general(req, res, () => resolve());
-  });
-  
-  // Handle CSRF token request
-  return handleCSRFTokenRequest(req, res);
-}
+// Apply rate limiting and handle CSRF token requests
+export default withAPIRateLimit()(handleCSRFToken);

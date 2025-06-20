@@ -197,9 +197,7 @@ async function runAllFixes() {
     console.log('3. Run comprehensive tests: npm run test:auth');
     console.log('4. Test manually in browser with your credentials');
     console.log('');
-    console.log('🔐 Test Credentials:');
-    console.log('Email: tomh@redbaez.com');
-    console.log('Password: Wijlre2010');
+    console.log('🔐 Use your production credentials to test authentication');
     
   } catch (error) {
     console.error('❌ Fix script failed:', error);

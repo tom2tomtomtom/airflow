@@ -2,11 +2,11 @@ import { getErrorMessage } from '@/utils/errorUtils';
 import { Worker, Job } from 'bullmq';
 import { connection } from '@/lib/queue/connection';
 import { EmailJobData } from '@/lib/queue/bullQueue';
-import { sendEmail } from '@/lib/email/resend';
+import { sendEmail, EmailTemplate } from '../email/resend';
 import * as Sentry from '@sentry/node';
 
 // Process email job
-async function processEmailJob(job: Job<EmailJobData>): Promise<void> {
+async function processEmailJob(job: Job<EmailJobData>): Promise<{ success: boolean; emailId: string; to: string | string[]; template: string; } | { success: false; permanentFailure: boolean; error: string; }> {
   const { to, template, subject, data } = job.data;
   
   try {
@@ -16,7 +16,7 @@ async function processEmailJob(job: Job<EmailJobData>): Promise<void> {
     const result = await sendEmail({
       to,
       subject,
-      template: template as any,
+      template: template as EmailTemplate,
       data,
     });
     

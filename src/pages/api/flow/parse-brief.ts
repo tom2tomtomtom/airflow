@@ -1,5 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withAuth } from '@/middleware/withAuth';
+import { withFlowRateLimit } from '@/lib/rate-limiter';
+import { withCSRFProtection } from '@/lib/csrf';
 import formidable from 'formidable';
 import fs from 'fs';
 import path from 'path';
@@ -381,17 +383,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(405).json({ success: false, message: 'Method not allowed' });
   }
 
-  // Mock user for development if not present
-  let user = (req as any).user;
-  if (!user && process.env.NODE_ENV === 'development') {
-    user = {
-      id: '354d56b0-440b-403e-b207-7038fb8b00d7',
-      email: 'tomh@redbaez.com',
-      role: 'admin',
-      permissions: ['*'],
-      clientIds: ['mock-client-id'],
-      tenantId: 'mock-tenant'
-    };
+  // Get authenticated user from middleware
+  const user = (req as any).user;
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: 'Authentication required'
+    });
   }
   
     try {
@@ -728,15 +726,18 @@ async function parseDocumentContent(content: string, title: string): Promise<Bri
     requirements
   };
   
-  console.log('Pattern matching completed. Extracted:', {
-    title: result.title,
-    objective: result.objective.substring(0, 50) + '...',
-    keyMessageCount: result.keyMessages.length,
-    platformCount: result.platforms.length
-  });
+  // Log completion for monitoring (production-safe)
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Pattern matching completed. Extracted:', {
+      title: result.title,
+      objective: result.objective.substring(0, 50) + '...',
+      keyMessageCount: result.keyMessages.length,
+      platformCount: result.platforms.length
+    });
+  }
   
   return result;
 }
 
-// For development: bypass auth for flow APIs to avoid hanging issues
-export default process.env.NODE_ENV === 'development' ? handler : withAuth(handler);
+// Apply authentication, rate limiting, and CSRF protection for security
+export default withAuth(withFlowRateLimit()(withCSRFProtection(handler)));

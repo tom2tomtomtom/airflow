@@ -147,18 +147,8 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
   // Add security headers to all responses
   response = addSecurityHeaders(response);
   
-  // Apply rate limiting to auth endpoints
-  if (pathname.startsWith('/api/auth/')) {
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown';
-    const rateLimitKey = `auth:${ip}`;
-    
-    if (!checkRateLimit(rateLimitKey, 20, 60000)) { // 20 requests per minute
-      return NextResponse.json(
-        { success: false, message: 'Too many requests. Please try again later.' },
-        { status: 429 }
-      );
-    }
-  }
+  // Rate limiting is now handled at the individual API endpoint level
+  // This provides more granular control and better error handling
 
   // Allow public routes and static assets
   const isPublicRoute = publicRoutes.some(route => 

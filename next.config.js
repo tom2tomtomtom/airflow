@@ -55,12 +55,43 @@ const nextConfig = {
     formats: ['image/avif', 'image/webp'],
   },
   
-  // Headers for security and performance
+  // Enhanced security headers for production readiness
   async headers() {
+    // Build CSP based on environment
+    const cspBase = [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "font-src 'self' https://fonts.gstatic.com data:",
+      "img-src 'self' data: blob: https: http:",
+      "media-src 'self' blob: https:",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.openai.com https://api.elevenlabs.io https://api.creatomate.com https://api.runway.com",
+      "frame-src 'none'",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+    ];
+
+    // More permissive CSP in development
+    if (process.env.NODE_ENV === 'development') {
+      cspBase.push(
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'unsafe-hashes' https://cdn.jsdelivr.net",
+        "style-src 'self' 'unsafe-inline'",
+        "connect-src 'self' ws: wss: http: https:"
+      );
+    } else {
+      // Production CSP - more restrictive
+      cspBase.push("upgrade-insecure-requests");
+    }
+
     return [
       {
         source: '/:path*',
         headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: cspBase.join('; '),
+          },
           {
             key: 'X-DNS-Prefetch-Control',
             value: 'on',
@@ -83,7 +114,7 @@ const nextConfig = {
           },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(), payment=()',
+            value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), bluetooth=()',
           },
           // Add HSTS in production
           ...(process.env.NODE_ENV === 'production' ? [{

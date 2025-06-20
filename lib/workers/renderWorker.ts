@@ -5,7 +5,7 @@ import { RenderJobData } from '@/lib/queue/bullQueue';
 import { sendRenderCompleteEmail } from '@/lib/email/resend';
 import { S3Storage } from '@/lib/storage/s3Storage';
 import { createClient } from '@supabase/supabase-js';
-import { AppError, ExternalServiceError } from '@/lib/errors/errorHandler';
+import { AppError, ExternalServiceError } from '../errors/errorHandler';
 import * as Sentry from '@sentry/node';
 import { broadcastRenderProgress, broadcastRenderComplete } from '@/pages/api/realtime/events';
 
@@ -22,7 +22,7 @@ interface CreatomateRenderResponse {
 }
 
 // Process render job
-async function processRenderJob(job: Job<RenderJobData>): Promise<void> {
+async function processRenderJob(job: Job<RenderJobData>): Promise<{ success: boolean; executionId: string; renderUrl: string; renderId: string; }> {
   const { executionId, matrixId, templateId, assets, userId, clientId, isPreview } = job.data;
   
   try {

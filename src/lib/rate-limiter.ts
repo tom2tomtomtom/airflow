@@ -1,147 +1,170 @@
-import Redis from 'ioredis';
-import { RateLimiterRedis, RateLimiterMemory } from 'rate-limiter-flexible';
+import { Ratelimit } from '@upstash/ratelimit';
+import { Redis } from '@upstash/redis';
+import { NextApiRequest, NextApiResponse } from 'next';
 import { env } from './env';
-import { logger } from './logger';
 
-// Initialize Redis client
-const redis = env.REDIS_URL 
-  ? new Redis(env.REDIS_URL, {
-      retryStrategy: (times) => {
-        const delay = Math.min(times * 50, 2000);
-        return delay;
-      },
-      maxRetriesPerRequest: 3,
+// Initialize Redis client for production or fallback to memory
+const redis = env.UPSTASH_REDIS_REST_URL && env.UPSTASH_REDIS_REST_TOKEN
+  ? new Redis({
+      url: env.UPSTASH_REDIS_REST_URL,
+      token: env.UPSTASH_REDIS_REST_TOKEN,
     })
-  : null;
+  : undefined;
 
-// Redis health check
-if (redis) {
-  redis.on('error', (error) => {
-    logger.error('Redis connection error:', error);
-  });
-  
-  redis.on('connect', () => {
-    logger.info('Redis connected successfully');
-  });
+// Log Redis status
+if (process.env.NODE_ENV === 'development') {
+  console.log('Rate limiter Redis status:', redis ? 'Connected' : 'Using memory fallback');
 }
 
-// Create rate limiters with fallback to memory if Redis is unavailable
-export const createRateLimiter = (options: {
-  points: number;
-  duration: number;
-  keyPrefix: string;
-}) => {
-  if (redis) {
-    return new RateLimiterRedis({
-      storeClient: redis,
-      keyPrefix: `rate_limit:${options.keyPrefix}`,
-      points: options.points,
-      duration: options.duration,
-      execEvenly: false,
-    });
-  }
-  
-  // Fallback to memory rate limiter if Redis is not available
-  logger.warn(`Using in-memory rate limiter for ${options.keyPrefix} - Redis not available`);
-  return new RateLimiterMemory({
-    points: options.points,
-    duration: options.duration,
-    execEvenly: false,
-  });
-};
-
-// Pre-configured rate limiters
+// Rate limiter configurations using Upstash
 export const rateLimiters = {
-  // Auth endpoints - strict limits
-  auth: createRateLimiter({
-    points: 5,
-    duration: 60, // 5 requests per minute
-    keyPrefix: 'auth',
+  // Authentication endpoints - very strict
+  auth: new Ratelimit({
+    redis: redis || new Map(), // Fallback to memory
+    limiter: Ratelimit.slidingWindow(5, '15 m'), // 5 attempts per 15 minutes
+    analytics: true,
+    prefix: 'auth',
   }),
-  
-  // API endpoints - moderate limits
-  api: createRateLimiter({
-    points: 100,
-    duration: 60, // 100 requests per minute
-    keyPrefix: 'api',
+
+  // General API endpoints - moderate
+  api: new Ratelimit({
+    redis: redis || new Map(),
+    limiter: Ratelimit.slidingWindow(100, '1 m'), // 100 requests per minute
+    analytics: true,
+    prefix: 'api',
   }),
-  
-  // File upload endpoints - strict limits
-  upload: createRateLimiter({
-    points: 10,
-    duration: 300, // 10 uploads per 5 minutes
-    keyPrefix: 'upload',
-  }),
-  
+
   // AI generation endpoints - expensive operations
-  ai: createRateLimiter({
-    points: 20,
-    duration: 3600, // 20 requests per hour
-    keyPrefix: 'ai',
+  ai: new Ratelimit({
+    redis: redis || new Map(),
+    limiter: Ratelimit.slidingWindow(20, '1 h'), // 20 AI requests per hour
+    analytics: true,
+    prefix: 'ai',
+  }),
+
+  // File upload endpoints - resource intensive
+  upload: new Ratelimit({
+    redis: redis || new Map(),
+    limiter: Ratelimit.slidingWindow(10, '5 m'), // 10 uploads per 5 minutes
+    analytics: true,
+    prefix: 'upload',
+  }),
+
+  // Flow workflow endpoints - critical business logic
+  flow: new Ratelimit({
+    redis: redis || new Map(),
+    limiter: Ratelimit.slidingWindow(30, '5 m'), // 30 flow operations per 5 minutes
+    analytics: true,
+    prefix: 'flow',
+  }),
+
+  // Email sending - prevent spam
+  email: new Ratelimit({
+    redis: redis || new Map(),
+    limiter: Ratelimit.slidingWindow(5, '1 h'), // 5 emails per hour
+    analytics: true,
+    prefix: 'email',
   }),
 };
 
-// Middleware factory
-export const rateLimitMiddleware = (limiterName: keyof typeof rateLimiters) => {
-  return async (req: any, res: any, next: any) => {
-    const limiter = rateLimiters[limiterName];
-    const key = req.headers['x-forwarded-for'] || req.ip || 'unknown';
-    
-    try {
-      await limiter.consume(key);
-      
-      // Add rate limit headers
-      const rateLimiterRes = await limiter.get(key);
-      if (rateLimiterRes) {
-        res.setHeader('X-RateLimit-Limit', limiter.points);
-        res.setHeader('X-RateLimit-Remaining', rateLimiterRes.remainingPoints || 0);
-        res.setHeader('X-RateLimit-Reset', new Date(Date.now() + rateLimiterRes.msBeforeNext).toISOString());
+// Get identifier for rate limiting (user ID or IP)
+function getIdentifier(req: NextApiRequest): string {
+  // Try to get user ID from authenticated request
+  const userId = (req as any).user?.id || (req as any).userId;
+  if (userId) {
+    return `user:${userId}`;
+  }
+
+  // Fall back to IP address
+  const forwarded = req.headers['x-forwarded-for'];
+  const ip = forwarded
+    ? (typeof forwarded === 'string' ? forwarded : forwarded[0]).split(',')[0]
+    : req.socket.remoteAddress;
+
+  return `ip:${ip || 'unknown'}`;
+}
+
+// Rate limit middleware for API routes
+export function withRateLimit(
+  limiterName: keyof typeof rateLimiters,
+  options?: {
+    skipForAdmin?: boolean;
+    customIdentifier?: (req: NextApiRequest) => string;
+  }
+) {
+  return async function rateLimitMiddleware(
+    handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void>
+  ) {
+    return async (req: NextApiRequest, res: NextApiResponse) => {
+      try {
+        // Skip rate limiting for admin users if configured
+        if (options?.skipForAdmin && (req as any).user?.role === 'admin') {
+          return handler(req, res);
+        }
+
+        const identifier = options?.customIdentifier
+          ? options.customIdentifier(req)
+          : getIdentifier(req);
+
+        const limiter = rateLimiters[limiterName];
+        const result = await limiter.limit(identifier);
+
+        // Set rate limit headers
+        res.setHeader('X-RateLimit-Limit', result.limit);
+        res.setHeader('X-RateLimit-Remaining', result.remaining);
+        res.setHeader('X-RateLimit-Reset', new Date(result.reset).toISOString());
+
+        if (!result.success) {
+          res.setHeader('Retry-After', Math.ceil((result.reset - Date.now()) / 1000));
+
+          return res.status(429).json({
+            success: false,
+            error: 'Too many requests',
+            message: 'Please try again later',
+            retryAfter: Math.ceil((result.reset - Date.now()) / 1000),
+          });
+        }
+
+        return handler(req, res);
+      } catch (error) {
+        // If rate limiting fails, allow the request but log the error
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Rate limiting error:', error);
+        }
+        return handler(req, res);
       }
-      
-      next();
-    } catch (error) {
-      // Rate limit exceeded
-      res.setHeader('Retry-After', String(Math.round(error.msBeforeNext / 1000)) || '60');
-      res.status(429).json({
-        success: false,
-        error: 'Too many requests',
-        message: 'Please try again later',
-        retryAfter: Math.round(error.msBeforeNext / 1000),
-      });
-    }
+    };
   };
-};
+}
 
 // Helper function for manual rate limit checking
 export const checkRateLimit = async (
   limiterName: keyof typeof rateLimiters,
-  key: string
+  identifier: string
 ): Promise<{ allowed: boolean; remaining?: number; resetAt?: Date }> => {
-  const limiter = rateLimiters[limiterName];
-  
   try {
-    const rateLimiterRes = await limiter.get(key);
-    
-    if (!rateLimiterRes) {
-      return { allowed: true, remaining: limiter.points };
-    }
-    
+    const limiter = rateLimiters[limiterName];
+    const result = await limiter.limit(identifier, { rate: 0 }); // Check without consuming
+
     return {
-      allowed: rateLimiterRes.remainingPoints > 0,
-      remaining: rateLimiterRes.remainingPoints,
-      resetAt: new Date(Date.now() + rateLimiterRes.msBeforeNext),
+      allowed: result.success,
+      remaining: result.remaining,
+      resetAt: new Date(result.reset),
     };
   } catch (error) {
-    logger.error('Rate limit check error:', error);
-    return { allowed: true }; // Fail open in case of errors
+    // Fail open in case of errors
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Rate limit check error:', error);
+    }
+    return { allowed: true };
   }
 };
 
-// Clean up on exit
-if (redis) {
-  process.on('SIGTERM', () => {
-    redis.disconnect();
-  });
-}
+// Convenience exports for common rate limiting patterns
+export const withAuthRateLimit = withRateLimit('auth');
+export const withAPIRateLimit = withRateLimit('api');
+export const withAIRateLimit = withRateLimit('ai');
+export const withUploadRateLimit = withRateLimit('upload');
+export const withFlowRateLimit = withRateLimit('flow');
 
 export default rateLimiters;

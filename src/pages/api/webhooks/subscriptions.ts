@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withErrorHandler } from '@/lib/errors/errorHandler';
-import { withRateLimitedRoute } from '../../../../middleware/rateLimiter';
+import { withAPIRateLimit } from '@/lib/rate-limiter';
 import { WebhookManager } from '../../../../lib/webhooks/webhookManager';
 import { AuthorizationError, ValidationError } from '@/lib/errors/errorHandler';
 
@@ -109,4 +109,4 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, userId: s
   res.status(204).end();
 }
 
-export default withRateLimitedRoute(withErrorHandler(handler), 'api');
+export default withErrorHandler(withAPIRateLimit()(handler));

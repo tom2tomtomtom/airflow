@@ -1,4 +1,5 @@
 import { getErrorMessage } from '@/utils/errorUtils';
+import { withAuthRateLimit } from '@/lib/rate-limiter';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
 import { apiSchemas } from '@/middleware/validation';
@@ -20,7 +21,7 @@ interface LoginResponse {
   error?: string;
 }
 
-export default async function handler(
+async function handler(
   req: NextApiRequest,
   res: NextApiResponse<LoginResponse>
 ): Promise<void> {
@@ -189,3 +190,6 @@ export default async function handler(
     });
   }
 }
+
+// Apply rate limiting to prevent brute force attacks
+export default withAuthRateLimit()(handler);

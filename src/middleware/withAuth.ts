@@ -201,22 +201,7 @@ async function getUserClients(supabase: any, userId: string): Promise<string[]> 
 // Middleware to require authentication
 export function withAuth(handler: AuthenticatedHandler) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
-    // TEMPORARY: Bypass auth for Flow APIs in development for testing drag/drop
-    if (process.env.NODE_ENV === 'development' && req.url?.includes('/api/flow/')) {
-            const mockUser = {
-        id: '354d56b0-440b-403e-b207-7038fb8b00d7',
-        email: 'tomh@redbaez.com',
-        role: 'admin' as UserRole,
-        permissions: ['*'],
-        clientIds: ['mock-client-id'],
-        tenantId: 'mock-tenant'
-      };
-      
-      const authReq = req as AuthenticatedRequest;
-      authReq.user = mockUser;
-      
-      return handler(authReq, res);
-    }
+    // Always require proper authentication - no bypasses for security
     
     try {
             // Enhanced token validation with multiple methods

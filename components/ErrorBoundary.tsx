@@ -1,6 +1,6 @@
 import React from 'react';
 import * as Sentry from '@sentry/nextjs';
-import { handleReactError } from '@/lib/errors/errorHandler';
+import { handleReactError } from '../lib/errors/errorHandler';
 
 interface ErrorBoundaryState {
   hasError: boolean;

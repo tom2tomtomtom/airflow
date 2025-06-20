@@ -1,7 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withErrorHandler } from '@/lib/errors/errorHandler';
-import { withRateLimitedRoute } from '../../../../middleware/rateLimiter';
+import { withAPIRateLimit } from '@/lib/rate-limiter';
 import { WebhookManager } from '../../../../lib/webhooks/webhookManager';
 import { ValidationError } from '@/lib/errors/errorHandler';
 
@@ -60,4 +60,4 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   }
 }
 
-export default withRateLimitedRoute(withErrorHandler(handler), 'api');
+export default withErrorHandler(withAPIRateLimit()(handler));

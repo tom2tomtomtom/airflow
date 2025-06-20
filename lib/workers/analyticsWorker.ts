@@ -11,7 +11,7 @@ const supabase = createClient(
 );
 
 // Process analytics job
-async function processAnalyticsJob(job: Job<AnalyticsJobData>): Promise<void> {
+async function processAnalyticsJob(job: Job<AnalyticsJobData>): Promise<{ success: boolean; event: string; timestamp: string; }> {
   const { event, userId, clientId, properties, timestamp } = job.data;
   
   try {

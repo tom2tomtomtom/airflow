@@ -2,6 +2,7 @@ import { getErrorMessage } from '@/utils/errorUtils';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from 'openai';
 import { env, hasOpenAI, hasElevenLabs, hasRunway } from '@/lib/env';
+import { withAIRateLimit } from '@/lib/rate-limiter';
 
 export interface GenerationPrompt {
   prompt: string;
@@ -169,7 +170,7 @@ const generateVoice = async (prompt: string, parameters?: Record<string, any>): 
 };
 
 
-export default async function handler(
+async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>
 ): Promise<void> {
@@ -242,3 +243,6 @@ export default async function handler(
     return res.status(500).json({ success: false, message: 'Internal server error' });
   }
 }
+
+// Apply AI rate limiting to prevent abuse and cost overruns
+export default withAIRateLimit()(handler);

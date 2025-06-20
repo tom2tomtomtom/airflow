@@ -1,5 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withAuth } from '@/middleware/withAuth';
+import { withAIRateLimit } from '@/lib/rate-limiter';
+import { withCSRFProtection } from '@/lib/csrf';
 import OpenAI from 'openai';
 
 interface BriefData {
@@ -39,17 +41,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(405).json({ success: false, message: 'Method not allowed' });
   }
 
-  // Mock user for development if not present
-  let user = (req as any).user;
-  if (!user && process.env.NODE_ENV === 'development') {
-    user = {
-      id: '354d56b0-440b-403e-b207-7038fb8b00d7',
-      email: 'tomh@redbaez.com',
-      role: 'admin',
-      permissions: ['*'],
-      clientIds: ['mock-client-id'],
-      tenantId: 'mock-tenant'
-    };
+  // Get authenticated user from middleware
+  const user = (req as any).user;
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: 'Authentication required'
+    });
   }
   const { briefData }: { briefData: BriefData } = req.body;
   
@@ -371,5 +369,5 @@ async function generateMotivationsWithTemplates(briefData: BriefData): Promise<M
     .slice(0, 10);
 }
 
-// For development: bypass auth for flow APIs to avoid hanging issues
-export default process.env.NODE_ENV === 'development' ? handler : withAuth(handler);
+// Apply authentication, AI rate limiting, and CSRF protection for security
+export default withAuth(withAIRateLimit()(withCSRFProtection(handler)));

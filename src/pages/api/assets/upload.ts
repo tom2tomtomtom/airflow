@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
+import { withUploadRateLimit } from '@/lib/rate-limiter';
 
 export const config = {
   api: {
@@ -242,4 +243,4 @@ async function handler(
   }
 }
 
-export default withSecurityHeaders(withAuth(handler));
+export default withSecurityHeaders(withAuth(withUploadRateLimit()(handler)));

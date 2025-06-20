@@ -18,7 +18,7 @@ function generateSignature(payload: any, secret: string): string {
 }
 
 // Process webhook job
-async function processWebhookJob(job: Job<WebhookJobData>): Promise<void> {
+async function processWebhookJob(job: Job<WebhookJobData>): Promise<{ success: boolean; status?: number; response?: string; deliveredAt?: string; retryScheduled?: boolean; permanentFailure?: boolean; error?: string; attempts?: number; }> {
   const { url, event, data, secret, attempts = 0, maxAttempts = 3 } = job.data;
   
   try {

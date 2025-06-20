@@ -1,6 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withAuth } from '@/middleware/withAuth';
 import { supabase } from '@/lib/supabase/client';
+import { successResponse, errorResponse, handleApiError, methodNotAllowed, validateRequiredFields, ApiErrorCode } from '@/lib/api-response';
+import { withFlowRateLimit } from '@/lib/rate-limiter';
 
 interface CopyVariation {
   id: string;
@@ -20,18 +22,30 @@ interface StoreCopyRequest {
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ success: false, message: 'Method not allowed' });
+    return methodNotAllowed(res, ['POST']);
   }
 
   const user = (req as any).user;
   const { selectedCopy, briefTitle, clientId }: StoreCopyRequest = req.body;
-  
-  if (!selectedCopy || !Array.isArray(selectedCopy) || selectedCopy.length === 0) {
-    return res.status(400).json({ success: false, message: 'Selected copy variations are required' });
+
+  // Validate required fields
+  const missingFields = validateRequiredFields(req.body, ['selectedCopy', 'clientId']);
+  if (missingFields.length > 0) {
+    return errorResponse(
+      res,
+      ApiErrorCode.VALIDATION_ERROR,
+      `Missing required fields: ${missingFields.join(', ')}`,
+      400
+    );
   }
 
-  if (!clientId) {
-    return res.status(400).json({ success: false, message: 'Client ID is required' });
+  if (!Array.isArray(selectedCopy) || selectedCopy.length === 0) {
+    return errorResponse(
+      res,
+      ApiErrorCode.VALIDATION_ERROR,
+      'Selected copy variations must be a non-empty array',
+      400
+    );
   }
 
   try {
@@ -89,22 +103,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       });
     }
 
-        return res.status(200).json({
-      success: true,
-      data: {
-        storedAssets,
-        count: storedAssets.length
-      },
+    return successResponse(res, {
+      storedAssets,
+      count: storedAssets.length,
       message: `${storedAssets.length} copy variations stored in assets library`
-    });
+    }, 200);
 
   } catch (error) {
-    console.error('Error storing copy assets:', error);
-    return res.status(500).json({
-      success: false,
-      message: error instanceof Error ? error.message : 'Failed to store copy assets'
-    });
+    return handleApiError(res, error, 'store-copy-assets');
   }
 }
 
-export default withAuth(handler);
+export default withAuth(withFlowRateLimit()(handler));
