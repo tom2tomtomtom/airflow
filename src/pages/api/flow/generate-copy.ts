@@ -115,47 +115,55 @@ async function generateCopyFromMotivations(motivations: Motivation[], briefData:
 }
 
 async function generateCopyWithAI(motivations: Motivation[], briefData: BriefData): Promise<CopyVariation[]> {
-  const prompt = `You are an expert copywriter and digital marketing specialist. Generate compelling, platform-specific ad copy based on the provided motivations and creative brief.
+  const prompt = `You are an expert copywriter specializing in conversion-focused ad copy. Create compelling copy that bridges the specific motivations with the exact product/service and target audience from the brief.
 
-CREATIVE BRIEF:
+CREATIVE BRIEF CONTEXT:
 Title: ${briefData.title}
 Objective: ${briefData.objective}
 Target Audience: ${briefData.targetAudience}
 Key Messages: ${briefData.keyMessages.join(', ')}
 Platforms: ${briefData.platforms.join(', ')}
-Product/Service: ${briefData.product || 'Not specified'}
+Product/Service: ${briefData.product || briefData.service || 'Not specified'}
 Value Proposition: ${briefData.valueProposition || 'Not specified'}
 Industry: ${briefData.industry || 'Not specified'}
-Brand Guidelines: ${briefData.brandGuidelines || 'Not specified'}
 
-SELECTED MOTIVATIONS:
-${motivations.map((m, i) => `${i + 1}. ${m.title}: ${m.description}`).join('\n')}
+SELECTED MOTIVATIONS TO ADDRESS:
+${motivations.map((m, i) => `${i + 1}. "${m.title}": ${m.description}\n   Target Emotions: ${m.targetEmotions.join(', ')}\n   Reasoning: ${m.reasoning}`).join('\n\n')}
 
-Generate 3 copy variations for each available motivation (up to 3 motivations) and the PRIMARY platform. Each copy should be:
-- Maximum 10 words for social media optimization
-- Platform-appropriate in tone and style
-- Aligned with the specific motivation
-- Compelling and actionable
-- Brand-appropriate based on guidelines
+TASK: Generate 3 copy variations for EACH motivation that:
+1. Directly address the specific motivation described
+2. Relate to the exact product/service in the brief
+3. Speak to the target audience using their language/concerns
+4. Incorporate the value proposition naturally
+5. Are optimized for the primary platform: ${briefData.platforms[0] || 'Meta'}
 
-For each copy variation, include:
-- id: unique identifier
-- text: the actual copy (max 10 words)
-- platform: which platform it's optimized for
-- motivation: which motivation it's based on
-- wordCount: number of words
-- tone: descriptive tone (e.g., "urgent", "inspiring", "professional")
-- cta: strong call-to-action (2-3 words)
+COPY REQUIREMENTS:
+- Maximum 10 words per copy
+- Must connect the MOTIVATION → PRODUCT/SERVICE → TARGET AUDIENCE
+- Include emotional triggers from the motivation's targetEmotions
+- Platform-appropriate tone and style
+- Clear, compelling call-to-action
 
-Platform-specific guidelines:
-- Meta/Facebook: Conversational, benefit-focused
-- Instagram: Visual, trendy, with emoji potential
-- LinkedIn: Professional, value-driven, B2B focused
-- TikTok: Trendy, catchy, youth-oriented
-- YouTube: Educational, engaging, longer form allowed
+PLATFORM OPTIMIZATION (${briefData.platforms[0] || 'Meta'}):
+- Meta/Facebook: Conversational, benefit-focused, community-oriented
+- Instagram: Visual, trendy, lifestyle-focused, emoji-friendly
+- LinkedIn: Professional, value-driven, results-oriented, B2B tone
+- TikTok: Trendy, catchy, youth-oriented, action-focused
+- YouTube: Educational, engaging, story-driven
 - Pinterest: Aspirational, visual, lifestyle-focused
 
-Respond with a JSON array of copy variations. Generate 3 variations per available motivation (up to 9 total if 3 motivations are provided). Focus on quality over quantity.`;
+For each copy variation, provide:
+- id: unique identifier (copy_motivation1_var1, etc.)
+- text: the actual copy (max 10 words)
+- platform: ${briefData.platforms[0] || 'Meta'}
+- motivation: exact motivation title it addresses
+- wordCount: number of words
+- tone: tone that matches the motivation's target emotions
+- cta: strong 2-3 word call-to-action
+
+CRITICAL: Each copy must clearly connect the motivation to the specific product/service. Don't create generic copy - make it specific to this brief's context.
+
+Respond with JSON array only.`;
 
   const response = await Promise.race([
     openai.chat.completions.create({

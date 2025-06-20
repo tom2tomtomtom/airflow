@@ -77,8 +77,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 }
 
 async function generateMotivationsFromBrief(briefData: BriefData): Promise<Motivation[]> {
-  // Try AI-powered generation first, but with quick fallback
-  if (process.env.OPENAI_API_KEY && process.env.NODE_ENV !== 'production') {
+  // Try AI-powered generation first for better contextual motivations
+  if (process.env.OPENAI_API_KEY) {
     try {
       const aiMotivations = await generateMotivationsWithAI(briefData);
       if (aiMotivations && aiMotivations.length > 0) {
@@ -89,44 +89,56 @@ async function generateMotivationsFromBrief(briefData: BriefData): Promise<Motiv
     }
   }
 
-  // Use template-based generation for production reliability
+  // Use template-based generation as fallback
   return generateMotivationsWithTemplates(briefData);
 }
 
 async function generateMotivationsWithAI(briefData: BriefData): Promise<Motivation[]> {
-  const prompt = `You are an expert marketing strategist and consumer psychologist. Analyze the following creative brief and generate 8-10 strategic consumer motivations that are SPECIFICALLY tailored to this brief content. Avoid generic motivations - make them contextual and relevant to the specific product/service, audience, and objectives described.
+  const prompt = `You are an expert marketing strategist and consumer psychologist. Analyze this creative brief and generate 8-10 consumer motivations that are SPECIFICALLY tailored to the exact product/service, target audience, and objectives described. These motivations must be contextual and unique to this brief - NOT generic templates.
 
-CREATIVE BRIEF:
+CREATIVE BRIEF ANALYSIS:
 Title: ${briefData.title}
 Objective: ${briefData.objective}
 Target Audience: ${briefData.targetAudience}
 Key Messages: ${briefData.keyMessages.join(', ')}
 Platforms: ${briefData.platforms.join(', ')}
-Product/Service: ${briefData.product || 'Not specified'}
+Product/Service: ${briefData.product || briefData.service || 'Not specified'}
 Value Proposition: ${briefData.valueProposition || 'Not specified'}
 Industry: ${briefData.industry || 'Not specified'}
-Brand Guidelines: ${briefData.brandGuidelines || 'Not specified'}
+Budget: ${briefData.budget || 'Not specified'}
+Timeline: ${briefData.timeline || 'Not specified'}
 
-Generate 8-10 consumer motivations as a JSON array that are SPECIFICALLY tailored to this brief. Each motivation should include:
-- id: unique identifier (motivation_1, motivation_2, etc.)
-- title: Clear, compelling motivation title (2-4 words)
-- description: Detailed explanation of how this motivation drives consumer behavior (2-3 sentences)
-- score: Relevance score 1-100 based on brief analysis
-- reasoning: Why this motivation is effective for this specific campaign (1-2 sentences)
-- targetEmotions: Array of 2-3 primary emotions this motivation targets
-- platforms: Array of platforms where this motivation would be most effective
+TASK: Generate motivations that answer "What would make THIS specific target audience want to buy/engage with THIS specific product/service to achieve THIS specific objective?"
 
-Focus on:
-1. Deep consumer psychology insights SPECIFIC to the product/service mentioned
-2. Emotional triggers that directly relate to the target audience described in the brief
-3. Motivations that align with the exact campaign objectives stated
-4. Platform-appropriate strategies for the specific platforms mentioned
-5. Industry-specific consumer drivers relevant to the industry in the brief
-6. Cultural and behavioral trends that affect the specific target audience
+Each motivation must be:
+1. SPECIFIC to the product/service mentioned in the brief
+2. RELEVANT to the exact target audience described
+3. ALIGNED with the stated campaign objective
+4. ACTIONABLE for the platforms mentioned
+5. DISTINCT from each other (no overlapping concepts)
 
-CRITICAL: Ensure motivations are diverse, covering emotional, rational, social, and aspirational drivers, but ALL must be contextually relevant to this specific brief. Do NOT use generic motivations like "Fear of Missing Out" unless they directly relate to the specific product/service and audience described. Instead, create motivations that are unique to this campaign's context.
+Generate as JSON array with each motivation containing:
+- id: "motivation_1", "motivation_2", etc.
+- title: Specific motivation name (2-4 words, not generic)
+- description: How this motivation drives the TARGET AUDIENCE to want the SPECIFIC PRODUCT/SERVICE (2-3 sentences)
+- score: Relevance score 1-100 based on brief alignment
+- reasoning: Why this motivation works for THIS specific campaign context (1-2 sentences)
+- targetEmotions: 2-3 emotions this motivation triggers in the target audience
+- platforms: Which platforms from the brief would work best for this motivation
 
-Respond ONLY with the JSON array, no additional text.`;
+EXAMPLES OF WHAT TO AVOID:
+❌ Generic: "Social Proof" → ✅ Specific: "Peer Success Stories" (if brief mentions community/networking)
+❌ Generic: "Fear of Missing Out" → ✅ Specific: "Career Advancement Urgency" (if brief is about professional development)
+❌ Generic: "Emotional Connection" → ✅ Specific: "Family Security Assurance" (if brief mentions family protection)
+
+Focus on psychological drivers that are unique to:
+- The specific industry mentioned
+- The exact target demographic described
+- The particular product/service benefits
+- The stated campaign goals
+- The cultural context of the audience
+
+Respond ONLY with the JSON array.`;
 
   const response = await Promise.race([
     openai.chat.completions.create({
