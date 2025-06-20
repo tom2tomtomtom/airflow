@@ -3,7 +3,7 @@ import { promisify } from 'util';
 import { exec } from 'child_process';
 import path from 'path';
 import fs from 'fs';
-import { loggers } from './logger';
+import { logger } from './logger';
 import { env } from './env';
 
 const execAsync = promisify(exec);
@@ -87,10 +87,10 @@ export class FileUploadSecurity {
     try {
       await execAsync('clamscan --version');
       this.clamAvAvailable = true;
-      loggers.general.info('ClamAV is available for virus scanning');
+      logger.info('ClamAV is available for virus scanning');
     } catch (error) {
       this.clamAvAvailable = false;
-      loggers.general.warn('ClamAV not available - virus scanning disabled');
+      logger.warn('ClamAV not available - virus scanning disabled');
     }
   }
 
@@ -160,7 +160,7 @@ export class FileUploadSecurity {
     const startTime = Date.now();
 
     if (!this.clamAvAvailable) {
-      loggers.general.debug('Virus scanning skipped - ClamAV not available');
+      logger.debug('Virus scanning skipped - ClamAV not available');
       return {
         clean: true,
         infected: false,
@@ -187,9 +187,9 @@ export class FileUploadSecurity {
           });
         }
 
-        loggers.general.warn('Virus detected in uploaded file', {
+        logger.warn('Virus detected in uploaded file', {
           filePath,
-          threats: threats.join(', '),
+          threats,
           scanTime,
         });
 
@@ -197,7 +197,7 @@ export class FileUploadSecurity {
         try {
           await fsUnlink(filePath);
         } catch (error) {
-          loggers.general.error('Failed to delete infected file', error, { filePath });
+          logger.error('Failed to delete infected file', error, { filePath });
         }
 
         return {
@@ -208,7 +208,7 @@ export class FileUploadSecurity {
         };
       }
 
-      loggers.general.debug('File scan completed - no threats found', {
+      logger.debug('File scan completed - no threats found', {
         filePath,
         scanTime,
       });
@@ -219,7 +219,7 @@ export class FileUploadSecurity {
         scanTime,
       };
     } catch (error) {
-      loggers.general.error('Virus scan failed', error, { filePath });
+      logger.error('Virus scan failed', error, { filePath });
       
       return {
         clean: false,
@@ -340,7 +340,7 @@ export class FileUploadSecurity {
   // Get file type from extension
   private getFileType(extension: string): keyof typeof ALLOWED_FILE_TYPES | null {
     for (const [type, extensions] of Object.entries(ALLOWED_FILE_TYPES)) {
-      if ((extensions as readonly string[]).includes(extension)) {
+      if (extensions.includes(extension)) {
         return type as keyof typeof ALLOWED_FILE_TYPES;
       }
     }

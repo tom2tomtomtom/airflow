@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import compression from 'compression';
-import { loggers } from './logger';
+import { logger } from './logger';
 import { env } from './env';
 
 // Cache control headers for different resource types
@@ -173,12 +173,12 @@ export async function trackQueryPerformance<T>(
     
     // Log slow queries
     if (duration > 1000) {
-      loggers.db.warn('Slow query detected', {
+      logger.warn('Slow query detected', {
         queryName,
         duration: `${duration.toFixed(2)}ms`,
       });
     } else {
-      loggers.db.debug('Query executed', {
+      logger.debug('Query executed', {
         queryName,
         duration: `${duration.toFixed(2)}ms`,
       });
@@ -188,7 +188,7 @@ export async function trackQueryPerformance<T>(
   } catch (error) {
     const duration = Number(process.hrtime.bigint() - startTime) / 1000000;
     
-    loggers.db.error('Query failed', error, {
+    logger.error('Query failed', error, {
       queryName,
       duration: `${duration.toFixed(2)}ms`,
     });
@@ -198,7 +198,7 @@ export async function trackQueryPerformance<T>(
 }
 
 // Response size optimization
-export function optimizeResponse<T extends object>(
+export function optimizeResponse<T>(
   data: T,
   fields?: string[]
 ): Partial<T> {
@@ -215,7 +215,7 @@ export function optimizeResponse<T extends object>(
   return pickFields(data, fields);
 }
 
-function pickFields<T extends object>(obj: T, fields: string[]): Partial<T> {
+function pickFields<T>(obj: T, fields: string[]): Partial<T> {
   const result: any = {};
   
   for (const field of fields) {
