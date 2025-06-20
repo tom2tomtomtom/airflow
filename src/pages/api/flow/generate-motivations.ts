@@ -94,7 +94,7 @@ async function generateMotivationsFromBrief(briefData: BriefData): Promise<Motiv
 }
 
 async function generateMotivationsWithAI(briefData: BriefData): Promise<Motivation[]> {
-  const prompt = `You are an expert marketing strategist and consumer psychologist. Analyze the following creative brief and generate 12 strategic consumer motivations that would drive engagement and action for this campaign.
+  const prompt = `You are an expert marketing strategist and consumer psychologist. Analyze the following creative brief and generate 8-10 strategic consumer motivations that are SPECIFICALLY tailored to this brief content. Avoid generic motivations - make them contextual and relevant to the specific product/service, audience, and objectives described.
 
 CREATIVE BRIEF:
 Title: ${briefData.title}

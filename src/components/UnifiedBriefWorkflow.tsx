@@ -1109,95 +1109,206 @@ const BriefReviewEditor: React.FC<BriefReviewEditorProps> = ({
   };
 
   return (
-    <div className="w-full p-6 bg-white">
-      <div className="border-l-4 border-blue-500 pl-6 mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+    <Box sx={{ width: '100%', p: 3, bgcolor: 'background.paper' }}>
+      <Box sx={{ borderLeft: 4, borderColor: 'primary.main', pl: 3, mb: 4 }}>
+        <Typography variant="h4" component="h2" sx={{ fontWeight: 'bold', color: 'text.primary', mb: 1 }}>
           Review & Edit Brief Content
-        </h2>
-        <p className="text-gray-600 text-lg">
+        </Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ fontSize: '1.1rem' }}>
           Please review the parsed content below and make any necessary adjustments before proceeding to generate motivations.
-        </p>
-      </div>
+        </Typography>
+      </Box>
       
-      <div className="space-y-8">
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         {/* Basic Information Section */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
-          <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-            <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+        <Paper sx={{
+          background: 'linear-gradient(135deg, #e3f2fd 0%, #e8eaf6 100%)',
+          borderRadius: 3,
+          p: 3,
+          border: 1,
+          borderColor: 'primary.200'
+        }}>
+          <Typography variant="h5" component="h3" sx={{
+            fontWeight: 600,
+            color: 'text.primary',
+            mb: 3,
+            display: 'flex',
+            alignItems: 'center'
+          }}>
+            <Box sx={{
+              width: 8,
+              height: 8,
+              bgcolor: 'primary.main',
+              borderRadius: '50%',
+              mr: 2
+            }} />
             Basic Information
-          </h3>
-          
-          <div className="space-y-6">
-            <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-2">Brief Title</label>
-              <input
-                type="text"
-                className="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-lg shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-300"
+          </Typography>
+
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <Box>
+              <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'text.primary', mb: 1 }}>
+                Brief Title
+              </Typography>
+              <TextField
+                fullWidth
+                variant="outlined"
+                size="medium"
                 value={typeof editedData.title === 'string' ? editedData.title : String(editedData.title || '')}
                 onChange={(e) => handleFieldChange('title', e.target.value)}
                 placeholder="Enter your brief title..."
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    bgcolor: 'background.paper',
+                    fontSize: '1.1rem',
+                    '& fieldset': {
+                      borderWidth: 2,
+                    },
+                    '&:hover fieldset': {
+                      borderColor: 'primary.main',
+                    },
+                  },
+                }}
               />
-            </div>
-            
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-              <div>
-                <label className="block text-sm font-semibold text-gray-800 mb-2">Industry</label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-lg shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-300"
+            </Box>
+
+            <Grid container spacing={3}>
+              <Grid item xs={12} xl={6}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'text.primary', mb: 1 }}>
+                  Industry
+                </Typography>
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  size="medium"
                   value={editedData.industry || ''}
                   onChange={(e) => handleFieldChange('industry', e.target.value)}
                   placeholder="e.g., Technology, Healthcare, Retail"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      bgcolor: 'background.paper',
+                      fontSize: '1.1rem',
+                      '& fieldset': {
+                        borderWidth: 2,
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'primary.main',
+                      },
+                    },
+                  }}
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-800 mb-2">Product/Service</label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-lg shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-300"
+              </Grid>
+              <Grid item xs={12} xl={6}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'text.primary', mb: 1 }}>
+                  Product/Service
+                </Typography>
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  size="medium"
                   value={editedData.product || editedData.service || ''}
                   onChange={(e) => handleFieldChange('product', e.target.value)}
                   placeholder="Describe your product or service"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      bgcolor: 'background.paper',
+                      fontSize: '1.1rem',
+                      '& fieldset': {
+                        borderWidth: 2,
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'primary.main',
+                      },
+                    },
+                  }}
                 />
-              </div>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-semibold text-gray-800 mb-2">Objective</label>
-              <textarea
-                className="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-lg shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-300 resize-none"
+              </Grid>
+            </Grid>
+
+            <Box>
+              <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'text.primary', mb: 1 }}>
+                Objective
+              </Typography>
+              <TextField
+                fullWidth
+                multiline
                 rows={6}
+                variant="outlined"
                 value={typeof editedData.objective === 'string' ? editedData.objective : String(editedData.objective || '')}
                 onChange={(e) => handleFieldChange('objective', e.target.value)}
                 placeholder="Describe the main objective of your campaign..."
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    bgcolor: 'background.paper',
+                    fontSize: '1.1rem',
+                    '& fieldset': {
+                      borderWidth: 2,
+                    },
+                    '&:hover fieldset': {
+                      borderColor: 'primary.main',
+                    },
+                  },
+                }}
               />
-            </div>
-            
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-              <div>
-                <label className="block text-sm font-semibold text-gray-800 mb-2">Target Audience</label>
-                <textarea
-                  className="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-lg shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-300 resize-none"
+            </Box>
+
+            <Grid container spacing={3}>
+              <Grid item xs={12} xl={6}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'text.primary', mb: 1 }}>
+                  Target Audience
+                </Typography>
+                <TextField
+                  fullWidth
+                  multiline
                   rows={6}
+                  variant="outlined"
                   value={typeof editedData.targetAudience === 'string' ? editedData.targetAudience : String(editedData.targetAudience || '')}
                   onChange={(e) => handleFieldChange('targetAudience', e.target.value)}
                   placeholder="Describe your target audience in detail..."
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      bgcolor: 'background.paper',
+                      fontSize: '1.1rem',
+                      '& fieldset': {
+                        borderWidth: 2,
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'primary.main',
+                      },
+                    },
+                  }}
                 />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-semibold text-gray-800 mb-2">Value Proposition</label>
-                <textarea
-                  className="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-lg shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 hover:border-gray-300 resize-none"
+              </Grid>
+
+              <Grid item xs={12} xl={6}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'text.primary', mb: 1 }}>
+                  Value Proposition
+                </Typography>
+                <TextField
+                  fullWidth
+                  multiline
                   rows={6}
+                  variant="outlined"
                   value={typeof editedData.valueProposition === 'string' ? editedData.valueProposition || '' : String(editedData.valueProposition || '')}
                   onChange={(e) => handleFieldChange('valueProposition', e.target.value)}
                   placeholder="What unique value does your product/service offer?"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      bgcolor: 'background.paper',
+                      fontSize: '1.1rem',
+                      '& fieldset': {
+                        borderWidth: 2,
+                      },
+                      '&:hover fieldset': {
+                        borderColor: 'primary.main',
+                      },
+                    },
+                  }}
                 />
-              </div>
-            </div>
-          </div>
-        </div>
+              </Grid>
+            </Grid>
+          </Box>
+        </Paper>
           
         {/* Product & Service Details Section */}
         <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">

@@ -270,29 +270,29 @@ async function parseWithOpenAI(content: string, title: string): Promise<BriefDat
 
     // Check if document needs chunking
   const chunks = chunkDocument(content, 6000); // Leave room for prompt and response
-  
+
   if (chunks.length > 1) {
         return await parseChunkedDocument(chunks, title);
   }
-  
+
   try {
     const prompt = `You are an expert marketing strategist tasked with extracting structured information from a creative brief. Please analyze the following creative brief and extract the key information into the specified JSON format.
 
 CREATIVE BRIEF CONTENT:
 ${content}
 
-Please extract and format the information as a JSON object with the following structure:
+Please extract and format the information as a JSON object with the following structure. Be specific and contextual to the brief content - avoid generic responses:
 {
-  "title": "Brief title or project name",
-  "objective": "Main campaign objective and goals",
-  "targetAudience": "Detailed target audience description",
+  "title": "Brief title or project name (extract from content or use filename)",
+  "objective": "Main campaign objective and goals (be specific to this brief)",
+  "targetAudience": "Detailed target audience description (extract specific demographics/psychographics)",
   "keyMessages": ["Key message 1", "Key message 2", "Key message 3"],
   "platforms": ["Platform1", "Platform2", "Platform3"],
-  "budget": "Budget information if mentioned",
-  "timeline": "Timeline or launch date information",
-  "product": "Main product or service being promoted",
+  "budget": "Budget information if mentioned, otherwise 'Not specified'",
+  "timeline": "Timeline or launch date information, otherwise 'Not specified'",
+  "product": "Main product or service being promoted (be specific)",
   "service": "Service offerings or additional services",
-  "valueProposition": "Unique value proposition or competitive advantage",
+  "valueProposition": "Unique value proposition or competitive advantage (extract from brief)",
   "brandGuidelines": "Brand guidelines, tone of voice, or creative mandatories",
   "requirements": ["Requirement 1", "Requirement 2"],
   "industry": "Industry or sector",
