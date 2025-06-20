@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act, waitFor } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
+import { waitFor } from '@testing-library/dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { AuthProvider } from '@/contexts/AuthContext';
 import React from 'react';
@@ -48,16 +49,33 @@ describe('AuthContext', () => {
   });
 
   it('should handle successful login', async () => {
-    const mockUser = { 
-      id: '123', 
+    const mockUser = {
+      id: '123',
       email: 'test@example.com',
-      user_metadata: { full_name: 'Test User' }
+      user_metadata: { full_name: 'Test User' },
+      app_metadata: {},
+      aud: 'authenticated',
+      created_at: '2023-01-01T00:00:00Z',
+      confirmed_at: '2023-01-01T00:00:00Z',
+      email_confirmed_at: '2023-01-01T00:00:00Z',
+      phone: '',
+      last_sign_in_at: '2023-01-01T00:00:00Z',
+      role: 'authenticated',
+      updated_at: '2023-01-01T00:00:00Z'
     };
-    
+
+    const mockSession = {
+      access_token: 'token',
+      refresh_token: 'refresh_token',
+      expires_in: 3600,
+      token_type: 'bearer',
+      user: mockUser
+    };
+
     const { supabase } = await import('@/lib/supabase/client');
-    
+
     vi.mocked(supabase.auth.signInWithPassword).mockResolvedValueOnce({
-      data: { user: mockUser, session: { access_token: 'token' } },
+      data: { user: mockUser, session: mockSession },
       error: null
     });
 
@@ -76,10 +94,14 @@ describe('AuthContext', () => {
 
   it('should handle login error', async () => {
     const { supabase } = await import('@/lib/supabase/client');
-    
+
+    const mockError = {
+      message: 'Invalid credentials'
+    } as any; // Use type assertion to avoid strict type checking in tests
+
     vi.mocked(supabase.auth.signInWithPassword).mockResolvedValueOnce({
       data: { user: null, session: null },
-      error: { message: 'Invalid credentials' }
+      error: mockError
     });
 
     const { result } = renderHook(() => useAuth(), { wrapper });
@@ -98,16 +120,33 @@ describe('AuthContext', () => {
   });
 
   it('should handle successful signup', async () => {
-    const mockUser = { 
-      id: '456', 
+    const mockUser = {
+      id: '456',
       email: 'newuser@example.com',
-      user_metadata: { full_name: 'New User' }
+      user_metadata: { full_name: 'New User' },
+      app_metadata: {},
+      aud: 'authenticated',
+      created_at: '2023-01-01T00:00:00Z',
+      confirmed_at: '2023-01-01T00:00:00Z',
+      email_confirmed_at: '2023-01-01T00:00:00Z',
+      phone: '',
+      last_sign_in_at: '2023-01-01T00:00:00Z',
+      role: 'authenticated',
+      updated_at: '2023-01-01T00:00:00Z'
     };
-    
+
+    const mockSession = {
+      access_token: 'token',
+      refresh_token: 'refresh_token',
+      expires_in: 3600,
+      token_type: 'bearer',
+      user: mockUser
+    };
+
     const { supabase } = await import('@/lib/supabase/client');
-    
+
     vi.mocked(supabase.auth.signUp).mockResolvedValueOnce({
-      data: { user: mockUser, session: { access_token: 'token' } },
+      data: { user: mockUser, session: mockSession },
       error: null
     });
 
@@ -146,20 +185,34 @@ describe('AuthContext', () => {
   });
 
   it('should handle session on mount', async () => {
-    const mockUser = { 
-      id: '789', 
+    const mockUser = {
+      id: '789',
       email: 'existing@example.com',
-      user_metadata: { full_name: 'Existing User' }
+      user_metadata: { full_name: 'Existing User' },
+      app_metadata: {},
+      aud: 'authenticated',
+      created_at: '2023-01-01T00:00:00Z',
+      confirmed_at: '2023-01-01T00:00:00Z',
+      email_confirmed_at: '2023-01-01T00:00:00Z',
+      phone: '',
+      last_sign_in_at: '2023-01-01T00:00:00Z',
+      role: 'authenticated',
+      updated_at: '2023-01-01T00:00:00Z'
     };
-    
+
+    const mockSession = {
+      access_token: 'token',
+      refresh_token: 'refresh_token',
+      expires_in: 3600,
+      token_type: 'bearer',
+      user: mockUser
+    };
+
     const { supabase } = await import('@/lib/supabase/client');
-    
+
     vi.mocked(supabase.auth.getSession).mockResolvedValueOnce({
-      data: { 
-        session: { 
-          access_token: 'token',
-          user: mockUser 
-        } 
+      data: {
+        session: mockSession
       },
       error: null
     });

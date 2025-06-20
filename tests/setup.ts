@@ -17,11 +17,11 @@ Object.defineProperty(window, 'matchMedia', {
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
-  constructor() {}
+  constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {}
   disconnect() {}
-  observe() {}
-  unobserve() {}
-};
+  observe(target: Element) {}
+  unobserve(target: Element) {}
+} as any;
 
 // Mock ResizeObserver
 global.ResizeObserver = class ResizeObserver {

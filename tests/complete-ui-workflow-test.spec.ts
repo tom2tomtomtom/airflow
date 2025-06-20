@@ -227,7 +227,7 @@ test.describe('AIRWAVE Complete UI Workflow Testing', () => {
     console.log('✅ Workflow dialog opened');
     
     // Get initial state report
-    const initialReport = await page.evaluate(() => window.workflowStateTracker.getReport());
+    const initialReport = await page.evaluate(() => (window as any).workflowStateTracker.getReport());
     console.log('📊 Initial state:', initialReport.summary);
     
     // Step 3: Test file upload functionality
@@ -312,12 +312,12 @@ test.describe('AIRWAVE Complete UI Workflow Testing', () => {
         console.log(`📊 Second ${i + 1}: Step ${currentState.activeStep} (${stepInfo.name})`);
         
         // Try to interact with current step
-        await this.interactWithCurrentStep(page, currentState.activeStep);
+        await interactWithCurrentStep(page, currentState.activeStep);
       }
       
       // Check for state resets
       if (i > 10 && currentState && currentState.activeStep === 0) {
-        const report = await page.evaluate(() => window.workflowStateTracker.getReport());
+        const report = await page.evaluate(() => (window as any).workflowStateTracker.getReport());
         const recentStateChanges = report.stateChanges.slice(-5);
         console.log('🚨 POTENTIAL STATE RESET DETECTED');
         console.log('Recent state changes:', recentStateChanges);
@@ -327,7 +327,7 @@ test.describe('AIRWAVE Complete UI Workflow Testing', () => {
     // Step 5: Generate comprehensive report
     console.log('🔍 Step 5: Generating final report...');
     
-    const finalReport = await page.evaluate(() => window.workflowStateTracker.getReport());
+    const finalReport = await page.evaluate(() => (window as any).workflowStateTracker.getReport());
     
     console.log('📋 COMPREHENSIVE TEST REPORT');
     console.log('============================');
@@ -338,7 +338,7 @@ test.describe('AIRWAVE Complete UI Workflow Testing', () => {
     console.log('Errors:', finalReport.errors.length);
     
     // Analyze for issues
-    const issues = this.analyzeIssues(finalReport);
+    const issues = analyzeIssues(finalReport);
     console.log('🔍 ISSUES DETECTED:', issues);
     
     // Assertions

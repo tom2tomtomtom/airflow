@@ -3,13 +3,13 @@ import { CircularProgress, Box } from '@mui/material';
 
 // Lazy load the heavy ImageGenerationTab component
 const ImageGenerationTab = dynamic(
-  () => import('./ImageGenerationTab'),
+  () => import('./ImageGenerationTab') as any,
   {
     loading: () => (
-      <Box 
-        display="flex" 
-        justifyContent="center" 
-        alignItems="center" 
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
         minHeight="400px"
       >
         <CircularProgress />

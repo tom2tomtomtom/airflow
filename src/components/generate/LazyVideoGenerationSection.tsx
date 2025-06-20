@@ -19,7 +19,7 @@ import {
   Select,
   MenuItem,
   Slider,
-  Grid2 as Grid,
+  Grid,
 } from '@mui/material';
 import {
   Videocam as VideocamIcon,
@@ -84,7 +84,7 @@ const LazyVideoGenerationSection: React.FC<LazyVideoGenerationSectionProps> = ({
       </Typography>
 
       <Grid container spacing={4}>
-        <Grid md={4} xs={12}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Paper sx={{ p: 3, height: '100%' }}>
             <Typography variant="subtitle1" gutterBottom fontWeight={600}>
               Video Settings
@@ -110,7 +110,7 @@ const LazyVideoGenerationSection: React.FC<LazyVideoGenerationSectionProps> = ({
             </Box>
 
             <Grid container spacing={2} sx={{ mb: 3 }}>
-              <Grid xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <Typography variant="body2" gutterBottom>
                   Duration: {videoDuration} seconds
                 </Typography>
@@ -132,7 +132,7 @@ const LazyVideoGenerationSection: React.FC<LazyVideoGenerationSectionProps> = ({
             </Grid>
 
             <Grid container spacing={2} sx={{ mb: 3 }}>
-              <Grid xs={6}>
+              <Grid size={{ xs: 6 }}>
                 <FormControl fullWidth size="small">
                   <InputLabel>Style</InputLabel>
                   <Select
@@ -148,7 +148,7 @@ const LazyVideoGenerationSection: React.FC<LazyVideoGenerationSectionProps> = ({
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid xs={6}>
+              <Grid size={{ xs: 6 }}>
                 <FormControl fullWidth size="small">
                   <InputLabel>Resolution</InputLabel>
                   <Select
@@ -177,7 +177,7 @@ const LazyVideoGenerationSection: React.FC<LazyVideoGenerationSectionProps> = ({
           </Paper>
         </Grid>
 
-        <Grid md={8} xs={12}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
               <Typography variant="h6">
@@ -192,10 +192,10 @@ const LazyVideoGenerationSection: React.FC<LazyVideoGenerationSectionProps> = ({
 
             <Grid container spacing={3}>
               {generatedVideos.map((video) => (
-                <Grid sm={6} md={4} key={video.id} xs={12}>
+                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={video.id}>
                   <Card>
                     <Grid container>
-                      <Grid xs={12}>
+                      <Grid size={{ xs: 12 }}>
                         <CardMedia
                           component="img"
                           height="140"
@@ -255,7 +255,7 @@ const LazyVideoGenerationSection: React.FC<LazyVideoGenerationSectionProps> = ({
                           </Box>
                         )}
                       </Grid>
-                      <Grid xs={12}>
+                      <Grid size={{ xs: 12 }}>
                         <CardContent sx={{ pb: 1 }}>
                           <Box
                             sx={{

@@ -74,7 +74,8 @@ test.describe('Authentication & Flow Access', () => {
               fullPage: true 
             });
             
-            return { success: true, credentials: creds, redirectUrl: currentUrl };
+            // Login successful - continue with test
+            break;
           }
         }
         
@@ -85,7 +86,6 @@ test.describe('Authentication & Flow Access', () => {
     }
     
     console.log('⚠️ Could not authenticate with test credentials');
-    return { success: false };
   });
 
   test('Test Flow Page Access After Authentication', async ({ page }) => {

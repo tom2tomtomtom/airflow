@@ -26,16 +26,6 @@ Sentry.init({
       maskAllInputs: true,
       blockAllMedia: false,
       
-      // Privacy settings
-      privacy: {
-        maskTextContent: false,
-        maskInputOptions: {
-          password: true,
-          email: true,
-          tel: true,
-        },
-      },
-      
       // Network recording
       networkDetailAllowUrls: [
         window.location.origin,
@@ -80,7 +70,7 @@ Sentry.init({
     
     // Sanitize sensitive data
     if (event.request?.cookies) {
-      event.request.cookies = '[Filtered]';
+      event.request.cookies = { filtered: '[Filtered]' };
     }
     
     if (event.user?.email) {

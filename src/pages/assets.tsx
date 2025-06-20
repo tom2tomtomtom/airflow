@@ -123,7 +123,7 @@ const AssetsPage = () => {
         <TabPanel value={tabValue} index={0}>
           <Grid container spacing={3}>
             {mockAssets.map((asset) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={asset.id}>
+              <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={asset.id}>
                 <Card sx={{ height: '100%' }} data-testid="asset-card">
                   <Box
                     sx={{
@@ -153,7 +153,7 @@ const AssetsPage = () => {
             
             {/* Empty state with upload button */}
             {mockAssets.length === 0 && (
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <Box textAlign="center" py={5}>
                   <Upload sx={{ fontSize: 60, color: 'grey.400', mb: 2 }} />
                   <Typography variant="h6" color="text.secondary" gutterBottom>

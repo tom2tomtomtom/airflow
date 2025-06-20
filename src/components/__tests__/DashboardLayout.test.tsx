@@ -1,5 +1,6 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
+import { screen } from '@testing-library/dom';
 import { useRouter } from 'next/router';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import DashboardLayout from '../DashboardLayout';

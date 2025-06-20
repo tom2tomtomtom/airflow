@@ -549,7 +549,7 @@ export class MatrixPage {
   }
 
   // Helper Methods
-  private getMatrixCell(rowIndex: number, columnIndex: number): Locator {
+  getMatrixCell(rowIndex: number, columnIndex: number): Locator {
     return this.matrixRows.nth(rowIndex).locator('[data-testid="matrix-cell"]').nth(columnIndex);
   }
 

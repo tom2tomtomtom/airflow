@@ -67,7 +67,10 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       count || 0
     );
 
-    return successResponse(res, clients, 200, { pagination: paginationMeta });
+    return successResponse(res, clients, 200, {
+      pagination: paginationMeta,
+      timestamp: new Date().toISOString()
+    });
   } catch (error) {
     return handleApiError(res, error, 'handleGet');
   }

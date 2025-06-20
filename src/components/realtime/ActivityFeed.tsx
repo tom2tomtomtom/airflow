@@ -32,6 +32,7 @@ import {
   VideoLibrary as VideoIcon,
   Timeline as TimelineIcon,
   Visibility as ViewIcon,
+  VisibilityOff as HideIcon,
 } from '@mui/icons-material';
 import { useRealtime } from '@/hooks/useRealtime';
 import { useClient } from '@/contexts/ClientContext';

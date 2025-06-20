@@ -341,7 +341,7 @@ class PerformanceReporter implements Reporter {
     console.log('\n🏆 Top Performance Metrics:');
     for (const [metric, avgValue] of Object.entries(summary.averageValues)) {
       const threshold = this.getThreshold(metric);
-      const status = avgValue <= threshold ? '✅' : '❌';
+      const status = (typeof avgValue === 'number' && avgValue <= threshold) ? '✅' : '❌';
       console.log(`   ${status} ${metric}: ${avgValue}ms (avg)`);
     }
   }

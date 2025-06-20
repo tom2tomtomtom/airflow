@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
+import { screen } from '@testing-library/dom';
 import userEvent from '@testing-library/user-event';
 import ErrorBoundary from '../ErrorBoundary';
 
@@ -47,7 +48,11 @@ describe('ErrorBoundary', () => {
 
   it('should show error details in development mode', () => {
     const originalEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'development';
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: 'development',
+      writable: true,
+      configurable: true
+    });
 
     render(
       <ErrorBoundary>
@@ -57,12 +62,20 @@ describe('ErrorBoundary', () => {
 
     expect(screen.getByText(/Error: Test error/)).toBeInTheDocument();
 
-    process.env.NODE_ENV = originalEnv;
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: originalEnv,
+      writable: true,
+      configurable: true
+    });
   });
 
   it('should not show error details in production mode', () => {
     const originalEnv = process.env.NODE_ENV;
-    process.env.NODE_ENV = 'production';
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: 'production',
+      writable: true,
+      configurable: true
+    });
 
     render(
       <ErrorBoundary>
@@ -72,7 +85,11 @@ describe('ErrorBoundary', () => {
 
     expect(screen.queryByText(/Error: Test error/)).not.toBeInTheDocument();
 
-    process.env.NODE_ENV = originalEnv;
+    Object.defineProperty(process.env, 'NODE_ENV', {
+      value: originalEnv,
+      writable: true,
+      configurable: true
+    });
   });
 
   it('should render custom fallback when provided', () => {

@@ -208,9 +208,9 @@ test.describe('AIrWAVE Application Workflow Testing', () => {
     console.log('🔄 Running Complete Application Workflow Simulation...');
     
     const workflow = {
-      steps: [],
-      errors: [],
-      metrics: {}
+      steps: [] as string[],
+      errors: [] as string[],
+      metrics: {} as { loadTime?: number }
     };
     
     try {

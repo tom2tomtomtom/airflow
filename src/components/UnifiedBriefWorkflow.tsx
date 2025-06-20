@@ -591,7 +591,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
                 </Typography>
                 <Grid container spacing={2}>
                   {motivations.map((motivation) => (
-                    <Grid item xs={12} md={6} key={motivation.id}>
+                    <Grid size={{ xs: 12, md: 6 }} key={motivation.id}>
                       <Card
                         sx={{
                           cursor: 'pointer',
@@ -726,7 +726,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
               Choose Your Assets
             </Typography>
             <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Card sx={{ height: '100%' }}>
                   <CardContent sx={{ p: 3 }}>
                     <Typography variant="h6" gutterBottom>
@@ -745,7 +745,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Card sx={{ height: '100%' }}>
                   <CardContent sx={{ p: 3 }}>
                     <Typography variant="h6" gutterBottom>
@@ -787,7 +787,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
             </Typography>
             <Grid container spacing={2}>
               {['Modern Slideshow', 'Dynamic Promo', 'Social Story', 'Product Showcase'].map((template) => (
-                <Grid item xs={12} md={6} key={template}>
+                <Grid size={{ xs: 12, md: 6 }} key={template}>
                   <Card
                     sx={{
                       cursor: 'pointer',
@@ -844,7 +844,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
               Your content matrix will be populated with the selected motivations, copy, and assets.
             </Alert>
             <Grid container spacing={2}>
-              <Grid item xs={12} md={4}>
+              <Grid size={{ xs: 12, md: 4 }}>
                 <Card>
                   <CardContent>
                     <Typography variant="h6" gutterBottom>
@@ -856,7 +856,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid size={{ xs: 12, md: 4 }}>
                 <Card>
                   <CardContent>
                     <Typography variant="h6" gutterBottom>
@@ -868,7 +868,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
                   </CardContent>
                 </Card>
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid size={{ xs: 12, md: 4 }}>
                 <Card>
                   <CardContent>
                     <Typography variant="h6" gutterBottom>
@@ -1121,7 +1121,7 @@ const BriefReviewEditor: React.FC<BriefReviewEditorProps> = ({
       </Box>
 
       <Grid container spacing={3}>
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <TextField
             fullWidth
             label="Brief Title"
@@ -1133,7 +1133,7 @@ const BriefReviewEditor: React.FC<BriefReviewEditorProps> = ({
           />
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <TextField
             fullWidth
             label="Industry"
@@ -1144,7 +1144,7 @@ const BriefReviewEditor: React.FC<BriefReviewEditorProps> = ({
           />
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <TextField
             fullWidth
             label="Product/Service"
@@ -1155,7 +1155,7 @@ const BriefReviewEditor: React.FC<BriefReviewEditorProps> = ({
           />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <TextField
             fullWidth
             label="Objective"
@@ -1168,7 +1168,7 @@ const BriefReviewEditor: React.FC<BriefReviewEditorProps> = ({
           />
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <TextField
             fullWidth
             label="Target Audience"
@@ -1181,7 +1181,7 @@ const BriefReviewEditor: React.FC<BriefReviewEditorProps> = ({
           />
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <TextField
             fullWidth
             label="Value Proposition"
@@ -1194,7 +1194,7 @@ const BriefReviewEditor: React.FC<BriefReviewEditorProps> = ({
           />
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <TextField
             fullWidth
             label="Budget"
@@ -1205,7 +1205,7 @@ const BriefReviewEditor: React.FC<BriefReviewEditorProps> = ({
           />
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <TextField
             fullWidth
             label="Timeline"

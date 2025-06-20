@@ -2,7 +2,7 @@ import { getErrorMessage } from '@/utils/errorUtils';
 // workers/email.ts
 import { Worker, Job } from 'bullmq';
 import { connection } from '@/lib/queue/connection';
-import { sendEmail } from '@/lib/email/resend';
+import { sendEmail } from '../lib/email/resend';
 
 interface EmailJobData {
   to: string;
@@ -18,6 +18,7 @@ export const emailWorker = new Worker<EmailJobData>(
     try {
       await sendEmail({
         to,
+        subject: `Template: ${template}`,
         template,
         data
       });

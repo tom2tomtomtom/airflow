@@ -210,7 +210,7 @@ export function logRequest(req: CustomRequest, res: Response, next: NextFunction
         duration: `${duration}ms`,
       });
     }
-  } as any;
+  };
 
   next();
 }

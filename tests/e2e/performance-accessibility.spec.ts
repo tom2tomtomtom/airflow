@@ -585,7 +585,7 @@ test.describe('Accessibility Testing', () => {
       
       // Zoom to 200%
       await page.evaluate(() => {
-        document.body.style.zoom = '2';
+        (document.body.style as any).zoom = '2';
       });
       
       // Verify that important elements are still visible and functional
@@ -598,7 +598,7 @@ test.describe('Accessibility Testing', () => {
       
       // Reset zoom
       await page.evaluate(() => {
-        document.body.style.zoom = '1';
+        (document.body.style as any).zoom = '1';
       });
     });
   });

@@ -58,7 +58,7 @@ const testUsers: TestUser[] = [
   }
 ];
 
-async function createTestUser(testUser: TestUser): Promise<void> {
+async function createTestUser(testUser: TestUser): Promise<any> {
   console.log(`\n🔧 Creating test user: ${testUser.email}`);
   
   try {

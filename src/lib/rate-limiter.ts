@@ -20,7 +20,7 @@ if (process.env.NODE_ENV === 'development') {
 export const rateLimiters = {
   // Authentication endpoints - very strict
   auth: new Ratelimit({
-    redis: redis || new Map(), // Fallback to memory
+    redis: redis || (new Map() as any), // Fallback to memory
     limiter: Ratelimit.slidingWindow(5, '15 m'), // 5 attempts per 15 minutes
     analytics: true,
     prefix: 'auth',
@@ -28,7 +28,7 @@ export const rateLimiters = {
 
   // General API endpoints - moderate
   api: new Ratelimit({
-    redis: redis || new Map(),
+    redis: redis || (new Map() as any),
     limiter: Ratelimit.slidingWindow(100, '1 m'), // 100 requests per minute
     analytics: true,
     prefix: 'api',
@@ -36,7 +36,7 @@ export const rateLimiters = {
 
   // AI generation endpoints - expensive operations
   ai: new Ratelimit({
-    redis: redis || new Map(),
+    redis: redis || (new Map() as any),
     limiter: Ratelimit.slidingWindow(20, '1 h'), // 20 AI requests per hour
     analytics: true,
     prefix: 'ai',
@@ -44,7 +44,7 @@ export const rateLimiters = {
 
   // File upload endpoints - resource intensive
   upload: new Ratelimit({
-    redis: redis || new Map(),
+    redis: redis || (new Map() as any),
     limiter: Ratelimit.slidingWindow(10, '5 m'), // 10 uploads per 5 minutes
     analytics: true,
     prefix: 'upload',
@@ -52,7 +52,7 @@ export const rateLimiters = {
 
   // Flow workflow endpoints - critical business logic
   flow: new Ratelimit({
-    redis: redis || new Map(),
+    redis: redis || (new Map() as any),
     limiter: Ratelimit.slidingWindow(30, '5 m'), // 30 flow operations per 5 minutes
     analytics: true,
     prefix: 'flow',
@@ -60,7 +60,7 @@ export const rateLimiters = {
 
   // Email sending - prevent spam
   email: new Ratelimit({
-    redis: redis || new Map(),
+    redis: redis || (new Map() as any),
     limiter: Ratelimit.slidingWindow(5, '1 h'), // 5 emails per hour
     analytics: true,
     prefix: 'email',
@@ -92,7 +92,7 @@ export function withRateLimit(
     customIdentifier?: (req: NextApiRequest) => string;
   }
 ) {
-  return async function rateLimitMiddleware(
+  return function rateLimitMiddleware(
     handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void>
   ) {
     return async (req: NextApiRequest, res: NextApiResponse) => {

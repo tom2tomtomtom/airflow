@@ -17,12 +17,12 @@ export function AuthRefreshHandler() {
         clearTimeout(refreshTimerRef.current);
         refreshTimerRef.current = null;
       }
-      return;
+      return undefined;
     }
 
     // Calculate when to refresh (5 minutes before expiry)
     const expiresAt = session.expires_at;
-    if (!expiresAt) return;
+    if (!expiresAt) return undefined;
 
     const expiryTime = expiresAt * 1000; // Convert to milliseconds
     const currentTime = Date.now();
@@ -31,8 +31,8 @@ export function AuthRefreshHandler() {
 
     // If token expires in less than 5 minutes, refresh immediately
     if (refreshTime <= 0) {
-      process.env.NODE_ENV === 'development' &&       refreshSession();
-      return;
+      process.env.NODE_ENV === 'development' && refreshSession();
+      return undefined;
     }
 
     // Schedule refresh
@@ -60,7 +60,7 @@ export function AuthRefreshHandler() {
 
   // Also listen for visibility changes to refresh when tab becomes active
   useEffect(() => {
-    const handleVisibilityChange = async () => {
+    const handleVisibilityChange = async (): Promise<void> => {
       if (document.visibilityState === 'visible' && session) {
         // Check if token needs refresh
         const expiresAt = session.expires_at;

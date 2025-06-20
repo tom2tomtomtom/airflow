@@ -195,7 +195,7 @@ describe('env utilities', () => {
         ELEVENLABS_API_KEY: 'elevenlabs-test-key',
       };
 
-      process.env = { ...process.env, ...validEnv };
+      Object.assign(process.env, validEnv);
 
       const result1 = getValidatedEnv();
       const result2 = getValidatedEnv();
@@ -234,10 +234,9 @@ describe('env utilities', () => {
         throw new Error('Process exit');
       });
       
-      process.env = {
-        ...process.env,
-        NODE_ENV: 'invalid',
-      };
+      Object.assign(process.env, {
+        NODE_ENV: 'invalid' as any, // Intentionally invalid for testing
+      });
 
       expect(() => logEnvironmentStatus()).toThrow('Process exit');
       expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Environment validation failed'), expect.any(Error));

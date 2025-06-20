@@ -42,7 +42,7 @@ async function getTestUsers(): Promise<void> {
         continue;
       }
 
-      const user = userData?.users?.find(u => u.email === email);
+      const user = userData?.users?.find((u: any) => u.email === email);
       
       if (user) {
         console.log(`✅ Found user: ${email}`);

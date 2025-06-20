@@ -166,7 +166,7 @@ export class FileHelper {
     }, {
       selector: dropZoneSelector,
       fileName: file.name,
-      fileContent: Array.from(file.buffer),
+      fileContent: file.buffer,
       mimeType: file.mimeType
     });
   }
