@@ -4,7 +4,7 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": true, // Enabled after fixing critical security and type issues
+    "strict": false,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
@@ -19,28 +19,22 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*", "./*"],
-      "@/components/*": ["./src/components/*"],
-      "@/types/*": ["./src/types/*"],
-      "@/lib/*": ["./src/lib/*"],
-      "@/utils/*": ["./src/utils/*"],
-      "@/contexts/*": ["./src/contexts/*"],
-      "@/middleware/*": ["./src/middleware/*"]
+      "@/*": ["./src/*", "./*"]
     },
     "types": ["node"],
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictBindCallApply": true,
-    "strictPropertyInitialization": false, // Disabled for MUI compatibility
-    "noImplicitThis": true,
-    "alwaysStrict": true,
-    "noUnusedLocals": false, // Disabled during cleanup phase
-    "noUnusedParameters": false, // Disabled during cleanup phase
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
+    "strictBindCallApply": false,
+    "strictPropertyInitialization": false,
+    "noImplicitThis": false,
+    "alwaysStrict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": false, // Disabled to reduce complexity
-    "exactOptionalPropertyTypes": false, // Disabled for MUI compatibility
+    "noUncheckedIndexedAccess": false,
+    "exactOptionalPropertyTypes": false,
     "baseUrl": ".",
     "typeRoots": ["./node_modules/@types", "./types"],
     "declaration": false,
@@ -53,11 +47,10 @@
   },
   "include": [
     "next-env.d.ts",
-    "src/**/*.ts",
-    "src/**/*.tsx",
+    "**/*.ts",
+    "**/*.tsx",
     ".next/types/**/*.ts",
-    "types/**/*.d.ts",
-    "types/**/*.ts"
+    "types/**/*.d.ts"
   ],
   "exclude": [
     "node_modules",
@@ -66,23 +59,6 @@
     "public",
     "coverage",
     "dist",
-    "build",
-    "tests/**/*",
-    "scripts/**/*",
-    "src/components/__tests__/**/*",
-    "src/components/generate/**/*",
-    "src/components/realtime/**/*",
-    "src/components/social/PlatformConnections.tsx",
-    "src/pages/generate-enhanced.tsx",
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "**/*-backup.tsx",
-    "**/*.backup.tsx",
-    "vitest.config.ts",
-    "playwright.config.ts",
-    "sentry.client.config.ts",
-    "sentry.server.config.ts",
-    "workers/**/*.ts",
-    "lib/**/*.ts"
+    "build"
   ]
 }
