@@ -1,3 +1,210 @@
+/**
+ * @swagger
+ * /api/clients:
+ *   get:
+ *     summary: List all clients
+ *     description: Retrieve a paginated list of clients with optional filtering and sorting
+ *     tags: [Clients]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term to filter clients by name, description, or industry
+ *       - in: query
+ *         name: industry
+ *         schema:
+ *           type: string
+ *         description: Filter clients by industry
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 50
+ *         description: Number of clients to return per page
+ *       - in: query
+ *         name: offset
+ *         schema:
+ *           type: integer
+ *           minimum: 0
+ *           default: 0
+ *         description: Number of clients to skip
+ *       - in: query
+ *         name: sort_by
+ *         schema:
+ *           type: string
+ *           enum: [name, industry, created_at, updated_at]
+ *           default: name
+ *         description: Field to sort by
+ *       - in: query
+ *         name: sort_order
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: asc
+ *         description: Sort order
+ *       - in: query
+ *         name: include_stats
+ *         schema:
+ *           type: boolean
+ *           default: false
+ *         description: Include campaign, asset, and matrix counts
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved clients
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Success'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Client'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       429:
+ *         description: Rate limit exceeded
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *   post:
+ *     summary: Create a new client
+ *     description: Create a new client with brand guidelines and contact information
+ *     tags: [Clients]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - industry
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "Acme Corporation"
+ *                 description: Client name
+ *               industry:
+ *                 type: string
+ *                 example: "Technology"
+ *                 description: Client industry
+ *               description:
+ *                 type: string
+ *                 example: "Leading technology company"
+ *                 description: Client description
+ *               website:
+ *                 type: string
+ *                 format: uri
+ *                 example: "https://acme.com"
+ *                 description: Client website URL
+ *               logo:
+ *                 type: string
+ *                 format: uri
+ *                 example: "https://cdn.acme.com/logo.png"
+ *                 description: Client logo URL
+ *               primaryColor:
+ *                 type: string
+ *                 example: "#1976d2"
+ *                 description: Primary brand color (hex)
+ *               secondaryColor:
+ *                 type: string
+ *                 example: "#dc004e"
+ *                 description: Secondary brand color (hex)
+ *               socialMedia:
+ *                 type: object
+ *                 properties:
+ *                   instagram:
+ *                     type: string
+ *                   facebook:
+ *                     type: string
+ *                   twitter:
+ *                     type: string
+ *                   linkedin:
+ *                     type: string
+ *                 example:
+ *                   instagram: "@acmecorp"
+ *                   linkedin: "acme-corporation"
+ *               brand_guidelines:
+ *                 type: object
+ *                 properties:
+ *                   voiceTone:
+ *                     type: string
+ *                     example: "Professional and approachable"
+ *                   targetAudience:
+ *                     type: string
+ *                     example: "Tech-savvy professionals aged 25-45"
+ *                   keyMessages:
+ *                     type: array
+ *                     items:
+ *                       type: string
+ *                     example: ["Innovation", "Reliability", "Customer-first"]
+ *               contacts:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                       example: "John Smith"
+ *                     email:
+ *                       type: string
+ *                       format: email
+ *                       example: "john@acme.com"
+ *                     role:
+ *                       type: string
+ *                       example: "Marketing Director"
+ *                     phone:
+ *                       type: string
+ *                       example: "+1-555-123-4567"
+ *     responses:
+ *       201:
+ *         description: Client created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Success'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       $ref: '#/components/schemas/Client'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       429:
+ *         description: Rate limit exceeded
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { withAuth } from '@/middleware/withAuth';
 import { withAPIRateLimit } from '@/lib/rate-limiter';

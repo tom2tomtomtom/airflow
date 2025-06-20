@@ -1,3 +1,186 @@
+/**
+ * @swagger
+ * /api/assets:
+ *   get:
+ *     summary: List all assets
+ *     description: Retrieve a paginated list of assets with filtering and sorting options
+ *     tags: [Assets]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 20
+ *         description: Number of assets per page
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term to filter assets by name
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *           enum: [image, video, text, voice]
+ *         description: Filter assets by type
+ *       - in: query
+ *         name: clientId
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Filter assets by client ID
+ *       - in: query
+ *         name: sortBy
+ *         schema:
+ *           type: string
+ *           enum: [name, type, created_at, updated_at]
+ *           default: created_at
+ *         description: Field to sort by
+ *       - in: query
+ *         name: sortOrder
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *           default: desc
+ *         description: Sort order
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved assets
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/Success'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Asset'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *   post:
+ *     summary: Create a new asset
+ *     description: Create a new asset with metadata and file information
+ *     tags: [Assets]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - type
+ *               - url
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "Product Hero Image"
+ *                 description: Asset name
+ *               type:
+ *                 type: string
+ *                 enum: [image, video, text, voice]
+ *                 example: "image"
+ *                 description: Asset type
+ *               url:
+ *                 type: string
+ *                 format: uri
+ *                 example: "https://cdn.airwave.app/assets/hero.jpg"
+ *                 description: Asset file URL
+ *               thumbnailUrl:
+ *                 type: string
+ *                 format: uri
+ *                 example: "https://cdn.airwave.app/assets/hero-thumb.jpg"
+ *                 description: Thumbnail URL for preview
+ *               description:
+ *                 type: string
+ *                 example: "Main hero image for product landing page"
+ *                 description: Asset description
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example: ["hero", "product", "marketing"]
+ *                 description: Asset tags for categorization
+ *               clientId:
+ *                 type: string
+ *                 format: uuid
+ *                 example: "123e4567-e89b-12d3-a456-426614174000"
+ *                 description: Associated client ID
+ *               metadata:
+ *                 type: object
+ *                 example: {"campaign": "summer-launch", "version": "v1"}
+ *                 description: Additional metadata
+ *               size:
+ *                 type: integer
+ *                 example: 1024000
+ *                 description: File size in bytes
+ *               mimeType:
+ *                 type: string
+ *                 example: "image/jpeg"
+ *                 description: MIME type of the file
+ *               duration:
+ *                 type: number
+ *                 example: 30.5
+ *                 description: Duration in seconds (for video/audio)
+ *               width:
+ *                 type: integer
+ *                 example: 1920
+ *                 description: Width in pixels (for images/videos)
+ *               height:
+ *                 type: integer
+ *                 example: 1080
+ *                 description: Height in pixels (for images/videos)
+ *     responses:
+ *       201:
+ *         description: Asset created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Asset created successfully"
+ *                 asset:
+ *                   $ref: '#/components/schemas/Asset'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase/client';

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+// Jest test - no imports needed for basic Jest functions
 import { render } from '@testing-library/react';
 import { screen } from '@testing-library/dom';
 import StatusIndicator, { CompletionStatus } from '../StatusIndicator';

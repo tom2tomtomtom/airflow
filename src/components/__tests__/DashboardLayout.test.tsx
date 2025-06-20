@@ -2,18 +2,18 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { screen } from '@testing-library/dom';
 import { useRouter } from 'next/router';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+// Jest test - no imports needed for basic Jest functions
 import DashboardLayout from '../DashboardLayout';
 
-vi.mock('next/router', () => ({
-  useRouter: vi.fn(),
+jest.mock('next/router', () => ({
+  useRouter: jest.fn(),
 }));
 
 describe('DashboardLayout', () => {
-  const mockPush = vi.fn();
-  
+  const mockPush = jest.fn();
+
   beforeEach(() => {
-    (useRouter as ReturnType<typeof vi.fn>).mockReturnValue({
+    (useRouter as ReturnType<typeof jest.fn>).mockReturnValue({
       pathname: '/',
       push: mockPush,
     });
@@ -34,7 +34,7 @@ describe('DashboardLayout', () => {
   });
 
   it('highlights active route', () => {
-    (useRouter as ReturnType<typeof vi.fn>).mockReturnValue({
+    (useRouter as ReturnType<typeof jest.fn>).mockReturnValue({
       pathname: '/generate',
       push: mockPush,
     });

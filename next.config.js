@@ -19,6 +19,8 @@ try {
   withBundleAnalyzer = (config) => config;
 }
 
+
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Allow dev server resources from local proxy ports used by Windsurf browser preview
@@ -183,7 +185,7 @@ const nextConfig = {
   },
   
   // Webpack configuration
-  webpack: (config, { isServer, webpack }) => {
+  webpack: (config, { isServer, webpack, dev }) => {
     // Fix for React Email
     if (!isServer) {
       config.resolve.fallback = {
@@ -191,6 +193,40 @@ const nextConfig = {
         fs: false,
         net: false,
         tls: false,
+      };
+    }
+
+    // Production bundle optimizations
+    if (!dev && !isServer) {
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+            priority: 10,
+          },
+          mui: {
+            test: /[\\/]node_modules[\\/]@mui[\\/]/,
+            name: 'mui',
+            chunks: 'all',
+            priority: 20,
+          },
+          react: {
+            test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+            name: 'react',
+            chunks: 'all',
+            priority: 30,
+          },
+          common: {
+            name: 'common',
+            minChunks: 2,
+            chunks: 'all',
+            priority: 5,
+            reuseExistingChunk: true,
+          },
+        },
       };
     }
     
@@ -224,6 +260,7 @@ const nextConfig = {
   // Experimental features
   experimental: {
     optimizeCss: true, // Enable CSS optimization
+    optimizePackageImports: ['@mui/material', '@mui/icons-material', 'lodash', 'date-fns'],
     // instrumentationHook: true, // Removed - instrumentation.js is available by default
   },
 };
