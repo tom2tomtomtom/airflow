@@ -59,6 +59,12 @@
     "public",
     "coverage",
     "dist",
-    "build"
+    "build",
+    "tests/**/*",
+    "scripts/**/*",
+    "playwright.config.ts",
+    "playwright.config.*.ts",
+    "**/*.spec.ts",
+    "**/*.test.ts"
   ]
 }

@@ -44,6 +44,10 @@
     "test:campaigns": "playwright test tests/e2e/campaign-matrix-integrated.spec.ts",
     "test:rendering": "playwright test tests/e2e/rendering-pipeline-integrated.spec.ts",
     "test:portal": "playwright test tests/e2e/client-portal-integrated.spec.ts",
+    "test:airwave": "playwright test tests/e2e/airwave-comprehensive.spec.ts",
+    "test:airwave:headed": "playwright test tests/e2e/airwave-comprehensive.spec.ts --headed",
+    "test:airwave:ui": "playwright test tests/e2e/airwave-comprehensive.spec.ts --ui",
+    "test:airwave:debug": "playwright test tests/e2e/airwave-comprehensive.spec.ts --debug",
     "test:complete-workflow": "playwright test tests/e2e/complete-user-workflow.spec.ts --config=playwright.config.comprehensive-enhanced.ts",
     "test:performance-detailed": "playwright test tests/e2e/performance-accessibility.spec.ts --config=playwright.config.comprehensive-enhanced.ts --project=performance",
     "test:accessibility-detailed": "playwright test tests/e2e/performance-accessibility.spec.ts --config=playwright.config.comprehensive-enhanced.ts --project=accessibility",
@@ -143,7 +147,8 @@
     "vitest": "^3.1.4",
     "winston": "^3.11.0",
     "xlsx": "^0.18.5",
-    "zod": "^3.25.32"
+    "zod": "^3.25.32",
+    "swagger-ui-react": "^5.25.2"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.8.0",
@@ -166,7 +171,6 @@
     "playwright": "^1.52.0",
     "supabase": "^2.23.4",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-react": "^5.25.2",
     "ts-jest": "^29.3.4",
     "tsx": "^3.12.7"
   },

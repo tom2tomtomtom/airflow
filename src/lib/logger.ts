@@ -1,6 +1,27 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { env } from './env';
-import { Request, Response, NextFunction } from 'express';
+
+// Define Express types locally to avoid dependency
+interface Request {
+  method: string;
+  url: string;
+  ip?: string;
+  connection?: {
+    remoteAddress?: string;
+  };
+  headers: {
+    [key: string]: string | string[] | undefined;
+  };
+}
+
+interface Response {
+  statusCode: number;
+  end: any;
+}
+
+interface NextFunction {
+  (): void;
+}
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
@@ -161,11 +182,8 @@ export function logPerformance<T>(
 }
 
 // Type definition for Express Request to include custom properties
-interface CustomRequest extends Omit<Request, 'ip' | 'connection'> {
-  ip?: string;
-  connection?: {
-    remoteAddress?: string;
-  };
+interface CustomRequest extends Request {
+  // Already includes ip and connection from our local Request interface
 }
 
 // Request logging middleware helper
@@ -174,11 +192,12 @@ export function logRequest(req: CustomRequest, res: Response, next: NextFunction
   const start = Date.now();
   
   // Log request
+  const userAgent = req.headers['user-agent'];
   logger.info(`${req.method} ${req.url}`, {
     method: req.method,
     url: req.url,
     ip: req.ip || req.connection?.remoteAddress || 'unknown',
-    userAgent: req.headers['user-agent'] || 'unknown',
+    userAgent: Array.isArray(userAgent) ? userAgent[0] : userAgent || 'unknown',
   });
 
   // Override res.end to log response

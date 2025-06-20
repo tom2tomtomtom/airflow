@@ -20,13 +20,16 @@ tests/
 │   ├── asset-management-integrated.spec.ts
 │   ├── campaign-matrix-integrated.spec.ts
 │   ├── rendering-pipeline-integrated.spec.ts
-│   └── client-portal-integrated.spec.ts
+│   ├── client-portal-integrated.spec.ts
+│   └── airwave-comprehensive.spec.ts  # NEW: Complete workflow tests
 ├── pages/                        # Page Object Models
 │   ├── auth-page.ts
 │   ├── dashboard-page.ts
 │   ├── assets-page.ts
 │   ├── campaigns-page.ts
 │   └── matrix-page.ts
+├── helpers/                      # Testing utilities
+│   └── test-utils.ts             # NEW: Comprehensive test helpers
 ├── utils/                        # Testing utilities
 │   ├── auth-helper.ts
 │   ├── file-helper.ts
@@ -64,6 +67,7 @@ npm run test:assets       # Asset management tests
 npm run test:campaigns    # Campaign and matrix tests
 npm run test:rendering    # Rendering pipeline tests
 npm run test:portal       # Client portal tests
+npm run test:airwave      # NEW: Complete AIRWAVE workflow tests
 
 # Run tests with different configurations
 npm run test:mobile       # Mobile-specific tests
@@ -164,6 +168,58 @@ npm run test:report
 - Feedback forms are accessible
 - Mobile portal works well
 - Navigation is clear
+
+### 6. AIRWAVE Comprehensive Workflow Tests
+**File**: `e2e/airwave-comprehensive.spec.ts`
+
+**Complete End-to-End Testing**:
+- Homepage and navigation validation
+- Full authentication flow with real credentials
+- Dashboard overview and navigation
+- Client management (create, edit, delete)
+- Asset management and upload workflows
+- Campaign creation with multi-step builder
+- AIRWAVE flow: Brief → Motivations → Copy → Video
+- Video generation with Creatomate API integration
+- API documentation validation
+- Error handling and edge cases
+- Performance and accessibility testing
+- Cross-browser and mobile testing
+
+**Real-World Integration**:
+- Uses actual login credentials: `tomh@redbaez.com`
+- Integrates with real Creatomate template
+- Tests complete user workflows end-to-end
+- Validates data persistence across pages
+- Tests responsive design on multiple devices
+
+**Test Configuration**:
+```typescript
+// Real Creatomate template integration
+const TEST_CONFIG = {
+  email: 'tomh@redbaez.com',
+  password: 'Wijlre2010',
+  creatomateTemplate: {
+    templateId: '374ee9e3-de75-4feb-bfae-5c5e11d88d80',
+    apiKey: '5ab32660fef044e5b135a646a78cff8ec7e2503b79e201bad7e566f4b24ec111f2fa7e01a824eaa77904c1783e083efa'
+  }
+};
+```
+
+**Running AIRWAVE Tests**:
+```bash
+# Run all AIRWAVE workflow tests
+npm run test:airwave
+
+# Run with browser UI (recommended)
+npm run test:airwave:ui
+
+# Run in headed mode (see browser)
+npm run test:airwave:headed
+
+# Debug mode (step-by-step)
+npm run test:airwave:debug
+```
 
 ## 🛠 Testing Utilities
 
