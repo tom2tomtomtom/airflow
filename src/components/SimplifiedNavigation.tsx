@@ -66,8 +66,15 @@ const navigationItems: NavItem[] = [
         id: 'workflow',
         label: 'Brief to Video',
         icon: <PlayArrow />,
-        href: '/strategic-content',
+        href: '/flow',
         description: 'Complete workflow from brief to render'
+      },
+      {
+        id: 'strategy',
+        label: 'Strategy Generator',
+        icon: <PlayArrow />,
+        href: '/strategy',
+        description: 'AI-powered strategy generation'
       },
       {
         id: 'templates',
