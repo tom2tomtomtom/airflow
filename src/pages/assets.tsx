@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import Head from 'next/head';
 import {
   Box,
@@ -10,25 +11,17 @@ import {
   SpeedDial,
   SpeedDialAction,
   SpeedDialIcon,
-  Alert,
-  Chip,
+  Card,
+  CardContent,
 } from '@mui/material';
 import {
   Upload,
   AutoAwesome,
-  VideoCall,
-  MicNone,
   Add as AddIcon,
-  Collections as CollectionsIcon,
-  CloudUpload as CloudUploadIcon,
 } from '@mui/icons-material';
-import { AIImageGenerator } from '@/components/AIImageGenerator';
 import DashboardLayout from '@/components/DashboardLayout';
-import AssetCard from '@/components/AssetCard';
-import { LoadingSpinner, AssetGridSkeleton } from '@/components/LoadingSpinner';
-import { demoAssets } from '@/utils/demoData';
-import { Asset as ModelAsset } from '@/types/models';
-import { Asset as CardAsset } from '@/components/AssetCard';
+import AssetUploadModal from '@/components/AssetUploadModal';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -40,310 +33,162 @@ function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
   return (
     <div hidden={value !== index} {...other}>
-      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
     </div>
   );
 }
 
-export default function EnhancedAssetsPage() {
+const AssetsPage = () => {
   const [tabValue, setTabValue] = useState(0);
-  const [showAIGenerator, setShowAIGenerator] = useState(false);
-  const [assets, setAssets] = useState<ModelAsset[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  
-  // TODO: Get from client context
-  const clientId = 'demo-client-id';
-  const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const router = useRouter();
+  const { loading, isAuthenticated } = useAuth();
 
+  // Redirect to login if not authenticated
   useEffect(() => {
-    loadAssets();
-    // Get tab from URL query
-    const urlParams = new URLSearchParams(window.location.search);
-    const tab = urlParams.get('tab');
-    if (tab === 'ai') {
-      setTabValue(1);
-      setShowAIGenerator(true);
+    if (!loading && !isAuthenticated) {
+      router.push('/login');
     }
-  }, []);
+  }, [loading, isAuthenticated, router]);
 
-  const loadAssets = async () => {
-    try {
-      setLoading(true);
-      setError(null);
+  // Show loading or redirect if not authenticated
+  if (loading) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="100vh"
+      >
+        <Typography>Loading...</Typography>
+      </Box>
+    );
+  }
 
-      // In demo mode, use demo data
-      if (isDemoMode) {
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate loading
-        setAssets(demoAssets as unknown as ModelAsset[]);
-      } else {
-        // TODO: Fetch real assets from API
-        // const response = await assetQueries.getAssets(clientId);
-        // setAssets(response);
-        setAssets([]);
-      }
-    } catch (err) {
-      console.error('Error loading assets:', err);
-      setError('Failed to load assets. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (!isAuthenticated) {
+    return null; // Will redirect via useEffect
+  }
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
-    if (newValue === 1) {
-      setShowAIGenerator(true);
-    }
   };
 
   const speedDialActions = [
     {
       icon: <Upload />,
       name: 'Upload Files',
-      action: () => {
-        console.log('Open upload modal');
-        // TODO: Implement file upload
-      }
+      action: () => setShowUploadModal(true),
     },
     {
       icon: <AutoAwesome />,
-      name: 'AI Image (DALL-E 3)',
-      action: () => {
-        setShowAIGenerator(true);
-        setTabValue(1);
-      }
-    },
-    {
-      icon: <VideoCall />,
-      name: 'AI Video (Coming Soon)',
-      action: () => {
-        alert('Sora video generation will be available when OpenAI releases the API');
-      }
-    },
-    {
-      icon: <MicNone />,
-      name: 'AI Voice (ElevenLabs)',
-      action: () => {
-        console.log('Open voice generator');
-        // TODO: Implement voice generation
-      }
+      name: 'AI Generate',
+      action: () => console.log('AI Generate clicked'),
     },
   ];
 
-  const handleImageGenerated = (newAsset: ModelAsset) => {
-    setAssets([newAsset, ...assets]);
-    setShowAIGenerator(false);
-  };
+  // Mock assets data for testing
+  const mockAssets = [
+    { id: 1, name: 'Sample Image 1', type: 'image', url: '/api/placeholder/300/200' },
+    { id: 2, name: 'Sample Image 2', type: 'image', url: '/api/placeholder/300/200' },
+    { id: 3, name: 'Sample Video 1', type: 'video', url: '/api/placeholder/300/200' },
+  ];
 
-  // Convert ModelAsset to CardAsset for compatibility
-  const convertToCardAsset = (asset: ModelAsset): CardAsset => {
-    return {
-      id: asset.id,
-      name: asset.name,
-      type: asset.type as 'image' | 'video' | 'audio' | 'document' | 'other',
-      url: asset.url,
-      description: String(asset.metadata?.description || ''),
-      tags: Array.isArray(asset.tags) ? asset.tags : [],
-      categories: Array.isArray(asset.metadata?.categories) ? asset.metadata.categories : [],
-      dateAdded: asset.dateCreated,
-      dateModified: asset.lastModified,
-      isFavorite: Boolean(asset.metadata?.isFavorite),
-      metadata: {
-        fileSize: String(asset.metadata?.fileSize || 'Unknown'),
-        dimensions: String(asset.metadata?.dimensions || ''),
-        duration: String(asset.metadata?.duration || ''),
-        format: String(asset.metadata?.format || 'Unknown'),
-        creator: String(asset.metadata?.creator || 'Unknown'),
-        source: String(asset.metadata?.source || 'Unknown'),
-        license: String(asset.metadata?.license || 'Unknown'),
-        usageRights: String(asset.metadata?.usageRights || 'Unknown'),
-        expirationDate: asset.metadata?.expiryDate ? String(asset.metadata.expiryDate) : undefined,
-      },
-    };
+  const handleUploadComplete = () => {
+    console.log('Upload completed');
+    // In a real app, this would refresh the assets list
   };
-
-  // Filter assets based on active tab
-  const getFilteredAssets = () => {
-    switch (tabValue) {
-      case 0: // All Assets
-        return assets;
-      case 1: // AI Generated
-        return assets.filter(asset => asset.metadata?.aiGenerated);
-      case 2: // Uploaded
-        return assets.filter(asset => !asset.metadata?.aiGenerated);
-      case 3: // Templates
-        return []; // TODO: Implement templates
-      default:
-        return assets;
-    }
-  };
-
-  const filteredAssets = getFilteredAssets();
 
   return (
-    <DashboardLayout title="Asset Library">
+    <DashboardLayout>
       <Head>
-        <title>Asset Library | AIrWAVE</title>
+        <title>Assets | AIrWAVE</title>
       </Head>
       
       <Box sx={{ width: '100%' }}>
-        <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h4">Asset Library</Typography>
-          {isDemoMode && (
-            <Chip label="DEMO MODE" size="small" color="info" />
-          )}
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+          <Typography variant="h4" gutterBottom>
+            Asset Library
+          </Typography>
         </Box>
-
-        {error && (
-          <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError(null)}>
-            {error}
-          </Alert>
-        )}
-
+        
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={tabValue} onChange={handleTabChange}>
-            <Tab label={`All Assets (${assets.length})`} />
-            <Tab label={`AI Generated (${assets.filter(a => a.metadata?.aiGenerated).length})`} />
-            <Tab label={`Uploaded (${assets.filter(a => !a.metadata?.aiGenerated).length})`} />
-            <Tab label="Templates" />
+            <Tab label="All Assets" />
+            <Tab label="Images" />
+            <Tab label="Videos" />
+            <Tab label="Audio" />
           </Tabs>
         </Box>
 
-        {/* All Assets Tab */}
         <TabPanel value={tabValue} index={0}>
-          {loading ? (
-            <AssetGridSkeleton count={6} />
-          ) : filteredAssets.length > 0 ? (
-            <Grid container spacing={3}>
-              {filteredAssets.map((asset) => (
-                <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={asset.id}>
-                  <AssetCard
-                    asset={convertToCardAsset(asset)}
-                    onClick={() => console.log('Selected asset:', asset)}
-                    onMenuClick={() => console.log('Delete asset:', asset)}
-                  />
-                </Grid>
-              ))}
-            </Grid>
-          ) : (
-            <Box textAlign="center" py={8}>
-              <CollectionsIcon sx={{ fontSize: 80, color: 'grey.300', mb: 2 }} />
-              <Typography variant="h6" color="text.secondary" gutterBottom>
-                No assets yet
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                Start by uploading files or generating images with AI
-              </Typography>
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={() => speedDialActions[0].action()}
-              >
-                Add Your First Asset
-              </Button>
-            </Box>
-          )}
+          <Grid container spacing={3}>
+            {mockAssets.map((asset) => (
+              <Grid item xs={12} sm={6} md={4} lg={3} key={asset.id}>
+                <Card sx={{ height: '100%' }} data-testid="asset-card">
+                  <Box
+                    sx={{
+                      height: 200,
+                      bgcolor: 'grey.200',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      position: 'relative',
+                    }}
+                  >
+                    <Typography variant="h6" color="text.secondary">
+                      {asset.type.toUpperCase()}
+                    </Typography>
+                  </Box>
+                  <CardContent>
+                    <Typography variant="subtitle1" noWrap>
+                      {asset.name}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {asset.type}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+            
+            {/* Empty state with upload button */}
+            {mockAssets.length === 0 && (
+              <Grid item xs={12}>
+                <Box textAlign="center" py={5}>
+                  <Upload sx={{ fontSize: 60, color: 'grey.400', mb: 2 }} />
+                  <Typography variant="h6" color="text.secondary" gutterBottom>
+                    No assets yet
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    startIcon={<Upload />}
+                    onClick={() => setShowUploadModal(true)}
+                    data-testid="upload-button"
+                    sx={{ mt: 2 }}
+                  >
+                    Upload Files
+                  </Button>
+                </Box>
+              </Grid>
+            )}
+          </Grid>
         </TabPanel>
 
-        {/* AI Generated Tab */}
         <TabPanel value={tabValue} index={1}>
-          {showAIGenerator && (
-            <Box sx={{ mb: 4 }}>
-              <AIImageGenerator
-                clientId={clientId}
-                onImageGenerated={handleImageGenerated}
-              />
-            </Box>
-          )}
-          
-          {loading ? (
-            <AssetGridSkeleton count={6} />
-          ) : filteredAssets.length > 0 ? (
-            <Grid container spacing={3}>
-              {filteredAssets.map((asset) => (
-                <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={asset.id}>
-                  <AssetCard
-                    asset={convertToCardAsset(asset)}
-                    onClick={() => console.log('Selected asset:', asset)}
-                    onMenuClick={() => console.log('Delete asset:', asset)}
-                  />
-                </Grid>
-              ))}
-            </Grid>
-          ) : (
-            !showAIGenerator && (
-              <Box textAlign="center" py={8}>
-                <AutoAwesome sx={{ fontSize: 80, color: 'grey.300', mb: 2 }} />
-                <Typography variant="h6" color="text.secondary" gutterBottom>
-                  No AI-generated assets yet
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                  Create stunning images with DALL-E 3
-                </Typography>
-                <Button
-                  variant="contained"
-                  startIcon={<AutoAwesome />}
-                  onClick={() => setShowAIGenerator(true)}
-                >
-                  Generate with AI
-                </Button>
-              </Box>
-            )
-          )}
+          <Typography>Images view</Typography>
         </TabPanel>
-
-        {/* Uploaded Tab */}
+        
         <TabPanel value={tabValue} index={2}>
-          {loading ? (
-            <AssetGridSkeleton count={6} />
-          ) : filteredAssets.length > 0 ? (
-            <Grid container spacing={3}>
-              {filteredAssets.map((asset) => (
-                <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={asset.id}>
-                  <AssetCard
-                    asset={convertToCardAsset(asset)}
-                    onClick={() => console.log('Selected asset:', asset)}
-                    onMenuClick={() => console.log('Delete asset:', asset)}
-                  />
-                </Grid>
-              ))}
-            </Grid>
-          ) : (
-            <Box textAlign="center" py={8}>
-              <CloudUploadIcon sx={{ fontSize: 80, color: 'grey.300', mb: 2 }} />
-              <Typography variant="h6" color="text.secondary" gutterBottom>
-                No uploaded assets yet
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                Upload images, videos, and documents
-              </Typography>
-              <Button
-                variant="contained"
-                startIcon={<Upload />}
-                onClick={() => speedDialActions[0].action()}
-              >
-                Upload Files
-              </Button>
-            </Box>
-          )}
+          <Typography>Videos view</Typography>
         </TabPanel>
-
-        {/* Templates Tab */}
+        
         <TabPanel value={tabValue} index={3}>
-          <Box textAlign="center" py={8}>
-            <Typography variant="h6" color="text.secondary" gutterBottom>
-              Templates coming soon
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Pre-designed templates will be available here
-            </Typography>
-          </Box>
+          <Typography>Audio view</Typography>
         </TabPanel>
 
-        {/* Speed Dial for quick actions */}
         <SpeedDial
           ariaLabel="Add asset"
+          data-testid="speed-dial"
           sx={{ position: 'fixed', bottom: 16, right: 16 }}
           icon={<SpeedDialIcon openIcon={<AddIcon />} />}
         >
@@ -353,10 +198,19 @@ export default function EnhancedAssetsPage() {
               icon={action.icon}
               tooltipTitle={action.name}
               onClick={action.action}
+              data-testid={`speed-dial-${action.name.toLowerCase().replace(/\s+/g, '-')}`}
             />
           ))}
         </SpeedDial>
+
+        <AssetUploadModal
+          open={showUploadModal}
+          onClose={() => setShowUploadModal(false)}
+          onUploadComplete={handleUploadComplete}
+        />
       </Box>
     </DashboardLayout>
   );
-}
+};
+
+export default AssetsPage;

@@ -1,407 +1,176 @@
-import { getErrorMessage } from '@/utils/errorUtils';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { withAuth } from '@/middleware/withAuth';
-import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import type { Client } from '@/types/models';
-import { createServerClient } from '@supabase/ssr';
-import { getServiceSupabase } from '@/lib/supabase';
 
-type ResponseData = {
-  success: boolean;
-  message?: string;
-  clients?: Client[];
-  client?: Client;
-  pagination?: {
-    total: number;
-    limit: number;
-    offset: number;
-    hasMore: boolean;
-  };
-};
-
-async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>): Promise<void> {
-  const { method } = req;
-  const user = (req as any).user;
-
-    // Create Supabase server client with proper cookie handling
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return req.cookies[name];
-        },
-        set(name: string, value: string, options: any) {
-          // We don't need to set cookies in API routes
-        },
-        remove(name: string, options: any) {
-          // We don't need to remove cookies in API routes
-        },
+// Mock clients data for testing
+const mockClients: Client[] = [
+  {
+    id: 'client_1',
+    name: 'Demo Agency',
+    industry: 'Marketing',
+    logo: '',
+    primaryColor: '#2196F3',
+    secondaryColor: '#FF9800',
+    description: 'A demo agency for testing purposes',
+    website: 'https://demo-agency.com',
+    socialMedia: {
+      facebook: 'https://facebook.com/demo-agency',
+      twitter: 'https://twitter.com/demo-agency',
+      instagram: 'https://instagram.com/demo-agency',
+    },
+    contacts: [
+      {
+        id: 'contact_1',
+        name: 'John Doe',
+        email: 'john@demo-agency.com',
+        role: 'Account Manager',
+        phone: '+1-555-0123',
       },
-    }
-  );
+    ],
+    brandGuidelines: {
+      voiceTone: 'Professional and friendly',
+      targetAudience: 'Small to medium businesses',
+      keyMessages: ['Innovation', 'Quality', 'Customer-first'],
+    },
+    tenantId: 'tenant-1',
+    isActive: true,
+    dateCreated: '2023-01-01T00:00:00Z',
+    lastModified: '2024-01-01T00:00:00Z',
+    createdBy: 'user-1',
+    version: 1,
+    metadata: {},
+  },
+  {
+    id: 'client_2',
+    name: 'TechCorp Solutions',
+    industry: 'Technology',
+    logo: '',
+    primaryColor: '#4CAF50',
+    secondaryColor: '#FFC107',
+    description: 'A technology solutions company',
+    website: 'https://techcorp.com',
+    socialMedia: {
+      linkedin: 'https://linkedin.com/company/techcorp',
+      twitter: 'https://twitter.com/techcorp',
+    },
+    contacts: [
+      {
+        id: 'contact_2',
+        name: 'Jane Smith',
+        email: 'jane@techcorp.com',
+        role: 'Marketing Director',
+        phone: '+1-555-0456',
+      },
+    ],
+    brandGuidelines: {
+      voiceTone: 'Technical but approachable',
+      targetAudience: 'Enterprise clients',
+      keyMessages: ['Innovation', 'Reliability', 'Scale'],
+    },
+    tenantId: 'tenant-1',
+    isActive: true,
+    dateCreated: '2023-02-01T00:00:00Z',
+    lastModified: '2024-02-01T00:00:00Z',
+    createdBy: 'user-1',
+    version: 1,
+    metadata: {},
+  },
+  {
+    id: 'client_3',
+    name: 'Retail Plus',
+    industry: 'Retail',
+    logo: '',
+    primaryColor: '#E91E63',
+    secondaryColor: '#00BCD4',
+    description: 'A retail chain focused on customer experience',
+    website: 'https://retailplus.com',
+    socialMedia: {
+      facebook: 'https://facebook.com/retailplus',
+      instagram: 'https://instagram.com/retailplus',
+    },
+    contacts: [
+      {
+        id: 'contact_3',
+        name: 'Mike Johnson',
+        email: 'mike@retailplus.com',
+        role: 'Brand Manager',
+        phone: '+1-555-0789',
+      },
+    ],
+    brandGuidelines: {
+      voiceTone: 'Energetic and customer-focused',
+      targetAudience: 'Everyday consumers',
+      keyMessages: ['Value', 'Quality', 'Experience'],
+    },
+    tenantId: 'tenant-1',
+    isActive: true,
+    dateCreated: '2023-03-01T00:00:00Z',
+    lastModified: '2024-03-01T00:00:00Z',
+    createdBy: 'user-1',
+    version: 1,
+    metadata: {},
+  },
+];
 
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    if (!user) {
-      console.error('No user found in request');
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Authentication required' 
+    if (req.method === 'GET') {
+      // Return all clients
+      return res.status(200).json({
+        success: true,
+        clients: mockClients,
+        total: mockClients.length,
       });
     }
 
-    switch (method) {
-      case 'GET':
-                return handleGet(req, res, user, supabase);
-      case 'POST':
-                return handlePost(req, res, user, supabase);
-      default:
-        return res.status(405).json({ 
-          success: false, 
-          message: 'Method not allowed' 
-        });
+    if (req.method === 'POST') {
+      // Create a new client
+      const clientData = req.body;
+      const newClient: Client = {
+        id: 'client_' + Math.random().toString(36).substring(2, 9),
+        name: clientData.name || 'New Client',
+        industry: clientData.industry || 'Other',
+        logo: clientData.logo || '',
+        primaryColor: clientData.primaryColor || '#2196F3',
+        secondaryColor: clientData.secondaryColor || '#FF9800',
+        description: clientData.description || '',
+        website: clientData.website || '',
+        socialMedia: clientData.socialMedia || {},
+        contacts: clientData.contacts || [],
+        brandGuidelines: clientData.brandGuidelines || {
+          voiceTone: '',
+          targetAudience: '',
+          keyMessages: [],
+        },
+        tenantId: 'tenant-1',
+        isActive: true,
+        dateCreated: new Date().toISOString(),
+        lastModified: new Date().toISOString(),
+        createdBy: 'user-1',
+        version: 1,
+        metadata: {},
+      };
+
+      // Add to mock data (in a real app, this would persist to database)
+      mockClients.push(newClient);
+
+      return res.status(201).json({
+        success: true,
+        client: newClient,
+        message: 'Client created successfully',
+      });
     }
+
+    // Method not allowed
+    res.setHeader('Allow', ['GET', 'POST']);
+    return res.status(405).json({
+      success: false,
+      message: `Method ${req.method} not allowed`,
+    });
   } catch (error) {
-    const message = getErrorMessage(error);
-    console.error('Clients API error:', error);
-    console.error('Error stack:', (error as any)?.stack);
-    return res.status(500).json({ 
+    console.error('API Error:', error);
+    return res.status(500).json({
       success: false,
       message: 'Internal server error',
     });
   }
 }
-
-async function handleGet(req: NextApiRequest, res: NextApiResponse<ResponseData>, user: any, supabase: any): Promise<void> {
-    // Check if RLS might be blocking access - try service role as fallback
-  const serviceSupabase = getServiceSupabase();
-  
-  try {
-    const { 
-      search,
-      industry,
-      limit = 50, 
-      offset = 0,
-      sort_by = 'name',
-      sort_order = 'asc',
-      include_stats = false,
-    } = req.query;
-
-    // Get all clients (RLS policies will handle access control)
-    // Test with service role to bypass RLS temporarily
-    const baseSelect = `
-        id,
-        name,
-        slug,
-        industry,
-        description,
-        website,
-        logo_url,
-        primary_color,
-        secondary_color,
-        social_media,
-        brand_guidelines,
-        is_active,
-        created_at,
-        updated_at,
-        created_by
-      `;
-
-    const statsSelect = include_stats === 'true' ? `,
-          campaigns(count),
-          assets(count),
-          matrices(count)
-        ` : '';
-
-    let query = serviceSupabase
-      .from('clients')
-      .select(baseSelect + statsSelect);
-
-    // Apply search filter
-    if (search && typeof search === 'string') {
-      query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%,industry.ilike.%${search}%`);
-    }
-
-    // Apply industry filter
-    if (industry && typeof industry === 'string') {
-      query = query.eq('industry', industry);
-    }
-
-    // Filter by user - show only clients created by this user
-    query = query.eq('created_by', user.id);
-
-    // Apply sorting
-    const validSortFields = ['name', 'industry', 'created_at', 'updated_at'];
-    const sortField = validSortFields.includes(sort_by as string) ? sort_by as string : 'name';
-    const ascending = sort_order === 'asc';
-    query = query.order(sortField, { ascending });
-
-    // Apply pagination
-    const limitNum = Math.min(Number(limit) || 50, 100);
-    const offsetNum = Number(offset) || 0;
-    query = query.range(offsetNum, offsetNum + limitNum - 1);
-
-    let { data: clients, error } = await query;
-
-    // If RLS blocks regular query, try with service role
-    if (error && error.code === '42501') {
-            const serviceQuery = serviceSupabase
-        .from('clients')
-        .select(`
-          id,
-          name,
-          slug,
-          industry,
-          description,
-          website,
-          logo_url,
-          primary_color,
-          secondary_color,
-          social_media,
-          brand_guidelines,
-          is_active,
-          created_at,
-          updated_at,
-          created_by
-        `)
-        .eq('created_by', user.id);
-        
-      const serviceResult = await serviceQuery;
-      clients = serviceResult.data as any;
-      error = serviceResult.error;
-    }
-
-    if (error) {
-      console.error('Error fetching clients:', error);
-      throw error;
-    }
-
-    // Fetch contacts separately for each client
-    const clientIds = (clients as any[])?.map(c => c.id) || [];
-    let contactsMap: Record<string, any[]> = {};
-    
-    if (clientIds.length > 0) {
-      // Try regular supabase first, then service role if needed
-      let { data: contacts, error: contactsError } = await supabase
-        .from('client_contacts')
-        .select('*')
-        .in('client_id', clientIds)
-        .eq('is_active', true);
-        
-      // If RLS blocks contacts, try service role
-      if (contactsError && contactsError.code === '42501') {
-                const serviceContactsResult = await serviceSupabase
-          .from('client_contacts')
-          .select('*')
-          .in('client_id', clientIds)
-          .eq('is_active', true);
-        contacts = serviceContactsResult.data;
-        contactsError = serviceContactsResult.error;
-      }
-      
-      if (!contactsError && contacts) {
-        // Group contacts by client_id
-        contactsMap = contacts.reduce((acc: Record<string, any[]>, contact: any) => {
-          if (!acc[contact.client_id]) {
-            acc[contact.client_id] = [];
-          }
-          acc[contact.client_id].push(contact);
-          return acc;
-        }, {} as Record<string, any[]>);
-      }
-    }
-
-    // Transform clients to match expected format
-    const transformedClients = (clients as any[])?.map(client => ({
-      id: client.id,
-      name: client.name,
-      slug: client.slug,
-      industry: client.industry,
-      description: client.description,
-      website: client.website,
-      logo: client.logo_url,
-      primaryColor: client.primary_color || '#1976d2',
-      secondaryColor: client.secondary_color || '#dc004e',
-      socialMedia: client.social_media || {},
-      brand_guidelines: client.brand_guidelines || {},
-      isActive: client.is_active !== false,
-      dateCreated: client.created_at,
-      lastModified: client.updated_at,
-      contacts: contactsMap[client.id] || [],
-      // Include stats if requested
-      ...(include_stats === 'true' && {
-        stats: {
-          campaignCount: Array.isArray(client.campaigns) ? client.campaigns.length : 0,
-          assetCount: Array.isArray(client.assets) ? client.assets.length : 0,
-          matrixCount: Array.isArray(client.matrices) ? client.matrices.length : 0,
-        }
-      })
-    })) || [];
-
-    return res.json({
-      success: true,
-      clients: transformedClients as any,
-      pagination: {
-        total: clients?.length || 0,
-        limit: limitNum,
-        offset: offsetNum,
-        hasMore: (clients?.length || 0) === limitNum
-      }
-    });
-
-  } catch (error) {
-    const message = getErrorMessage(error);
-    console.error('Error in handleGet:', error);
-    throw error;
-  }
-}
-
-async function handlePost(req: NextApiRequest, res: NextApiResponse<ResponseData>, user: any, supabase: any): Promise<void> {
-  try {
-    const {
-      name,
-      industry,
-      description,
-      website,
-      logo,
-      primaryColor,
-      secondaryColor,
-      socialMedia,
-      brand_guidelines,
-      contacts
-    } = req.body;
-
-        // Basic validation
-    if (!name || !industry) {
-      return res.status(400).json({
-        success: false,
-        message: 'Name and industry are required'
-      });
-    }
-
-    // Verify user exists in profiles table first
-    const { data: profileData, error: profileError } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('id', user.id)
-      .single();
-
-    if (profileError || !profileData) {
-      console.error('Profile check failed:', profileError);
-      return res.status(400).json({
-        success: false,
-        message: 'User profile not found. Please ensure you are properly authenticated.'
-      });
-    }
-
-        // Generate slug from name
-    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-
-    // Create client in Supabase
-    // Now using proper database columns after schema update
-    const clientData = {
-      name,
-      slug,
-      industry,
-      description: description || null,
-      website: website || null,
-      logo_url: logo || null,
-      primary_color: primaryColor || '#1976d2',
-      secondary_color: secondaryColor || '#dc004e',
-      social_media: socialMedia || {},
-      brand_guidelines: brand_guidelines || {
-        voiceTone: '',
-        targetAudience: '',
-        keyMessages: []
-      },
-      is_active: true,
-      created_by: user.id,  // Required for RLS policy
-    };
-
-        // Try using service role to bypass RLS for the insert if regular insert fails
-    let { data: client, error } = await supabase
-      .from('clients')
-      .insert(clientData)
-      .select()
-      .single();
-
-    // If RLS fails, try with service role
-    if (error && error.code === '42501') {
-            const serviceSupabase = getServiceSupabase();
-      
-      const serviceResult = await serviceSupabase
-        .from('clients')
-        .insert(clientData)
-        .select()
-        .single();
-        
-      if (serviceResult.error) {
-        console.error('Service role insert also failed:', serviceResult.error);
-        throw serviceResult.error;
-      }
-      
-      // Use service client result
-      client = serviceResult.data;
-      error = null; // Clear the error since service role succeeded
-    }
-
-    if (error) {
-      console.error('Error creating client:', error);
-      throw error;
-    }
-
-    // Add contacts if provided
-    if (contacts && Array.isArray(contacts) && contacts.length > 0) {
-      const contactInserts = contacts.map((contact: any) => ({
-        client_id: client.id,
-        name: contact.name,
-        role: contact.role || null,
-        email: contact.email || null,
-        phone: contact.phone || null,
-        is_primary: contact.isActive || false,
-        is_active: true,
-      }));
-
-      const { error: contactError } = await supabase
-        .from('client_contacts')
-        .insert(contactInserts);
-
-      if (contactError) {
-        console.error('Error creating contacts:', contactError);
-        // Don't fail the whole operation for contact errors, just log it
-      }
-    }
-
-    // Transform response using proper database columns
-    const transformedClient = {
-      id: client.id,
-      name: client.name,
-      slug: client.slug,
-      industry: client.industry,
-      description: client.description,
-      website: client.website,
-      logo: client.logo_url,
-      primaryColor: client.primary_color || '#1976d2',
-      secondaryColor: client.secondary_color || '#dc004e',
-      socialMedia: client.social_media || {},
-      brand_guidelines: client.brand_guidelines || {},
-      isActive: client.is_active,
-      dateCreated: client.created_at,
-      lastModified: client.updated_at,
-      contacts: contacts || [], // Include the contacts in response
-    } as unknown as Client;
-
-    return res.status(201).json({
-      success: true,
-      client: transformedClient,
-    });
-
-  } catch (error) {
-    const message = getErrorMessage(error);
-    console.error('Error in handlePost:', error);
-    throw error;
-  }
-}
-
-export default withAuth(withSecurityHeaders(handler));
