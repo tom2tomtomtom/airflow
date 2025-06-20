@@ -590,4 +590,4 @@ function shuffleArray<T>(array: T[]): T[] {
 }
 
 // Apply authentication, AI rate limiting, and CSRF protection for security
-export default withAuth(withAIRateLimit()(withCSRFProtection(handler)));
+export default withAuth(withAIRateLimit(withCSRFProtection(handler)));

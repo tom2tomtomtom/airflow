@@ -243,4 +243,4 @@ async function handler(
   }
 }
 
-export default withSecurityHeaders(withAuth(withUploadRateLimit()(handler)));
+export default withSecurityHeaders(withAuth(withUploadRateLimit(handler)));

@@ -39,7 +39,7 @@ Sentry.init({
     }
     
     // Don't send 4xx errors except 429 (rate limit)
-    const statusCode = hint.originalException?.statusCode;
+    const statusCode = (hint.originalException as any)?.statusCode;
     if (statusCode && statusCode >= 400 && statusCode < 500 && statusCode !== 429) {
       return null;
     }

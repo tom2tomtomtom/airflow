@@ -162,14 +162,11 @@ async function processRenderJob(job: Job<RenderJobData>): Promise<{ success: boo
     
     if (!userError && userData) {
       // Send completion email
-      await sendRenderCompleteEmail({
-        to: userData.email || '',
-        campaignName: `Execution ${executionId}`,
-        renderCount: 1,
-        successCount: 1,
-        failedCount: 0,
+      await sendRenderCompleteEmail(userData.email || '', {
+        id: renderData.id,
+        name: `Execution ${executionId}`,
         downloadUrl: uploadedFile.cdnUrl || uploadedFile.url,
-        completedAt: new Date().toISOString(),
+        status: 'completed',
       });
     }
     

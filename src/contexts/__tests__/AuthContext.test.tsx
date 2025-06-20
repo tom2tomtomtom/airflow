@@ -64,8 +64,8 @@ describe('AuthContext', () => {
     const { result } = renderHook(() => useAuth(), { wrapper });
 
     await act(async () => {
-      const response = await result.current.login('test@example.com', 'password');
-      expect(response.error).toBeNull();
+      await result.current.login('test@example.com', 'password');
+      // No error thrown means success
     });
 
     await waitFor(() => {
@@ -85,8 +85,12 @@ describe('AuthContext', () => {
     const { result } = renderHook(() => useAuth(), { wrapper });
 
     await act(async () => {
-      const response = await result.current.login('test@example.com', 'wrong-password');
-      expect(response.error).toBe('Invalid credentials');
+      try {
+        await result.current.login('test@example.com', 'wrong-password');
+        expect(true).toBe(false); // Should not reach here
+      } catch (error) {
+        expect((error as Error).message).toBe('Invalid credentials');
+      }
     });
 
     expect(result.current.user).toBeNull();
@@ -110,12 +114,12 @@ describe('AuthContext', () => {
     const { result } = renderHook(() => useAuth(), { wrapper });
 
     await act(async () => {
-      const response = await result.current.signup(
-        'newuser@example.com', 
-        'password', 
-        { full_name: 'New User' }
+      await result.current.signup(
+        'newuser@example.com',
+        'password',
+        'New User'
       );
-      expect(response.error).toBeNull();
+      // No error thrown means success
     });
 
     await waitFor(() => {

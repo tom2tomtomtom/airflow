@@ -245,4 +245,4 @@ async function handler(
 }
 
 // Apply AI rate limiting to prevent abuse and cost overruns
-export default withAIRateLimit()(handler);
+export default withAIRateLimit(handler);

@@ -192,4 +192,4 @@ async function handler(
 }
 
 // Apply rate limiting to prevent brute force attacks
-export default withAuthRateLimit()(handler);
+export default withAuthRateLimit(handler);

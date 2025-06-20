@@ -194,4 +194,4 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 }
 
 // Apply authentication and rate limiting
-export default withAuth(withAPIRateLimit()(handler));
+export default withAuth(withAPIRateLimit(handler));

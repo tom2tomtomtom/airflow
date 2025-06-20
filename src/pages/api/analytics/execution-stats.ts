@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withAuth } from '@/middleware/auth';
 import { supabase } from '@/lib/supabase';
-import { errorResponse } from '@/utils/api';
+import { errorResponse, ApiErrorCode } from '@/lib/api-response';
 
 interface ExecutionStats {
   total_executions: number;
@@ -16,14 +16,14 @@ interface ExecutionStats {
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
-    return res.status(405).json(errorResponse('Method not allowed', 'METHOD_NOT_ALLOWED'));
+    return errorResponse(res, ApiErrorCode.METHOD_NOT_ALLOWED, 'Method not allowed', 405);
   }
 
   try {
     const { client_id } = req.query;
 
     if (!client_id || typeof client_id !== 'string') {
-      return res.status(400).json(errorResponse('Client ID is required', 'MISSING_CLIENT_ID'));
+      return errorResponse(res, ApiErrorCode.VALIDATION_ERROR, 'Client ID is required', 400);
     }
 
     // Get execution statistics
@@ -42,7 +42,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     if (executionsError) {
       console.error('Error fetching executions:', executionsError);
-      return res.status(500).json(errorResponse('Failed to fetch executions', 'DATABASE_ERROR'));
+      return errorResponse(res, ApiErrorCode.DATABASE_ERROR, 'Failed to fetch executions', 500);
     }
 
     const totalExecutions = executions?.length || 0;
@@ -91,7 +91,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     });
   } catch (error) {
     console.error('Error in execution stats API:', error);
-    res.status(500).json(errorResponse('Internal server error', 'INTERNAL_ERROR'));
+    return errorResponse(res, ApiErrorCode.INTERNAL_ERROR, 'Internal server error', 500);
   }
 }
 

@@ -1,29 +1,29 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withAuth } from '@/middleware/auth';
 import { supabase } from '@/lib/supabase';
-import { errorResponse } from '@/utils/api';
+import { errorResponse, ApiErrorCode } from '@/lib/api-response';
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
-    return res.status(405).json(errorResponse('Method not allowed', 'METHOD_NOT_ALLOWED'));
+    return errorResponse(res, ApiErrorCode.METHOD_NOT_ALLOWED, 'Method not allowed', 405);
   }
 
   try {
     const { queueId, action } = req.query;
 
     if (!queueId || typeof queueId !== 'string') {
-      return res.status(400).json(errorResponse('Queue ID is required', 'MISSING_QUEUE_ID'));
+      return errorResponse(res, ApiErrorCode.VALIDATION_ERROR, 'Queue ID is required', 400);
     }
 
     if (!action || typeof action !== 'string') {
-      return res.status(400).json(errorResponse('Action is required', 'MISSING_ACTION'));
+      return errorResponse(res, ApiErrorCode.VALIDATION_ERROR, 'Action is required', 400);
     }
 
     // Parse queue ID to get matrix_id and campaign_id
     const [matrixId, campaignId] = queueId.split('-');
 
     if (!matrixId || !campaignId) {
-      return res.status(400).json(errorResponse('Invalid queue ID format', 'INVALID_QUEUE_ID'));
+      return errorResponse(res, ApiErrorCode.VALIDATION_ERROR, 'Invalid queue ID format', 400);
     }
 
     // Get executions for this queue
@@ -35,11 +35,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     if (fetchError) {
       console.error('Error fetching executions:', fetchError);
-      return res.status(500).json(errorResponse('Failed to fetch executions', 'DATABASE_ERROR'));
+      return errorResponse(res, ApiErrorCode.DATABASE_ERROR, 'Failed to fetch executions', 500);
     }
 
     if (!executions || executions.length === 0) {
-      return res.status(404).json(errorResponse('No executions found for this queue', 'QUEUE_NOT_FOUND'));
+      return errorResponse(res, ApiErrorCode.NOT_FOUND, 'No executions found for this queue', 404);
     }
 
     let updateData: any = {};
@@ -59,25 +59,27 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         statusFilter = ['pending', 'processing', 'paused'];
         break;
       case 'retry':
-        updateData = { 
+        // For retry, we'll handle the retry_count increment separately
+        updateData = {
           status: 'pending',
-          retry_count: supabase.raw('COALESCE(retry_count, 0) + 1'),
           error_message: null
         };
         statusFilter = ['failed'];
         break;
       default:
-        return res.status(400).json(errorResponse('Invalid action', 'INVALID_ACTION'));
+        return errorResponse(res, ApiErrorCode.VALIDATION_ERROR, 'Invalid action', 400);
     }
 
     // Filter executions that can be affected by this action
     const targetExecutions = executions.filter(e => statusFilter.includes(e.status));
 
     if (targetExecutions.length === 0) {
-      return res.status(400).json(errorResponse(
-        `No executions in appropriate status for ${action}`, 
-        'NO_APPLICABLE_EXECUTIONS'
-      ));
+      return errorResponse(
+        res,
+        ApiErrorCode.VALIDATION_ERROR,
+        `No executions in appropriate status for ${action}`,
+        400
+      );
     }
 
     // Update executions
@@ -89,7 +91,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     if (updateError) {
       console.error('Error updating executions:', updateError);
-      return res.status(500).json(errorResponse('Failed to update executions', 'UPDATE_ERROR'));
+      return errorResponse(res, ApiErrorCode.DATABASE_ERROR, 'Failed to update executions', 500);
     }
 
     // Log the queue action
@@ -119,7 +121,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     });
   } catch (error) {
     console.error('Error in queue action API:', error);
-    res.status(500).json(errorResponse('Internal server error', 'INTERNAL_ERROR'));
+    return errorResponse(res, ApiErrorCode.INTERNAL_ERROR, 'Internal server error', 500);
   }
 }
 

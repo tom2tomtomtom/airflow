@@ -109,4 +109,4 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, userId: s
   res.status(204).end();
 }
 
-export default withErrorHandler(withAPIRateLimit()(handler));
+export default withErrorHandler(withAPIRateLimit(handler));

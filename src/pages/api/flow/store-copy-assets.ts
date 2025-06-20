@@ -114,4 +114,4 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   }
 }
 
-export default withAuth(withFlowRateLimit()(handler));
+export default withAuth(withFlowRateLimit(handler));

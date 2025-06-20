@@ -83,7 +83,7 @@ test.describe('Workflow Corrected Test', () => {
       
       // Monitor file input changes
       document.addEventListener('change', (event) => {
-        if (event.target && event.target.type === 'file') {
+        if (event.target && (event.target as HTMLInputElement).type === 'file') {
           const fileInput = event.target as HTMLInputElement;
           console.log(`📁 FILE INPUT CHANGE: ${fileInput.files?.length || 0} files selected`);
           if (fileInput.files && fileInput.files.length > 0) {

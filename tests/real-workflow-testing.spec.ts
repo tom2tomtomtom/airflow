@@ -186,7 +186,7 @@ test.describe('Real AIrWAVE Workflow Testing', () => {
         hasNavigation: document.querySelectorAll('nav').length > 0,
         navigationItems: Array.from(document.querySelectorAll('nav a')).map(link => ({
           text: link.textContent?.trim(),
-          href: link.href
+          href: (link as HTMLAnchorElement).href
         })),
         bodyText: document.body.innerText.substring(0, 500)
       };
@@ -341,7 +341,7 @@ test.describe('Real AIrWAVE Workflow Testing', () => {
           console.log(`     📊 Actual value: ${actualValue}`);
           
           // Clear for next test
-          await page.keyboard.selectAll();
+          await page.keyboard.press('Control+a');
           await page.keyboard.press('Delete');
           
         } catch (error) {

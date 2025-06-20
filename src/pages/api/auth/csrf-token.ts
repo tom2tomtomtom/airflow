@@ -8,4 +8,4 @@ import { handleCSRFToken } from '@/lib/csrf';
 import { withAPIRateLimit } from '@/lib/rate-limiter';
 
 // Apply rate limiting and handle CSRF token requests
-export default withAPIRateLimit()(handleCSRFToken);
+export default withAPIRateLimit(handleCSRFToken);

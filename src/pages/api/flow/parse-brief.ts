@@ -740,4 +740,4 @@ async function parseDocumentContent(content: string, title: string): Promise<Bri
 }
 
 // Apply authentication, rate limiting, and CSRF protection for security
-export default withAuth(withFlowRateLimit()(withCSRFProtection(handler)));
+export default withAuth(withFlowRateLimit(withCSRFProtection(handler)));

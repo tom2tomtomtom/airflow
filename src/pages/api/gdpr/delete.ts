@@ -60,4 +60,4 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   }
 }
 
-export default withErrorHandler(withAPIRateLimit()(handler));
+export default withErrorHandler(withAPIRateLimit(handler));

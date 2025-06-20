@@ -207,7 +207,7 @@ test.describe('AIrWAVE Actual Workflow Testing', () => {
           console.log(`   ✅ Input ${i + 1} filled successfully with: ${testValue}`);
           
           // Clear the input for next test
-          await page.keyboard.selectAll();
+          await page.keyboard.press('Control+a');
           await page.keyboard.press('Delete');
           
         } catch (error) {
