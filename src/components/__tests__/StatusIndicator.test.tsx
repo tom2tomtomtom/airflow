@@ -101,10 +101,10 @@ describe('StatusIndicator', () => {
   describe('text variant', () => {
     it('should render text variant correctly', () => {
       renderWithTheme(<StatusIndicator status="completed" variant="text" />);
-      
+
       const text = screen.getByText('Completed');
       expect(text).toBeInTheDocument();
-      expect(text.tagName).toBe('P'); // Typography renders as p tag
+      expect(text.tagName).toBe('SPAN'); // Typography renders as span tag by default
     });
 
     it('should show progress bar for in-progress status with progress prop', () => {

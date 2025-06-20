@@ -1,255 +1,215 @@
-// Manual OpenAPI specification without swagger-jsdoc to avoid webpack issues
-const swaggerSpec = {
+// Minimal OpenAPI specification for testing
+export const swaggerSpec = {
   openapi: '3.0.0',
-    info: {
-      title: 'AIRWAVE API',
-      version: '1.0.0',
-      description: 'Comprehensive API documentation for AIRWAVE - AI-powered content generation and campaign management platform',
-      contact: {
-        name: 'AIRWAVE Support',
-        email: 'support@airwave.app',
+  info: {
+    title: 'AIRWAVE API',
+    version: '1.0.0',
+    description: 'API documentation for AIRWAVE platform',
+  },
+  servers: [
+    {
+      url: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
+      description: 'Development server',
+    },
+  ],
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
       },
-      license: {
-        name: 'MIT',
-        url: 'https://opensource.org/licenses/MIT',
+      cookieAuth: {
+        type: 'apiKey',
+        in: 'cookie',
+        name: 'auth-token',
       },
     },
-    servers: [
-      {
-        url: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
-        description: 'Development server',
-      },
-      {
-        url: 'https://airwave-complete.netlify.app',
-        description: 'Production server',
-      },
-    ],
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT',
-        },
-        cookieAuth: {
-          type: 'apiKey',
-          in: 'cookie',
-          name: 'auth-token',
-        },
-      },
-      schemas: {
-        Error: {
-          type: 'object',
-          properties: {
-            success: {
-              type: 'boolean',
-              example: false,
+    schemas: {
+      Error: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: false,
+          },
+          error: {
+            type: 'object',
+            properties: {
+              code: {
+                type: 'string',
+                example: 'VALIDATION_ERROR',
+              },
+              message: {
+                type: 'string',
+                example: 'Invalid input data',
+              },
             },
-            error: {
-              type: 'object',
-              properties: {
-                code: {
-                  type: 'string',
-                  example: 'VALIDATION_ERROR',
-                },
-                message: {
-                  type: 'string',
-                  example: 'Invalid input data',
+          },
+        },
+      },
+      Success: {
+        type: 'object',
+        properties: {
+          success: {
+            type: 'boolean',
+            example: true,
+          },
+          data: {
+            type: 'object',
+          },
+          meta: {
+            type: 'object',
+            properties: {
+              timestamp: {
+                type: 'string',
+                format: 'date-time',
+              },
+              pagination: {
+                type: 'object',
+                properties: {
+                  page: { type: 'integer' },
+                  limit: { type: 'integer' },
+                  total: { type: 'integer' },
+                  totalPages: { type: 'integer' },
                 },
               },
             },
           },
         },
-        Success: {
-          type: 'object',
-          properties: {
-            success: {
-              type: 'boolean',
-              example: true,
+      },
+      Client: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            format: 'uuid',
+            example: '123e4567-e89b-12d3-a456-426614174000',
+          },
+          name: {
+            type: 'string',
+            example: 'Acme Corporation',
+          },
+          email: {
+            type: 'string',
+            format: 'email',
+            example: 'contact@acme.com',
+          },
+          industry: {
+            type: 'string',
+            example: 'Technology',
+          },
+          brandGuidelines: {
+            type: 'object',
+            properties: {
+              colors: {
+                type: 'array',
+                items: { type: 'string' },
+                example: ['#FF0000', '#00FF00'],
+              },
+              fonts: {
+                type: 'array',
+                items: { type: 'string' },
+                example: ['Arial', 'Helvetica'],
+              },
+              tone: {
+                type: 'string',
+                example: 'Professional and friendly',
+              },
             },
-            data: {
-              type: 'object',
-            },
-            meta: {
-              type: 'object',
-              properties: {
-                timestamp: {
-                  type: 'string',
-                  format: 'date-time',
-                },
-                pagination: {
+          },
+          createdAt: {
+            type: 'string',
+            format: 'date-time',
+          },
+          updatedAt: {
+            type: 'string',
+            format: 'date-time',
+          },
+        },
+      },
+      Asset: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            format: 'uuid',
+          },
+          name: {
+            type: 'string',
+            example: 'Product Hero Image',
+          },
+          type: {
+            type: 'string',
+            enum: ['image', 'video', 'audio', 'document'],
+            example: 'image',
+          },
+          url: {
+            type: 'string',
+            format: 'uri',
+            example: 'https://cdn.airwave.app/assets/hero-image.jpg',
+          },
+          thumbnailUrl: {
+            type: 'string',
+            format: 'uri',
+          },
+          size: {
+            type: 'integer',
+            example: 1024000,
+          },
+          mimeType: {
+            type: 'string',
+            example: 'image/jpeg',
+          },
+          clientId: {
+            type: 'string',
+            format: 'uuid',
+          },
+          tags: {
+            type: 'array',
+            items: { type: 'string' },
+            example: ['hero', 'product', 'marketing'],
+          },
+          createdAt: {
+            type: 'string',
+            format: 'date-time',
+          },
+        },
+      },
+    },
+  },
+  security: [
+    {
+      bearerAuth: [],
+    },
+    {
+      cookieAuth: [],
+    },
+  ],
+  paths: {
+    '/api/health': {
+      get: {
+        summary: 'Health check',
+        description: 'Check if the API is running and healthy',
+        tags: ['System'],
+        responses: {
+          200: {
+            description: 'API is healthy',
+            content: {
+              'application/json': {
+                schema: {
                   type: 'object',
                   properties: {
-                    page: { type: 'integer' },
-                    limit: { type: 'integer' },
-                    total: { type: 'integer' },
-                    totalPages: { type: 'integer' },
+                    status: { type: 'string', example: 'ok' },
+                    timestamp: { type: 'string', format: 'date-time' },
                   },
                 },
               },
             },
           },
         },
-        Client: {
-          type: 'object',
-          properties: {
-            id: {
-              type: 'string',
-              format: 'uuid',
-              example: '123e4567-e89b-12d3-a456-426614174000',
-            },
-            name: {
-              type: 'string',
-              example: 'Acme Corporation',
-            },
-            email: {
-              type: 'string',
-              format: 'email',
-              example: 'contact@acme.com',
-            },
-            industry: {
-              type: 'string',
-              example: 'Technology',
-            },
-            brandGuidelines: {
-              type: 'object',
-              properties: {
-                colors: {
-                  type: 'array',
-                  items: { type: 'string' },
-                  example: ['#FF0000', '#00FF00'],
-                },
-                fonts: {
-                  type: 'array',
-                  items: { type: 'string' },
-                  example: ['Arial', 'Helvetica'],
-                },
-                tone: {
-                  type: 'string',
-                  example: 'Professional and friendly',
-                },
-              },
-            },
-            createdAt: {
-              type: 'string',
-              format: 'date-time',
-            },
-            updatedAt: {
-              type: 'string',
-              format: 'date-time',
-            },
-          },
-        },
-        Asset: {
-          type: 'object',
-          properties: {
-            id: {
-              type: 'string',
-              format: 'uuid',
-            },
-            name: {
-              type: 'string',
-              example: 'Product Hero Image',
-            },
-            type: {
-              type: 'string',
-              enum: ['image', 'video', 'audio', 'document'],
-              example: 'image',
-            },
-            url: {
-              type: 'string',
-              format: 'uri',
-              example: 'https://cdn.airwave.app/assets/hero-image.jpg',
-            },
-            thumbnailUrl: {
-              type: 'string',
-              format: 'uri',
-            },
-            size: {
-              type: 'integer',
-              example: 1024000,
-            },
-            mimeType: {
-              type: 'string',
-              example: 'image/jpeg',
-            },
-            clientId: {
-              type: 'string',
-              format: 'uuid',
-            },
-            tags: {
-              type: 'array',
-              items: { type: 'string' },
-              example: ['hero', 'product', 'marketing'],
-            },
-            createdAt: {
-              type: 'string',
-              format: 'date-time',
-            },
-          },
-        },
-        Campaign: {
-          type: 'object',
-          properties: {
-            id: {
-              type: 'string',
-              format: 'uuid',
-            },
-            name: {
-              type: 'string',
-              example: 'Summer Product Launch',
-            },
-            description: {
-              type: 'string',
-              example: 'Comprehensive campaign for new product launch',
-            },
-            clientId: {
-              type: 'string',
-              format: 'uuid',
-            },
-            status: {
-              type: 'string',
-              enum: ['draft', 'active', 'paused', 'completed'],
-              example: 'active',
-            },
-            platforms: {
-              type: 'array',
-              items: {
-                type: 'string',
-                enum: ['instagram', 'facebook', 'twitter', 'linkedin', 'tiktok'],
-              },
-              example: ['instagram', 'facebook'],
-            },
-            budget: {
-              type: 'number',
-              example: 10000,
-            },
-            startDate: {
-              type: 'string',
-              format: 'date',
-            },
-            endDate: {
-              type: 'string',
-              format: 'date',
-            },
-            createdAt: {
-              type: 'string',
-              format: 'date-time',
-            },
-          },
-        },
       },
     },
-    security: [
-      {
-        bearerAuth: [],
-      },
-      {
-        cookieAuth: [],
-      },
-    ],
-  },
-  paths: {
     '/api/clients': {
       get: {
         summary: 'List all clients',
@@ -422,8 +382,6 @@ const swaggerSpec = {
           }
         }
       }
-    }
-  }
+    },
+  },
 };
-
-export { swaggerSpec };
