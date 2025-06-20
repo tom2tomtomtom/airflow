@@ -1119,6 +1119,122 @@ const BriefReviewEditor: React.FC<BriefReviewEditorProps> = ({
           Please review the parsed content below and make any necessary adjustments before proceeding to generate motivations.
         </Typography>
       </Box>
+
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            label="Brief Title"
+            variant="outlined"
+            value={typeof editedData.title === 'string' ? editedData.title : String(editedData.title || '')}
+            onChange={(e) => handleFieldChange('title', e.target.value)}
+            placeholder="Enter your brief title..."
+            sx={{ mb: 2 }}
+          />
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <TextField
+            fullWidth
+            label="Industry"
+            variant="outlined"
+            value={editedData.industry || ''}
+            onChange={(e) => handleFieldChange('industry', e.target.value)}
+            placeholder="e.g., Technology, Healthcare, Retail"
+          />
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <TextField
+            fullWidth
+            label="Product/Service"
+            variant="outlined"
+            value={editedData.product || editedData.service || ''}
+            onChange={(e) => handleFieldChange('product', e.target.value)}
+            placeholder="Describe your product or service"
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            label="Objective"
+            multiline
+            rows={4}
+            variant="outlined"
+            value={typeof editedData.objective === 'string' ? editedData.objective : String(editedData.objective || '')}
+            onChange={(e) => handleFieldChange('objective', e.target.value)}
+            placeholder="Describe the main objective of your campaign..."
+          />
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <TextField
+            fullWidth
+            label="Target Audience"
+            multiline
+            rows={4}
+            variant="outlined"
+            value={typeof editedData.targetAudience === 'string' ? editedData.targetAudience : String(editedData.targetAudience || '')}
+            onChange={(e) => handleFieldChange('targetAudience', e.target.value)}
+            placeholder="Describe your target audience in detail..."
+          />
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <TextField
+            fullWidth
+            label="Value Proposition"
+            multiline
+            rows={4}
+            variant="outlined"
+            value={typeof editedData.valueProposition === 'string' ? editedData.valueProposition || '' : String(editedData.valueProposition || '')}
+            onChange={(e) => handleFieldChange('valueProposition', e.target.value)}
+            placeholder="What unique value does your product/service offer?"
+          />
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <TextField
+            fullWidth
+            label="Budget"
+            variant="outlined"
+            value={editedData.budget || ''}
+            onChange={(e) => handleFieldChange('budget', e.target.value)}
+            placeholder="e.g., $50,000 or TBD"
+          />
+        </Grid>
+
+        <Grid item xs={12} md={6}>
+          <TextField
+            fullWidth
+            label="Timeline"
+            variant="outlined"
+            value={editedData.timeline || ''}
+            onChange={(e) => handleFieldChange('timeline', e.target.value)}
+            placeholder="e.g., 3 months or Q1 2024"
+          />
+        </Grid>
+      </Grid>
+
+      <Box sx={{ mt: 4, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+        <Button
+          variant="outlined"
+          onClick={onReset}
+          startIcon={<ClearIcon />}
+        >
+          Reset to Original
+        </Button>
+        <Button
+          variant="contained"
+          onClick={onProceed}
+          startIcon={<ArrowForwardIcon />}
+        >
+          Confirm & Generate Motivations
+        </Button>
+      </Box>
+    </Box>
+  );
       
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         {/* Basic Information Section */}
