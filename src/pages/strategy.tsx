@@ -41,7 +41,7 @@ import {
   CheckCircle,
   TrendingUp,
   Lightbulb,
-  Target,
+  CenterFocusStrong as Target,
   Refresh,
   Info,
   Star,
