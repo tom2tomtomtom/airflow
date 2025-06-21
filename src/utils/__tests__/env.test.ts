@@ -134,8 +134,11 @@ describe('env utilities', () => {
     });
 
     it('should identify missing required variables', () => {
+      // Save original env vars
+      const originalEnv = process.env;
+
+      // Set minimal env with only NODE_ENV and JWT_SECRET
       process.env = {
-        ...process.env,
         NODE_ENV: 'production',
         JWT_SECRET: 'a'.repeat(32),
       };
@@ -144,6 +147,9 @@ describe('env utilities', () => {
       expect(result.isReady).toBe(false);
       expect(result.missingVars).toContain('NEXT_PUBLIC_SUPABASE_URL');
       expect(result.missingVars).toContain('OPENAI_API_KEY');
+
+      // Restore original env
+      process.env = originalEnv;
     });
 
     it('should warn about short JWT_SECRET', () => {

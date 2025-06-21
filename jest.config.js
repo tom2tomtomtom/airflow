@@ -20,6 +20,7 @@ module.exports = {
     '!**/tests/**/*.playwright.ts',
     '!**/tests/**/*.playwright.spec.ts',
     '!**/tests/ui-*.spec.ts',
+    '!**/src/pages/api/webhooks/test.ts',
   ],
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {
