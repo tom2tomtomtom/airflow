@@ -272,6 +272,8 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<HealthCheckResponse>
 ): Promise<void> {
+  const startTime = Date.now();
+
   // Only allow GET requests
   if (req.method !== 'GET') {
     res.setHeader('Allow', ['GET']);
@@ -326,7 +328,17 @@ export default async function handler(
     timestamp: new Date().toISOString(),
     version: process.env.npm_package_version || '1.0.0',
     uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development',
+    deployment: {
+      platform: process.env.VERCEL ? 'Vercel' : process.env.NETLIFY ? 'Netlify' : 'Unknown',
+      region: process.env.VERCEL_REGION || process.env.AWS_REGION || 'Unknown',
+      commit: process.env.VERCEL_GIT_COMMIT_SHA || process.env.COMMIT_REF || undefined,
+    },
     checks,
+    performance: {
+      memory_usage: (process.memoryUsage().heapUsed / process.memoryUsage().heapTotal) * 100,
+      response_time: Date.now() - startTime,
+    },
   };
 
   // Set appropriate status code - always return 200 for basic health check
