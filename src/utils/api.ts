@@ -59,7 +59,7 @@ export const apiRequest = async <T>(
     // Set default headers - include credentials for cookie-based auth
     const headers = {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : Record<string, unknown>,
       ...options.headers,
     };
     

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Head from 'next/head';
 import {
   Box,
@@ -15,18 +15,12 @@ import {
   Stepper,
   Step,
   StepLabel,
-  StepContent,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Accordion,
   AccordionSummary,
   AccordionDetails,
   Rating,
   IconButton,
   Tooltip,
-  Divider,
   List,
   ListItem,
   ListItemText,

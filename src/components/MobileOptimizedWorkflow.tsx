@@ -9,11 +9,6 @@ import {
   CardContent,
   IconButton,
   LinearProgress,
-  Stepper,
-  Step,
-  StepLabel,
-  SwipeableDrawer,
-  Fab,
   useTheme,
   useMediaQuery,
   Slide,
@@ -30,11 +25,9 @@ import {
   ContentCopy,
   Image,
   VideoLibrary,
-  GridView,
   Send,
   SwipeLeft,
   SwipeRight,
-  TouchApp,
 } from '@mui/icons-material';
 import { useSwipeable } from 'react-swipeable';
 

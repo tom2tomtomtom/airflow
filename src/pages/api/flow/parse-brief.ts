@@ -456,6 +456,20 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     // Parse content using AI/NLP (for now, we'll extract basic patterns)
     const parsedBrief = await parseDocumentContent(fileContent, briefTitle);
 
+    // Debug logging to see what was parsed
+    console.log('🔍 BRIEF PARSING - Extracted data:', {
+      title: parsedBrief.title,
+      objective: parsedBrief.objective?.substring(0, 100) + '...',
+      targetAudience: parsedBrief.targetAudience?.substring(0, 100) + '...',
+      keyMessages: parsedBrief.keyMessages,
+      platforms: parsedBrief.platforms,
+      product: parsedBrief.product,
+      service: parsedBrief.service,
+      valueProposition: parsedBrief.valueProposition?.substring(0, 100) + '...',
+      industry: parsedBrief.industry,
+      contentLength: fileContent.length
+    });
+
     // Clean up uploaded file
     fs.unlinkSync(uploadedFile.filepath);
 

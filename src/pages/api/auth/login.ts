@@ -2,7 +2,6 @@ import { getErrorMessage } from '@/utils/errorUtils';
 import { withAuthRateLimit } from '@/lib/rate-limiter';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
-import { apiSchemas } from '@/middleware/validation';
 
 interface LoginRequest {
   email: string;

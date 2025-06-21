@@ -21,9 +21,7 @@ module.exports = {
   ],
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {
-      tsconfig: {
-        jsx: 'react-jsx',
-      },
+      tsconfig: 'tsconfig.test.json',
     }],
   },
   moduleNameMapper: {
@@ -31,12 +29,8 @@ module.exports = {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
   setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
-  globals: {
-    'ts-jest': {
-      tsconfig: {
-        jsx: 'react-jsx',
-      },
-    },
+  testEnvironmentOptions: {
+    customExportConditions: [''],
   },
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',

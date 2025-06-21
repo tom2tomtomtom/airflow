@@ -60,7 +60,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     });
   }
   const { motivations, briefData }: { motivations: Motivation[], briefData: BriefData } = req.body;
-  
+
   if (!motivations || !Array.isArray(motivations) || motivations.length === 0) {
     return res.status(400).json({ success: false, message: 'Selected motivations are required' });
   }
@@ -72,6 +72,16 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!briefData) {
     return res.status(400).json({ success: false, message: 'Brief data is required' });
   }
+
+  // Debug logging to see what data we're receiving
+  console.log('🔍 COPY API - Received data:', {
+    motivationCount: motivations.length,
+    motivationTitles: motivations.map(m => m.title),
+    briefTitle: briefData.title,
+    briefObjective: briefData.objective?.substring(0, 100) + '...',
+    briefProduct: briefData.product,
+    briefValueProp: briefData.valueProposition?.substring(0, 100) + '...'
+  });
 
   try {
         // Generate 5 copy variations per motivation (max 10 words each)

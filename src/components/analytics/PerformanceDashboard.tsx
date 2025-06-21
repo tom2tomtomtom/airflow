@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Card,
   Typography,
   Button,
   Stack,
@@ -11,44 +10,22 @@ import {
   MenuItem,
   Alert,
   Paper,
-  Tabs,
-  Tab,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
   Select,
   CircularProgress,
-  Divider,
-  CardContent,
   Grid
 } from '@mui/material';
 import {
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
-  Analytics as AnalyticsIcon,
-  Assessment as AssessmentIcon,
-  Lightbulb as LightbulbIcon,
   Warning as WarningIcon,
   CheckCircle as CheckCircleIcon,
   Error as ErrorIcon,
   Info as InfoIcon,
   Refresh as RefreshIcon,
-  Download as DownloadIcon,
-  Visibility as VisibilityIcon,
-  AttachMoney as MoneyIcon,
-  TouchApp as TouchAppIcon
+  Download as DownloadIcon
 } from '@mui/icons-material';
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip as Chart,
-  Legend,
-  ResponsiveContainer
-} from 'recharts';
+
+
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
 import { getErrorMessage } from '@/utils/errorUtils';

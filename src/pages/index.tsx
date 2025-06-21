@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { Box, Button, Typography, Container, Paper } from '@mui/material';
+import { Box, Button, Typography, Container } from '@mui/material';
 import { useAuth } from '@/contexts/AuthContext';
 
 const HomePage = () => {

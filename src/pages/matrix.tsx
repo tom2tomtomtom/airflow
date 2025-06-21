@@ -11,7 +11,6 @@ import {
   Button,
   Divider,
   TextField,
-  IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -28,14 +27,10 @@ import {
   Alert,
   CardMedia,
   Stack,
-  Fab,
 } from '@mui/material';
 import {
   Add as AddIcon,
-  Edit as EditIcon,
   Save as SaveIcon,
-  Check as CheckIcon,
-  Close as CloseIcon,
   Image as ImageIcon,
   TextFields as TextFieldsIcon,
   Videocam as VideoIcon,
@@ -44,12 +39,10 @@ import {
   Link as LinkIcon,
   Search as SearchIcon,
   ViewModule as MatrixIcon,
-  Dashboard as DashboardIcon,
 } from '@mui/icons-material';
 import { useAuth } from '@/contexts/AuthContext';
 import { useClient } from '@/contexts/ClientContext';
 import DashboardLayout from '@/components/DashboardLayout';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { demoTemplates } from '@/utils/demoData';
 
 // Define types

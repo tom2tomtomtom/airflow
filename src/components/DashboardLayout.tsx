@@ -30,8 +30,6 @@ import {
   Psychology as StrategicIcon,
   PlayArrow as ExecuteIcon,
   Visibility as PreviewIcon,
-  CheckCircle as SignOffIcon,
-  AutoAwesome as GenerateIcon,
   TrendingUp as FlowIcon,
   Assignment as ApprovalsIcon,
   Analytics as AnalyticsIcon,
@@ -44,7 +42,6 @@ import {
 import { useRouter } from 'next/router';
 import ClientSelector from './ClientSelector';
 import UserMenu from './UserMenu';
-import NotificationCenter from './realtime/NotificationCenter';
 import LiveCollaboration from './realtime/LiveCollaboration';
 import { GlobalSearch } from './GlobalSearch';
 import { useThemeMode } from '@/contexts/ThemeContext';

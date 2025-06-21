@@ -34,7 +34,6 @@ import {
   Archive as ArchiveIcon,
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
-import LoadingSkeleton from '@/components/LoadingSkeleton';
 import ErrorMessage from '@/components/ErrorMessage';
 import { CardSkeleton } from '@/components/SkeletonLoaders';
 import { AnimatedActionButton } from '@/components/AnimatedComponents';

@@ -47,7 +47,7 @@ const TestFlowPage: React.FC = () => {
 // Override getServerSideProps to prevent auth redirect
 export async function getServerSideProps() {
   return {
-    props: {},
+    props: Record<string, unknown>
   };
 }
 

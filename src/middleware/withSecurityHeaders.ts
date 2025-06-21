@@ -6,7 +6,7 @@ export function withSecurityHeaders(handler: (req: NextApiRequest, res: NextApiR
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     
     // Build CSP with proper font and connection sources
-    let csp = [
+    const csp = [
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",

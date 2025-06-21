@@ -29,7 +29,6 @@ import {
   Group,
   Campaign,
   Approval,
-  Menu as MenuIcon,
   Close,
 } from '@mui/icons-material';
 

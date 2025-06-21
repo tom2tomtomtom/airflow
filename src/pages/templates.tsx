@@ -42,7 +42,6 @@ import {
 } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import DashboardLayout from '@/components/DashboardLayout';
-import LoadingSkeleton from '@/components/LoadingSkeleton';
 import ErrorMessage from '@/components/ErrorMessage';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { EmptyTemplates } from '@/components/EmptyStates';

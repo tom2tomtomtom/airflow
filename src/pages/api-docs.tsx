@@ -68,6 +68,6 @@ export default function ApiDocsPage() {
 
 export async function getStaticProps() {
   return {
-    props: {},
+    props: Record<string, unknown>
   };
 }

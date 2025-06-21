@@ -2,7 +2,6 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
 import { env } from '@/lib/env';
 import { z } from 'zod';
-import axios from 'axios';
 import OpenAI from 'openai';
 
 const BriefParseSchema = z.object({

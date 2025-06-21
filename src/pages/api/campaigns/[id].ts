@@ -87,7 +87,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, c
     },
     kpis: ['impressions', 'clicks', 'conversions'],
     tags: ['ai', 'marketing', 'automation'],
-    creative_requirements: {},
+    creative_requirements: Record<string, unknown>
     approval_status: 'pending',
     created_by: user.id,
     dateCreated: new Date().toISOString(),

@@ -1,14 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
   Box,
   Typography,
   Button,
-  Stepper,
-  Step,
-  StepLabel,
-  StepContent,
   Card,
   CardContent,
   Grid,
@@ -17,7 +13,6 @@ import {
   LinearProgress,
   IconButton,
   Fade,
-  Slide,
 } from '@mui/material';
 import {
   Close,

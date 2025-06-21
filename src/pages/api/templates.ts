@@ -30,7 +30,7 @@ const TemplateUpdateSchema = TemplateInsertSchema.partial().extend({
 
 // Helper function to remove undefined values from object
 function removeUndefined<T extends Record<string, any>>(obj: T): T {
-  const result = {} as T;
+  const result = {} as Record<string, unknown> & T;
   for (const key in obj) {
     if (obj[key] !== undefined) {
       result[key] = obj[key];

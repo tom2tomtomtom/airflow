@@ -223,7 +223,7 @@ export const useFormValidation = <T extends Record<string, any>>(
   const [touched, setTouched] = React.useState<Record<keyof T, boolean>>({} as any);
 
   const validateForm = React.useCallback(() => {
-    const newErrors: Record<keyof T, string | null> = {} as any;
+    const newErrors: Record<keyof T, string | null> = {} as Record<string, unknown> & any;
     let isValid = true;
 
     Object.keys(validationRules).forEach((field) => {

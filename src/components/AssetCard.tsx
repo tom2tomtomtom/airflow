@@ -119,7 +119,7 @@ const AssetCard: React.FC<AssetCardProps> = ({
             theme.palette.mode === 'light'
               ? '0 12px 48px rgba(124, 58, 237, 0.15), 0 4px 12px rgba(0, 0, 0, 0.05)'
               : '0 12px 48px rgba(167, 139, 250, 0.25), 0 4px 12px rgba(0, 0, 0, 0.3)',
-        } : {},
+        } : Record<string, unknown>
       }}
       onClick={handleCardClick}
     >

@@ -15,7 +15,6 @@ import {
 } from '@mui/material';
 import {
   ArrowBack,
-  CheckCircle,
 } from '@mui/icons-material';
 import { addDays } from 'date-fns';
 import DashboardLayout from '../../components/DashboardLayout';

@@ -20,8 +20,6 @@ import {
   Add,
   Check,
   CloudUpload,
-  Download,
-  Share,
   PlayArrow,
   Pause,
 } from '@mui/icons-material';

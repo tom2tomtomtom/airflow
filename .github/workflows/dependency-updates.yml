@@ -1,0 +1,153 @@
+name: Dependency Updates
+
+on:
+  schedule:
+    # Run weekly on Mondays at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch: # Allow manual triggering
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  update-dependencies:
+    name: 📦 Update Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Check for outdated packages
+        id: outdated
+        run: |
+          echo "Checking for outdated packages..."
+          if npm outdated --json > outdated.json 2>/dev/null; then
+            echo "has-updates=false" >> $GITHUB_OUTPUT
+          else
+            echo "has-updates=true" >> $GITHUB_OUTPUT
+            echo "Found outdated packages:"
+            cat outdated.json | jq -r 'to_entries[] | "\(.key): \(.value.current) → \(.value.latest)"'
+          fi
+          
+      - name: Update compatible dependencies
+        if: steps.outdated.outputs.has-updates == 'true'
+        run: |
+          echo "Updating compatible dependencies..."
+          npm update
+          
+      - name: Run tests after update
+        if: steps.outdated.outputs.has-updates == 'true'
+        run: |
+          echo "Running tests to verify updates..."
+          npm run type-check
+          npm test
+          npm run build
+          
+      - name: Create Pull Request
+        if: steps.outdated.outputs.has-updates == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: update dependencies'
+          title: '📦 Weekly Dependency Updates'
+          body: |
+            ## 📦 Automated Dependency Updates
+            
+            This PR contains automated dependency updates for the week.
+            
+            ### Changes Made
+            - Updated compatible dependencies to their latest versions
+            - All tests pass with the new versions
+            - Build verification completed successfully
+            
+            ### Verification
+            - ✅ TypeScript compilation
+            - ✅ Unit tests
+            - ✅ Build process
+            
+            ### Review Notes
+            Please review the changes and test the application before merging.
+            
+            ---
+            *This PR was created automatically by the dependency update workflow.*
+          branch: chore/dependency-updates
+          delete-branch: true
+          
+  security-audit:
+    name: 🔒 Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run security audit
+        id: audit
+        run: |
+          echo "Running security audit..."
+          if npm audit --audit-level moderate --json > audit.json 2>/dev/null; then
+            echo "has-vulnerabilities=false" >> $GITHUB_OUTPUT
+            echo "✅ No security vulnerabilities found"
+          else
+            echo "has-vulnerabilities=true" >> $GITHUB_OUTPUT
+            echo "⚠️ Security vulnerabilities found"
+            cat audit.json | jq -r '.metadata.vulnerabilities | to_entries[] | "\(.key): \(.value)"'
+          fi
+          
+      - name: Create security issue
+        if: steps.audit.outputs.has-vulnerabilities == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const audit = JSON.parse(fs.readFileSync('audit.json', 'utf8'));
+            const vulns = audit.metadata.vulnerabilities;
+            
+            const body = `## 🔒 Security Vulnerabilities Detected
+            
+            The weekly security audit has detected vulnerabilities in our dependencies:
+            
+            ### Summary
+            - **Critical**: ${vulns.critical || 0}
+            - **High**: ${vulns.high || 0}
+            - **Moderate**: ${vulns.moderate || 0}
+            - **Low**: ${vulns.low || 0}
+            
+            ### Action Required
+            Please run \`npm audit fix\` to automatically fix compatible issues, or review and update dependencies manually.
+            
+            ### Commands to Fix
+            \`\`\`bash
+            npm audit fix
+            npm audit fix --force  # If automatic fix doesn't work
+            \`\`\`
+            
+            ---
+            *This issue was created automatically by the security audit workflow.*`;
+            
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '🔒 Security Vulnerabilities Detected',
+              body: body,
+              labels: ['security', 'dependencies', 'high-priority']
+            });

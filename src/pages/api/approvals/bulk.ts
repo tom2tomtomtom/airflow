@@ -520,7 +520,8 @@ async function triggerPostDecisionWorkflow(approval: any, decision: any): Promis
 
 async function logBulkApprovalDecision(approvalIds: string[], action: string, userId: string, comments?: string): Promise<void> {
   try {
-      } catch (error) {
+    // Empty try block
+  } catch (error) {
     const message = getErrorMessage(error);
     console.error('Error logging bulk approval decision:', error);
   }

@@ -13,7 +13,7 @@ export function escapeHtml(text: string): string {
 export function sanitizeInput(input: string): string {
   return input
     .trim()
-    .replace(/[\x00-\x1F\x7F]/g, '')
+    .replace(/[\u0000-\u001F\u007F]/g, '')
     .replace(/[<>]/g, '')
     .replace(/javascript:/gi, '');
 }

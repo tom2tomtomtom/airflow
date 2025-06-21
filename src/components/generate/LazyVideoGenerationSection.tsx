@@ -13,7 +13,6 @@ import {
   Chip,
   IconButton,
   Tooltip,
-  LinearProgress,
   FormControl,
   InputLabel,
   Select,

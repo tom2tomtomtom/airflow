@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import {
@@ -12,7 +12,6 @@ import {
   CardActions,
   IconButton,
   Chip,
-  CircularProgress,
   Alert,
   Grid,
 } from '@mui/material';

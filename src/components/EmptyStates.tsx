@@ -3,12 +3,9 @@ import {
   Box,
   Typography,
   Button,
-  Card,
-  CardContent,
   Avatar,
   Stack,
   Chip,
-  Paper,
 } from '@mui/material';
 import {
   CloudUpload,
@@ -22,7 +19,6 @@ import {
   AutoAwesome,
   Lightbulb,
   TrendingUp,
-  Folder,
   Search,
 } from '@mui/icons-material';
 

@@ -28,7 +28,6 @@ import {
   AutoAwesome as AutoAwesomeIcon,
   CheckCircle as CheckCircleIcon,
   ArrowForward as ArrowForwardIcon,
-  Add as AddIcon,
   Clear as ClearIcon,
   Close as CloseIcon,
   Send as SendIcon,
@@ -228,7 +227,8 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
         setBriefConfirmed(false);
       }, 100);
     } else {
-          }
+      // Component is closing, no action needed
+    }
   }, [open]);
 
   // Debug effect to track activeStep changes
@@ -944,7 +944,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
     }
   };
 
-  const handleDialogClose = (event: {}, reason: 'backdropClick' | 'escapeKeyDown') => {
+  const handleDialogClose = (_event: Record<string, unknown>, reason: 'backdropClick' | 'escapeKeyDown') => {
     // Prevent closing during processing to avoid losing state
     if (processing) {
             return;

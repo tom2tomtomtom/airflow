@@ -25,8 +25,8 @@ export type AuthenticatedHandler = (
 // Enhanced token validation with multiple fallback methods
 async function validateUserToken(req: NextApiRequest): Promise<any> {
   let supabase;
-  let user = null;
-  let error = null;
+  const user = null;
+  const error = null;
 
   // Method 1: Try Supabase SSR with cookies (primary method)
   try {
@@ -54,8 +54,9 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
             return { user: cookieUser, supabase };
     }
     
-      } catch (cookieErr) {
-      }
+      } catch ($1) {
+    // Handle error silently
+  }
 
   // Method 2: Try Authorization header (Bearer token)
   try {
@@ -82,8 +83,9 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
       }
       
           }
-  } catch (headerErr) {
-      }
+  } catch ($1) {
+    // Handle error silently
+  }
 
   // Method 3: Try custom auth headers (fallback for API clients)
   try {
@@ -108,8 +110,9 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
       }
       
           }
-  } catch (customErr) {
-      }
+  } catch ($1) {
+    // Handle error silently
+  }
 
   // All methods failed
     return { user: null, supabase: null };

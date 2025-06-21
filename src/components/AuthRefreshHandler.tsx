@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react';
 import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
-import { supabase } from '@/lib/supabase/client';
 
 /**
  * Component to handle automatic token refresh

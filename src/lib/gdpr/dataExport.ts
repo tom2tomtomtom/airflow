@@ -28,7 +28,7 @@ export async function exportUserData(request: DataExportRequest): Promise<Export
     campaigns: [],
     assets: [],
     analytics: [],
-    preferences: {},
+    preferences: Record<string, unknown>
     exportedAt: new Date().toISOString(),
   };
 }

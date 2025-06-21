@@ -82,7 +82,7 @@ export function sanitizeSQLString(input: string): string {
 // Sanitize object keys to prevent prototype pollution
 export function sanitizeObject<T extends Record<string, any>>(obj: T): T {
   const dangerous = ['__proto__', 'constructor', 'prototype'];
-  const cleaned = {} as T;
+  const cleaned = {} as Record<string, unknown> & T;
   
   for (const [key, value] of Object.entries(obj)) {
     if (!dangerous.includes(key)) {

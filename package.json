@@ -63,7 +63,15 @@
     "test:working": "playwright test --config=playwright.config.working.ts",
     "test:user": "playwright test tests/simple-user-test.spec.ts --config=playwright.config.working.ts",
     "test:discover-errors": "playwright test tests/comprehensive-error-discovery.spec.ts --config=playwright.config.working.ts --headed",
-    "test:user-workflows": "playwright test tests/user-workflow-testing.spec.ts --config=playwright.config.working.ts --headed"
+    "test:user-workflows": "playwright test tests/user-workflow-testing.spec.ts --config=playwright.config.working.ts --headed",
+    "validate:env": "node scripts/validate-env.js",
+    "strict:enable": "node scripts/enable-strict-mode.js",
+    "fix:deprecations": "node scripts/fix-deprecations.js",
+    "ci:check": "npm run lint && npm run type-check && npm test && npm run build",
+    "ci:quick": "npm run lint && npm run type-check",
+    "pre-commit": "npm run ci:quick",
+    "pre-push": "npm run ci:check",
+    "fix:lint": "node scripts/fix-lint-issues.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.817.0",

@@ -16,7 +16,6 @@ import {
 } from '@mui/material';
 import {
   CheckCircle,
-  Schedule,
   AutoAwesome,
   ExpandMore,
   ExpandLess,

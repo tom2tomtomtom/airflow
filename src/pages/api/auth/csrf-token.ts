@@ -3,7 +3,6 @@
  * Provides CSRF tokens for client-side security
  */
 
-import { NextApiRequest, NextApiResponse } from 'next';
 import { handleCSRFToken } from '@/lib/csrf';
 import { withAPIRateLimit } from '@/lib/rate-limiter';
 

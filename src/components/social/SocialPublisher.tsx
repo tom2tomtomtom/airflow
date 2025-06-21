@@ -17,7 +17,6 @@ import {
   DialogTitle,
   DialogContent,
   LinearProgress,
-  Grid,
 } from '@mui/material';
 import {
   Image as ImageIcon,
@@ -25,7 +24,6 @@ import {
   Link as LinkIcon,
   Schedule as ScheduleIcon,
   Send as SendIcon,
-  Delete as DeleteIcon,
   Visibility as PreviewIcon,
   Facebook as FacebookIcon,
   Twitter as TwitterIcon,

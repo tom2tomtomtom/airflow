@@ -21,7 +21,7 @@
     "paths": {
       "@/*": ["./src/*", "./*"]
     },
-    "types": ["node"],
+    "types": ["node", "jest"],
     "noImplicitAny": false,
     "strictNullChecks": false,
     "strictFunctionTypes": false,

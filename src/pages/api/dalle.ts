@@ -1,6 +1,6 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabase, getServiceSupabase } from '@/lib/supabase';
+import { getServiceSupabase } from '@/lib/supabase';
 import { env, hasOpenAI } from '@/lib/env';
 import OpenAI from 'openai';
 import { z } from 'zod';

@@ -1,4 +1,3 @@
-import { getErrorMessage } from '@/utils/errorUtils';
 import { NextRequest, NextResponse } from 'next/server';
 import { updateSession } from '@/utils/supabase-middleware';
 

@@ -23,24 +23,18 @@ import {
   Card,
   CardContent,
   CardMedia,
-  Checkbox,
-  FormControlLabel,
   Slider,
   Alert,
   LinearProgress,
   Stack,
-  Divider,
-  Tooltip,
 } from '@mui/material';
 import {
   Add as AddIcon,
   Delete as DeleteIcon,
   ContentCopy as DuplicateIcon,
   Lock as LockIcon,
-  LockOpen as UnlockIcon,
   AutoAwesome as MagicIcon,
   PlayArrow as RenderIcon,
-  Preview as PreviewIcon,
   More as MoreIcon,
   Image as ImageIcon,
   VideoLibrary as VideoIcon,
@@ -156,7 +150,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
       id: `row-${Date.now()}`,
       name: `Variation ${rows.length + 1}`,
       locked: false,
-      cells: {},
+      cells: Record<string, unknown>
     };
 
     // Initialize cells for all fields

@@ -130,10 +130,13 @@ describe('ErrorBoundary', () => {
 
   it('should reset error boundary when try again is clicked', async () => {
     const user = userEvent.setup();
+    let shouldThrow = true;
+
+    const TestComponent = () => <ThrowError shouldThrow={shouldThrow} />;
 
     const { rerender } = render(
       <ErrorBoundary>
-        <ThrowError shouldThrow={true} />
+        <TestComponent />
       </ErrorBoundary>
     );
 
@@ -142,12 +145,23 @@ describe('ErrorBoundary', () => {
 
     // Click try again - this should reset the error boundary state
     const tryAgainButton = screen.getByText('Try Again');
+
+    // Change the component to not throw an error after reset
+    shouldThrow = false;
+
     await user.click(tryAgainButton);
 
-    // The error boundary should be reset, but we need to verify the reset worked
-    // by checking that the error UI is no longer visible after the click
+    // Re-render with non-throwing component to test the reset
+    rerender(
+      <ErrorBoundary>
+        <ThrowError shouldThrow={false} />
+      </ErrorBoundary>
+    );
+
+    // The error boundary should be reset and show normal content
     await waitFor(() => {
       expect(screen.queryByText('Oops! Something went wrong')).not.toBeInTheDocument();
+      expect(screen.getByText('No error')).toBeInTheDocument();
     });
   });
 });

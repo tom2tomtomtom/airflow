@@ -50,10 +50,23 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     });
   }
   const { briefData }: { briefData: BriefData } = req.body;
-  
+
   if (!briefData) {
     return res.status(400).json({ success: false, message: 'Brief data is required' });
   }
+
+  // Debug logging to see what brief data we're receiving
+  console.log('🔍 MOTIVATIONS API - Received brief data:', {
+    title: briefData.title,
+    objective: briefData.objective?.substring(0, 100) + '...',
+    targetAudience: briefData.targetAudience?.substring(0, 100) + '...',
+    keyMessages: briefData.keyMessages,
+    platforms: briefData.platforms,
+    product: briefData.product,
+    service: briefData.service,
+    valueProposition: briefData.valueProposition?.substring(0, 100) + '...',
+    industry: briefData.industry
+  });
 
   try {
         // Generate motivations based on brief analysis

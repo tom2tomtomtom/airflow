@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Head from 'next/head';
 import {
   Box,
@@ -21,15 +21,10 @@ import {
   FormControl,
   InputLabel,
   Select,
-  Alert,
   CircularProgress,
   Tooltip,
-  Divider,
-  List,
-  ListItem,
   ListItemIcon,
   ListItemText,
-  ListItemSecondaryAction,
   Paper,
   Tab,
   Tabs,
@@ -40,14 +35,11 @@ import {
 import {
   Add as AddIcon,
   Search as SearchIcon,
-  FilterList as FilterIcon,
   MoreVert as MoreVertIcon,
   Business as BusinessIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
   Language as WebsiteIcon,
-  Email as EmailIcon,
-  Phone as PhoneIcon,
   Person as PersonIcon,
   Palette as PaletteIcon,
   ExpandMore as ExpandMoreIcon,
@@ -109,7 +101,7 @@ const ClientsPage: React.FC = () => {
     logo: '',
     primaryColor: '#2196F3',
     secondaryColor: '#FF9800',
-    socialMedia: {},
+    socialMedia: Record<string, unknown>
     contacts: [],
     brand_guidelines: {
       voiceTone: '',
@@ -205,7 +197,7 @@ const ClientsPage: React.FC = () => {
         logo: '',
         primaryColor: '#2196F3',
         secondaryColor: '#FF9800',
-        socialMedia: {},
+        socialMedia: Record<string, unknown>
         contacts: [],
         brand_guidelines: {
           voiceTone: '',
