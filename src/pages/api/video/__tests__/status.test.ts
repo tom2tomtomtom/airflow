@@ -200,7 +200,7 @@ describe('/api/video/status', () => {
 
   test('should return 404 for non-existent generation', async () => {
     // Mock empty result
-    const mockSupabase = require('@/lib/supabase/client').supabase;
+    const mockSupabase = jest.requireMock('@/lib/supabase/client').supabase;
     mockSupabase.from.mockReturnValueOnce({
       select: jest.fn(() => ({
         eq: jest.fn(() => ({
@@ -227,7 +227,7 @@ describe('/api/video/status', () => {
 
   test('should return 403 for unauthorized access', async () => {
     // Mock no client access
-    const mockSupabase = require('@/lib/supabase/client').supabase;
+    const mockSupabase = jest.requireMock('@/lib/supabase/client').supabase;
     mockSupabase.from.mockImplementation((table: string) => {
       if (table === 'video_generations') {
         return {
@@ -276,7 +276,7 @@ describe('/api/video/status', () => {
 
   test('should handle database errors gracefully', async () => {
     // Mock database error
-    const mockSupabase = require('@/lib/supabase/client').supabase;
+    const mockSupabase = jest.requireMock('@/lib/supabase/client').supabase;
     mockSupabase.from.mockReturnValueOnce({
       select: jest.fn(() => ({
         eq: jest.fn(() => ({
