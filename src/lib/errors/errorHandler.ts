@@ -84,19 +84,19 @@ export function handleError(error: unknown, context?: ErrorContext): AppError {
 /**
  * Create specific error types
  */
-export const createUnauthorizedError = (message = 'Unauthorized') =>
+export const createUnauthorizedError = (message: string = 'Unauthorized') =>
   new AppError(message, 401, ErrorCodes.UNAUTHORIZED);
 
-export const createForbiddenError = (message = 'Forbidden') =>
+export const createForbiddenError = (message: string = 'Forbidden') =>
   new AppError(message, 403, ErrorCodes.FORBIDDEN);
 
-export const createNotFoundError = (message = 'Resource not found') =>
+export const createNotFoundError = (message: string = 'Resource not found') =>
   new AppError(message, 404, ErrorCodes.NOT_FOUND);
 
 export const createValidationError = (message: string) =>
   new AppError(message, 400, ErrorCodes.VALIDATION_ERROR);
 
-export const createRateLimitError = (message = 'Rate limit exceeded') =>
+export const createRateLimitError = (message: string = 'Rate limit exceeded') =>
   new AppError(message, 429, ErrorCodes.RATE_LIMIT_EXCEEDED);
 
 // Additional specific error types for GDPR endpoints

@@ -26,7 +26,7 @@ export function render(ui: React.ReactElement, options = {}) {
 }
 
 // Mock router
-export const createMockRouter = (router = {}) => ({
+export const createMockRouter = (router: Record<string, any> = {}) => ({
   pathname: '/',
   route: '/',
   query: {},

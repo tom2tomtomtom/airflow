@@ -51,7 +51,7 @@ describe('UnifiedBriefWorkflow State Management', () => {
     jest.restoreAllMocks();
   });
 
-  const renderWorkflow = (props = {}) => {
+  const renderWorkflow = (props: Record<string, any> = {}) => {
     const defaultProps = {
       open: true,
       onClose: jest.fn(),

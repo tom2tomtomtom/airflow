@@ -9,7 +9,7 @@ function generateSessionId(): string {
 // Initialize Mixpanel only in production or if explicitly enabled
 const MIXPANEL_TOKEN = process.env.NEXT_PUBLIC_MIXPANEL_TOKEN;
 const isDevelopment = process.env.NODE_ENV === 'development';
-const isEnabled = MIXPANEL_TOKEN && (process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === 'true' || process.env.NODE_ENV === 'production');
+const isEnabled = Boolean(MIXPANEL_TOKEN && (process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === 'true' || process.env.NODE_ENV === 'production'));
 
 if (isEnabled) {
   mixpanel.init(MIXPANEL_TOKEN!, {

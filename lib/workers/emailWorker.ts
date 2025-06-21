@@ -1,6 +1,6 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { Worker, Job } from 'bullmq';
-import { connection } from '@/lib/queue/connection';
+import { connectionOptions } from '@/lib/queue/connection';
 import { EmailJobData } from '@/lib/queue/bullQueue';
 import { sendEmail, EmailTemplate } from '../email/resend';
 import * as Sentry from '@sentry/node';
@@ -62,7 +62,7 @@ export const emailWorker = new Worker(
   'email',
   processEmailJob,
   {
-    connection,
+    connection: connectionOptions,
     concurrency: parseInt(process.env.EMAIL_WORKER_CONCURRENCY || '5'),
     removeOnComplete: { count: 1000 },
     removeOnFail: { count: 1000 },
@@ -78,7 +78,8 @@ emailWorker.on('failed', (job, error) => {
   console.error(`Email job ${job?.id} failed:`, error);
   
   // Only capture to Sentry if it's not a permanent failure
-  if (!job?.returnvalue?.permanentFailure) {
+  const returnValue = job?.returnvalue as any;
+  if (!returnValue?.permanentFailure) {
     Sentry.captureException(error, {
       tags: {
         job_type: 'email',

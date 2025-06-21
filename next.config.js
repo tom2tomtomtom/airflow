@@ -37,9 +37,9 @@ const nextConfig = {
     ignoreBuildErrors: false, // Enforce TypeScript safety in production
   },
 
-  // ESLint configuration - Temporarily allow warnings during cleanup phase
+  // ESLint configuration - Production ready
   eslint: {
-    ignoreDuringBuilds: true, // Temporarily ignore during builds while we fix issues
+    ignoreDuringBuilds: false, // Enable ESLint checks in production builds
     dirs: ['src'], // Only lint src directory to avoid checking test files
   },
   
@@ -62,8 +62,8 @@ const nextConfig = {
     // Build CSP based on environment
     const cspBase = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "script-src 'self' https://cdn.jsdelivr.net https://unpkg.com",
+      "style-src 'self' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com data:",
       "img-src 'self' data: blob: https: http:",
       "media-src 'self' blob: https:",
@@ -74,15 +74,14 @@ const nextConfig = {
       "form-action 'self'",
     ];
 
-    // More permissive CSP in development
+    // More permissive CSP in development only
     if (process.env.NODE_ENV === 'development') {
-      cspBase.push(
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'unsafe-hashes' https://cdn.jsdelivr.net",
-        "style-src 'self' 'unsafe-inline'",
-        "connect-src 'self' ws: wss: http: https:"
-      );
+      // Allow unsafe directives only in development
+      cspBase[1] = "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com";
+      cspBase[2] = "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com";
+      cspBase[7] = "connect-src 'self' ws: wss: http: https: https://*.supabase.co wss://*.supabase.co https://api.openai.com https://api.elevenlabs.io https://api.creatomate.com https://api.runway.com";
     } else {
-      // Production CSP - more restrictive
+      // Production CSP - strict security
       cspBase.push("upgrade-insecure-requests");
     }
 
@@ -198,8 +197,8 @@ const nextConfig = {
 
     // Production bundle optimizations
     if (!dev && !isServer) {
-      // Temporarily disable minification to fix webpack error
-      config.optimization.minimize = false;
+      // Enable minification for production builds
+      config.optimization.minimize = true;
 
       config.optimization.splitChunks = {
         chunks: 'all',
@@ -262,7 +261,7 @@ const nextConfig = {
   
   // Experimental features
   experimental: {
-    optimizeCss: false, // Temporarily disable CSS optimization due to webpack error
+    optimizeCss: true, // Enable CSS optimization for production
     optimizePackageImports: ['@mui/material', '@mui/icons-material', 'lodash', 'date-fns'],
     // instrumentationHook: true, // Removed - instrumentation.js is available by default
   },

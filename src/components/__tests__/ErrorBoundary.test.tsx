@@ -1,3 +1,4 @@
+import React from 'react';
 // Jest test - no imports needed for basic Jest functions
 import { render, waitFor } from '@testing-library/react';
 import { screen } from '@testing-library/dom';

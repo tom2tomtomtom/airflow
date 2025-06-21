@@ -129,7 +129,7 @@ describe('Workflow Integration Tests', () => {
       } as Response);
   });
 
-  const renderWorkflow = (props = {}) => {
+  const renderWorkflow = (props: Record<string, any> = {}) => {
     return render(
       <MockProviders>
         <UnifiedBriefWorkflow {...defaultProps} {...props} />

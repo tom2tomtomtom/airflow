@@ -198,16 +198,18 @@ export const WorkflowContainer: React.FC<WorkflowContainerProps> = ({
     onClose();
   }, [actions, onClose]);
 
-  // Render current step component with performance tracking and lazy loading
-  const renderStepContent = () => {
-    const performanceTracker = SimplePerformanceTracker.getInstance();
-    const stepName = workflowSteps[currentStep]?.id || 'unknown';
+  // Performance tracking for current step
+  const performanceTracker = SimplePerformanceTracker.getInstance();
+  const stepName = workflowSteps[currentStep]?.id || 'unknown';
 
-    // Start performance tracking for step render
-    React.useEffect(() => {
-      const operation = performanceTracker.startOperation(`workflow_step_${stepName}`);
-      return () => operation.end();
-    }, [currentStep, stepName, performanceTracker]);
+  // Start performance tracking for step render
+  React.useEffect(() => {
+    const operation = performanceTracker.startOperation(`workflow_step_${stepName}`);
+    return () => operation.end();
+  }, [currentStep, stepName, performanceTracker]);
+
+  // Render current step component with lazy loading
+  const renderStepContent = () => {
 
     const stepComponents = {
       0: () => (
@@ -257,11 +259,11 @@ export const WorkflowContainer: React.FC<WorkflowContainerProps> = ({
       case 0:
         return state.briefConfirmed;
       case 1:
-        return state.motivations.some(m => m.selected);
+        return state?.motivations?.some(m => m.selected);
       case 2:
-        return state.copyVariations.some(c => c.selected);
+        return state?.copyVariations?.some(c => c.selected);
       case 3:
-        return state.selectedAssets.length > 0;
+        return state?.selectedAssets?.length > 0;
       case 4:
         return state.selectedTemplate !== null;
       case 5:

@@ -207,7 +207,7 @@ export const AICostMonitor: React.FC<CostMonitorProps> = ({
                   {service}
                 </Typography>
                 <Chip
-                  label={`${data.percentUsed.toFixed(0)}%`}
+                  label={`${data?.percentUsed?.toFixed(0)}%`}
                   size="small"
                   color={getUsageColor(data.percentUsed)}
                 />
@@ -220,7 +220,7 @@ export const AICostMonitor: React.FC<CostMonitorProps> = ({
               />
               <Box display="flex" justifyContent="space-between">
                 <Typography variant="caption" color="text.secondary">
-                  {formatCurrency(data.usage.totalCost)}
+                  {formatCurrency(data?.usage?.totalCost)}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
                   {formatCurrency(data.budget)}
@@ -256,7 +256,7 @@ export const AICostMonitor: React.FC<CostMonitorProps> = ({
                 </TableHead>
                 <TableBody>
                   {Object.entries(stats).map(([service, data]) =>
-                    Object.entries(data.usage.byModel).map(([model, modelData]) => (
+                    Object.entries(data?.usage?.byModel).map(([model, modelData]) => (
                       <TableRow key={`${service}-${model}`}>
                         <TableCell>{service}</TableCell>
                         <TableCell>{model}</TableCell>

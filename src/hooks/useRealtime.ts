@@ -76,9 +76,9 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
       if (response.ok) {
         const data = await response.json();
         
-        if (data.events && data.events.length > 0) {
+        if (data.events && data?.events?.length > 0) {
           setEvents(prev => {
-            const newEvents = data.events.filter(
+            const newEvents = data?.events?.filter(
               (event: RealtimeEvent) => !prev.some(e => e.id === event.id)
             );
             return [...newEvents, ...prev].slice(0, 100); // Keep last 100 events

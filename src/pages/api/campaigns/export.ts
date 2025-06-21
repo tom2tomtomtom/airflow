@@ -99,7 +99,9 @@ async function gatherCampaignData(campaignId: string, includeAssets: boolean, in
       .select('*')
       .in('id', campaign.motivation_ids);
     
-    data.strategy.motivations = motivations || [];
+    if (data?.strategy) {
+      data.strategy.motivations = motivations || [];
+    }
   }
 
   // Get copy assets
@@ -109,12 +111,16 @@ async function gatherCampaignData(campaignId: string, includeAssets: boolean, in
       .select('*')
       .in('id', campaign.copy_asset_ids);
     
-    data.strategy.copy_assets = copyAssets || [];
+    if (data?.strategy) {
+      data.strategy.copy_assets = copyAssets || [];
+    }
   }
 
   // Get matrix combinations
   if (campaign?.matrix_data) {
-    data.matrix.combinations = campaign.matrix_data;
+    if (data?.matrix) {
+      data.matrix.combinations = campaign.matrix_data;
+    }
   }
 
   // Get assets if requested
@@ -146,7 +152,7 @@ async function generateExport(data: any, format: string, platform?: string): Pro
       return {
         format: 'json',
         content: JSON.stringify(data, null, 2),
-        filename: `campaign-${data.campaign.name}-${Date.now()}.json`,
+        filename: `campaign-${data?.campaign?.name}-${Date.now()}.json`,
         mime_type: 'application/json',
       };
 
@@ -154,7 +160,7 @@ async function generateExport(data: any, format: string, platform?: string): Pro
       return {
         format: 'csv',
         content: convertToCSV(data),
-        filename: `campaign-${data.campaign.name}-${Date.now()}.csv`,
+        filename: `campaign-${data?.campaign?.name}-${Date.now()}.csv`,
         mime_type: 'text/csv',
       };
 
@@ -165,7 +171,7 @@ async function generateExport(data: any, format: string, platform?: string): Pro
       return {
         format: 'pdf',
         content: null,
-        filename: `campaign-${data.campaign.name}-${Date.now()}.pdf`,
+        filename: `campaign-${data?.campaign?.name}-${Date.now()}.pdf`,
         mime_type: 'application/pdf',
         error: 'PDF export not yet implemented',
       };
@@ -174,7 +180,7 @@ async function generateExport(data: any, format: string, platform?: string): Pro
       return {
         format: 'xlsx',
         content: null,
-        filename: `campaign-${data.campaign.name}-${Date.now()}.xlsx`,
+        filename: `campaign-${data?.campaign?.name}-${Date.now()}.xlsx`,
         mime_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         error: 'Excel export not yet implemented',
       };
@@ -187,12 +193,12 @@ async function generateExport(data: any, format: string, platform?: string): Pro
 function convertToCSV(data: any): string {
   const rows = [
     ['Type', 'Name', 'Description', 'Details'],
-    ['Campaign', data.campaign.name, data.campaign.description || '', `Client: ${data.campaign.clients?.name}`],
+    ['Campaign', data?.campaign?.name, data?.campaign?.description || '', `Client: ${data?.campaign?.clients?.name}`],
     ['', '', '', ''],
     ['Motivations', '', '', ''],
   ];
 
-  data.strategy.motivations.forEach((motivation: any) => {
+  data?.strategy?.motivations.forEach((motivation: any) => {
     rows.push([
       'Motivation',
       motivation.title || '',
@@ -204,7 +210,7 @@ function convertToCSV(data: any): string {
   rows.push(['', '', '', '']);
   rows.push(['Copy Assets', '', '', '']);
 
-  data.strategy.copy_assets.forEach((copy: any) => {
+  data?.strategy?.copy_assets.forEach((copy: any) => {
     rows.push([
       'Copy',
       copy.platform || '',
@@ -216,7 +222,7 @@ function convertToCSV(data: any): string {
   rows.push(['', '', '', '']);
   rows.push(['Matrix Combinations', '', '', '']);
 
-  data.matrix.combinations.forEach((combo: any, index: number) => {
+  data?.matrix?.combinations.forEach((combo: any, index: number) => {
     rows.push([
       'Combination',
       combo.name || `Combination ${index + 1}`,
@@ -228,7 +234,7 @@ function convertToCSV(data: any): string {
   rows.push(['', '', '', '']);
   rows.push(['Generated Videos', '', '', '']);
 
-  data.videos.forEach((video: any) => {
+  data?.videos?.forEach((video: any) => {
     rows.push([
       'Video',
       video.id || '',
@@ -250,36 +256,36 @@ function generatePlatformSpecificExport(data: any, platform?: string): any {
 
   const platformExports: Record<string, any> = {
     youtube: {
-      title: data.campaign.name,
-      description: data.campaign.description,
-      tags: data.strategy.motivations.map((m: any) => m.category).filter(Boolean),
-      thumbnails: data.assets.filter((a: any) => a.type === 'image').slice(0, 3),
-      videos: data.videos.filter((v: any) => v.config?.video_config?.platform === 'youtube'),
+      title: data?.campaign?.name,
+      description: data?.campaign?.description,
+      tags: data?.strategy?.motivations.map((m: any) => m.category).filter(Boolean),
+      thumbnails: data?.assets?.filter((a: any) => a.type === 'image').slice(0, 3),
+      videos: data?.videos?.filter((v: any) => v.config?.video_config?.platform === 'youtube'),
     },
     instagram: {
-      posts: data.strategy.copy_assets.filter((c: any) => c.platform === 'instagram'),
-      stories: data.videos.filter((v: any) => v.config?.video_config?.aspect_ratio === '9:16'),
-      hashtags: generateHashtags(data.strategy.motivations),
+      posts: data?.strategy?.copy_assets.filter((c: any) => c.platform === 'instagram'),
+      stories: data?.videos?.filter((v: any) => v.config?.video_config?.aspect_ratio === '9:16'),
+      hashtags: generateHashtags(data?.strategy?.motivations),
     },
     tiktok: {
-      videos: data.videos.filter((v: any) => v.config?.video_config?.platform === 'tiktok'),
-      captions: data.strategy.copy_assets.filter((c: any) => c.platform === 'tiktok'),
+      videos: data?.videos?.filter((v: any) => v.config?.video_config?.platform === 'tiktok'),
+      captions: data?.strategy?.copy_assets.filter((c: any) => c.platform === 'tiktok'),
       effects: [],
     },
     facebook: {
-      posts: data.strategy.copy_assets.filter((c: any) => c.platform === 'facebook'),
-      ads: data.matrix.combinations,
-      targeting: extractTargetingData(data.strategy.motivations),
+      posts: data?.strategy?.copy_assets.filter((c: any) => c.platform === 'facebook'),
+      ads: data?.matrix?.combinations,
+      targeting: extractTargetingData(data?.strategy?.motivations),
     },
     linkedin: {
-      posts: data.strategy.copy_assets.filter((c: any) => c.platform === 'linkedin'),
+      posts: data?.strategy?.copy_assets.filter((c: any) => c.platform === 'linkedin'),
       articles: [],
-      company_updates: data.matrix.combinations,
+      company_updates: data?.matrix?.combinations,
     },
     twitter: {
-      tweets: data.strategy.copy_assets.filter((c: any) => c.platform === 'twitter'),
+      tweets: data?.strategy?.copy_assets.filter((c: any) => c.platform === 'twitter'),
       threads: [],
-      hashtags: generateHashtags(data.strategy.motivations),
+      hashtags: generateHashtags(data?.strategy?.motivations),
     },
   };
 
@@ -287,7 +293,7 @@ function generatePlatformSpecificExport(data: any, platform?: string): any {
     format: 'platform_specific',
     platform,
     content: JSON.stringify(platformExports[platform] || {}, null, 2),
-    filename: `${platform}-export-${data.campaign.name}-${Date.now()}.json`,
+    filename: `${platform}-export-${data?.campaign?.name}-${Date.now()}.json`,
     mime_type: 'application/json',
   };
 }

@@ -1,3 +1,4 @@
+import React from 'react';
 import type { AppProps } from 'next/app';
 import { useEffect } from 'react';
 import Head from 'next/head';
@@ -116,7 +117,8 @@ function MyApp(props: MyAppProps) {
   useEffect(() => {
     // App initialization
     if (process.env.NODE_ENV === 'development') {
-          }
+      // Development-specific initialization
+    }
   }, []);
 
   // Global error handler

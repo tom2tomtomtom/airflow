@@ -1,6 +1,6 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { Queue, Worker, Job, QueueEvents } from 'bullmq';
-import { connection } from './connection';
+import { connection, connectionOptions } from './connection';
 import { handleError } from '@/lib/errors/errorHandler';
 
 // Queue names
@@ -23,24 +23,33 @@ const defaultJobOptions = {
   },
 };
 
+// Define queue types
+type QueueMap = {
+  render: Queue;
+  email: Queue;
+  webhook: Queue;
+  fileCleanup: Queue;
+  analytics: Queue;
+};
+
 // Initialize queues only if Redis is available
-export const queues = connection ? {
-  render: new Queue(QUEUE_NAMES.RENDER, { connection }),
-  email: new Queue(QUEUE_NAMES.EMAIL, { connection }),
-  webhook: new Queue(QUEUE_NAMES.WEBHOOK, { connection }),
-  fileCleanup: new Queue(QUEUE_NAMES.FILE_CLEANUP, { connection }),
-  analytics: new Queue(QUEUE_NAMES.ANALYTICS, { connection }),
+export const queues: QueueMap | null = connectionOptions ? {
+  render: new Queue(QUEUE_NAMES.RENDER, { connection: connectionOptions }),
+  email: new Queue(QUEUE_NAMES.EMAIL, { connection: connectionOptions }),
+  webhook: new Queue(QUEUE_NAMES.WEBHOOK, { connection: connectionOptions }),
+  fileCleanup: new Queue(QUEUE_NAMES.FILE_CLEANUP, { connection: connectionOptions }),
+  analytics: new Queue(QUEUE_NAMES.ANALYTICS, { connection: connectionOptions }),
 } : null;
 
 // Queue event listeners for monitoring
-if (queues && connection) {
+if (queues && connectionOptions) {
   Object.entries(queues).forEach(([name, queue]) => {
-    const queueEvents = new QueueEvents(name, { connection });
-    
+    const queueEvents = new QueueEvents(name, { connection: connectionOptions });
+
     queueEvents.on('completed', ({ jobId, returnvalue }) => {
       console.log(`[${name}] Job ${jobId} completed`);
     });
-    
+
     queueEvents.on('failed', ({ jobId, failedReason }) => {
       console.error(`[${name}] Job ${jobId} failed:`, failedReason);
     });
@@ -193,7 +202,7 @@ export async function addBulkRenderJobs(jobs: RenderJobData[]): Promise<Job[] | 
 }
 
 // Queue management functions
-export async function getQueueStats(queueName: keyof typeof queues): Promise<any> {
+export async function getQueueStats(queueName: keyof QueueMap): Promise<any> {
   if (!queues) return null;
   const queue = queues[queueName];
   
@@ -220,14 +229,15 @@ export async function getAllQueueStats(): Promise<Record<string, any>> {
   const stats: Record<string, any> = {};
   
   for (const [name, _] of Object.entries(queues)) {
-    stats[name] = await getQueueStats(name as keyof typeof queues);
+    stats[name] = await getQueueStats(name as keyof QueueMap);
   }
   
   return stats;
 }
 
 // Clean queue (remove completed/failed jobs)
-export async function cleanQueue(queueName: keyof typeof queues, grace: number = 0): Promise<void> {
+export async function cleanQueue(queueName: keyof QueueMap, grace: number = 0): Promise<void> {
+  if (!queues) return;
   const queue = queues[queueName];
   
   await Promise.all([
@@ -237,24 +247,24 @@ export async function cleanQueue(queueName: keyof typeof queues, grace: number =
 }
 
 // Pause/resume queue
-export async function pauseQueue(queueName: keyof typeof queues): Promise<void> {
+export async function pauseQueue(queueName: keyof QueueMap): Promise<void> {
   if (!queues) return;
   await queues[queueName].pause();
 }
 
-export async function resumeQueue(queueName: keyof typeof queues): Promise<void> {
+export async function resumeQueue(queueName: keyof QueueMap): Promise<void> {
   if (!queues) return;
   await queues[queueName].resume();
 }
 
 // Get job by ID
-export async function getJob(queueName: keyof typeof queues, jobId: string): Promise<Job | null> {
+export async function getJob(queueName: keyof QueueMap, jobId: string): Promise<Job | null> {
   if (!queues) return null;
   return queues[queueName].getJob(jobId);
 }
 
 // Retry failed job
-export async function retryJob(queueName: keyof typeof queues, jobId: string): Promise<void> {
+export async function retryJob(queueName: keyof QueueMap, jobId: string): Promise<void> {
   const job = await getJob(queueName, jobId);
   if (job && job.failedReason) {
     await job.retry();
@@ -298,5 +308,5 @@ export async function gracefulShutdown(): Promise<void> {
 }
 
 // Export types
-export type QueueName = keyof typeof queues;
-export type { Job, Queue, Worker };
+export type QueueName = keyof QueueMap;
+export type { Job, Queue, Worker, QueueMap };

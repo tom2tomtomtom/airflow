@@ -163,7 +163,7 @@ async function publishToLinkedIn(accessToken: string, profileId: string, content
       }
     );
 
-    return { success: true, postId: response.data.id };
+    return { success: true, postId: response?.data?.id };
   } catch (error: any) {
     return { success: false, error: error.response?.data?.message || getErrorMessage(error) };
   }

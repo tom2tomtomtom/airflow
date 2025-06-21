@@ -1,3 +1,4 @@
+import React from 'react';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Box, CircularProgress } from '@mui/material';

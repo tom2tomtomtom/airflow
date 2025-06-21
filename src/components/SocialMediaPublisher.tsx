@@ -74,7 +74,7 @@ export default function SocialMediaPublisher() {
       if (data.success) {
         setPlatforms(data.platforms);
         // Auto-select connected platforms
-        setSelectedPlatforms(data.platforms.filter((p: Platform) => p.isConnected).map((p: Platform) => p.id));
+        setSelectedPlatforms(data?.platforms?.filter((p: Platform) => p.isConnected).map((p: Platform) => p.id));
       } else {
         setError(data.error);
       }
@@ -128,7 +128,7 @@ export default function SocialMediaPublisher() {
       if (data.success) {
         setResults(data.results);
         // Clear form if all successful
-        if (data.summary.failed === 0) {
+        if (data?.summary?.failed === 0) {
           setContent('');
           setLink('');
         }

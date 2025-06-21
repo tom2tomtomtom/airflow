@@ -13,6 +13,8 @@ export function escapeHtml(text: string): string {
 export function sanitizeInput(input: string): string {
   return input
     .trim()
+    // Remove control characters (null, tab, newline, etc.)
+    // eslint-disable-next-line no-control-regex
     .replace(/[\u0000-\u001F\u007F]/g, '')
     .replace(/[<>]/g, '')
     .replace(/javascript:/gi, '');

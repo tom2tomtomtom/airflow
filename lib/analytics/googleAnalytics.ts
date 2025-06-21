@@ -2,8 +2,8 @@
 
 declare global {
   interface Window {
-    gtag: (...args: any[]) => void;
-    dataLayer: any[];
+    gtag?: (...args: any[]) => void;
+    dataLayer?: any[];
   }
 }
 
@@ -22,7 +22,7 @@ export function initGA() {
   // Initialize dataLayer and gtag
   window.dataLayer = window.dataLayer || [];
   window.gtag = function gtag() {
-    window.dataLayer.push(arguments);
+    window.dataLayer?.push(arguments);
   };
   window.gtag('js', new Date());
   window.gtag('config', GA_MEASUREMENT_ID, {

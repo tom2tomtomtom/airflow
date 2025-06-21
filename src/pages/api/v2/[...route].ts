@@ -90,7 +90,9 @@ async function universalHandler(req: NextApiRequest, res: NextApiResponse): Prom
   
   // Extract route from URL
   const { route: routeParams } = req.query;
-  const route = Array.isArray(routeParams) ? routeParams : [routeParams].filter(Boolean);
+  const route = Array.isArray(routeParams)
+    ? routeParams.filter((param): param is string => typeof param === 'string')
+    : [routeParams].filter((param): param is string => typeof param === 'string');
   
   const context: RouteContext = {
     user,
@@ -188,7 +190,7 @@ async function handleHealthCheck(
 }
 
 // Middleware pipeline wrapper
-function withMiddlewarePipeline(handler: Function) {
+function withMiddlewarePipeline(handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void>) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     // Set CORS headers for API v2
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -261,7 +263,7 @@ export async function withCostTracking(
 
 // Input validation middleware
 export function validateInput(schema: any) {
-  return (req: NextApiRequest, res: NextApiResponse, next: Function) => {
+  return (req: NextApiRequest, res: NextApiResponse, next: () => void) => {
     try {
       // TODO: Implement Zod schema validation
       // const validated = schema.parse(req.body);

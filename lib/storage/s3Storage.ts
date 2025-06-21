@@ -110,7 +110,7 @@ export async function uploadFile(
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('S3 upload error:', error);
-    throw new Error(`Failed to upload file: ${error.message}`);
+    throw new Error(`Failed to upload file: ${message}`);
   }
 }
 
@@ -167,7 +167,7 @@ export async function deleteFile(key: string): Promise<void> {
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('S3 delete error:', error);
-    throw new Error(`Failed to delete file: ${error.message}`);
+    throw new Error(`Failed to delete file: ${message}`);
   }
 }
 
@@ -210,7 +210,7 @@ export async function listFiles(
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('S3 list error:', error);
-    throw new Error(`Failed to list files: ${error.message}`);
+    throw new Error(`Failed to list files: ${message}`);
   }
 }
 
@@ -226,7 +226,7 @@ export async function fileExists(key: string): Promise<boolean> {
     return true;
   } catch (error) {
     const message = getErrorMessage(error);
-    if (error.name === 'NotFound') {
+    if (error && typeof error === 'object' && 'name' in error && error.name === 'NotFound') {
       return false;
     }
     throw error;
@@ -254,7 +254,7 @@ export async function getFileMetadata(key: string): Promise<StorageFile | null> 
     };
   } catch (error) {
     const message = getErrorMessage(error);
-    if (error.name === 'NotFound') {
+    if (error && typeof error === 'object' && 'name' in error && error.name === 'NotFound') {
       return null;
     }
     throw error;

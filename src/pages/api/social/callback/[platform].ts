@@ -157,7 +157,7 @@ async function getTwitterProfile(accessToken: string): Promise<any> {
       'Authorization': `Bearer ${accessToken}`,
     },
   });
-  return response.data.data;
+  return response?.data?.data;
 }
 
 async function getLinkedInProfile(accessToken: string): Promise<any> {

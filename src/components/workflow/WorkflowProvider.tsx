@@ -113,7 +113,7 @@ function workflowReducer(state: WorkflowState, action: WorkflowAction): Workflow
     case 'TOGGLE_MOTIVATION':
       return {
         ...state,
-        motivations: state.motivations.map(m =>
+        motivations: state?.motivations?.map(m =>
           m.id === action.id ? { ...m, selected: !m.selected } : m
         ),
       };
@@ -124,7 +124,7 @@ function workflowReducer(state: WorkflowState, action: WorkflowAction): Workflow
     case 'TOGGLE_COPY':
       return {
         ...state,
-        copyVariations: state.copyVariations.map(c =>
+        copyVariations: state?.copyVariations?.map(c =>
           c.id === action.id ? { ...c, selected: !c.selected } : c
         ),
       };
@@ -141,7 +141,7 @@ function workflowReducer(state: WorkflowState, action: WorkflowAction): Workflow
     case 'REMOVE_ASSET':
       return {
         ...state,
-        selectedAssets: state.selectedAssets.filter(a => a.id !== action.id),
+        selectedAssets: state?.selectedAssets?.filter(a => a.id !== action.id),
       };
     
     case 'SET_SELECTED_TEMPLATE':
@@ -204,12 +204,13 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({
   }, []);
 
   // Enhanced error handling wrapper
-  const withErrorHandling = useCallback(<T extends any>(
-    operation: () => Promise<T>,
-    context: string,
-    fallback?: () => void
-  ) => {
-    return async (): Promise<T | null> => {
+  const withErrorHandling = useCallback(
+    <T,>(
+      operation: () => Promise<T>,
+      context: string,
+      fallback?: () => void
+    ) => {
+      return async (): Promise<T | null> => {
       try {
         dispatch({ type: 'SET_ERROR', error: null }); // Clear previous errors
         const result = await operation();
@@ -417,7 +418,7 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({
       return;
     }
 
-    const selectedMotivations = state.motivations.filter(m => m.selected);
+    const selectedMotivations = state?.motivations?.filter(m => m.selected);
     if (selectedMotivations.length < 1) {
       showNotification('Minimum 1 motivation required to generate copy', 'error');
       return;
@@ -439,7 +440,7 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({
           operationData: {
             motivations: selectedMotivations,
             briefData: state.briefData,
-            platforms: state.briefData.platforms
+            platforms: state?.briefData?.platforms
           }
         })
       });

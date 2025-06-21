@@ -1,7 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 // workers/render.ts
 import { Worker, Job } from 'bullmq';
-import { connection } from '@/lib/queue/connection';
+import { connectionOptions } from '@/lib/queue/connection';
 import { supabase } from '@/lib/supabase';
 
 interface RenderJobData {
@@ -91,7 +91,7 @@ export const renderWorker = new Worker<RenderJobData>(
     }
   },
   {
-    connection,
+    connection: connectionOptions,
     concurrency: 5,
     removeOnComplete: { count: 100 },
     removeOnFail: { count: 50 }

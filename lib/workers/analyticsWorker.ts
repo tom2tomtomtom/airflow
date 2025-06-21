@@ -1,6 +1,6 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { Worker, Job } from 'bullmq';
-import { connection } from '@/lib/queue/connection';
+import { connectionOptions } from '@/lib/queue/connection';
 import { AnalyticsJobData } from '@/lib/queue/bullQueue';
 import { createClient } from '@supabase/supabase-js';
 import * as Sentry from '@sentry/node';
@@ -118,7 +118,7 @@ export const analyticsWorker = new Worker(
   'analytics',
   processAnalyticsJob,
   {
-    connection,
+    connection: connectionOptions,
     concurrency: parseInt(process.env.ANALYTICS_WORKER_CONCURRENCY || '10'),
     removeOnComplete: { count: 10000 },
     removeOnFail: { count: 5000 },

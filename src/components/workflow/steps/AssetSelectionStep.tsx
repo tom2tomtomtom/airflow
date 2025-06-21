@@ -149,7 +149,7 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
   const generateSmartPrompts = useCallback(() => {
     if (!briefData) return [];
 
-    const selectedMotivations = state.motivations.filter(m => m.selected);
+    const selectedMotivations = state?.motivations?.filter(m => m.selected);
 
     const prompts = [];
 
@@ -486,7 +486,7 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
             )}
 
             <AIImageGenerator
-              clientId={clientId || undefined}
+              clientId={clientId || ''}
               onImageGenerated={handleAIImageGenerated}
               brandGuidelines={typeof briefData?.brandGuidelines === 'string' ?
                 {

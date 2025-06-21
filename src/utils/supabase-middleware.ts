@@ -28,7 +28,7 @@ export async function updateSession(request: NextRequest) {
               headers: request.headers,
             },
           });
-          response.cookies.set({
+          response?.cookies?.set({
             name,
             value,
             ...options,
@@ -45,7 +45,7 @@ export async function updateSession(request: NextRequest) {
               headers: request.headers,
             },
           });
-          response.cookies.set({
+          response?.cookies?.set({
             name,
             value: '',
             ...options,

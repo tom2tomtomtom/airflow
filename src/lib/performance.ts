@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import compression from 'compression';
 import { loggers } from './logger';
 import { env } from './env';
+import crypto from 'crypto';
 
 // Cache control headers for different resource types
 const CACHE_CONTROL = {
@@ -198,7 +199,7 @@ export async function trackQueryPerformance<T>(
 }
 
 // Response size optimization
-export function optimizeResponse<T>(
+export function optimizeResponse<T extends Record<string, any>>(
   data: T,
   fields?: string[]
 ): Partial<T> {
@@ -252,7 +253,6 @@ function setNestedField(obj: any, path: string[], value: any): void {
 
 // ETags for caching
 export function generateETag(data: any): string {
-  const crypto = require('crypto');
   const hash = crypto.createHash('md5');
   hash.update(JSON.stringify(data));
   return `"${hash.digest('hex')}"`;

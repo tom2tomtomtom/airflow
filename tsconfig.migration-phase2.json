@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.migration-phase1.json",
+  "compilerOptions": {
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true
+  }
+}

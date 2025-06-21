@@ -167,7 +167,7 @@ export function createPaginationMeta(
   page: number,
   limit: number,
   total: number
-): ApiResponse['meta']['pagination'] {
+): NonNullable<NonNullable<ApiResponse['meta']>['pagination']> {
   return {
     page,
     limit,

@@ -1,7 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 // workers/email.ts
 import { Worker, Job } from 'bullmq';
-import { connection } from '@/lib/queue/connection';
+import { connectionOptions } from '@/lib/queue/connection';
 import { sendEmail } from '../lib/email/resend';
 
 interface EmailJobData {
@@ -31,7 +31,7 @@ export const emailWorker = new Worker<EmailJobData>(
     }
   },
   {
-    connection,
+    connection: connectionOptions,
     concurrency: 10,
     removeOnComplete: { count: 100 },
     removeOnFail: { count: 50 }

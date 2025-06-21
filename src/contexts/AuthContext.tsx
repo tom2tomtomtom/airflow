@@ -147,7 +147,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       
       // Check if email confirmation is required
-      if (data.message && data.message.includes('check your email')) {
+      if (data.message && data?.message?.includes('check your email')) {
         // Don't log the user in, just show the message
         throw new Error(data.message);
       }

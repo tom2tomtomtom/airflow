@@ -238,7 +238,7 @@ export function isValidCopyVariation(data: any): data is CopyVariation {
   return (
     typeof data.id === 'string' &&
     typeof data.text === 'string' &&
-    data.text.trim() !== '' &&
+    data?.text?.trim() !== '' &&
     typeof data.platform === 'string' &&
     typeof data.selected === 'boolean'
   );
@@ -269,7 +269,7 @@ export function isValidTemplate(data: any): data is Template {
   return (
     typeof data.id === 'string' &&
     typeof data.name === 'string' &&
-    data.name.trim() !== '' &&
+    data?.name?.trim() !== '' &&
     typeof data.description === 'string' &&
     typeof data.category === 'string' &&
     typeof data.selected === 'boolean'

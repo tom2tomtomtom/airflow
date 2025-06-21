@@ -1,6 +1,6 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { Worker, Job } from 'bullmq';
-import { connection } from '@/lib/queue/connection';
+import { connectionOptions } from '@/lib/queue/connection';
 import { WebhookJobData, addWebhookJob } from '@/lib/queue/bullQueue';
 import crypto from 'crypto';
 import * as Sentry from '@sentry/node';
@@ -124,7 +124,7 @@ export const webhookWorker = new Worker(
   'webhook',
   processWebhookJob,
   {
-    connection,
+    connection: connectionOptions,
     concurrency: parseInt(process.env.WEBHOOK_WORKER_CONCURRENCY || '10'),
     removeOnComplete: { count: 1000 },
     removeOnFail: { count: 500 },

@@ -167,15 +167,15 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
         tags: ['ai-generated', options.purpose],
       });
 
-      if (response.data.success) {
+      if (response?.data?.success) {
         setGeneratedImage(response.data);
         setShowDialog(true);
         
         if (onImageGenerated) {
-          onImageGenerated(response.data.asset);
+          onImageGenerated(response?.data?.asset);
         }
       } else {
-        setError(response.data.message || 'Failed to generate image');
+        setError(response?.data?.message || 'Failed to generate image');
       }
     } catch (err) {
       console.error('Generation error:', err);

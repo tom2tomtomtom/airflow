@@ -6,27 +6,39 @@ import Redis from 'ioredis';
 const redisUrl = process.env.UPSTASH_REDIS_URL || process.env.REDIS_URL;
 
 let connection: Redis | null = null;
+let connectionOptions: any = null;
 
 try {
   if (redisUrl) {
-    connection = new Redis(redisUrl, {
+    const redisConfig = {
       maxRetriesPerRequest: null,
       enableReadyCheck: false,
-      retryStrategy: (times) => {
+      retryStrategy: (times: number) => {
         const delay = Math.min(times * 50, 2000);
         return delay;
       },
-    });
+    };
+
+    connection = new Redis(redisUrl, redisConfig);
+
+    // For BullMQ, we need to provide connection options, not the instance
+    connectionOptions = redisUrl.startsWith('redis://') || redisUrl.startsWith('rediss://')
+      ? redisUrl
+      : {
+          host: redisUrl.includes('@') ? redisUrl.split('@')[1].split(':')[0] : 'localhost',
+          port: redisUrl.includes(':') ? parseInt(redisUrl.split(':').pop() || '6379') : 6379,
+          ...redisConfig
+        };
   } else {
     console.warn('No Redis URL configured. Queue functionality will be disabled.');
   }
 } catch (error) {
-    const message = getErrorMessage(error);
   console.error('Failed to initialize Redis connection:', error);
   connection = null;
+  connectionOptions = null;
 }
 
-export { connection };
+export { connection, connectionOptions };
 
 // Connection event handlers
 if (connection) {

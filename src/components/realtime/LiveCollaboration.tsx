@@ -165,7 +165,7 @@ const LiveCollaboration: React.FC<LiveCollaborationProps> = ({
           </Typography>
           {user.current_page && (
             <Typography variant="caption" display="block">
-              Viewing: {user.current_page.split('/').pop()?.replace('-', ' ')}
+              Viewing: {user?.current_page?.split('/').pop()?.replace('-', ' ')}
             </Typography>
           )}
         </Box>
@@ -191,7 +191,7 @@ const LiveCollaboration: React.FC<LiveCollaborationProps> = ({
           alt={user.name}
           sx={{ width: size, height: size, cursor: 'pointer' }}
         >
-          {user.name.charAt(0)}
+          {user?.name?.charAt(0)}
         </Avatar>
       </Badge>
     </Tooltip>
@@ -267,7 +267,7 @@ const LiveCollaboration: React.FC<LiveCollaborationProps> = ({
                           </Typography>
                           {user.current_page && (
                             <Typography variant="caption" display="block" color="text.secondary">
-                              Working on: {user.current_page.split('/').pop()?.replace('-', ' ')}
+                              Working on: {user?.current_page?.split('/').pop()?.replace('-', ' ')}
                             </Typography>
                           )}
                         </Box>

@@ -184,9 +184,9 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
 
       const data = await response.json();
       if (data.data) {
-        const newJobs: VideoJob[] = data.data.jobs.results.map((result: any) => ({
+        const newJobs: VideoJob[] = data?.data?.jobs.results.map((result: any) => ({
           id: result.job_id,
-          generation_id: data.data.generation_id,
+          generation_id: data?.data?.generation_id,
           variation_index: 1,
           status: result.status,
           render_job_id: result.render_job_id,

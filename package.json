@@ -1,5 +1,5 @@
 {
-  "name": "airflow",
+  "name": "airwave",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -11,6 +11,12 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "type-check": "tsc --noEmit",
+    "type-check:phase1": "tsc --noEmit -p tsconfig.migration-phase1.json",
+    "type-check:phase2": "tsc --noEmit -p tsconfig.migration-phase2.json",
+    "type-check:final": "tsc --noEmit -p tsconfig.migration-final.json",
+    "migrate:types": "node scripts/migrate-types.js",
+    "test:types": "node scripts/test-types.js",
+    "fix:types": "node scripts/migrate-types.js && npm run type-check:phase1",
     "postinstall": "echo 'Install complete'",
     "workers": "tsx workers/index.ts",
     "worker:render": "tsx workers/index.ts --only=render",

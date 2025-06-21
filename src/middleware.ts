@@ -70,16 +70,16 @@ function checkRateLimit(identifier: string, limit: number = 10, windowMs: number
 // Add security headers
 function addSecurityHeaders(response: NextResponse): NextResponse {
   // Prevent clickjacking
-  response.headers.set('X-Frame-Options', 'DENY');
+  response?.headers?.set('X-Frame-Options', 'DENY');
   
   // Prevent MIME type sniffing
-  response.headers.set('X-Content-Type-Options', 'nosniff');
+  response?.headers?.set('X-Content-Type-Options', 'nosniff');
   
   // Enable XSS protection
-  response.headers.set('X-XSS-Protection', '1; mode=block');
+  response?.headers?.set('X-XSS-Protection', '1; mode=block');
   
   // Control referrer information
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  response?.headers?.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   
   // Content Security Policy - Improved security
   const cspBase = [
@@ -113,14 +113,14 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
     );
   }
   
-  response.headers.set('Content-Security-Policy', cspBase.join('; '));
+  response?.headers?.set('Content-Security-Policy', cspBase.join('; '));
   
   // Permissions Policy
-  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
+  response?.headers?.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
   
   // Additional security headers for production
   if (process.env.NODE_ENV === 'production') {
-    response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    response?.headers?.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   }
   
   return response;
@@ -224,8 +224,8 @@ function redirectToLogin(request: NextRequest): NextResponse {
   }
   
   const response = NextResponse.redirect(url);
-  response.cookies.delete('airwave_token');
-  response.cookies.delete('auth_token');
+  response?.cookies?.delete('airwave_token');
+  response?.cookies?.delete('auth_token');
   
   return response;
 }

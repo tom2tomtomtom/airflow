@@ -5,6 +5,7 @@ import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { supabase } from '@/lib/supabase/client';
 import { z } from 'zod';
 import { deliverWebhook, WEBHOOK_EVENTS } from './index';
+import crypto from 'crypto';
 
 const WebhookUpdateSchema = z.object({
   name: z.string().min(1, 'Name is required').optional(),
@@ -516,7 +517,6 @@ async function handleToggleWebhook(req: NextApiRequest, res: NextApiResponse, us
 
 // Helper functions
 function generateWebhookSecret(): string {
-  const crypto = require('crypto');
   return crypto.randomBytes(32).toString('hex');
 }
 

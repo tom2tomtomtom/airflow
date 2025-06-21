@@ -1,3 +1,4 @@
+import React from 'react';
 import dynamic from 'next/dynamic';
 import { ComponentProps } from 'react';
 import { CircularProgress, Box } from '@mui/material';

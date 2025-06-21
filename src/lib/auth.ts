@@ -37,8 +37,8 @@ export async function signIn(email: string, password: string): Promise<{ user: U
       password 
     });
 
-    if (!response.data.success || !response.data.user || !response.data.token) {
-      throw new Error(response.data.message || 'Login failed');
+    if (!response?.data?.success || !response?.data?.user || !response?.data?.token) {
+      throw new Error(response?.data?.message || 'Login failed');
     }
 
     const { user, token } = response.data;
@@ -72,8 +72,8 @@ export async function signUp(
       lastName,
     });
 
-    if (!response.data.success || !response.data.user) {
-      throw new Error(response.data.message || 'Sign up failed');
+    if (!response?.data?.success || !response?.data?.user) {
+      throw new Error(response?.data?.message || 'Sign up failed');
     }
 
     const { user, token } = response.data;
@@ -93,8 +93,8 @@ export async function signUp(
       result.token = token;
     }
     
-    if (response.data.emailConfirmationRequired !== undefined) {
-      result.emailConfirmationRequired = response.data.emailConfirmationRequired;
+    if (response?.data?.emailConfirmationRequired !== undefined) {
+      result.emailConfirmationRequired = response?.data?.emailConfirmationRequired;
     }
     
     return result;
@@ -165,7 +165,7 @@ export async function refreshToken(): Promise<boolean> {
     // With httpOnly cookies, token refresh is handled automatically by the browser
     // We can make a request to a protected endpoint to verify if the token is still valid
     const response = await authAxios.get<{ success: boolean }>('/api/auth/me');
-    return response.data.success;
+    return response?.data?.success;
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Token refresh check failed:', error);

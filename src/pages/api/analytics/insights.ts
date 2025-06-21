@@ -231,10 +231,10 @@ function generatePerformanceInsights(data: any): any[] {
   const insights = [];
 
   // Calculate overall performance metrics
-  const totalImpressions = data.analytics.reduce((sum: number, item: any) => sum + (item.impressions || 0), 0);
-  const totalClicks = data.analytics.reduce((sum: number, item: any) => sum + (item.clicks || 0), 0);
-  const totalConversions = data.analytics.reduce((sum: number, item: any) => sum + (item.conversions || 0), 0);
-  const totalSpend = data.analytics.reduce((sum: number, item: any) => sum + parseFloat(item.spend || '0'), 0);
+  const totalImpressions = data?.analytics?.reduce((sum: number, item: any) => sum + (item.impressions || 0), 0);
+  const totalClicks = data?.analytics?.reduce((sum: number, item: any) => sum + (item.clicks || 0), 0);
+  const totalConversions = data?.analytics?.reduce((sum: number, item: any) => sum + (item.conversions || 0), 0);
+  const totalSpend = data?.analytics?.reduce((sum: number, item: any) => sum + parseFloat(item.spend || '0'), 0);
 
   const ctr = totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0;
   const conversionRate = totalClicks > 0 ? (totalConversions / totalClicks) * 100 : 0;
@@ -305,7 +305,7 @@ function generatePerformanceInsights(data: any): any[] {
   }
 
   // Campaign Volume Insight
-  const activeCampaigns = data.campaigns.filter((c: any) => c.status === 'active').length;
+  const activeCampaigns = data?.campaigns?.filter((c: any) => c.status === 'active').length;
   if (activeCampaigns > 10) {
     insights.push({
       type: 'info',
@@ -443,7 +443,7 @@ function generateAnomalyDetection(data: any): any[] {
   const anomalies: any[] = [];
 
   // Simulate anomaly detection based on data patterns
-  const recentAnalytics = data.analytics.slice(0, 7); // Last 7 days
+  const recentAnalytics = data?.analytics?.slice(0, 7); // Last 7 days
   const avgImpressions = recentAnalytics.reduce((sum: number, item: any) => sum + (item.impressions || 0), 0) / recentAnalytics.length;
 
   // Check for significant spikes or drops
@@ -484,7 +484,7 @@ function generateAnomalyDetection(data: any): any[] {
 
 function generatePredictions(data: any): any {
   // Calculate trends for predictions
-  const recentData = data.analytics.slice(0, 30);
+  const recentData = data?.analytics?.slice(0, 30);
   const avgDailyImpressions = recentData.reduce((sum: number, item: any) => sum + (item.impressions || 0), 0) / recentData.length;
   const avgDailyConversions = recentData.reduce((sum: number, item: any) => sum + (item.conversions || 0), 0) / recentData.length;
   const avgDailySpend = recentData.reduce((sum: number, item: any) => sum + parseFloat(item.spend || '0'), 0) / recentData.length;
@@ -496,7 +496,7 @@ function generatePredictions(data: any): any {
       expected_spend: Math.round(avgDailySpend * 30 * 1.02 * 100) / 100, // 2% growth assumption
       confidence_level: 78
     },
-    recommended_budget_adjustments: data.campaigns.slice(0, 3).map((campaign: any) => ({
+    recommended_budget_adjustments: data?.campaigns?.slice(0, 3).map((campaign: any) => ({
       campaign_id: campaign.id,
       campaign_name: campaign.name,
       current_budget: Math.round(Math.random() * 5000 + 1000),

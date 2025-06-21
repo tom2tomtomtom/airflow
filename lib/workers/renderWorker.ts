@@ -1,6 +1,6 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { Worker, Job } from 'bullmq';
-import { connection } from '@/lib/queue/connection';
+import { connectionOptions } from '@/lib/queue/connection';
 import { RenderJobData } from '@/lib/queue/bullQueue';
 import { sendRenderCompleteEmail } from '@/lib/email/resend';
 import { S3Storage } from '@/lib/storage/s3Storage';
@@ -210,7 +210,7 @@ export const renderWorker = new Worker(
   'render',
   processRenderJob,
   {
-    connection,
+    connection: connectionOptions,
     concurrency: parseInt(process.env.RENDER_WORKER_CONCURRENCY || '3'),
     removeOnComplete: { count: 100 },
     removeOnFail: { count: 500 },
