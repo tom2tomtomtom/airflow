@@ -13,10 +13,20 @@ import {
   CircularProgress,
   Chip,
   Avatar,
+  List,
+  ListItem,
   ListItemIcon,
+  ListItemText,
+  ListItemButton,
+  ListItemSecondaryAction,
   Divider,
   IconButton,
   Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
   FormControl,
   InputLabel,
   Select,
@@ -25,6 +35,10 @@ import {
   LinearProgress,
   Tabs,
   Tab,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Badge,
   Menu,
   MenuList,
   MenuItem as MenuItemComponent,
@@ -37,12 +51,24 @@ import {
   Refresh as RefreshIcon,
   Timeline as TimelineIcon,
   Assessment as AnalyticsIcon,
+  Settings as SettingsIcon,
+  FilterList as FilterIcon,
+  ExpandMore as ExpandMoreIcon,
+  CheckCircle as CompleteIcon,
+  Error as ErrorIcon,
+  Warning as WarningIcon,
+  Info as InfoIcon,
   MoreVert as MoreIcon,
   Launch as LaunchIcon,
   Visibility as ViewIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
   Speed as SpeedIcon,
   TrendingUp as TrendingUpIcon,
   Campaign as CampaignIcon,
+  VideoLibrary as VideoIcon,
+  Image as ImageIcon,
+  Article as ContentIcon,
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
 import ExecutionMonitor from '@/components/ExecutionMonitor';
@@ -295,7 +321,6 @@ const ExecutePage: React.FC = () => {
       const interval = setInterval(loadExecutionData, refreshInterval * 1000);
       return () => clearInterval(interval);
     }
-    return undefined;
   }, [refreshInterval, activeClient]);
 
   return (
