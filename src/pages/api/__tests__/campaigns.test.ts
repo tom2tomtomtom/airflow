@@ -6,9 +6,14 @@
 import { createMocks } from 'node-mocks-http';
 import { NextApiRequest, NextApiResponse } from 'next';
 
+
+// Test constants (safe for testing)
+const TEST_JWT_TOKEN_PLACEHOLDER = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0IiwicmVmIjoidGVzdCIsInJvbGUiOiJhbm9uIn0.test-signature';
+const DEFAULT_JWT_TOKEN_PLACEHOLDER = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0IiwicmVmIjoiZGVmYXVsdCIsInJvbGUiOiJhbm9uIn0.default-signature';
+
 // Set environment variables before importing
 process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co';
-process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRlc3QiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTY0NjA2NzI2MCwiZXhwIjoxOTYxNjQzMjYwfQ.test-signature';
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'TEST_JWT_TOKEN_PLACEHOLDER';
 
 import handler from '../campaigns';
 

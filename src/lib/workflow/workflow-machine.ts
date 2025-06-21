@@ -154,6 +154,7 @@ export const workflowMachine = createMachine<WorkflowMachineContext, WorkflowEve
   id: 'airwaveWorkflow',
   initial: 'briefUpload',
   context: initialContext,
+  predictableActionArguments: true,
   states: {
     briefUpload: {
       on: {

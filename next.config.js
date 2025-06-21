@@ -198,6 +198,9 @@ const nextConfig = {
 
     // Production bundle optimizations
     if (!dev && !isServer) {
+      // Temporarily disable minification to fix webpack error
+      config.optimization.minimize = false;
+
       config.optimization.splitChunks = {
         chunks: 'all',
         cacheGroups: {
@@ -259,10 +262,12 @@ const nextConfig = {
   
   // Experimental features
   experimental: {
-    optimizeCss: true, // Enable CSS optimization
+    optimizeCss: false, // Temporarily disable CSS optimization due to webpack error
     optimizePackageImports: ['@mui/material', '@mui/icons-material', 'lodash', 'date-fns'],
     // instrumentationHook: true, // Removed - instrumentation.js is available by default
   },
+
+
 };
 
 // Sentry configuration options
