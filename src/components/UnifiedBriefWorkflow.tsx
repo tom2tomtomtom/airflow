@@ -36,6 +36,7 @@ import {
 } from '@mui/icons-material';
 import { useDropzone } from 'react-dropzone';
 import { useNotification } from '@/contexts/NotificationContext';
+import { useCSRF } from '@/hooks/useCSRF';
 import { briefWorkflowSteps } from './SmartProgressIndicator';
 import { MobileOptimizedWorkflow } from './MobileOptimizedWorkflow';
 
@@ -120,6 +121,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
   const [lastError, setLastError] = useState<string | null>(null);
 
   const { showNotification } = useNotification();
+  const { makeCSRFRequest } = useCSRF();
 
   // Define handleProcessBrief first
   const handleProcessBrief = useCallback(async (file: File) => {
@@ -134,14 +136,11 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
 
         console.log(`Sending file to API... (attempt ${retryCount + 1})`);
         console.log('FormData contents:', formData.get('file'));
-        
-        const response = await fetch('/api/flow/parse-brief', {
+
+        const response = await makeCSRFRequest('/api/flow/parse-brief', {
           method: 'POST',
           body: formData,
-          credentials: 'include',
-          headers: {
-            // Don't set Content-Type header - let browser set it for FormData
-          }
+          // Don't set Content-Type header - let browser set it for FormData
         });
         
                 if (!response.ok) {
@@ -187,7 +186,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
       setLastError(errorMessage);
       showNotification(errorMessage, 'error');
     }
-  }, [showNotification]); // activeStep removed from dependency array
+  }, [showNotification, makeCSRFRequest]); // activeStep removed from dependency array
 
   // Dropzone configuration - defined after handleProcessBrief
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -263,13 +262,12 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
         setProcessing(true);
     
     try {
-      const response = await fetch('/api/flow/generate-motivations', {
+      const response = await makeCSRFRequest('/api/flow/generate-motivations', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ briefData }),
-        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -340,16 +338,15 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
         setProcessing(true);
     
     try {
-      const response = await fetch('/api/flow/generate-copy', {
+      const response = await makeCSRFRequest('/api/flow/generate-copy', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          motivations: selectedMotivations, 
-          briefData 
+        body: JSON.stringify({
+          motivations: selectedMotivations,
+          briefData
         }),
-        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -397,7 +394,7 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
 
     try {
       // Store selected copy variations in assets library
-      const response = await fetch('/api/flow/store-copy-assets', {
+      const response = await makeCSRFRequest('/api/flow/store-copy-assets', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -407,7 +404,6 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
           briefTitle: briefData?.title || 'Untitled Brief',
           clientId: 'default-client' // TODO: Get actual client ID from context
         }),
-        credentials: 'include',
       });
 
       if (!response.ok) {
