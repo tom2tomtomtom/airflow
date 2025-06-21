@@ -9,7 +9,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
   };
 };
 
-const ContentPage = () => {
+const ContentPage = (): JSX.Element => {
   return null;
 };
 

@@ -5,7 +5,7 @@ import { useSupabaseAuth } from '@/contexts/SupabaseAuthContext';
  * Component to handle automatic token refresh
  * Should be included in _app.tsx to run on all pages
  */
-export function AuthRefreshHandler() {
+export function AuthRefreshHandler(): null {
   const { session, refreshSession } = useSupabaseAuth();
   const refreshTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -26,7 +26,7 @@ export function AuthRefreshHandler() {
     const expiryTime = expiresAt * 1000; // Convert to milliseconds
     const currentTime = Date.now();
     const timeUntilExpiry = expiryTime - currentTime;
-    const refreshTime = timeUntilExpiry - (5 * 60 * 1000); // 5 minutes before expiry
+    const refreshTime = timeUntilExpiry - 5 * 60 * 1000; // 5 minutes before expiry
 
     // If token expires in less than 5 minutes, refresh immediately
     if (refreshTime <= 0) {
@@ -35,12 +35,13 @@ export function AuthRefreshHandler() {
     }
 
     // Schedule refresh
-    process.env.NODE_ENV === 'development' && console.log(`Scheduling token refresh in ${Math.round(refreshTime / 1000 / 60)} minutes`);
-    
+    process.env.NODE_ENV === 'development' &&
+      console.log(`Scheduling token refresh in ${Math.round(refreshTime / 1000 / 60)} minutes`);
+
     refreshTimerRef.current = setTimeout(async () => {
       process.env.NODE_ENV === 'development' && console.log('Refreshing session...');
       const result = await refreshSession();
-      
+
       if (result.success) {
         process.env.NODE_ENV === 'development' && console.log('Session refreshed successfully');
       } else {
@@ -71,13 +72,13 @@ export function AuthRefreshHandler() {
 
         // Refresh if less than 10 minutes until expiry
         if (timeUntilExpiry < 10 * 60 * 1000) {
-          process.env.NODE_ENV === 'development' &&           await refreshSession();
+          process.env.NODE_ENV === 'development' && (await refreshSession());
         }
       }
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    
+
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };

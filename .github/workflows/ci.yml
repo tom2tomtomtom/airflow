@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 env:
   NODE_VERSION: '20'
@@ -52,6 +52,15 @@ jobs:
 
       - name: Run TypeScript check
         run: npm run type-check
+
+      - name: Upload TypeScript results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: typescript-results
+          path: |
+            tsconfig.json
+            .next/types/**/*.ts
 
   test:
     name: 🧪 Run Tests

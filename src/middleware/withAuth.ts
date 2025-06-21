@@ -25,8 +25,8 @@ export type AuthenticatedHandler = (
 // Enhanced token validation with multiple fallback methods
 async function validateUserToken(req: NextApiRequest): Promise<any> {
   let supabase;
-  const user = null;
-  const error = null;
+  const user: any = null;
+  const error: any = null;
 
   // Method 1: Try Supabase SSR with cookies (primary method)
   try {
@@ -48,13 +48,15 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
       }
     );
 
-    const { data: { user: cookieUser }, error: cookieError } = await supabase.auth.getUser();
-    
+    const {
+      data: { user: cookieUser },
+      error: cookieError,
+    } = await supabase.auth.getUser();
+
     if (cookieUser && !cookieError) {
-            return { user: cookieUser, supabase };
+      return { user: cookieUser, supabase };
     }
-    
-      } catch ($1) {
+  } catch ($1) {
     // Handle error silently
   }
 
@@ -63,7 +65,7 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.substring(7);
-      
+
       supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -76,13 +78,15 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
         }
       );
 
-      const { data: { user: headerUser }, error: headerError } = await supabase.auth.getUser(token);
-      
+      const {
+        data: { user: headerUser },
+        error: headerError,
+      } = await supabase.auth.getUser(token);
+
       if (headerUser && !headerError) {
-                return { user: headerUser, supabase };
+        return { user: headerUser, supabase };
       }
-      
-          }
+    }
   } catch ($1) {
     // Handle error silently
   }
@@ -103,19 +107,21 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
         }
       );
 
-      const { data: { user: customUser }, error: customError } = await supabase.auth.getUser(customToken);
-      
+      const {
+        data: { user: customUser },
+        error: customError,
+      } = await supabase.auth.getUser(customToken);
+
       if (customUser && !customError) {
-                return { user: customUser, supabase };
+        return { user: customUser, supabase };
       }
-      
-          }
+    }
   } catch ($1) {
     // Handle error silently
   }
 
   // All methods failed
-    return { user: null, supabase: null };
+  return { user: null, supabase: null };
 }
 
 // Enhanced user profile handling with better error recovery
@@ -128,11 +134,11 @@ async function getUserProfile(supabase: any, user: any): Promise<any> {
       .single();
 
     if (profileError) {
-            // If profile doesn't exist, create a basic one
+      // If profile doesn't exist, create a basic one
       if (profileError.code === 'PGRST116') {
-                const userName = user.user_metadata?.name || user.email?.split('@')[0] || 'User';
+        const userName = user.user_metadata?.name || user.email?.split('@')[0] || 'User';
         const nameParts = userName.split(' ');
-        
+
         const { data: newProfile, error: createError } = await supabase
           .from('profiles')
           .insert({
@@ -151,10 +157,10 @@ async function getUserProfile(supabase: any, user: any): Promise<any> {
           console.error('Error creating profile:', createError);
           return createFallbackProfile(user);
         }
-        
-                return newProfile;
+
+        return newProfile;
       }
-      
+
       // For other errors, return fallback profile
       return createFallbackProfile(user);
     }
@@ -205,21 +211,16 @@ async function getUserClients(supabase: any, userId: string): Promise<string[]> 
 export function withAuth(handler: AuthenticatedHandler) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     // Always require proper authentication - no bypasses for security
-    
+
     try {
-            // Enhanced token validation with multiple methods
+      // Enhanced token validation with multiple methods
       const { user, supabase } = await validateUserToken(req);
 
       if (!user || !supabase) {
-                return errorResponse(
-          res,
-          ErrorCode.UNAUTHORIZED,
-          'Authentication required',
-          401
-        );
+        return errorResponse(res, ErrorCode.UNAUTHORIZED, 'Authentication required', 401);
       }
 
-            // Get user profile with enhanced error handling
+      // Get user profile with enhanced error handling
       const profile = await getUserProfile(supabase, user);
 
       // Get user's client access with error handling
@@ -232,7 +233,7 @@ export function withAuth(handler: AuthenticatedHandler) {
         role: (profile?.role as UserRole) || UserRole.VIEWER,
         permissions: profile?.permissions || [],
         clientIds,
-        tenantId: profile?.tenant_id || ''
+        tenantId: profile?.tenant_id || '',
       };
 
       console.log(`✅ Request authenticated for user: ${user.email} (${profile?.role})`);
@@ -259,23 +260,13 @@ export function withRoles(roles: UserRole | UserRole[]) {
       const userRole = req.user?.role;
 
       if (!userRole) {
-        return errorResponse(
-          res,
-          ErrorCode.UNAUTHORIZED,
-          'User not authenticated',
-          401
-        );
+        return errorResponse(res, ErrorCode.UNAUTHORIZED, 'User not authenticated', 401);
       }
 
       const allowedRoles = Array.isArray(roles) ? roles : [roles];
 
       if (!allowedRoles.includes(userRole)) {
-        return errorResponse(
-          res,
-          ErrorCode.FORBIDDEN,
-          'Insufficient permissions',
-          403
-        );
+        return errorResponse(res, ErrorCode.FORBIDDEN, 'Insufficient permissions', 403);
       }
 
       return await handler(req, res);
@@ -293,17 +284,12 @@ export function withPermissions(requiredPermissions: string | string[]) {
         ? requiredPermissions
         : [requiredPermissions];
 
-      const hasAllPermissions = permissions.every(permission =>
-        userPermissions.includes(permission) || userPermissions.includes('*')
+      const hasAllPermissions = permissions.every(
+        permission => userPermissions.includes(permission) || userPermissions.includes('*')
       );
 
       if (!hasAllPermissions) {
-        return errorResponse(
-          res,
-          ErrorCode.FORBIDDEN,
-          'Insufficient permissions',
-          403
-        );
+        return errorResponse(res, ErrorCode.FORBIDDEN, 'Insufficient permissions', 403);
       }
 
       return await handler(req, res);
@@ -324,17 +310,13 @@ export function withClientAccess(clientIdParam: string = 'clientId') {
       }
 
       // Get client ID from request
-      const clientId = req.query[clientIdParam] as string ||
-                      req.body[clientIdParam] as string ||
-                      req.headers['x-client-id'] as string;
+      const clientId =
+        (req.query[clientIdParam] as string) ||
+        (req.body[clientIdParam] as string) ||
+        (req.headers['x-client-id'] as string);
 
       if (!clientId) {
-        return errorResponse(
-          res,
-          ErrorCode.VALIDATION_ERROR,
-          'Client ID is required',
-          400
-        );
+        return errorResponse(res, ErrorCode.VALIDATION_ERROR, 'Client ID is required', 400);
       }
 
       // Check if user has access to the client

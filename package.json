@@ -71,7 +71,23 @@
     "ci:quick": "npm run lint && npm run type-check",
     "pre-commit": "npm run ci:quick",
     "pre-push": "npm run ci:check",
-    "fix:lint": "node scripts/fix-lint-issues.js"
+    "fix:lint": "node scripts/fix-lint-issues.js",
+    "analyze:bundle": "node scripts/analyze-bundle.js",
+    "audit:security": "node scripts/security-audit.js",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.817.0",
@@ -173,9 +189,11 @@
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-react": "^5.18.0",
     "dotenv": "^16.5.0",
+    "husky": "^9.1.7",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
+    "lint-staged": "^16.1.2",
     "msw": "^2.10.2",
     "node-mocks-http": "^1.17.2",
     "playwright": "^1.52.0",
