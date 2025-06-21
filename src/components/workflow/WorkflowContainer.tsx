@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, Suspense, lazy } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -13,6 +13,8 @@ import {
   IconButton,
   useTheme,
   useMediaQuery,
+  CircularProgress,
+  Skeleton,
 } from '@mui/material';
 import {
   Close as CloseIcon,
@@ -25,19 +27,92 @@ import {
   PlayArrow as PlayArrowIcon,
 } from '@mui/icons-material';
 import { useWorkflow } from './WorkflowProvider';
-import { BriefUploadStep } from './steps/BriefUploadStep';
-import { MotivationSelectionStep } from './steps/MotivationSelectionStep';
-import { CopyGenerationStep } from './steps/CopyGenerationStep';
-import { AssetSelectionStep } from './steps/AssetSelectionStep';
-import { TemplateSelectionStep } from './steps/TemplateSelectionStep';
-import { MatrixBuildStep } from './steps/MatrixBuildStep';
-import { RenderStep } from './steps/RenderStep';
+// Simple performance tracker for workflow steps
+class SimplePerformanceTracker {
+  private static instance: SimplePerformanceTracker;
+  private operations: Map<string, number> = new Map();
+
+  static getInstance() {
+    if (!SimplePerformanceTracker.instance) {
+      SimplePerformanceTracker.instance = new SimplePerformanceTracker();
+    }
+    return SimplePerformanceTracker.instance;
+  }
+
+  startOperation(name: string) {
+    const startTime = Date.now();
+    return {
+      end: () => {
+        const duration = Date.now() - startTime;
+        this.operations.set(name, duration);
+        console.log(`[Performance] ${name}: ${duration}ms`);
+      }
+    };
+  }
+
+  recordMetric(name: string, value: number) {
+    this.operations.set(name, value);
+  }
+}
+
+// Lazy load step components for better performance
+const BriefUploadStep = lazy(() =>
+  import('./steps/BriefUploadStep').then(module => ({ default: module.BriefUploadStep }))
+);
+const MotivationSelectionStep = lazy(() =>
+  import('./steps/MotivationSelectionStep').then(module => ({ default: module.MotivationSelectionStep }))
+);
+const CopyGenerationStep = lazy(() =>
+  import('./steps/CopyGenerationStep').then(module => ({ default: module.CopyGenerationStep }))
+);
+const AssetSelectionStep = lazy(() =>
+  import('./steps/AssetSelectionStep').then(module => ({ default: module.AssetSelectionStep }))
+);
+const TemplateSelectionStep = lazy(() =>
+  import('./steps/TemplateSelectionStep').then(module => ({ default: module.TemplateSelectionStep }))
+);
+const MatrixBuildStep = lazy(() =>
+  import('./steps/MatrixBuildStep').then(module => ({ default: module.MatrixBuildStep }))
+);
+const RenderStep = lazy(() =>
+  import('./steps/RenderStep').then(module => ({ default: module.RenderStep }))
+);
 
 interface WorkflowContainerProps {
   open: boolean;
   onClose: () => void;
   onComplete: (data: any) => void;
 }
+
+// Skeleton loading components for each step
+const StepSkeleton: React.FC<{ stepType: string }> = ({ stepType }) => {
+  return (
+    <Box sx={{ p: 3 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+        <CircularProgress size={24} sx={{ mr: 2 }} />
+        <Typography variant="h6" color="text.secondary">
+          Loading {stepType}...
+        </Typography>
+      </Box>
+
+      <Box sx={{ mb: 3 }}>
+        <Skeleton variant="text" width="60%" height={40} />
+        <Skeleton variant="text" width="80%" height={24} sx={{ mt: 1 }} />
+      </Box>
+
+      <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
+        {[1, 2, 3].map((i) => (
+          <Skeleton key={i} variant="rectangular" height={120} sx={{ borderRadius: 1 }} />
+        ))}
+      </Box>
+
+      <Box sx={{ display: 'flex', gap: 2, justifyContent: 'space-between', mt: 4 }}>
+        <Skeleton variant="rectangular" width={100} height={36} sx={{ borderRadius: 1 }} />
+        <Skeleton variant="rectangular" width={120} height={36} sx={{ borderRadius: 1 }} />
+      </Box>
+    </Box>
+  );
+};
 
 // Define workflow steps
 const workflowSteps = [
@@ -125,60 +200,57 @@ export const WorkflowContainer: React.FC<WorkflowContainerProps> = ({
     onClose();
   }, [actions, onClose]);
 
-  // Render current step component
+  // Render current step component with performance tracking and lazy loading
   const renderStepContent = () => {
-    switch (currentStep) {
-      case 0:
-        return (
-          <BriefUploadStep
-            onNext={handleNext}
-          />
-        );
-      case 1:
-        return (
-          <MotivationSelectionStep
-            onNext={handleNext}
-            onPrevious={handlePrevious}
-          />
-        );
-      case 2:
-        return (
-          <CopyGenerationStep
-            onNext={handleNext}
-            onPrevious={handlePrevious}
-          />
-        );
-      case 3:
-        return (
-          <AssetSelectionStep
-            onNext={handleNext}
-            onPrevious={handlePrevious}
-          />
-        );
-      case 4:
-        return (
-          <TemplateSelectionStep
-            onNext={handleNext}
-            onPrevious={handlePrevious}
-          />
-        );
-      case 5:
-        return (
-          <MatrixBuildStep
-            onNext={handleNext}
-            onPrevious={handlePrevious}
-          />
-        );
-      case 6:
-        return (
-          <RenderStep
-            onPrevious={handlePrevious}
-            onComplete={handleWorkflowComplete}
-          />
-        );
-      default:
-        return null;
-    }
+    const performanceTracker = SimplePerformanceTracker.getInstance();
+    const stepName = workflowSteps[currentStep]?.id || 'unknown';
+
+    // Start performance tracking for step render
+    React.useEffect(() => {
+      const operation = performanceTracker.startOperation(`workflow_step_${stepName}`);
+      return () => operation.end();
+    }, [currentStep, stepName, performanceTracker]);
+
+    const stepComponents = {
+      0: () => (
+        <Suspense fallback={<StepSkeleton stepType="Brief Upload" />}>
+          <BriefUploadStep onNext={handleNext} />
+        </Suspense>
+      ),
+      1: () => (
+        <Suspense fallback={<StepSkeleton stepType="Motivation Selection" />}>
+          <MotivationSelectionStep onNext={handleNext} onPrevious={handlePrevious} />
+        </Suspense>
+      ),
+      2: () => (
+        <Suspense fallback={<StepSkeleton stepType="Copy Generation" />}>
+          <CopyGenerationStep onNext={handleNext} onPrevious={handlePrevious} />
+        </Suspense>
+      ),
+      3: () => (
+        <Suspense fallback={<StepSkeleton stepType="Asset Selection" />}>
+          <AssetSelectionStep onNext={handleNext} onPrevious={handlePrevious} />
+        </Suspense>
+      ),
+      4: () => (
+        <Suspense fallback={<StepSkeleton stepType="Template Selection" />}>
+          <TemplateSelectionStep onNext={handleNext} onPrevious={handlePrevious} />
+        </Suspense>
+      ),
+      5: () => (
+        <Suspense fallback={<StepSkeleton stepType="Matrix Build" />}>
+          <MatrixBuildStep onNext={handleNext} onPrevious={handlePrevious} />
+        </Suspense>
+      ),
+      6: () => (
+        <Suspense fallback={<StepSkeleton stepType="Video Rendering" />}>
+          <RenderStep onPrevious={handlePrevious} onComplete={handleWorkflowComplete} />
+        </Suspense>
+      ),
+    };
+
+    const StepComponent = stepComponents[currentStep as keyof typeof stepComponents];
+    return StepComponent ? StepComponent() : null;
   };
 
   // Check if step is completed

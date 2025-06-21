@@ -259,11 +259,11 @@ export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
                 <VideoLibraryIcon />
                 Recommended for Your Campaign
               </Typography>
-              <Grid container spacing={3} sx={{ mb: 3 }}>
+              <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr', lg: '1fr 1fr 1fr' }, mb: 3 }}>
                 {recommendedTemplates.map((template) => {
                   const creatomateTemplate = creatomateTemplates.find(ct => ct.id === template.id);
                   return (
-                    <Grid item xs={12} md={6} lg={4} key={template.id}>
+                    <Box key={template.id}>
                       <Card
                         sx={{
                           cursor: 'pointer',
@@ -348,10 +348,10 @@ export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
                           </Box>
                         </CardContent>
                       </Card>
-                    </Grid>
+                    </Box>
                   );
                 })}
-              </Grid>
+              </Box>
             </Box>
           )}
 
@@ -368,11 +368,11 @@ export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
                     {category} ({categoryTemplates.length})
                   </Typography>
 
-                  <Grid container spacing={3}>
+                  <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr', lg: '1fr 1fr 1fr' } }}>
                     {categoryTemplates.map((template) => {
                       const creatomateTemplate = creatomateTemplates.find(ct => ct.id === template.id);
                       return (
-                        <Grid item xs={12} md={6} lg={4} key={template.id}>
+                        <Box key={template.id}>
                           <Card
                             sx={{
                               cursor: 'pointer',
@@ -447,10 +447,10 @@ export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
                               </Box>
                             </CardContent>
                           </Card>
-                        </Grid>
+                        </Box>
                       );
                     })}
-                  </Grid>
+                  </Box>
                 </Box>
               ))}
             </>

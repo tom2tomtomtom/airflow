@@ -133,7 +133,6 @@ async function getWorkflowAssets(
     // If no assets selected, return empty array
     if (selectedAssets.length === 0) {
       return successResponse(res, [], 200, {
-        workflowId,
         timestamp: new Date().toISOString()
       });
     }
@@ -185,8 +184,6 @@ async function getWorkflowAssets(
     }));
 
     return successResponse(res, workflowAssets, 200, {
-      workflowId,
-      count: workflowAssets.length,
       timestamp: new Date().toISOString()
     });
 
@@ -258,8 +255,6 @@ async function selectWorkflowAssets(
     }
 
     return successResponse(res, { selectedAssets: assetIds }, 200, {
-      workflowId,
-      message: 'Assets selected successfully',
       timestamp: new Date().toISOString()
     });
 
@@ -316,8 +311,6 @@ async function removeWorkflowAsset(
     }
 
     return successResponse(res, { removedAssetId: assetId }, 200, {
-      workflowId,
-      message: 'Asset removed successfully',
       timestamp: new Date().toISOString()
     });
 

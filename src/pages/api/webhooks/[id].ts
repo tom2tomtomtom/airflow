@@ -589,7 +589,7 @@ function calculateDeliveryStatistics(deliveries: any[]): any {
       avg_response_time: 0,
       recent_failures: 0,
       last_delivery: null,
-      status_distribution: Record<string, unknown>
+      status_distribution: {}
     };
   }
 

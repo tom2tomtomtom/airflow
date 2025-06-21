@@ -234,7 +234,6 @@ async function createAsset(req: NextApiRequest, res: NextApiResponse, context: R
 
   return successResponse(res, asset, 201, {
     requestId: context.requestId,
-    message: 'Asset created successfully',
     timestamp: new Date().toISOString()
   });
 }
@@ -281,7 +280,6 @@ async function updateAsset(req: NextApiRequest, res: NextApiResponse, context: R
   // Implementation for updating asset
   return successResponse(res, { updated: true }, 200, {
     requestId: context.requestId,
-    message: 'Asset updated successfully',
     timestamp: new Date().toISOString()
   });
 }
@@ -290,7 +288,6 @@ async function deleteAsset(req: NextApiRequest, res: NextApiResponse, context: R
   // Implementation for deleting asset
   return successResponse(res, { deleted: true }, 200, {
     requestId: context.requestId,
-    message: 'Asset deleted successfully',
     timestamp: new Date().toISOString()
   });
 }
@@ -304,7 +301,6 @@ async function handleUpload(req: NextApiRequest, res: NextApiResponse, context: 
   // Implementation for asset upload
   return successResponse(res, { uploaded: true }, 200, {
     requestId: context.requestId,
-    message: 'Asset uploaded successfully',
     timestamp: new Date().toISOString()
   });
 }
@@ -318,7 +314,6 @@ async function handleSearch(req: NextApiRequest, res: NextApiResponse, context: 
   // Implementation for asset search
   return successResponse(res, [], 200, {
     requestId: context.requestId,
-    message: 'Search completed',
     timestamp: new Date().toISOString()
   });
 }
@@ -332,7 +327,6 @@ async function handleBulk(req: NextApiRequest, res: NextApiResponse, context: Ro
   // Implementation for bulk operations
   return successResponse(res, { processed: 0 }, 200, {
     requestId: context.requestId,
-    message: 'Bulk operation completed',
     timestamp: new Date().toISOString()
   });
 }

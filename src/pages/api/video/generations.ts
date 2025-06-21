@@ -437,7 +437,7 @@ function getEmptySummary(): any {
   return {
     total_jobs: 0,
     total_generations: 0,
-    status_breakdown: Record<string, unknown>
+    status_breakdown: {},
     today_count: 0,
     weekly_count: 0,
     completion_rate: 0,

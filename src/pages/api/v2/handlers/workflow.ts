@@ -187,7 +187,6 @@ async function updateWorkflowState(req: NextApiRequest, res: NextApiResponse, co
     updatedAt: workflow.updated_at
   }, 200, {
     requestId: context.requestId,
-    message: 'Workflow state updated successfully',
     timestamp: new Date().toISOString()
   });
 }
@@ -211,8 +210,6 @@ async function deleteWorkflowState(req: NextApiRequest, res: NextApiResponse, co
 
   return successResponse(res, { deleted: true }, 200, {
     requestId: context.requestId,
-    workflowId,
-    message: 'Workflow session deleted successfully',
     timestamp: new Date().toISOString()
   });
 }
@@ -239,7 +236,6 @@ async function getWorkflowAssets(req: NextApiRequest, res: NextApiResponse, cont
   // Implementation similar to existing workflow assets API
   return successResponse(res, [], 200, {
     requestId: context.requestId,
-    message: 'Workflow assets retrieved',
     timestamp: new Date().toISOString()
   });
 }
@@ -248,7 +244,6 @@ async function selectWorkflowAssets(req: NextApiRequest, res: NextApiResponse, c
   // Implementation for selecting assets
   return successResponse(res, { success: true }, 200, {
     requestId: context.requestId,
-    message: 'Assets selected for workflow',
     timestamp: new Date().toISOString()
   });
 }
@@ -257,7 +252,6 @@ async function removeWorkflowAsset(req: NextApiRequest, res: NextApiResponse, co
   // Implementation for removing assets
   return successResponse(res, { success: true }, 200, {
     requestId: context.requestId,
-    message: 'Asset removed from workflow',
     timestamp: new Date().toISOString()
   });
 }
@@ -281,32 +275,31 @@ async function handleGenerateAssets(
   // Implementation for AI asset generation
   return successResponse(res, { generatedAssets: [] }, 200, {
     requestId: context.requestId,
-    message: 'AI assets generated successfully',
     timestamp: new Date().toISOString()
   });
 }
 
 // Placeholder implementations for other endpoints
 async function handleBrief(req: NextApiRequest, res: NextApiResponse, context: RouteContext) {
-  return successResponse(res, { success: true }, 200, { requestId: context.requestId });
+  return successResponse(res, { success: true }, 200, { requestId: context.requestId, timestamp: new Date().toISOString() });
 }
 
 async function handleMotivations(req: NextApiRequest, res: NextApiResponse, context: RouteContext) {
-  return successResponse(res, { success: true }, 200, { requestId: context.requestId });
+  return successResponse(res, { success: true }, 200, { requestId: context.requestId, timestamp: new Date().toISOString() });
 }
 
 async function handleCopy(req: NextApiRequest, res: NextApiResponse, context: RouteContext) {
-  return successResponse(res, { success: true }, 200, { requestId: context.requestId });
+  return successResponse(res, { success: true }, 200, { requestId: context.requestId, timestamp: new Date().toISOString() });
 }
 
 async function handleTemplates(req: NextApiRequest, res: NextApiResponse, context: RouteContext) {
-  return successResponse(res, { success: true }, 200, { requestId: context.requestId });
+  return successResponse(res, { success: true }, 200, { requestId: context.requestId, timestamp: new Date().toISOString() });
 }
 
 async function handleMatrix(req: NextApiRequest, res: NextApiResponse, context: RouteContext) {
-  return successResponse(res, { success: true }, 200, { requestId: context.requestId });
+  return successResponse(res, { success: true }, 200, { requestId: context.requestId, timestamp: new Date().toISOString() });
 }
 
 async function handleRender(req: NextApiRequest, res: NextApiResponse, context: RouteContext) {
-  return successResponse(res, { success: true }, 200, { requestId: context.requestId });
+  return successResponse(res, { success: true }, 200, { requestId: context.requestId, timestamp: new Date().toISOString() });
 }

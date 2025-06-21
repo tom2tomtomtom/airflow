@@ -89,23 +89,19 @@ export const MotivationSelectionStep: React.FC<MotivationSelectionStepProps> = (
           <Typography variant="h6" gutterBottom>
             Brief Summary
           </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
-              <Typography variant="body2" color="text.secondary">
-                <strong>Title:</strong> {briefData.title}
-              </Typography>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Typography variant="body2" color="text.secondary">
-                <strong>Industry:</strong> {briefData.industry || 'Not specified'}
-              </Typography>
-            </Grid>
-            <Grid item xs={12}>
+          <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' } }}>
+            <Typography variant="body2" color="text.secondary">
+              <strong>Title:</strong> {briefData.title}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              <strong>Industry:</strong> {briefData.industry || 'Not specified'}
+            </Typography>
+            <Box sx={{ gridColumn: { xs: '1', md: '1 / -1' } }}>
               <Typography variant="body2" color="text.secondary">
                 <strong>Objective:</strong> {typeof briefData.objective === 'string' ? briefData.objective : String(briefData.objective || '')}
               </Typography>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </Paper>
       )}
 
@@ -149,9 +145,9 @@ export const MotivationSelectionStep: React.FC<MotivationSelectionStepProps> = (
 
       {/* Motivations Grid */}
       {motivations.length > 0 && (
-        <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, mb: 4 }}>
           {motivations.map((motivation) => (
-            <Grid item xs={12} md={6} key={motivation.id}>
+            <Box key={motivation.id}>
               <Card
                 sx={{
                   cursor: 'pointer',
@@ -195,9 +191,9 @@ export const MotivationSelectionStep: React.FC<MotivationSelectionStepProps> = (
                   </Box>
                 </CardContent>
               </Card>
-            </Grid>
+            </Box>
           ))}
-        </Grid>
+        </Box>
       )}
 
       {/* Empty State */}

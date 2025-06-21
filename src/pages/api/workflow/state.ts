@@ -219,7 +219,6 @@ async function updateWorkflowState(
     };
 
     return successResponse(res, workflowState, 200, {
-      message: 'Workflow state updated successfully',
       timestamp: new Date().toISOString()
     });
 
@@ -258,8 +257,6 @@ async function deleteWorkflowState(
     }
 
     return successResponse(res, { deleted: true }, 200, {
-      workflowId,
-      message: 'Workflow session deleted successfully',
       timestamp: new Date().toISOString()
     });
 

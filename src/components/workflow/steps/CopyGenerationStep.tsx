@@ -177,9 +177,9 @@ export const CopyGenerationStep: React.FC<CopyGenerationStepProps> = ({
                 <Chip label={`${copies.length} variations`} size="small" />
               </Typography>
               
-              <Grid container spacing={2}>
+              <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr', lg: '1fr 1fr 1fr' } }}>
                 {copies.map((copy) => (
-                  <Grid item xs={12} md={6} lg={4} key={copy.id}>
+                  <Box key={copy.id}>
                     <Card
                       sx={{
                         cursor: 'pointer',
@@ -241,9 +241,9 @@ export const CopyGenerationStep: React.FC<CopyGenerationStepProps> = ({
                         </Box>
                       </CardContent>
                     </Card>
-                  </Grid>
+                  </Box>
                 ))}
-              </Grid>
+              </Box>
               
               {platform !== Object.keys(copyByPlatform)[Object.keys(copyByPlatform).length - 1] && (
                 <Divider sx={{ mt: 3 }} />

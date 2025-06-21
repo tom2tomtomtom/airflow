@@ -19,7 +19,7 @@ import {
   AutoAwesome as AIIcon,
   TrendingUp as StrategyIcon,
   Lightbulb as IdeaIcon,
-  Target as TargetIcon,
+  GpsFixed as TargetIcon,
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useNotification } from '@/contexts/NotificationContext';
@@ -212,3 +212,5 @@ const StrategyPage: React.FC = () => {
     </>
   );
 };
+
+export default StrategyPage;

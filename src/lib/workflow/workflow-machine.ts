@@ -58,27 +58,27 @@ const guards = {
 // Actions
 const actions = {
   setProcessing: assign<WorkflowMachineContext, WorkflowEvent>({
-    processing: (_, event) => 
-      event.type === 'UPLOAD_BRIEF' || 
-      event.type === 'GENERATE_MOTIVATIONS' || 
+    processing: (_, event) =>
+      event.type === 'UPLOAD_BRIEF' ||
+      event.type === 'GENERATE_MOTIVATIONS' ||
       event.type === 'GENERATE_COPY',
   }),
-  
+
   setBriefData: assign<WorkflowMachineContext, WorkflowEvent>({
-    briefData: (_, event) => 
+    briefData: (_, event) =>
       event.type === 'CONFIRM_BRIEF' ? event.briefData : null,
-    originalBriefData: (_, event) => 
+    originalBriefData: (_, event) =>
       event.type === 'CONFIRM_BRIEF' ? event.briefData : null,
     briefConfirmed: (_, event) => event.type === 'CONFIRM_BRIEF',
     showBriefReview: false,
   }),
-  
+
   setUploadedFile: assign<WorkflowMachineContext, WorkflowEvent>({
-    uploadedFile: (_, event) => 
+    uploadedFile: (_, event) =>
       event.type === 'UPLOAD_BRIEF' ? event.file : null,
     showBriefReview: true,
   }),
-  
+
   selectMotivation: assign<WorkflowMachineContext, WorkflowEvent>({
     motivations: (context, event) => {
       if (event.type === 'SELECT_MOTIVATION') {
@@ -89,7 +89,7 @@ const actions = {
       return context.motivations;
     },
   }),
-  
+
   selectCopy: assign<WorkflowMachineContext, WorkflowEvent>({
     copyVariations: (context, event) => {
       if (event.type === 'SELECT_COPY') {
@@ -100,7 +100,7 @@ const actions = {
       return context.copyVariations;
     },
   }),
-  
+
   selectAsset: assign<WorkflowMachineContext, WorkflowEvent>({
     selectedAssets: (context, event) => {
       if (event.type === 'SELECT_ASSET') {
@@ -114,34 +114,34 @@ const actions = {
       return context.selectedAssets;
     },
   }),
-  
+
   selectTemplate: assign<WorkflowMachineContext, WorkflowEvent>({
-    selectedTemplate: (_, event) => 
+    selectedTemplate: (_, event) =>
       event.type === 'SELECT_TEMPLATE' ? event.template : null,
   }),
-  
+
   nextStep: assign<WorkflowMachineContext, WorkflowEvent>({
     currentStep: (context) => Math.min(context.currentStep + 1, 6),
   }),
-  
+
   previousStep: assign<WorkflowMachineContext, WorkflowEvent>({
     currentStep: (context) => Math.max(context.currentStep - 1, 0),
   }),
-  
+
   goToStep: assign<WorkflowMachineContext, WorkflowEvent>({
-    currentStep: (_, event) => 
+    currentStep: (_, event) =>
       event.type === 'GO_TO_STEP' ? Math.max(0, Math.min(event.step, 6)) : 0,
   }),
-  
+
   setError: assign<WorkflowMachineContext, WorkflowEvent>({
-    lastError: (_, event) => 
+    lastError: (_, event) =>
       event.type === 'SET_ERROR' ? event.error : null,
   }),
-  
+
   clearError: assign<WorkflowMachineContext, WorkflowEvent>({
     lastError: null,
   }),
-  
+
   resetWorkflow: assign<WorkflowMachineContext, WorkflowEvent>(() => ({
     ...initialContext,
   })),

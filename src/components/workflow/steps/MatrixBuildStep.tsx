@@ -174,51 +174,43 @@ export const MatrixBuildStep: React.FC<MatrixBuildStepProps> = ({
           Matrix Overview
         </Typography>
         
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={3}>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="h3" color="primary">
-                {stats.total}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Total Combinations
-              </Typography>
-            </Box>
-          </Grid>
-          
-          <Grid item xs={12} md={3}>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="h3" color="success.main">
-                {stats.ready}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Ready to Render
-              </Typography>
-            </Box>
-          </Grid>
-          
-          <Grid item xs={12} md={3}>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="h3" color="info.main">
-                {stats.platforms}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Platforms
-              </Typography>
-            </Box>
-          </Grid>
-          
-          <Grid item xs={12} md={3}>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="h3" color="warning.main">
-                {selectedTemplate ? 1 : 0}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Template Selected
-              </Typography>
-            </Box>
-          </Grid>
-        </Grid>
+        <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr 1fr' } }}>
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" color="primary">
+              {stats.total}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Total Combinations
+            </Typography>
+          </Box>
+
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" color="success.main">
+              {stats.ready}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Ready to Render
+            </Typography>
+          </Box>
+
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" color="info.main">
+              {stats.platforms}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Platforms
+            </Typography>
+          </Box>
+
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" color="warning.main">
+              {selectedTemplate ? 1 : 0}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Template Selected
+            </Typography>
+          </Box>
+        </Box>
 
         {/* Selected Components Summary */}
         <Box sx={{ mt: 3 }}>

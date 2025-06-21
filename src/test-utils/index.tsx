@@ -29,7 +29,7 @@ export function render(ui: React.ReactElement, options = {}) {
 export const createMockRouter = (router = {}) => ({
   pathname: '/',
   route: '/',
-  query: Record<string, unknown>
+  query: {},
   asPath: '/',
   push: vi.fn(),
   replace: vi.fn(),

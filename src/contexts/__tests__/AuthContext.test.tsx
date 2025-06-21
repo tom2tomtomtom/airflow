@@ -53,7 +53,7 @@ describe('AuthContext', () => {
       id: '123',
       email: 'test@example.com',
       user_metadata: { full_name: 'Test User' },
-      app_metadata: Record<string, unknown>
+      app_metadata: {},
       aud: 'authenticated',
       created_at: '2023-01-01T00:00:00Z',
       confirmed_at: '2023-01-01T00:00:00Z',
@@ -124,7 +124,7 @@ describe('AuthContext', () => {
       id: '456',
       email: 'newuser@example.com',
       user_metadata: { full_name: 'New User' },
-      app_metadata: Record<string, unknown>
+      app_metadata: {},
       aud: 'authenticated',
       created_at: '2023-01-01T00:00:00Z',
       confirmed_at: '2023-01-01T00:00:00Z',
@@ -189,7 +189,7 @@ describe('AuthContext', () => {
       id: '789',
       email: 'existing@example.com',
       user_metadata: { full_name: 'Existing User' },
-      app_metadata: Record<string, unknown>
+      app_metadata: {},
       aud: 'authenticated',
       created_at: '2023-01-01T00:00:00Z',
       confirmed_at: '2023-01-01T00:00:00Z',

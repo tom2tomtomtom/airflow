@@ -364,7 +364,7 @@ function getEmptyWebhookStatistics() {
     successful_deliveries: 0,
     failed_deliveries: 0,
     success_rate: 0,
-    event_distribution: Record<string, unknown>
+    event_distribution: {}
   };
 }
 

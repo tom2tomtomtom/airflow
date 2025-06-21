@@ -77,9 +77,17 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
 
   // Convert BrowserAsset to WorkflowAsset
   const convertBrowserAssetToWorkflowAsset = (browserAsset: BrowserAsset): WorkflowAsset => {
+    // Map browser asset types to workflow asset types
+    let workflowType: 'image' | 'video' | 'template' | 'copy';
+    if (browserAsset.type === 'voice' || browserAsset.type === 'text') {
+      workflowType = 'copy';
+    } else {
+      workflowType = browserAsset.type as 'image' | 'video';
+    }
+
     return {
       id: browserAsset.id,
-      type: browserAsset.type === 'voice' ? 'copy' : browserAsset.type, // Map voice to copy for workflow
+      type: workflowType,
       url: browserAsset.url,
       content: browserAsset.type === 'text' ? browserAsset.description : undefined,
       metadata: {
@@ -149,8 +157,7 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
   const generateSmartPrompts = useCallback(() => {
     if (!briefData) return [];
 
-    const { state: workflowState } = useWorkflow();
-    const selectedMotivations = workflowState.motivations.filter(m => m.selected);
+    const selectedMotivations = state.motivations.filter(m => m.selected);
 
     const prompts = [];
 
@@ -232,9 +239,9 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
 
   // Render selected assets summary
   const renderSelectedAssets = () => (
-    <Grid container spacing={2}>
+    <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
       {selectedAssets.map((asset) => (
-        <Grid item xs={12} sm={6} md={4} key={asset.id}>
+        <Box key={asset.id}>
           <Card
             sx={{
               border: 1,
@@ -305,9 +312,9 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
               </Typography>
             </CardContent>
           </Card>
-        </Grid>
+        </Box>
       ))}
-    </Grid>
+    </Box>
   );
 
   return (
@@ -456,9 +463,9 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                   Click any suggestion to use it as a starting point for your image generation.
                 </Typography>
-                <Grid container spacing={2}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   {smartPrompts.map((suggestion, index) => (
-                    <Grid item xs={12} key={index}>
+                    <Box key={index}>
                       <Card
                         sx={{
                           cursor: 'pointer',
@@ -480,16 +487,23 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
                           </Typography>
                         </CardContent>
                       </Card>
-                    </Grid>
+                    </Box>
                   ))}
-                </Grid>
+                </Box>
               </Box>
             )}
 
             <AIImageGenerator
               clientId={clientId || undefined}
               onImageGenerated={handleAIImageGenerated}
-              brandGuidelines={briefData?.brandGuidelines}
+              brandGuidelines={typeof briefData?.brandGuidelines === 'string' ?
+                {
+                  voiceTone: briefData.brandGuidelines,
+                  targetAudience: '',
+                  keyMessages: []
+                } :
+                briefData?.brandGuidelines
+              }
             />
           </Box>
         </DialogContent>

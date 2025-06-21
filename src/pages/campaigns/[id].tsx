@@ -2,6 +2,6 @@ import React, { useState } from 'react'; import { useRouter } from 'next/router'
   // In a real app, you might fetch the campaign data here
   // For now, we'll rely on client-side data fetching
   return {
-    props: Record<string, unknown>
+    props: {}
   };
 }

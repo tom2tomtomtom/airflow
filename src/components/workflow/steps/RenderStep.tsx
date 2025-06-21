@@ -244,51 +244,43 @@ export const RenderStep: React.FC<RenderStepProps> = ({
           Rendering Progress
         </Typography>
         
-        <Grid container spacing={3} sx={{ mb: 3 }}>
-          <Grid item xs={6} md={3}>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="h3" color="success.main">
-                {stats.completed}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Completed
-              </Typography>
-            </Box>
-          </Grid>
-          
-          <Grid item xs={6} md={3}>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="h3" color="primary.main">
-                {stats.rendering}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Rendering
-              </Typography>
-            </Box>
-          </Grid>
-          
-          <Grid item xs={6} md={3}>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="h3" color="grey.500">
-                {stats.pending}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Pending
-              </Typography>
-            </Box>
-          </Grid>
-          
-          <Grid item xs={6} md={3}>
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="h3" color="error.main">
-                {stats.failed}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Failed
-              </Typography>
-            </Box>
-          </Grid>
-        </Grid>
+        <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr 1fr', md: '1fr 1fr 1fr 1fr' }, mb: 3 }}>
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" color="success.main">
+              {stats.completed}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Completed
+            </Typography>
+          </Box>
+
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" color="primary.main">
+              {stats.rendering}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Rendering
+            </Typography>
+          </Box>
+
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" color="grey.500">
+              {stats.pending}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Pending
+            </Typography>
+          </Box>
+
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="h3" color="error.main">
+              {stats.failed}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Failed
+            </Typography>
+          </Box>
+        </Box>
 
         {/* Overall Progress */}
         {isRendering && (

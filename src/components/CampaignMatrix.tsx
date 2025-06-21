@@ -150,7 +150,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
       id: `row-${Date.now()}`,
       name: `Variation ${rows.length + 1}`,
       locked: false,
-      cells: Record<string, unknown>
+      cells: {}
     };
 
     // Initialize cells for all fields

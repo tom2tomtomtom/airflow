@@ -138,41 +138,35 @@ const BriefUploadStepComponent: React.FC<BriefUploadStepProps> = ({
           Please review the parsed content and make any necessary edits before proceeding.
         </Typography>
 
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Title"
-              variant="outlined"
-              value={briefData.title || ''}
-              onChange={(e) => handleFieldChange('title', e.target.value)}
-              placeholder="Campaign title"
-            />
-          </Grid>
+        <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' } }}>
+          <TextField
+            fullWidth
+            label="Title"
+            variant="outlined"
+            value={briefData.title || ''}
+            onChange={(e) => handleFieldChange('title', e.target.value)}
+            placeholder="Campaign title"
+          />
 
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Industry"
-              variant="outlined"
-              value={briefData.industry || ''}
-              onChange={(e) => handleFieldChange('industry', e.target.value)}
-              placeholder="e.g., Technology, Healthcare, Retail"
-            />
-          </Grid>
+          <TextField
+            fullWidth
+            label="Industry"
+            variant="outlined"
+            value={briefData.industry || ''}
+            onChange={(e) => handleFieldChange('industry', e.target.value)}
+            placeholder="e.g., Technology, Healthcare, Retail"
+          />
 
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Product/Service"
-              variant="outlined"
-              value={briefData.product || briefData.service || ''}
-              onChange={(e) => handleFieldChange('product', e.target.value)}
-              placeholder="Describe your product or service"
-            />
-          </Grid>
+          <TextField
+            fullWidth
+            label="Product/Service"
+            variant="outlined"
+            value={briefData.product || briefData.service || ''}
+            onChange={(e) => handleFieldChange('product', e.target.value)}
+            placeholder="Describe your product or service"
+          />
 
-          <Grid item xs={12}>
+          <Box sx={{ gridColumn: { xs: '1', md: '1 / -1' } }}>
             <TextField
               fullWidth
               label="Objective"
@@ -183,56 +177,48 @@ const BriefUploadStepComponent: React.FC<BriefUploadStepProps> = ({
               onChange={(e) => handleFieldChange('objective', e.target.value)}
               placeholder="Describe the main objective of your campaign..."
             />
-          </Grid>
+          </Box>
 
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Target Audience"
-              multiline
-              rows={4}
-              variant="outlined"
-              value={typeof briefData.targetAudience === 'string' ? briefData.targetAudience : String(briefData.targetAudience || '')}
-              onChange={(e) => handleFieldChange('targetAudience', e.target.value)}
-              placeholder="Describe your target audience in detail..."
-            />
-          </Grid>
+          <TextField
+            fullWidth
+            label="Target Audience"
+            multiline
+            rows={4}
+            variant="outlined"
+            value={typeof briefData.targetAudience === 'string' ? briefData.targetAudience : String(briefData.targetAudience || '')}
+            onChange={(e) => handleFieldChange('targetAudience', e.target.value)}
+            placeholder="Describe your target audience in detail..."
+          />
 
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Value Proposition"
-              multiline
-              rows={4}
-              variant="outlined"
-              value={typeof briefData.valueProposition === 'string' ? briefData.valueProposition || '' : String(briefData.valueProposition || '')}
-              onChange={(e) => handleFieldChange('valueProposition', e.target.value)}
-              placeholder="What unique value does your product/service offer?"
-            />
-          </Grid>
+          <TextField
+            fullWidth
+            label="Value Proposition"
+            multiline
+            rows={4}
+            variant="outlined"
+            value={typeof briefData.valueProposition === 'string' ? briefData.valueProposition || '' : String(briefData.valueProposition || '')}
+            onChange={(e) => handleFieldChange('valueProposition', e.target.value)}
+            placeholder="What unique value does your product/service offer?"
+          />
 
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Budget"
-              variant="outlined"
-              value={briefData.budget || ''}
-              onChange={(e) => handleFieldChange('budget', e.target.value)}
-              placeholder="e.g., $50,000 or TBD"
-            />
-          </Grid>
+          <TextField
+            fullWidth
+            label="Budget"
+            variant="outlined"
+            value={briefData.budget || ''}
+            onChange={(e) => handleFieldChange('budget', e.target.value)}
+            placeholder="e.g., $50,000 or TBD"
+          />
 
-          <Grid item xs={12} md={6}>
-            <TextField
-              fullWidth
-              label="Timeline"
-              variant="outlined"
-              value={briefData.timeline || ''}
-              onChange={(e) => handleFieldChange('timeline', e.target.value)}
-              placeholder="e.g., 3 months or Q1 2024"
-            />
-          </Grid>
-        </Grid>
+          <TextField
+            fullWidth
+            label="Timeline"
+            variant="outlined"
+            value={briefData.timeline || ''}
+            onChange={(e) => handleFieldChange('timeline', e.target.value)}
+            placeholder="e.g., 3 months or Q1 2024"
+          />
+        </Box>
 
         <Box sx={{ mt: 4, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
           <Button

@@ -321,6 +321,7 @@ const ExecutePage: React.FC = () => {
       const interval = setInterval(loadExecutionData, refreshInterval * 1000);
       return () => clearInterval(interval);
     }
+    return undefined;
   }, [refreshInterval, activeClient]);
 
   return (

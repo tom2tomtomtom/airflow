@@ -8,7 +8,6 @@ import {
   CardContent,
   Typography,
   LinearProgress,
-  Grid,
   Chip,
   Alert,
   IconButton,
@@ -204,45 +203,43 @@ export const AICostMonitor: React.FC<CostMonitorProps> = ({
         </Box>
 
         {/* Service Breakdown */}
-        <Grid container spacing={2}>
+        <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
           {Object.entries(stats).map(([service, data]) => (
-            <Grid item xs={12} sm={6} md={4} key={service}>
-              <Paper sx={{ p: 2, bgcolor: 'background.default' }}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-                  <Typography variant="subtitle2" textTransform="capitalize">
-                    {service}
-                  </Typography>
-                  <Chip
-                    label={`${data.percentUsed.toFixed(0)}%`}
-                    size="small"
-                    color={getUsageColor(data.percentUsed)}
-                  />
-                </Box>
-                <LinearProgress
-                  variant="determinate"
-                  value={Math.min(data.percentUsed, 100)}
+            <Paper key={service} sx={{ p: 2, bgcolor: 'background.default' }}>
+              <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+                <Typography variant="subtitle2" textTransform="capitalize">
+                  {service}
+                </Typography>
+                <Chip
+                  label={`${data.percentUsed.toFixed(0)}%`}
+                  size="small"
                   color={getUsageColor(data.percentUsed)}
-                  sx={{ mb: 1, height: 6, borderRadius: 1 }}
                 />
-                <Box display="flex" justifyContent="space-between">
-                  <Typography variant="caption" color="text.secondary">
-                    {formatCurrency(data.usage.totalCost)}
+              </Box>
+              <LinearProgress
+                variant="determinate"
+                value={Math.min(data.percentUsed, 100)}
+                color={getUsageColor(data.percentUsed)}
+                sx={{ mb: 1, height: 6, borderRadius: 1 }}
+              />
+              <Box display="flex" justifyContent="space-between">
+                <Typography variant="caption" color="text.secondary">
+                  {formatCurrency(data.usage.totalCost)}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {formatCurrency(data.budget)}
+                </Typography>
+              </Box>
+              {data.projectedTotal > data.budget && (
+                <Alert severity="warning" sx={{ mt: 1, py: 0 }}>
+                  <Typography variant="caption">
+                    Projected: {formatCurrency(data.projectedTotal)}
                   </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {formatCurrency(data.budget)}
-                  </Typography>
-                </Box>
-                {data.projectedTotal > data.budget && (
-                  <Alert severity="warning" sx={{ mt: 1, py: 0 }}>
-                    <Typography variant="caption">
-                      Projected: {formatCurrency(data.projectedTotal)}
-                    </Typography>
-                  </Alert>
-                )}
-              </Paper>
-            </Grid>
+                </Alert>
+              )}
+            </Paper>
           ))}
-        </Grid>
+        </Box>
 
         {/* Detailed Breakdown */}
         <Collapse in={expanded}>

@@ -203,7 +203,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         lastModified: new Date().toISOString(),
         createdBy: user?.id || 'user-1',
         version: 1,
-        metadata: Record<string, unknown>
+        metadata: {}
       };
 
       const updatedClients = [...clients, newClient];

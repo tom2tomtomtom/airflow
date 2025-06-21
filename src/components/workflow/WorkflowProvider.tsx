@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useCallback, useMemo, ReactNode } from 'react';
 import { useNotification } from '@/contexts/NotificationContext';
 import { useCSRF } from '@/hooks/useCSRF';
 import { useClient } from '@/contexts/ClientContext';
@@ -17,6 +17,33 @@ import {
   estimateTokensForCopy,
 } from '@/utils/ai-cost-estimation';
 import { WorkflowErrorBoundary } from './ErrorBoundary';
+// Simple performance tracker for workflow operations
+class SimplePerformanceTracker {
+  private static instance: SimplePerformanceTracker;
+  private operations: Map<string, number> = new Map();
+
+  static getInstance() {
+    if (!SimplePerformanceTracker.instance) {
+      SimplePerformanceTracker.instance = new SimplePerformanceTracker();
+    }
+    return SimplePerformanceTracker.instance;
+  }
+
+  startOperation(name: string) {
+    const startTime = Date.now();
+    return {
+      end: () => {
+        const duration = Date.now() - startTime;
+        this.operations.set(name, duration);
+        console.log(`[Performance] ${name}: ${duration}ms`);
+      }
+    };
+  }
+
+  recordMetric(name: string, value: number) {
+    this.operations.set(name, value);
+  }
+}
 
 // Initial state
 const initialState: WorkflowState = {
@@ -135,7 +162,7 @@ function workflowReducer(state: WorkflowState, action: WorkflowAction): Workflow
 }
 
 // Context
-const WorkflowContext = createContext<WorkflowContext | null>(null);
+const WorkflowContextProvider = createContext<WorkflowContext | null>(null);
 
 // Provider component
 interface WorkflowProviderProps {
@@ -153,6 +180,9 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({
 
   const { showNotification } = useNotification();
   const { makeCSRFRequest } = useCSRF();
+
+  // Initialize performance tracker
+  const performanceTracker = useMemo(() => SimplePerformanceTracker.getInstance(), []);
 
   // Navigation actions
   const nextStep = useCallback(() => {
@@ -174,7 +204,7 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({
   }, []);
 
   // Enhanced error handling wrapper
-  const withErrorHandling = useCallback(<T>(
+  const withErrorHandling = useCallback(<T extends any>(
     operation: () => Promise<T>,
     context: string,
     fallback?: () => void
@@ -219,49 +249,59 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({
     };
   }, [showNotification]);
 
-  // Brief handling actions with enhanced error handling
+  // Brief handling actions with enhanced error handling and performance tracking
   const uploadBrief = useCallback(async (file: File) => {
-    dispatch({ type: 'SET_PROCESSING', processing: true });
-    dispatch({ type: 'SET_UPLOADED_FILE', file });
+    const operation = performanceTracker.startOperation('workflow_upload_brief');
 
-    const operation = async () => {
-      const formData = new FormData();
-      formData.append('file', file);
+    try {
+      dispatch({ type: 'SET_PROCESSING', processing: true });
+      dispatch({ type: 'SET_UPLOADED_FILE', file });
 
-      const response = await makeCSRFRequest('/api/flow/parse-brief', {
-        method: 'POST',
-        body: formData,
-      });
+      const briefOperation = async () => {
+        const formData = new FormData();
+        formData.append('file', file);
 
-      if (!response.ok) {
-        throw new Error(`API returned ${response.status}: ${response.statusText}`);
-      }
-
-      const result = await response.json();
-
-      if (result.success) {
-        dispatch({
-          type: 'SET_BRIEF_DATA',
-          briefData: result.data,
-          originalBriefData: result.data,
+        const response = await makeCSRFRequest('/api/flow/parse-brief', {
+          method: 'POST',
+          body: formData,
         });
-        dispatch({ type: 'SET_SHOW_BRIEF_REVIEW', show: true });
-        showNotification('Brief processed successfully! Please review and edit the parsed content.', 'success');
-        return result.data;
-      } else {
-        throw new Error(result.message || 'Failed to parse brief');
-      }
-    };
 
-    const fallback = () => {
-      dispatch({ type: 'SET_UPLOADED_FILE', file: null });
-    };
+        if (!response.ok) {
+          throw new Error(`API returned ${response.status}: ${response.statusText}`);
+        }
 
-    const result = await withErrorHandling(operation, 'Brief Upload', fallback)();
+        const result = await response.json();
 
-    dispatch({ type: 'SET_PROCESSING', processing: false });
-    return result;
-  }, [makeCSRFRequest, showNotification, withErrorHandling]);
+        if (result.success) {
+          dispatch({
+            type: 'SET_BRIEF_DATA',
+            briefData: result.data,
+            originalBriefData: result.data,
+          });
+          dispatch({ type: 'SET_SHOW_BRIEF_REVIEW', show: true });
+          showNotification('Brief processed successfully! Please review and edit the parsed content.', 'success');
+
+          // Track successful brief upload
+          performanceTracker.recordMetric('workflow_brief_upload_success', 1);
+
+          return result.data;
+        } else {
+          throw new Error(result.message || 'Failed to parse brief');
+        }
+      };
+
+      const fallback = () => {
+        dispatch({ type: 'SET_UPLOADED_FILE', file: null });
+        performanceTracker.recordMetric('workflow_brief_upload_fallback', 1);
+      };
+
+      const result = await withErrorHandling(briefOperation, 'Brief Upload', fallback)();
+      return result;
+    } finally {
+      dispatch({ type: 'SET_PROCESSING', processing: false });
+      operation.end();
+    }
+  }, [makeCSRFRequest, showNotification, withErrorHandling, performanceTracker]);
 
   const confirmBrief = useCallback((briefData: BriefData) => {
     dispatch({ type: 'SET_BRIEF_DATA', briefData, originalBriefData: state.originalBriefData! });
@@ -280,78 +320,91 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({
     }
   }, [state.originalBriefData]);
 
-  // Motivation actions with enhanced error handling
+  // Motivation actions with enhanced error handling and performance tracking
   const generateMotivations = useCallback(async () => {
     if (!state.briefData) {
       showNotification('Brief data is required to generate motivations', 'error');
       return;
     }
 
-    dispatch({ type: 'SET_PROCESSING', processing: true });
+    const operation = performanceTracker.startOperation('workflow_generate_motivations');
 
-    const operation = async () => {
-      // Pre-flight cost check
-      const estimatedTokens = estimateTokensForMotivations(state.briefData!);
-      const costCheck = await fetch('/api/ai/cost-check', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          service: 'openai',
-          model: 'gpt-4o-mini',
-          estimatedTokens,
-          operation: 'generate-motivations'
-        })
-      });
+    try {
+      dispatch({ type: 'SET_PROCESSING', processing: true });
 
-      const { allowed, reason, fallbackModel, budgetRemaining } = await costCheck.json();
+      const motivationOperation = async () => {
+        // Pre-flight cost check
+        const estimatedTokens = estimateTokensForMotivations(state.briefData!);
+        const costCheck = await fetch('/api/ai/cost-check', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            service: 'openai',
+            model: 'gpt-4o-mini',
+            estimatedTokens,
+            operation: 'generate-motivations'
+          })
+        });
 
-      if (!allowed) {
-        throw new Error(`Budget limit reached: ${reason}`);
-      }
+        const { allowed, reason, fallbackModel, budgetRemaining } = await costCheck.json();
 
-      if (fallbackModel) {
-        showNotification(`Using ${fallbackModel} to stay within budget ($${budgetRemaining?.toFixed(2)} remaining)`, 'info');
-      }
+        if (!allowed) {
+          performanceTracker.recordMetric('workflow_motivation_budget_blocked', 1);
+          throw new Error(`Budget limit reached: ${reason}`);
+        }
 
-      const response = await makeCSRFRequest('/api/flow/generate-motivations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          briefData: state.briefData,
-          model: fallbackModel || 'gpt-4o-mini',
-          budgetAware: true
-        }),
-      });
+        if (fallbackModel) {
+          showNotification(`Using ${fallbackModel} to stay within budget ($${budgetRemaining?.toFixed(2)} remaining)`, 'info');
+          performanceTracker.recordMetric('workflow_motivation_fallback_model', 1);
+        }
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: Failed to generate motivations`);
-      }
+        const response = await makeCSRFRequest('/api/flow/generate-motivations', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            briefData: state.briefData,
+            model: fallbackModel || 'gpt-4o-mini',
+            budgetAware: true
+          }),
+        });
 
-      const result = await response.json();
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: Failed to generate motivations`);
+        }
 
-      if (result.success) {
-        const motivationsWithSelection = result.data.map((motivation: any) => ({
-          ...motivation,
-          selected: false
-        }));
+        const result = await response.json();
 
-        dispatch({ type: 'SET_MOTIVATIONS', motivations: motivationsWithSelection });
-        showNotification(`Generated ${result.data.length} motivations!`, 'success');
-        return result.data;
-      } else {
-        throw new Error(result.message || 'Failed to generate motivations');
-      }
-    };
+        if (result.success) {
+          const motivationsWithSelection = result.data.map((motivation: any) => ({
+            ...motivation,
+            selected: false
+          }));
 
-    const fallback = () => {
-      // Provide manual motivation entry option
-      showNotification('You can manually enter motivations or try again later', 'info');
-    };
+          dispatch({ type: 'SET_MOTIVATIONS', motivations: motivationsWithSelection });
+          showNotification(`Generated ${result.data.length} motivations!`, 'success');
 
-    const result = await withErrorHandling(operation, 'Motivation Generation', fallback)();
-    dispatch({ type: 'SET_PROCESSING', processing: false });
-    return result;
-  }, [state.briefData, makeCSRFRequest, showNotification, withErrorHandling]);
+          // Track successful motivation generation
+          performanceTracker.recordMetric('workflow_motivations_generated', result.data.length);
+
+          return result.data;
+        } else {
+          throw new Error(result.message || 'Failed to generate motivations');
+        }
+      };
+
+      const fallback = () => {
+        // Provide manual motivation entry option
+        showNotification('You can manually enter motivations or try again later', 'info');
+        performanceTracker.recordMetric('workflow_motivation_fallback', 1);
+      };
+
+      const result = await withErrorHandling(motivationOperation, 'Motivation Generation', fallback)();
+      return result;
+    } finally {
+      dispatch({ type: 'SET_PROCESSING', processing: false });
+      operation.end();
+    }
+  }, [state.briefData, makeCSRFRequest, showNotification, withErrorHandling, performanceTracker]);
 
   const selectMotivation = useCallback((id: string) => {
     dispatch({ type: 'TOGGLE_MOTIVATION', id });
@@ -510,7 +563,8 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({
     dispatch({ type: 'RESET_WORKFLOW' });
   }, []);
 
-  const actions: WorkflowActions = {
+  // Memoize actions object to prevent unnecessary re-renders
+  const actions: WorkflowActions = useMemo(() => ({
     nextStep,
     previousStep,
     goToStep,
@@ -528,25 +582,44 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({
     clearError,
     setError,
     resetWorkflow,
-  };
+  }), [
+    nextStep,
+    previousStep,
+    goToStep,
+    uploadBrief,
+    confirmBrief,
+    resetBrief,
+    generateMotivations,
+    selectMotivation,
+    generateCopy,
+    selectCopy,
+    storeCopyVariations,
+    selectAsset,
+    removeAsset,
+    selectTemplate,
+    clearError,
+    setError,
+    resetWorkflow,
+  ]);
 
-  const contextValue: WorkflowContext = {
+  // Memoize context value to prevent unnecessary re-renders
+  const contextValue: WorkflowContext = useMemo(() => ({
     state,
     actions,
-  };
+  }), [state, actions]);
 
   return (
     <WorkflowErrorBoundary context="WorkflowProvider" showDetails={process.env.NODE_ENV === 'development'}>
-      <WorkflowContext.Provider value={contextValue}>
+      <WorkflowContextProvider.Provider value={contextValue}>
         {children}
-      </WorkflowContext.Provider>
+      </WorkflowContextProvider.Provider>
     </WorkflowErrorBoundary>
   );
 };
 
 // Hook to use workflow context
 export const useWorkflow = (): WorkflowContext => {
-  const context = useContext(WorkflowContext);
+  const context = useContext(WorkflowContextProvider);
   if (!context) {
     throw new Error('useWorkflow must be used within a WorkflowProvider');
   }
