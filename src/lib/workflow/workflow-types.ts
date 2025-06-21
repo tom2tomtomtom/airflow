@@ -1,6 +1,16 @@
 // Shared types for the AIRWAVE workflow system
 
-export interface WorkflowStep {
+export enum WorkflowStep {
+  BRIEF_UPLOAD = 0,
+  MOTIVATION_SELECTION = 1,
+  COPY_GENERATION = 2,
+  ASSET_SELECTION = 3,
+  TEMPLATE_SELECTION = 4,
+  MATRIX_BUILD = 5,
+  RENDERING = 6,
+}
+
+export interface WorkflowStepInfo {
   id: string;
   label: string;
   description: string;
@@ -181,4 +191,199 @@ export interface CostCheckResponse {
     totalSpent: number;
     monthlyLimit: number;
   };
+}
+
+// Utility functions for workflow types
+
+/**
+ * Type guard to check if an object is valid BriefData
+ */
+export function isValidBriefData(data: any): data is BriefData {
+  if (!data || typeof data !== 'object') return false;
+
+  const required = ['title', 'objective', 'targetAudience', 'keyMessages', 'platforms', 'budget', 'timeline'];
+
+  for (const field of required) {
+    if (!data[field]) return false;
+    if (typeof data[field] === 'string' && data[field].trim() === '') return false;
+    if (Array.isArray(data[field]) && data[field].length === 0) return false;
+  }
+
+  return true;
+}
+
+/**
+ * Type guard to check if an object is valid Motivation
+ */
+export function isValidMotivation(data: any): data is Motivation {
+  if (!data || typeof data !== 'object') return false;
+
+  return (
+    typeof data.id === 'string' &&
+    typeof data.title === 'string' &&
+    typeof data.description === 'string' &&
+    typeof data.score === 'number' &&
+    data.score >= 0 &&
+    data.score <= 1 &&
+    typeof data.selected === 'boolean'
+  );
+}
+
+/**
+ * Type guard to check if an object is valid CopyVariation
+ */
+export function isValidCopyVariation(data: any): data is CopyVariation {
+  if (!data || typeof data !== 'object') return false;
+
+  return (
+    typeof data.id === 'string' &&
+    typeof data.text === 'string' &&
+    data.text.trim() !== '' &&
+    typeof data.platform === 'string' &&
+    typeof data.selected === 'boolean'
+  );
+}
+
+/**
+ * Type guard to check if an object is valid Asset
+ */
+export function isValidAsset(data: any): data is Asset {
+  if (!data || typeof data !== 'object') return false;
+
+  const validTypes = ['image', 'video', 'copy', 'template'];
+
+  return (
+    typeof data.id === 'string' &&
+    validTypes.includes(data.type) &&
+    typeof data.selected === 'boolean' &&
+    (data.url ? isValidUrl(data.url) : true)
+  );
+}
+
+/**
+ * Type guard to check if an object is valid Template
+ */
+export function isValidTemplate(data: any): data is Template {
+  if (!data || typeof data !== 'object') return false;
+
+  return (
+    typeof data.id === 'string' &&
+    typeof data.name === 'string' &&
+    data.name.trim() !== '' &&
+    typeof data.description === 'string' &&
+    typeof data.category === 'string' &&
+    typeof data.selected === 'boolean'
+  );
+}
+
+/**
+ * Helper function to validate URLs
+ */
+function isValidUrl(url: string): boolean {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Create initial workflow context
+ */
+export function createInitialContext(clientId?: string): WorkflowMachineContext {
+  return {
+    currentStep: 0,
+    briefData: null,
+    originalBriefData: null,
+    motivations: [],
+    copyVariations: [],
+    selectedAssets: [],
+    selectedTemplate: null,
+    processing: false,
+    uploadedFile: null,
+    showBriefReview: false,
+    briefConfirmed: false,
+    lastError: null,
+    clientId: clientId || null,
+  };
+}
+
+/**
+ * Get human-readable step name
+ */
+export function getStepName(step: WorkflowStep): string {
+  switch (step) {
+    case WorkflowStep.BRIEF_UPLOAD:
+      return 'Brief Upload';
+    case WorkflowStep.MOTIVATION_SELECTION:
+      return 'Motivation Selection';
+    case WorkflowStep.COPY_GENERATION:
+      return 'Copy Generation';
+    case WorkflowStep.ASSET_SELECTION:
+      return 'Asset Selection';
+    case WorkflowStep.TEMPLATE_SELECTION:
+      return 'Template Selection';
+    case WorkflowStep.MATRIX_BUILD:
+      return 'Matrix Build';
+    case WorkflowStep.RENDERING:
+      return 'Rendering';
+    default:
+      return 'Unknown Step';
+  }
+}
+
+/**
+ * Get next workflow step
+ */
+export function getNextStep(currentStep: WorkflowStep): WorkflowStep | null {
+  if (currentStep < 0 || currentStep > WorkflowStep.RENDERING) {
+    return null;
+  }
+  if (currentStep < WorkflowStep.RENDERING) {
+    return currentStep + 1;
+  }
+  return null;
+}
+
+/**
+ * Get previous workflow step
+ */
+export function getPreviousStep(currentStep: WorkflowStep): WorkflowStep | null {
+  if (currentStep < 0 || currentStep > WorkflowStep.RENDERING) {
+    return null;
+  }
+  if (currentStep > WorkflowStep.BRIEF_UPLOAD) {
+    return currentStep - 1;
+  }
+  return null;
+}
+
+/**
+ * Check if workflow can proceed to a specific step
+ */
+export function canProceedToStep(context: WorkflowMachineContext, targetStep: WorkflowStep): boolean {
+  switch (targetStep) {
+    case WorkflowStep.BRIEF_UPLOAD:
+      return true;
+    case WorkflowStep.MOTIVATION_SELECTION:
+      return context.briefData !== null && context.briefConfirmed;
+    case WorkflowStep.COPY_GENERATION:
+      return context.motivations.some(m => m.selected);
+    case WorkflowStep.ASSET_SELECTION:
+      return context.copyVariations.some(c => c.selected);
+    case WorkflowStep.TEMPLATE_SELECTION:
+      return context.selectedAssets.length > 0;
+    case WorkflowStep.MATRIX_BUILD:
+      return context.selectedTemplate !== null;
+    case WorkflowStep.RENDERING:
+      return (
+        context.selectedTemplate !== null &&
+        context.motivations.some(m => m.selected) &&
+        context.copyVariations.some(c => c.selected) &&
+        context.selectedAssets.length > 0
+      );
+    default:
+      return false;
+  }
 }

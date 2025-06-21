@@ -65,25 +65,33 @@ describe('UnifiedBriefWorkflow State Management', () => {
     );
   };
 
-  test('should initialize with empty state when no saved state exists', () => {
+  test('should initialize with empty state when no saved state exists', async () => {
     renderWorkflow();
 
-    // Should render the first step (upload brief)
-    expect(screen.getByText('Drag & drop your brief document')).toBeInTheDocument();
+    // Should render the workflow dialog with new title
+    expect(screen.getByText('AIRWAVE Campaign Builder')).toBeInTheDocument();
+    // Should render the upload step label
+    expect(screen.getByText('Upload Brief')).toBeInTheDocument();
+    // Wait for lazy-loaded component to render and check for unique text
+    await waitFor(() => {
+      expect(screen.getByText('Start by uploading your campaign brief. Our AI will parse the content and extract key information.')).toBeInTheDocument();
+    });
   });
 
   test('should restore state from sessionStorage when available', () => {
     renderWorkflow();
 
-    // Should render the workflow dialog
-    expect(screen.getByText('Brief to Execution Workflow')).toBeInTheDocument();
+    // Should render the workflow dialog with new title
+    expect(screen.getByText('AIRWAVE Campaign Builder')).toBeInTheDocument();
+    // Should render the upload step
+    expect(screen.getByText('Upload Brief')).toBeInTheDocument();
   });
 
   test('should save state to sessionStorage when state changes', async () => {
     renderWorkflow();
 
-    // Component should render without errors
-    expect(screen.getByText('Brief to Execution Workflow')).toBeInTheDocument();
+    // Component should render without errors with new title
+    expect(screen.getByText('AIRWAVE Campaign Builder')).toBeInTheDocument();
   });
 
   test('should prevent multiple initializations', () => {
@@ -129,8 +137,8 @@ describe('UnifiedBriefWorkflow State Management', () => {
   test('should maintain component instance across re-renders', () => {
     const { rerender } = renderWorkflow();
 
-    // Component should render initially
-    expect(screen.getByText('Brief to Execution Workflow')).toBeInTheDocument();
+    // Component should render initially with new title
+    expect(screen.getByText('AIRWAVE Campaign Builder')).toBeInTheDocument();
 
     rerender(
       <MockNotificationProvider>
@@ -138,7 +146,7 @@ describe('UnifiedBriefWorkflow State Management', () => {
       </MockNotificationProvider>
     );
 
-    // Should still render after re-render
-    expect(screen.getByText('Brief to Execution Workflow')).toBeInTheDocument();
+    // Should still render after re-render with new title
+    expect(screen.getByText('AIRWAVE Campaign Builder')).toBeInTheDocument();
   });
 });

@@ -58,11 +58,77 @@ export function isValidEmail(email: string): boolean {
  */
 export function isValidUrl(url: string): boolean {
   try {
-    new URL(url);
+    const urlObj = new URL(url);
+    // Reject javascript: protocol for security
+    if (urlObj.protocol === 'javascript:') {
+      return false;
+    }
     return true;
   } catch {
     return false;
   }
+}
+
+/**
+ * Validate file type by extension
+ */
+export function validateFileType(filename: string, allowedTypes: string[]): boolean {
+  if (!filename) return false;
+  const extension = filename.split('.').pop()?.toLowerCase();
+  if (!extension) return false;
+  return allowedTypes.includes(extension);
+}
+
+/**
+ * Validate file size
+ */
+export function validateFileSize(sizeInBytes: number, maxSizeMB: number): boolean {
+  const maxSizeBytes = maxSizeMB * 1024 * 1024;
+  return sizeInBytes <= maxSizeBytes;
+}
+
+/**
+ * Sanitize input (uses HTML sanitization for dangerous content)
+ */
+export function sanitizeInput(input: string | null | undefined): string {
+  if (!input) return '';
+  return sanitizeHtml(input);
+}
+
+/**
+ * Validate URL (stricter than isValidUrl - only allows http/https)
+ */
+export function validateURL(url: string): boolean {
+  try {
+    const urlObj = new URL(url);
+    // Only allow http and https protocols
+    return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Validate email (alias for isValidEmail for backward compatibility)
+ */
+export function validateEmail(email: string): boolean {
+  return isValidEmail(email);
+}
+
+/**
+ * Validate password strength
+ */
+export function validatePassword(password: string): boolean {
+  // At least 8 characters, one uppercase, one lowercase, one digit, one special char
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  return passwordRegex.test(password);
+}
+
+/**
+ * Validate required field
+ */
+export function validateRequired(value: any): boolean {
+  return value !== undefined && value !== null && value !== '';
 }
 
 /**

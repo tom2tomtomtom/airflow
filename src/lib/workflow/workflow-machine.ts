@@ -28,28 +28,29 @@ const initialContext: WorkflowMachineContext = {
 
 // Guards
 const guards = {
-  hasBriefData: (context: WorkflowMachineContext) => context.briefData !== null,
+  hasBriefData: (context: WorkflowMachineContext, event: WorkflowEvent) =>
+    event.type === 'CONFIRM_BRIEF' && event.briefData !== null,
   briefIsConfirmed: (context: WorkflowMachineContext) => context.briefConfirmed,
-  hasSelectedMotivations: (context: WorkflowMachineContext) => 
+  hasSelectedMotivations: (context: WorkflowMachineContext) =>
     context.motivations.some(m => m.selected),
-  hasSelectedCopy: (context: WorkflowMachineContext) => 
+  hasSelectedCopy: (context: WorkflowMachineContext) =>
     context.copyVariations.some(c => c.selected),
-  hasSelectedAssets: (context: WorkflowMachineContext) => 
+  hasSelectedAssets: (context: WorkflowMachineContext) =>
     context.selectedAssets.length > 0,
-  hasSelectedTemplate: (context: WorkflowMachineContext) => 
+  hasSelectedTemplate: (context: WorkflowMachineContext) =>
     context.selectedTemplate !== null,
-  canProceedToMotivations: (context: WorkflowMachineContext) => 
+  canProceedToMotivations: (context: WorkflowMachineContext) =>
     context.briefData !== null && context.briefConfirmed,
-  canProceedToCopy: (context: WorkflowMachineContext) => 
+  canProceedToCopy: (context: WorkflowMachineContext) =>
     context.motivations.some(m => m.selected),
-  canProceedToAssets: (context: WorkflowMachineContext) => 
+  canProceedToAssets: (context: WorkflowMachineContext) =>
     context.copyVariations.some(c => c.selected),
-  canProceedToTemplate: (context: WorkflowMachineContext) => 
+  canProceedToTemplate: (context: WorkflowMachineContext) =>
     context.selectedAssets.length > 0,
-  canProceedToMatrix: (context: WorkflowMachineContext) => 
+  canProceedToMatrix: (context: WorkflowMachineContext) =>
     context.selectedTemplate !== null,
-  canProceedToRender: (context: WorkflowMachineContext) => 
-    context.selectedTemplate !== null && 
+  canProceedToRender: (context: WorkflowMachineContext) =>
+    context.selectedTemplate !== null &&
     context.motivations.some(m => m.selected) &&
     context.copyVariations.some(c => c.selected) &&
     context.selectedAssets.length > 0,
@@ -71,6 +72,7 @@ const actions = {
       event.type === 'CONFIRM_BRIEF' ? event.briefData : null,
     briefConfirmed: (_, event) => event.type === 'CONFIRM_BRIEF',
     showBriefReview: false,
+    currentStep: 1,
   }),
 
   setUploadedFile: assign<WorkflowMachineContext, WorkflowEvent>({
@@ -184,9 +186,11 @@ export const workflowMachine = createMachine<WorkflowMachineContext, WorkflowEve
         NEXT_STEP: {
           target: 'copyGeneration',
           cond: 'hasSelectedMotivations',
+          actions: ['nextStep'],
         },
         PREVIOUS_STEP: {
           target: 'briefUpload',
+          actions: ['previousStep'],
         },
         SET_ERROR: {
           actions: ['setError'],
@@ -209,9 +213,11 @@ export const workflowMachine = createMachine<WorkflowMachineContext, WorkflowEve
         NEXT_STEP: {
           target: 'assetSelection',
           cond: 'hasSelectedCopy',
+          actions: ['nextStep'],
         },
         PREVIOUS_STEP: {
           target: 'motivationSelection',
+          actions: ['previousStep'],
         },
         SET_ERROR: {
           actions: ['setError'],
@@ -231,9 +237,11 @@ export const workflowMachine = createMachine<WorkflowMachineContext, WorkflowEve
         NEXT_STEP: {
           target: 'templateSelection',
           cond: 'hasSelectedAssets',
+          actions: ['nextStep'],
         },
         PREVIOUS_STEP: {
           target: 'copyGeneration',
+          actions: ['previousStep'],
         },
         SET_ERROR: {
           actions: ['setError'],
@@ -253,9 +261,11 @@ export const workflowMachine = createMachine<WorkflowMachineContext, WorkflowEve
         NEXT_STEP: {
           target: 'matrixBuild',
           cond: 'hasSelectedTemplate',
+          actions: ['nextStep'],
         },
         PREVIOUS_STEP: {
           target: 'assetSelection',
+          actions: ['previousStep'],
         },
         SET_ERROR: {
           actions: ['setError'],
@@ -272,9 +282,11 @@ export const workflowMachine = createMachine<WorkflowMachineContext, WorkflowEve
         NEXT_STEP: {
           target: 'rendering',
           cond: 'canProceedToRender',
+          actions: ['nextStep'],
         },
         PREVIOUS_STEP: {
           target: 'templateSelection',
+          actions: ['previousStep'],
         },
         SET_ERROR: {
           actions: ['setError'],
@@ -290,6 +302,7 @@ export const workflowMachine = createMachine<WorkflowMachineContext, WorkflowEve
       on: {
         PREVIOUS_STEP: {
           target: 'matrixBuild',
+          actions: ['previousStep'],
         },
         RESET_WORKFLOW: {
           target: 'briefUpload',

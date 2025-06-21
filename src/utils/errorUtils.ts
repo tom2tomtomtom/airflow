@@ -15,18 +15,31 @@ export interface AppError {
  * @returns A string error message
  */
 export function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message;
+  if (!error) {
+    return 'An unknown error occurred';
   }
-  
+
   if (typeof error === 'string') {
-    return error;
+    return error.trim() || 'An unknown error occurred';
   }
-  
-  if (error && typeof error === 'object' && 'message' in error) {
-    return String((error as any).message);
+
+  if (error instanceof Error) {
+    return error.message.trim() || 'An unknown error occurred';
   }
-  
+
+  if (typeof error === 'object' && error !== null) {
+    // Check for common error object patterns
+    const errorObj = error as any;
+
+    if (typeof errorObj.message === 'string') {
+      return errorObj.message.trim() || 'An unknown error occurred';
+    }
+
+    if (typeof errorObj.error === 'string') {
+      return errorObj.error.trim() || 'An unknown error occurred';
+    }
+  }
+
   return 'An unknown error occurred';
 }
 
@@ -109,10 +122,89 @@ export function formatApiError(error: unknown): { error: string; code?: string }
  */
 export function handleComponentError(error: Error, errorInfo: any): void {
   logError(error, 'Component Error');
-  
+
   // In production, you might want to send errors to a monitoring service
   if (process.env.NODE_ENV === 'production') {
     // Example: Send to error monitoring service
     // errorMonitoringService.captureException(error, { extra: errorInfo });
   }
+}
+
+/**
+ * Check if an error is related to network connectivity
+ */
+export function isNetworkError(error: unknown): boolean {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+
+  const message = error.message.toLowerCase();
+  const networkKeywords = [
+    'network request',
+    'network error',
+    'fetch',
+    'connection',
+    'timeout',
+    'refused',
+    'unreachable',
+    'offline',
+    'dns',
+    'cors'
+  ];
+
+  return networkKeywords.some(keyword => message.includes(keyword));
+}
+
+/**
+ * Check if an error is related to authentication or authorization
+ */
+export function isAuthError(error: unknown): boolean {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+
+  const message = error.message.toLowerCase();
+  const authKeywords = [
+    'auth',
+    'unauthorized',
+    'forbidden',
+    'token',
+    'login',
+    'permission',
+    'access denied',
+    'invalid credentials',
+    'session expired'
+  ];
+
+  return authKeywords.some(keyword => message.includes(keyword));
+}
+
+/**
+ * Format an error message for display to end users
+ * Provides user-friendly messages while hiding technical details
+ */
+export function formatErrorForUser(error: unknown): string {
+  if (isNetworkError(error)) {
+    return 'Network connection error. Please check your internet connection and try again.';
+  }
+
+  if (isAuthError(error)) {
+    return 'Authentication error. Please log in again.';
+  }
+
+  const message = getErrorMessage(error).toLowerCase();
+
+  if (message.includes('rate limit') || message.includes('too many requests')) {
+    return 'Too many requests. Please wait a moment and try again.';
+  }
+
+  if (message.includes('validation') || message.includes('invalid') || message.includes('required')) {
+    return 'Please check your input and try again.';
+  }
+
+  if (message.includes('server error') || message.includes('internal error')) {
+    return 'Server error. Please try again later.';
+  }
+
+  return 'An unexpected error occurred. Please try again.';
 }

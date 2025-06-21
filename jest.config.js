@@ -4,6 +4,7 @@ module.exports = {
   roots: [
     '<rootDir>/src/components/__tests__',
     '<rootDir>/src/utils',
+    '<rootDir>/src/lib',
     '<rootDir>/tests/utils',
   ],
   testMatch: [
