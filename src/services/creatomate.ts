@@ -38,7 +38,7 @@ export class CreatomateService {
 
   async getTemplate(templateId?: string): Promise<CreatomateTemplate> {
     const id = templateId || this.defaultTemplateId;
-    
+
     try {
       const response = await fetch(`${this.baseUrl}/templates/${id}`, {
         headers: {
@@ -56,6 +56,32 @@ export class CreatomateService {
     } catch (error) {
       console.error(`Error fetching template ${id}:`, error);
       return this.getDefaultTemplate();
+    }
+  }
+
+  async getTemplates(limit: number = 20): Promise<CreatomateTemplate[]> {
+    try {
+      const response = await fetch(`${this.baseUrl}/templates?limit=${limit}`, {
+        headers: {
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      // Handle both array response and paginated response
+      const templates = Array.isArray(data) ? data : (data.data || []);
+
+      return templates.map((template: any) => this.mapCreatomateTemplate(template));
+    } catch (error) {
+      console.error('Error fetching templates:', error);
+      // Return default template as fallback
+      return [this.getDefaultTemplate()];
     }
   }
 

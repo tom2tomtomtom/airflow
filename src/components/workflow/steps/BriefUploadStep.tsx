@@ -21,10 +21,11 @@ import {
 import { useDropzone } from 'react-dropzone';
 import { useWorkflow } from '../WorkflowProvider';
 import { BriefData, StepComponentProps } from '@/lib/workflow/workflow-types';
+import { withErrorBoundary } from '../ErrorBoundary';
 
 interface BriefUploadStepProps extends StepComponentProps {}
 
-export const BriefUploadStep: React.FC<BriefUploadStepProps> = ({
+const BriefUploadStepComponent: React.FC<BriefUploadStepProps> = ({
   onNext,
 }) => {
   const { state, actions } = useWorkflow();
@@ -295,3 +296,6 @@ export const BriefUploadStep: React.FC<BriefUploadStepProps> = ({
     </Box>
   );
 };
+
+// Export with error boundary
+export const BriefUploadStep = withErrorBoundary(BriefUploadStepComponent, 'BriefUploadStep');

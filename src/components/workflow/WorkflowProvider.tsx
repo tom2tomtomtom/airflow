@@ -16,6 +16,7 @@ import {
   estimateTokensForMotivations,
   estimateTokensForCopy,
 } from '@/utils/ai-cost-estimation';
+import { WorkflowErrorBoundary } from './ErrorBoundary';
 
 // Initial state
 const initialState: WorkflowState = {
@@ -172,12 +173,58 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({
     }
   }, []);
 
-  // Brief handling actions
+  // Enhanced error handling wrapper
+  const withErrorHandling = useCallback(<T>(
+    operation: () => Promise<T>,
+    context: string,
+    fallback?: () => void
+  ) => {
+    return async (): Promise<T | null> => {
+      try {
+        dispatch({ type: 'SET_ERROR', error: null }); // Clear previous errors
+        const result = await operation();
+        return result;
+      } catch (error) {
+        console.error(`[Workflow Error] ${context}:`, error);
+
+        // Categorize and handle error
+        let errorMessage = 'An unexpected error occurred';
+        let recoverable = true;
+
+        if (error instanceof Error) {
+          if (error.message.includes('budget') || error.message.includes('cost')) {
+            errorMessage = 'AI operation blocked due to budget limits. Please try with a smaller request or upgrade your plan.';
+            recoverable = false;
+          } else if (error.message.includes('network') || error.message.includes('fetch')) {
+            errorMessage = 'Network error. Please check your connection and try again.';
+            recoverable = true;
+          } else if (error.message.includes('validation') || error.message.includes('invalid')) {
+            errorMessage = 'Invalid input data. Please check your entries and try again.';
+            recoverable = false;
+          } else {
+            errorMessage = error.message;
+          }
+        }
+
+        dispatch({ type: 'SET_ERROR', error: errorMessage });
+        showNotification(errorMessage, 'error');
+
+        // Execute fallback if provided and error is not recoverable
+        if (!recoverable && fallback) {
+          fallback();
+        }
+
+        return null;
+      }
+    };
+  }, [showNotification]);
+
+  // Brief handling actions with enhanced error handling
   const uploadBrief = useCallback(async (file: File) => {
     dispatch({ type: 'SET_PROCESSING', processing: true });
     dispatch({ type: 'SET_UPLOADED_FILE', file });
 
-    try {
+    const operation = async () => {
       const formData = new FormData();
       formData.append('file', file);
 
@@ -200,19 +247,21 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({
         });
         dispatch({ type: 'SET_SHOW_BRIEF_REVIEW', show: true });
         showNotification('Brief processed successfully! Please review and edit the parsed content.', 'success');
+        return result.data;
       } else {
         throw new Error(result.message || 'Failed to parse brief');
       }
-    } catch (error) {
-      console.error('Error processing brief:', error);
+    };
+
+    const fallback = () => {
       dispatch({ type: 'SET_UPLOADED_FILE', file: null });
-      const errorMessage = error instanceof Error ? error.message : 'Failed to process brief';
-      dispatch({ type: 'SET_ERROR', error: errorMessage });
-      showNotification(errorMessage, 'error');
-    } finally {
-      dispatch({ type: 'SET_PROCESSING', processing: false });
-    }
-  }, [makeCSRFRequest, showNotification]);
+    };
+
+    const result = await withErrorHandling(operation, 'Brief Upload', fallback)();
+
+    dispatch({ type: 'SET_PROCESSING', processing: false });
+    return result;
+  }, [makeCSRFRequest, showNotification, withErrorHandling]);
 
   const confirmBrief = useCallback((briefData: BriefData) => {
     dispatch({ type: 'SET_BRIEF_DATA', briefData, originalBriefData: state.originalBriefData! });
@@ -231,7 +280,7 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({
     }
   }, [state.originalBriefData]);
 
-  // Motivation actions
+  // Motivation actions with enhanced error handling
   const generateMotivations = useCallback(async () => {
     if (!state.briefData) {
       showNotification('Brief data is required to generate motivations', 'error');
@@ -240,9 +289,9 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({
 
     dispatch({ type: 'SET_PROCESSING', processing: true });
 
-    try {
+    const operation = async () => {
       // Pre-flight cost check
-      const estimatedTokens = estimateTokensForMotivations(state.briefData);
+      const estimatedTokens = estimateTokensForMotivations(state.briefData!);
       const costCheck = await fetch('/api/ai/cost-check', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -288,18 +337,21 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({
 
         dispatch({ type: 'SET_MOTIVATIONS', motivations: motivationsWithSelection });
         showNotification(`Generated ${result.data.length} motivations!`, 'success');
+        return result.data;
       } else {
         throw new Error(result.message || 'Failed to generate motivations');
       }
-    } catch (error) {
-      console.error('Error generating motivations:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to generate motivations. Please try again.';
-      dispatch({ type: 'SET_ERROR', error: errorMessage });
-      showNotification(errorMessage, 'error');
-    } finally {
-      dispatch({ type: 'SET_PROCESSING', processing: false });
-    }
-  }, [state.briefData, makeCSRFRequest, showNotification]);
+    };
+
+    const fallback = () => {
+      // Provide manual motivation entry option
+      showNotification('You can manually enter motivations or try again later', 'info');
+    };
+
+    const result = await withErrorHandling(operation, 'Motivation Generation', fallback)();
+    dispatch({ type: 'SET_PROCESSING', processing: false });
+    return result;
+  }, [state.briefData, makeCSRFRequest, showNotification, withErrorHandling]);
 
   const selectMotivation = useCallback((id: string) => {
     dispatch({ type: 'TOGGLE_MOTIVATION', id });
@@ -484,9 +536,11 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({
   };
 
   return (
-    <WorkflowContext.Provider value={contextValue}>
-      {children}
-    </WorkflowContext.Provider>
+    <WorkflowErrorBoundary context="WorkflowProvider" showDetails={process.env.NODE_ENV === 'development'}>
+      <WorkflowContext.Provider value={contextValue}>
+        {children}
+      </WorkflowContext.Provider>
+    </WorkflowErrorBoundary>
   );
 };
 

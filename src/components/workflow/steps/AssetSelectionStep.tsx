@@ -14,6 +14,10 @@ import {
   Tabs,
   Tab,
   IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import {
   ArrowForward as ArrowForwardIcon,
@@ -26,7 +30,30 @@ import {
   AutoAwesome as AutoAwesomeIcon,
 } from '@mui/icons-material';
 import { useWorkflow } from '../WorkflowProvider';
-import { StepComponentProps, Asset } from '@/lib/workflow/workflow-types';
+import { StepComponentProps, Asset as WorkflowAsset } from '@/lib/workflow/workflow-types';
+import AssetBrowser from '@/components/AssetBrowser';
+import { AIImageGenerator } from '@/components/AIImageGenerator';
+
+// Asset Browser Asset interface (from AssetBrowser.tsx)
+interface BrowserAsset {
+  id: string;
+  name: string;
+  type: 'image' | 'video' | 'text' | 'voice';
+  url: string;
+  thumbnailUrl?: string;
+  description?: string;
+  tags: string[];
+  dateCreated: string;
+  clientId: string;
+  userId: string;
+  favorite?: boolean;
+  metadata?: Record<string, any>;
+  size?: number;
+  mimeType?: string;
+  duration?: number;
+  width?: number;
+  height?: number;
+}
 
 interface AssetSelectionStepProps extends StepComponentProps {}
 
@@ -40,105 +67,131 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
     selectedAssets,
     processing,
     lastError,
+    clientId,
   } = state;
 
   const [activeTab, setActiveTab] = useState(0);
   const [generatingAssets, setGeneratingAssets] = useState(false);
+  const [showAssetBrowser, setShowAssetBrowser] = useState(false);
+  const [showAIGenerator, setShowAIGenerator] = useState(false);
 
-  // Mock assets for demonstration - in real implementation, these would come from APIs
-  const mockAssets: Asset[] = [
-    {
-      id: 'img-1',
-      type: 'image',
-      url: 'https://via.placeholder.com/300x200/4CAF50/white?text=Product+Hero',
-      metadata: { title: 'Product Hero Image', description: 'Main product showcase' },
+  // Convert BrowserAsset to WorkflowAsset
+  const convertBrowserAssetToWorkflowAsset = (browserAsset: BrowserAsset): WorkflowAsset => {
+    return {
+      id: browserAsset.id,
+      type: browserAsset.type === 'voice' ? 'copy' : browserAsset.type, // Map voice to copy for workflow
+      url: browserAsset.url,
+      content: browserAsset.type === 'text' ? browserAsset.description : undefined,
+      metadata: {
+        ...browserAsset.metadata,
+        name: browserAsset.name,
+        description: browserAsset.description,
+        tags: browserAsset.tags,
+        thumbnailUrl: browserAsset.thumbnailUrl,
+        size: browserAsset.size,
+        mimeType: browserAsset.mimeType,
+        duration: browserAsset.duration,
+        width: browserAsset.width,
+        height: browserAsset.height,
+        dateCreated: browserAsset.dateCreated,
+        favorite: browserAsset.favorite,
+      },
       selected: false,
-    },
-    {
-      id: 'img-2',
-      type: 'image',
-      url: 'https://via.placeholder.com/300x200/2196F3/white?text=Lifestyle+Shot',
-      metadata: { title: 'Lifestyle Image', description: 'Product in use context' },
-      selected: false,
-    },
-    {
-      id: 'img-3',
-      type: 'image',
-      url: 'https://via.placeholder.com/300x200/FF9800/white?text=Brand+Logo',
-      metadata: { title: 'Brand Logo', description: 'Company branding asset' },
-      selected: false,
-    },
-    {
-      id: 'vid-1',
-      type: 'video',
-      url: 'https://via.placeholder.com/300x200/9C27B0/white?text=Demo+Video',
-      metadata: { title: 'Product Demo', description: '30-second product demonstration' },
-      selected: false,
-    },
-    {
-      id: 'vid-2',
-      type: 'video',
-      url: 'https://via.placeholder.com/300x200/F44336/white?text=Testimonial',
-      metadata: { title: 'Customer Testimonial', description: 'Customer success story' },
-      selected: false,
-    },
-  ];
+    };
+  };
 
-  // Handle asset selection
-  const handleSelectAsset = useCallback((asset: Asset) => {
-    const isSelected = selectedAssets.some(a => a.id === asset.id);
+  // Handle asset selection from AssetBrowser
+  const handleAssetBrowserSelect = useCallback((browserAsset: BrowserAsset) => {
+    const workflowAsset = convertBrowserAssetToWorkflowAsset(browserAsset);
+    const isSelected = selectedAssets.some(a => a.id === workflowAsset.id);
+
     if (isSelected) {
-      actions.removeAsset(asset.id);
+      actions.removeAsset(workflowAsset.id);
     } else {
-      actions.selectAsset({ ...asset, selected: true });
+      actions.selectAsset({ ...workflowAsset, selected: true });
     }
-  }, [selectedAssets, actions]);
+  }, [selectedAssets, actions, convertBrowserAssetToWorkflowAsset]);
 
-  // Handle AI asset generation
-  const handleGenerateAssets = useCallback(async () => {
-    if (!briefData) return;
+  // Handle AI image generation
+  const handleAIImageGenerated = useCallback((generatedAsset: any) => {
+    // Convert the generated asset to workflow format
+    const workflowAsset: WorkflowAsset = {
+      id: generatedAsset.id || `ai-${Date.now()}`,
+      type: 'image',
+      url: generatedAsset.url,
+      metadata: {
+        ...generatedAsset.metadata,
+        name: generatedAsset.name,
+        description: generatedAsset.description || 'AI Generated Image',
+        aiGenerated: true,
+        ai_prompt: generatedAsset.ai_prompt,
+        tags: generatedAsset.tags || ['ai-generated'],
+      },
+      selected: false,
+    };
 
-    setGeneratingAssets(true);
-    
-    try {
-      // Simulate AI asset generation
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // In real implementation, this would call the AI image generation API
-      const generatedAssets: Asset[] = [
-        {
-          id: 'ai-img-1',
-          type: 'image',
-          url: 'https://via.placeholder.com/300x200/4CAF50/white?text=AI+Generated+1',
-          metadata: { 
-            title: 'AI Generated Image 1', 
-            description: `Generated based on: ${briefData.title}`,
-            aiGenerated: true 
-          },
-          selected: false,
-        },
-        {
-          id: 'ai-img-2',
-          type: 'image',
-          url: 'https://via.placeholder.com/300x200/2196F3/white?text=AI+Generated+2',
-          metadata: { 
-            title: 'AI Generated Image 2', 
-            description: `Generated for: ${briefData.targetAudience}`,
-            aiGenerated: true 
-          },
-          selected: false,
-        },
-      ];
+    // Add to selected assets
+    actions.selectAsset({ ...workflowAsset, selected: true });
+    setShowAIGenerator(false);
+  }, [actions]);
 
-      // Add generated assets to selection
-      generatedAssets.forEach(asset => actions.selectAsset(asset));
-      
-    } catch (error) {
-      actions.setError('Failed to generate AI assets');
-    } finally {
-      setGeneratingAssets(false);
+  // Handle opening asset browser
+  const handleOpenAssetBrowser = useCallback(() => {
+    setShowAssetBrowser(true);
+  }, []);
+
+  // Handle opening AI generator
+  const handleOpenAIGenerator = useCallback(() => {
+    setShowAIGenerator(true);
+  }, []);
+
+  // Generate smart prompts based on brief data and motivations
+  const generateSmartPrompts = useCallback(() => {
+    if (!briefData) return [];
+
+    const { state: workflowState } = useWorkflow();
+    const selectedMotivations = workflowState.motivations.filter(m => m.selected);
+
+    const prompts = [];
+
+    // Base prompt from brief
+    const baseContext = `${briefData.product || briefData.service || briefData.title} for ${briefData.targetAudience}`;
+
+    // Add prompts based on selected motivations
+    selectedMotivations.forEach(motivation => {
+      prompts.push({
+        title: `${motivation.title} - Hero Image`,
+        prompt: `Professional marketing image for ${baseContext}, focusing on ${motivation.description.toLowerCase()}, modern and clean design, high quality photography style`,
+      });
+    });
+
+    // Add general prompts based on brief
+    if (briefData.platforms?.includes('social')) {
+      prompts.push({
+        title: 'Social Media Visual',
+        prompt: `Eye-catching social media image for ${baseContext}, vibrant colors, engaging composition, optimized for social platforms`,
+      });
     }
-  }, [briefData, actions]);
+
+    if (briefData.valueProposition) {
+      prompts.push({
+        title: 'Value Proposition Visual',
+        prompt: `Visual representation of ${briefData.valueProposition} for ${baseContext}, professional, trustworthy, modern design`,
+      });
+    }
+
+    // Add industry-specific prompts
+    if (briefData.industry) {
+      prompts.push({
+        title: `${briefData.industry} Industry Visual`,
+        prompt: `Professional ${briefData.industry} industry image for ${baseContext}, clean, modern, industry-appropriate styling`,
+      });
+    }
+
+    return prompts.slice(0, 5); // Limit to 5 suggestions
+  }, [briefData]);
+
+  const smartPrompts = generateSmartPrompts();
 
   // Handle next step
   const handleNext = useCallback(() => {
@@ -146,7 +199,7 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
       actions.setError('Please select at least one asset to continue');
       return;
     }
-    
+
     actions.clearError();
     onNext?.();
   }, [selectedAssets.length, actions, onNext]);
@@ -156,105 +209,104 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
     actions.clearError();
   }, [actions]);
 
-  // Filter assets by type
-  const getAssetsByType = (type: Asset['type']) => {
-    return [...mockAssets, ...selectedAssets.filter(a => a.metadata?.aiGenerated)]
-      .filter(asset => asset.type === type);
+  // Remove asset from selection
+  const handleRemoveAsset = useCallback((assetId: string) => {
+    actions.removeAsset(assetId);
+  }, [actions]);
+
+  // Get asset display name
+  const getAssetDisplayName = (asset: WorkflowAsset) => {
+    return asset.metadata?.name || asset.metadata?.title || `Asset ${asset.id}`;
   };
 
-  const imageAssets = getAssetsByType('image');
-  const videoAssets = getAssetsByType('video');
-
-  // Check if asset is selected
-  const isAssetSelected = (assetId: string) => {
-    return selectedAssets.some(a => a.id === assetId);
+  // Get asset counts by type
+  const getAssetCounts = () => {
+    const counts = { image: 0, video: 0, copy: 0, template: 0 };
+    selectedAssets.forEach(asset => {
+      counts[asset.type] = (counts[asset.type] || 0) + 1;
+    });
+    return counts;
   };
 
-  const tabLabels = [
-    { label: 'Images', icon: <ImageIcon />, count: imageAssets.length },
-    { label: 'Videos', icon: <VideoLibraryIcon />, count: videoAssets.length },
-  ];
+  const assetCounts = getAssetCounts();
 
-  const renderAssetGrid = (assets: Asset[]) => (
-    <Grid container spacing={3}>
-      {assets.map((asset) => {
-        const selected = isAssetSelected(asset.id);
-        return (
-          <Grid item xs={12} sm={6} md={4} key={asset.id}>
-            <Card
+  // Render selected assets summary
+  const renderSelectedAssets = () => (
+    <Grid container spacing={2}>
+      {selectedAssets.map((asset) => (
+        <Grid item xs={12} sm={6} md={4} key={asset.id}>
+          <Card
+            sx={{
+              border: 1,
+              borderColor: 'primary.main',
+              bgcolor: 'primary.50',
+              position: 'relative',
+            }}
+          >
+            {/* Asset Preview */}
+            <Box
               sx={{
-                cursor: 'pointer',
-                border: selected ? 2 : 1,
-                borderColor: selected ? 'primary.main' : 'grey.300',
-                bgcolor: selected ? 'primary.50' : 'background.paper',
-                transition: 'all 0.2s ease-in-out',
+                height: 150,
+                backgroundImage: asset.url ? `url(${asset.url})` : 'none',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                bgcolor: asset.url ? 'transparent' : 'grey.200',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 position: 'relative',
-                '&:hover': {
-                  borderColor: 'primary.main',
-                  transform: 'translateY(-2px)',
-                  boxShadow: 2,
-                },
               }}
-              onClick={() => handleSelectAsset(asset)}
             >
-              {/* Asset Preview */}
-              <Box
+              {!asset.url && (
+                <Typography variant="h6" color="text.secondary">
+                  {asset.type.toUpperCase()}
+                </Typography>
+              )}
+
+              {/* Remove Button */}
+              <IconButton
                 sx={{
-                  height: 200,
-                  backgroundImage: `url(${asset.url})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  position: 'relative',
+                  position: 'absolute',
+                  top: 8,
+                  right: 8,
+                  bgcolor: 'error.main',
+                  color: 'white',
+                  '&:hover': {
+                    bgcolor: 'error.dark',
+                  },
                 }}
+                size="small"
+                onClick={() => handleRemoveAsset(asset.id)}
               >
-                {/* Selection Indicator */}
-                <IconButton
+                <RemoveIcon />
+              </IconButton>
+
+              {/* AI Generated Badge */}
+              {asset.metadata?.aiGenerated && (
+                <Chip
+                  label="AI Generated"
+                  size="small"
+                  color="secondary"
                   sx={{
                     position: 'absolute',
-                    top: 8,
-                    right: 8,
-                    bgcolor: selected ? 'primary.main' : 'rgba(0,0,0,0.5)',
-                    color: 'white',
-                    '&:hover': {
-                      bgcolor: selected ? 'primary.dark' : 'rgba(0,0,0,0.7)',
-                    },
+                    bottom: 8,
+                    left: 8,
                   }}
-                  size="small"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleSelectAsset(asset);
-                  }}
-                >
-                  {selected ? <Remove /> : <Add />}
-                </IconButton>
+                />
+              )}
+            </Box>
 
-                {/* AI Generated Badge */}
-                {asset.metadata?.aiGenerated && (
-                  <Chip
-                    label="AI Generated"
-                    size="small"
-                    color="secondary"
-                    sx={{
-                      position: 'absolute',
-                      bottom: 8,
-                      left: 8,
-                    }}
-                  />
-                )}
-              </Box>
-
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  {asset.metadata?.title || `${asset.type} Asset`}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {asset.metadata?.description || 'No description available'}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        );
-      })}
+            <CardContent>
+              <Typography variant="subtitle1" gutterBottom>
+                {getAssetDisplayName(asset)}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {asset.metadata?.description || `${asset.type} asset`}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      ))}
     </Grid>
   );
 
@@ -264,13 +316,13 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
         Asset Selection
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-        Choose images, videos, and other assets for your campaign. You can select from existing assets or generate new ones with AI.
+        Choose images, videos, and other assets for your campaign. You can browse existing assets or generate new ones with AI.
       </Typography>
 
       {/* Error Alert */}
       {lastError && (
-        <Alert 
-          severity="error" 
+        <Alert
+          severity="error"
           sx={{ mb: 3 }}
           onClose={handleClearError}
         >
@@ -278,75 +330,66 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
         </Alert>
       )}
 
-      {/* Selection Summary */}
+      {/* Asset Actions */}
       <Paper sx={{ p: 3, mb: 4, bgcolor: 'grey.50' }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Box>
-            <Typography variant="h6" gutterBottom>
-              Selected Assets ({selectedAssets.length})
-            </Typography>
-            <Stack direction="row" spacing={1} flexWrap="wrap">
-              {selectedAssets.map((asset) => (
-                <Chip
-                  key={asset.id}
-                  label={asset.metadata?.title || asset.id}
-                  onDelete={() => actions.removeAsset(asset.id)}
-                  color="primary"
-                  size="small"
-                />
-              ))}
-              {selectedAssets.length === 0 && (
-                <Typography variant="body2" color="text.secondary">
-                  No assets selected yet
-                </Typography>
-              )}
-            </Stack>
-          </Box>
-          
+        <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+          <Button
+            variant="contained"
+            onClick={handleOpenAssetBrowser}
+            startIcon={<ImageIcon />}
+          >
+            Browse Assets
+          </Button>
+
           <Button
             variant="outlined"
-            onClick={handleGenerateAssets}
+            onClick={handleOpenAIGenerator}
             startIcon={<AutoAwesomeIcon />}
-            disabled={generatingAssets || !briefData}
+            disabled={!briefData}
           >
-            {generatingAssets ? 'Generating...' : 'Generate AI Assets'}
+            Generate AI Images
           </Button>
+        </Box>
+
+        {/* Selection Summary */}
+        <Box>
+          <Typography variant="h6" gutterBottom>
+            Selected Assets ({selectedAssets.length})
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
+            <Chip
+              label={`Images: ${assetCounts.image}`}
+              color={assetCounts.image > 0 ? 'primary' : 'default'}
+              size="small"
+            />
+            <Chip
+              label={`Videos: ${assetCounts.video}`}
+              color={assetCounts.video > 0 ? 'primary' : 'default'}
+              size="small"
+            />
+            <Chip
+              label={`Other: ${assetCounts.copy + assetCounts.template}`}
+              color={(assetCounts.copy + assetCounts.template) > 0 ? 'primary' : 'default'}
+              size="small"
+            />
+          </Box>
+          {selectedAssets.length === 0 && (
+            <Typography variant="body2" color="text.secondary">
+              No assets selected yet. Use the buttons above to browse or generate assets.
+            </Typography>
+          )}
         </Box>
       </Paper>
 
-      {/* Processing Indicator */}
-      {generatingAssets && (
-        <Box sx={{ mb: 3 }}>
-          <LinearProgress />
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            Generating AI assets based on your brief...
+      {/* Selected Assets Display */}
+      {selectedAssets.length > 0 && (
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h6" gutterBottom>
+            Selected Assets
           </Typography>
+          {renderSelectedAssets()}
         </Box>
       )}
-
-      {/* Asset Tabs */}
-      <Box sx={{ mb: 3 }}>
-        <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)}>
-          {tabLabels.map((tab, index) => (
-            <Tab
-              key={index}
-              label={
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  {tab.icon}
-                  {tab.label}
-                  <Chip label={tab.count} size="small" />
-                </Box>
-              }
-            />
-          ))}
-        </Tabs>
-      </Box>
-
-      {/* Asset Content */}
-      <Box sx={{ mb: 4 }}>
-        {activeTab === 0 && renderAssetGrid(imageAssets)}
-        {activeTab === 1 && renderAssetGrid(videoAssets)}
-      </Box>
 
       {/* Action Buttons */}
       <Box sx={{ display: 'flex', gap: 2, justifyContent: 'space-between' }}>
@@ -367,6 +410,95 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
           Continue to Templates ({selectedAssets.length} assets)
         </Button>
       </Box>
+
+      {/* Asset Browser Dialog */}
+      <Dialog
+        open={showAssetBrowser}
+        onClose={() => setShowAssetBrowser(false)}
+        maxWidth="lg"
+        fullWidth
+      >
+        <DialogTitle>
+          Browse Assets
+        </DialogTitle>
+        <DialogContent>
+          <AssetBrowser
+            clientId={clientId || undefined}
+            onAssetSelect={handleAssetBrowserSelect}
+            selectionMode={true}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowAssetBrowser(false)}>
+            Done
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* AI Image Generator Dialog */}
+      <Dialog
+        open={showAIGenerator}
+        onClose={() => setShowAIGenerator(false)}
+        maxWidth="lg"
+        fullWidth
+      >
+        <DialogTitle>
+          Generate AI Images
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ mb: 3 }}>
+            {/* Smart Prompt Suggestions */}
+            {smartPrompts.length > 0 && (
+              <Box sx={{ mb: 3 }}>
+                <Typography variant="h6" gutterBottom>
+                  Suggested Prompts Based on Your Brief
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                  Click any suggestion to use it as a starting point for your image generation.
+                </Typography>
+                <Grid container spacing={2}>
+                  {smartPrompts.map((suggestion, index) => (
+                    <Grid item xs={12} key={index}>
+                      <Card
+                        sx={{
+                          cursor: 'pointer',
+                          '&:hover': { bgcolor: 'action.hover' },
+                          border: 1,
+                          borderColor: 'divider',
+                        }}
+                        onClick={() => {
+                          // This would need to be passed to AIImageGenerator
+                          // For now, we'll show the prompt in the dialog
+                        }}
+                      >
+                        <CardContent sx={{ py: 2 }}>
+                          <Typography variant="subtitle2" gutterBottom>
+                            {suggestion.title}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {suggestion.prompt}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+            )}
+
+            <AIImageGenerator
+              clientId={clientId || undefined}
+              onImageGenerated={handleAIImageGenerated}
+              brandGuidelines={briefData?.brandGuidelines}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowAIGenerator(false)}>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
