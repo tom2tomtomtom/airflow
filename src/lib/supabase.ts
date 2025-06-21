@@ -3,7 +3,7 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '@/types/database';
 
 // Build-safe environment variable access with Vercel support
-const getSupabaseConfig = () => {
+export const getSupabaseConfig = () => {
   // Check if we're in build context
   const isBuildContext = (typeof globalThis !== 'undefined' && 'EdgeRuntime' in globalThis) ||
                         process.env.NETLIFY ||
