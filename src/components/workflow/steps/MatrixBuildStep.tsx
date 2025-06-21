@@ -3,9 +3,6 @@ import {
   Box,
   Typography,
   Button,
-  Card,
-  CardContent,
-  Grid,
   Chip,
   Alert,
   Stack,
@@ -26,7 +23,6 @@ import {
   Visibility as VisibilityIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
-  Add as AddIcon,
 } from '@mui/icons-material';
 import { useWorkflow } from '../WorkflowProvider';
 import { StepComponentProps } from '@/lib/workflow/workflow-types';

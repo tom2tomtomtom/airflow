@@ -18,19 +18,15 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  Tooltip
+  Paper
 } from '@mui/material';
 import {
-  TrendingUp,
-  TrendingDown,
   Warning,
   CheckCircle,
   ExpandMore,
   ExpandLess,
   AttachMoney,
-  Speed,
-  Timeline
+  Speed
 } from '@mui/icons-material';
 
 interface UsageStats {

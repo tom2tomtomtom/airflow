@@ -59,7 +59,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase/client';
 import { withAuth } from '@/middleware/withAuth';
 import { withAPIRateLimit } from '@/lib/rate-limiter';
-import { successResponse, errorResponse, handleApiError, methodNotAllowed, validateRequiredFields, ApiErrorCode } from '@/lib/api-response';
+import { successResponse, errorResponse, handleApiError, methodNotAllowed, ApiErrorCode } from '@/lib/api-response';
 
 interface WorkflowState {
   id: string;

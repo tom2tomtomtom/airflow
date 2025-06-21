@@ -4,7 +4,6 @@ import {
   Typography,
   Paper,
   Button,
-  CircularProgress,
 } from '@mui/material';
 
 // Simple placeholder component for ImageGenerationTab

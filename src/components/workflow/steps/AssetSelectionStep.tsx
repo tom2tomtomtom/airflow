@@ -5,14 +5,9 @@ import {
   Button,
   Card,
   CardContent,
-  Grid,
   Chip,
-  LinearProgress,
   Alert,
-  Stack,
   Paper,
-  Tabs,
-  Tab,
   IconButton,
   Dialog,
   DialogTitle,
@@ -22,11 +17,8 @@ import {
 import {
   ArrowForward as ArrowForwardIcon,
   ArrowBack as ArrowBackIcon,
-  Add as AddIcon,
   Remove as RemoveIcon,
   Image as ImageIcon,
-  VideoLibrary as VideoLibraryIcon,
-  Description as DescriptionIcon,
   AutoAwesome as AutoAwesomeIcon,
 } from '@mui/icons-material';
 import { useWorkflow } from '../WorkflowProvider';

@@ -37,8 +37,7 @@ import {
   estimateTokensForCopy,
   estimateTokensForImageGeneration,
   estimateTokensForBriefParsing,
-  getRecommendedModel,
-  formatCost
+  getRecommendedModel
 } from '@/utils/ai-cost-estimation';
 
 interface CostCheckRequest {

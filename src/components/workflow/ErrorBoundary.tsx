@@ -7,7 +7,6 @@ import {
   AlertTitle,
   Paper,
   Stack,
-  Chip,
   Accordion,
   AccordionSummary,
   AccordionDetails,

@@ -2,11 +2,6 @@ import { createMachine, assign } from 'xstate';
 import {
   WorkflowMachineContext,
   WorkflowEvent,
-  BriefData,
-  Motivation,
-  CopyVariation,
-  Asset,
-  Template,
 } from './workflow-types';
 
 // Initial context

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { UnifiedBriefWorkflow } from '../UnifiedBriefWorkflow';
 import { NotificationProvider } from '@/contexts/NotificationContext';
 import { ClientProvider } from '@/contexts/ClientContext';
