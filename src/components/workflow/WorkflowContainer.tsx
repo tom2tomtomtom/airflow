@@ -25,33 +25,7 @@ import {
   PlayArrow as PlayArrowIcon,
 } from '@mui/icons-material';
 import { useWorkflow } from './WorkflowProvider';
-// Simple performance tracker for workflow steps
-class SimplePerformanceTracker {
-  private static instance: SimplePerformanceTracker;
-  private operations: Map<string, number> = new Map();
-
-  static getInstance() {
-    if (!SimplePerformanceTracker.instance) {
-      SimplePerformanceTracker.instance = new SimplePerformanceTracker();
-    }
-    return SimplePerformanceTracker.instance;
-  }
-
-  startOperation(name: string) {
-    const startTime = Date.now();
-    return {
-      end: () => {
-        const duration = Date.now() - startTime;
-        this.operations.set(name, duration);
-        console.log(`[Performance] ${name}: ${duration}ms`);
-      }
-    };
-  }
-
-  recordMetric(name: string, value: number) {
-    this.operations.set(name, value);
-  }
-}
+import { performanceTracker } from '@/lib/performance/performance-tracker';
 
 // Lazy load step components for better performance
 const BriefUploadStep = lazy(() =>
@@ -199,14 +173,14 @@ export const WorkflowContainer: React.FC<WorkflowContainerProps> = ({
   }, [actions, onClose]);
 
   // Performance tracking for current step
-  const performanceTracker = SimplePerformanceTracker.getInstance();
   const stepName = workflowSteps[currentStep]?.id || 'unknown';
 
   // Start performance tracking for step render
   React.useEffect(() => {
-    const operation = performanceTracker.startOperation(`workflow_step_${stepName}`);
-    return () => operation.end();
-  }, [currentStep, stepName, performanceTracker]);
+    const operationName = `workflow_step_${stepName}`;
+    performanceTracker.start(operationName);
+    return () => performanceTracker.end(operationName);
+  }, [currentStep, stepName]);
 
   // Render current step component with lazy loading
   const renderStepContent = () => {

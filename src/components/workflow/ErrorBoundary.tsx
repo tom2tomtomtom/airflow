@@ -73,23 +73,86 @@ export class WorkflowErrorBoundary extends Component<Props, State> {
 
   private reportError = (error: Error, errorInfo: ErrorInfo) => {
     try {
-      // In production, send to error tracking service
+      // Sanitize error information for production
+      const sanitizedError = this.sanitizeErrorForProduction(error);
+
       const errorReport = {
         errorId: this.state.errorId,
-        message: error.message,
-        stack: error.stack,
-        componentStack: errorInfo.componentStack,
+        message: sanitizedError.message,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+        componentStack: process.env.NODE_ENV === 'development' ? errorInfo.componentStack : undefined,
         context: this.props.context,
         timestamp: new Date().toISOString(),
-        userAgent: navigator.userAgent,
-        url: window.location.href,
+        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
+        url: typeof window !== 'undefined' ? window.location.href : 'unknown',
+        environment: process.env.NODE_ENV,
       };
 
-      // TODO: Send to actual error tracking service
-      console.error('Error Report:', errorReport);
+      // In development, log full details
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error Report:', errorReport);
+      } else {
+        // In production, only log sanitized information
+        console.error('Production Error:', {
+          errorId: errorReport.errorId,
+          message: errorReport.message,
+          context: errorReport.context,
+          timestamp: errorReport.timestamp
+        });
+      }
+
+      // TODO: Send to actual error tracking service (Sentry, etc.)
+      // await this.sendToErrorService(errorReport);
     } catch (reportingError) {
       console.error('Failed to report error:', reportingError);
     }
+  };
+
+  private sanitizeErrorForProduction(error: Error): { message: string } {
+    // In production, sanitize error messages to prevent information disclosure
+    if (process.env.NODE_ENV === 'production') {
+      // Check for sensitive patterns and replace with generic messages
+      const sensitivePatterns = [
+        /password/i,
+        /token/i,
+        /key/i,
+        /secret/i,
+        /api[_-]?key/i,
+        /database/i,
+        /connection/i,
+        /internal/i,
+        /server/i,
+        /file.*not.*found/i,
+        /permission.*denied/i,
+        /access.*denied/i,
+      ];
+
+      const isSensitive = sensitivePatterns.some(pattern => pattern.test(error.message));
+
+      if (isSensitive) {
+        return { message: 'An unexpected error occurred. Please try again or contact support.' };
+      }
+
+      // For non-sensitive errors, still provide a user-friendly message
+      const userFriendlyMessages: Record<string, string> = {
+        'Network Error': 'Connection error. Please check your internet connection and try again.',
+        'ChunkLoadError': 'Loading error. Please refresh the page and try again.',
+        'TypeError': 'An unexpected error occurred. Please refresh the page and try again.',
+        'ReferenceError': 'An unexpected error occurred. Please refresh the page and try again.',
+      };
+
+      for (const [pattern, message] of Object.entries(userFriendlyMessages)) {
+        if (error.message.includes(pattern)) {
+          return { message };
+        }
+      }
+
+      // Default sanitized message
+      return { message: 'An unexpected error occurred. Please try again.' };
+    }
+
+    // In development, return original message
+    return { message: error.message };
   };
 
   private handleRetry = () => {
@@ -150,7 +213,7 @@ Please describe what you were doing when this error occurred:
                 <strong>Context:</strong> {this.props.context || 'Workflow'}
               </Typography>
               <Typography variant="body2">
-                <strong>Message:</strong> {this.state.error?.message || 'Unknown error occurred'}
+                <strong>Message:</strong> {this.state.error ? this.sanitizeErrorForProduction(this.state.error).message : 'Unknown error occurred'}
               </Typography>
             </Alert>
 

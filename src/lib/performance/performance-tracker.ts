@@ -1,60 +1,173 @@
 /**
- * Simple Performance Tracker
- * Provides basic performance monitoring for development and debugging
+ * Production Performance Tracker
+ * Provides performance monitoring with Redis persistence for production use
  */
 
-export class SimplePerformanceTracker {
-  private static instance: SimplePerformanceTracker;
-  private timers: Map<string, number> = new Map();
+import { redisManager } from '@/lib/redis/redis-config';
 
-  private constructor() {}
+interface PerformanceMetric {
+  operationName: string;
+  duration: number;
+  timestamp: number;
+  userId?: string;
+  metadata?: Record<string, any>;
+}
+
+export class ProductionPerformanceTracker {
+  private static instance: ProductionPerformanceTracker;
+  private timers: Map<string, number> = new Map();
+  private useRedis = false;
+
+  private constructor() {
+    this.initializeRedis();
+  }
 
   /**
    * Get singleton instance
    */
-  public static getInstance(): SimplePerformanceTracker {
-    if (!SimplePerformanceTracker.instance) {
-      SimplePerformanceTracker.instance = new SimplePerformanceTracker();
+  public static getInstance(): ProductionPerformanceTracker {
+    if (!ProductionPerformanceTracker.instance) {
+      ProductionPerformanceTracker.instance = new ProductionPerformanceTracker();
     }
-    return SimplePerformanceTracker.instance;
+    return ProductionPerformanceTracker.instance;
+  }
+
+  /**
+   * Initialize Redis connection
+   */
+  private async initializeRedis(): Promise<void> {
+    try {
+      this.useRedis = await redisManager.isAvailable();
+      if (this.useRedis) {
+        console.log('✅ Performance tracker using Redis for persistence');
+      } else {
+        console.log('⚠️ Performance tracker using in-memory storage (Redis unavailable)');
+      }
+    } catch (error) {
+      console.warn('Performance tracker Redis initialization failed:', error);
+      this.useRedis = false;
+    }
   }
 
   /**
    * Start timing an operation
    */
-  public start(operationName: string): void {
-    this.timers.set(operationName, Date.now());
+  public start(operationName: string, userId?: string, metadata?: Record<string, any>): void {
+    const key = this.getTimerKey(operationName, userId);
+    const startTime = Date.now();
+
+    this.timers.set(key, startTime);
+
+    // Store additional context for later use
+    if (userId || metadata) {
+      this.timers.set(`${key}:context`, JSON.stringify({ userId, metadata }));
+    }
   }
 
   /**
-   * End timing an operation and log the result
+   * End timing an operation and persist the result
    */
-  public end(operationName: string): void {
-    const startTime = this.timers.get(operationName);
-    
+  public async end(operationName: string, userId?: string): Promise<number> {
+    const key = this.getTimerKey(operationName, userId);
+    const startTime = this.timers.get(key);
+
     if (startTime === undefined) {
       console.warn(`[Performance] No start time found for: ${operationName}`);
-      return;
+      return 0;
     }
 
     const duration = Date.now() - startTime;
+    const timestamp = Date.now();
+
+    // Get context if available
+    const contextKey = `${key}:context`;
+    const contextData = this.timers.get(contextKey);
+    let context: { userId?: string; metadata?: Record<string, any> } = {};
+
+    if (contextData) {
+      try {
+        context = JSON.parse(contextData as string);
+      } catch (error) {
+        console.warn('Failed to parse performance context:', error);
+      }
+    }
+
+    // Create metric object
+    const metric: PerformanceMetric = {
+      operationName,
+      duration,
+      timestamp,
+      userId: userId || context.userId,
+      metadata: context.metadata,
+    };
+
+    // Log the result
     console.log(`[Performance] ${operationName}: ${duration}ms`);
-    
-    // Clean up the timer
-    this.timers.delete(operationName);
+
+    // Persist to Redis if available
+    if (this.useRedis) {
+      await this.persistMetric(metric);
+    }
+
+    // Clean up timers
+    this.timers.delete(key);
+    this.timers.delete(contextKey);
+
+    return duration;
+  }
+
+  /**
+   * Generate unique timer key
+   */
+  private getTimerKey(operationName: string, userId?: string): string {
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substr(2, 9);
+    return userId ? `${operationName}:${userId}:${timestamp}:${random}` : `${operationName}:${timestamp}:${random}`;
+  }
+
+  /**
+   * Persist metric to Redis
+   */
+  private async persistMetric(metric: PerformanceMetric): Promise<void> {
+    try {
+      const key = `performance:metrics:${metric.operationName}`;
+      const dailyKey = `performance:daily:${new Date().toISOString().split('T')[0]}`;
+
+      // Store individual metric
+      await redisManager.lpush(key, metric);
+
+      // Store daily aggregation
+      await redisManager.hset(dailyKey, metric.operationName, {
+        count: await redisManager.hget(dailyKey, `${metric.operationName}:count`) || 0 + 1,
+        totalDuration: await redisManager.hget(dailyKey, `${metric.operationName}:total`) || 0 + metric.duration,
+        avgDuration: metric.duration, // Will be calculated properly in aggregation
+        lastUpdate: metric.timestamp,
+      });
+
+      // Set TTL for metrics (30 days)
+      await redisManager.expire(key, 30 * 24 * 60 * 60);
+      await redisManager.expire(dailyKey, 30 * 24 * 60 * 60);
+    } catch (error) {
+      console.error('Failed to persist performance metric:', error);
+    }
   }
 
   /**
    * Measure a function execution time
    */
-  public async measure<T>(operationName: string, fn: () => Promise<T>): Promise<T> {
-    this.start(operationName);
+  public async measure<T>(
+    operationName: string,
+    fn: () => Promise<T>,
+    userId?: string,
+    metadata?: Record<string, any>
+  ): Promise<T> {
+    this.start(operationName, userId, metadata);
     try {
       const result = await fn();
-      this.end(operationName);
+      await this.end(operationName, userId);
       return result;
     } catch (error) {
-      this.end(operationName);
+      await this.end(operationName, userId);
       throw error;
     }
   }
@@ -62,15 +175,60 @@ export class SimplePerformanceTracker {
   /**
    * Measure a synchronous function execution time
    */
-  public measureSync<T>(operationName: string, fn: () => T): T {
-    this.start(operationName);
+  public async measureSync<T>(
+    operationName: string,
+    fn: () => T,
+    userId?: string,
+    metadata?: Record<string, any>
+  ): Promise<T> {
+    this.start(operationName, userId, metadata);
     try {
       const result = fn();
-      this.end(operationName);
+      await this.end(operationName, userId);
       return result;
     } catch (error) {
-      this.end(operationName);
+      await this.end(operationName, userId);
       throw error;
+    }
+  }
+
+  /**
+   * Get performance metrics for an operation
+   */
+  public async getMetrics(operationName: string, limit: number = 100): Promise<PerformanceMetric[]> {
+    if (!this.useRedis) {
+      return [];
+    }
+
+    try {
+      const key = `performance:metrics:${operationName}`;
+      const client = await redisManager.getClient();
+      const metrics = await client.lrange(key, 0, limit - 1);
+
+      return metrics.map(metric => JSON.parse(metric));
+    } catch (error) {
+      console.error('Failed to get performance metrics:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get daily performance summary
+   */
+  public async getDailySummary(date?: string): Promise<Record<string, any>> {
+    if (!this.useRedis) {
+      return {};
+    }
+
+    try {
+      const targetDate = date || new Date().toISOString().split('T')[0];
+      const key = `performance:daily:${targetDate}`;
+      const client = await redisManager.getClient();
+
+      return await client.hgetall(key);
+    } catch (error) {
+      console.error('Failed to get daily performance summary:', error);
+      return {};
     }
   }
 
@@ -85,9 +243,36 @@ export class SimplePerformanceTracker {
    * Get all active timer names
    */
   public getActiveTimers(): string[] {
-    return Array.from(this.timers.keys());
+    return Array.from(this.timers.keys()).filter(key => !key.includes(':context'));
+  }
+
+  /**
+   * Record a custom metric
+   */
+  public async recordMetric(
+    operationName: string,
+    value: number,
+    userId?: string,
+    metadata?: Record<string, any>
+  ): Promise<void> {
+    const metric: PerformanceMetric = {
+      operationName,
+      duration: value,
+      timestamp: Date.now(),
+      userId,
+      metadata,
+    };
+
+    console.log(`[Performance] ${operationName}: ${value}ms`);
+
+    if (this.useRedis) {
+      await this.persistMetric(metric);
+    }
   }
 }
 
 // Export singleton instance for convenience
-export const performanceTracker = SimplePerformanceTracker.getInstance();
+export const performanceTracker = ProductionPerformanceTracker.getInstance();
+
+// Export types
+export type { PerformanceMetric };
