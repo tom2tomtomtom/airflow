@@ -174,8 +174,18 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({
   }, []);
 
   // Get client info for metrics
-  const { activeClient } = useClient();
   const userId = activeClient?.id || 'anonymous';
+
+  // Define workflow steps for navigation
+  const workflowSteps = [
+    { id: 'brief-upload', title: 'Upload Brief' },
+    { id: 'brief-review', title: 'Review Brief' },
+    { id: 'motivation-generation', title: 'Generate Motivations' },
+    { id: 'motivation-selection', title: 'Select Motivations' },
+    { id: 'copy-generation', title: 'Generate Copy' },
+    { id: 'copy-selection', title: 'Select Copy' },
+    { id: 'render-completion', title: 'Complete' }
+  ];
 
   // Navigation actions
   const nextStep = useCallback(() => {
@@ -458,7 +468,7 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({
             throw new Error(`Motivation validation failed: ${motivationValidation.errors.join(', ')}`);
           }
 
-          dispatch({ type: 'SET_MOTIVATIONS', motivations: motivationValidation.data });
+          dispatch({ type: 'SET_MOTIVATIONS', motivations: motivationValidation.data || [] });
           showNotification(`Generated ${result.data.length} motivations!`, 'success');
 
           // Cache the result for future use
@@ -539,7 +549,7 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({
       };
       const cachedCopy = await aiResponseCache.get('generate-copy', cacheKey);
 
-      if (cachedCopy) {
+      if (cachedCopy && Array.isArray(cachedCopy)) {
         console.log('🎯 Using cached copy variations');
         const copyWithSelection = cachedCopy.map((copy: any) => ({
           ...copy,
@@ -548,7 +558,7 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({
 
         const copyValidation = validateCopyVariations(copyWithSelection);
         if (copyValidation.valid) {
-          dispatch({ type: 'SET_COPY_VARIATIONS', copyVariations: copyValidation.data });
+          dispatch({ type: 'SET_COPY_VARIATIONS', copyVariations: copyValidation.data || [] });
           showNotification(`Loaded ${cachedCopy.length} cached copy variations!`, 'success');
           return;
         }
@@ -644,7 +654,7 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({
           throw new Error(`Copy validation failed: ${copyValidation.errors.join(', ')}`);
         }
 
-        dispatch({ type: 'SET_COPY_VARIATIONS', copyVariations: copyValidation.data });
+        dispatch({ type: 'SET_COPY_VARIATIONS', copyVariations: copyValidation.data || [] });
         showNotification(`Generated ${result.data.length} copy variations!`, 'success');
 
         // Cache the result for future use
@@ -698,7 +708,7 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({
       showNotification(errorMessage, 'error');
       throw error;
     }
-  }, [makeCSRFRequest, state.briefData, activeClient, showNotification, setError]);
+  }, [makeCSRFRequest, state.briefData, activeClient, showNotification]);
 
   // Asset actions
   const selectAsset = useCallback((asset: Asset) => {

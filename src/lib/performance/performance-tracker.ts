@@ -60,7 +60,7 @@ export class ProductionPerformanceTracker {
 
     // Store additional context for later use
     if (userId || metadata) {
-      this.timers.set(`${key}:context`, JSON.stringify({ userId, metadata }));
+      this.timers.set(`${key}:context`, Date.now()); // Store timestamp as placeholder
     }
   }
 
@@ -85,11 +85,8 @@ export class ProductionPerformanceTracker {
     let context: { userId?: string; metadata?: Record<string, any> } = {};
 
     if (contextData) {
-      try {
-        context = JSON.parse(contextData as string);
-      } catch (error) {
-        console.warn('Failed to parse performance context:', error);
-      }
+      // For now, just use the provided userId and metadata
+      context = { userId, metadata: {} };
     }
 
     // Create metric object

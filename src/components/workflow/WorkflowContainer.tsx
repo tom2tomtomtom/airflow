@@ -179,7 +179,9 @@ export const WorkflowContainer: React.FC<WorkflowContainerProps> = ({
   React.useEffect(() => {
     const operationName = `workflow_step_${stepName}`;
     performanceTracker.start(operationName);
-    return () => performanceTracker.end(operationName);
+    return () => {
+      performanceTracker.end(operationName);
+    };
   }, [currentStep, stepName]);
 
   // Render current step component with lazy loading
