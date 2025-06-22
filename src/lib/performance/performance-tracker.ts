@@ -39,11 +39,14 @@ export class ProductionPerformanceTracker {
     try {
       this.useRedis = await redisManager.isAvailable();
       if (this.useRedis) {
+        // eslint-disable-next-line no-console
         console.log('✅ Performance tracker using Redis for persistence');
       } else {
+        // eslint-disable-next-line no-console
         console.log('⚠️ Performance tracker using in-memory storage (Redis unavailable)');
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.warn('Performance tracker Redis initialization failed:', error);
       this.useRedis = false;
     }
@@ -72,6 +75,7 @@ export class ProductionPerformanceTracker {
     const startTime = this.timers.get(key);
 
     if (startTime === undefined) {
+      // eslint-disable-next-line no-console
       console.warn(`[Performance] No start time found for: ${operationName}`);
       return 0;
     }
@@ -99,6 +103,7 @@ export class ProductionPerformanceTracker {
     };
 
     // Log the result
+    // eslint-disable-next-line no-console
     console.log(`[Performance] ${operationName}: ${duration}ms`);
 
     // Persist to Redis if available
@@ -114,12 +119,10 @@ export class ProductionPerformanceTracker {
   }
 
   /**
-   * Generate unique timer key
+   * Generate timer key
    */
   private getTimerKey(operationName: string, userId?: string): string {
-    const timestamp = Date.now();
-    const random = Math.random().toString(36).substr(2, 9);
-    return userId ? `${operationName}:${userId}:${timestamp}:${random}` : `${operationName}:${timestamp}:${random}`;
+    return userId ? `${operationName}:${userId}` : operationName;
   }
 
   /**
@@ -135,8 +138,10 @@ export class ProductionPerformanceTracker {
 
       // Store daily aggregation
       await redisManager.hset(dailyKey, metric.operationName, {
-        count: await redisManager.hget(dailyKey, `${metric.operationName}:count`) || 0 + 1,
-        totalDuration: await redisManager.hget(dailyKey, `${metric.operationName}:total`) || 0 + metric.duration,
+        count: (await redisManager.hget(dailyKey, `${metric.operationName}:count`)) || 0 + 1,
+        totalDuration:
+          (await redisManager.hget(dailyKey, `${metric.operationName}:total`)) ||
+          0 + metric.duration,
         avgDuration: metric.duration, // Will be calculated properly in aggregation
         lastUpdate: metric.timestamp,
       });
@@ -145,6 +150,7 @@ export class ProductionPerformanceTracker {
       await redisManager.expire(key, 30 * 24 * 60 * 60);
       await redisManager.expire(dailyKey, 30 * 24 * 60 * 60);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Failed to persist performance metric:', error);
     }
   }
@@ -192,7 +198,10 @@ export class ProductionPerformanceTracker {
   /**
    * Get performance metrics for an operation
    */
-  public async getMetrics(operationName: string, limit: number = 100): Promise<PerformanceMetric[]> {
+  public async getMetrics(
+    operationName: string,
+    limit: number = 100
+  ): Promise<PerformanceMetric[]> {
     if (!this.useRedis) {
       return [];
     }
@@ -204,6 +213,7 @@ export class ProductionPerformanceTracker {
 
       return metrics.map(metric => JSON.parse(metric));
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Failed to get performance metrics:', error);
       return [];
     }
@@ -224,6 +234,7 @@ export class ProductionPerformanceTracker {
 
       return await client.hgetall(key);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Failed to get daily performance summary:', error);
       return {};
     }
@@ -260,6 +271,7 @@ export class ProductionPerformanceTracker {
       metadata,
     };
 
+    // eslint-disable-next-line no-console
     console.log(`[Performance] ${operationName}: ${value}ms`);
 
     if (this.useRedis) {

@@ -7,6 +7,7 @@ module.exports = {
     '<rootDir>/src/lib',
     '<rootDir>/src/pages',
     '<rootDir>/tests/utils',
+    '<rootDir>/src/__tests__',
   ],
   testMatch: [
     '**/__tests__/**/*.ts?(x)',
@@ -23,9 +24,12 @@ module.exports = {
     '!**/src/pages/api/webhooks/test.ts',
   ],
   transform: {
-    '^.+\\.tsx?$': ['ts-jest', {
-      tsconfig: 'tsconfig.test.json',
-    }],
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {
+        tsconfig: 'tsconfig.test.json',
+      },
+    ],
   },
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
