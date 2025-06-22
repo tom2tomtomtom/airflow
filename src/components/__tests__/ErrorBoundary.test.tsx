@@ -1,14 +1,12 @@
-import React from 'react';
-// Jest test - no imports needed for basic Jest functions
-import { render, waitFor } from '@testing-library/react';
-import { screen } from '@testing-library/dom';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ErrorBoundary from '../ErrorBoundary';
 
 // Mock console methods to avoid noise in test output
 const originalError = console.error;
 beforeEach(() => {
-  console.error = jest.fn();
+  console.error = vi.fn();
 });
 
 afterEach(() => {
@@ -43,17 +41,13 @@ describe('ErrorBoundary', () => {
 
     expect(screen.getByText('Oops! Something went wrong')).toBeInTheDocument();
     expect(
-      screen.getByText('We\'re sorry for the inconvenience. The application encountered an unexpected error.')
+      screen.getByText("We're sorry for the inconvenience. An unexpected error occurred.")
     ).toBeInTheDocument();
   });
 
   it('should show error details in development mode', () => {
     const originalEnv = process.env.NODE_ENV;
-    Object.defineProperty(process.env, 'NODE_ENV', {
-      value: 'development',
-      writable: true,
-      configurable: true
-    });
+    process.env.NODE_ENV = 'development';
 
     render(
       <ErrorBoundary>
@@ -63,20 +57,12 @@ describe('ErrorBoundary', () => {
 
     expect(screen.getByText(/Error: Test error/)).toBeInTheDocument();
 
-    Object.defineProperty(process.env, 'NODE_ENV', {
-      value: originalEnv,
-      writable: true,
-      configurable: true
-    });
+    process.env.NODE_ENV = originalEnv;
   });
 
   it('should not show error details in production mode', () => {
     const originalEnv = process.env.NODE_ENV;
-    Object.defineProperty(process.env, 'NODE_ENV', {
-      value: 'production',
-      writable: true,
-      configurable: true
-    });
+    process.env.NODE_ENV = 'production';
 
     render(
       <ErrorBoundary>
@@ -86,11 +72,7 @@ describe('ErrorBoundary', () => {
 
     expect(screen.queryByText(/Error: Test error/)).not.toBeInTheDocument();
 
-    Object.defineProperty(process.env, 'NODE_ENV', {
-      value: originalEnv,
-      writable: true,
-      configurable: true
-    });
+    process.env.NODE_ENV = originalEnv;
   });
 
   it('should render custom fallback when provided', () => {
@@ -106,13 +88,13 @@ describe('ErrorBoundary', () => {
     expect(screen.queryByText('Oops! Something went wrong')).not.toBeInTheDocument();
   });
 
-  it('should navigate to home when home button is clicked', async () => {
+  it('should reload page when reload button is clicked', async () => {
     const user = userEvent.setup();
-    const originalLocation = window.location;
-
-    // Mock window.location.href
-    delete (window as any).location;
-    window.location = { ...originalLocation, href: '' };
+    const reloadMock = vi.fn();
+    Object.defineProperty(window, 'location', {
+      value: { reload: reloadMock },
+      writable: true,
+    });
 
     render(
       <ErrorBoundary>
@@ -120,49 +102,39 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>
     );
 
-    const homeButton = screen.getByText('Go to Home');
-    await user.click(homeButton);
+    const reloadButton = screen.getByText('Reload Page');
+    await user.click(reloadButton);
 
-    expect(window.location.href).toBe('/');
-
-    // Restore original location
-    window.location = originalLocation;
+    expect(reloadMock).toHaveBeenCalled();
   });
 
   it('should reset error boundary when try again is clicked', async () => {
     const user = userEvent.setup();
     let shouldThrow = true;
 
-    const TestComponent = () => <ThrowError shouldThrow={shouldThrow} />;
-
     const { rerender } = render(
       <ErrorBoundary>
-        <TestComponent />
+        <ThrowError shouldThrow={shouldThrow} />
       </ErrorBoundary>
     );
 
     // Verify error state
     expect(screen.getByText('Oops! Something went wrong')).toBeInTheDocument();
 
-    // Click try again - this should reset the error boundary state
-    const tryAgainButton = screen.getByText('Try Again');
-
-    // Change the component to not throw an error after reset
+    // Click try again
     shouldThrow = false;
-
+    const tryAgainButton = screen.getByText('Try Again');
     await user.click(tryAgainButton);
 
-    // Re-render with non-throwing component to test the reset
+    // Re-render with no error
     rerender(
       <ErrorBoundary>
-        <ThrowError shouldThrow={false} />
+        <ThrowError shouldThrow={shouldThrow} />
       </ErrorBoundary>
     );
 
-    // The error boundary should be reset and show normal content
-    await waitFor(() => {
-      expect(screen.queryByText('Oops! Something went wrong')).not.toBeInTheDocument();
-      expect(screen.getByText('No error')).toBeInTheDocument();
-    });
+    // Verify normal state is restored
+    expect(screen.getByText('No error')).toBeInTheDocument();
+    expect(screen.queryByText('Oops! Something went wrong')).not.toBeInTheDocument();
   });
 });

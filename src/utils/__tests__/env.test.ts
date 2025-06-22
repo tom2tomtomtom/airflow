@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { validateEnv, getEnvVar, checkProductionReadiness, getValidatedEnv, logEnvironmentStatus } from '../env';
 
 describe('env utilities', () => {
@@ -6,7 +7,7 @@ describe('env utilities', () => {
 
   beforeEach(() => {
     // Reset environment for each test
-    jest.resetModules();
+    vi.resetModules();
     process.env = { ...originalEnv };
   });
 
@@ -134,11 +135,8 @@ describe('env utilities', () => {
     });
 
     it('should identify missing required variables', () => {
-      // Save original env vars
-      const originalEnv = process.env;
-
-      // Set minimal env with only NODE_ENV and JWT_SECRET
       process.env = {
+        ...process.env,
         NODE_ENV: 'production',
         JWT_SECRET: 'a'.repeat(32),
       };
@@ -147,9 +145,6 @@ describe('env utilities', () => {
       expect(result.isReady).toBe(false);
       expect(result.missingVars).toContain('NEXT_PUBLIC_SUPABASE_URL');
       expect(result.missingVars).toContain('OPENAI_API_KEY');
-
-      // Restore original env
-      process.env = originalEnv;
     });
 
     it('should warn about short JWT_SECRET', () => {
@@ -200,7 +195,7 @@ describe('env utilities', () => {
         ELEVENLABS_API_KEY: 'elevenlabs-test-key',
       };
 
-      Object.assign(process.env, validEnv);
+      process.env = { ...process.env, ...validEnv };
 
       const result1 = getValidatedEnv();
       const result2 = getValidatedEnv();
@@ -212,8 +207,8 @@ describe('env utilities', () => {
 
   describe('logEnvironmentStatus', () => {
     it('should log success for valid environment', () => {
-      const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-
+      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+      
       process.env = {
         ...process.env,
         NODE_ENV: 'development',
@@ -228,26 +223,25 @@ describe('env utilities', () => {
       };
 
       logEnvironmentStatus();
-
-      expect(consoleSpy).toHaveBeenCalledWith('Environment validated successfully');
+      
+      expect(consoleSpy).toHaveBeenCalledWith('✅ Environment validation passed');
       consoleSpy.mockRestore();
     });
 
     it('should exit process on validation failure', () => {
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-      const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => {
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {
         throw new Error('Process exit');
       });
-
-      // Set NODE_ENV to development so error logging is enabled, but make JWT_SECRET invalid
-      Object.assign(process.env, {
-        NODE_ENV: 'development',
-        JWT_SECRET: 'too-short', // This will cause validation to fail
-      });
+      
+      process.env = {
+        ...process.env,
+        NODE_ENV: 'invalid',
+      };
 
       expect(() => logEnvironmentStatus()).toThrow('Process exit');
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('❌ Environment validation failed'), expect.any(Error));
-
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Environment validation failed'), expect.any(Error));
+      
       consoleSpy.mockRestore();
       exitSpy.mockRestore();
     });

@@ -1,6 +1,6 @@
 /**
  * Universal API v2 Router
- * 
+ *
  * This is the central router for all API v2 endpoints with a standardized middleware pipeline:
  * 1. Error handling
  * 2. Authentication
@@ -8,7 +8,7 @@
  * 4. Input validation
  * 5. Cost tracking (for AI operations)
  * 6. Route handling
- * 
+ *
  * All API v2 endpoints follow consistent patterns for:
  * - Response format
  * - Error handling
@@ -20,7 +20,13 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withAuth } from '@/middleware/withAuth';
 import { withAPIRateLimit } from '@/lib/rate-limiter';
-import { successResponse, errorResponse, handleApiError, methodNotAllowed, ApiErrorCode } from '@/lib/api-response';
+import {
+  successResponse,
+  errorResponse,
+  handleApiError,
+  methodNotAllowed,
+  ApiErrorCode,
+} from '@/lib/api-response';
 // Simple stubs for missing modules
 class AICostController {
   static getInstance() {
@@ -39,7 +45,14 @@ class AICostController {
     return { allowed: true, budgetRemaining: 1000, reason: 'Budget check passed' };
   }
 
-  async trackUsage(service: string, model: string, tokens: number, cost: number, userId: string, metadata: any) {
+  async trackUsage(
+    service: string,
+    model: string,
+    tokens: number,
+    cost: number,
+    userId: string,
+    metadata: any
+  ) {
     // Stub implementation
     console.log(`Tracked usage: ${service}/${model} - ${tokens} tokens, $${cost}`, metadata);
   }
@@ -87,13 +100,13 @@ async function universalHandler(req: NextApiRequest, res: NextApiResponse): Prom
   const startTime = Date.now();
   const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   const user = (req as any).user;
-  
+
   // Extract route from URL
   const { route: routeParams } = req.query;
   const route = Array.isArray(routeParams)
     ? routeParams.filter((param): param is string => typeof param === 'string')
     : [routeParams].filter((param): param is string => typeof param === 'string');
-  
+
   const context: RouteContext = {
     user,
     route,
@@ -101,7 +114,7 @@ async function universalHandler(req: NextApiRequest, res: NextApiResponse): Prom
     body: req.body,
     query: req.query,
     startTime,
-    requestId
+    requestId,
   };
 
   // Start performance tracking
@@ -114,7 +127,7 @@ async function universalHandler(req: NextApiRequest, res: NextApiResponse): Prom
 
     // Validate route
     if (!route || route.length === 0) {
-      return errorResponse(res, ApiErrorCode.NOT_FOUND, 'API v2 route not specified', 404);
+      return errorResponse(res, ApiErrorCode.INVALID_REQUEST, 'API v2 route not specified', 400);
     }
 
     const [mainRoute, ...subRoute] = route;
@@ -123,33 +136,39 @@ async function universalHandler(req: NextApiRequest, res: NextApiResponse): Prom
     switch (mainRoute) {
       case 'workflow':
         return await handleWorkflowRoutes(req, res, context, subRoute);
-      
+
       case 'ai':
         return await handleAIRoutes(req, res, context, subRoute);
-      
+
       case 'assets':
         return await handleAssetsRoutes(req, res, context, subRoute);
-      
+
       case 'monitoring':
         return await handleMonitoringRoutes(req, res, context, subRoute);
-      
+
       case 'health':
         return await handleHealthCheck(req, res, context);
-      
-      default:
-        return errorResponse(res, ApiErrorCode.NOT_FOUND, `API v2 route '${mainRoute}' not found`, 404);
-    }
 
+      default:
+        return errorResponse(
+          res,
+          ApiErrorCode.NOT_FOUND,
+          `API v2 route '${mainRoute}' not found`,
+          404
+        );
+    }
   } catch (error) {
     console.error(`[API v2] Error in ${context.method} /${route.join('/')}:`, error);
     return handleApiError(res, error, `api_v2_${route.join('_')}`);
   } finally {
     // End performance tracking
     operation.end();
-    
+
     // Log response time
     const duration = Date.now() - startTime;
-    console.log(`[API v2] ${context.method} /${route.join('/')} completed in ${duration}ms - ${requestId}`);
+    console.log(
+      `[API v2] ${context.method} /${route.join('/')} completed in ${duration}ms - ${requestId}`
+    );
   }
 }
 
@@ -175,22 +194,24 @@ async function handleHealthCheck(
     performance: {
       averageResponseTime: performanceTracker.getAverageResponseTime(),
       totalRequests: performanceTracker.getTotalRequests(),
-      errorRate: performanceTracker.getErrorRate()
+      errorRate: performanceTracker.getErrorRate(),
     },
     ai: {
       budgetStatus: await costController.getBudgetStatus(),
-      totalSpent: await costController.getTotalSpent()
-    }
+      totalSpent: await costController.getTotalSpent(),
+    },
   };
 
   return successResponse(res, health, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 }
 
 // Middleware pipeline wrapper
-function withMiddlewarePipeline(handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void>) {
+function withMiddlewarePipeline(
+  handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void>
+) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     // Set CORS headers for API v2
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -223,7 +244,7 @@ export async function withCostTracking(
   }
 
   const costController = AICostController.getInstance();
-  
+
   try {
     // Check budget before operation
     const budgetCheck = await costController.checkBudget(
@@ -234,24 +255,22 @@ export async function withCostTracking(
     );
 
     if (!budgetCheck.allowed) {
-      errorResponse(res, ApiErrorCode.VALIDATION_ERROR, budgetCheck.reason || 'Budget exceeded', 402);
+      errorResponse(
+        res,
+        ApiErrorCode.VALIDATION_ERROR,
+        budgetCheck.reason || 'Budget exceeded',
+        402
+      );
       return false;
     }
 
     // Track the operation (will be called after successful completion)
     (req as any).trackCost = async (actualCost: number) => {
-      await costController.trackUsage(
-        'openai',
-        'gpt-4',
-        1000,
-        actualCost,
-        context.user.id,
-        {
-          operation,
-          route: context.route.join('/'),
-          requestId: context.requestId
-        }
-      );
+      await costController.trackUsage('openai', 'gpt-4', 1000, actualCost, context.user.id, {
+        operation,
+        route: context.route.join('/'),
+        requestId: context.requestId,
+      });
     };
 
     return true;
@@ -276,8 +295,4 @@ export function validateInput(schema: any) {
 }
 
 // Export the handler with middleware pipeline
-export default withMiddlewarePipeline(
-  withAuth(
-    withAPIRateLimit(universalHandler)
-  )
-);
+export default withMiddlewarePipeline(withAuth(withAPIRateLimit(universalHandler)));
