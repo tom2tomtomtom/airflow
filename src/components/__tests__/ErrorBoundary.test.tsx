@@ -5,10 +5,12 @@ import ErrorBoundary from '../ErrorBoundary';
 // Mock console methods to avoid noise in test output
 const originalError = console.error;
 beforeEach(() => {
+  // eslint-disable-next-line no-console
   console.error = jest.fn();
 });
 
 afterEach(() => {
+  // eslint-disable-next-line no-console
   console.error = originalError;
 });
 
@@ -90,8 +92,8 @@ describe('ErrorBoundary', () => {
   it('should go to home when go home button is clicked', async () => {
     const user = userEvent.setup();
     // Mock window.location.href
-    delete (window as any).location;
-    (window as any).location = { href: '' };
+    delete (window as unknown as { location: unknown }).location;
+    (window as unknown as { location: { href: string } }).location = { href: '' };
 
     render(
       <ErrorBoundary>

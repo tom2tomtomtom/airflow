@@ -25,11 +25,11 @@ import {
 import { withCostTracking } from '../[...route]';
 
 interface RouteContext {
-  user: any;
+  user: Record<string, unknown>;
   route: string[];
   method: string;
-  body: any;
-  query: any;
+  body: Record<string, unknown>;
+  query: Record<string, unknown>;
   startTime: number;
   requestId: string;
 }
@@ -45,7 +45,7 @@ export async function handleWorkflowRoutes(
       return errorResponse(res, ApiErrorCode.UNAUTHORIZED, 'Authentication required', 401);
     }
 
-    const [endpoint, ...params] = subRoute;
+    const [endpoint, ..._params] = subRoute;
 
     switch (endpoint) {
       case 'state':
@@ -128,7 +128,7 @@ async function getWorkflowState(req: NextApiRequest, res: NextApiResponse, conte
   };
 
   const data = workflow;
-  const error = null;
+  const _error = null;
 
   return successResponse(
     res,
@@ -170,7 +170,7 @@ async function updateWorkflowState(
   // Use provided workflowId or generate a new one
   const actualWorkflowId = workflowId || `workflow_${Date.now()}`;
 
-  const updateData: any = {
+  const updateData: Record<string, unknown> = {
     updated_at: new Date().toISOString(),
   };
 
@@ -204,7 +204,7 @@ async function updateWorkflowState(
   };
 
   const data = workflow;
-  const error = null;
+  const _error = null;
 
   return successResponse(
     res,
@@ -231,7 +231,7 @@ async function updateWorkflowState(
   );
 }
 
-async function deleteWorkflowState(
+async function _deleteWorkflowState(
   req: NextApiRequest,
   res: NextApiResponse,
   context: RouteContext
@@ -243,7 +243,7 @@ async function deleteWorkflowState(
   }
 
   // Mock successful deletion for testing
-  const error = null;
+  const _error = null;
 
   return successResponse(res, { deleted: true }, 200, {
     requestId: context.requestId,
@@ -343,7 +343,7 @@ async function handleGenerateAssets(
   }
 
   // Implementation for AI asset generation
-  const { workflowId, prompt, style, count = 1 } = context.body;
+  const { workflowId, prompt, style: _style, count = 1 } = context.body;
 
   if (!workflowId || !prompt) {
     return errorResponse(
@@ -378,7 +378,7 @@ async function handleBrief(req: NextApiRequest, res: NextApiResponse, context: R
     return methodNotAllowed(res, ['POST']);
   }
 
-  const { workflowId, briefContent, briefUrl, briefType } = context.body;
+  const { workflowId, briefContent, briefUrl, briefType: _briefType } = context.body;
 
   if (!workflowId || (!briefContent && !briefUrl)) {
     return errorResponse(
@@ -393,7 +393,7 @@ async function handleBrief(req: NextApiRequest, res: NextApiResponse, context: R
   const briefId = `brief_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
   // Mock successful brief storage for testing
-  const error = null;
+  const _error = null;
 
   return successResponse(
     res,
@@ -469,7 +469,7 @@ async function selectMotivations(req: NextApiRequest, res: NextApiResponse, cont
   }
 
   // Mock successful motivation update for testing
-  const error = null;
+  const _error = null;
 
   return successResponse(res, { success: true }, 200, {
     requestId: context.requestId,
@@ -532,7 +532,7 @@ async function selectCopy(req: NextApiRequest, res: NextApiResponse, context: Ro
   }
 
   // Mock successful copy update for testing
-  const error = null;
+  const _error = null;
 
   return successResponse(res, { success: true }, 200, {
     requestId: context.requestId,
@@ -601,7 +601,7 @@ async function selectTemplate(req: NextApiRequest, res: NextApiResponse, context
   }
 
   // Mock successful template update for testing
-  const error = null;
+  const _error = null;
 
   return successResponse(res, { success: true }, 200, {
     requestId: context.requestId,
@@ -630,8 +630,8 @@ async function handleMatrix(req: NextApiRequest, res: NextApiResponse, context: 
     id: `matrix_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     workflowId,
     templateId,
-    combinations: selectedAssets.flatMap((asset: any) =>
-      selectedCopy.map((copy: any) => ({
+    combinations: selectedAssets.flatMap((asset: Record<string, unknown>) =>
+      selectedCopy.map((copy: Record<string, unknown>) => ({
         id: `combo_${asset.id || asset}_${copy.id || copy}`,
         assetId: asset.id || asset,
         copyId: copy.id || copy,

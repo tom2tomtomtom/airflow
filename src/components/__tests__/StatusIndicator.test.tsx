@@ -164,7 +164,7 @@ describe('CompletionStatus', () => {
   });
 
   it('should respect size prop', () => {
-    const { container } = renderWithTheme(
+    const { container: _container } = renderWithTheme(
       <CompletionStatus completed={5} total={10} size="medium" />
     );
 

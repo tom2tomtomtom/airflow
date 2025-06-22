@@ -24,7 +24,7 @@ class PerformanceTracker {
     return 100;
   }
 
-  getPercentileResponseTime(percentile: number) {
+  getPercentileResponseTime(_percentile: number) {
     return 150;
   }
 
@@ -56,7 +56,7 @@ class PerformanceTracker {
     return 0;
   }
 
-  getOperationMetrics(operation: string) {
+  getOperationMetrics(_operation: string) {
     return { count: 0, averageTime: 0, errorRate: 0 };
   }
 
@@ -64,7 +64,7 @@ class PerformanceTracker {
     return {};
   }
 
-  getRecentErrors(limit: number) {
+  getRecentErrors(_limit: number) {
     return [];
   }
 
@@ -100,11 +100,11 @@ class AICostController {
 }
 
 interface RouteContext {
-  user: any;
+  user: Record<string, unknown>;
   route: string[];
   method: string;
-  body: any;
-  query: any;
+  body: Record<string, unknown>;
+  query: Record<string, unknown>;
   startTime: number;
   requestId: string;
 }
