@@ -11,35 +11,38 @@
     "unused-imports/no-unused-imports": "warn",
     "unused-imports/no-unused-vars": [
       "warn",
-      { 
-        "vars": "all", 
+      {
+        "vars": "all",
         "varsIgnorePattern": "^_",
-        "args": "after-used", 
-        "argsIgnorePattern": "^_" 
+        "args": "after-used",
+        "argsIgnorePattern": "^_"
       }
     ],
-    
-    // TypeScript specific rules
-    "@typescript-eslint/no-explicit-any": "off",
+
+    // TypeScript specific rules - STRICT MODE ENABLED
+    "@typescript-eslint/no-explicit-any": "error",
     "@typescript-eslint/explicit-module-boundary-types": "off",
-    "@typescript-eslint/no-unused-vars": ["warn", { 
-      "argsIgnorePattern": "^_",
-      "varsIgnorePattern": "^_"
-    }],
-    
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ],
+
     // React rules
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off",
     "react-hooks/exhaustive-deps": "warn",
     "react/no-unescaped-entities": "warn",
-    
-    // General rules - relaxed for deployment
-    "no-console": "warn",
+
+    // General rules - STRICT MODE ENABLED
+    "no-console": "error",
     "no-unused-expressions": "off",
     "@typescript-eslint/no-unused-expressions": "warn",
     "no-case-declarations": "warn",
     "prefer-rest-params": "warn",
-    
+
     // Import rules - disabled for deployment
     "import/order": "off"
   },

@@ -29,12 +29,12 @@
     "strictPropertyInitialization": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
-    "noUnusedLocals": false, // TODO: Re-enable after fixing 588 unused variables
-    "noUnusedParameters": false, // TODO: Re-enable after fixing unused parameters
+    "noUnusedLocals": true, // STRICT MODE: Re-enabled
+    "noUnusedParameters": true, // STRICT MODE: Re-enabled
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": false,
-    "exactOptionalPropertyTypes": false,
+    "noUncheckedIndexedAccess": true, // STRICT MODE: Enable safer array/object access
+    "exactOptionalPropertyTypes": true, // STRICT MODE: Stricter optional property handling
     "baseUrl": ".",
     "typeRoots": ["./node_modules/@types", "./types"],
     "declaration": false,
@@ -45,13 +45,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    "types/**/*.d.ts"
-  ],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "types/**/*.d.ts"],
   "exclude": [
     "node_modules",
     ".next",
