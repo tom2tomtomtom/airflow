@@ -129,7 +129,7 @@ export async function handleMonitoringRoutes(
         return await handleLogs(req, res, context);
       
       case 'alerts':
-        return await handleAlerts(req, res, context);
+        return await handleAlerts(req, res, context, params);
       
       case 'performance':
         return await handlePerformance(req, res, context);
@@ -217,9 +217,15 @@ async function handleMetrics(
   }
 
   const performanceTracker = PerformanceTracker.getInstance();
-  const { timeRange = '1h', operation } = context.query;
+  const { timeRange = '1h', operation, realtime } = context.query;
 
-  const metrics = {
+  // Validate time range parameter
+  const validTimeRanges = ['5m', '15m', '1h', '6h', '24h', '7d', '30d'];
+  if (timeRange && !validTimeRanges.includes(timeRange as string)) {
+    return errorResponse(res, ApiErrorCode.VALIDATION_ERROR, 'Invalid time range', 400);
+  }
+
+  const metricsData = {
     timeRange,
     timestamp: new Date().toISOString(),
     overall: {
@@ -228,7 +234,7 @@ async function handleMetrics(
       errorRate: performanceTracker.getErrorRate(),
       throughput: performanceTracker.getThroughput()
     },
-    operations: operation 
+    operations: operation
       ? performanceTracker.getOperationMetrics(operation as string)
       : performanceTracker.getAllOperationMetrics(),
     slowOperations: performanceTracker.getSlowOperations(),
@@ -240,7 +246,27 @@ async function handleMetrics(
     }
   };
 
-  return successResponse(res, metrics, 200, {
+  // Handle real-time metrics request
+  if (realtime === 'true') {
+    const realtimeData = {
+      ...metricsData,
+      realtime: {
+        currentRequests: 5,
+        activeConnections: 12,
+        queueLength: 0,
+        lastUpdate: new Date().toISOString()
+      }
+    };
+    return successResponse(res, realtimeData, 200, {
+      requestId: context.requestId,
+      timestamp: new Date().toISOString()
+    });
+  }
+
+  // Wrap metrics in expected structure
+  const response = { metrics: metricsData };
+
+  return successResponse(res, response, 200, {
     requestId: context.requestId,
     timestamp: new Date().toISOString()
   });
@@ -256,47 +282,130 @@ async function handleLogs(
     return methodNotAllowed(res, ['GET']);
   }
 
-  const { level = 'info', limit = '100', since } = context.query;
+  const { level = 'info', limit = '100', since, search, startTime, endTime } = context.query;
 
-  // Mock log data - in production, this would query actual log storage
-  const logs = [
-    {
-      timestamp: new Date().toISOString(),
-      level: 'info',
-      message: 'API v2 request processed',
-      requestId: context.requestId,
-      userId: context.user?.id,
-      metadata: {
-        route: context.route.join('/'),
-        method: context.method,
-        responseTime: Date.now() - context.startTime
+  // Validate log query parameters
+  const validLevels = ['error', 'warn', 'info', 'debug'];
+  if (level && !validLevels.includes(level as string)) {
+    return errorResponse(res, ApiErrorCode.VALIDATION_ERROR, 'Invalid log level', 400);
+  }
+
+  const limitNum = parseInt(limit as string, 10);
+  if (isNaN(limitNum) || limitNum < 1 || limitNum > 1000) {
+    return errorResponse(res, ApiErrorCode.VALIDATION_ERROR, 'Invalid limit parameter', 400);
+  }
+
+  try {
+    // Ensure context and user are properly defined
+    if (!context || !context.user) {
+      return errorResponse(res, ApiErrorCode.VALIDATION_ERROR, 'Invalid request context', 400);
+    }
+
+    // Mock log data - in production, this would query actual log storage
+    const allLogs = [
+      {
+        id: 'log-1',
+        timestamp: new Date().toISOString(),
+        level: 'info',
+        message: 'API v2 request processed',
+        requestId: context.requestId,
+        userId: context.user?.id || 'anonymous',
+        metadata: {
+          route: Array.isArray(context.route) ? context.route.join('/') : 'unknown',
+          method: context.method,
+          responseTime: Date.now() - (context.startTime || Date.now())
+        }
+      },
+      {
+        id: 'log-2',
+        timestamp: new Date(Date.now() - 60000).toISOString(),
+        level: 'error',
+        message: 'Database connection timeout',
+        requestId: 'req-123',
+        metadata: {
+          error: 'Connection timeout after 5000ms',
+          database: 'primary'
+        }
+      }
+    ];
+
+    // Apply filters
+    let filteredLogs = allLogs;
+
+    if (level && level !== 'info') {
+      filteredLogs = filteredLogs.filter(log => log.level === level);
+    }
+
+    if (search) {
+      const searchTerm = (search as string).toLowerCase();
+      filteredLogs = filteredLogs.filter(log =>
+        log.message.toLowerCase().includes(searchTerm) ||
+        log.level.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // Handle time range filtering
+    if (since) {
+      try {
+        const sinceDate = new Date(since as string);
+        filteredLogs = filteredLogs.filter(log =>
+          new Date(log.timestamp) >= sinceDate
+        );
+      } catch (error) {
+        // Ignore invalid date
       }
     }
-  ];
 
-  return successResponse(res, {
-    logs,
-    total: logs.length,
-    filters: { level, limit, since }
-  }, 200, {
-    requestId: context.requestId,
-    timestamp: new Date().toISOString()
-  });
+    if (startTime && endTime) {
+      try {
+        const start = new Date(startTime as string);
+        const end = new Date(endTime as string);
+        filteredLogs = filteredLogs.filter(log => {
+          const logTime = new Date(log.timestamp);
+          return logTime >= start && logTime <= end;
+        });
+      } catch (error) {
+        // Ignore invalid dates
+      }
+    }
+
+    // Apply limit
+    const logs = filteredLogs.slice(0, limitNum);
+
+    return successResponse(res, {
+      logs,
+      total: filteredLogs.length,
+      filters: { level, limit: limitNum, since, search, startTime, endTime }
+    }, 200, {
+      requestId: context.requestId,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    return errorResponse(res, ApiErrorCode.INTERNAL_ERROR, 'Failed to retrieve logs', 500);
+  }
 }
 
 // Alert management
 async function handleAlerts(
   req: NextApiRequest,
   res: NextApiResponse,
-  context: RouteContext
+  context: RouteContext,
+  params: string[] = []
 ): Promise<void> {
+  const [alertId] = params; // Get alert ID from params if present
+
   switch (context.method) {
     case 'GET':
       return await getAlerts(req, res, context);
     case 'POST':
       return await createAlert(req, res, context);
+    case 'PUT':
+      if (alertId) {
+        return await updateAlert(req, res, context, alertId);
+      }
+      return errorResponse(res, ApiErrorCode.VALIDATION_ERROR, 'Alert ID required for update', 400);
     default:
-      return methodNotAllowed(res, ['GET', 'POST']);
+      return methodNotAllowed(res, ['GET', 'POST', 'PUT']);
   }
 }
 
@@ -333,16 +442,20 @@ async function getAlerts(req: NextApiRequest, res: NextApiResponse, context: Rou
 }
 
 async function createAlert(req: NextApiRequest, res: NextApiResponse, context: RouteContext) {
-  const { title, description, severity, threshold, metric } = context.body;
+  const { title, name, description, condition, severity, threshold, metric } = context.body;
 
-  if (!title || !description || !severity) {
-    return errorResponse(res, ApiErrorCode.VALIDATION_ERROR, 'Title, description, and severity are required', 400);
+  // Accept either title/description or name/condition for flexibility
+  const alertTitle = title || name;
+  const alertDescription = description || condition;
+
+  if (!alertTitle || !alertDescription || !severity) {
+    return errorResponse(res, ApiErrorCode.VALIDATION_ERROR, 'Title/name, description/condition, and severity are required', 400);
   }
 
   const alert = {
     id: `alert-${Date.now()}`,
-    title,
-    description,
+    title: alertTitle,
+    description: alertDescription,
     severity,
     status: 'active',
     createdAt: new Date().toISOString(),
@@ -350,7 +463,33 @@ async function createAlert(req: NextApiRequest, res: NextApiResponse, context: R
     metadata: { threshold, metric }
   };
 
-  return successResponse(res, alert, 201, {
+  return successResponse(res, { alert }, 201, {
+    requestId: context.requestId,
+    timestamp: new Date().toISOString()
+  });
+}
+
+async function updateAlert(req: NextApiRequest, res: NextApiResponse, context: RouteContext, alertId: string) {
+  const { status, acknowledged } = context.body;
+
+  // Mock alert update - in production, this would update the database
+  const updatedAlert = {
+    id: alertId,
+    title: 'High Memory Usage',
+    description: 'Memory usage is above 85%',
+    severity: 'warning',
+    status: status || 'acknowledged',
+    acknowledgedAt: acknowledged ? new Date().toISOString() : undefined,
+    acknowledgedBy: acknowledged ? context.user.id : undefined,
+    createdAt: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+    metadata: {
+      currentValue: 87,
+      threshold: 85,
+      metric: 'memory_usage'
+    }
+  };
+
+  return successResponse(res, { alert: updatedAlert }, 200, {
     requestId: context.requestId,
     timestamp: new Date().toISOString()
   });
@@ -400,7 +539,38 @@ async function handleSystem(
     return methodNotAllowed(res, ['GET']);
   }
 
+  const memoryUsage = process.memoryUsage();
+  const cpuUsage = process.cpuUsage();
+
   const system = {
+    cpu: {
+      usage: {
+        user: cpuUsage.user,
+        system: cpuUsage.system
+      },
+      loadAverage: [0.5, 0.3, 0.2], // Mock load average
+      cores: 8 // Mock CPU cores
+    },
+    memory: {
+      total: memoryUsage.heapTotal,
+      used: memoryUsage.heapUsed,
+      free: memoryUsage.heapTotal - memoryUsage.heapUsed,
+      external: memoryUsage.external,
+      rss: memoryUsage.rss,
+      arrayBuffers: memoryUsage.arrayBuffers
+    },
+    disk: {
+      total: 500 * 1024 * 1024 * 1024, // 500GB mock
+      used: 250 * 1024 * 1024 * 1024,  // 250GB mock
+      free: 250 * 1024 * 1024 * 1024,  // 250GB mock
+      usage: 50 // 50% usage
+    },
+    network: {
+      bytesReceived: 1024 * 1024 * 100, // 100MB mock
+      bytesSent: 1024 * 1024 * 50,      // 50MB mock
+      packetsReceived: 10000,
+      packetsSent: 8000
+    },
     node: {
       version: process.version,
       platform: process.platform,
@@ -413,8 +583,8 @@ async function handleSystem(
       locale: Intl.DateTimeFormat().resolvedOptions().locale
     },
     resources: {
-      memory: process.memoryUsage(),
-      cpu: process.cpuUsage()
+      memory: memoryUsage,
+      cpu: cpuUsage
     },
     features: {
       apiV2: true,

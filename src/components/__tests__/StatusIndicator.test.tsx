@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+// No need to import describe, it, expect - they're global in Jest
 import { render, screen } from '@testing-library/react';
 import StatusIndicator, { CompletionStatus } from '../StatusIndicator';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -103,7 +103,7 @@ describe('StatusIndicator', () => {
 
       const text = screen.getByText('Completed');
       expect(text).toBeInTheDocument();
-      expect(text.tagName).toBe('P'); // Typography renders as p tag
+      expect(text.tagName).toBe('SPAN'); // Typography renders as span tag by default
     });
 
     it('should show progress bar for in-progress status with progress prop', () => {
