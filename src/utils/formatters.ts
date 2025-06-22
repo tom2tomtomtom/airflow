@@ -6,11 +6,20 @@
  * Format a number as currency
  */
 export function formatCurrency(amount: number, currency: string = 'USD'): string {
-  const formatter = new Intl.NumberFormat('en-US', {
+  const options: Intl.NumberFormatOptions = {
     style: 'currency',
     currency: currency,
-    minimumFractionDigits: 2,
-  });
+  };
+  
+  // JPY doesn't use decimals
+  if (currency === 'JPY') {
+    options.minimumFractionDigits = 0;
+    options.maximumFractionDigits = 0;
+  } else {
+    options.minimumFractionDigits = 2;
+  }
+  
+  const formatter = new Intl.NumberFormat('en-US', options);
   
   return formatter.format(amount);
 }
@@ -53,21 +62,24 @@ export function formatDate(date: Date | string | null, format: 'short' | 'long' 
  * Format file size in human readable format
  */
 export function formatFileSize(bytes: number): string {
-  if (bytes < 0) return '0 B';
+  if (bytes < 0 || isNaN(bytes)) return '0 B';
   if (bytes === 0) return '0 B';
   
   const k = 1024;
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  const value = bytes / Math.pow(k, i);
+  const formatted = value % 1 === 0 ? value.toFixed(1) : value.toFixed(1);
+  
+  return formatted + ' ' + sizes[i];
 }
 
 /**
  * Format duration in seconds to MM:SS or HH:MM:SS format
  */
 export function formatDuration(seconds: number): string {
-  if (seconds < 0) seconds = 0;
+  if (seconds < 0 || isNaN(seconds)) seconds = 0;
   
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
@@ -78,6 +90,14 @@ export function formatDuration(seconds: number): string {
   } else {
     return `${minutes}:${secs.toString().padStart(2, '0')}`;
   }
+}
+
+/**
+ * Format a number with thousands separators
+ */
+export function formatNumber(num: number): string {
+  if (isNaN(num)) return '0';
+  return new Intl.NumberFormat('en-US').format(num);
 }
 
 /**
