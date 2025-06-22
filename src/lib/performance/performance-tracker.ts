@@ -3,7 +3,16 @@
  * Provides performance monitoring with Redis persistence for production use
  */
 
-import { redisManager } from '@/lib/redis/redis-config';
+// Conditional Redis import for server-side only
+let redisManager: any = null;
+if (typeof window === 'undefined') {
+  try {
+    redisManager = require('@/lib/redis/redis-config').redisManager;
+  } catch (error) {
+    // Redis not available, will fallback to in-memory
+    console.warn('Redis not available, using in-memory performance tracking');
+  }
+}
 
 interface PerformanceMetric {
   operationName: string;

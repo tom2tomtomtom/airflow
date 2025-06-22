@@ -25,7 +25,28 @@ import {
   PlayArrow as PlayArrowIcon,
 } from '@mui/icons-material';
 import { useWorkflow } from './WorkflowProvider';
-import { performanceTracker } from '@/lib/performance/performance-tracker';
+
+// Conditional performance tracker import for server-side only
+let performanceTracker: any = null;
+if (typeof window === 'undefined') {
+  try {
+    performanceTracker = require('@/lib/performance/performance-tracker').performanceTracker;
+  } catch (error) {
+    // Performance tracker not available, use noop
+    performanceTracker = {
+      startTimer: () => {},
+      endTimer: () => {},
+      recordMetric: () => {}
+    };
+  }
+} else {
+  // Client-side noop implementation
+  performanceTracker = {
+    startTimer: () => {},
+    endTimer: () => {},
+    recordMetric: () => {}
+  };
+}
 
 // Lazy load step components for better performance
 const BriefUploadStep = lazy(() =>

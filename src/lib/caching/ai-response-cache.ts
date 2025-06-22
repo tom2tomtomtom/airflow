@@ -3,8 +3,26 @@
  * Caches expensive AI operations to reduce costs and improve performance
  */
 
-import { redisManager } from '@/lib/redis/redis-config';
-import crypto from 'crypto';
+// Conditional imports for server-side only
+let crypto: any = null;
+let redisManager: any = null;
+
+if (typeof window === 'undefined') {
+  try {
+    crypto = require('crypto');
+    redisManager = require('@/lib/redis/redis-config').redisManager;
+  } catch (error) {
+    // Server dependencies not available, will fallback to in-memory
+    console.warn('Server dependencies not available, using fallbacks');
+  }
+} else {
+  // Client-side fallback for crypto
+  crypto = {
+    createHash: () => ({
+      update: () => ({ digest: () => Math.random().toString(36) })
+    })
+  };
+}
 
 interface CacheConfig {
   ttl: number; // Time to live in seconds
