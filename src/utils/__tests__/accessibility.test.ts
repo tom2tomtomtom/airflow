@@ -14,8 +14,7 @@ import {
   createLoadingProps,
   createTableProps,
   usePrefersReducedMotion,
-  commonAriaAttributes,
-  AriaAttributes
+  commonAriaAttributes
 } from '../accessibility';
 
 // Mock React hooks for testing
@@ -150,24 +149,28 @@ describe('accessibility utilities', () => {
     });
 
     it('should set message content after timeout', () => {
+      const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+      
       announceToScreenReader('Test message');
+      
+      // The timeout function should have been called
+      expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 100);
       
       // Fast forward the first timeout
       jest.advanceTimersByTime(100);
-      
-      // The timeout function should have been called
-      expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), 100);
     });
 
     it('should remove element after cleanup timeout', () => {
+      const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+      
       announceToScreenReader('Test message');
+      
+      // Both timeout functions should have been called
+      expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 100);
+      expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 3000);
       
       // Fast forward both timeouts
       jest.advanceTimersByTime(3100);
-      
-      // Both timeout functions should have been called
-      expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), 100);
-      expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), 3000);
     });
 
     it('should execute with default priority', () => {

@@ -29,8 +29,8 @@ export interface ValidationResult {
  */
 export function sanitizeHtml(html: string): string {
   return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'p', 'br', 'ul', 'ol', 'li'],
-    ALLOWED_ATTR: [],
+    ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'p', 'br', 'ul', 'ol', 'li', 'a'],
+    ALLOWED_ATTR: ['href'],
   });
 }
 
@@ -49,6 +49,46 @@ export function sanitizeString(input: string): string {
  * Validate email format
  */
 export function isValidEmail(email: string): boolean {
+  if (!email || typeof email !== 'string') return false;
+  
+  // Security checks - reject dangerous patterns
+  const dangerousPatterns = [
+    /<script/i,
+    /<img/i,
+    /javascript:/i,
+    /onerror=/i,
+    /onclick=/i,
+    /DROP TABLE/i,
+    /INSERT INTO/i,
+    /DELETE FROM/i,
+    /\r\n/,
+    /\x00/,
+    /<>/,
+  ];
+  
+  if (dangerousPatterns.some(pattern => pattern.test(email))) {
+    return false;
+  }
+  
+  // More comprehensive email validation
+  // Must have exactly one @ symbol
+  const atSymbols = email.split('@').length - 1;
+  if (atSymbols !== 1) return false;
+  
+  // Split into local and domain parts
+  const [localPart, domainPart] = email.split('@');
+  
+  // Check local part
+  if (!localPart || localPart.length === 0) return false;
+  if (localPart.includes(' ')) return false;
+  
+  // Check domain part
+  if (!domainPart || domainPart.length === 0) return false;
+  if (domainPart.includes(' ')) return false;
+  if (!domainPart.includes('.')) return false;
+  if (domainPart.startsWith('.') || domainPart.endsWith('.')) return false;
+  if (domainPart.includes('..')) return false;
+  
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
@@ -116,12 +156,51 @@ export function validateEmail(email: string): boolean {
 }
 
 /**
- * Validate password strength
+ * Validate password strength (simple boolean check)
  */
-export function validatePassword(password: string): boolean {
+export function isPasswordValid(password: string): boolean {
   // At least 8 characters, one uppercase, one lowercase, one digit, one special char
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
   return passwordRegex.test(password);
+}
+
+/**
+ * Validate password strength with detailed feedback
+ */
+export function validatePassword(password: string): { isValid: boolean; errors: string[] } {
+  const errors: string[] = [];
+  
+  if (password.length < 8) {
+    errors.push('Password must be at least 8 characters long');
+  }
+  
+  if (!/[a-z]/.test(password)) {
+    errors.push('Password must contain at least one lowercase letter');
+  }
+  
+  if (!/[A-Z]/.test(password)) {
+    errors.push('Password must contain at least one uppercase letter');
+  }
+  
+  if (!/\d/.test(password)) {
+    errors.push('Password must contain at least one digit');
+  }
+  
+  if (!/[@$!%*?&#]/.test(password)) {
+    errors.push('Password must contain at least one special character');
+  }
+  
+  // Check if password is exactly a common weak password
+  const commonWeakPasswords = ['password', 'admin', 'qwerty', '123456', 'password123', 'admin123', 'qwerty123'];
+  const lowerPassword = password.toLowerCase();
+  if (commonWeakPasswords.includes(lowerPassword)) {
+    errors.push('Password contains common patterns');
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors,
+  };
 }
 
 /**
@@ -464,4 +543,94 @@ export function sanitizeFileData(file: any): {
       name: sanitizedName,
     },
   };
+}
+
+/**
+ * Validate UUID (alias for isValidUuid)
+ */
+export function validateUUID(uuid: string | null | undefined): boolean {
+  if (!uuid || typeof uuid !== 'string') return false;
+  return isValidUuid(uuid);
+}
+
+/**
+ * Validate file upload for security
+ */
+export function validateFileUpload(file: { name: string; type: string; size: number }): { 
+  isValid: boolean; 
+  errors?: string[] 
+} {
+  const errors: string[] = [];
+  
+  // Check for executable file types
+  const dangerousExtensions = [
+    '.exe', '.bat', '.cmd', '.com', '.pif', '.scr', '.vbs', '.js',
+    '.jar', '.app', '.dmg', '.pkg', '.deb', '.rpm'
+  ];
+  
+  const fileName = file.name.toLowerCase();
+  for (const ext of dangerousExtensions) {
+    if (fileName.endsWith(ext)) {
+      errors.push('File type not allowed for security reasons');
+      break;
+    }
+  }
+  
+  // Check for path traversal attempts
+  if (file.name.includes('..') || file.name.includes('/') || file.name.includes('\\')) {
+    errors.push('File name contains invalid path characters');
+  }
+  
+  // Check file size (10MB limit)
+  const maxSize = 10 * 1024 * 1024;
+  if (file.size > maxSize) {
+    errors.push('File size exceeds maximum limit');
+  }
+  
+  // Check MIME type
+  const allowedTypes = [
+    'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
+    'video/mp4', 'video/webm',
+    'audio/mp3', 'audio/mpeg', 'audio/wav',
+    'application/pdf', 'text/plain', 'text/csv'
+  ];
+  
+  if (!allowedTypes.includes(file.type)) {
+    errors.push('File type not allowed for security reasons');
+  }
+  
+  return { 
+    isValid: errors.length === 0,
+    errors: errors.length > 0 ? errors : []
+  };
+}
+
+/**
+ * Detect malicious patterns in input
+ */
+export function detectMaliciousPatterns(input: string): boolean {
+  const patterns = [
+    // SQL injection patterns
+    /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|CREATE|ALTER)\b)/i,
+    /'.*OR.*'/i,
+    /1'='1/,
+    
+    // NoSQL injection patterns
+    /\$where|\$ne|\$gt|\$lt|\$gte|\$lte|\$in|\$nin/,
+    
+    // LDAP injection patterns
+    /[()&|*]/,
+    
+    // Template injection patterns
+    /\{\{.*\}\}/,
+    /<%.*%>/,
+    /\${.*}/,
+    
+    // Command injection patterns
+    /;.*&&|;.*\|\|/,
+    /`.*`/,
+    /\$\(.*\)/,
+  ];
+  
+  return patterns.some(pattern => pattern.test(input));
 }

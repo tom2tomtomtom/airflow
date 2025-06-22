@@ -152,9 +152,16 @@ export function withRateLimit(
 ) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     return new Promise<void>((resolve, reject) => {
+      let nextCalled = false;
       rateLimit(req, res, () => {
+        nextCalled = true;
         handler(req, res).then(resolve).catch(reject);
       });
+      
+      // If next wasn't called, the rate limit was hit
+      if (!nextCalled) {
+        resolve();
+      }
     });
   };
 }
@@ -227,4 +234,11 @@ export function getRateLimitStats(): {
     activeEntries: activeEntries.length,
     topEndpoints,
   };
+}
+
+/**
+ * Clear all rate limit entries (for testing)
+ */
+export function clearRateLimitStore(): void {
+  Object.keys(rateLimitStore).forEach(key => delete rateLimitStore[key]);
 }

@@ -26,6 +26,16 @@ export function withSecurityHeaders(handler: (req: NextApiRequest, res: NextApiR
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.setHeader('Content-Security-Policy', csp.join('; '));
     
+    // Add Permissions-Policy header
+    res.setHeader('Permissions-Policy', 
+      'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=()');
+    
+    // Add HSTS header in production
+    if (process.env.NODE_ENV === 'production') {
+      res.setHeader('Strict-Transport-Security', 
+        'max-age=31536000; includeSubDomains; preload');
+    }
+    
     // Call the handler
     return handler(req, res);
   };

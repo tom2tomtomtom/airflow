@@ -72,8 +72,8 @@ export function withCSRFProtection(
   handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void>
 ) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
-    // Skip CSRF for GET requests (they should be idempotent)
-    if (req.method === 'GET') {
+    // Skip CSRF for safe methods (they should be idempotent)
+    if (['GET', 'HEAD', 'OPTIONS'].includes(req.method || '')) {
       return handler(req, res);
     }
     
@@ -82,20 +82,45 @@ export function withCSRFProtection(
       return handler(req, res);
     }
     
+    // Check origin/referer for additional protection
+    const origin = req.headers.origin as string;
+    const referer = req.headers.referer as string;
+    
+    if (origin || referer) {
+      const validOrigin = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+      const isValidOrigin = origin === validOrigin || (referer && referer.startsWith(validOrigin));
+      
+      if (!isValidOrigin) {
+        return res.status(403).json({
+          success: false,
+          error: {
+            code: 'FORBIDDEN',
+            message: 'Invalid origin',
+          }
+        });
+      }
+    }
+    
     const csrfToken = req.headers['x-csrf-token'] as string;
     const sessionId = req.headers['x-session-id'] as string;
     
     if (!csrfToken) {
       return res.status(403).json({
-        error: 'CSRF token required',
-        code: 'CSRF_TOKEN_MISSING'
+        success: false,
+        error: {
+          code: 'FORBIDDEN',
+          message: 'CSRF token missing',
+        }
       });
     }
     
     if (!verifyCSRFToken(csrfToken, sessionId)) {
       return res.status(403).json({
-        error: 'Invalid CSRF token',
-        code: 'CSRF_TOKEN_INVALID'
+        success: false,
+        error: {
+          code: 'FORBIDDEN',
+          message: 'Invalid CSRF token',
+        }
       });
     }
     

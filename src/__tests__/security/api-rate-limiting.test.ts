@@ -38,7 +38,6 @@ jest.mock('@/lib/rate-limiter', () => ({
 jest.mock('@/utils/sanitization', () => ({
   sanitizeInput: jest.fn(),
   sanitizeHtml: jest.fn(),
-  validateSqlInjection: jest.fn(),
 }));
 
 describe('API Security & Rate Limiting Tests', () => {
@@ -288,9 +287,7 @@ describe('API Security & Rate Limiting Tests', () => {
 
   describe('SQL Injection Prevention', () => {
     it('should detect SQL injection patterns', () => {
-      const { validateSqlInjection } = await import('@/utils/sanitization');
-      
-      (validateSqlInjection as jest.Mock).mockImplementation((input: string) => {
+      const validateSqlInjection = jest.fn((input: string) => {
         const sqlPatterns = [
           /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION)\b)/i,
           /(--|\/\*|\*\/)/,
@@ -315,9 +312,7 @@ describe('API Security & Rate Limiting Tests', () => {
     });
 
     it('should allow safe inputs', () => {
-      const { validateSqlInjection } = await import('@/utils/sanitization');
-      
-      (validateSqlInjection as jest.Mock).mockImplementation((input: string) => {
+      const validateSqlInjection = jest.fn((input: string) => {
         const sqlPatterns = [
           /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION)\b)/i,
           /(--|\/\*|\*\/)/,
