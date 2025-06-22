@@ -1,6 +1,6 @@
-import { getErrorMessage } from '@/utils/errorUtils';
 import { supabase } from './supabase';
 import { User } from '@/types/auth';
+import { loggers } from './logger';
 import axios, { AxiosError } from 'axios';
 
 // API base configuration
@@ -30,11 +30,14 @@ interface ApiError {
 }
 
 // Sign in with email and password
-export async function signIn(email: string, password: string): Promise<{ user: User; token: string }> {
+export async function signIn(
+  email: string,
+  password: string
+): Promise<{ user: User; token: string }> {
   try {
-    const response = await authAxios.post<AuthResponse>('/api/auth/login', { 
-      email, 
-      password 
+    const response = await authAxios.post<AuthResponse>('/api/auth/login', {
+      email,
+      password,
     });
 
     if (!response?.data?.success || !response?.data?.user || !response?.data?.token) {
@@ -50,9 +53,8 @@ export async function signIn(email: string, password: string): Promise<{ user: U
 
     return { user, token };
   } catch (error) {
-    const message = getErrorMessage(error);
     const axiosError = error as AxiosError<ApiError>;
-    console.error('Sign in error:', error);
+    loggers.auth.error('Sign in failed', error, { email });
     throw new Error(axiosError.response?.data?.message || axiosError.message || 'Login failed');
   }
 }
@@ -83,25 +85,24 @@ export async function signUp(
       localStorage.setItem('airwave_user', JSON.stringify(user));
     }
 
-    const result: { 
-      user: User; 
+    const result: {
+      user: User;
       token?: string;
       emailConfirmationRequired?: boolean;
     } = { user };
-    
+
     if (token !== undefined) {
       result.token = token;
     }
-    
+
     if (response?.data?.emailConfirmationRequired !== undefined) {
       result.emailConfirmationRequired = response?.data?.emailConfirmationRequired;
     }
-    
+
     return result;
   } catch (error) {
-    const message = getErrorMessage(error);
     const axiosError = error as AxiosError<ApiError>;
-    console.error('Sign up error:', error);
+    loggers.auth.error('Sign up failed', error, { email });
     throw new Error(axiosError.response?.data?.message || axiosError.message || 'Sign up failed');
   }
 }
@@ -112,21 +113,19 @@ export async function signOut(): Promise<void> {
     // Call the logout API
     await authAxios.post('/api/auth/logout');
   } catch (error) {
-    const message = getErrorMessage(error);
-    console.error('Sign out API error:', error);
+    loggers.auth.error('Sign out API error', error);
     // Continue with cleanup even if API call fails
   } finally {
     // Clear local storage
     if (typeof window !== 'undefined') {
       localStorage.removeItem('airwave_user');
     }
-    
+
     // Sign out from Supabase client
     try {
       await supabase.auth.signOut();
     } catch (error) {
-    const message = getErrorMessage(error);
-      console.error('Supabase signout error:', error);
+      loggers.auth.error('Supabase signout error', error);
     }
   }
 }
@@ -135,14 +134,13 @@ export async function signOut(): Promise<void> {
 export function getCurrentUser(): User | null {
   try {
     if (typeof window === 'undefined') return null;
-    
+
     const userJson = localStorage.getItem('airwave_user');
     if (!userJson) return null;
 
     return JSON.parse(userJson) as User;
   } catch (error) {
-    const message = getErrorMessage(error);
-    console.error('Get current user error:', error);
+    loggers.auth.error('Get current user error', error);
     return null;
   }
 }
@@ -167,8 +165,7 @@ export async function refreshToken(): Promise<boolean> {
     const response = await authAxios.get<{ success: boolean }>('/api/auth/me');
     return response?.data?.success;
   } catch (error) {
-    const message = getErrorMessage(error);
-    console.error('Token refresh check failed:', error);
+    loggers.auth.error('Token refresh check failed', error);
     return false;
   }
 }
@@ -184,9 +181,8 @@ export async function requestPasswordReset(email: string): Promise<void> {
       throw error;
     }
   } catch (error) {
-    const message = getErrorMessage(error);
     const authError = error as { message?: string };
-    console.error('Password reset request error:', error);
+    loggers.auth.error('Password reset request failed', error, { email });
     throw new Error(authError.message || 'Failed to send password reset email');
   }
 }
@@ -194,17 +190,16 @@ export async function requestPasswordReset(email: string): Promise<void> {
 // Reset password with token
 export async function resetPassword(_token: string, newPassword: string): Promise<void> {
   try {
-    const { error } = await supabase.auth.updateUser({ 
-      password: newPassword 
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
     });
 
     if (error) {
       throw error;
     }
   } catch (error) {
-    const message = getErrorMessage(error);
     const authError = error as { message?: string };
-    console.error('Password reset error:', error);
+    loggers.auth.error('Password reset failed', error);
     throw new Error(authError.message || 'Failed to reset password');
   }
 }
@@ -218,29 +213,27 @@ export const createAuthenticatedAxios = () => {
 
   // Request interceptor to add CSRF protection
   instance.interceptors.request.use(
-    async (config) => {
+    async config => {
       // CSRF token handling if needed
-      const csrfToken = typeof window !== 'undefined' 
-        ? localStorage.getItem('csrf_token') 
-        : null;
-      
+      const csrfToken = typeof window !== 'undefined' ? localStorage.getItem('csrf_token') : null;
+
       if (csrfToken && config.headers) {
         config.headers['X-CSRF-Token'] = csrfToken;
       }
 
       return config;
     },
-    (error) => Promise.reject(error)
+    error => Promise.reject(error)
   );
 
   // Response interceptor to handle auth errors
   instance.interceptors.response.use(
-    (response) => response,
+    response => response,
     async (error: AxiosError) => {
       if (error.response?.status === 401) {
         // Token expired or invalid, sign out user
         await signOut();
-        
+
         // Redirect to login page
         if (typeof window !== 'undefined') {
           window.location.href = '/login';
