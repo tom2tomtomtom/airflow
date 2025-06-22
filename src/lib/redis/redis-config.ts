@@ -40,7 +40,7 @@ class RedisManager {
 
     try {
       const config = this.getRedisConfig();
-      
+
       this.redis = new Redis(config);
 
       // Set up event listeners
@@ -49,7 +49,7 @@ class RedisManager {
         this.isConnected = true;
       });
 
-      this.redis.on('error', (error) => {
+      this.redis.on('error', error => {
         console.error('❌ Redis connection error:', error);
         this.isConnected = false;
       });
@@ -65,20 +65,40 @@ class RedisManager {
 
       // Test the connection
       await this.redis.ping();
-      
+
       return this.redis;
     } catch (error) {
       console.error('Failed to connect to Redis:', error);
-      throw new Error(`Redis connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Redis connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
   /**
    * Get Redis configuration from environment
    */
-  private getRedisConfig(): RedisConfig {
+  private getRedisConfig(): any {
+    // Check for Upstash Redis configuration first
+    const upstashUrl = process.env.UPSTASH_REDIS_URL;
+    const upstashToken = process.env.UPSTASH_REDIS_TOKEN;
+
+    if (upstashUrl && upstashToken) {
+      return {
+        url: upstashUrl,
+        token: upstashToken,
+        retryDelayOnFailover: 100,
+        maxRetriesPerRequest: 3,
+        lazyConnect: true,
+        keepAlive: 30000,
+        family: 4,
+        keyPrefix: 'airwave:',
+      };
+    }
+
+    // Check for standard Redis URL
     const redisUrl = process.env.REDIS_URL;
-    
+
     if (redisUrl) {
       // Parse Redis URL (e.g., redis://user:pass@host:port/db)
       const url = new URL(redisUrl);
@@ -153,13 +173,13 @@ class RedisManager {
     try {
       const client = await this.getClient();
       const serializedValue = JSON.stringify(value);
-      
+
       if (ttlSeconds) {
         await client.setex(key, ttlSeconds, serializedValue);
       } else {
         await client.set(key, serializedValue);
       }
-      
+
       return true;
     } catch (error) {
       console.error('Redis SET error:', error);
@@ -171,11 +191,11 @@ class RedisManager {
     try {
       const client = await this.getClient();
       const value = await client.get(key);
-      
+
       if (value === null) {
         return null;
       }
-      
+
       return JSON.parse(value) as T;
     } catch (error) {
       console.error('Redis GET error:', error);
@@ -183,10 +203,10 @@ class RedisManager {
     }
   }
 
-  async del(key: string): Promise<boolean> {
+  async del(...keys: string[]): Promise<boolean> {
     try {
       const client = await this.getClient();
-      const result = await client.del(key);
+      const result = await client.del(...keys);
       return result > 0;
     } catch (error) {
       console.error('Redis DEL error:', error);
@@ -223,11 +243,11 @@ class RedisManager {
     try {
       const client = await this.getClient();
       const value = await client.rpop(key);
-      
+
       if (value === null) {
         return null;
       }
-      
+
       return JSON.parse(value) as T;
     } catch (error) {
       console.error('Redis RPOP error:', error);
@@ -241,8 +261,9 @@ class RedisManager {
   async hset(key: string, field: string, value: any): Promise<boolean> {
     try {
       const client = await this.getClient();
-      const serializedValue = JSON.stringify(value);
-      const result = await client.hset(key, field, serializedValue);
+      // For hash operations, store as string directly (not JSON) for simple values
+      const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
+      const result = await client.hset(key, field, stringValue);
       return result >= 0;
     } catch (error) {
       console.error('Redis HSET error:', error);
@@ -254,12 +275,17 @@ class RedisManager {
     try {
       const client = await this.getClient();
       const value = await client.hget(key, field);
-      
+
       if (value === null) {
         return null;
       }
-      
-      return JSON.parse(value) as T;
+
+      // Try to parse as JSON, but return as string if it fails
+      try {
+        return JSON.parse(value) as T;
+      } catch {
+        return value as T;
+      }
     } catch (error) {
       console.error('Redis HGET error:', error);
       return null;
@@ -302,6 +328,176 @@ class RedisManager {
       return false;
     }
   }
+
+  /**
+   * Set operations
+   */
+  async sadd(key: string, ...members: string[]): Promise<number> {
+    try {
+      const client = await this.getClient();
+      return await client.sadd(key, ...members);
+    } catch (error) {
+      console.error('Redis SADD error:', error);
+      return 0;
+    }
+  }
+
+  async srem(key: string, ...members: string[]): Promise<number> {
+    try {
+      const client = await this.getClient();
+      return await client.srem(key, ...members);
+    } catch (error) {
+      console.error('Redis SREM error:', error);
+      return 0;
+    }
+  }
+
+  async smembers(key: string): Promise<string[]> {
+    try {
+      const client = await this.getClient();
+      return await client.smembers(key);
+    } catch (error) {
+      console.error('Redis SMEMBERS error:', error);
+      return [];
+    }
+  }
+
+  async sismember(key: string, member: string): Promise<boolean> {
+    try {
+      const client = await this.getClient();
+      const result = await client.sismember(key, member);
+      return result === 1;
+    } catch (error) {
+      console.error('Redis SISMEMBER error:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Sorted set operations
+   */
+  async zadd(key: string, score: number, member: string): Promise<number> {
+    try {
+      const client = await this.getClient();
+      return await client.zadd(key, score, member);
+    } catch (error) {
+      console.error('Redis ZADD error:', error);
+      return 0;
+    }
+  }
+
+  async zrem(key: string, ...members: string[]): Promise<number> {
+    try {
+      const client = await this.getClient();
+      return await client.zrem(key, ...members);
+    } catch (error) {
+      console.error('Redis ZREM error:', error);
+      return 0;
+    }
+  }
+
+  async zrange(key: string, start: number, stop: number): Promise<string[]> {
+    try {
+      const client = await this.getClient();
+      return await client.zrange(key, start, stop);
+    } catch (error) {
+      console.error('Redis ZRANGE error:', error);
+      return [];
+    }
+  }
+
+  async zrangebyscore(key: string, min: number, max: number): Promise<string[]> {
+    try {
+      const client = await this.getClient();
+      return await client.zrangebyscore(key, min, max);
+    } catch (error) {
+      console.error('Redis ZRANGEBYSCORE error:', error);
+      return [];
+    }
+  }
+
+  async zcard(key: string): Promise<number> {
+    try {
+      const client = await this.getClient();
+      return await client.zcard(key);
+    } catch (error) {
+      console.error('Redis ZCARD error:', error);
+      return 0;
+    }
+  }
+
+  /**
+   * Utility operations
+   */
+  async keys(pattern: string): Promise<string[]> {
+    try {
+      const client = await this.getClient();
+      return await client.keys(pattern);
+    } catch (error) {
+      console.error('Redis KEYS error:', error);
+      return [];
+    }
+  }
+
+  async ping(): Promise<string> {
+    try {
+      const client = await this.getClient();
+      return await client.ping();
+    } catch (error) {
+      console.error('Redis PING error:', error);
+      throw error;
+    }
+  }
+
+  async ttl(key: string): Promise<number> {
+    try {
+      const client = await this.getClient();
+      return await client.ttl(key);
+    } catch (error) {
+      console.error('Redis TTL error:', error);
+      return -1;
+    }
+  }
+
+  async hdel(key: string, ...fields: string[]): Promise<number> {
+    try {
+      const client = await this.getClient();
+      return await client.hdel(key, ...fields);
+    } catch (error) {
+      console.error('Redis HDEL error:', error);
+      return 0;
+    }
+  }
+
+  async hgetall(key: string): Promise<Record<string, string>> {
+    try {
+      const client = await this.getClient();
+      return await client.hgetall(key);
+    } catch (error) {
+      console.error('Redis HGETALL error:', error);
+      return {};
+    }
+  }
+
+  async decr(key: string): Promise<number> {
+    try {
+      const client = await this.getClient();
+      return await client.decr(key);
+    } catch (error) {
+      console.error('Redis DECR error:', error);
+      return 0;
+    }
+  }
+
+  async flushall(): Promise<string> {
+    try {
+      const client = await this.getClient();
+      return await client.flushall();
+    } catch (error) {
+      console.error('Redis FLUSHALL error:', error);
+      throw error;
+    }
+  }
 }
 
 // Export singleton instance
@@ -309,6 +505,9 @@ export const redisManager = RedisManager.getInstance();
 
 // Export Redis client getter for direct access when needed
 export const getRedisClient = () => redisManager.getClient();
+
+// Export the class for testing
+export { RedisManager };
 
 // Export types
 export type { RedisConfig };

@@ -53,3 +53,6 @@ process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
 process.env.JWT_SECRET = 'test-secret-key-for-testing-purposes-only';
 process.env.OPENAI_API_KEY = 'sk-test-key';
 process.env.ELEVENLABS_API_KEY = 'test-elevenlabs-key';
+process.env.UPSTASH_REDIS_URL = 'redis://localhost:6379';
+process.env.UPSTASH_REDIS_TOKEN = 'test-redis-token';
+process.env.NODE_ENV = 'test';
