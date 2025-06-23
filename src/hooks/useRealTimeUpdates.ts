@@ -51,7 +51,10 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastEvent, setLastEvent] = useState<RealTimeEvent | null>(null);
-  const [connectionStats, setConnectionStats] = useState({ attempts: 0, lastConnected: null as Date | null });
+  const [connectionStats, setConnectionStats] = useState({
+    attempts: 0,
+    lastConnected: null as Date | null,
+  });
 
   const eventSourceRef = useRef<EventSource | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -85,7 +88,7 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
         try {
           callback(data);
         } catch (error: any) {
-    const message = getErrorMessage(error);
+          const message = getErrorMessage(error);
           console.error(`Error in event listener for ${eventType}:`, error);
         }
       });
@@ -115,7 +118,7 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
 
       eventSource.onerror = (event: any) => {
         setConnected(false);
-        
+
         if (eventSource.readyState === EventSource.CLOSED) {
           setError('Connection closed by server');
         } else {
@@ -131,7 +134,7 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
           }));
 
           reconnectTimeoutRef.current = setTimeout(() => {
-            process.env.NODE_ENV === 'development' &&             disconnect();
+            process.env.NODE_ENV === 'development' && disconnect();
             connect();
           }, reconnectDelay);
         }
@@ -146,46 +149,45 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
             data,
             timestamp: Date.now(),
           };
-          
+
           setLastEvent(realTimeEvent);
           emit('message', realTimeEvent);
         } catch (error: any) {
-    const message = getErrorMessage(error);
+          const message = getErrorMessage(error);
           console.error('Failed to parse SSE message:', error);
         }
       };
 
       // Specific event handlers
-      eventSource.addEventListener('connected', (_event) => {
+      eventSource.addEventListener('connected', _event => {
         const data = JSON.parse(event.data);
         emit('connected', data);
       });
 
-      eventSource.addEventListener('heartbeat', (_event) => {
+      eventSource.addEventListener('heartbeat', _event => {
         const data = JSON.parse(event.data);
         emit('heartbeat', data);
       });
 
-      eventSource.addEventListener('render_progress', (_event) => {
+      eventSource.addEventListener('render_progress', _event => {
         const data: RenderProgressEvent = JSON.parse(event.data);
         emit('render_progress', data);
         setLastEvent({ type: 'render_progress', data, timestamp: Date.now() });
       });
 
-      eventSource.addEventListener('render_complete', (_event) => {
+      eventSource.addEventListener('render_complete', _event => {
         const data: RenderCompleteEvent = JSON.parse(event.data);
         emit('render_complete', data);
         setLastEvent({ type: 'render_complete', data, timestamp: Date.now() });
       });
 
-      eventSource.addEventListener('notification', (_event) => {
+      eventSource.addEventListener('notification', _event => {
         const data: NotificationEvent = JSON.parse(event.data);
         emit('notification', data);
         setLastEvent({ type: 'notification', data, timestamp: Date.now() });
       });
-
     } catch (error: any) {
-    const message = getErrorMessage(error);
+      const message = getErrorMessage(error);
       console.error('Failed to create SSE connection:', error);
       setError(error instanceof Error ? error.message : 'Connection failed');
     }
@@ -224,21 +226,33 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
   }, [disconnect]);
 
   // Convenience methods for specific event types
-  const onRenderProgress = useCallback((callback: (data: RenderProgressEvent) => void) => {
-    return subscribe('render_progress', callback);
-  }, [subscribe]);
+  const onRenderProgress = useCallback(
+    (callback: (data: RenderProgressEvent) => void) => {
+      return subscribe('render_progress', callback);
+    },
+    [subscribe]
+  );
 
-  const onRenderComplete = useCallback((callback: (data: RenderCompleteEvent) => void) => {
-    return subscribe('render_complete', callback);
-  }, [subscribe]);
+  const onRenderComplete = useCallback(
+    (callback: (data: RenderCompleteEvent) => void) => {
+      return subscribe('render_complete', callback);
+    },
+    [subscribe]
+  );
 
-  const onNotification = useCallback((callback: (data: NotificationEvent) => void) => {
-    return subscribe('notification', callback);
-  }, [subscribe]);
+  const onNotification = useCallback(
+    (callback: (data: NotificationEvent) => void) => {
+      return subscribe('notification', callback);
+    },
+    [subscribe]
+  );
 
-  const onConnected = useCallback((callback: (data: any) => void) => {
-    return subscribe('connected', callback);
-  }, [subscribe]);
+  const onConnected = useCallback(
+    (callback: (data: any) => void) => {
+      return subscribe('connected', callback);
+    },
+    [subscribe]
+  );
 
   return {
     // Connection state

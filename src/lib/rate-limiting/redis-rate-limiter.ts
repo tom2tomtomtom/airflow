@@ -34,7 +34,7 @@ export class RedisRateLimiter {
         url: config.url,
         password: config.password,
         database: config.db,
-        socket: {
+        socket: {},
           reconnectStrategy: (retries) => Math.min(retries * 50, 500)
         }
       }) as RedisClientType;

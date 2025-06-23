@@ -25,8 +25,8 @@ export type AuthenticatedHandler = (
 // Enhanced token validation with multiple fallback methods
 async function validateUserToken(req: NextApiRequest): Promise<any> {
   let supabase;
-  const user: any = null;
-  const error: any = null;
+  const user: unknown = null;
+  const error: unknown = null;
 
   // Method 1: Try Supabase SSR with cookies (primary method)
   try {
@@ -34,24 +34,21 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
-        cookies: {
+        cookies: {},
           get(name: string) {
             return req.cookies[name];
           },
-          set(name: string, value: string, options: any) {
+          set(name: string, value: string, options: unknown) {
             // We don't need to set cookies in API routes
           },
-          remove(name: string, options: any) {
+          remove(name: string, options: unknown) {
             // We don't need to remove cookies in API routes
-          },
-        },
-      }
+          }}}
     );
 
     const {
       data: { user: cookieUser },
-      error: cookieError,
-    } = await supabase.auth.getUser();
+      error: cookieError} = await supabase.auth.getUser();
 
     if (cookieUser && !cookieError) {
       return { user: cookieUser, supabase };
@@ -70,18 +67,15 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
-          cookies: {
+          cookies: {},
             get: () => undefined,
             set: () => {},
-            remove: () => {},
-          },
-        }
+            remove: () => {}}}
       );
 
       const {
         data: { user: headerUser },
-        error: headerError,
-      } = await supabase.auth.getUser(token);
+        error: headerError} = await supabase.auth.getUser(token);
 
       if (headerUser && !headerError) {
         return { user: headerUser, supabase };
@@ -99,18 +93,15 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
-          cookies: {
+          cookies: {},
             get: () => undefined,
             set: () => {},
-            remove: () => {},
-          },
-        }
+            remove: () => {}}}
       );
 
       const {
         data: { user: customUser },
-        error: customError,
-      } = await supabase.auth.getUser(customToken);
+        error: customError} = await supabase.auth.getUser(customToken);
 
       if (customUser && !customError) {
         return { user: customUser, supabase };
@@ -125,7 +116,7 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
 }
 
 // Enhanced user profile handling with better error recovery
-async function getUserProfile(supabase: any, user: any): Promise<any> {
+async function getUserProfile(supabase: unknown, user: unknown): Promise<any> {
   try {
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
@@ -148,8 +139,7 @@ async function getUserProfile(supabase: any, user: any): Promise<any> {
             role: 'user',
             email: user.email,
             created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          })
+            updated_at: new Date().toISOString()})
           .select()
           .single();
 
@@ -166,14 +156,14 @@ async function getUserProfile(supabase: any, user: any): Promise<any> {
     }
 
     return profile;
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Profile handling exception:', err);
     return createFallbackProfile(user);
   }
 }
 
 // Create fallback profile when database operations fail
-function createFallbackProfile(user: any): any {
+function createFallbackProfile(user: unknown): unknown {
   return {
     id: user.id,
     email: user.email || '',
@@ -183,12 +173,11 @@ function createFallbackProfile(user: any): any {
     permissions: [],
     tenant_id: null,
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  };
+    updated_at: new Date().toISOString()};
 }
 
 // Enhanced client access fetching with error handling
-async function getUserClients(supabase: any, userId: string): Promise<string[]> {
+async function getUserClients(supabase: unknown, userId: string): Promise<string[]> {
   try {
     const { data: userClients, error: clientsError } = await supabase
       .from('user_clients')
@@ -201,7 +190,7 @@ async function getUserClients(supabase: any, userId: string): Promise<string[]> 
     }
 
     return userClients?.map((uc: { client_id: string }) => uc.client_id) || [];
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Client access exception:', err);
     return [];
   }
@@ -233,14 +222,13 @@ export function withAuth(handler: AuthenticatedHandler) {
         role: (profile?.role as UserRole) || UserRole.VIEWER,
         permissions: profile?.permissions || [],
         clientIds,
-        tenantId: profile?.tenant_id || '',
-      };
+        tenantId: profile?.tenant_id || ''};
 
       console.log(`✅ Request authenticated for user: ${user.email} (${profile?.role})`);
 
       // Call the handler
       return await handler(req as AuthenticatedRequest, res);
-    } catch (error: any) {
+    } catch (error: unknown) {
       const message = getErrorMessage(error);
       console.error('❌ Authentication error:', error);
       return errorResponse(

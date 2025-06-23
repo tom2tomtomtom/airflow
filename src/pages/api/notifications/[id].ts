@@ -38,20 +38,27 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Notification API error:', error);
     return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? message : undefined
+      details: process.env.NODE_ENV === 'development' ? message : undefined,
     });
   }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, notificationId: string): Promise<void> {
+async function handleGet(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  notificationId: string
+): Promise<void> {
   try {
     const { data: notification, error } = await supabase
       .from('notifications')
-      .select(`
+      .select(
+        `
         *,
         clients(id, name, slug),
         profiles!notifications_created_by_fkey(full_name, avatar_url)
-      `)
+      `
+      )
       .eq('id', notificationId)
       .eq('user_id', user.id)
       .single();
@@ -81,44 +88,50 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, n
           if (notification.metadata.execution_id) {
             const { data: execution } = await supabase
               .from('executions')
-              .select(`
+              .select(
+                `
                 id, status, platform, content_type, created_at, updated_at,
                 matrices(id, name, campaigns(id, name))
-              `)
+              `
+              )
               .eq('id', notification.metadata.execution_id)
               .single();
-            
+
             enrichedNotification.context = { execution };
           }
           break;
-        
+
         case 'approval':
           if (notification.metadata.approval_id) {
             const { data: approval } = await supabase
               .from('approvals')
-              .select(`
+              .select(
+                `
                 id, status, approval_type, item_type, created_at,
                 item_details,
                 profiles!approvals_assigned_to_fkey(full_name)
-              `)
+              `
+              )
               .eq('id', notification.metadata.approval_id)
               .single();
-            
+
             enrichedNotification.context = { approval };
           }
           break;
-        
+
         case 'campaign':
           if (notification.metadata.campaign_id) {
             const { data: campaign } = await supabase
               .from('campaigns')
-              .select(`
+              .select(
+                `
                 id, name, status, description, created_at,
                 health_score
-              `)
+              `
+              )
               .eq('id', notification.metadata.campaign_id)
               .single();
-            
+
             enrichedNotification.context = { campaign };
           }
           break;
@@ -129,13 +142,13 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, n
     if (!notification.read) {
       await supabase
         .from('notifications')
-        .update({ 
-          read: true, 
-          read_at: new Date().toISOString() 
+        .update({
+          read: true,
+          read_at: new Date().toISOString(),
         })
         .eq('id', notificationId)
         .eq('user_id', user.id);
-      
+
       enrichedNotification.read = true;
       enrichedNotification.read_at = new Date().toISOString();
     }
@@ -148,13 +161,18 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, n
   }
 }
 
-async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, notificationId: string): Promise<void> {
+async function handlePut(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  notificationId: string
+): Promise<void> {
   const validationResult = NotificationUpdateSchema.safeParse(req.body);
-  
+
   if (!validationResult.success) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Validation failed',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
@@ -203,11 +221,13 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, n
       .update(updates)
       .eq('id', notificationId)
       .eq('user_id', user.id)
-      .select(`
+      .select(
+        `
         *,
         clients(id, name, slug),
         profiles!notifications_created_by_fkey(full_name, avatar_url)
-      `)
+      `
+      )
       .single();
 
     if (error) {
@@ -223,7 +243,12 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, n
   }
 }
 
-async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any, notificationId: string): Promise<void> {
+async function handleDelete(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  notificationId: string
+): Promise<void> {
   try {
     // Verify notification belongs to user
     const { data: existingNotification } = await supabase

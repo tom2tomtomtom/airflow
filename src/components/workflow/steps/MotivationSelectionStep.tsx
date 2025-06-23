@@ -28,12 +28,7 @@ export const MotivationSelectionStep: React.FC<MotivationSelectionStepProps> = (
   onPrevious,
 }) => {
   const { state, actions } = useWorkflow();
-  const {
-    briefData,
-    motivations,
-    processing,
-    lastError,
-  } = state;
+  const { briefData, motivations, processing, lastError } = state;
 
   // Auto-generate motivations when step loads if none exist
   useEffect(() => {
@@ -43,9 +38,12 @@ export const MotivationSelectionStep: React.FC<MotivationSelectionStepProps> = (
   }, [briefData, motivations.length, processing, actions]);
 
   // Handle motivation selection
-  const handleSelectMotivation = useCallback((id: string) => {
-    actions.selectMotivation(id);
-  }, [actions]);
+  const handleSelectMotivation = useCallback(
+    (id: string) => {
+      actions.selectMotivation(id);
+    },
+    [actions]
+  );
 
   // Handle next step
   const handleNext = useCallback(() => {
@@ -54,7 +52,7 @@ export const MotivationSelectionStep: React.FC<MotivationSelectionStepProps> = (
       actions.setError('Please select at least 1 motivation to continue');
       return;
     }
-    
+
     actions.clearError();
     onNext?.();
   }, [motivations, actions, onNext]);
@@ -78,7 +76,8 @@ export const MotivationSelectionStep: React.FC<MotivationSelectionStepProps> = (
         Strategic Motivations
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-        AI-generated motivations based on your brief. Select the ones that best align with your campaign goals.
+        AI-generated motivations based on your brief. Select the ones that best align with your
+        campaign goals.
       </Typography>
 
       {/* Brief Summary */}
@@ -96,7 +95,10 @@ export const MotivationSelectionStep: React.FC<MotivationSelectionStepProps> = (
             </Typography>
             <Box sx={{ gridColumn: { xs: '1', md: '1 / -1' } }}>
               <Typography variant="body2" color="text.secondary">
-                <strong>Objective:</strong> {typeof briefData.objective === 'string' ? briefData.objective : String(briefData.objective || '')}
+                <strong>Objective:</strong>{' '}
+                {typeof briefData.objective === 'string'
+                  ? briefData.objective
+                  : String(briefData.objective || '')}
               </Typography>
             </Box>
           </Box>
@@ -105,11 +107,7 @@ export const MotivationSelectionStep: React.FC<MotivationSelectionStepProps> = (
 
       {/* Error Alert */}
       {lastError && (
-        <Alert 
-          severity="error" 
-          sx={{ mb: 3 }}
-          onClose={handleClearError}
-        >
+        <Alert severity="error" sx={{ mb: 3 }} onClose={handleClearError}>
           {lastError}
         </Alert>
       )}
@@ -130,11 +128,11 @@ export const MotivationSelectionStep: React.FC<MotivationSelectionStepProps> = (
           <Typography variant="body2" color="text.secondary">
             {selectedCount} of {motivations.length} motivations selected
             {selectedCount > 0 && (
-              <Chip 
-                label={`${selectedCount} selected`} 
-                color="primary" 
-                size="small" 
-                sx={{ ml: 2 }} 
+              <Chip
+                label={`${selectedCount} selected`}
+                color="primary"
+                size="small"
+                sx={{ ml: 2 }}
               />
             )}
           </Typography>
@@ -143,7 +141,9 @@ export const MotivationSelectionStep: React.FC<MotivationSelectionStepProps> = (
 
       {/* Motivations Grid */}
       {motivations.length > 0 && (
-        <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, mb: 4 }}>
+        <Box
+          sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, mb: 4 }}
+        >
           {motivations.map((motivation: any) => (
             <Box key={motivation.id}>
               <Card
@@ -179,7 +179,13 @@ export const MotivationSelectionStep: React.FC<MotivationSelectionStepProps> = (
                         <Chip
                           label={`Score: ${motivation.score}/10`}
                           size="small"
-                          color={motivation.score >= 8 ? 'success' : motivation.score >= 6 ? 'warning' : 'default'}
+                          color={
+                            motivation.score >= 8
+                              ? 'success'
+                              : motivation.score >= 6
+                                ? 'warning'
+                                : 'default'
+                          }
                         />
                         {motivation.selected && (
                           <CheckCircleIcon color="primary" sx={{ fontSize: 20 }} />
@@ -217,11 +223,7 @@ export const MotivationSelectionStep: React.FC<MotivationSelectionStepProps> = (
 
       {/* Action Buttons */}
       <Box sx={{ display: 'flex', gap: 2, justifyContent: 'space-between' }}>
-        <Button
-          variant="outlined"
-          onClick={onPrevious}
-          startIcon={<ArrowBackIcon />}
-        >
+        <Button variant="outlined" onClick={onPrevious} startIcon={<ArrowBackIcon />}>
           Back to Brief
         </Button>
 
@@ -236,7 +238,7 @@ export const MotivationSelectionStep: React.FC<MotivationSelectionStepProps> = (
               Regenerate
             </Button>
           )}
-          
+
           <Button
             variant="contained"
             onClick={handleNext}

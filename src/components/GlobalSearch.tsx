@@ -13,8 +13,7 @@ import {
   Avatar,
   Divider,
   IconButton,
-  InputAdornment,
-} from '@mui/material';
+  InputAdornment} from '@mui/material';
 import {
   Search,
   Close,
@@ -26,8 +25,7 @@ import {
   Group,
   PlayArrow,
   Folder,
-  AccessTime,
-} from '@mui/icons-material';
+  AccessTime} from '@mui/icons-material';
 import { useRouter } from 'next/router';
 
 interface SearchResult {
@@ -190,11 +188,10 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
       maxWidth="md"
       fullWidth
       PaperProps={{
-        sx: {
+        sx: {},
           borderRadius: 3,
           overflow: 'hidden',
-          mt: 8,
-        }
+          mt: 8}
       }}
     >
       <DialogContent sx={{ p: 0 }}>
@@ -218,12 +215,10 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
                   <IconButton onClick={onClose} size="small" aria-label="Close search">                    <Close />
                   </IconButton>
                 </InputAdornment>
-              ),
-            }}
+              )}}
             sx={{
               '& .MuiOutlinedInput-root': {
-                '& fieldset': { border: 'none' },
-              }
+                '& fieldset': { border: 'none' }}
             }}
           />
         </Box>
@@ -244,8 +239,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
                     cursor: 'pointer',
                     backgroundColor: index === selectedIndex ? 'action.selected' : 'transparent',
                     '&:hover': {
-                      backgroundColor: 'action.hover',
-                    }
+                      backgroundColor: 'action.hover'}
                   }}
                 >
                   <ListItemIcon>
@@ -253,8 +247,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
                       sx={{
                         bgcolor: `${getTypeColor(result.type)}.light`,
                         width: 32,
-                        height: 32,
-                      }}
+                        height: 32}}
                     >
                       {result.icon}
                     </Avatar>

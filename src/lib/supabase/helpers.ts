@@ -46,8 +46,7 @@ export async function withRetry<T>(
       
       loggers.supabase.warn(`Retrying operation (attempt ${attempt}/${config.maxAttempts})`, {
         error: error instanceof Error ? error.message : 'Unknown error',
-        delay,
-      });
+        delay});
       
       await new Promise(resolve => setTimeout(resolve, delay));
       
@@ -94,15 +93,13 @@ export async function withRLS<T>(
     loggers.supabase.debug('RLS operation completed', {
       table: tableName,
       operation,
-      userId: user?.id,
-    });
+      userId: user?.id});
     
     return result;
   } catch (error: any) {
     await handleSupabaseError(error, {
       operation: `${operation} with RLS`,
-      table: tableName,
-    });
+      table: tableName});
   }
 }
 
@@ -168,8 +165,7 @@ export async function batchQuery<T>(
       await handleSupabaseError(error, {
         operation: 'batchQuery',
         table: tableName,
-        metadata: { chunkIndex: i / chunkSize, chunkSize: chunk.length },
-      });
+        metadata: { chunkIndex: i / chunkSize, chunkSize: chunk.length }});
     }
     
     results.push(...(data as T[]));
@@ -193,8 +189,7 @@ export async function upsertWithConflict<T extends Record<string, any>>(
       .from(tableName)
       .upsert(data, {
         onConflict: options?.onConflict,
-        ignoreDuplicates: options?.ignoreDuplicates,
-      })
+        ignoreDuplicates: options?.ignoreDuplicates})
       .select();
     
     if (error) {
@@ -206,11 +201,9 @@ export async function upsertWithConflict<T extends Record<string, any>>(
     await handleSupabaseError(error, {
       operation: 'upsert',
       table: tableName,
-      metadata: {
+      metadata: {},
         recordCount: Array.isArray(data) ? data.length : 1,
-        onConflict: options?.onConflict,
-      },
-    });
+        onConflict: options?.onConflict}});
   }
 }
 
@@ -270,14 +263,12 @@ export async function paginatedQuery<T>(
       page,
       pageSize,
       totalPages,
-      hasMore: page < totalPages,
-    };
+      hasMore: page < totalPages};
   } catch (error: any) {
     await handleSupabaseError(error, {
       operation: 'paginatedQuery',
       table: tableName,
-      metadata: { page, pageSize, orderBy, ascending },
-    });
+      metadata: { page, pageSize, orderBy, ascending }});
   }
 }
 
@@ -306,13 +297,11 @@ export async function softDelete(
     
     loggers.supabase.info('Soft delete completed', {
       table: tableName,
-      id,
-    });
+      id});
   } catch (error: any) {
     await handleSupabaseError(error, {
       operation: 'softDelete',
       table: tableName,
-      metadata: { id },
-    });
+      metadata: { id }});
   }
 }

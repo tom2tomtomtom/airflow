@@ -4,8 +4,7 @@ import {
   sanitizeObject,
   fileValidation,
   apiValidationSchemas,
-  securityValidation,
-} from '../validation-utils';
+  securityValidation} from '../validation-utils';
 
 describe('Validation Utils', () => {
   describe('validationSchemas', () => {
@@ -86,12 +85,10 @@ describe('Validation Utils', () => {
     it('should validate date ranges', () => {
       const validRange = {
         startDate: '2023-01-01T00:00:00Z',
-        endDate: '2023-12-31T23:59:59Z',
-      };
+        endDate: '2023-12-31T23:59:59Z'};
       const invalidRange = {
         startDate: '2023-12-31T23:59:59Z',
-        endDate: '2023-01-01T00:00:00Z',
-      };
+        endDate: '2023-01-01T00:00:00Z'};
 
       expect(() => validationSchemas.dateRange.parse(validRange)).not.toThrow();
       expect(() => validationSchemas.dateRange.parse(invalidRange)).toThrow();
@@ -129,8 +126,7 @@ describe('Validation Utils', () => {
     it('should remove dangerous prototype properties', () => {
       const dangerousObject = {
         name: 'test',
-        normalProperty: 'value',
-      };
+        normalProperty: 'value'};
       
       // Manually add dangerous properties to test sanitization
       (dangerousObject as Record<string, unknown>)['__proto__'] = { isAdmin: true };
@@ -148,13 +144,10 @@ describe('Validation Utils', () => {
 
     it('should recursively sanitize nested objects', () => {
       const nestedObject = {
-        user: {
+        user: {},
           name: 'test',
-          profile: {
-            age: 25,
-          },
-        },
-      };
+          profile: {},
+            age: 25}}};
       
       // Add dangerous properties to nested objects
       (nestedObject.user as Record<string, unknown>)['__proto__'] = { isAdmin: true };
@@ -176,8 +169,7 @@ describe('Validation Utils', () => {
       const imageFile = {
         type: 'image/jpeg',
         size: 1024 * 1024, // 1MB
-        name: 'test.jpg',
-      };
+        name: 'test.jpg'};
 
       expect(() => fileValidation.validate(imageFile, 'image')).not.toThrow();
     });
@@ -186,8 +178,7 @@ describe('Validation Utils', () => {
       const executableFile = {
         type: 'application/x-executable',
         size: 1024,
-        name: 'malware.exe',
-      };
+        name: 'malware.exe'};
 
       expect(() => fileValidation.validate(executableFile, 'image')).toThrow();
     });
@@ -196,8 +187,7 @@ describe('Validation Utils', () => {
       const largeFile = {
         type: 'image/jpeg',
         size: 20 * 1024 * 1024, // 20MB (over 10MB limit)
-        name: 'huge.jpg',
-      };
+        name: 'huge.jpg'};
 
       expect(() => fileValidation.validate(largeFile, 'image')).toThrow();
     });
@@ -216,8 +206,7 @@ describe('Validation Utils', () => {
       const correctFile = {
         type: 'image/png',
         size: 1024,
-        name: 'test.png',
-      };
+        name: 'test.png'};
 
       expect(() => fileValidation.validate(correctFile, 'image')).not.toThrow();
     });
@@ -227,12 +216,10 @@ describe('Validation Utils', () => {
     it('should validate login schema', () => {
       const validLogin = {
         email: 'test@example.com',
-        password: 'password123',
-      };
+        password: 'password123'};
       const invalidLogin = {
         email: 'invalid-email',
-        password: '',
-      };
+        password: ''};
 
       expect(() => apiValidationSchemas.login.parse(validLogin)).not.toThrow();
       expect(() => apiValidationSchemas.login.parse(invalidLogin)).toThrow();
@@ -242,13 +229,11 @@ describe('Validation Utils', () => {
       const validSignup = {
         email: 'test@example.com',
         password: 'Test-password-123!', // Test password
-        name: 'John Doe',
-      };
+        name: 'John Doe'};
       const invalidSignup = {
         email: 'invalid-email',
         password: 'weak',
-        name: 'J',
-      };
+        name: 'J'};
 
       expect(() => apiValidationSchemas.signup.parse(validSignup)).not.toThrow();
       expect(() => apiValidationSchemas.signup.parse(invalidSignup)).toThrow();
@@ -259,8 +244,7 @@ describe('Validation Utils', () => {
         name: 'Test Client',
         description: 'A test client description',
         brandColor: '#FF5733',
-        secondaryColor: '#33C3FF',
-      };
+        secondaryColor: '#33C3FF'};
       const invalidClient = {
         name: 'T', // Too short
         brandColor: 'invalid-color',
@@ -275,12 +259,10 @@ describe('Validation Utils', () => {
       const validAsset = {
         clientId: '123e4567-e89b-12d3-a456-426614174000',
         category: 'image' as const,
-        tags: ['logo', 'brand'],
-      };
+        tags: ['logo', 'brand']};
       const invalidAsset = {
         clientId: 'invalid-uuid',
-        category: 'invalid-category',
-      };
+        category: 'invalid-category'};
 
       expect(() => apiValidationSchemas.uploadAsset.parse(validAsset)).not.toThrow();
       expect(() => apiValidationSchemas.uploadAsset.parse(invalidAsset)).toThrow();
@@ -292,13 +274,11 @@ describe('Validation Utils', () => {
         title: 'Marketing Brief',
         content: 'Brief content here',
         objectives: ['Increase brand awareness'],
-        targetAudience: 'Young adults 18-35',
-      };
+        targetAudience: 'Young adults 18-35'};
       const invalidBrief = {
         clientId: 'invalid-uuid',
         title: 'AB', // Too short
-        content: '',
-      };
+        content: ''};
 
       expect(() => apiValidationSchemas.createBrief.parse(validBrief)).not.toThrow();
       expect(() => apiValidationSchemas.createBrief.parse(invalidBrief)).toThrow();
@@ -483,15 +463,11 @@ describe('Validation Utils', () => {
 
     it('should handle complex nested sanitization', () => {
       const complexObject = {
-        level1: {
-          level2: {
-            level3: {
-              safe: 'value',
-            },
-          },
-        },
-        normalField: 'normal',
-      };
+        level1: {},
+          level2: {},
+            level3: {},
+              safe: 'value'}}},
+        normalField: 'normal'};
       
       // Add dangerous properties to test sanitization
       (complexObject.level1.level2.level3 as Record<string, unknown>)['__proto__'] = { dangerous: true };
@@ -512,10 +488,8 @@ describe('Validation Utils', () => {
     it('should handle arrays in object sanitization', () => {
       const objectWithArrays = {
         tags: ['tag1', 'tag2'],
-        nested: {
-          items: [{ name: 'item1' }, { name: 'item2' }],
-        },
-      };
+        nested: {},
+          items: [{ name: 'item1' }, { name: 'item2' }]}};
       
       // Add dangerous property to test sanitization
       (objectWithArrays.nested as Record<string, unknown>)['__proto__'] = { evil: true };

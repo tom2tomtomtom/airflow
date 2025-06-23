@@ -18,18 +18,18 @@ process.env.JWT_SECRET = 'test-secret-key-for-testing-purposes-only';
 
 // Mock Supabase client
 jest.mock('@/lib/supabase', () => ({
-  supabase: {
-    auth: {
+  supabase: {},
+    auth: {},
       signInWithPassword: jest.fn(({ email, password }) => {
         if (email === 'test@example.com' && password === 'password123') {
           return Promise.resolve({
-            data: {
-              user: {
+            data: {},
+              user: {},
                 id: 'test-user-id',
                 email: 'test@example.com',
                 user_metadata: { name: 'Test User' }
               },
-              session: {
+              session: {},
                 access_token: 'test-access-token',
                 refresh_token: 'test-refresh-token'
               }
@@ -48,7 +48,7 @@ jest.mock('@/lib/supabase', () => ({
       select: jest.fn(() => ({
         eq: jest.fn(() => ({
           single: jest.fn(() => Promise.resolve({
-            data: {
+            data: {},
               id: 'test-user-id',
               first_name: 'Test',
               last_name: 'User',
@@ -63,7 +63,7 @@ jest.mock('@/lib/supabase', () => ({
       insert: jest.fn(() => ({
         select: jest.fn(() => ({
           single: jest.fn(() => Promise.resolve({
-            data: {
+            data: {},
               id: 'test-user-id',
               first_name: 'Test',
               last_name: 'User',
@@ -96,7 +96,7 @@ describe('/api/auth/login', () => {
     test('should authenticate user with valid credentials', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           email: 'test@example.com',
           password: 'password123'
         }
@@ -113,7 +113,7 @@ describe('/api/auth/login', () => {
     test('should reject invalid credentials', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           email: 'test@example.com',
           password: 'wrongpassword'
         }
@@ -130,7 +130,7 @@ describe('/api/auth/login', () => {
     test('should return 400 for missing email', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           password: 'password123'
         }
       });
@@ -146,7 +146,7 @@ describe('/api/auth/login', () => {
     test('should return 400 for missing password', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           email: 'test@example.com'
         }
       });
@@ -207,7 +207,7 @@ describe('/api/auth/login', () => {
     test('should handle empty email', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           email: '',
           password: 'validpassword123'
         }
@@ -224,7 +224,7 @@ describe('/api/auth/login', () => {
     test('should handle empty password', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           email: 'test@example.com',
           password: ''
         }
@@ -241,7 +241,7 @@ describe('/api/auth/login', () => {
     test('should handle whitespace-only email', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           email: '   ',
           password: 'validpassword123'
         }
@@ -258,7 +258,7 @@ describe('/api/auth/login', () => {
     test('should handle whitespace-only password', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           email: 'test@example.com',
           password: '   '
         }
@@ -275,7 +275,7 @@ describe('/api/auth/login', () => {
     test('should handle invalid email format', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           email: 'invalid-email',
           password: 'validpassword123'
         }
@@ -293,7 +293,7 @@ describe('/api/auth/login', () => {
       const longEmail = 'a'.repeat(1000) + '@example.com';
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           email: longEmail,
           password: 'validpassword123'
         }
@@ -311,7 +311,7 @@ describe('/api/auth/login', () => {
       const longPassword = 'a'.repeat(10000);
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           email: 'test@example.com',
           password: longPassword
         }
@@ -328,7 +328,7 @@ describe('/api/auth/login', () => {
     test('should handle special characters in email', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           email: 'test+special@example.com',
           password: 'validpassword123'
         }
@@ -343,7 +343,7 @@ describe('/api/auth/login', () => {
     test('should handle special characters in password', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           email: 'test@example.com',
           password: 'P@ssw0rd!#$%'
         }
@@ -358,7 +358,7 @@ describe('/api/auth/login', () => {
     test('should handle null values', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           email: null,
           password: null
         }
@@ -374,7 +374,7 @@ describe('/api/auth/login', () => {
     test('should handle undefined values', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           email: undefined,
           password: undefined
         }
@@ -390,7 +390,7 @@ describe('/api/auth/login', () => {
     test('should handle extra fields in request body', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           email: 'test@example.com',
           password: 'validpassword123',
           extraField: 'should be ignored',
@@ -409,7 +409,7 @@ describe('/api/auth/login', () => {
     test('should handle SQL injection attempts in email', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           email: "'; DROP TABLE users; --",
           password: 'validpassword123'
         }
@@ -426,7 +426,7 @@ describe('/api/auth/login', () => {
     test('should handle XSS attempts in email', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           email: '<script>alert("xss")</script>@example.com',
           password: 'validpassword123'
         }
@@ -443,7 +443,7 @@ describe('/api/auth/login', () => {
     test('should handle unicode characters', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           email: 'tëst@éxample.com',
           password: 'pässwörd123'
         }

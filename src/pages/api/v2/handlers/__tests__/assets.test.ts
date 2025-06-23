@@ -15,32 +15,22 @@ import { handleAssetsRoutes } from '../assets';
 
 // Mock dependencies
 jest.mock('@/lib/supabase', () => ({
-  supabase: {
+  supabase: {},
     from: jest.fn(() => ({
       select: jest.fn(() => ({
         eq: jest.fn(() => ({
           single: jest.fn(() => Promise.resolve({ data: { id: 'asset123' }, error: null })),
-          order: jest.fn(() => Promise.resolve({ data: [], error: null })),
-        })),
+          order: jest.fn(() => Promise.resolve({ data: [], error: null }))})),
         or: jest.fn(() => ({
-          order: jest.fn(() => Promise.resolve({ data: [], error: null })),
-        })),
-        order: jest.fn(() => Promise.resolve({ data: [], error: null })),
-      })),
+          order: jest.fn(() => Promise.resolve({ data: [], error: null }))})),
+        order: jest.fn(() => Promise.resolve({ data: [], error: null }))})),
       insert: jest.fn(() => ({
         select: jest.fn(() => ({
-          single: jest.fn(() => Promise.resolve({ data: { id: 'asset123' }, error: null })),
-        })),
-      })),
+          single: jest.fn(() => Promise.resolve({ data: { id: 'asset123' }, error: null }))}))})),
       update: jest.fn(() => ({
-        eq: jest.fn(() => Promise.resolve({ data: null, error: null })),
-      })),
+        eq: jest.fn(() => Promise.resolve({ data: null, error: null }))})),
       delete: jest.fn(() => ({
-        eq: jest.fn(() => Promise.resolve({ data: null, error: null })),
-      })),
-    })),
-  },
-}));
+        eq: jest.fn(() => Promise.resolve({ data: null, error: null }))}))}))}}));
 
 // Mock console methods
 const _mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -67,8 +57,7 @@ describe('API v2 Assets Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         url: '/api/v2/assets',
-        query: { clientId: 'client123' },
-      });
+        query: { clientId: 'client123' }});
 
       const getContext = { ...mockContext, query: req.query };
       await handleAssetsRoutes(req, res, getContext, []);
@@ -83,8 +72,7 @@ describe('API v2 Assets Handler', () => {
     test('should handle GET single asset', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        url: '/api/v2/assets/asset123',
-      });
+        url: '/api/v2/assets/asset123'});
 
       await handleAssetsRoutes(req, res, mockContext, ['asset123']);
 
@@ -98,15 +86,13 @@ describe('API v2 Assets Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         url: '/api/v2/assets',
-        body: {
+        body: {},
           name: 'Test Asset',
           type: 'image',
           url: 'https://example.com/image.jpg',
           clientId: 'client123',
           description: 'Test asset description',
-          tags: ['marketing', 'social'],
-        },
-      });
+          tags: ['marketing', 'social']}});
 
       const postContext = { ...mockContext, method: 'POST', body: req.body };
       await handleAssetsRoutes(req, res, postContext, []);
@@ -121,12 +107,10 @@ describe('API v2 Assets Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'PUT',
         url: '/api/v2/assets/asset123',
-        body: {
+        body: {},
           name: 'Updated Asset Name',
           description: 'Updated description',
-          tags: ['updated', 'tags'],
-        },
-      });
+          tags: ['updated', 'tags']}});
 
       const putContext = { ...mockContext, method: 'PUT', body: req.body };
       await handleAssetsRoutes(req, res, putContext, ['asset123']);
@@ -139,8 +123,7 @@ describe('API v2 Assets Handler', () => {
     test('should handle DELETE asset', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'DELETE',
-        url: '/api/v2/assets/asset123',
-      });
+        url: '/api/v2/assets/asset123'});
 
       const deleteContext = { ...mockContext, method: 'DELETE' };
       await handleAssetsRoutes(req, res, deleteContext, ['asset123']);
@@ -154,10 +137,9 @@ describe('API v2 Assets Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         url: '/api/v2/assets',
-        body: {
+        body: {},
           // Missing required fields
-        },
-      });
+        }});
 
       const postContext = { ...mockContext, method: 'POST', body: req.body };
       await handleAssetsRoutes(req, res, postContext, []);
@@ -174,17 +156,14 @@ describe('API v2 Assets Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         url: '/api/v2/assets/upload',
-        body: {
+        body: {},
           fileName: 'test-image.jpg',
           fileType: 'image/jpeg',
           fileSize: 1024000,
           clientId: 'client123',
-          metadata: {
+          metadata: {},
             width: 1920,
-            height: 1080,
-          },
-        },
-      });
+            height: 1080}}});
 
       const postContext = { ...mockContext, method: 'POST', body: req.body };
       await handleAssetsRoutes(req, res, postContext, ['upload']);
@@ -200,13 +179,11 @@ describe('API v2 Assets Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         url: '/api/v2/assets/upload',
-        body: {
+        body: {},
           fileName: 'test.exe', // Invalid file type
           fileType: 'application/exe',
           fileSize: 1024000,
-          clientId: 'client123',
-        },
-      });
+          clientId: 'client123'}});
 
       const postContext = { ...mockContext, method: 'POST', body: req.body };
       await handleAssetsRoutes(req, res, postContext, ['upload']);
@@ -221,13 +198,11 @@ describe('API v2 Assets Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         url: '/api/v2/assets/upload',
-        body: {
+        body: {},
           fileName: 'large-file.jpg',
           fileType: 'image/jpeg',
           fileSize: 100000000, // 100MB - too large
-          clientId: 'client123',
-        },
-      });
+          clientId: 'client123'}});
 
       const postContext = { ...mockContext, method: 'POST', body: req.body };
       await handleAssetsRoutes(req, res, postContext, ['upload']);
@@ -244,11 +219,9 @@ describe('API v2 Assets Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         url: '/api/v2/assets/search',
-        query: {
+        query: {},
           q: 'logo',
-          clientId: 'client123',
-        },
-      });
+          clientId: 'client123'}});
 
       const getContext = { ...mockContext, query: req.query };
       await handleAssetsRoutes(req, res, getContext, ['search']);
@@ -263,11 +236,9 @@ describe('API v2 Assets Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         url: '/api/v2/assets/search',
-        query: {
+        query: {},
           tags: 'marketing,social',
-          clientId: 'client123',
-        },
-      });
+          clientId: 'client123'}});
 
       const getContext = { ...mockContext, query: req.query };
       await handleAssetsRoutes(req, res, getContext, ['search']);
@@ -281,11 +252,9 @@ describe('API v2 Assets Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         url: '/api/v2/assets/search',
-        query: {
+        query: {},
           type: 'image',
-          clientId: 'client123',
-        },
-      });
+          clientId: 'client123'}});
 
       const getContext = { ...mockContext, query: req.query };
       await handleAssetsRoutes(req, res, getContext, ['search']);
@@ -299,13 +268,11 @@ describe('API v2 Assets Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         url: '/api/v2/assets/search',
-        query: {
+        query: {},
           q: 'test',
           page: '2',
           limit: '10',
-          clientId: 'client123',
-        },
-      });
+          clientId: 'client123'}});
 
       const getContext = { ...mockContext, query: req.query };
       await handleAssetsRoutes(req, res, getContext, ['search']);
@@ -320,13 +287,11 @@ describe('API v2 Assets Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         url: '/api/v2/assets/search',
-        query: {
+        query: {},
           q: 'test',
           sortBy: 'created_at',
           sortOrder: 'desc',
-          clientId: 'client123',
-        },
-      });
+          clientId: 'client123'}});
 
       const getContext = { ...mockContext, query: req.query };
       await handleAssetsRoutes(req, res, getContext, ['search']);
@@ -342,14 +307,11 @@ describe('API v2 Assets Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'PUT',
         url: '/api/v2/assets/bulk',
-        body: {
+        body: {},
           assetIds: ['asset1', 'asset2', 'asset3'],
-          updates: {
+          updates: {},
             tags: ['bulk-updated'],
-            description: 'Bulk updated description',
-          },
-        },
-      });
+            description: 'Bulk updated description'}}});
 
       const putContext = { ...mockContext, method: 'PUT', body: req.body };
       await handleAssetsRoutes(req, res, putContext, ['bulk']);
@@ -364,10 +326,8 @@ describe('API v2 Assets Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'DELETE',
         url: '/api/v2/assets/bulk',
-        body: {
-          assetIds: ['asset1', 'asset2', 'asset3'],
-        },
-      });
+        body: {},
+          assetIds: ['asset1', 'asset2', 'asset3']}});
 
       const deleteContext = { ...mockContext, method: 'DELETE', body: req.body };
       await handleAssetsRoutes(req, res, deleteContext, ['bulk']);
@@ -382,11 +342,9 @@ describe('API v2 Assets Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'PUT',
         url: '/api/v2/assets/bulk',
-        body: {
+        body: {},
           assetIds: Array(1001).fill('asset').map((_, i) => `asset${i}`), // Too many assets
-          updates: { tags: ['test'] },
-        },
-      });
+          updates: { tags: ['test'] }}});
 
       const putContext = { ...mockContext, method: 'PUT', body: req.body };
       await handleAssetsRoutes(req, res, putContext, ['bulk']);
@@ -403,19 +361,16 @@ describe('API v2 Assets Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         url: '/api/v2/assets',
-        body: {
+        body: {},
           name: 'Test Image',
           type: 'image',
           url: 'https://example.com/image.jpg',
           clientId: 'client123',
-          metadata: {
+          metadata: {},
             width: 1920,
             height: 1080,
             format: 'JPEG',
-            colorSpace: 'sRGB',
-          },
-        },
-      });
+            colorSpace: 'sRGB'}}});
 
       const postContext = { ...mockContext, method: 'POST', body: req.body };
       await handleAssetsRoutes(req, res, postContext, []);
@@ -430,20 +385,17 @@ describe('API v2 Assets Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         url: '/api/v2/assets',
-        body: {
+        body: {},
           name: 'Test Video',
           type: 'video',
           url: 'https://example.com/video.mp4',
           clientId: 'client123',
-          metadata: {
+          metadata: {},
             duration: 30.5,
             width: 1920,
             height: 1080,
             frameRate: 30,
-            codec: 'H.264',
-          },
-        },
-      });
+            codec: 'H.264'}}});
 
       const postContext = { ...mockContext, method: 'POST', body: req.body };
       await handleAssetsRoutes(req, res, postContext, []);
@@ -459,8 +411,7 @@ describe('API v2 Assets Handler', () => {
     test('should handle unknown asset endpoints', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        url: '/api/v2/assets/unknown',
-      });
+        url: '/api/v2/assets/unknown'});
 
       await handleAssetsRoutes(req, res, mockContext, ['unknown']);
 
@@ -473,8 +424,7 @@ describe('API v2 Assets Handler', () => {
     test('should handle authentication errors', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        url: '/api/v2/assets',
-      });
+        url: '/api/v2/assets'});
 
       const unauthContext = { ...mockContext, user: null };
       await handleAssetsRoutes(req, res, unauthContext, []);
@@ -488,8 +438,7 @@ describe('API v2 Assets Handler', () => {
     test('should handle asset not found', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        url: '/api/v2/assets/nonexistent',
-      });
+        url: '/api/v2/assets/nonexistent'});
 
       await handleAssetsRoutes(req, res, mockContext, ['nonexistent']);
 
@@ -502,8 +451,7 @@ describe('API v2 Assets Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         url: '/api/v2/assets',
-        query: { clientId: 'client123' },
-      });
+        query: { clientId: 'client123' }});
 
       const getContext = { ...mockContext, query: req.query };
       await handleAssetsRoutes(req, res, getContext, []);

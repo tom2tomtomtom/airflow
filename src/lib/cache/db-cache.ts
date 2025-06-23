@@ -9,8 +9,7 @@ const DB_NAMESPACES = {
   CAMPAIGNS: 'db:campaigns',
   TEMPLATES: 'db:templates',
   USER_PROFILES: 'db:profiles',
-  MATRICES: 'db:matrices',
-} as const;
+  MATRICES: 'db:matrices'} as const;
 
 // Generate cache key from query parameters
 function generateQueryHash(query: string, params?: any[]): string {
@@ -308,7 +307,7 @@ export class DBCacheUtils {
     query: string,
     queryFn: () => Promise<T>,
     params?: any[],
-    options: {
+    options: {},
       ttl?: number;
       tags?: string[];
       namespace?: string;
@@ -322,8 +321,7 @@ export class DBCacheUtils {
       queryFn,
       {
         ttl: options.ttl || CACHE_TTL.DB_QUERY,
-        tags: options.tags || ['db-query'],
-      },
+        tags: options.tags || ['db-query']},
       namespace
     );
   }
@@ -335,5 +333,4 @@ export default {
   CampaignCache,
   UserProfileCache,
   QueryCache,
-  DBCacheUtils,
-};
+  DBCacheUtils};

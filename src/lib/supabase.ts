@@ -10,12 +10,10 @@ import { withRetry, queryWithCache } from './supabase/helpers';
 import { loggers } from './logger';
 
 // Export the primary client getter based on environment
-export const supabase = typeof window !== 'undefined' 
-  ? getSupabaseBrowserClient()
-  : null; // Server components should use createServerSupabaseClient
+export const supabase = typeof window !== 'undefined' ? getSupabaseBrowserClient() : null; // Server components should use createServerSupabaseClient
 
 // Re-export essential functions from the new module structure
-export { 
+export {
   getSupabaseBrowserClient,
   createServerSupabaseClient,
   getAdminSupabaseClient,
@@ -39,10 +37,11 @@ export async function getUserFromToken(
 
   try {
     // Use server client for token validation
-    const client = typeof window === 'undefined' 
-      ? await createServerSupabaseClient()
-      : getSupabaseBrowserClient();
-      
+    const client =
+      typeof window === 'undefined'
+        ? await createServerSupabaseClient()
+        : getSupabaseBrowserClient();
+
     const { data, error } = await client.auth.getUser(token);
 
     if (error) {
@@ -58,7 +57,7 @@ export async function getUserFromToken(
   } catch (error: any) {
     await handleSupabaseError(error, {
       operation: 'getUserFromToken',
-      metadata: { hasToken: !!token }
+      metadata: { hasToken: !!token },
     });
   }
 }
@@ -72,15 +71,12 @@ export async function getUserProfile(
   }
 
   return withRetry(async () => {
-    const client = typeof window === 'undefined' 
-      ? await createServerSupabaseClient()
-      : getSupabaseBrowserClient();
-      
-    const { data, error } = await client
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
+    const client =
+      typeof window === 'undefined'
+        ? await createServerSupabaseClient()
+        : getSupabaseBrowserClient();
+
+    const { data, error } = await client.from('profiles').select('*').eq('id', userId).single();
 
     if (error) {
       // Handle case where profile doesn't exist
@@ -103,10 +99,11 @@ export async function getUserClients(userId: string): Promise<string[]> {
   return queryWithCache(
     `user-clients:${userId}`,
     async () => {
-      const client = typeof window === 'undefined' 
-        ? await createServerSupabaseClient()
-        : getSupabaseBrowserClient();
-        
+      const client =
+        typeof window === 'undefined'
+          ? await createServerSupabaseClient()
+          : getSupabaseBrowserClient();
+
       const { data, error } = await client
         .from('user_clients')
         .select('client_id')

@@ -84,6 +84,10 @@ const SAFE_PATTERNS = [
   '.test-signature', // Test JWT signatures
   '.default-signature', // Test JWT signatures
   'eyJpc3MiOiJ0ZXN0Ii', // Test JWT payload
+  'too-short', // Test JWT secret for validation
+  'short-secret', // Test JWT secret for validation
+  'JWT_SECRET: \'too-short\'', // Test validation context
+  'JWT_SECRET: \'short-secret\'', // Test validation context
 ];
 
 function shouldIgnoreFile(filePath) {

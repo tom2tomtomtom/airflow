@@ -17,7 +17,7 @@ export function createServerSupabaseClient(
       config.url,
       config.anonKey,
       {
-        cookies: {
+        cookies: {},
           get(name: string) {
             return req?.cookies[name];
           },
@@ -42,9 +42,7 @@ export function createServerSupabaseClient(
                 loggers.supabase.debug('Cookie remove from API handler', { name, error });
               }
             }
-          },
-        },
-      }
+          }}}
     );
 
     return client;

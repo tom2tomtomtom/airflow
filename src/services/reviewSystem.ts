@@ -19,7 +19,7 @@ export interface ReviewWorkflow {
   createdAt: Date;
   updatedAt: Date;
   createdBy: string;
-  metadata: {
+  metadata: {},
     totalStages: number;
     completedStages: number;
     averageReviewTime: number;
@@ -116,7 +116,7 @@ export interface ReviewComment {
 
 export interface ReviewAnalytics {
   workflowId: string;
-  performance: {
+  performance: {},
     totalTime: number;
     averageStageTime: number;
     bottlenecks: Array<{
@@ -127,7 +127,7 @@ export interface ReviewAnalytics {
     }>;
     efficiency: number; // 0-100 score
   };
-  participation: {
+  participation: {},
     totalReviewers: number;
     activeReviewers: number;
     averageResponseTime: number;
@@ -138,7 +138,7 @@ export interface ReviewAnalytics {
       qualityScore: number;
     }>;
   };
-  quality: {
+  quality: {},
     totalComments: number;
     issuesFound: number;
     issuesResolved: number;
@@ -169,7 +169,7 @@ export class ReviewSystem {
   async createReviewWorkflow(
     campaign: RenderedCampaign | PopulatedTemplate,
     workflowTemplate: 'standard' | 'expedited' | 'comprehensive' | 'custom',
-    options: {
+    options: {},
       name?: string;
       description?: string;
       reviewers?: Reviewer[];
@@ -206,7 +206,7 @@ export class ReviewSystem {
         createdAt: new Date(),
         updatedAt: new Date(),
         createdBy: options.createdBy,
-        metadata: {
+        metadata: {},
           totalStages: stages.length,
           completedStages: 0,
           averageReviewTime: 0,
@@ -633,13 +633,13 @@ export class ReviewSystem {
 
     return {
       workflowId: workflow.id,
-      performance: {
+      performance: {},
         totalTime,
         averageStageTime,
         bottlenecks: [], // Would calculate based on stage times
         efficiency
       },
-      participation: {
+      participation: {},
         totalReviewers: workflow.stages.reduce((sum, stage) => sum + stage.reviewers.length, 0),
         activeReviewers: workflow.stages.reduce((sum, stage) => 
           sum + stage.reviewers.filter((r: any) => r.status === 'reviewing').length, 0
@@ -647,7 +647,7 @@ export class ReviewSystem {
         averageResponseTime: 0, // Would calculate from submission data
         topPerformers: [] // Would rank reviewers by performance
       },
-      quality: {
+      quality: {},
         totalComments: 0, // Would count from comments table
         issuesFound: 0,
         issuesResolved: 0,

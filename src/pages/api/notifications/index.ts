@@ -17,8 +17,7 @@ const NotificationCreateSchema = z.object({
   action_url: z.string().optional(),
   action_label: z.string().optional(),
   expires_at: z.string().optional(),
-  metadata: z.any().optional(),
-});
+  metadata: z.any().optional()});
 
 const NotificationFilterSchema = z.object({
   client_id: z.string().uuid().optional(),
@@ -29,8 +28,7 @@ const NotificationFilterSchema = z.object({
   limit: z.number().min(1).max(100).default(50),
   offset: z.number().min(0).default(0),
   sort_by: z.enum(['created_at', 'priority', 'expires_at']).default('created_at'),
-  sort_order: z.enum(['asc', 'desc']).default('desc'),
-});
+  sort_order: z.enum(['asc', 'desc']).default('desc')});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -136,7 +134,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       data: notifications || [],
       count: notifications?.length || 0,
       statistics,
-      pagination: {
+      pagination: {},
         limit: filters.limit,
         offset: filters.offset,
         total: count || 0
@@ -194,8 +192,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
         user_id: targetUserId,
         created_by: user.id,
         read: false,
-        read_at: null,
-      };
+        read_at: null};
 
       delete notification.target_user_ids; // Remove this field from the insert
 
@@ -367,8 +364,7 @@ async function calculateNotificationStatistics(userId: string, clientIds: string
       recent_24h: recent,
       by_type: byType,
       by_category: byCategory,
-      by_priority: byPriority,
-    };
+      by_priority: byPriority};
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error calculating notification statistics:', error);
@@ -382,9 +378,9 @@ function getEmptyStatistics() {
     unread: 0,
     read: 0,
     recent_24h: 0,
-    by_type: Record<string, unknown>$1
-    by_category: Record<string, unknown>$1
-    by_priority: Record<string, unknown>$1
+    by_type: {}
+    by_category: {}
+    by_priority: {}
   };
 }
 
@@ -404,8 +400,7 @@ async function triggerNotificationEvent(notification: any): Promise<void> {
         category: notification.category,
         priority: notification.priority,
         action_url: notification.action_url,
-        action_label: notification.action_label,
-      },
+        action_label: notification.action_label},
       notification.client_id,
       notification.created_by // Don't send to the creator unless they're the target
     );
@@ -438,8 +433,7 @@ export async function createExecutionNotification(
     const statusMessages = {
       completed: { title: 'Execution Completed', type: 'success' },
       failed: { title: 'Execution Failed', type: 'error' },
-      cancelled: { title: 'Execution Cancelled', type: 'warning' },
-    };
+      cancelled: { title: 'Execution Cancelled', type: 'warning' }};
 
     const statusInfo = statusMessages[status as keyof typeof statusMessages];
     if (!statusInfo) return;
@@ -457,9 +451,7 @@ export async function createExecutionNotification(
         client_id: clientId,
         action_url: `/execute?execution=${executionId}`,
         action_label: 'View Details',
-        metadata: { execution_id: executionId, status },
-      }),
-    });
+        metadata: { execution_id: executionId, status }})});
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error creating execution notification:', error);
@@ -488,8 +480,7 @@ export async function createApprovalNotification(
       created: { title: 'New Approval Request', type: 'info' },
       approved: { title: 'Approval Granted', type: 'success' },
       rejected: { title: 'Approval Rejected', type: 'error' },
-      changes_requested: { title: 'Changes Requested', type: 'warning' },
-    };
+      changes_requested: { title: 'Changes Requested', type: 'warning' }};
 
     const actionInfo = actionMessages[action as keyof typeof actionMessages];
     if (!actionInfo) return;
@@ -506,9 +497,7 @@ export async function createApprovalNotification(
         client_id: clientId,
         action_url: `/approvals?approval=${approvalId}`,
         action_label: 'View Details',
-        metadata: { approval_id: approvalId, action },
-      }),
-    });
+        metadata: { approval_id: approvalId, action }})});
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error creating approval notification:', error);

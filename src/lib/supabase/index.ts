@@ -4,19 +4,14 @@ export { createServerSupabaseClient, createClient } from './server';
 export { getAdminSupabaseClient, supabaseAdmin } from './admin';
 export { validateSupabaseConfig, hasServiceRoleAccess, STORAGE_BUCKETS } from './config';
 export { createMiddlewareSupabaseClient } from './middleware';
-export { 
-  handleSupabaseError, 
-  isAuthError, 
-  isNetworkError, 
-  isRateLimitError,
-  getErrorMessage 
-} from './errors';
 export {
-  withRetry,
-  withTransaction,
-  withRLS,
-  queryWithCache,
-} from './helpers';
+  handleSupabaseError,
+  isAuthError,
+  isNetworkError,
+  isRateLimitError,
+  getErrorMessage,
+} from './errors';
+export { withRetry, withTransaction, withRLS, queryWithCache } from './helpers';
 
 // Re-export database types
 export type { Database } from '@/types/database';

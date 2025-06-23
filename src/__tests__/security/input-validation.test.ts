@@ -10,8 +10,7 @@ import {
   validateUUID,
   sanitizeHtml,
   validateFileUpload,
-  detectMaliciousPatterns,
-} from '@/utils/validation';
+  detectMaliciousPatterns} from '@/utils/validation';
 
 describe('Input Validation & Sanitization Security Tests', () => {
   beforeEach(() => {

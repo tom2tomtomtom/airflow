@@ -33,8 +33,7 @@ import {
   Tabs,
   Tab,
   Paper,
-  Tooltip,
-} from '@mui/material';
+  Tooltip} from '@mui/material';
 import {
   CheckCircle as ApproveIcon,
   Cancel as RejectIcon,
@@ -46,8 +45,7 @@ import {
   Comment as CommentIcon,
   History as HistoryIcon,
   Warning as WarningIcon,
-  Notifications as NotificationIcon,
-} from '@mui/icons-material';
+  Notifications as NotificationIcon} from '@mui/icons-material';
 import { useNotification } from '@/contexts/NotificationContext';
 import { useClient } from '@/contexts/ClientContext';
 
@@ -92,8 +90,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
   clientId,
   itemType,
   itemId,
-  showActions = true,
-}) => {
+  showActions = true}) => {
   const { activeClient } = useClient();
   const { showNotification } = useNotification();
   const [approvals, setApprovals] = useState<Approval[]>([]);
@@ -108,8 +105,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
     action: 'approve' as 'approve' | 'reject' | 'request_changes',
     comments: '',
     changes_requested: [] as any[],
-    conditions: [] as string[],
-  });
+    conditions: [] as string[]});
 
   // Fetch approvals
   const fetchApprovals = async () => {
@@ -124,14 +120,11 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
         ...(tabValue !== 'all' && { status: tabValue }),
         ...(targetClientId && { client_id: targetClientId }),
         ...(itemType && { item_type: itemType }),
-        ...(itemId && { item_id: itemId }),
-      });
+        ...(itemId && { item_id: itemId })});
 
       const response = await fetch(`/api/approvals?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
+        headers: {},
+          'Authorization': `Bearer ${localStorage.getItem('token')}`}});
 
       if (response.ok) {
         const data = await response.json();
@@ -152,12 +145,10 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
     try {
       const response = await fetch(`/api/approvals/${selectedApproval.id}`, {
         method: 'PUT',
-        headers: {
+        headers: {},
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify(decisionData),
-      });
+          'Authorization': `Bearer ${localStorage.getItem('token')}`},
+        body: JSON.stringify(decisionData)});
 
       if (response.ok) {
         showNotification(`Approval ${decisionData.action}d successfully`, 'success');
@@ -182,15 +173,12 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
     try {
       const response = await fetch('/api/approvals/bulk', {
         method: 'PUT',
-        headers: {
+        headers: {},
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+          'Authorization': `Bearer ${localStorage.getItem('token')}`},
         body: JSON.stringify({
           approval_ids: selectedIds,
-          ...decisionData,
-        }),
-      });
+          ...decisionData})});
 
       if (response.ok) {
         showNotification(`${selectedIds.length} approvals processed successfully`, 'success');
@@ -213,8 +201,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
       action: 'approve',
       comments: '',
       changes_requested: [],
-      conditions: [],
-    });
+      conditions: []});
   };
 
   // Get approval status display
@@ -237,8 +224,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
       content: { color: '#2196f3', label: 'Content Review' },
       legal: { color: '#ff9800', label: 'Legal Review' },
       brand: { color: '#9c27b0', label: 'Brand Review' },
-      final: { color: '#4caf50', label: 'Final Approval' },
-    };
+      final: { color: '#4caf50', label: 'Final Approval' }};
     return displays[type as keyof typeof displays] || { color: '#666', label: type };
   };
 
@@ -293,8 +279,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
   const handleBulkToggle = (approvalId: string) => {
     setBulkSelection(prev => ({
       ...prev,
-      [approvalId]: !prev[approvalId],
-    }));
+      [approvalId]: !prev[approvalId]}));
   };
 
   const handleSelectAll = () => {

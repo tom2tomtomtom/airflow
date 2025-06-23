@@ -43,7 +43,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(200).json({
     success: true,
     data: filteredTemplates,
-    meta: {
+    meta: {},
       total: filteredTemplates.length,
       categories: ['marketing', 'product', 'social'],
       timestamp: new Date().toISOString()
@@ -54,8 +54,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 describe('/api/templates', () => {
   it('should return templates list successfully', async () => {
     const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-      method: 'GET',
-    });
+      method: 'GET'});
 
     await handler(req, res);
 
@@ -68,9 +67,7 @@ describe('/api/templates', () => {
       meta: expect.objectContaining({
         total: expect.any(Number),
         categories: expect.any(Array),
-        timestamp: expect.any(String),
-      }),
-    });
+        timestamp: expect.any(String)})});
     
     expect(data.data.length).toBeGreaterThan(0);
     expect(data.data[0]).toHaveProperty('id');
@@ -111,8 +108,7 @@ describe('/api/templates', () => {
 
   it('should reject non-GET methods', async () => {
     const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-      method: 'POST',
-    });
+      method: 'POST'});
 
     await handler(req, res);
 
@@ -124,8 +120,7 @@ describe('/api/templates', () => {
 
   it('should include template metadata', async () => {
     const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-      method: 'GET',
-    });
+      method: 'GET'});
 
     await handler(req, res);
 

@@ -11,7 +11,7 @@ export interface ValidationRule {
   maxLength?: number;
   pattern?: RegExp;
   type?: 'string' | 'number' | 'email' | 'url' | 'uuid' | 'json';
-  custom?: (value: any) => boolean | string;
+  custom?: (value: unknown) => boolean | string;
 }
 
 export interface ValidationSchema {
@@ -21,7 +21,7 @@ export interface ValidationSchema {
 export interface ValidationResult {
   isValid: boolean;
   errors: { [key: string]: string };
-  sanitizedData: { [key: string]: any };
+  sanitizedData: { [key: string]: unknown };
 }
 
 /**
@@ -30,8 +30,7 @@ export interface ValidationResult {
 export function sanitizeHtml(html: string): string {
   return DOMPurify.sanitize(html, {
     ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'p', 'br', 'ul', 'ol', 'li', 'a'],
-    ALLOWED_ATTR: ['href'],
-  });
+    ALLOWED_ATTR: ['href']});
 }
 
 /**
@@ -161,7 +160,7 @@ export function validateEmail(email: string): boolean {
  */
 export function isPasswordValid(password: string): boolean {
   // At least 8 characters, one uppercase, one lowercase, one digit, one special char
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8}$/;
   return passwordRegex.test(password);
 }
 
@@ -200,14 +199,13 @@ export function validatePassword(password: string): { isValid: boolean; errors: 
   
   return {
     isValid: errors.length === 0,
-    errors,
-  };
+    errors};
 }
 
 /**
  * Validate required field
  */
-export function validateRequired(value: any): boolean {
+export function validateRequired(value: unknown): boolean {
   return value !== undefined && value !== null && value !== '';
 }
 
@@ -234,7 +232,7 @@ export function isValidJson(json: string): boolean {
 /**
  * Validate single field
  */
-export function validateField(value: any, rule: ValidationRule): string | null {
+export function validateField(value: unknown, rule: ValidationRule): string | null {
   // Check required
   if (rule.required && (value === undefined || value === null || value === '')) {
     return 'This field is required';
@@ -310,12 +308,12 @@ export function validateField(value: any, rule: ValidationRule): string | null {
 /**
  * Validate data against schema
  */
-export function validateData(data: any, schema: ValidationSchema): ValidationResult {
+export function validateData(data: unknown, schema: ValidationSchema): ValidationResult {
   const errors: { [key: string]: string } = {};
-  const sanitizedData: { [key: string]: any } = {};
+  const sanitizedData: { [key: string]: unknown } = {};
   
   // Validate each field in schema
-  Object.keys(schema).forEach((key: any) => {
+  Object.keys(schema).forEach((key: unknown) => {
     const value = data[key];
     const rule = schema[key];
 
@@ -339,8 +337,7 @@ export function validateData(data: any, schema: ValidationSchema): ValidationRes
   return {
     isValid: Object.keys(errors).length === 0,
     errors,
-    sanitizedData,
-  };
+    sanitizedData};
 }
 
 /**
@@ -348,146 +345,120 @@ export function validateData(data: any, schema: ValidationSchema): ValidationRes
  */
 export const validationSchemas = {
   // User registration
-  userRegistration: {
-    email: {
+  userRegistration: {},
+    email: {},
       required: true,
       type: 'email' as const,
-      maxLength: 255,
-    },
-    password: {
+      maxLength: 255},
+    password: {},
       required: true,
       type: 'string' as const,
       minLength: 8,
       maxLength: 128,
-      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
-    },
-    name: {
+      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/},
+    name: {},
       required: true,
       type: 'string' as const,
       minLength: 2,
-      maxLength: 100,
-    },
-  },
+      maxLength: 100}},
   
   // User login
-  login: {
-    email: {
+  login: {},
+    email: {},
       required: true,
       type: 'email' as const,
-      maxLength: 255,
-    },
-    password: {
+      maxLength: 255},
+    password: {},
       required: true,
       type: 'string' as const,
       minLength: 1,
-      maxLength: 128,
-    },
-  },
+      maxLength: 128}},
 
   // User signup
-  signup: {
-    email: {
+  signup: {},
+    email: {},
       required: true,
       type: 'email' as const,
-      maxLength: 255,
-    },
-    password: {
+      maxLength: 255},
+    password: {},
       required: true,
       type: 'string' as const,
       minLength: 8,
       maxLength: 128,
-      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
-    },
-    name: {
+      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/},
+    name: {},
       required: true,
       type: 'string' as const,
       minLength: 2,
-      maxLength: 100,
-    },
-  },
+      maxLength: 100}},
   
   // Client creation
-  clientCreation: {
-    name: {
+  clientCreation: {},
+    name: {},
       required: true,
       type: 'string' as const,
       minLength: 2,
-      maxLength: 100,
-    },
-    industry: {
+      maxLength: 100},
+    industry: {},
       required: false,
       type: 'string' as const,
-      maxLength: 100,
-    },
-    description: {
+      maxLength: 100},
+    description: {},
       required: false,
       type: 'string' as const,
-      maxLength: 1000,
-    },
-  },
+      maxLength: 1000}},
   
   // Campaign creation
-  campaignCreation: {
-    name: {
+  campaignCreation: {},
+    name: {},
       required: true,
       type: 'string' as const,
       minLength: 2,
-      maxLength: 200,
-    },
-    description: {
+      maxLength: 200},
+    description: {},
       required: false,
       type: 'string' as const,
-      maxLength: 2000,
-    },
-    budget: {
+      maxLength: 2000},
+    budget: {},
       required: false,
       type: 'number' as const,
-      custom: (value: number) => value >= 0 || 'Budget must be positive',
-    },
-  },
+      custom: (value: number) => value >= 0 || 'Budget must be positive'}},
   
   // AI generation request
-  aiGeneration: {
-    prompt: {
+  aiGeneration: {},
+    prompt: {},
       required: true,
       type: 'string' as const,
       minLength: 10,
-      maxLength: 2000,
-    },
-    type: {
+      maxLength: 2000},
+    type: {},
       required: true,
       type: 'string' as const,
-      pattern: /^(text|image|video|voice)$/,
-    },
-    clientId: {
+      pattern: /^(text|image|video|voice)$/},
+    clientId: {},
       required: true,
       type: 'string' as const,
-      minLength: 1,
-    },
-    style: {
+      minLength: 1},
+    style: {},
       required: false,
       type: 'string' as const,
-      maxLength: 100,
-    },
-  },
-};
+      maxLength: 100}}};
 
 /**
  * Middleware for request validation
  */
 export function withValidation(
   schema: ValidationSchema,
-  handler: (req: any, res: any) => Promise<void>
+  handler: (req: unknown, res: unknown) => Promise<void>
 ) {
-  return async (req: any, res: any) => {
+  return async (req: unknown, res: unknown) => {
     const validation = validateData(req.body, schema);
     
     if (!validation.isValid) {
       return res.status(400).json({
         error: 'Validation failed',
         code: 'VALIDATION_ERROR',
-        details: validation.errors,
-      });
+        details: validation.errors});
     }
     
     // Replace request body with sanitized data
@@ -500,10 +471,10 @@ export function withValidation(
 /**
  * Sanitize file upload data
  */
-export function sanitizeFileData(file: any): {
+export function sanitizeFileData(file: unknown): {
   isValid: boolean;
   error?: string;
-  sanitizedFile?: any;
+  sanitizedFile?: unknown;
 } {
   if (!file) {
     return { isValid: false, error: 'No file provided' };
@@ -534,16 +505,14 @@ export function sanitizeFileData(file: any): {
   // Sanitize filename
   const sanitizedName = file.name
     .replace(/[^a-zA-Z0-9.-]/g, '_')
-    .replace(/_{2,}/g, '_')
+    .replace(/_{2}/g, '_')
     .toLowerCase();
   
   return {
     isValid: true,
-    sanitizedFile: {
+    sanitizedFile: {},
       ...file,
-      name: sanitizedName,
-    },
-  };
+      name: sanitizedName}};
 }
 
 /**

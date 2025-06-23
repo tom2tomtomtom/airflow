@@ -14,8 +14,7 @@ const PerformanceFilterSchema = z.object({
   campaign_id: z.string().uuid().optional(),
   matrix_id: z.string().uuid().optional(),
   granularity: z.enum(['hour', 'day', 'week', 'month']).default('day'),
-  metrics: z.array(z.string()).default(['impressions', 'clicks', 'conversions', 'spend']),
-});
+  metrics: z.array(z.string()).default(['impressions', 'clicks', 'conversions', 'spend'])});
 
 interface PerformanceMetrics {
   timeSeriesData: Array<{
@@ -29,7 +28,7 @@ interface PerformanceMetrics {
     conversion_rate: number;
     roas: number;
   }>;
-  aggregatedMetrics: {
+  aggregatedMetrics: {},
     total_impressions: number;
     total_clicks: number;
     total_conversions: number;
@@ -39,20 +38,20 @@ interface PerformanceMetrics {
     average_conversion_rate: number;
     average_roas: number;
   };
-  comparisons: {
-    previous_period: {
+  comparisons: {},
+    previous_period: {},
       impressions_change: number;
       clicks_change: number;
       conversions_change: number;
       spend_change: number;
     };
-    benchmarks: {
+    benchmarks: {},
       industry_avg_ctr: number;
       industry_avg_conversion_rate: number;
       performance_score: number;
     };
   };
-  topPerformers: {
+  topPerformers: {},
     campaigns: Array<{
       id: string;
       name: string;
@@ -129,8 +128,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
 
   return res.json({
     success: true,
-    data: performanceData,
-  });
+    data: performanceData});
 }
 
 async function getPerformanceData(
@@ -197,8 +195,7 @@ async function getPerformanceData(
     timeSeriesData,
     aggregatedMetrics,
     comparisons,
-    topPerformers,
-  };
+    topPerformers};
 }
 
 function generateTimeSeriesData(
@@ -237,8 +234,7 @@ function generateTimeSeriesData(
       ctr: Math.round(ctr * 100) / 100,
       cpc: Math.round(cpc * 100) / 100,
       conversion_rate: Math.round(conversionRate * 100) / 100,
-      roas: Math.round(roas * 100) / 100,
-    });
+      roas: Math.round(roas * 100) / 100});
 
     // Increment date based on granularity
     switch (granularity) {
@@ -266,8 +262,7 @@ function calculateAggregatedMetrics(timeSeriesData: any[]): any {
       total_impressions: acc.total_impressions + item.impressions,
       total_clicks: acc.total_clicks + item.clicks,
       total_conversions: acc.total_conversions + item.conversions,
-      total_spend: acc.total_spend + item.spend,
-    }),
+      total_spend: acc.total_spend + item.spend}),
     { total_impressions: 0, total_clicks: 0, total_conversions: 0, total_spend: 0 }
   );
 
@@ -292,8 +287,7 @@ function calculateAggregatedMetrics(timeSeriesData: any[]): any {
     average_ctr: Math.round(average_ctr * 100) / 100,
     average_cpc: Math.round(average_cpc * 100) / 100,
     average_conversion_rate: Math.round(average_conversion_rate * 100) / 100,
-    average_roas: Math.round(average_roas * 100) / 100,
-  };
+    average_roas: Math.round(average_roas * 100) / 100};
 }
 
 async function getPreviousPeriodData(
@@ -329,18 +323,15 @@ function calculateComparisons(current: any, previous: any): any {
   };
 
   return {
-    previous_period: {
+    previous_period: {},
       impressions_change: calculateChange(current.total_impressions, previous.total_impressions),
       clicks_change: calculateChange(current.total_clicks, previous.total_clicks),
       conversions_change: calculateChange(current.total_conversions, previous.total_conversions),
-      spend_change: calculateChange(current.total_spend, previous.total_spend),
-    },
-    benchmarks: {
+      spend_change: calculateChange(current.total_spend, previous.total_spend)},
+    benchmarks: {},
       industry_avg_ctr: 2.5, // Industry benchmark
       industry_avg_conversion_rate: 3.8, // Industry benchmark
-      performance_score: calculatePerformanceScore(current),
-    },
-  };
+      performance_score: calculatePerformanceScore(current)}};
 }
 
 function calculatePerformanceScore(metrics: any): number {
@@ -362,8 +353,7 @@ async function getTopPerformers(filters: any, campaigns: any[]): Promise<any> {
       name: campaign.name,
       impressions: Math.floor(Math.random() * 10000) + 1000,
       conversions: Math.floor(Math.random() * 100) + 10,
-      roas: Math.round((Math.random() * 3 + 1) * 100) / 100,
-    }));
+      roas: Math.round((Math.random() * 3 + 1) * 100) / 100}));
 
   // Top performing content (from executions)
   const allExecutions = campaigns.flatMap(campaign => 
@@ -373,8 +363,7 @@ async function getTopPerformers(filters: any, campaigns: any[]): Promise<any> {
         title: `${matrix.name} - ${execution.platform}`,
         platform: execution.platform,
         engagement_rate: Math.round((Math.random() * 8 + 2) * 100) / 100,
-        conversion_rate: Math.round((Math.random() * 5 + 1) * 100) / 100,
-      })) || []
+        conversion_rate: Math.round((Math.random() * 5 + 1) * 100) / 100})) || []
     ) || []
   );
 
@@ -387,8 +376,7 @@ async function getTopPerformers(filters: any, campaigns: any[]): Promise<any> {
         name: execution.platform,
         spend: 0,
         conversions: 0,
-        count: 0,
-      };
+        count: 0};
     }
     acc[execution.platform].spend += Math.random() * 500 + 100;
     acc[execution.platform].conversions += Math.random() * 20 + 5;
@@ -401,16 +389,14 @@ async function getTopPerformers(filters: any, campaigns: any[]): Promise<any> {
       ...platform,
       spend: Math.round(platform.spend * 100) / 100,
       conversions: Math.round(platform.conversions),
-      efficiency_score: Math.round((platform.conversions / platform.spend) * 100),
-    }))
+      efficiency_score: Math.round((platform.conversions / platform.spend) * 100)}))
     .sort((a: any, b: any) => b.efficiency_score - a.efficiency_score)
     .slice(0, 5);
 
   return {
     campaigns: topCampaigns,
     content: topContent,
-    platforms: topPlatforms,
-  };
+    platforms: topPlatforms};
 }
 
 export default withAuth(withSecurityHeaders(handler));

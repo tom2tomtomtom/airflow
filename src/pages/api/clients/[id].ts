@@ -37,7 +37,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
-      cookies: {
+      cookies: {},
         get(name: string) {
           return req.cookies[name];
         },
@@ -46,9 +46,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
         },
         remove(name: string, options: any) {
           // We don't need to remove cookies in API routes
-        },
-      },
-    }
+        }}}
   );
 
   try {
@@ -127,21 +125,18 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
       isActive: client.is_active !== false,
       dateCreated: client.created_at,
       lastModified: client.updated_at,
-      contacts: contacts || [],
-    } as unknown as Client;
+      contacts: contacts || []} as unknown as Client;
 
         return res.json({
       success: true,
-      client: transformedClient,
-    });
+      client: transformedClient});
 
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Individual client API error:', error);
     return res.status(500).json({ 
       success: false,
-      message: 'Internal server error',
-    });
+      message: 'Internal server error'});
   }
 }
 

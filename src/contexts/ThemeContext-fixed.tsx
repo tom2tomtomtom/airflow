@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+  useCallback,
+} from 'react';
 import { PaletteMode } from '@mui/material';
 
 interface ThemeContextType {
@@ -29,7 +36,9 @@ export const ThemeModeProvider: React.FC<ThemeModeProviderProps> = ({ children }
   // Initialize theme only after component mounts (client-side)
   useEffect(() => {
     // Get initial theme from blocking script or default
-    const currentTheme = document.documentElement.getAttribute('data-mui-color-scheme') as PaletteMode;
+    const currentTheme = document.documentElement.getAttribute(
+      'data-mui-color-scheme'
+    ) as PaletteMode;
     if (currentTheme === 'dark' || currentTheme === 'light') {
       setMode(currentTheme);
     }
@@ -53,14 +62,14 @@ export const ThemeModeProvider: React.FC<ThemeModeProviderProps> = ({ children }
     // Update localStorage
     try {
       localStorage.setItem('themeMode', newMode);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.warn('Failed to save theme to localStorage:', error);
     }
 
     // Set new mode after a brief delay to allow DOM update
     setTimeout(() => {
       setMode(newMode);
-      
+
       // Remove transition class after theme has been applied
       setTimeout(() => {
         document.body.classList.remove('theme-transitioning');
@@ -72,7 +81,7 @@ export const ThemeModeProvider: React.FC<ThemeModeProviderProps> = ({ children }
   // Only update DOM attributes when mode changes (not on every render)
   useEffect(() => {
     if (!mounted) return;
-    
+
     document.documentElement.setAttribute('data-mui-color-scheme', mode);
     document.documentElement.style.colorScheme = mode;
   }, [mode, mounted]);
@@ -80,7 +89,9 @@ export const ThemeModeProvider: React.FC<ThemeModeProviderProps> = ({ children }
   // Don't render until mounted to prevent hydration mismatches
   if (!mounted) {
     return (
-      <ThemeContext.Provider value={{ mode: 'light', toggleMode: () => {}, isTransitioning: false }}>
+      <ThemeContext.Provider
+        value={{ mode: 'light', toggleMode: () => {}, isTransitioning: false }}
+      >
         {children}
       </ThemeContext.Provider>
     );

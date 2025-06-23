@@ -36,12 +36,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ...errorReport,
       serverTimestamp: new Date().toISOString(),
       ip: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
-      buildInfo: {
+      buildInfo: {},
         version: process.env.npm_package_version || '1.0.0',
         commit: process.env.VERCEL_GITHUB_COMMIT_SHA || process.env.GIT_COMMIT,
-        environment: process.env.NODE_ENV,
-      },
-    };
+        environment: process.env.NODE_ENV}};
 
     // Log error for server monitoring
     console.error('Client Error Report:', {
@@ -49,8 +47,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       message: errorReport.message,
       url: errorReport.url,
       timestamp: errorReport.timestamp,
-      userAgent: errorReport.userAgent,
-    });
+      userAgent: errorReport.userAgent});
 
     // In production, you would:
     // 1. Store in database for analysis
@@ -74,15 +71,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).json({
       success: true,
       errorId: errorReport.errorId,
-      message: 'Error report received',
-    });
+      message: 'Error report received'});
 
   } catch (error: any) {
     console.error('Error processing error report:', error);
     return res.status(500).json({
       error: 'Failed to process error report',
-      details: process.env.NODE_ENV === 'development' ? getErrorMessage(error) : undefined,
-    });
+      details: process.env.NODE_ENV === 'development' ? getErrorMessage(error) : undefined});
   }
 }
 
@@ -110,7 +105,7 @@ async function sendToMonitoringService(report: any) {
   // if (process.env.ERROR_REPORTING_URL) {
   //   await fetch(process.env.ERROR_REPORTING_URL, {
   //     method: 'POST',
-  //     headers: {
+  //     headers: {},
   //       'Content-Type': 'application/json',
   //       'Authorization': `Bearer ${process.env.ERROR_REPORTING_TOKEN}`,
   //     },
@@ -141,6 +136,5 @@ async function sendAlert(report: any) {
     errorId: report.errorId,
     message: report.message,
     url: report.url,
-    timestamp: report.timestamp,
-  });
+    timestamp: report.timestamp});
 }

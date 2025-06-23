@@ -190,11 +190,11 @@ async function generateWorkflowAssets(
           tags: ['ai-generated', prompt.purpose || 'general', 'workflow'],
           client_id: clientId || workflow.client_id,
           created_by: userId,
-          metadata: {
+          metadata: {},
             ai_generated: true,
             original_prompt: prompt.text,
             enhanced_prompt: enhancedPrompt,
-            generation_settings: {
+            generation_settings: {},
               size: prompt.size || '1024x1024',
               quality: prompt.quality || 'standard',
               style: prompt.style || 'vivid'
@@ -252,7 +252,7 @@ async function generateWorkflowAssets(
           id: asset.id,
           type: 'image',
           url: asset.file_url,
-          metadata: {
+          metadata: {},
             ...asset.metadata,
             name: asset.name,
             description: asset.description,
@@ -288,7 +288,7 @@ async function generateWorkflowAssets(
 }
 
 // Mock image generation function - replace with actual DALL-E API call
-async function generateImage(params: {
+async function generateImage(params: {},
   prompt: string;
   size: string;
   quality: string;

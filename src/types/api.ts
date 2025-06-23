@@ -50,7 +50,7 @@ export interface AIGenerationResponse extends BaseApiResponse {
     id: string;
     type: 'text' | 'image' | 'video' | 'voice';
     content: string;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
     created_at: string;
   };
 }
@@ -131,7 +131,7 @@ export interface AnalyticsResponse extends BaseApiResponse {
       change: number;
       trend: 'up' | 'down' | 'stable';
     }>;
-    charts?: Record<string, any>;
+    charts?: Record<string, unknown>;
     timeRange: string;
   };
 }
@@ -152,7 +152,7 @@ export interface CSRFTokenResponse extends BaseApiResponse {
 export interface ErrorResponse extends BaseApiResponse {
   success: false;
   error: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
   code?: string;
 }
 
@@ -166,7 +166,7 @@ export interface PaginationParams {
 
 export interface SearchParams extends PaginationParams {
   query?: string;
-  filters?: Record<string, any>;
+  filters?: Record<string, unknown>;
 }
 
 // AI Generation Request
@@ -174,14 +174,14 @@ export interface AIGenerationRequest {
   prompt: string;
   type: 'text' | 'image' | 'video' | 'voice';
   clientId: string;
-  parameters?: Record<string, any>;
+  parameters?: Record<string, unknown>;
 }
 
 // Asset Upload Request
 export interface AssetUploadRequest {
   file: File;
   type?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 // Campaign Request
@@ -189,7 +189,7 @@ export interface CampaignRequest {
   name: string;
   description?: string;
   status?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 // Authentication Request
@@ -205,7 +205,9 @@ export interface SignupRequest {
 }
 
 // Type guards for API responses
-export function isSuccessResponse(response: BaseApiResponse): response is BaseApiResponse & { success: true } {
+export function isSuccessResponse(
+  response: BaseApiResponse
+): response is BaseApiResponse & { success: true } {
   return response.success === true;
 }
 
@@ -221,24 +223,24 @@ export const API_ENDPOINTS = {
   LOGOUT: '/api/auth/logout',
   SESSION: '/api/auth/session',
   CSRF_TOKEN: '/api/auth/csrf-token',
-  
+
   // AI Generation
   AI_GENERATE: '/api/ai/generate',
   AI_GENERATIONS: '/api/ai/generations',
-  
+
   // Assets
   ASSETS: '/api/assets',
   ASSET_UPLOAD: '/api/assets/upload',
-  
+
   // Campaigns
   CAMPAIGNS: '/api/campaigns',
-  
+
   // Analytics
   ANALYTICS_OVERVIEW: '/api/analytics/overview',
   ANALYTICS_PERFORMANCE: '/api/analytics/performance',
-  
+
   // Health
   HEALTH: '/api/health',
 } as const;
 
-export type ApiEndpoint = typeof API_ENDPOINTS[keyof typeof API_ENDPOINTS];
+export type ApiEndpoint = (typeof API_ENDPOINTS)[keyof typeof API_ENDPOINTS];

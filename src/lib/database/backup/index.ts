@@ -183,7 +183,7 @@ export class DatabaseBackupManager {
       
       // Write backup to file
       const backupContent = JSON.stringify({
-        metadata: {
+        metadata: {},
           timestamp: new Date().toISOString(),
           since: since?.toISOString(),
           tables,
@@ -286,7 +286,7 @@ export class DatabaseBackupManager {
   }
   
   // Schedule automated backups
-  async scheduleBackups(schedule: {
+  async scheduleBackups(schedule: {},
     full: { enabled: boolean; cron: string; retention: number };
     incremental: { enabled: boolean; cron: string; retention: number };
     destination: string;

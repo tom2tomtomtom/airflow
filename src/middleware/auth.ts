@@ -9,19 +9,24 @@ export interface AuthenticatedRequest extends NextApiRequest {
   };
 }
 
-export function withAuth(handler: (req: AuthenticatedRequest, res: NextApiResponse) => Promise<void>) {
+export function withAuth(
+  handler: (req: AuthenticatedRequest, res: NextApiResponse) => Promise<void>
+) {
   return async (req: AuthenticatedRequest, res: NextApiResponse) => {
     try {
       // Get token from cookies
       const token = req.cookies.airwave_token;
-      
+
       if (!token) {
         return res.status(401).json({ error: 'No authentication token provided' });
       }
 
       // Verify the token with Supabase
-      const { data: { user }, error } = await supabase.auth.getUser(token);
-      
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser(token);
+
       if (error || !user) {
         return res.status(401).json({ error: 'Invalid or expired token' });
       }
@@ -47,7 +52,7 @@ export function withAuth(handler: (req: AuthenticatedRequest, res: NextApiRespon
 
       // Call the original handler
       return await handler(req, res);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Authentication middleware error:', error);
       return res.status(401).json({ error: 'Authentication failed' });
     }

@@ -12,8 +12,7 @@ export enum ErrorCode {
   INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR',
   RATE_LIMIT_EXCEEDED = 'RATE_LIMIT_EXCEEDED',
   VALIDATION_ERROR = 'VALIDATION_ERROR',
-  INVALID_TOKEN = 'INVALID_TOKEN',
-}
+  INVALID_TOKEN = 'INVALID_TOKEN'}
 
 // Error response helper
 export const errorResponse = (
@@ -24,11 +23,9 @@ export const errorResponse = (
 ) => {
   return res.status(statusCode).json({
     success: false,
-    error: {
+    error: {},
       code,
-      message,
-    },
-  });
+      message}});
 };
 
 // Get the authentication token from localStorage
@@ -39,7 +36,7 @@ const getAuthToken = (): string | null => {
     
     const userData = JSON.parse(user);
     return userData.token || null;
-  } catch (error: any) {
+  } catch (error: unknown) {
     const message = getErrorMessage(error);
     if (process.env.NODE_ENV === 'development') {
       console.error('Error getting auth token:', error);
@@ -60,8 +57,7 @@ export const apiRequest = async <T>(
     const headers = {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : Record<string, unknown>$1,
-      ...(options.headers || {}),
-    };
+      ...(options.headers || {})};
     
     // Make the request with credentials to include cookies
     const response = await fetch(url, {
@@ -79,7 +75,7 @@ export const apiRequest = async <T>(
     }
     
     return data as T;
-  } catch (error: any) {
+  } catch (error: unknown) {
     const message = getErrorMessage(error);
     if (process.env.NODE_ENV === 'development') {
 
@@ -95,7 +91,7 @@ export const authApi = {
   login: async (email: string, password: string) => {
     return apiRequest<{
       success: boolean;
-      user: {
+      user: {},
         id: string;
         email: string;
         name: string;
@@ -103,14 +99,13 @@ export const authApi = {
       };
     }>('/api/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ email, password }),
-    });
+      body: JSON.stringify({ email, password })});
   },
   
   signup: async (email: string, password: string, name: string) => {
     return apiRequest<{
       success: boolean;
-      user: {
+      user: {},
         id: string;
         email: string;
         name: string;
@@ -118,10 +113,8 @@ export const authApi = {
       };
     }>('/api/auth/signup', {
       method: 'POST',
-      body: JSON.stringify({ email, password, name }),
-    });
-  },
-};
+      body: JSON.stringify({ email, password, name })});
+  }};
 
 // Client API
 export interface Client {
@@ -148,8 +141,7 @@ export const clientApi = {
       client: Client;
     }>('/api/clients', {
       method: 'POST',
-      body: JSON.stringify(clientData),
-    });
+      body: JSON.stringify(clientData)});
   },
   
   updateClient: async (id: string, clientData: Partial<Omit<Client, 'id' | 'userId'>>) => {
@@ -158,8 +150,7 @@ export const clientApi = {
       client: Client;
     }>(`/api/clients/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(clientData),
-    });
+      body: JSON.stringify(clientData)});
   },
   
   deleteClient: async (id: string) => {
@@ -168,10 +159,8 @@ export const clientApi = {
       message: string;
       client: Client;
     }>(`/api/clients/${id}`, {
-      method: 'DELETE',
-    });
-  },
-};
+      method: 'DELETE'});
+  }};
 
 // Assets API
 export interface Asset {
@@ -202,8 +191,7 @@ export const assetApi = {
       asset: Asset;
     }>('/api/assets', {
       method: 'POST',
-      body: JSON.stringify(assetData),
-    });
+      body: JSON.stringify(assetData)});
   },
   
   updateAsset: async (id: string, assetData: Partial<Omit<Asset, 'id' | 'userId'>>) => {
@@ -212,8 +200,7 @@ export const assetApi = {
       asset: Asset;
     }>(`/api/assets/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(assetData),
-    });
+      body: JSON.stringify(assetData)});
   },
   
   deleteAsset: async (id: string) => {
@@ -221,16 +208,14 @@ export const assetApi = {
       success: boolean;
       message: string;
     }>(`/api/assets/${id}`, {
-      method: 'DELETE',
-    });
-  },
-};
+      method: 'DELETE'});
+  }};
 
 // AI Generation API
 export interface GenerationPrompt {
   prompt: string;
   type: 'text' | 'image' | 'video' | 'voice';
-  parameters?: Record<string, any>;
+  parameters?: Record<string, unknown>;
   clientId: string;
 }
 
@@ -251,8 +236,7 @@ export const aiApi = {
       result: GenerationResult;
     }>('/api/ai/generate', {
       method: 'POST',
-      body: JSON.stringify(promptData),
-    });
+      body: JSON.stringify(promptData)});
   },
   
   getGenerations: async (clientId?: string) => {
@@ -261,14 +245,12 @@ export const aiApi = {
       success: boolean;
       generations: GenerationResult[];
     }>(url);
-  },
-};
+  }};
 
 const api = {
   auth: authApi,
   client: clientApi,
   asset: assetApi,
-  ai: aiApi,
-};
+  ai: aiApi};
 
 export default api;

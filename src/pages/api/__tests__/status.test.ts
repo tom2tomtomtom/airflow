@@ -10,8 +10,7 @@ import handler from '../status';
 describe('/api/status', () => {
   it('should return status OK with timestamp', async () => {
     const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-      method: 'GET',
-    });
+      method: 'GET'});
 
     await handler(req, res);
 
@@ -20,8 +19,7 @@ describe('/api/status', () => {
     const data = JSON.parse(res._getData());
     expect(data).toMatchObject({
       status: 'ok',
-      timestamp: expect.any(String),
-    });
+      timestamp: expect.any(String)});
     
     // Verify timestamp is a valid ISO string
     expect(new Date(data.timestamp).toISOString()).toBe(data.timestamp);
@@ -29,8 +27,7 @@ describe('/api/status', () => {
 
   it('should work with POST method (method agnostic)', async () => {
     const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-      method: 'POST',
-    });
+      method: 'POST'});
 
     await handler(req, res);
 
@@ -41,12 +38,10 @@ describe('/api/status', () => {
 
   it('should return fresh timestamp on each call', async () => {
     const { req: req1, res: res1 } = createMocks<NextApiRequest, NextApiResponse>({
-      method: 'GET',
-    });
+      method: 'GET'});
 
     const { req: req2, res: res2 } = createMocks<NextApiRequest, NextApiResponse>({
-      method: 'GET',
-    });
+      method: 'GET'});
 
     await handler(req1, res1);
     await new Promise(resolve => setTimeout(resolve, 1)); // Wait 1ms

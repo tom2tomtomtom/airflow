@@ -96,9 +96,10 @@ const TemplateCard: React.FC<{
           backgroundPosition: 'center',
         }}
       >
-        {!template.thumbnail && (
-          platformIcons[template.platform] || <AspectRatioIcon sx={{ fontSize: 48, color: 'grey.400' }} />
-        )}
+        {!template.thumbnail &&
+          (platformIcons[template.platform] || (
+            <AspectRatioIcon sx={{ fontSize: 48, color: 'grey.400' }} />
+          ))}
         <Box
           sx={{
             position: 'absolute',
@@ -116,7 +117,7 @@ const TemplateCard: React.FC<{
             size="small"
             sx={{
               bgcolor: 'background.paper',
-              '&:hover': { bgcolor: 'background.paper' }
+              '&:hover': { bgcolor: 'background.paper' },
             }}
           >
             <MoreVertIcon />
@@ -130,19 +131,34 @@ const TemplateCard: React.FC<{
               'aria-labelledby': `template-menu-${template.id}`,
             }}
           >
-            <MenuItem onClick={() => { handleClose(); onEdit(template); }}>
+            <MenuItem
+              onClick={() => {
+                handleClose();
+                onEdit(template);
+              }}
+            >
               <ListItemIcon>
                 <EditIcon fontSize="small" />
               </ListItemIcon>
               <ListItemText>Edit</ListItemText>
             </MenuItem>
-            <MenuItem onClick={() => { handleClose(); onDuplicate(template); }}>
+            <MenuItem
+              onClick={() => {
+                handleClose();
+                onDuplicate(template);
+              }}
+            >
               <ListItemIcon>
                 <ContentCopyIcon fontSize="small" />
               </ListItemIcon>
               <ListItemText>Duplicate</ListItemText>
             </MenuItem>
-            <MenuItem onClick={() => { handleClose(); onDelete(template.id); }}>
+            <MenuItem
+              onClick={() => {
+                handleClose();
+                onDelete(template.id);
+              }}
+            >
               <ListItemIcon>
                 <DeleteIcon fontSize="small" />
               </ListItemIcon>
@@ -161,11 +177,7 @@ const TemplateCard: React.FC<{
             icon={platformIcons[template.platform] as React.ReactElement}
             label={template.platform}
           />
-          <Chip
-            size="small"
-            icon={<AspectRatioIcon />}
-            label={template.aspectRatio}
-          />
+          <Chip size="small" icon={<AspectRatioIcon />} label={template.aspectRatio} />
         </Stack>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           {template.description}
@@ -219,7 +231,8 @@ const Templates: React.FC = () => {
   // Filtering logic
   const filteredTemplates = (templates ?? []).filter((template: any) => {
     if (platformFilter !== 'All' && template.platform !== platformFilter) return false;
-    if (searchQuery && !template.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    if (searchQuery && !template.name.toLowerCase().includes(searchQuery.toLowerCase()))
+      return false;
     return true;
   });
 
@@ -339,9 +352,7 @@ const Templates: React.FC = () => {
         structure: currentTemplate?.structure || {},
       };
 
-      const body = currentTemplate
-        ? { ...templateData, id: currentTemplate.id }
-        : templateData;
+      const body = currentTemplate ? { ...templateData, id: currentTemplate.id } : templateData;
 
       const response = await fetch('/api/templates', {
         method,
@@ -387,11 +398,11 @@ const Templates: React.FC = () => {
     console.error('Templates error:', error);
     return (
       <DashboardLayout title="Templates">
-        <ErrorMessage 
+        <ErrorMessage
           title="Unable to load templates"
           message="There was an issue loading templates. Please try again."
-          error={error} 
-          onRetry={refetch} 
+          error={error}
+          onRetry={refetch}
         />
       </DashboardLayout>
     );
@@ -404,177 +415,178 @@ const Templates: React.FC = () => {
       </Head>
       <ErrorBoundary>
         <DashboardLayout title="Templates">
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" component="h1" gutterBottom fontWeight={600}>
-            Templates
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Create and manage templates for different platforms and formats
-          </Typography>
-        </Box>
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h4" component="h1" gutterBottom fontWeight={600}>
+              Templates
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Create and manage templates for different platforms and formats
+            </Typography>
+          </Box>
 
-        <Paper sx={{ p: 2, mb: 4 }}>
-          <Grid container spacing={2} alignItems="center">
-            <Grid size={{ xs: 12, md: 4 }}>
-              <TextField
-                fullWidth
-                placeholder="Search templates..."
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                size="small"
-              />
-            </Grid>
-            <Grid size={{ xs: 12, md: 3 }}>
-              <FormControl fullWidth size="small">
-                <InputLabel id="platform-filter-label">Platform</InputLabel>
-                <Select
-                  labelId="platform-filter-label"
-                  id="platform-filter"
-                  value={platformFilter}
-                  label="Platform"
-                  onChange={handlePlatformFilterChange}
-                >
-                  <MenuItem value="All">All Platforms</MenuItem>
-                  <MenuItem value="Instagram">Instagram</MenuItem>
-                  <MenuItem value="Facebook">Facebook</MenuItem>
-                  <MenuItem value="Twitter">Twitter</MenuItem>
-                  <MenuItem value="YouTube">YouTube</MenuItem>
-                  <MenuItem value="LinkedIn">LinkedIn</MenuItem>
-                  <MenuItem value="Pinterest">Pinterest</MenuItem>
-                  <MenuItem value="TikTok">TikTok</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid size={{ xs: 12, md: 5 }} sx={{ display: 'flex', justifyContent: { xs: 'flex-start', md: 'flex-end' } }}>
-              <AnimatedActionButton onClick={handleAddTemplate}>
-                <AddIcon sx={{ mr: 1 }} />
-                Create Template
-              </AnimatedActionButton>
-            </Grid>
-          </Grid>
-        </Paper>
-
-        <Grid container spacing={3}>
-          {filteredTemplates.length > 0 ? (
-            filteredTemplates.map((template: any) => (
-              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={template.id}>
-                <TemplateCard
-                  template={template}
-                  onEdit={handleEditTemplate}
-                  onDelete={handleDeleteTemplate}
-                  onDuplicate={handleDuplicateTemplate}
-                  onCreateMatrix={handleCreateMatrix}
+          <Paper sx={{ p: 2, mb: 4 }}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid size={{ xs: 12, md: 4 }}>
+                <TextField
+                  fullWidth
+                  placeholder="Search templates..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  size="small"
                 />
               </Grid>
-            ))
-          ) : searchQuery || platformFilter !== 'All' ? (
-            <Grid size={{ xs: 12 }}>
-              <Box textAlign="center" py={8}>
-                <Typography variant="h6" color="text.secondary" gutterBottom>
-                  No templates found
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                  Try adjusting your filters
-                </Typography>
-                <AnimatedActionButton onClick={() => {
-                  setSearchQuery('');
-                  setPlatformFilter('All');
-                }}>
-                  Clear Filters
+              <Grid size={{ xs: 12, md: 3 }}>
+                <FormControl fullWidth size="small">
+                  <InputLabel id="platform-filter-label">Platform</InputLabel>
+                  <Select
+                    labelId="platform-filter-label"
+                    id="platform-filter"
+                    value={platformFilter}
+                    label="Platform"
+                    onChange={handlePlatformFilterChange}
+                  >
+                    <MenuItem value="All">All Platforms</MenuItem>
+                    <MenuItem value="Instagram">Instagram</MenuItem>
+                    <MenuItem value="Facebook">Facebook</MenuItem>
+                    <MenuItem value="Twitter">Twitter</MenuItem>
+                    <MenuItem value="YouTube">YouTube</MenuItem>
+                    <MenuItem value="LinkedIn">LinkedIn</MenuItem>
+                    <MenuItem value="Pinterest">Pinterest</MenuItem>
+                    <MenuItem value="TikTok">TikTok</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid
+                size={{ xs: 12, md: 5 }}
+                sx={{ display: 'flex', justifyContent: { xs: 'flex-start', md: 'flex-end' } }}
+              >
+                <AnimatedActionButton onClick={handleAddTemplate}>
+                  <AddIcon sx={{ mr: 1 }} />
+                  Create Template
                 </AnimatedActionButton>
-              </Box>
+              </Grid>
             </Grid>
-          ) : (
-            <Grid size={{ xs: 12 }}>
-              <EmptyTemplates
-                onBrowseTemplates={() => {}}
-                onCreateTemplate={handleAddTemplate}
-              />
-            </Grid>
-          )}
-        </Grid>
+          </Paper>
 
-        <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
-          <DialogTitle>
-            {currentTemplate ? 'Edit Template' : 'Create New Template'}
-          </DialogTitle>
-          <DialogContent>
-            <Box sx={{ pt: 1 }}>
-              <TextField
-                margin="dense"
-                id="name"
-                label="Template Name"
-                type="text"
-                fullWidth
-                variant="outlined"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                sx={{ mb: 2 }}
-                required
-              />
-              <FormControl fullWidth margin="dense" sx={{ mb: 2 }}>
-                <InputLabel id="platform-label">Platform</InputLabel>
-                <Select
-                  labelId="platform-label"
-                  id="platform"
-                  value={formData.platform}
-                  onChange={(e) => setFormData({ ...formData, platform: e.target.value })}
-                  label="Platform"
-                >
-                  <MenuItem value="Instagram">Instagram</MenuItem>
-                  <MenuItem value="Facebook">Facebook</MenuItem>
-                  <MenuItem value="Twitter">Twitter</MenuItem>
-                  <MenuItem value="YouTube">YouTube</MenuItem>
-                  <MenuItem value="LinkedIn">LinkedIn</MenuItem>
-                  <MenuItem value="Pinterest">Pinterest</MenuItem>
-                  <MenuItem value="TikTok">TikTok</MenuItem>
-                </Select>
-              </FormControl>
-              <FormControl fullWidth margin="dense" sx={{ mb: 2 }}>
-                <InputLabel id="aspect-ratio-label">Aspect Ratio</InputLabel>
-                <Select
-                  labelId="aspect-ratio-label"
-                  id="aspect-ratio"
-                  value={formData.aspect_ratio}
-                  onChange={(e) => {
-                    const aspectRatio = e.target.value;
-                    setFormData({
-                      ...formData,
-                      aspect_ratio: aspectRatio,
-                      width: aspectRatio === '16:9' ? 1920 : aspectRatio === '9:16' ? 1080 : 1080,
-                      height: aspectRatio === '16:9' ? 1080 : aspectRatio === '9:16' ? 1920 : 1080,
-                    });
-                  }}
-                  label="Aspect Ratio"
-                >
-                  <MenuItem value="1:1">1:1 (Square)</MenuItem>
-                  <MenuItem value="4:5">4:5 (Instagram Portrait)</MenuItem>
-                  <MenuItem value="16:9">16:9 (Landscape)</MenuItem>
-                  <MenuItem value="9:16">9:16 (Vertical)</MenuItem>
-                  <MenuItem value="2:3">2:3 (Pinterest)</MenuItem>
-                </Select>
-              </FormControl>
-              <TextField
-                margin="dense"
-                id="description"
-                label="Description"
-                type="text"
-                fullWidth
-                multiline
-                rows={3}
-                variant="outlined"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              />
-            </Box>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseDialog}>Cancel</Button>
-            <Button variant="contained" onClick={handleSaveTemplate}>
-              {currentTemplate ? 'Update' : 'Create'}
-            </Button>
-          </DialogActions>
-        </Dialog>
+          <Grid container spacing={3}>
+            {filteredTemplates.length > 0 ? (
+              filteredTemplates.map((template: any) => (
+                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={template.id}>
+                  <TemplateCard
+                    template={template}
+                    onEdit={handleEditTemplate}
+                    onDelete={handleDeleteTemplate}
+                    onDuplicate={handleDuplicateTemplate}
+                    onCreateMatrix={handleCreateMatrix}
+                  />
+                </Grid>
+              ))
+            ) : searchQuery || platformFilter !== 'All' ? (
+              <Grid size={{ xs: 12 }}>
+                <Box textAlign="center" py={8}>
+                  <Typography variant="h6" color="text.secondary" gutterBottom>
+                    No templates found
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                    Try adjusting your filters
+                  </Typography>
+                  <AnimatedActionButton
+                    onClick={() => {
+                      setSearchQuery('');
+                      setPlatformFilter('All');
+                    }}
+                  >
+                    Clear Filters
+                  </AnimatedActionButton>
+                </Box>
+              </Grid>
+            ) : (
+              <Grid size={{ xs: 12 }}>
+                <EmptyTemplates onBrowseTemplates={() => {}} onCreateTemplate={handleAddTemplate} />
+              </Grid>
+            )}
+          </Grid>
+
+          <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
+            <DialogTitle>{currentTemplate ? 'Edit Template' : 'Create New Template'}</DialogTitle>
+            <DialogContent>
+              <Box sx={{ pt: 1 }}>
+                <TextField
+                  margin="dense"
+                  id="name"
+                  label="Template Name"
+                  type="text"
+                  fullWidth
+                  variant="outlined"
+                  value={formData.name}
+                  onChange={e => setFormData({ ...formData, name: e.target.value })}
+                  sx={{ mb: 2 }}
+                  required
+                />
+                <FormControl fullWidth margin="dense" sx={{ mb: 2 }}>
+                  <InputLabel id="platform-label">Platform</InputLabel>
+                  <Select
+                    labelId="platform-label"
+                    id="platform"
+                    value={formData.platform}
+                    onChange={e => setFormData({ ...formData, platform: e.target.value })}
+                    label="Platform"
+                  >
+                    <MenuItem value="Instagram">Instagram</MenuItem>
+                    <MenuItem value="Facebook">Facebook</MenuItem>
+                    <MenuItem value="Twitter">Twitter</MenuItem>
+                    <MenuItem value="YouTube">YouTube</MenuItem>
+                    <MenuItem value="LinkedIn">LinkedIn</MenuItem>
+                    <MenuItem value="Pinterest">Pinterest</MenuItem>
+                    <MenuItem value="TikTok">TikTok</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl fullWidth margin="dense" sx={{ mb: 2 }}>
+                  <InputLabel id="aspect-ratio-label">Aspect Ratio</InputLabel>
+                  <Select
+                    labelId="aspect-ratio-label"
+                    id="aspect-ratio"
+                    value={formData.aspect_ratio}
+                    onChange={e => {
+                      const aspectRatio = e.target.value;
+                      setFormData({
+                        ...formData,
+                        aspect_ratio: aspectRatio,
+                        width: aspectRatio === '16:9' ? 1920 : aspectRatio === '9:16' ? 1080 : 1080,
+                        height:
+                          aspectRatio === '16:9' ? 1080 : aspectRatio === '9:16' ? 1920 : 1080,
+                      });
+                    }}
+                    label="Aspect Ratio"
+                  >
+                    <MenuItem value="1:1">1:1 (Square)</MenuItem>
+                    <MenuItem value="4:5">4:5 (Instagram Portrait)</MenuItem>
+                    <MenuItem value="16:9">16:9 (Landscape)</MenuItem>
+                    <MenuItem value="9:16">9:16 (Vertical)</MenuItem>
+                    <MenuItem value="2:3">2:3 (Pinterest)</MenuItem>
+                  </Select>
+                </FormControl>
+                <TextField
+                  margin="dense"
+                  id="description"
+                  label="Description"
+                  type="text"
+                  fullWidth
+                  multiline
+                  rows={3}
+                  variant="outlined"
+                  value={formData.description}
+                  onChange={e => setFormData({ ...formData, description: e.target.value })}
+                />
+              </Box>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseDialog}>Cancel</Button>
+              <Button variant="contained" onClick={handleSaveTemplate}>
+                {currentTemplate ? 'Update' : 'Create'}
+              </Button>
+            </DialogActions>
+          </Dialog>
         </DashboardLayout>
       </ErrorBoundary>
     </>

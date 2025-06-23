@@ -38,7 +38,7 @@ export interface MotivationSet {
   motivations: PsychologicalMotivation[];
   generatedAt: Date;
   version: number;
-  metadata: {
+  metadata: {},
     totalMotivations: number;
     diversityScore: number;
     averageConfidence: number;
@@ -597,7 +597,7 @@ Make them diverse, authentic, and psychologically grounded.
 
   async refineMotivations(
     motivationSet: MotivationSet,
-    refinements: {
+    refinements: {},
       enhanceConfidence?: boolean;
       increaseDiversity?: boolean;
       balancePsychology?: boolean;

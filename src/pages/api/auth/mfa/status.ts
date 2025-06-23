@@ -43,30 +43,26 @@ async function handler(
       console.error('Error fetching MFA status:', error);
       return res.status(500).json({
         success: false,
-        error: 'Failed to fetch MFA status',
-      });
+        error: 'Failed to fetch MFA status'});
     }
 
     const status = data?.[0];
 
     return res.status(200).json({
       success: true,
-      data: {
+      data: {},
         isConfigured: status?.is_configured || false,
         isEnabled: status?.is_enabled || false,
         isRequired: status?.is_required || false,
         backupCodesCount: status?.backup_codes_count || 0,
-        lastUsedAt: status?.last_used_at || undefined,
-      },
-    });
+        lastUsedAt: status?.last_used_at || undefined}});
 
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('MFA status error:', error);
     return res.status(500).json({
       success: false,
-      error: 'Failed to get MFA status. Please try again.',
-    });
+      error: 'Failed to get MFA status. Please try again.'});
   }
 }
 

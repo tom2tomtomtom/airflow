@@ -14,20 +14,15 @@ import handler from '../[...route]';
 
 // Mock dependencies
 jest.mock('@/middleware/withAuth', () => ({
-  withAuth: (fn: any) => fn,
-}));
+  withAuth: (fn: any) => fn}));
 
 jest.mock('@/lib/rate-limiter', () => ({
-  withAPIRateLimit: (fn: any) => fn,
-}));
+  withAPIRateLimit: (fn: any) => fn}));
 
 jest.mock('@/lib/supabase', () => ({
-  supabase: {
-    auth: {
-      getUser: jest.fn(),
-    },
-  },
-}));
+  supabase: {},
+    auth: {},
+      getUser: jest.fn()}}}));
 
 // Mock console methods
 const _mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -47,11 +42,9 @@ describe('API v2 Universal Router', () => {
         method: 'GET',
         url: '/api/v2/health',
         query: { route: ['health'] },
-        headers: {
+        headers: {},
           'x-user-id': 'user123',
-          'x-user-email': 'test@example.com',
-        },
-      });
+          'x-user-email': 'test@example.com'}});
 
       await handler(req, res);
 
@@ -65,11 +58,9 @@ describe('API v2 Universal Router', () => {
         method: 'GET',
         url: '/api/v2/health',
         query: { route: ['health'] },
-        headers: {
+        headers: {},
           'x-user-id': 'user123',
-          'x-user-email': 'test@example.com',
-        },
-      });
+          'x-user-email': 'test@example.com'}});
 
       await handler(req, res);
 
@@ -81,8 +72,7 @@ describe('API v2 Universal Router', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'OPTIONS',
         url: '/api/v2/health',
-        query: { route: ['health'] },
-      });
+        query: { route: ['health'] }});
 
       await handler(req, res);
 
@@ -97,11 +87,9 @@ describe('API v2 Universal Router', () => {
         method: 'GET',
         url: '/api/v2/health',
         query: { route: ['health'] },
-        headers: {
+        headers: {},
           'x-user-id': 'user123',
-          'x-user-email': 'test@example.com',
-        },
-      });
+          'x-user-email': 'test@example.com'}});
 
       await handler(req, res);
 
@@ -117,11 +105,9 @@ describe('API v2 Universal Router', () => {
         method: 'GET',
         url: '/api/v2/workflow/state',
         query: { route: ['workflow', 'state'] },
-        headers: {
+        headers: {},
           'x-user-id': 'user123',
-          'x-user-email': 'test@example.com',
-        },
-      });
+          'x-user-email': 'test@example.com'}});
 
       await handler(req, res);
 
@@ -134,11 +120,9 @@ describe('API v2 Universal Router', () => {
         method: 'GET',
         url: '/api/v2/ai/models',
         query: { route: ['ai', 'models'] },
-        headers: {
+        headers: {},
           'x-user-id': 'user123',
-          'x-user-email': 'test@example.com',
-        },
-      });
+          'x-user-email': 'test@example.com'}});
 
       await handler(req, res);
 
@@ -151,11 +135,9 @@ describe('API v2 Universal Router', () => {
         method: 'GET',
         url: '/api/v2/assets',
         query: { route: ['assets'] },
-        headers: {
+        headers: {},
           'x-user-id': 'user123',
-          'x-user-email': 'test@example.com',
-        },
-      });
+          'x-user-email': 'test@example.com'}});
 
       await handler(req, res);
 
@@ -168,11 +150,9 @@ describe('API v2 Universal Router', () => {
         method: 'GET',
         url: '/api/v2/monitoring/health',
         query: { route: ['monitoring', 'health'] },
-        headers: {
+        headers: {},
           'x-user-id': 'user123',
-          'x-user-email': 'test@example.com',
-        },
-      });
+          'x-user-email': 'test@example.com'}});
 
       await handler(req, res);
 
@@ -185,11 +165,9 @@ describe('API v2 Universal Router', () => {
         method: 'GET',
         url: '/api/v2/unknown',
         query: { route: ['unknown'] },
-        headers: {
+        headers: {},
           'x-user-id': 'user123',
-          'x-user-email': 'test@example.com',
-        },
-      });
+          'x-user-email': 'test@example.com'}});
 
       await handler(req, res);
 
@@ -207,11 +185,9 @@ describe('API v2 Universal Router', () => {
         method: 'GET',
         url: '/api/v2/health',
         query: { route: ['health'] },
-        headers: {
+        headers: {},
           'x-user-id': 'user123',
-          'x-user-email': 'test@example.com',
-        },
-      });
+          'x-user-email': 'test@example.com'}});
 
       await handler(req, res);
 
@@ -248,11 +224,9 @@ describe('API v2 Universal Router', () => {
         method: 'GET',
         url: '/api/v2/health',
         query: { route: ['health'] },
-        headers: {
+        headers: {},
           'x-user-id': 'user123',
-          'x-user-email': 'test@example.com',
-        },
-      });
+          'x-user-email': 'test@example.com'}});
 
       await handler(req, res);
 
@@ -270,11 +244,9 @@ describe('API v2 Universal Router', () => {
         method: 'GET',
         url: '/api/v2/',
         query: Record<string, unknown>$1
-        headers: {
+        headers: {},
           'x-user-id': 'user123',
-          'x-user-email': 'test@example.com',
-        },
-      });
+          'x-user-email': 'test@example.com'}});
 
       await handler(req, res);
 
@@ -304,12 +276,10 @@ describe('API v2 Universal Router', () => {
         url: '/api/v2/workflow/state',
         query: { route: ['workflow', 'state'] },
         body: 'invalid json',
-        headers: {
+        headers: {},
           'x-user-id': 'user123',
           'x-user-email': 'test@example.com',
-          'content-type': 'application/json',
-        },
-      });
+          'content-type': 'application/json'}});
 
       await handler(req, res);
 
@@ -324,11 +294,9 @@ describe('API v2 Universal Router', () => {
         method: 'GET',
         url: '/api/v2/health',
         query: { route: ['health'] },
-        headers: {
+        headers: {},
           'x-user-id': 'user123',
-          'x-user-email': 'test@example.com',
-        },
-      });
+          'x-user-email': 'test@example.com'}});
 
       await handler(req, res);
 
@@ -347,11 +315,9 @@ describe('API v2 Universal Router', () => {
           debug: 'true',
           format: 'json'
         },
-        headers: {
+        headers: {},
           'x-user-id': 'user123',
-          'x-user-email': 'test@example.com',
-        },
-      });
+          'x-user-email': 'test@example.com'}});
 
       await handler(req, res);
 
@@ -367,11 +333,9 @@ describe('API v2 Universal Router', () => {
           method,
           url: '/api/v2/health',
           query: { route: ['health'] },
-          headers: {
+          headers: {},
             'x-user-id': 'user123',
-            'x-user-email': 'test@example.com',
-          },
-        });
+            'x-user-email': 'test@example.com'}});
 
         await handler(req, res);
 
@@ -387,11 +351,9 @@ describe('API v2 Universal Router', () => {
         method: 'GET',
         url: '/api/v2/health',
         query: { route: ['health'] },
-        headers: {
+        headers: {},
           'x-user-id': 'user123',
-          'x-user-email': 'test@example.com',
-        },
-      });
+          'x-user-email': 'test@example.com'}});
 
       await handler(req, res);
 
@@ -410,11 +372,9 @@ describe('API v2 Universal Router', () => {
         method: 'GET',
         url: '/api/v2/unknown',
         query: { route: ['unknown'] },
-        headers: {
+        headers: {},
           'x-user-id': 'user123',
-          'x-user-email': 'test@example.com',
-        },
-      });
+          'x-user-email': 'test@example.com'}});
 
       await handler(req, res);
 

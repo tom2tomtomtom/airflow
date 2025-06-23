@@ -89,7 +89,9 @@ const DashboardPage = () => {
             </Typography>
             <Typography variant="body1" color="text.secondary">
               {activeClient ? (
-                <>Working on: <Chip label={activeClient.name} size="small" /></>
+                <>
+                  Working on: <Chip label={activeClient.name} size="small" />
+                </>
               ) : (
                 'Select a client to get started'
               )}
@@ -100,7 +102,9 @@ const DashboardPage = () => {
           {!activeClient && (
             <Alert severity="info" sx={{ mb: 4 }}>
               <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Typography>Please select a client to access the full dashboard features</Typography>
+                <Typography>
+                  Please select a client to access the full dashboard features
+                </Typography>
                 <AnimatedActionButton onClick={() => router.push('/clients')}>
                   <BusinessIcon sx={{ mr: 1 }} />
                   View Clients
@@ -182,7 +186,8 @@ const DashboardPage = () => {
                       </Box>
                       <Box component="li" sx={{ mb: 1 }}>
                         <Typography variant="body2">
-                          <strong>Generate Content:</strong> Use AI to create images, copy, and videos
+                          <strong>Generate Content:</strong> Use AI to create images, copy, and
+                          videos
                         </Typography>
                       </Box>
                       <Box component="li" sx={{ mb: 1 }}>
@@ -203,8 +208,16 @@ const DashboardPage = () => {
                     </Typography>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
                       <Chip label="Press Cmd+K for quick search" size="small" variant="outlined" />
-                      <Chip label="Start with templates for faster creation" size="small" variant="outlined" />
-                      <Chip label="Use AI generation for unique content" size="small" variant="outlined" />
+                      <Chip
+                        label="Start with templates for faster creation"
+                        size="small"
+                        variant="outlined"
+                      />
+                      <Chip
+                        label="Use AI generation for unique content"
+                        size="small"
+                        variant="outlined"
+                      />
                     </Box>
                     <Button
                       variant="contained"

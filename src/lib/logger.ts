@@ -9,7 +9,7 @@ interface Request {
   connection?: {
     remoteAddress?: string;
   };
-  headers: {
+  headers: {},
     [key: string]: string | string[] | undefined;
   };
 }
@@ -114,8 +114,7 @@ class Logger {
       errorContext.error = {
         name: error.name,
         message: error.message,
-        stack: error.stack,
-      };
+        stack: error.stack};
     } else if (error) {
       errorContext.error = String(error);
     }
@@ -146,8 +145,7 @@ export const loggers = {
   ai: createLogger('ai'),
   storage: createLogger('storage'),
   general: createLogger('app'),
-  supabase: createLogger('supabase'),
-};
+  supabase: createLogger('supabase')};
 
 // Performance logging utility
 export function logPerformance<T>(
@@ -201,8 +199,7 @@ export function logRequest(req: CustomRequest, res: Response, next: NextFunction
     method: req.method,
     url: req.url,
     ip: req.ip || req.connection?.remoteAddress || 'unknown',
-    userAgent: Array.isArray(userAgent) ? userAgent[0] : userAgent || 'unknown',
-  });
+    userAgent: Array.isArray(userAgent) ? userAgent[0] : userAgent || 'unknown'});
 
   // Override res.end to log response
   const originalEnd = res.end.bind(res);
@@ -230,8 +227,7 @@ export function logRequest(req: CustomRequest, res: Response, next: NextFunction
         method: req.method,
         url: req.url,
         statusCode: res.statusCode,
-        duration: `${duration}ms`,
-      });
+        duration: `${duration}ms`});
     }
   };
 

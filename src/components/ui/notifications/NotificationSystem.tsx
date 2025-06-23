@@ -77,39 +77,43 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     return `notification-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   }, []);
 
-  const addNotification = useCallback((notification: Omit<Notification, 'id' | 'timestamp'>) => {
-    const id = generateId();
-    const newNotification: Notification = {
-      ...notification,
-      id,
-      timestamp: new Date(),
-      duration: notification.duration ?? (notification.type === 'error' ? 8000 : 5000),
-    };
+  const addNotification = useCallback(
+    (notification: Omit<Notification, 'id' | 'timestamp'>) => {
+      const id = generateId();
+      const newNotification: Notification = {
+        ...notification,
+        id,
+        timestamp: new Date(),
+        duration: notification.duration ?? (notification.type === 'error' ? 8000 : 5000),
+      };
 
-    setNotifications(prev => {
-      const updated = [newNotification, ...prev];
-      
-      // Limit number of notifications
-      if (updated.length > maxNotifications) {
-        return updated.slice(0, maxNotifications);
+      setNotifications(prev => {
+        const updated = [newNotification, ...prev];
+
+        // Limit number of notifications
+        if (updated.length > maxNotifications) {
+          return updated.slice(0, maxNotifications);
+        }
+
+        return updated;
+      });
+
+      // Announce to screen readers
+      const priority =
+        notification.type === 'error' || notification.type === 'warning' ? 'assertive' : 'polite';
+      announceToScreenReader(`${notification.type}: ${notification.message}`, priority);
+
+      // Auto-remove after duration (unless persistent)
+      if (!notification.persistent && newNotification.duration && newNotification.duration > 0) {
+        setTimeout(() => {
+          removeNotification(id);
+        }, newNotification.duration);
       }
-      
-      return updated;
-    });
 
-    // Announce to screen readers
-    const priority = notification.type === 'error' || notification.type === 'warning' ? 'assertive' : 'polite';
-    announceToScreenReader(`${notification.type}: ${notification.message}`, priority);
-
-    // Auto-remove after duration (unless persistent)
-    if (!notification.persistent && newNotification.duration && newNotification.duration > 0) {
-      setTimeout(() => {
-        removeNotification(id);
-      }, newNotification.duration);
-    }
-
-    return id;
-  }, [generateId, maxNotifications]);
+      return id;
+    },
+    [generateId, maxNotifications]
+  );
 
   const removeNotification = useCallback((id: string) => {
     setNotifications(prev => prev.filter((notification: any) => notification.id !== id));
@@ -119,21 +123,33 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
     setNotifications([]);
   }, []);
 
-  const showSuccess = useCallback((message: string, options?: Partial<Notification>) => {
-    return addNotification({ ...options, type: 'success', message });
-  }, [addNotification]);
+  const showSuccess = useCallback(
+    (message: string, options?: Partial<Notification>) => {
+      return addNotification({ ...options, type: 'success', message });
+    },
+    [addNotification]
+  );
 
-  const showError = useCallback((message: string, options?: Partial<Notification>) => {
-    return addNotification({ ...options, type: 'error', message });
-  }, [addNotification]);
+  const showError = useCallback(
+    (message: string, options?: Partial<Notification>) => {
+      return addNotification({ ...options, type: 'error', message });
+    },
+    [addNotification]
+  );
 
-  const showWarning = useCallback((message: string, options?: Partial<Notification>) => {
-    return addNotification({ ...options, type: 'warning', message });
-  }, [addNotification]);
+  const showWarning = useCallback(
+    (message: string, options?: Partial<Notification>) => {
+      return addNotification({ ...options, type: 'warning', message });
+    },
+    [addNotification]
+  );
 
-  const showInfo = useCallback((message: string, options?: Partial<Notification>) => {
-    return addNotification({ ...options, type: 'info', message });
-  }, [addNotification]);
+  const showInfo = useCallback(
+    (message: string, options?: Partial<Notification>) => {
+      return addNotification({ ...options, type: 'info', message });
+    },
+    [addNotification]
+  );
 
   const updateNotification = useCallback((id: string, updates: Partial<Notification>) => {
     setNotifications(prev =>
@@ -205,10 +221,7 @@ interface NotificationItemProps {
   onRemove: (id: string) => void;
 }
 
-const NotificationItem: React.FC<NotificationItemProps> = ({
-  notification,
-  onRemove,
-}) => {
+const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onRemove }) => {
   const getIcon = () => {
     switch (notification.type) {
       case 'success':
@@ -292,23 +305,24 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
         }}
       >
         {notification.title && (
-          <AlertTitle sx={{ fontWeight: 600, mb: 0.5 }}>
-            {notification.title}
-          </AlertTitle>
+          <AlertTitle sx={{ fontWeight: 600, mb: 0.5 }}>{notification.title}</AlertTitle>
         )}
         <Typography variant="body2" sx={{ mb: notification.progress !== undefined ? 1 : 0 }}>
           {notification.message}
         </Typography>
-        
+
         {notification.progress !== undefined && (
           <Box sx={{ mt: 1 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-              <Typography variant="caption">
-                Progress
-              </Typography>
-              <Typography variant="caption">
-                {Math.round(notification.progress)}%
-              </Typography>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                mb: 0.5,
+              }}
+            >
+              <Typography variant="caption">Progress</Typography>
+              <Typography variant="caption">{Math.round(notification.progress)}%</Typography>
             </Box>
             <LinearProgress
               variant="determinate"
@@ -334,40 +348,52 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
 export const useNotificationHelpers = () => {
   const { showSuccess, showError, showWarning, showInfo, updateNotification } = useNotifications();
 
-  const showLoadingNotification = useCallback((message: string, options?: Partial<Notification>) => {
-    return showInfo(message, {
-      ...options,
-      persistent: true,
-      progress: 0,
-    });
-  }, [showInfo]);
+  const showLoadingNotification = useCallback(
+    (message: string, options?: Partial<Notification>) => {
+      return showInfo(message, {
+        ...options,
+        persistent: true,
+        progress: 0,
+      });
+    },
+    [showInfo]
+  );
 
-  const updateLoadingProgress = useCallback((id: string, progress: number, message?: string) => {
-    updateNotification(id, {
-      progress,
-      ...(message && { message }),
-    });
-  }, [updateNotification]);
+  const updateLoadingProgress = useCallback(
+    (id: string, progress: number, message?: string) => {
+      updateNotification(id, {
+        progress,
+        ...(message && { message }),
+      });
+    },
+    [updateNotification]
+  );
 
-  const completeLoadingNotification = useCallback((id: string, successMessage: string) => {
-    updateNotification(id, {
-      type: 'success',
-      message: successMessage,
-      progress: 100,
-      persistent: false,
-      duration: 3000,
-    });
-  }, [updateNotification]);
+  const completeLoadingNotification = useCallback(
+    (id: string, successMessage: string) => {
+      updateNotification(id, {
+        type: 'success',
+        message: successMessage,
+        progress: 100,
+        persistent: false,
+        duration: 3000,
+      });
+    },
+    [updateNotification]
+  );
 
-  const failLoadingNotification = useCallback((id: string, errorMessage: string) => {
-    updateNotification(id, {
-      type: 'error',
-      message: errorMessage,
-      progress: undefined,
-      persistent: false,
-      duration: 8000,
-    });
-  }, [updateNotification]);
+  const failLoadingNotification = useCallback(
+    (id: string, errorMessage: string) => {
+      updateNotification(id, {
+        type: 'error',
+        message: errorMessage,
+        progress: undefined,
+        persistent: false,
+        duration: 8000,
+      });
+    },
+    [updateNotification]
+  );
 
   return {
     showSuccess,

@@ -188,7 +188,7 @@ export const initializeLogging = () => {
   logger.info('Logging system initialized', {
     environment: process.env.NODE_ENV || 'development',
     logLevel: getLoggingConfig().level,
-    transports: {
+    transports: {},
       console: getLoggingConfig().console.enabled,
       file: getLoggingConfig().file.enabled
     }

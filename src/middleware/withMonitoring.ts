@@ -31,12 +31,11 @@ const DEFAULT_CONFIG: Required<MonitoringConfig> = {
   enableAlerting: true,
   customTags: {},
   samplingRate: 1.0,
-  performanceThresholds: {
+  performanceThresholds: {},
     responseTime: 2000, // 2 seconds
     errorRate: 0.05, // 5%
     memoryUsage: 0.8, // 80%
-  },
-};
+  }};
 
 /**
  * Comprehensive monitoring middleware that provides:
@@ -58,8 +57,7 @@ export function withMonitoring(config: MonitoringConfig = {}) {
     if (finalConfig.collectMetrics) {
       wrappedHandler = withMetrics({
         customTags: finalConfig.customTags,
-        samplingRate: finalConfig.samplingRate,
-      })(wrappedHandler);
+        samplingRate: finalConfig.samplingRate})(wrappedHandler);
     }
 
     return async function (req: NextApiRequest, res: NextApiResponse) {
@@ -120,8 +118,7 @@ function trackRequestStart(endpoint: string, method: string, customTags: Record<
   const tags = {
     endpoint: sanitizeEndpoint(endpoint),
     method,
-    ...customTags,
-  };
+    ...customTags};
 
   // Update dashboard with real-time data
   performanceDashboard.updateMetric('api.requests.active', 1);
@@ -146,8 +143,7 @@ function trackRequestCompletion(
     endpoint: sanitizedEndpoint,
     method,
     status_code: statusCode.toString(),
-    ...config.customTags,
-  };
+    ...config.customTags};
 
   // Update performance dashboard
   performanceDashboard.updateMetric('api.requests.duration', duration);
@@ -187,7 +183,7 @@ function trackRequestCompletion(
 function trackError(
   endpoint: string,
   method: string,
-  error: any,
+  error: unknown,
   customTags: Record<string, string>
 ): void {
   const tags = {
@@ -195,8 +191,7 @@ function trackError(
     method,
     error_type: error.constructor.name,
     error_code: error.code || 'unknown',
-    ...customTags,
-  };
+    ...customTags};
 
   // Update dashboard and alerting
   performanceDashboard.updateMetric('api.errors.total', 1);
@@ -233,8 +228,7 @@ async function monitorSystemHealth(thresholds: Required<MonitoringConfig>['perfo
     if (heapUsedPercent > thresholds.memoryUsage) {
       metrics.counter('system.memory.threshold_exceeded', 1, {
         threshold: thresholds.memoryUsage.toString(),
-        current: heapUsedPercent.toString(),
-      });
+        current: heapUsedPercent.toString()});
     }
 
     // Monitor event loop lag (simplified)
@@ -268,8 +262,7 @@ async function checkPerformanceThresholds(
     metrics.counter('alerts.performance.slow_response', 1, {
       endpoint: sanitizedEndpoint,
       duration: duration.toString(),
-      threshold: thresholds.responseTime.toString(),
-    });
+      threshold: thresholds.responseTime.toString()});
   }
 
   // Update endpoint-specific error rates for alerting
@@ -281,15 +274,14 @@ async function checkPerformanceThresholds(
 /**
  * Trigger error-specific alerts
  */
-async function triggerErrorAlert(endpoint: string, error: any): Promise<void> {
+async function triggerErrorAlert(endpoint: string, error: unknown): Promise<void> {
   const severity = determineErrorSeverity(error);
   const sanitizedEndpoint = sanitizeEndpoint(endpoint);
 
   metrics.counter('alerts.errors.triggered', 1, {
     endpoint: sanitizedEndpoint,
     error_type: error.constructor.name,
-    severity,
-  });
+    severity});
 
   // For critical errors, immediately update alerting system
   if (severity === 'critical') {
@@ -323,8 +315,7 @@ function trackEndpointCategory(
   
   const categoryTags = {
     ...baseTags,
-    category,
-  };
+    category};
 
   metrics.timer(`api.categories.${category}.duration`, duration, categoryTags);
   metrics.counter(`api.categories.${category}.requests`, 1, categoryTags);
@@ -377,7 +368,7 @@ function categorizeError(errorMessage: string): string {
 /**
  * Determine error severity for alerting
  */
-function determineErrorSeverity(error: any): string {
+function determineErrorSeverity(error: unknown): string {
   // Critical errors that require immediate attention
   if (error.name === 'DatabaseConnectionError') return 'critical';
   if (error.name === 'SecurityError') return 'critical';
@@ -404,7 +395,7 @@ function sanitizeEndpoint(url: string): string {
     .split('?')[0] // Remove query parameters
     .replace(/\/\d+/g, '/:id') // Replace numeric IDs
     .replace(/\/[a-f0-9-]{36}/g, '/:uuid') // Replace UUIDs
-    .replace(/\/[a-zA-Z0-9_-]{20,}/g, '/:token') // Replace long tokens
+    .replace(/\/[a-zA-Z0-9_-]{20}/g, '/:token') // Replace long tokens
     .replace(/[^a-zA-Z0-9\/._-]/g, '_') // Replace special characters
     .toLowerCase();
 }
@@ -415,49 +406,40 @@ function sanitizeEndpoint(url: string): string {
 export function withAIMonitoring(config: MonitoringConfig = {}) {
   return withMonitoring({
     ...config,
-    customTags: {
+    customTags: {},
       ...config.customTags,
-      service_type: 'ai',
-    },
-    performanceThresholds: {
+      service_type: 'ai'},
+    performanceThresholds: {},
       responseTime: 30000, // AI operations can take longer
       errorRate: 0.1, // Higher error tolerance for AI
       memoryUsage: 0.9, // AI operations are memory intensive
-      ...config.performanceThresholds,
-    },
-  });
+      ...config.performanceThresholds}});
 }
 
 export function withVideoMonitoring(config: MonitoringConfig = {}) {
   return withMonitoring({
     ...config,
-    customTags: {
+    customTags: {},
       ...config.customTags,
-      service_type: 'video',
-    },
-    performanceThresholds: {
+      service_type: 'video'},
+    performanceThresholds: {},
       responseTime: 60000, // Video operations take longer
       errorRate: 0.05,
       memoryUsage: 0.85,
-      ...config.performanceThresholds,
-    },
-  });
+      ...config.performanceThresholds}});
 }
 
 export function withDatabaseMonitoring(config: MonitoringConfig = {}) {
   return withMonitoring({
     ...config,
-    customTags: {
+    customTags: {},
       ...config.customTags,
-      service_type: 'database',
-    },
-    performanceThresholds: {
+      service_type: 'database'},
+    performanceThresholds: {},
       responseTime: 1000, // Database operations should be fast
       errorRate: 0.01, // Very low error tolerance
       memoryUsage: 0.8,
-      ...config.performanceThresholds,
-    },
-  });
+      ...config.performanceThresholds}});
 }
 
 export default withMonitoring;

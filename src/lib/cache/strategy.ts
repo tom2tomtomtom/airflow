@@ -39,8 +39,7 @@ class MemoryCache<T = any> {
       data,
       timestamp: Date.now(),
       ttl: config.ttl,
-      stale: false,
-    };
+      stale: false};
 
     this.cache.set(key, entry);
     this.accessOrder.set(key, ++this.accessCounter);
@@ -102,8 +101,7 @@ class MemoryCache<T = any> {
     return {
       size: this.cache.size,
       maxSize: this.maxSize,
-      entries: Array.from(this.cache.keys()),
-    };
+      entries: Array.from(this.cache.keys())};
   }
 }
 
@@ -175,11 +173,9 @@ class CacheManager {
     if (config.ttl > 30 * 60 * 1000 && this.browserCache) {
       try {
         const response = new Response(JSON.stringify(data), {
-          headers: {
+          headers: {},
             'Content-Type': 'application/json',
-            'Cache-Control': `max-age=${Math.floor(config.ttl / 1000)}`,
-          },
-        });
+            'Cache-Control': `max-age=${Math.floor(config.ttl / 1000)}`}});
         await this.browserCache.put(`${namespace}:${key}`, response);
       } catch (error) {
         console.warn('Failed to set browser cache:', error);
@@ -296,8 +292,7 @@ class CacheManager {
 
     return {
       memoryStats: Object.fromEntries(memoryStats),
-      hasBrowserCache: !!this.browserCache,
-    };
+      hasBrowserCache: !!this.browserCache};
   }
 }
 

@@ -9,8 +9,8 @@ process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'TEST_JWT_TOKEN_PLACEHOLDER';
 
 // Mock Supabase client
 jest.mock('@/lib/supabase/client', () => ({
-  supabase: {
-    storage: {
+  supabase: {},
+    storage: {},
       from: jest.fn(() => ({
         upload: jest.fn(() => Promise.resolve({
           data: { path: 'test-user/test-file.jpg' },
@@ -26,7 +26,7 @@ jest.mock('@/lib/supabase/client', () => ({
       insert: jest.fn(() => ({
         select: jest.fn(() => ({
           single: jest.fn(() => Promise.resolve({
-            data: {
+            data: {},
               id: 'test-asset-id',
               name: 'test-file.jpg',
               type: 'image',
@@ -51,7 +51,7 @@ jest.mock('formidable', () => {
     parse: jest.fn(() => Promise.resolve([
       {}, // fields
       {
-        files: {
+        files: {},
           filepath: '/tmp/test-file',
           originalFilename: 'test-file.jpg',
           mimetype: 'image/jpeg',
@@ -100,8 +100,7 @@ describe('/api/assets/upload', () => {
 
   test('should return 405 for non-POST requests', async () => {
     const { req, res } = createMocks({
-      method: 'GET',
-    });
+      method: 'GET'});
 
     await handler(req, res);
 
@@ -120,7 +119,7 @@ describe('/api/assets/upload', () => {
   test('should successfully upload a file', async () => {
     const { req, res } = createMocks({
       method: 'POST',
-      headers: {
+      headers: {},
         'content-type': 'multipart/form-data'
       }
     });
@@ -151,8 +150,7 @@ describe('/api/assets/upload', () => {
     });
 
     const { req, res } = createMocks({
-      method: 'POST',
-    });
+      method: 'POST'});
 
     await handler(req, res);
 
@@ -174,8 +172,7 @@ describe('/api/assets/upload', () => {
     });
 
     const { req, res } = createMocks({
-      method: 'POST',
-    });
+      method: 'POST'});
 
     await handler(req, res);
 
@@ -201,8 +198,7 @@ describe('/api/assets/upload', () => {
     });
 
     const { req, res } = createMocks({
-      method: 'POST',
-    });
+      method: 'POST'});
 
     await handler(req, res);
 
@@ -228,8 +224,7 @@ describe('/api/assets/upload', () => {
     });
 
     const { req, res } = createMocks({
-      method: 'POST',
-    });
+      method: 'POST'});
 
     await handler(req, res);
 
@@ -247,7 +242,7 @@ describe('/api/assets/upload', () => {
       parse: jest.fn(() => Promise.resolve([
         {},
         {
-          files: {
+          files: {},
             filepath: '/tmp/test-video',
             originalFilename: 'test-video.mp4',
             mimetype: 'video/mp4',
@@ -263,7 +258,7 @@ describe('/api/assets/upload', () => {
       insert: jest.fn(() => ({
         select: jest.fn(() => ({
           single: jest.fn(() => Promise.resolve({
-            data: {
+            data: {},
               id: 'test-asset-id',
               name: 'test-video.mp4',
               type: 'video',
@@ -281,8 +276,7 @@ describe('/api/assets/upload', () => {
     });
 
     const { req, res } = createMocks({
-      method: 'POST',
-    });
+      method: 'POST'});
 
     await handler(req, res);
 
@@ -318,8 +312,7 @@ describe('/api/assets/upload', () => {
     });
 
     const { req, res } = createMocks({
-      method: 'POST',
-    });
+      method: 'POST'});
 
     await handler(req, res);
 

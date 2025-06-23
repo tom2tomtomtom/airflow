@@ -10,11 +10,7 @@ export const useErrorHandling = ({ dispatch }: UseErrorHandlingProps) => {
 
   // Enhanced error handling wrapper
   const withErrorHandling = useCallback(
-    <T,>(
-      operation: () => Promise<T>,
-      context: string,
-      fallback?: () => void
-    ) => {
+    <T>(operation: () => Promise<T>, context: string, fallback?: () => void) => {
       return async (): Promise<T | null> => {
         try {
           dispatch({ type: 'SET_ERROR', error: null }); // Clear previous errors
@@ -29,7 +25,8 @@ export const useErrorHandling = ({ dispatch }: UseErrorHandlingProps) => {
 
           if (error instanceof Error) {
             if (error.message.includes('budget') || error.message.includes('cost')) {
-              errorMessage = 'AI operation blocked due to budget limits. Please try with a smaller request or upgrade your plan.';
+              errorMessage =
+                'AI operation blocked due to budget limits. Please try with a smaller request or upgrade your plan.';
               recoverable = false;
             } else if (error.message.includes('network') || error.message.includes('fetch')) {
               errorMessage = 'Network error. Please check your connection and try again.';
@@ -53,15 +50,20 @@ export const useErrorHandling = ({ dispatch }: UseErrorHandlingProps) => {
           return null;
         }
       };
-    }, [showNotification, dispatch]);
+    },
+    [showNotification, dispatch]
+  );
 
   const clearError = useCallback(() => {
     dispatch({ type: 'SET_ERROR', error: null });
   }, [dispatch]);
 
-  const setError = useCallback((error: string) => {
-    dispatch({ type: 'SET_ERROR', error });
-  }, [dispatch]);
+  const setError = useCallback(
+    (error: string) => {
+      dispatch({ type: 'SET_ERROR', error });
+    },
+    [dispatch]
+  );
 
   return {
     withErrorHandling,

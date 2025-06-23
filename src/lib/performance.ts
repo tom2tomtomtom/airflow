@@ -16,8 +16,7 @@ const CACHE_CONTROL = {
   private: 'private, no-cache, no-store, must-revalidate',
   
   // Dynamic content - short cache with revalidation
-  dynamic: 'public, max-age=60, s-maxage=60, stale-while-revalidate=30',
-};
+  dynamic: 'public, max-age=60, s-maxage=60, stale-while-revalidate=30'};
 
 // Response compression middleware
 export const compressionMiddleware = compression({
@@ -36,8 +35,7 @@ export const compressionMiddleware = compression({
     
     // Use compression's default filter
     return compression.filter(req, res);
-  },
-});
+  }});
 
 // Performance headers middleware
 export function performanceHeaders(
@@ -73,16 +71,15 @@ export function performanceHeaders(
 // Database query optimization hints
 export const dbOptimizations = {
   // Connection pooling configuration
-  poolConfig: {
+  poolConfig: {},
     min: 2,
     max: env.DB_POOL_SIZE || 20,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000,
-    statement_timeout: env.DB_TIMEOUT || 30000,
-  },
+    statement_timeout: env.DB_TIMEOUT || 30000},
   
   // Query optimization hints
-  queryHints: {
+  queryHints: {},
     // Use prepared statements
     usePreparedStatements: true,
     
@@ -94,34 +91,28 @@ export const dbOptimizations = {
     
     // Default limit for list queries
     defaultLimit: 50,
-    maxLimit: 200,
-  },
+    maxLimit: 200},
   
   // Index hints for common queries
-  indexHints: {
+  indexHints: {},
     // Assets queries
-    assets: {
+    assets: {},
       byClientId: 'idx_assets_client_id',
       byType: 'idx_assets_type',
       byTags: 'idx_assets_tags',
-      byCreatedAt: 'idx_assets_created_at',
-    },
+      byCreatedAt: 'idx_assets_created_at'},
     
     // Campaigns queries
-    campaigns: {
+    campaigns: {},
       byClientId: 'idx_campaigns_client_id',
       byStatus: 'idx_campaigns_status',
-      byDateRange: 'idx_campaigns_start_date_end_date',
-    },
+      byDateRange: 'idx_campaigns_start_date_end_date'},
     
     // Templates queries
-    templates: {
+    templates: {},
       byPlatform: 'idx_templates_platform',
       byContentType: 'idx_templates_content_type',
-      byPerformance: 'idx_templates_performance_score',
-    },
-  },
-};
+      byPerformance: 'idx_templates_performance_score'}}};
 
 // Pagination helper with optimization
 export interface PaginationOptions {
@@ -134,7 +125,7 @@ export interface PaginationOptions {
 
 export interface PaginatedResponse<T> {
   data: T[];
-  pagination: {
+  pagination: {},
     page: number;
     limit: number;
     total: number;
@@ -176,13 +167,11 @@ export async function trackQueryPerformance<T>(
     if (duration > 1000) {
       loggers.db.warn('Slow query detected', {
         queryName,
-        duration: `${duration.toFixed(2)}ms`,
-      });
+        duration: `${duration.toFixed(2)}ms`});
     } else {
       loggers.db.debug('Query executed', {
         queryName,
-        duration: `${duration.toFixed(2)}ms`,
-      });
+        duration: `${duration.toFixed(2)}ms`});
     }
     
     return result;
@@ -191,8 +180,7 @@ export async function trackQueryPerformance<T>(
     
     loggers.db.error('Query failed', error, {
       queryName,
-      duration: `${duration.toFixed(2)}ms`,
-    });
+      duration: `${duration.toFixed(2)}ms`});
     
     throw error;
   }
@@ -285,5 +273,4 @@ export default {
   trackQueryPerformance,
   optimizeResponse,
   generateETag,
-  handleETag,
-};
+  handleETag};

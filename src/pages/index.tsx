@@ -61,16 +61,10 @@ const HomePage = () => {
             AIrFLOW
           </Typography>
           <Box sx={{ display: 'flex', gap: 2 }}>
-            <Button
-              variant="outlined"
-              onClick={() => router.push('/login')}
-            >
+            <Button variant="outlined" onClick={() => router.push('/login')}>
               Sign In
             </Button>
-            <Button
-              variant="contained"
-              onClick={() => router.push('/login')}
-            >
+            <Button variant="contained" onClick={() => router.push('/login')}>
               Get Started
             </Button>
           </Box>
@@ -96,16 +90,12 @@ const HomePage = () => {
                   fontWeight: 'bold',
                   color: 'var(--carbon-amber-main)',
                   mb: 3,
-                  fontSize: { xs: '2.5rem', md: '3.5rem' }
+                  fontSize: { xs: '2.5rem', md: '3.5rem' },
                 }}
               >
                 Scale Creative, Unleash Impact
               </Typography>
-              <Typography
-                variant="h5"
-                color="textSecondary"
-                sx={{ mb: 4, fontWeight: 400 }}
-              >
+              <Typography variant="h5" color="textSecondary" sx={{ mb: 4, fontWeight: 400 }}>
                 AI-Powered Campaign Management Platform
               </Typography>
               <Typography
@@ -113,14 +103,19 @@ const HomePage = () => {
                 color="textSecondary"
                 sx={{ mb: 6, fontSize: '1.2rem', maxWidth: '600px', mx: 'auto' }}
               >
-                Create high-performing, scalable ad executions tailored to customer motivations at lightning speed.
-                Transform your creative workflow with AIrWAVE 2.0.
+                Create high-performing, scalable ad executions tailored to customer motivations at
+                lightning speed. Transform your creative workflow with AIrWAVE 2.0.
               </Typography>
 
               {/* Feature Highlights */}
-              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 4, mb: 6, flexWrap: 'wrap' }}>
+              <Box
+                sx={{ display: 'flex', justifyContent: 'center', gap: 4, mb: 6, flexWrap: 'wrap' }}
+              >
                 <Box sx={{ textAlign: 'center' }}>
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: 'var(--carbon-amber-main)' }}>
+                  <Typography
+                    variant="h6"
+                    sx={{ fontWeight: 600, color: 'var(--carbon-amber-main)' }}
+                  >
                     AI-Powered
                   </Typography>
                   <Typography variant="body2" color="textSecondary">
@@ -128,7 +123,10 @@ const HomePage = () => {
                   </Typography>
                 </Box>
                 <Box sx={{ textAlign: 'center' }}>
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: 'var(--carbon-amber-main)' }}>
+                  <Typography
+                    variant="h6"
+                    sx={{ fontWeight: 600, color: 'var(--carbon-amber-main)' }}
+                  >
                     Scalable
                   </Typography>
                   <Typography variant="body2" color="textSecondary">
@@ -136,7 +134,10 @@ const HomePage = () => {
                   </Typography>
                 </Box>
                 <Box sx={{ textAlign: 'center' }}>
-                  <Typography variant="h6" sx={{ fontWeight: 600, color: 'var(--carbon-amber-main)' }}>
+                  <Typography
+                    variant="h6"
+                    sx={{ fontWeight: 600, color: 'var(--carbon-amber-main)' }}
+                  >
                     Fast
                   </Typography>
                   <Typography variant="body2" color="textSecondary">
@@ -183,7 +184,9 @@ const HomePage = () => {
         color: 'var(--carbon-text-primary)',
       }}
     >
-      <Typography sx={{ color: 'var(--carbon-text-primary)' }}>Redirecting to dashboard...</Typography>
+      <Typography sx={{ color: 'var(--carbon-text-primary)' }}>
+        Redirecting to dashboard...
+      </Typography>
     </Box>
   );
 };

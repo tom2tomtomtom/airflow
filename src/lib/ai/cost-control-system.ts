@@ -60,14 +60,14 @@ export class AICostController {
           service,
           model,
           estimatedTokens,
-          userId
-        })
+          userId,
+        }),
       });
 
       if (!response.ok) {
         return {
           allowed: false,
-          reason: `Cost check failed: HTTP ${response.status}`
+          reason: `Cost check failed: HTTP ${response.status}`,
         };
       }
 
@@ -76,7 +76,7 @@ export class AICostController {
     } catch (error: any) {
       return {
         allowed: false,
-        reason: `Cost check failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+        reason: `Cost check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       };
     }
   }
@@ -97,14 +97,14 @@ export class AICostController {
           model,
           tokens,
           cost,
-          userId
-        })
+          userId,
+        }),
       });
 
       if (!response.ok) {
         return {
           success: false,
-          error: `Usage tracking failed: HTTP ${response.status}`
+          error: `Usage tracking failed: HTTP ${response.status}`,
         };
       }
 
@@ -113,7 +113,7 @@ export class AICostController {
     } catch (error: any) {
       return {
         success: false,
-        error: `Usage tracking failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+        error: `Usage tracking failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       };
     }
   }
@@ -122,7 +122,7 @@ export class AICostController {
     try {
       const response = await fetch(`/api/ai/usage-stats?userId=${userId}`, {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       });
 
       if (!response.ok) {
@@ -132,7 +132,9 @@ export class AICostController {
       const stats = await response.json();
       return stats;
     } catch (error: any) {
-      throw new Error(`Failed to get usage stats: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to get usage stats: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 
@@ -143,15 +145,15 @@ export class AICostController {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId,
-          reason
-        })
+          reason,
+        }),
       });
 
       if (!response.ok) {
         return {
           success: false,
           shutdownTriggered: false,
-          reason: `Emergency shutdown failed: HTTP ${response.status}`
+          reason: `Emergency shutdown failed: HTTP ${response.status}`,
         };
       }
 
@@ -161,7 +163,7 @@ export class AICostController {
       return {
         success: false,
         shutdownTriggered: false,
-        reason: `Emergency shutdown failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+        reason: `Emergency shutdown failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
       };
     }
   }
@@ -181,20 +183,20 @@ export class AICostController {
       return {
         proceed: false,
         model,
-        reason: budgetCheck.reason
+        reason: budgetCheck.reason,
       };
     }
 
     // Use fallback model if suggested
     const finalModel = budgetCheck.fallbackModel || model;
-    
+
     if (budgetCheck.fallbackModel) {
       console.info(`[AICostController] Using fallback model ${finalModel} for ${operation}`);
     }
 
     return {
       proceed: true,
-      model: finalModel
+      model: finalModel,
     };
   }
 
@@ -208,11 +210,16 @@ export class AICostController {
     operation: string
   ): Promise<void> {
     const trackingResult = await this.trackUsage(service, model, actualTokens, cost, userId);
-    
+
     if (!trackingResult.success) {
-      console.error(`[AICostController] Failed to track usage for ${operation}:`, trackingResult.error);
+      console.error(
+        `[AICostController] Failed to track usage for ${operation}:`,
+        trackingResult.error
+      );
     } else {
-      console.info(`[AICostController] Tracked ${operation}: ${actualTokens} tokens, $${cost.toFixed(4)}`);
+      console.info(
+        `[AICostController] Tracked ${operation}: ${actualTokens} tokens, $${cost.toFixed(4)}`
+      );
     }
   }
 
@@ -232,11 +239,15 @@ export class AICostController {
       Object.entries(stats).forEach(([service, serviceStats]) => {
         if (serviceStats.percentUsed >= 90) {
           status = 'critical';
-          alerts.push(`${service} budget at ${serviceStats.percentUsed.toFixed(1)}% - immediate action required`);
+          alerts.push(
+            `${service} budget at ${serviceStats.percentUsed.toFixed(1)}% - immediate action required`
+          );
           recommendations.push(`Consider upgrading ${service} budget or reducing usage`);
         } else if (serviceStats.percentUsed >= 75) {
           if (status !== 'critical') status = 'warning';
-          alerts.push(`${service} budget at ${serviceStats.percentUsed.toFixed(1)}% - monitor closely`);
+          alerts.push(
+            `${service} budget at ${serviceStats.percentUsed.toFixed(1)}% - monitor closely`
+          );
           recommendations.push(`Review ${service} usage patterns and optimize if possible`);
         }
       });
@@ -246,7 +257,7 @@ export class AICostController {
       return {
         status: 'critical',
         alerts: ['Unable to check budget health'],
-        recommendations: ['Check system connectivity and try again']
+        recommendations: ['Check system connectivity and try again'],
       };
     }
   }

@@ -16,8 +16,7 @@ const BriefUpdateSchema = z.object({
   platforms: z.array(z.string()).optional(),
   budget: z.number().optional(),
   timeline: z.any().optional(),
-  parsing_status: z.enum(['pending', 'processing', 'completed', 'error']).optional(),
-});
+  parsing_status: z.enum(['pending', 'processing', 'completed', 'error']).optional()});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -109,11 +108,10 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, b
     .order('created_at', { ascending: false });
 
   return res.json({
-    data: {
+    data: {},
       ...brief,
       content_variations: contentVariations || [],
-      related_strategies: strategies || [],
-    }
+      related_strategies: strategies || []}
   });
 }
 
@@ -152,8 +150,7 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, b
 
   const updateData = {
     ...validationResult.data,
-    updated_at: new Date().toISOString(),
-  };
+    updated_at: new Date().toISOString()};
 
   const { data: brief, error } = await supabase
     .from('briefs')

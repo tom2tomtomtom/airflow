@@ -84,13 +84,11 @@ async function handleRenderCompleted(payload: CreatomateWebhookPayload): Promise
     .update({
       status: 'completed',
       output_url: url,
-      metadata: {
+      metadata: {},
         ...metadata,
         render_id,
-        completed_at: new Date().toISOString(),
-      },
-      updated_at: new Date().toISOString(),
-    })
+        completed_at: new Date().toISOString()},
+      updated_at: new Date().toISOString()})
     .eq('id', metadata.execution_id)
     .select()
     .single();
@@ -105,13 +103,11 @@ async function handleRenderCompleted(payload: CreatomateWebhookPayload): Promise
   await webhookManager.triggerEvent(
     {
       type: WebhookManager.EVENTS.RENDER_COMPLETED,
-      data: {
+      data: {},
         execution_id: metadata.execution_id,
         render_id,
         url,
-        status: 'completed',
-      },
-    },
+        status: 'completed'}},
     metadata.client_id
   );
   
@@ -130,8 +126,7 @@ async function handleRenderCompleted(payload: CreatomateWebhookPayload): Promise
           id: render_id,
           name: execution.name || 'Untitled Campaign',
           downloadUrl: url!,
-          status: 'completed',
-        }
+          status: 'completed'}
       );
     }
   }
@@ -150,14 +145,12 @@ async function handleRenderFailed(payload: CreatomateWebhookPayload): Promise<vo
     .from('executions')
     .update({
       status: 'failed',
-      metadata: {
+      metadata: {},
         ...metadata,
         render_id,
         error,
-        failed_at: new Date().toISOString(),
-      },
-      updated_at: new Date().toISOString(),
-    })
+        failed_at: new Date().toISOString()},
+      updated_at: new Date().toISOString()})
     .eq('id', metadata.execution_id);
   
   // Trigger our own webhook event
@@ -165,13 +158,11 @@ async function handleRenderFailed(payload: CreatomateWebhookPayload): Promise<vo
   await webhookManager.triggerEvent(
     {
       type: WebhookManager.EVENTS.RENDER_FAILED,
-      data: {
+      data: {},
         execution_id: metadata.execution_id,
         render_id,
         error,
-        status: 'failed',
-      },
-    },
+        status: 'failed'}},
     metadata.client_id
   );
 }

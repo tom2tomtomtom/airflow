@@ -1,12 +1,5 @@
 import React, { useCallback } from 'react';
-import {
-  Box,
-  TextField,
-  Button,
-  Typography,
-  IconButton,
-  Chip,
-} from '@mui/material';
+import { Box, TextField, Button, Typography, IconButton, Chip } from '@mui/material';
 import {
   Image as ImageIcon,
   TextFields as TextFieldsIcon,
@@ -70,9 +63,12 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
     }
   }, []);
 
-  const handleTextFieldChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    onTextChange(field.id, event.target.value);
-  }, [field.id, onTextChange]);
+  const handleTextFieldChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      onTextChange(field.id, event.target.value);
+    },
+    [field.id, onTextChange]
+  );
 
   const handleAssetSelectClick = useCallback(() => {
     onAssetSelect(field.id);
@@ -84,7 +80,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
       return (
         <TextField
           fullWidth
-          size={compact ? "small" : "medium"}
+          size={compact ? 'small' : 'medium'}
           placeholder={`Enter ${field.type}...`}
           value={assignment?.value || ''}
           onChange={handleTextFieldChange}
@@ -95,7 +91,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
             '& .MuiInputBase-input[type="color"]': {
               minHeight: '2rem',
               padding: '4px',
-            }
+            },
           }}
         />
       );
@@ -124,7 +120,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
                 }}
               />
             )}
-            
+
             {field.type !== 'image' && (
               <Box
                 sx={{
@@ -144,7 +140,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
 
             {/* Asset info */}
             <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-              <Typography variant={compact ? "caption" : "body2"} noWrap>
+              <Typography variant={compact ? 'caption' : 'body2'} noWrap>
                 {asset.name}
               </Typography>
               <Typography variant="caption" color="text.secondary" display="block">
@@ -158,7 +154,11 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
             <IconButton
               size="small"
               onClick={handleAssetSelectClick}
-              title="Change asset" aria-label="Icon button">              <EditIcon fontSize="small" />
+              title="Change asset"
+              aria-label="Icon button"
+            >
+              {' '}
+              <EditIcon fontSize="small" />
             </IconButton>
           </Box>
         );
@@ -168,7 +168,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
             variant="outlined"
             startIcon={getFieldTypeIcon(field.type)}
             onClick={handleAssetSelectClick}
-            size={compact ? "small" : "medium"}
+            size={compact ? 'small' : 'medium'}
             sx={{
               justifyContent: 'flex-start',
               textTransform: 'none',
@@ -185,7 +185,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
       return (
         <TextField
           fullWidth
-          size={compact ? "small" : "medium"}
+          size={compact ? 'small' : 'medium'}
           placeholder="Enter URL..."
           value={assignment?.value || ''}
           onChange={handleTextFieldChange}
@@ -198,7 +198,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
     return (
       <TextField
         fullWidth
-        size={compact ? "small" : "medium"}
+        size={compact ? 'small' : 'medium'}
         placeholder={`Enter ${field.type}...`}
         value={assignment?.value || ''}
         onChange={handleTextFieldChange}
@@ -211,7 +211,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
       {/* Field header */}
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, gap: 1 }}>
         {getFieldTypeIcon(field.type)}
-        <Typography variant={compact ? "body2" : "subtitle2"} sx={{ fontWeight: 500 }}>
+        <Typography variant={compact ? 'body2' : 'subtitle2'} sx={{ fontWeight: 500 }}>
           {field.name}
         </Typography>
         {field.required && (

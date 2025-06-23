@@ -1,7 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 /**
  * Multi-Factor Authentication (MFA) Implementation
- * 
+ *
  * This module provides TOTP (Time-based One-Time Password) support
  * for enhanced security in AIrFLOW platform.
  */
@@ -57,25 +57,20 @@ export async function generateQRCode(
 /**
  * Complete MFA setup for a user
  */
-export async function setupMFA(
-  userId: string,
-  userEmail: string
-): Promise<MFASetupResult> {
+export async function setupMFA(userId: string, userEmail: string): Promise<MFASetupResult> {
   const secret = generateMFASecret();
   const backupCodes = generateBackupCodes();
   const qrCodeUrl = await generateQRCode(secret, userEmail);
 
   // Store MFA configuration in database
-  const { error } = await supabase
-    .from('user_mfa')
-    .upsert({
-      user_id: userId,
-      secret_encrypted: await encryptSecret(secret),
-      backup_codes_encrypted: await encryptBackupCodes(backupCodes),
-      is_enabled: false, // User needs to verify first
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    });
+  const { error } = await supabase.from('user_mfa').upsert({
+    user_id: userId,
+    secret_encrypted: await encryptSecret(secret),
+    backup_codes_encrypted: await encryptBackupCodes(backupCodes),
+    is_enabled: false, // User needs to verify first
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  });
 
   if (error) {
     throw new Error(`Failed to setup MFA: ${error.message}`);
@@ -292,7 +287,7 @@ export async function regenerateBackupCodes(
 
     // Generate new backup codes
     const newBackupCodes = generateBackupCodes();
-    
+
     const { error } = await supabase
       .from('user_mfa')
       .update({

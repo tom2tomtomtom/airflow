@@ -49,7 +49,7 @@ const LoginPage: React.FC = () => {
 
     // Form validation
     let hasErrors = false;
-    
+
     if (!email) {
       setEmailError('Email is required');
       hasErrors = true;
@@ -57,12 +57,12 @@ const LoginPage: React.FC = () => {
       setEmailError('Please enter a valid email address');
       hasErrors = true;
     }
-    
+
     if (!password) {
       setPasswordError('Password is required');
       hasErrors = true;
     }
-    
+
     if (hasErrors) {
       setLoading(false);
       return;
@@ -71,7 +71,7 @@ const LoginPage: React.FC = () => {
     try {
       // Use the Supabase login function
       const result = await login(email, password);
-      
+
       if (result.success) {
         // Handle remember me
         if (rememberMe) {
@@ -79,11 +79,11 @@ const LoginPage: React.FC = () => {
         } else {
           localStorage.removeItem('rememberLogin');
         }
-        
+
         // Redirect to intended page after successful login
         const from = router.query.from as string;
         const redirectTo = from && from !== '/login' ? from : '/dashboard';
-        
+
         // Small delay to ensure auth state propagates
         setTimeout(() => {
           // Use router.replace to avoid back button issues
@@ -98,7 +98,6 @@ const LoginPage: React.FC = () => {
       setLoading(false);
     }
   };
-
 
   return (
     <>
@@ -214,7 +213,7 @@ const LoginPage: React.FC = () => {
               control={
                 <Checkbox
                   checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
+                  onChange={e => setRememberMe(e.target.checked)}
                   name="remember"
                   color="primary"
                 />
@@ -256,27 +255,19 @@ const LoginPage: React.FC = () => {
             </Button>
           </form>
 
-
           <Box sx={{ textAlign: 'center' }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              <Link
-                href="/forgot-password"
-                sx={{ color: '#FBBF24', textDecoration: 'none' }}
-              >
+              <Link href="/forgot-password" sx={{ color: '#FBBF24', textDecoration: 'none' }}>
                 Forgot your password?
               </Link>
             </Typography>
             <Typography variant="body2" color="text.secondary">
               Don&apos;t have an account?{' '}
-              <Link
-                href="/signup"
-                sx={{ color: '#FBBF24', textDecoration: 'none' }}
-              >
+              <Link href="/signup" sx={{ color: '#FBBF24', textDecoration: 'none' }}>
                 Sign up
               </Link>
             </Typography>
           </Box>
-
         </Paper>
       </Box>
     </>

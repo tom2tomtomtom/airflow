@@ -25,12 +25,12 @@ export default class MyDocument extends Document<MyDocumentProps> {
           {/* PWA primary color */}
           <meta name="theme-color" content={lightTheme.palette.primary.main} />
           <link rel="shortcut icon" href="/favicon.ico" />
-          
+
           {/* Using system fonts only - no external font loading for performance */}
-          
+
           {/* Emotion insertion point */}
           <meta name="emotion-insertion-point" content="" />
-          
+
           {/* Inject MUI styles */}
           {this.props.emotionStyleTags}
         </Head>
@@ -69,9 +69,7 @@ export default class MyDocument extends Document<MyDocumentProps> {
 
 // `getInitialProps` belongs to `_document` (instead of `_app`),
 // it's compatible with static-site generation (SSG).
-MyDocument.getInitialProps = async (
-  ctx: DocumentContext,
-): Promise<MyDocumentProps> => {
+MyDocument.getInitialProps = async (ctx: DocumentContext): Promise<MyDocumentProps> => {
   const originalRenderPage = ctx.renderPage;
 
   // You can consider sharing the same Emotion cache between all the SSR requests to speed up performance.
@@ -81,9 +79,7 @@ MyDocument.getInitialProps = async (
 
   ctx.renderPage = () =>
     originalRenderPage({
-      enhanceApp: (
-        App: React.ComponentType<React.ComponentProps<AppType> & MyAppProps>,
-      ) =>
+      enhanceApp: (App: React.ComponentType<React.ComponentProps<AppType> & MyAppProps>) =>
         function EnhanceApp(props: any) {
           return <App emotionCache={cache} {...props} />;
         },

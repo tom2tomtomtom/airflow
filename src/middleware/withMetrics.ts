@@ -90,19 +90,19 @@ export function withMetrics(config: MetricsConfig = {}) {
       };
 
       // Override response methods
-      res.send = function (data: any) {
+      res.send = function (data: unknown) {
         const size = data ? Buffer.byteLength(data.toString(), 'utf8') : 0;
         interceptResponse(res.statusCode, size);
         return originalSend.call(this, data);
       };
 
-      res.json = function (data: any) {
+      res.json = function (data: unknown) {
         const size = data ? Buffer.byteLength(JSON.stringify(data), 'utf8') : 0;
         interceptResponse(res.statusCode, size);
         return originalJson.call(this, data);
       };
 
-      res.end = function (chunk?: any, encoding?: any) {
+      res.end = function (chunk?: unknown, encoding?: unknown) {
         const size = chunk ? Buffer.byteLength(chunk.toString(), 'utf8') : 0;
         interceptResponse(res.statusCode, size);
         return originalEnd.call(this, chunk, encoding);
@@ -173,7 +173,7 @@ function trackRequestCompletion(
   if (config.trackRequestCount) {
     metrics.counter('api.requests.total', 1, baseTags);
     metrics.counter('api.requests.completed', 1, baseTags);
-    
+
     if (isSuccess) {
       metrics.counter('api.requests.success', 1, baseTags);
     }
@@ -196,7 +196,7 @@ function trackRequestCompletion(
   // Track error rates
   if (config.trackErrorRate && isError) {
     metrics.counter('api.requests.errors', 1, baseTags);
-    
+
     // Specific error tracking
     if (statusCode === 404) {
       metrics.counter('api.requests.not_found', 1, baseTags);
@@ -214,9 +214,10 @@ function trackRequestCompletion(
   // Track response size
   if (responseSize > 0) {
     metrics.histogram('api.response.size', responseSize, baseTags);
-    
+
     // Track large responses
-    if (responseSize > 1024 * 1024) { // 1MB
+    if (responseSize > 1024 * 1024) {
+      // 1MB
       metrics.counter('api.responses.large', 1, { ...baseTags, threshold: '1mb' });
     }
   }
@@ -236,11 +237,7 @@ function trackRequestCompletion(
 /**
  * Track errors with detailed context
  */
-function trackError(
-  context: RequestContext,
-  error: any,
-  customTags: Record<string, string>
-): void {
+function trackError(context: RequestContext, error: unknown, customTags: Record<string, string>): void {
   const tags = {
     method: context.method,
     endpoint: context.endpoint,
@@ -250,7 +247,7 @@ function trackError(
   };
 
   metrics.counter('api.errors.total', 1, tags);
-  
+
   // Track specific error types
   if (error.name === 'ValidationError') {
     metrics.counter('api.errors.validation', 1, tags);
@@ -306,7 +303,7 @@ function trackEndpointSpecificMetrics(
   if (endpoint.includes('/ai/') || endpoint.includes('/flow/')) {
     metrics.counter('ai.api.requests', 1, baseTags);
     metrics.timer('ai.api.duration', duration, baseTags);
-    
+
     if (statusCode < 400) {
       metrics.counter('ai.api.success', 1, baseTags);
     }
@@ -327,7 +324,7 @@ function trackEndpointSpecificMetrics(
   // Authentication endpoints
   if (endpoint.includes('/auth/')) {
     metrics.counter('auth.api.requests', 1, baseTags);
-    
+
     if (statusCode === 200) {
       metrics.counter('auth.success', 1, baseTags);
     } else if (statusCode === 401) {
@@ -344,7 +341,7 @@ function sanitizeEndpoint(url: string): string {
     .split('?')[0] // Remove query parameters
     .replace(/\/\d+/g, '/:id') // Replace numeric IDs
     .replace(/\/[a-f0-9-]{36}/g, '/:uuid') // Replace UUIDs
-    .replace(/\/[a-zA-Z0-9_-]{20,}/g, '/:token') // Replace long tokens
+    .replace(/\/[a-zA-Z0-9_-]{20}/g, '/:token') // Replace long tokens
     .toLowerCase();
 }
 
@@ -355,7 +352,7 @@ function getUserAgentCategory(userAgent?: string): string {
   if (!userAgent) return 'unknown';
 
   const ua = userAgent.toLowerCase();
-  
+
   if (ua.includes('bot') || ua.includes('crawler') || ua.includes('spider')) {
     return 'bot';
   }
@@ -377,7 +374,7 @@ function getUserAgentCategory(userAgent?: string): string {
   if (ua.includes('edge')) {
     return 'edge';
   }
-  
+
   return 'other';
 }
 
@@ -386,7 +383,7 @@ function getUserAgentCategory(userAgent?: string): string {
  */
 function inferActionFromEndpoint(endpoint: string, method: string): string | null {
   const path = endpoint.toLowerCase();
-  
+
   if (method === 'POST') {
     if (path.includes('/clients')) return 'create_client';
     if (path.includes('/campaigns')) return 'create_campaign';
@@ -396,26 +393,26 @@ function inferActionFromEndpoint(endpoint: string, method: string): string | nul
     if (path.includes('/auth/login')) return 'login';
     if (path.includes('/auth/register')) return 'register';
   }
-  
+
   if (method === 'GET') {
     if (path.includes('/dashboard')) return 'view_dashboard';
     if (path.includes('/clients')) return 'view_clients';
     if (path.includes('/campaigns')) return 'view_campaigns';
     if (path.includes('/assets')) return 'view_assets';
   }
-  
+
   if (method === 'PUT' || method === 'PATCH') {
     if (path.includes('/clients')) return 'update_client';
     if (path.includes('/campaigns')) return 'update_campaign';
     if (path.includes('/profile')) return 'update_profile';
   }
-  
+
   if (method === 'DELETE') {
     if (path.includes('/clients')) return 'delete_client';
     if (path.includes('/campaigns')) return 'delete_campaign';
     if (path.includes('/assets')) return 'delete_asset';
   }
-  
+
   return null;
 }
 

@@ -36,13 +36,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Return session information (excluding sensitive data)
     return res.status(200).json({
       authenticated: true,
-      session: {
+      session: {},
         access_token: session.access_token ? '[REDACTED]' : null,
         expires_at: session.expires_at,
         expires_in: session.expires_in,
         token_type: session.token_type
       },
-      user: {
+      user: {},
         id: session.user.id,
         email: session.user.email,
         role: session.user.role,

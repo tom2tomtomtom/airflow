@@ -17,10 +17,11 @@ export function ProtectedRoute({ children, redirectTo = '/login' }: ProtectedRou
     if (!loading && !isAuthenticated) {
       // Preserve the current path for redirect after login
       const currentPath = router.asPath;
-      const loginUrl = currentPath !== '/' && currentPath !== '/login' 
-        ? `${redirectTo}?from=${encodeURIComponent(currentPath)}`
-        : redirectTo;
-        
+      const loginUrl =
+        currentPath !== '/' && currentPath !== '/login'
+          ? `${redirectTo}?from=${encodeURIComponent(currentPath)}`
+          : redirectTo;
+
       router.replace(loginUrl);
     }
   }, [loading, isAuthenticated, router, redirectTo]);

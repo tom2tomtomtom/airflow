@@ -25,8 +25,7 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  ListItemSecondaryAction,
-} from '@mui/material';
+  ListItemSecondaryAction} from '@mui/material';
 import {
   Analytics as AnalyticsIcon,
   TrendingUp,
@@ -38,8 +37,7 @@ import {
   ShowChart,
   Campaign,
   VideoLibrary,
-  Assessment,
-} from '@mui/icons-material';
+  Assessment} from '@mui/icons-material';
 import {
   AreaChart,
   Area,
@@ -51,8 +49,7 @@ import {
   CartesianGrid,
   Tooltip as ChartTooltip,
   Legend,
-  ResponsiveContainer,
-} from 'recharts';
+  ResponsiveContainer} from 'recharts';
 import DashboardLayout from '@/components/DashboardLayout';
 import PerformanceDashboard from '@/components/analytics/PerformanceDashboard';
 import { useClient } from '@/contexts/ClientContext';
@@ -86,7 +83,7 @@ interface AnalyticsOverview {
     campaignId: string;
     matrixId?: string;
   }>;
-  kpiSummary: {
+  kpiSummary: {},
     totalImpressions: number;
     totalClicks: number;
     totalConversions: number;
@@ -156,8 +153,7 @@ const AnalyticsPage: React.FC = () => {
       const params = new URLSearchParams({
         client_id: activeClient.id,
         date_range: dateRange,
-        platform: selectedPlatform,
-      });
+        platform: selectedPlatform});
 
       const response = await fetch(`/api/analytics/overview?${params}`);
       const result = await response.json();
@@ -180,8 +176,7 @@ const AnalyticsPage: React.FC = () => {
       const params = new URLSearchParams({
         client_id: activeClient.id,
         insight_types: 'performance,optimization,trends,anomalies,predictions',
-        date_range: dateRange,
-      });
+        date_range: dateRange});
 
       const response = await fetch(`/api/analytics/insights?${params}`);
       const result = await response.json();
@@ -205,8 +200,7 @@ const AnalyticsPage: React.FC = () => {
         client_id: activeClient.id,
         date_range: dateRange,
         granularity: 'daily',
-        metrics: 'impressions,clicks,conversions,spend,engagement',
-      });
+        metrics: 'impressions,clicks,conversions,spend,engagement'});
 
       const response = await fetch(`/api/analytics/performance?${params}`);
       const result = await response.json();
@@ -292,8 +286,7 @@ const AnalyticsPage: React.FC = () => {
   const formatCurrency = (amount: number): string => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
-    }).format(amount);
+      currency: 'USD'}).format(amount);
   };
 
   const formatPercentage = (value: number): string => {
@@ -612,8 +605,7 @@ const AnalyticsPage: React.FC = () => {
                   clientId={activeClient.id}
                   dateRange={{
                     start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-                    end: new Date().toISOString(),
-                  }}
+                    end: new Date().toISOString()}}
                 />
               )}
 

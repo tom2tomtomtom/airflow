@@ -9,12 +9,9 @@ type ResponseData = {
   asset?: any;
 };
 
-async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
-) {
+async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
   const { id } = req.query;
-  
+
   if (!id || Array.isArray(id)) {
     return res.status(400).json({ success: false, message: 'Invalid asset ID' });
   }
@@ -49,14 +46,14 @@ async function getAsset(
       .eq('id', assetId)
       .eq('user_id', userId)
       .single();
-    
+
     if (error) {
       if (error.code === 'PGRST116') {
         return res.status(404).json({ success: false, message: 'Asset not found' });
       }
       throw error;
     }
-    
+
     return res.status(200).json({
       success: true,
       asset: asset,
@@ -78,7 +75,7 @@ async function updateAsset(
     const { name, url, thumbnail_url, description, tags, favorite } = req.body;
 
     const updateData: any = {
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     if (name !== undefined) updateData.name = name;

@@ -68,12 +68,7 @@ interface TabPanelProps {
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
   return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`analytics-tabpanel-${index}`}
-      {...other}
-    >
+    <div role="tabpanel" hidden={value !== index} id={`analytics-tabpanel-${index}`} {...other}>
       {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
     </div>
   );
@@ -92,7 +87,7 @@ export const AdvancedAnalytics: React.FC = () => {
       change: 12.5,
       trend: 'up',
       icon: <Visibility />,
-      color: '#2196F3'
+      color: '#2196F3',
     },
     {
       id: 'engagement-rate',
@@ -101,7 +96,7 @@ export const AdvancedAnalytics: React.FC = () => {
       change: -2.1,
       trend: 'down',
       icon: <ThumbUp />,
-      color: '#4CAF50'
+      color: '#4CAF50',
     },
     {
       id: 'shares',
@@ -110,7 +105,7 @@ export const AdvancedAnalytics: React.FC = () => {
       change: 25.3,
       trend: 'up',
       icon: <Share />,
-      color: '#FF9800'
+      color: '#FF9800',
     },
     {
       id: 'conversion-rate',
@@ -119,7 +114,7 @@ export const AdvancedAnalytics: React.FC = () => {
       change: 5.7,
       trend: 'up',
       icon: <TrendingUp />,
-      color: '#9C27B0'
+      color: '#9C27B0',
     },
     {
       id: 'avg-watch-time',
@@ -128,7 +123,7 @@ export const AdvancedAnalytics: React.FC = () => {
       change: 8.9,
       trend: 'up',
       icon: <PlayArrow />,
-      color: '#F44336'
+      color: '#F44336',
     },
     {
       id: 'roi',
@@ -137,8 +132,8 @@ export const AdvancedAnalytics: React.FC = () => {
       change: 15.2,
       trend: 'up',
       icon: <Timeline />,
-      color: '#00BCD4'
-    }
+      color: '#00BCD4',
+    },
   ];
 
   const performanceData: PerformanceData[] = [
@@ -191,7 +186,7 @@ export const AdvancedAnalytics: React.FC = () => {
             <Select
               value={timeRange}
               label="Time Range"
-              onChange={(e) => handleTimeRangeChange(e.target.value)}
+              onChange={e => handleTimeRangeChange(e.target.value)}
             >
               <MenuItem value="24h">Last 24 Hours</MenuItem>
               <MenuItem value="7d">Last 7 Days</MenuItem>
@@ -207,19 +202,14 @@ export const AdvancedAnalytics: React.FC = () => {
           >
             Refresh
           </Button>
-          <Button
-            variant="contained"
-            startIcon={<Download />}
-          >
+          <Button variant="contained" startIcon={<Download />}>
             Export
           </Button>
         </Box>
       </Box>
 
       {/* Loading Indicator */}
-      {loading && (
-        <LinearProgress sx={{ mb: 3, borderRadius: 1 }} />
-      )}
+      {loading && <LinearProgress sx={{ mb: 3, borderRadius: 1 }} />}
 
       {/* Key Metrics */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -238,24 +228,32 @@ export const AdvancedAnalytics: React.FC = () => {
                     {metric.icon}
                   </Avatar>
                   <Tooltip title="More info">
-                    <IconButton size="small" aria-label="Icon button">                      <Info fontSize="small" />
+                    <IconButton size="small" aria-label="Icon button">
+                      {' '}
+                      <Info fontSize="small" />
                     </IconButton>
                   </Tooltip>
                 </Box>
-                
+
                 <Typography variant="h4" fontWeight={600} gutterBottom>
                   {metric.value}
                 </Typography>
-                
+
                 <Typography variant="body2" color="text.secondary" gutterBottom>
                   {metric.label}
                 </Typography>
-                
+
                 <Box display="flex" alignItems="center" gap={0.5}>
                   {getTrendIcon(metric.trend, metric.change)}
                   <Typography
                     variant="caption"
-                    color={metric.trend === 'up' ? 'success.main' : metric.trend === 'down' ? 'error.main' : 'text.secondary'}
+                    color={
+                      metric.trend === 'up'
+                        ? 'success.main'
+                        : metric.trend === 'down'
+                          ? 'error.main'
+                          : 'text.secondary'
+                    }
                     fontWeight={500}
                   >
                     {formatChange(metric.change)}
@@ -286,12 +284,22 @@ export const AdvancedAnalytics: React.FC = () => {
           <Typography variant="h6" gutterBottom>
             Performance Over Time
           </Typography>
-          <Box sx={{ height: 300, bgcolor: 'grey.50', borderRadius: 1, mb: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Box
+            sx={{
+              height: 300,
+              bgcolor: 'grey.50',
+              borderRadius: 1,
+              mb: 3,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
             <Typography color="text.secondary">
               📊 Interactive Chart Component Would Go Here
             </Typography>
           </Box>
-          
+
           <TableContainer component={Paper} variant="outlined">
             <Table>
               <TableHead>
@@ -339,17 +347,13 @@ export const AdvancedAnalytics: React.FC = () => {
                         <Typography variant="body2" color="text.secondary">
                           Views
                         </Typography>
-                        <Typography variant="h6">
-                          {content.views}
-                        </Typography>
+                        <Typography variant="h6">{content.views}</Typography>
                       </Grid>
                       <Grid size={{ xs: 6 }}>
                         <Typography variant="body2" color="text.secondary">
                           Engagement
                         </Typography>
-                        <Typography variant="h6">
-                          {content.engagement}
-                        </Typography>
+                        <Typography variant="h6">{content.engagement}</Typography>
                       </Grid>
                     </Grid>
                   </CardContent>
@@ -366,17 +370,31 @@ export const AdvancedAnalytics: React.FC = () => {
           </Typography>
           <Grid container spacing={3}>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Box sx={{ height: 250, bgcolor: 'grey.50', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Typography color="text.secondary">
-                  🥧 Age Distribution Chart
-                </Typography>
+              <Box
+                sx={{
+                  height: 250,
+                  bgcolor: 'grey.50',
+                  borderRadius: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Typography color="text.secondary">🥧 Age Distribution Chart</Typography>
               </Box>
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Box sx={{ height: 250, bgcolor: 'grey.50', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Typography color="text.secondary">
-                  🌍 Geographic Distribution
-                </Typography>
+              <Box
+                sx={{
+                  height: 250,
+                  bgcolor: 'grey.50',
+                  borderRadius: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Typography color="text.secondary">🌍 Geographic Distribution</Typography>
               </Box>
             </Grid>
           </Grid>

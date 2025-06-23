@@ -4,9 +4,9 @@
 declare global {
   interface Window {
     // Add any window properties used in the app
-    gtag?: (...args: any[]) => void;
-    analytics?: any;
-    __REDUX_DEVTOOLS_EXTENSION__?: any;
+    gtag?: (...args: unknown[]) => void;
+    analytics?: unknown;
+    __REDUX_DEVTOOLS_EXTENSION__?: unknown;
   }
 
   // Environment variables
@@ -96,7 +96,7 @@ export interface Campaign extends BaseEntity {
   start_date?: string;
   end_date?: string;
   budget?: number;
-  goals?: Record<string, any>;
+  goals?: Record<string, unknown>;
 }
 
 export {};

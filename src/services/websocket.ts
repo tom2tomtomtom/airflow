@@ -6,7 +6,12 @@ import { EventEmitter } from 'events';
 import React from 'react';
 
 export interface WebSocketMessage {
-  type: 'render_progress' | 'render_complete' | 'render_failed' | 'notification' | 'activity_update';
+  type:
+    | 'render_progress'
+    | 'render_complete'
+    | 'render_failed'
+    | 'notification'
+    | 'activity_update';
   payload: any;
   timestamp: number;
   userId?: string;
@@ -56,7 +61,7 @@ class WebSocketService extends EventEmitter {
   constructor() {
     super();
     this.isServer = typeof window === 'undefined';
-    
+
     if (!this.isServer) {
       // Client-side initialization
       this.initializeClientConnection();
@@ -69,14 +74,14 @@ class WebSocketService extends EventEmitter {
 
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const wsUrl = `${protocol}//${window.location.host}/api/ws`;
-    
+
     this.connectClient(wsUrl);
   }
 
   private connectClient(url: string) {
     try {
       const ws = new WebSocket(url);
-      
+
       ws.onopen = () => {
         if (process.env.NODE_ENV === 'development') {
           console.log('WebSocket connected');
@@ -90,11 +95,9 @@ class WebSocketService extends EventEmitter {
           const message: WebSocketMessage = JSON.parse(event.data);
           this.handleMessage(message);
         } catch (error: any) {
-    const message = getErrorMessage(error);
+          const message = getErrorMessage(error);
           if (process.env.NODE_ENV === 'development') {
-
             console.error('Failed to parse WebSocket message:', error);
-
           }
         }
       };
@@ -104,7 +107,7 @@ class WebSocketService extends EventEmitter {
           console.log('WebSocket disconnected:', event.code);
         }
         this.emit('disconnected');
-        
+
         // Reconnect after delay if not intentional close
         if (event.code !== 1000) {
           setTimeout(() => this.connectClient(url), 5000);
@@ -113,19 +116,14 @@ class WebSocketService extends EventEmitter {
 
       ws.onerror = (error: any) => {
         if (process.env.NODE_ENV === 'development') {
-
           console.error('WebSocket error:', error);
-
         }
         this.emit('error', error);
       };
-
     } catch (error: any) {
-    const message = getErrorMessage(error);
+      const message = getErrorMessage(error);
       if (process.env.NODE_ENV === 'development') {
-
         console.error('Failed to create WebSocket connection:', error);
-
       }
       // Fallback to polling if WebSocket fails
       this.emit('fallback_to_polling');
@@ -171,7 +169,7 @@ class WebSocketService extends EventEmitter {
     if (!this.isServer) return;
 
     this.connections.set(connectionId, ws);
-    
+
     if (userId) {
       if (!this.connectionsByUser.has(userId)) {
         this.connectionsByUser.set(userId, new Set());
@@ -188,7 +186,7 @@ class WebSocketService extends EventEmitter {
     if (!this.isServer) return;
 
     this.connections.delete(connectionId);
-    
+
     if (userId) {
       const userConnections = this.connectionsByUser.get(userId);
       if (userConnections) {
@@ -205,17 +203,15 @@ class WebSocketService extends EventEmitter {
     if (!this.isServer) return;
 
     const messageStr = JSON.stringify(message);
-    
+
     this.connections.forEach((ws, connectionId) => {
       if (ws.readyState === WebSocket.OPEN) {
         try {
           ws.send(messageStr);
         } catch (error: any) {
-    const message = getErrorMessage(error);
+          const message = getErrorMessage(error);
           if (process.env.NODE_ENV === 'development') {
-
             console.error(`Failed to send message to connection ${connectionId}:`, error);
-
           }
           this.connections.delete(connectionId);
         }
@@ -230,18 +226,16 @@ class WebSocketService extends EventEmitter {
     if (!userConnections) return;
 
     const messageStr = JSON.stringify(message);
-    
+
     userConnections.forEach((connectionId: any) => {
       const ws = this.connections.get(connectionId);
       if (ws && ws.readyState === WebSocket.OPEN) {
         try {
           ws.send(messageStr);
         } catch (error: any) {
-    const message = getErrorMessage(error);
+          const message = getErrorMessage(error);
           if (process.env.NODE_ENV === 'development') {
-
             console.error(`Failed to send message to user ${userId}:`, error);
-
           }
           this.removeConnection(connectionId, userId);
         }

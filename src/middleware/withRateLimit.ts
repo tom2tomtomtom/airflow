@@ -52,8 +52,7 @@ class MemoryStore {
         totalHits: 1,
         totalTime: windowMs,
         remaining: -1, // Will be calculated by caller
-        resetTime: new Date(resetTime),
-      };
+        resetTime: new Date(resetTime)};
     }
     
     // Increment existing count
@@ -64,8 +63,7 @@ class MemoryStore {
       totalHits: current.count,
       totalTime: current.resetTime - now,
       remaining: -1, // Will be calculated by caller
-      resetTime: new Date(current.resetTime),
-    };
+      resetTime: new Date(current.resetTime)};
   }
 
   // Cleanup expired entries periodically
@@ -83,7 +81,7 @@ class MemoryStore {
  * Redis store for production rate limiting
  */
 class RedisStore {
-  private redis: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+  private redis: unknown; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   constructor() {
     // Conditional Redis import for server-side only
@@ -121,8 +119,7 @@ class RedisStore {
       totalHits,
       totalTime: windowMs,
       remaining: -1, // Will be calculated by caller
-      resetTime: new Date(now + windowMs),
-    };
+      resetTime: new Date(now + windowMs)};
   }
 }
 
@@ -184,8 +181,7 @@ export function withRateLimit(
           maxRequests = RATE_LIMITS[type],
           skipSuccessfulRequests = false,
           skipFailedRequests = false,
-          keyGenerator = (req) => generateKey(req, type),
-        } = options;
+          keyGenerator = (req) => generateKey(req, type)} = options;
 
         const key = keyGenerator(req);
         const store = getStore();
@@ -209,30 +205,26 @@ export function withRateLimit(
             requests: limitInfo.totalHits,
             limit: maxRequests,
             window: windowMs,
-            resetTime: limitInfo.resetTime,
-          });
+            resetTime: limitInfo.resetTime});
 
           res.setHeader('Retry-After', Math.ceil(limitInfo.totalTime / 1000));
           
           return res.status(429).json({
             success: false,
-            error: {
+            error: {},
               code: 'RATE_LIMIT_EXCEEDED',
               message: 'Too many requests. Please try again later.',
-              details: {
+              details: {},
                 limit: maxRequests,
                 window: windowMs,
-                resetTime: limitInfo.resetTime.toISOString(),
-              },
-            },
-          });
+                resetTime: limitInfo.resetTime.toISOString()}}});
         }
 
         // Store original res.json to intercept response
         const originalJson = res.json;
         let statusCode = 200;
         
-        res.json = function(body: any) {
+        res.json = function(body: unknown) {
           statusCode = res.statusCode;
           return originalJson.call(this, body);
         };
@@ -279,8 +271,7 @@ export async function checkRateLimit(
     const {
       windowMs = 60000,
       maxRequests = RATE_LIMITS[type],
-      keyGenerator = (req) => generateKey(req, type),
-    } = options;
+      keyGenerator = (req) => generateKey(req, type)} = options;
 
     const key = keyGenerator(req);
     
@@ -296,8 +287,7 @@ export async function checkRateLimit(
       return {
         exceeded: current.count >= maxRequests,
         remaining,
-        resetTime: new Date(current.resetTime),
-      };
+        resetTime: new Date(current.resetTime)};
     }
 
     // For Redis, we can use a separate check operation
@@ -309,8 +299,7 @@ export async function checkRateLimit(
         return {
           exceeded: count >= maxRequests,
           remaining,
-          resetTime: new Date(Date.now() + windowMs),
-        };
+          resetTime: new Date(Date.now() + windowMs)};
       }
     }
 

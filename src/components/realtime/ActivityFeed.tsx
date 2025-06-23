@@ -61,7 +61,7 @@ interface ActivityFeedProps {
 }
 
 const ActivityFeed: React.FC<ActivityFeedProps> = ({
-  title = "Live Activity",
+  title = 'Live Activity',
   showControls = true,
   maxHeight = 500,
   compact = false,
@@ -70,19 +70,12 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
   const [activeTab, setActiveTab] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [showDetails, setShowDetails] = useState(!compact);
-  
-  const {
-    events,
-    loading,
-    error,
-    connectionStatus,
-    refresh,
-    startPolling,
-    stopPolling,
-  } = useRealtime({
-    pollInterval: isPaused ? 0 : 3000,
-    enableNotifications: false,
-  });
+
+  const { events, loading, error, connectionStatus, refresh, startPolling, stopPolling } =
+    useRealtime({
+      pollInterval: isPaused ? 0 : 3000,
+      enableNotifications: false,
+    });
 
   const handlePauseToggle = () => {
     setIsPaused(!isPaused);
@@ -96,9 +89,13 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
   const getEventIcon = (event: any) => {
     switch (event.type) {
       case 'execution_status_change':
-        return event.data.status === 'completed' ? <CheckIcon color="success" /> :
-               event.data.status === 'failed' ? <ErrorIcon color="error" /> :
-               <PendingIcon color="warning" />;
+        return event.data.status === 'completed' ? (
+          <CheckIcon color="success" />
+        ) : event.data.status === 'failed' ? (
+          <ErrorIcon color="error" />
+        ) : (
+          <PendingIcon color="warning" />
+        );
       case 'approval_decision':
         return <ApprovalIcon color="primary" />;
       case 'campaign_update':
@@ -113,11 +110,17 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
   const getEventColor = (event: any) => {
     switch (event.type) {
       case 'execution_status_change':
-        return event.data.status === 'completed' ? 'success' :
-               event.data.status === 'failed' ? 'error' : 'warning';
+        return event.data.status === 'completed'
+          ? 'success'
+          : event.data.status === 'failed'
+            ? 'error'
+            : 'warning';
       case 'approval_decision':
-        return event.data.decision === 'approved' ? 'success' :
-               event.data.decision === 'rejected' ? 'error' : 'info';
+        return event.data.decision === 'approved'
+          ? 'success'
+          : event.data.decision === 'rejected'
+            ? 'error'
+            : 'info';
       case 'campaign_update':
         return 'info';
       default:
@@ -131,17 +134,17 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
         const execution = event.context?.execution;
         const campaignName = execution?.matrices?.campaigns?.name || 'Unknown Campaign';
         return `${campaignName} execution ${event.data.status} on ${execution?.platform || 'unknown platform'}`;
-      
+
       case 'approval_decision':
         const approval = event.context?.approval;
         return `${approval?.approval_type || 'Approval'} ${event.data.decision} for ${approval?.item_type || 'item'}`;
-      
+
       case 'campaign_update':
         return `Campaign "${event.data.campaign_name}" was updated`;
-      
+
       case 'video_generation':
         return `Video generation ${event.data.status} for ${event.data.asset_name || 'asset'}`;
-      
+
       default:
         return event.data.message || 'Activity update';
     }
@@ -150,15 +153,15 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
   const getEventSecondaryText = (event: any) => {
     const timeAgo = formatDistanceToNow(new Date(event.timestamp), { addSuffix: true });
     const details = [];
-    
+
     if (event.context?.execution?.matrices?.name) {
       details.push(`Matrix: ${event.context.execution.matrices.name}`);
     }
-    
+
     if (event.data.user_name) {
       details.push(`By: ${event.data.user_name}`);
     }
-    
+
     return `${timeAgo}${details.length > 0 ? ` • ${details.join(' • ')}` : ''}`;
   };
 
@@ -193,10 +196,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
               <ListItemText
                 primary={
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Typography 
-                      variant={compact ? "body2" : "subtitle2"} 
-                      sx={{ flexGrow: 1 }}
-                    >
+                    <Typography variant={compact ? 'body2' : 'subtitle2'} sx={{ flexGrow: 1 }}>
                       {formatEventMessage(event)}
                     </Typography>
                     <Chip
@@ -237,35 +237,48 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
             <Badge
               color={connectionStatus === 'connected' ? 'success' : 'error'}
               variant="dot"
-              sx={{ 
-                '& .MuiBadge-badge': { 
-                  animation: connectionStatus === 'connected' ? 'pulse 2s infinite' : 'none' 
-                } 
+              sx={{
+                '& .MuiBadge-badge': {
+                  animation: connectionStatus === 'connected' ? 'pulse 2s infinite' : 'none',
+                },
               }}
             >
               <TimelineIcon />
             </Badge>
             {title}
           </Typography>
-          
+
           {showControls && (
             <Stack direction="row" spacing={1}>
-              <Tooltip title={showDetails ? "Hide details" : "Show details"}>
-                <IconButton 
-                  size="small" 
-                  onClick={() => setShowDetails(!showDetails)} aria-label="Icon button">
+              <Tooltip title={showDetails ? 'Hide details' : 'Show details'}>
+                <IconButton
+                  size="small"
+                  onClick={() => setShowDetails(!showDetails)}
+                  aria-label="Icon button"
+                >
                   {showDetails ? <HideIcon /> : <ViewIcon />}
                 </IconButton>
               </Tooltip>
-              <Tooltip title={isPaused ? "Resume updates" : "Pause updates"}>
-                <IconButton 
-                  size="small" 
+              <Tooltip title={isPaused ? 'Resume updates' : 'Pause updates'}>
+                <IconButton
+                  size="small"
                   onClick={handlePauseToggle}
-                  color={isPaused ? "warning" : "default"} aria-label="Icon button">                  {isPaused ? <PlayIcon /> : <PauseIcon />}
+                  color={isPaused ? 'warning' : 'default'}
+                  aria-label="Icon button"
+                >
+                  {' '}
+                  {isPaused ? <PlayIcon /> : <PauseIcon />}
                 </IconButton>
               </Tooltip>
               <Tooltip title="Refresh">
-                <IconButton size="small" onClick={refresh} disabled={loading} aria-label="Icon button">                  {loading ? <CircularProgress size={16} /> : <RefreshIcon />}
+                <IconButton
+                  size="small"
+                  onClick={refresh}
+                  disabled={loading}
+                  aria-label="Icon button"
+                >
+                  {' '}
+                  {loading ? <CircularProgress size={16} /> : <RefreshIcon />}
                 </IconButton>
               </Tooltip>
             </Stack>
@@ -293,20 +306,17 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
               scrollButtons="auto"
               sx={{ borderBottom: 1, borderColor: 'divider' }}
             >
-              <Tab 
-                label={`All (${allEvents.length})`} 
+              <Tab label={`All (${allEvents.length})`} sx={{ minHeight: compact ? 40 : 48 }} />
+              <Tab
+                label={`Executions (${executionEvents.length})`}
                 sx={{ minHeight: compact ? 40 : 48 }}
               />
-              <Tab 
-                label={`Executions (${executionEvents.length})`} 
+              <Tab
+                label={`Approvals (${approvalEvents.length})`}
                 sx={{ minHeight: compact ? 40 : 48 }}
               />
-              <Tab 
-                label={`Approvals (${approvalEvents.length})`} 
-                sx={{ minHeight: compact ? 40 : 48 }}
-              />
-              <Tab 
-                label={`Campaigns (${campaignEvents.length})`} 
+              <Tab
+                label={`Campaigns (${campaignEvents.length})`}
                 sx={{ minHeight: compact ? 40 : 48 }}
               />
             </Tabs>

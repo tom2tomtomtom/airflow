@@ -9,8 +9,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
 // Create axios instance with default config
 const authAxios = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
-});
+  timeout: 10000});
 
 // Response types
 interface AuthResponse {
@@ -37,8 +36,7 @@ export async function signIn(
   try {
     const response = await authAxios.post<AuthResponse>('/api/auth/login', {
       email,
-      password,
-    });
+      password});
 
     if (!response?.data?.success || !response?.data?.user || !response?.data?.token) {
       throw new Error(response?.data?.message || 'Login failed');
@@ -71,8 +69,7 @@ export async function signUp(
       email,
       password,
       firstName,
-      lastName,
-    });
+      lastName});
 
     if (!response?.data?.success || !response?.data?.user) {
       throw new Error(response?.data?.message || 'Sign up failed');
@@ -85,7 +82,7 @@ export async function signUp(
       localStorage.setItem('airwave_user', JSON.stringify(user));
     }
 
-    const result: {
+    const result: {},
       user: User;
       token?: string;
       emailConfirmationRequired?: boolean;
@@ -174,8 +171,7 @@ export async function refreshToken(): Promise<boolean> {
 export async function requestPasswordReset(email: string): Promise<void> {
   try {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
+      redirectTo: `${window.location.origin}/reset-password`});
 
     if (error) {
       throw error;
@@ -191,8 +187,7 @@ export async function requestPasswordReset(email: string): Promise<void> {
 export async function resetPassword(_token: string, newPassword: string): Promise<void> {
   try {
     const { error } = await supabase.auth.updateUser({
-      password: newPassword,
-    });
+      password: newPassword});
 
     if (error) {
       throw error;
@@ -208,8 +203,7 @@ export async function resetPassword(_token: string, newPassword: string): Promis
 export const createAuthenticatedAxios = () => {
   const instance = axios.create({
     baseURL: API_BASE_URL,
-    timeout: 10000,
-  });
+    timeout: 10000});
 
   // Request interceptor to add CSRF protection
   instance.interceptors.request.use(

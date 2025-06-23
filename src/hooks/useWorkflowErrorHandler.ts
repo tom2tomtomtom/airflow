@@ -43,7 +43,11 @@ export function useWorkflowErrorHandler() {
     }
 
     // AI cost/budget errors
-    if (error.message?.includes('budget') || error.message?.includes('cost') || error.status === 402) {
+    if (
+      error.message?.includes('budget') ||
+      error.message?.includes('cost') ||
+      error.status === 402
+    ) {
       return {
         id: errorId,
         type: 'ai_cost',
@@ -98,186 +102,189 @@ export function useWorkflowErrorHandler() {
   }, []);
 
   // Handle errors with automatic recovery strategies
-  const handleError = useCallback(async (
-    error: any,
-    context?: string,
-    recoveryOptions?: ErrorRecoveryOptions
-  ): Promise<WorkflowError> => {
-    const workflowError = categorizeError(error, context);
-    
-    // Log error for monitoring
-    console.error(`[Workflow Error] ${workflowError.type}:`, workflowError);
+  const handleError = useCallback(
+    async (
+      error: any,
+      context?: string,
+      recoveryOptions?: ErrorRecoveryOptions
+    ): Promise<WorkflowError> => {
+      const workflowError = categorizeError(error, context);
 
-    // Set error in workflow state
-    actions.setError(workflowError.message);
+      // Log error for monitoring
+      console.error(`[Workflow Error] ${workflowError.type}:`, workflowError);
 
-    // Attempt automatic recovery based on error type
-    if (workflowError.recoverable && !isRecovering) {
-      setIsRecovering(true);
-      
-      try {
-        switch (workflowError.type) {
-          case 'network':
-            await handleNetworkError(workflowError, recoveryOptions);
-            break;
-          
-          case 'ai_cost':
-            await handleAICostError(workflowError, recoveryOptions);
-            break;
-          
-          case 'validation':
-            await handleValidationError(workflowError, recoveryOptions);
-            break;
-          
-          case 'processing':
-            await handleProcessingError(workflowError, recoveryOptions);
-            break;
-          
-          default:
-            await handleUnknownError(workflowError, recoveryOptions);
-            break;
+      // Set error in workflow state
+      actions.setError(workflowError.message);
+
+      // Attempt automatic recovery based on error type
+      if (workflowError.recoverable && !isRecovering) {
+        setIsRecovering(true);
+
+        try {
+          switch (workflowError.type) {
+            case 'network':
+              await handleNetworkError(workflowError, recoveryOptions);
+              break;
+
+            case 'ai_cost':
+              await handleAICostError(workflowError, recoveryOptions);
+              break;
+
+            case 'validation':
+              await handleValidationError(workflowError, recoveryOptions);
+              break;
+
+            case 'processing':
+              await handleProcessingError(workflowError, recoveryOptions);
+              break;
+
+            default:
+              await handleUnknownError(workflowError, recoveryOptions);
+              break;
+          }
+        } catch (recoveryError: any) {
+          console.error('Error recovery failed:', recoveryError);
+          actions.setError('Recovery failed. Please try manually or contact support.');
+        } finally {
+          setIsRecovering(false);
         }
-      } catch (recoveryError: any) {
-        console.error('Error recovery failed:', recoveryError);
-        actions.setError('Recovery failed. Please try manually or contact support.');
-      } finally {
-        setIsRecovering(false);
       }
-    }
 
-    return workflowError;
-  }, [categorizeError, actions, isRecovering]);
+      return workflowError;
+    },
+    [categorizeError, actions, isRecovering]
+  );
 
   // Network error recovery
-  const handleNetworkError = useCallback(async (
-    error: WorkflowError,
-    options?: ErrorRecoveryOptions
-  ) => {
-    // Wait a bit and retry if retry function is provided
-    if (options?.retry && error.retryable) {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      try {
-        await options.retry();
-        actions.clearError();
-      } catch (retryError: any) {
-        actions.setError('Retry failed. Please check your connection and try again.');
-      }
-    }
-  }, [actions]);
-
-  // AI cost error recovery
-  const handleAICostError = useCallback(async (
-    error: WorkflowError,
-    options?: ErrorRecoveryOptions
-  ) => {
-    // Suggest fallback or skip step
-    if (options?.fallback) {
-      options.fallback();
-      actions.setError('Using fallback due to budget limits. Some AI features may be limited.');
-    } else if (options?.skipStep) {
-      options.skipStep();
-      actions.setError('Step skipped due to budget limits. You can continue with manual input.');
-    }
-  }, [actions]);
-
-  // Validation error recovery
-  const handleValidationError = useCallback(async (
-    error: WorkflowError,
-    options?: ErrorRecoveryOptions
-  ) => {
-    // For validation errors, we typically need user intervention
-    // Just keep the error message visible for user to fix
-    console.log('Validation error requires user intervention:', error.details);
-  }, []);
-
-  // Processing error recovery
-  const handleProcessingError = useCallback(async (
-    error: WorkflowError,
-    options?: ErrorRecoveryOptions
-  ) => {
-    // Try retry with exponential backoff
-    if (options?.retry && error.retryable) {
-      const delays = [1000, 3000, 5000]; // 1s, 3s, 5s
-      
-      for (const delay of delays) {
-        await new Promise(resolve => setTimeout(resolve, delay));
+  const handleNetworkError = useCallback(
+    async (error: WorkflowError, options?: ErrorRecoveryOptions) => {
+      // Wait a bit and retry if retry function is provided
+      if (options?.retry && error.retryable) {
+        await new Promise(resolve => setTimeout(resolve, 2000));
         try {
           await options.retry();
           actions.clearError();
-          return;
         } catch (retryError: any) {
-          console.log(`Retry failed, waiting ${delay}ms before next attempt`);
+          actions.setError('Retry failed. Please check your connection and try again.');
         }
       }
-      
-      actions.setError('Processing failed after multiple attempts. Please try again later.');
-    }
-  }, [actions]);
+    },
+    [actions]
+  );
+
+  // AI cost error recovery
+  const handleAICostError = useCallback(
+    async (error: WorkflowError, options?: ErrorRecoveryOptions) => {
+      // Suggest fallback or skip step
+      if (options?.fallback) {
+        options.fallback();
+        actions.setError('Using fallback due to budget limits. Some AI features may be limited.');
+      } else if (options?.skipStep) {
+        options.skipStep();
+        actions.setError('Step skipped due to budget limits. You can continue with manual input.');
+      }
+    },
+    [actions]
+  );
+
+  // Validation error recovery
+  const handleValidationError = useCallback(
+    async (error: WorkflowError, options?: ErrorRecoveryOptions) => {
+      // For validation errors, we typically need user intervention
+      // Just keep the error message visible for user to fix
+      console.log('Validation error requires user intervention:', error.details);
+    },
+    []
+  );
+
+  // Processing error recovery
+  const handleProcessingError = useCallback(
+    async (error: WorkflowError, options?: ErrorRecoveryOptions) => {
+      // Try retry with exponential backoff
+      if (options?.retry && error.retryable) {
+        const delays = [1000, 3000, 5000]; // 1s, 3s, 5s
+
+        for (const delay of delays) {
+          await new Promise(resolve => setTimeout(resolve, delay));
+          try {
+            await options.retry();
+            actions.clearError();
+            return;
+          } catch (retryError: any) {
+            console.log(`Retry failed, waiting ${delay}ms before next attempt`);
+          }
+        }
+
+        actions.setError('Processing failed after multiple attempts. Please try again later.');
+      }
+    },
+    [actions]
+  );
 
   // Unknown error recovery
-  const handleUnknownError = useCallback(async (
-    error: WorkflowError,
-    options?: ErrorRecoveryOptions
-  ) => {
-    // For unknown errors, try a simple retry once
-    if (options?.retry && error.retryable) {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      try {
-        await options.retry();
-        actions.clearError();
-      } catch (retryError: any) {
-        actions.setError('Operation failed. Please try again or contact support if the problem persists.');
+  const handleUnknownError = useCallback(
+    async (error: WorkflowError, options?: ErrorRecoveryOptions) => {
+      // For unknown errors, try a simple retry once
+      if (options?.retry && error.retryable) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        try {
+          await options.retry();
+          actions.clearError();
+        } catch (retryError: any) {
+          actions.setError(
+            'Operation failed. Please try again or contact support if the problem persists.'
+          );
+        }
       }
-    }
-  }, [actions]);
+    },
+    [actions]
+  );
 
   // Wrapper for async operations with error handling
-  const withErrorHandling = useCallback(<T>(
-    operation: () => Promise<T>,
-    context?: string,
-    recoveryOptions?: ErrorRecoveryOptions
-  ) => {
-    return async (): Promise<T | null> => {
-      try {
-        const result = await operation();
-        actions.clearError(); // Clear any previous errors on success
-        return result;
-      } catch (error: any) {
-        await handleError(error, context, recoveryOptions);
-        return null;
-      }
-    };
-  }, [handleError, actions]);
+  const withErrorHandling = useCallback(
+    <T>(operation: () => Promise<T>, context?: string, recoveryOptions?: ErrorRecoveryOptions) => {
+      return async (): Promise<T | null> => {
+        try {
+          const result = await operation();
+          actions.clearError(); // Clear any previous errors on success
+          return result;
+        } catch (error: any) {
+          await handleError(error, context, recoveryOptions);
+          return null;
+        }
+      };
+    },
+    [handleError, actions]
+  );
 
   // Wrapper for sync operations with error handling
-  const withSyncErrorHandling = useCallback(<T>(
-    operation: () => T,
-    context?: string
-  ) => {
-    return (): T | null => {
-      try {
-        const result = operation();
-        actions.clearError();
-        return result;
-      } catch (error: any) {
-        handleError(error, context);
-        return null;
-      }
-    };
-  }, [handleError, actions]);
+  const withSyncErrorHandling = useCallback(
+    <T>(operation: () => T, context?: string) => {
+      return (): T | null => {
+        try {
+          const result = operation();
+          actions.clearError();
+          return result;
+        } catch (error: any) {
+          handleError(error, context);
+          return null;
+        }
+      };
+    },
+    [handleError, actions]
+  );
 
   // Manual error reporting
-  const reportError = useCallback((
-    message: string,
-    details?: string,
-    context?: string
-  ) => {
-    const error = new Error(message);
-    if (details) {
-      (error as any).details = details;
-    }
-    return handleError(error, context);
-  }, [handleError]);
+  const reportError = useCallback(
+    (message: string, details?: string, context?: string) => {
+      const error = new Error(message);
+      if (details) {
+        (error as any).details = details;
+      }
+      return handleError(error, context);
+    },
+    [handleError]
+  );
 
   // Clear errors
   const clearError = useCallback(() => {

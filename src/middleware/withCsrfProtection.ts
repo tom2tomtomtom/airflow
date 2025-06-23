@@ -47,8 +47,7 @@ const DEFAULT_OPTIONS: Required<CsrfOptions> = {
       // If there's any error with hex decoding or comparison, tokens are invalid
       return false;
     }
-  },
-};
+  }};
 
 /**
  * Generate a cryptographically secure CSRF token
@@ -89,8 +88,7 @@ function extractTokenFromRequest(req: NextApiRequest, headerName: string): strin
     console.log('ExtractToken Debug:', {
       headerName,
       headerToken,
-      allHeaders: req.headers,
-    });
+      allHeaders: req.headers});
   }
   if (headerToken) {
     return headerToken;
@@ -211,8 +209,7 @@ export function withCsrfProtection(
           submittedToken: submittedToken ? submittedToken.slice(0, 8) + '...' : 'null',
           expectedToken: csrfToken.slice(0, 8) + '...',
           headers: Object.keys(req.headers || {}),
-          headerName: config.headerName,
-        });
+          headerName: config.headerName});
       }
 
       if (!submittedToken) {
@@ -220,14 +217,12 @@ export function withCsrfProtection(
           userAgent: req.headers?.['user-agent'] || 'unknown',
           ip:
             req.headers?.['x-forwarded-for'] || (req as any).connection?.remoteAddress || 'unknown',
-          referer: req.headers?.referer || 'unknown',
-        });
+          referer: req.headers?.referer || 'unknown'});
 
         return res.status(403).json({
           success: false,
           error: 'CSRF token missing',
-          code: 'FORBIDDEN',
-        });
+          code: 'FORBIDDEN'});
       }
 
       if (!config.validateToken(submittedToken, csrfToken)) {
@@ -237,14 +232,12 @@ export function withCsrfProtection(
           userAgent: req.headers?.['user-agent'] || 'unknown',
           ip:
             req.headers?.['x-forwarded-for'] || (req as any).connection?.remoteAddress || 'unknown',
-          referer: req.headers?.referer || 'unknown',
-        });
+          referer: req.headers?.referer || 'unknown'});
 
         return res.status(403).json({
           success: false,
           error: 'Invalid CSRF token',
-          code: 'FORBIDDEN',
-        });
+          code: 'FORBIDDEN'});
       }
 
       // Add CSRF token to response headers for client access
@@ -262,11 +255,9 @@ export function withCsrfProtection(
 
       return res.status(500).json({
         success: false,
-        error: {
+        error: {},
           code: 'CSRF_VALIDATION_ERROR',
-          message: 'Error validating CSRF token',
-        },
-      });
+          message: 'Error validating CSRF token'}});
     }
 
     // Execute the original handler
@@ -289,8 +280,7 @@ export async function generateCsrfTokenAPI(
   res.status(200).json({
     success: true,
     data: { token },
-    meta: { timestamp: new Date().toISOString() },
-  });
+    meta: { timestamp: new Date().toISOString() }});
 }
 
 /**
@@ -316,7 +306,7 @@ export function getCsrfTokenFromCookie(cookieName: string = '_csrf'): string | n
  * Predefined CSRF configurations for different security levels
  */
 export const CsrfConfigs = {
-  strict: {
+  strict: {},
     sameSite: 'strict' as const,
     secure: true,
     httpOnly: false,
@@ -324,22 +314,19 @@ export const CsrfConfigs = {
     skipPaths: [], // No paths skipped in strict mode
   },
 
-  moderate: {
+  moderate: {},
     sameSite: 'lax' as const,
     secure: process.env.NODE_ENV === 'production',
     httpOnly: false,
     maxAge: 86400, // 24 hours
-    skipPaths: ['/api/auth/callback', '/api/webhooks'],
-  },
+    skipPaths: ['/api/auth/callback', '/api/webhooks']},
 
-  relaxed: {
+  relaxed: {},
     sameSite: 'lax' as const,
     secure: false,
     httpOnly: false,
     maxAge: 86400, // 24 hours
-    skipPaths: ['/api/auth', '/api/webhooks', '/api/public'],
-  },
-};
+    skipPaths: ['/api/auth', '/api/webhooks', '/api/public']}};
 
 /**
  * Get CSRF configuration based on environment

@@ -32,7 +32,7 @@ interface AnalyticsOverview {
     campaignId: string;
     matrixId?: string;
   }>;
-  kpiSummary: {
+  kpiSummary: {},
     totalImpressions: number;
     totalClicks: number;
     totalConversions: number;
@@ -42,13 +42,13 @@ interface AnalyticsOverview {
     averageCPC: number;
     roas: number;
   };
-  trends: {
+  trends: {},
     impressions: { value: number; change: number };
     clicks: { value: number; change: number };
     conversions: { value: number; change: number };
     spend: { value: number; change: number };
   };
-  dateRange: {
+  dateRange: {},
     start: string;
     end: string;
   };
@@ -76,8 +76,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
         startDate: startDate as string,
         endDate: endDate as string,
         platform: platform as string,
-        campaignId: campaignId as string,
-      }
+        campaignId: campaignId as string}
     );
     
     return res.json({ success: true, data: analytics });
@@ -93,7 +92,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
 async function getAnalyticsOverview(
   userId: string, 
-  filters: {
+  filters: {},
     clientId?: string;
     startDate?: string;
     endDate?: string;
@@ -166,11 +165,9 @@ async function getAnalyticsOverview(
     topPerformingContent,
     kpiSummary,
     trends,
-    dateRange: {
+    dateRange: {},
       start: startDate.toISOString(),
-      end: endDate.toISOString(),
-    },
-  };
+      end: endDate.toISOString()}};
 }
 
 function calculateDailyPerformance(
@@ -190,8 +187,7 @@ function calculateDailyPerformance(
       conversions: 0,
       impressions: 0,
       clicks: 0,
-      spend: 0,
-    };
+      spend: 0};
   }
 
   // Aggregate analytics data by date
@@ -223,8 +219,7 @@ function calculatePlatformDistribution(campaigns: any[]): Array<any> {
     LinkedIn: '#0A66C2',
     YouTube: '#FF0000',
     TikTok: '#000000',
-    Pinterest: '#BD081C',
-  };
+    Pinterest: '#BD081C'};
 
   const platformStats: Record<string, any> = {};
   let totalImpressions = 0;
@@ -237,8 +232,7 @@ function calculatePlatformDistribution(campaigns: any[]): Array<any> {
         color: platformColors[platform] || '#666666',
         campaigns: 0,
         impressions: 0,
-        spend: 0,
-      };
+        spend: 0};
     }
 
     platformStats[platform].campaigns += 1;
@@ -253,8 +247,7 @@ function calculatePlatformDistribution(campaigns: any[]): Array<any> {
   // Calculate percentages
   return Object.values(platformStats).map((platform: any) => ({
     ...platform,
-    value: totalImpressions > 0 ? Math.round((platform.impressions / totalImpressions) * 100) : 0,
-  }));
+    value: totalImpressions > 0 ? Math.round((platform.impressions / totalImpressions) * 100) : 0}));
 }
 
 async function getTopPerformingContent(
@@ -294,8 +287,7 @@ async function getTopPerformingContent(
         conversion: Math.round(conversionRate * 100) / 100,
         trend: engagementRate > 5 ? 'up' : engagementRate < 2 ? 'down' : 'neutral',
         campaignId: campaign.id,
-        matrixId: campaign.matrices?.[0]?.id,
-      };
+        matrixId: campaign.matrices?.[0]?.id};
     }).sort((a, b) => b.views - a.views);
 
   } catch (error: any) {
@@ -332,8 +324,7 @@ function calculateKPISummary(campaigns: any[]): any {
     averageCTR: Math.round(averageCTR * 100) / 100,
     averageConversionRate: Math.round(averageConversionRate * 100) / 100,
     averageCPC: Math.round(averageCPC * 100) / 100,
-    roas: Math.round(roas * 100) / 100,
-  };
+    roas: Math.round(roas * 100) / 100};
 }
 
 async function calculateTrends(
@@ -367,23 +358,18 @@ async function calculateTrends(
     const previousMetrics = calculatePeriodMetrics(previousCampaigns || []);
 
     return {
-      impressions: {
+      impressions: {},
         value: currentMetrics.impressions,
-        change: calculatePercentageChange(currentMetrics.impressions, previousMetrics.impressions),
-      },
-      clicks: {
+        change: calculatePercentageChange(currentMetrics.impressions, previousMetrics.impressions)},
+      clicks: {},
         value: currentMetrics.clicks,
-        change: calculatePercentageChange(currentMetrics.clicks, previousMetrics.clicks),
-      },
-      conversions: {
+        change: calculatePercentageChange(currentMetrics.clicks, previousMetrics.clicks)},
+      conversions: {},
         value: currentMetrics.conversions,
-        change: calculatePercentageChange(currentMetrics.conversions, previousMetrics.conversions),
-      },
-      spend: {
+        change: calculatePercentageChange(currentMetrics.conversions, previousMetrics.conversions)},
+      spend: {},
         value: currentMetrics.spend,
-        change: calculatePercentageChange(currentMetrics.spend, previousMetrics.spend),
-      },
-    };
+        change: calculatePercentageChange(currentMetrics.spend, previousMetrics.spend)}};
 
   } catch (error: any) {
     console.error('Error calculating trends:', error);
@@ -391,8 +377,7 @@ async function calculateTrends(
       impressions: { value: 0, change: 0 },
       clicks: { value: 0, change: 0 },
       conversions: { value: 0, change: 0 },
-      spend: { value: 0, change: 0 },
-    };
+      spend: { value: 0, change: 0 }};
   }
 }
 
@@ -424,7 +409,7 @@ function getEmptyAnalytics(startDate: Date, endDate: Date): AnalyticsOverview {
     performanceData: [],
     platformData: [],
     topPerformingContent: [],
-    kpiSummary: {
+    kpiSummary: {},
       totalImpressions: 0,
       totalClicks: 0,
       totalConversions: 0,
@@ -432,19 +417,15 @@ function getEmptyAnalytics(startDate: Date, endDate: Date): AnalyticsOverview {
       averageCTR: 0,
       averageConversionRate: 0,
       averageCPC: 0,
-      roas: 0,
-    },
-    trends: {
+      roas: 0},
+    trends: {},
       impressions: { value: 0, change: 0 },
       clicks: { value: 0, change: 0 },
       conversions: { value: 0, change: 0 },
-      spend: { value: 0, change: 0 },
-    },
-    dateRange: {
+      spend: { value: 0, change: 0 }},
+    dateRange: {},
       start: startDate.toISOString(),
-      end: endDate.toISOString(),
-    },
-  };
+      end: endDate.toISOString()}};
 }
 
 export default withAuth(withSecurityHeaders(handler));

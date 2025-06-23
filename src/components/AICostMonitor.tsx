@@ -31,7 +31,7 @@ import {
 
 interface UsageStats {
   service: string;
-  usage: {
+  usage: {},
     totalCost: number;
     totalTokens: number;
     callCount: number;

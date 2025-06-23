@@ -25,8 +25,7 @@ describe('Security Headers & CSRF Protection Tests', () => {
       });
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-        method: 'GET',
-      });
+        method: 'GET'});
 
       const secureHandler = withSecurityHeaders(mockHandler);
       await secureHandler(req, res);
@@ -43,8 +42,7 @@ describe('Security Headers & CSRF Protection Tests', () => {
       });
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-        method: 'GET',
-      });
+        method: 'GET'});
 
       const secureHandler = withSecurityHeaders(mockHandler);
       await secureHandler(req, res);
@@ -59,8 +57,7 @@ describe('Security Headers & CSRF Protection Tests', () => {
       });
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-        method: 'GET',
-      });
+        method: 'GET'});
 
       const secureHandler = withSecurityHeaders(mockHandler);
       await secureHandler(req, res);
@@ -75,8 +72,7 @@ describe('Security Headers & CSRF Protection Tests', () => {
       });
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-        method: 'GET',
-      });
+        method: 'GET'});
 
       const secureHandler = withSecurityHeaders(mockHandler);
       await secureHandler(req, res);
@@ -91,8 +87,7 @@ describe('Security Headers & CSRF Protection Tests', () => {
       });
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-        method: 'GET',
-      });
+        method: 'GET'});
 
       const secureHandler = withSecurityHeaders(mockHandler);
       await secureHandler(req, res);
@@ -107,8 +102,7 @@ describe('Security Headers & CSRF Protection Tests', () => {
       });
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-        method: 'GET',
-      });
+        method: 'GET'});
 
       const secureHandler = withSecurityHeaders(mockHandler);
       await secureHandler(req, res);
@@ -129,8 +123,7 @@ describe('Security Headers & CSRF Protection Tests', () => {
         });
 
         const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-          method: 'GET',
-        });
+          method: 'GET'});
 
         const secureHandler = withSecurityHeaders(mockHandler);
         await secureHandler(req, res);
@@ -155,8 +148,7 @@ describe('Security Headers & CSRF Protection Tests', () => {
         });
 
         const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-          method: 'GET',
-        });
+          method: 'GET'});
 
         const secureHandler = withSecurityHeaders(mockHandler);
         await secureHandler(req, res);
@@ -176,8 +168,7 @@ describe('Security Headers & CSRF Protection Tests', () => {
       });
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-        method: 'GET',
-      });
+        method: 'GET'});
 
       const protectedHandler = withCsrfProtection(mockHandler);
       await protectedHandler(req, res);
@@ -192,8 +183,7 @@ describe('Security Headers & CSRF Protection Tests', () => {
       });
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-        method: 'HEAD',
-      });
+        method: 'HEAD'});
 
       const protectedHandler = withCsrfProtection(mockHandler);
       await protectedHandler(req, res);
@@ -208,8 +198,7 @@ describe('Security Headers & CSRF Protection Tests', () => {
       });
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-        method: 'OPTIONS',
-      });
+        method: 'OPTIONS'});
 
       const protectedHandler = withCsrfProtection(mockHandler);
       await protectedHandler(req, res);
@@ -223,8 +212,7 @@ describe('Security Headers & CSRF Protection Tests', () => {
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        headers: {} as Record<string, string>,
-      });
+        headers: {} as Record<string, string>});
 
       const protectedHandler = withCsrfProtection(mockHandler);
       await protectedHandler(req, res);
@@ -233,8 +221,7 @@ describe('Security Headers & CSRF Protection Tests', () => {
       expect(JSON.parse(res._getData())).toEqual({
         success: false,
         error: 'CSRF token missing',
-        code: 'FORBIDDEN',
-      });
+        code: 'FORBIDDEN'});
       expect(mockHandler).not.toHaveBeenCalled();
     });
 
@@ -243,8 +230,7 @@ describe('Security Headers & CSRF Protection Tests', () => {
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'PUT',
-        headers: {} as Record<string, string>,
-      });
+        headers: {} as Record<string, string>});
 
       const protectedHandler = withCsrfProtection(mockHandler);
       await protectedHandler(req, res);
@@ -258,8 +244,7 @@ describe('Security Headers & CSRF Protection Tests', () => {
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'DELETE',
-        headers: {} as Record<string, string>,
-      });
+        headers: {} as Record<string, string>});
 
       const protectedHandler = withCsrfProtection(mockHandler);
       await protectedHandler(req, res);
@@ -276,8 +261,7 @@ describe('Security Headers & CSRF Protection Tests', () => {
       // First, simulate a GET request to establish the CSRF token
       const { req: getReq, res: getRes } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        headers: {},
-      });
+        headers: {}});
 
       const protectedHandler = withCsrfProtection(mockHandler);
       await protectedHandler(getReq, getRes);
@@ -293,12 +277,10 @@ describe('Security Headers & CSRF Protection Tests', () => {
       // Now make the POST request with the token in both cookie and header
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        headers: {
+        headers: {},
           'x-csrf-token': csrfToken,
           'origin': 'https://airwave.com',
-          'cookie': `_csrf=${csrfToken}`,
-        },
-      });
+          'cookie': `_csrf=${csrfToken}`}});
 
       await protectedHandler(req, res);
 
@@ -311,11 +293,9 @@ describe('Security Headers & CSRF Protection Tests', () => {
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        headers: {
+        headers: {},
           'x-csrf-token': 'valid-csrf-token',
-          'origin': 'https://malicious-site.com',
-        },
-      });
+          'origin': 'https://malicious-site.com'}});
 
       const protectedHandler = withCsrfProtection(mockHandler);
       await protectedHandler(req, res);
@@ -333,8 +313,7 @@ describe('Security Headers & CSRF Protection Tests', () => {
       // First, simulate a GET request to establish the CSRF token
       const { req: getReq, res: getRes } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        headers: {},
-      });
+        headers: {}});
 
       const protectedHandler = withCsrfProtection(mockHandler);
       await protectedHandler(getReq, getRes);
@@ -350,12 +329,10 @@ describe('Security Headers & CSRF Protection Tests', () => {
       // Now make the POST request with the token and referer header
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        headers: {
+        headers: {},
           'x-csrf-token': csrfToken,
           'referer': 'https://airwave.com/dashboard',
-          'cookie': `_csrf=${csrfToken}`,
-        },
-      });
+          'cookie': `_csrf=${csrfToken}`}});
 
       await protectedHandler(req, res);
 
@@ -373,8 +350,7 @@ describe('Security Headers & CSRF Protection Tests', () => {
       });
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-        method: 'GET',
-      });
+        method: 'GET'});
 
       const secureHandler = withSecurityHeaders(mockHandler);
       await secureHandler(req, res);
@@ -391,8 +367,7 @@ describe('Security Headers & CSRF Protection Tests', () => {
       });
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-        method: 'GET',
-      });
+        method: 'GET'});
 
       const secureHandler = withSecurityHeaders(mockHandler);
       await secureHandler(req, res);

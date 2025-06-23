@@ -43,11 +43,9 @@ class StatsDBackend implements MetricsBackend {
           host: process.env.STATSD_HOST || 'localhost',
           port: parseInt(process.env.STATSD_PORT || '8125'),
           prefix: 'airwave.',
-          globalTags: {
+          globalTags: {},
             env: process.env.NODE_ENV || 'development',
-            service: 'airwave-web',
-          },
-        });
+            service: 'airwave-web'}});
       } catch (error) {
         console.warn('StatsD client not available:', error.message);
       }
@@ -133,9 +131,7 @@ class WebhookBackend implements MetricsBackend {
         body: JSON.stringify({
           metrics: [metric],
           timestamp: new Date().toISOString(),
-          service: 'airwave-web',
-        }),
-      });
+          service: 'airwave-web'})});
     } catch (error) {
       console.error('Failed to send metric to webhook:', error);
     }
@@ -149,9 +145,7 @@ class WebhookBackend implements MetricsBackend {
         body: JSON.stringify({
           metrics,
           timestamp: new Date().toISOString(),
-          service: 'airwave-web',
-        }),
-      });
+          service: 'airwave-web'})});
     } catch (error) {
       console.error('Failed to send metrics batch to webhook:', error);
     }
@@ -231,8 +225,7 @@ export class MetricsCollector {
       value,
       type: 'counter',
       tags,
-      timestamp: Date.now(),
-    });
+      timestamp: Date.now()});
   }
 
   public gauge(name: string, value: number, tags?: Record<string, string>): void {
@@ -241,8 +234,7 @@ export class MetricsCollector {
       value,
       type: 'gauge',
       tags,
-      timestamp: Date.now(),
-    });
+      timestamp: Date.now()});
   }
 
   public histogram(name: string, value: number, tags?: Record<string, string>): void {
@@ -251,8 +243,7 @@ export class MetricsCollector {
       value,
       type: 'histogram',
       tags,
-      timestamp: Date.now(),
-    });
+      timestamp: Date.now()});
   }
 
   public timer(name: string, value: number, tags?: Record<string, string>): void {
@@ -261,8 +252,7 @@ export class MetricsCollector {
       value,
       type: 'timer',
       tags,
-      timestamp: Date.now(),
-    });
+      timestamp: Date.now()});
   }
 
   // Timer helpers
@@ -270,8 +260,7 @@ export class MetricsCollector {
     return {
       name,
       startTime: performance.now(),
-      tags,
-    };
+      tags};
   }
 
   public endTimer(timerMetric: TimerMetric): void {
@@ -285,8 +274,7 @@ export class MetricsCollector {
       method,
       endpoint: this.sanitizeEndpoint(endpoint),
       status_code: statusCode.toString(),
-      status_class: `${Math.floor(statusCode / 100)}xx`,
-    };
+      status_class: `${Math.floor(statusCode / 100)}xx`};
 
     this.counter('api.requests.total', 1, tags);
     this.timer('api.requests.duration', duration, tags);
@@ -377,7 +365,7 @@ export class MetricsCollector {
     return endpoint
       .replace(/\/\d+/g, '/:id')
       .replace(/\/[a-f0-9-]{36}/g, '/:uuid')
-      .replace(/\/[a-zA-Z0-9_-]{20,}/g, '/:token');
+      .replace(/\/[a-zA-Z0-9_-]{20}/g, '/:token');
   }
 
   private getCacheKeyType(key: string): string {

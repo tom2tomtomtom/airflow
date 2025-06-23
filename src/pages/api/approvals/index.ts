@@ -13,8 +13,7 @@ const ApprovalCreateSchema = z.object({
   priority: z.enum(['low', 'normal', 'high', 'urgent']).default('normal'),
   due_date: z.string().optional(),
   notes: z.string().optional(),
-  metadata: z.any().optional(),
-});
+  metadata: z.any().optional()});
 
 const ApprovalFilterSchema = z.object({
   client_id: z.string().uuid().optional(),
@@ -28,8 +27,7 @@ const ApprovalFilterSchema = z.object({
   limit: z.number().min(1).max(100).default(50),
   offset: z.number().min(0).default(0),
   sort_by: z.enum(['created_at', 'due_date', 'priority', 'status']).default('created_at'),
-  sort_order: z.enum(['asc', 'desc']).default('desc'),
-});
+  sort_order: z.enum(['asc', 'desc']).default('desc')});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -144,8 +142,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     const itemDetails = await getApprovalItemDetails(approval.item_type, approval.item_id);
     return {
       ...approval,
-      item_details: itemDetails,
-    };
+      item_details: itemDetails};
   }));
 
   // Calculate approval statistics
@@ -155,7 +152,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     data: enrichedData,
     count: data?.length || 0,
     statistics,
-    pagination: {
+    pagination: {},
       limit: filters.limit,
       offset: filters.offset,
       total: count || 0
@@ -224,8 +221,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
       client_id: itemDetails.client_id,
       assigned_to: assignedTo,
       created_by: user.id,
-      status: 'pending',
-    })
+      status: 'pending'})
     .select(`
       *,
       profiles!approvals_created_by_fkey(full_name, avatar_url),
@@ -246,10 +242,9 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
   await updateItemApprovalStatus(approvalData.item_type, approvalData.item_id, 'pending_approval');
 
   return res.status(201).json({ 
-    data: {
+    data: {},
       ...approval,
-      item_details: itemDetails,
-    }
+      item_details: itemDetails}
   });
 }
 
@@ -336,8 +331,7 @@ async function getApprovalItemDetails(itemType: string, itemId: string): Promise
     return {
       ...data,
       client_id: clientId,
-      item_type: itemType,
-    };
+      item_type: itemType};
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting approval item details:', error);
@@ -367,8 +361,7 @@ async function determineApprovalAssignee(clientId: string, approvalType: string,
       content: ['content_reviewer', 'manager'],
       legal: ['legal_reviewer', 'manager'],
       brand: ['brand_manager', 'manager'],
-      final: ['manager', 'director'],
-    };
+      final: ['manager', 'director']};
 
     const roles = roleMapping[approvalType] || ['manager'];
 
@@ -411,8 +404,7 @@ async function updateItemApprovalStatus(itemType: string, itemId: string, status
       .from(table)
       .update({
         approval_status: status,
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString()})
       .eq('id', itemId);
   } catch (error: any) {
     const message = getErrorMessage(error);
@@ -472,8 +464,7 @@ function calculateApprovalStatistics(approvals: any[]): any {
     priority_distribution: priorityCount,
     overdue_count: overdueCount,
     pending_count: statusCount.pending || 0,
-    average_approval_time_hours: Math.round(avgApprovalTime * 100) / 100,
-  };
+    average_approval_time_hours: Math.round(avgApprovalTime * 100) / 100};
 }
 
 export default withAuth(withSecurityHeaders(handler));

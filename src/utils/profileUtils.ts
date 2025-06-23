@@ -29,7 +29,7 @@ export function parseFullName(fullName: string): { firstName: string; lastName: 
   const nameParts = fullName.trim().split(' ');
   const firstName = nameParts[0] || fullName;
   const lastName = nameParts.slice(1).join(' ') || null;
-  
+
   return { firstName, lastName };
 }
 
@@ -46,11 +46,7 @@ export function formatFullName(firstName: string | null, lastName: string | null
  * Get user profile by ID
  */
 export async function getUserProfile(userId: string): Promise<Profile | null> {
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', userId)
-    .single();
+  const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
 
   if (error) {
     console.error('Error fetching user profile:', error);
@@ -65,7 +61,7 @@ export async function getUserProfile(userId: string): Promise<Profile | null> {
  */
 export async function createUserProfile(profileData: CreateProfileData): Promise<Profile | null> {
   const { firstName, lastName } = parseFullName(profileData.name);
-  
+
   const { data, error } = await supabase
     .from('profiles')
     .insert({
@@ -91,7 +87,7 @@ export async function createUserProfile(profileData: CreateProfileData): Promise
  * Update user profile
  */
 export async function updateUserProfile(
-  userId: string, 
+  userId: string,
   updates: Partial<{ name: string; role: string; [key: string]: any }>
 ): Promise<Profile | null> {
   const profileUpdates: any = {
@@ -145,12 +141,12 @@ export function formatProfileResponse(profile: Profile, email: string): ProfileR
  * Get or create user profile (used during authentication)
  */
 export async function getOrCreateUserProfile(
-  userId: string, 
+  userId: string,
   userData: { name?: string; email?: string }
 ): Promise<ProfileResponse | null> {
   // Try to get existing profile
   let profile = await getUserProfile(userId);
-  
+
   // If profile doesn't exist, create it
   if (!profile) {
     const name = userData.name || userData.email?.split('@')[0] || 'User';
@@ -192,7 +188,7 @@ export function validateProfileData(data: any): { isValid: boolean; errors: stri
 
   return {
     isValid: errors.length === 0,
-    errors
+    errors,
   };
 }
 
@@ -215,7 +211,7 @@ export async function migrateLegacyProfile(userId: string): Promise<boolean> {
     // Check if profile needs migration (has full_name but no first_name/last_name)
     if ((profile as any).full_name && !profile.first_name && !profile.last_name) {
       const { firstName, lastName } = parseFullName((profile as any).full_name);
-      
+
       const { error: updateError } = await supabase
         .from('profiles')
         .update({
@@ -230,7 +226,8 @@ export async function migrateLegacyProfile(userId: string): Promise<boolean> {
         return false;
       }
 
-      process.env.NODE_ENV === 'development' && console.log(`Migrated legacy profile for user ${userId}`);
+      process.env.NODE_ENV === 'development' &&
+        console.log(`Migrated legacy profile for user ${userId}`);
     }
 
     return true;

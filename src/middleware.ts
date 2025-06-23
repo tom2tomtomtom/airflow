@@ -37,8 +37,7 @@ const publicRoutes = [
 const roleBasedRoutes: Record<string, string[]> = {
   '/admin': ['admin'],
   '/admin/users': ['admin'],
-  '/admin/settings': ['admin'],
-};
+  '/admin/settings': ['admin']};
 
 // Type for rate limit record
 interface RateLimitRecord {
@@ -181,10 +180,8 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
       requestHeaders.set('x-user-email', user.email || '');
       
       response = NextResponse.next({
-        request: {
-          headers: requestHeaders,
-        },
-      });
+        request: {},
+          headers: requestHeaders}});
       
       // Re-apply security headers
       response = addSecurityHeaders(response);
@@ -192,7 +189,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     
     // IMPORTANT: Return the modified response to ensure cookies are set
     return response;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Middleware error:', error);
     
     // For API routes, return 401
@@ -242,5 +239,4 @@ export const config = {
      * - file extensions (images, fonts, etc.)
      */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js)$).*)',
-  ],
-};
+  ]};

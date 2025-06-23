@@ -11,14 +11,12 @@ import {
   CardContent,
   Chip,
   Alert,
-  CircularProgress,
-} from '@mui/material';
+  CircularProgress} from '@mui/material';
 import {
   AutoAwesome as AIIcon,
   TrendingUp as StrategyIcon,
   Lightbulb as IdeaIcon,
-  GpsFixed as TargetIcon,
-} from '@mui/icons-material';
+  GpsFixed as TargetIcon} from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useNotification } from '@/contexts/NotificationContext';
 
@@ -48,12 +46,10 @@ const StrategyPage: React.FC = () => {
     try {
       const response = await fetch('/api/strategy-generate', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {},
+          'Content-Type': 'application/json'},
         body: JSON.stringify({ brief }),
-        credentials: 'include',
-      });
+        credentials: 'include'});
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: Failed to generate strategy`);

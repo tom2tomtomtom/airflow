@@ -43,8 +43,7 @@ interface CopyVariation {
 
 // Initialize OpenAI client
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+  apiKey: process.env.OPENAI_API_KEY});
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -307,31 +306,31 @@ function generateCopyWithTemplates(motivations: Motivation[], briefData: BriefDa
 
   // Platform-specific adaptations
   const platformAdaptations: Record<string, { maxWords: number; style: string; emojis: boolean; hashtags: boolean }> = {
-    Instagram: {
+    Instagram: {},
       maxWords: 8,
       style: 'visual',
       emojis: true,
       hashtags: true
     },
-    Facebook: {
+    Facebook: {},
       maxWords: 10,
       style: 'conversational',
       emojis: false,
       hashtags: false
     },
-    LinkedIn: {
+    LinkedIn: {},
       maxWords: 10,
       style: 'professional',
       emojis: false,
       hashtags: false
     },
-    Twitter: {
+    Twitter: {},
       maxWords: 6,
       style: 'concise',
       emojis: true,
       hashtags: true
     },
-    TikTok: {
+    TikTok: {},
       maxWords: 7,
       style: 'trendy',
       emojis: true,

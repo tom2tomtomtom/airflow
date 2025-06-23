@@ -25,8 +25,7 @@ const AuthContext = createContext<AuthContextType>({
   login: async () => {},
   signup: async () => {},
   logout: () => {},
-  isAuthenticated: false,
-});
+  isAuthenticated: false});
 
 export const useAuth = () => useContext(AuthContext);
 
@@ -52,13 +51,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 // Invalid stored user, remove it
                 localStorage.removeItem('airwave_user');
               }
-            } catch (parseError: any) {
+            } catch (parseError: unknown) {
               console.error('Error parsing stored user:', parseError);
               localStorage.removeItem('airwave_user');
             }
           }
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
     const message = getErrorMessage(error);
         if (process.env.NODE_ENV === 'development') {
           console.error('Authentication error:', error);
@@ -95,11 +94,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Call the login API endpoint
       const response = await fetch('/api/auth/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+        headers: {},
+          'Content-Type': 'application/json'},
+        body: JSON.stringify({ email, password })});
       
       const data = await response.json();
       
@@ -117,7 +114,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         throw new Error('Invalid response from server');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
     const message = getErrorMessage(error);
       console.error('Login error:', error);
       throw error;
@@ -133,11 +130,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Call the signup API endpoint
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password, name }),
-      });
+        headers: {},
+          'Content-Type': 'application/json'},
+        body: JSON.stringify({ email, password, name })});
       
       const data = await response.json();
       
@@ -166,7 +161,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         throw new Error('Invalid response from server');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
     const message = getErrorMessage(error);
       console.error('Signup error:', error);
       throw error;
@@ -194,8 +189,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         signup,
         logout,
-        isAuthenticated: !!user,
-      }}
+        isAuthenticated: !!user}}
     >
       {children}
     </AuthContext.Provider>

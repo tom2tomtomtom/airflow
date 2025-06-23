@@ -69,11 +69,9 @@ export function withCSRFProtection(
     if (!validateCSRFToken(req)) {
       return res.status(403).json({
         success: false,
-        error: {
+        error: {},
           code: 'FORBIDDEN',
-          message: 'CSRF token missing',
-        },
-      });
+          message: 'CSRF token missing'}});
     }
 
     return handler(req, res);
@@ -92,6 +90,5 @@ export async function handleCSRFToken(req: NextApiRequest, res: NextApiResponse)
   return res.status(200).json({
     success: true,
     token,
-    message: 'CSRF token generated',
-  });
+    message: 'CSRF token generated'});
 }

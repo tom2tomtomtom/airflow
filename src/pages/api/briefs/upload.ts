@@ -10,24 +10,20 @@ import mammoth from 'mammoth';
 import { PDFExtract } from 'pdf.js-extract';
 
 export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+  api: {},
+    bodyParser: false}};
 
 // Request schema
 const BriefUploadSchema = z.object({
   client_id: z.string().uuid(),
   name: z.string().min(1),
-  description: z.string().optional(),
-});
+  description: z.string().optional()});
 
 // Supported file types
 const SUPPORTED_TYPES = {
   'application/pdf': 'pdf',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
-  'text/plain': 'txt',
-};
+  'text/plain': 'txt'};
 
 export default async function handler(
   req: NextApiRequest,
@@ -55,15 +51,13 @@ export default async function handler(
     const validationResult = BriefUploadSchema.safeParse({
       client_id: fields.client_id?.[0],
       name: fields.name?.[0],
-      description: fields.description?.[0],
-    });
+      description: fields.description?.[0]});
 
     if (!validationResult.success) {
       return res.status(400).json({
         success: false,
         message: 'Invalid input',
-        errors: validationResult.error.errors,
-      });
+        errors: validationResult.error.errors});
     }
 
     const { client_id, name, description } = validationResult.data;
@@ -74,8 +68,7 @@ export default async function handler(
     if (!uploadedFile) {
       return res.status(400).json({
         success: false,
-        message: 'No file uploaded',
-      });
+        message: 'No file uploaded'});
     }
 
     // Validate file type
@@ -84,8 +77,7 @@ export default async function handler(
     if (!fileType) {
       return res.status(400).json({
         success: false,
-        message: 'Unsupported file type. Please upload PDF, DOCX, or TXT files.',
-      });
+        message: 'Unsupported file type. Please upload PDF, DOCX, or TXT files.'});
     }
 
     // Read file content
@@ -130,15 +122,13 @@ export default async function handler(
     const { data: _uploadData, error: uploadError } = await supabase.storage
       .from('briefs')
       .upload(`${client_id}/${fileName}`, fileContent, {
-        contentType: uploadedFile.mimetype || 'application/octet-stream',
-      });
+        contentType: uploadedFile.mimetype || 'application/octet-stream'});
 
     if (uploadError) {
       console.error('Storage upload error:', uploadError);
       return res.status(500).json({
         success: false,
-        message: 'Failed to upload file',
-      });
+        message: 'Failed to upload file'});
     }
 
     // Get public URL
@@ -157,8 +147,7 @@ export default async function handler(
         document_type: fileType,
         raw_content: extractedText.substring(0, 50000), // Limit to 50k chars
         parsing_status: 'pending',
-        created_by: userId,
-      })
+        created_by: userId})
       .select()
       .single();
 
@@ -166,8 +155,7 @@ export default async function handler(
       console.error('Brief creation error:', briefError);
       return res.status(500).json({
         success: false,
-        message: 'Failed to create brief record',
-      });
+        message: 'Failed to create brief record'});
     }
 
     // Trigger AI parsing in the background
@@ -177,21 +165,18 @@ export default async function handler(
     return res.status(200).json({
       success: true,
       message: 'Brief uploaded successfully. AI parsing in progress.',
-      brief: {
+      brief: {},
         id: brief.id,
         name: brief.name,
         document_url: brief.document_url,
-        parsing_status: brief.parsing_status,
-      },
-    });
+        parsing_status: brief.parsing_status}});
 
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Brief upload error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to upload brief',
-    });
+      message: 'Failed to upload brief'});
   }
 }
 
@@ -201,14 +186,11 @@ async function parseBriefAsync(briefId: string, content: string): Promise<void> 
     // Make API call to parse endpoint
     await fetch(`${env.NEXT_PUBLIC_API_URL}/api/briefs/parse`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: {},
+        'Content-Type': 'application/json'},
       body: JSON.stringify({
         brief_id: briefId,
-        content,
-      }),
-    });
+        content})});
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Failed to trigger parsing:', error);

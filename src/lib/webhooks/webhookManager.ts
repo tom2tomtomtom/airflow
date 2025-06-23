@@ -25,25 +25,20 @@ export async function sendWebhook(
   try {
     const response = await fetch(endpoint.url, {
       method: 'POST',
-      headers: {
+      headers: {},
         'Content-Type': 'application/json',
         'User-Agent': 'AIrWAVE-Webhook/1.0',
         ...(endpoint.secret && {
-          'X-Webhook-Signature': generateSignature(JSON.stringify(_event), endpoint.secret),
-        }),
-      },
-      body: JSON.stringify(_event),
-    });
+          'X-Webhook-Signature': generateSignature(JSON.stringify(_event), endpoint.secret)})},
+      body: JSON.stringify(_event)});
 
     return {
       success: response.ok,
-      status: response.status,
-    };
+      status: response.status};
   } catch (error: any) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    };
+      error: error instanceof Error ? error.message : 'Unknown error'};
   }
 }
 
@@ -79,8 +74,7 @@ export async function processIncomingWebhook(
   
   return {
     success: true,
-    message: 'Webhook processed successfully',
-  };
+    message: 'Webhook processed successfully'};
 }
 
 /**

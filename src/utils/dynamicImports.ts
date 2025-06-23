@@ -9,10 +9,10 @@ import { ComponentType, Suspense } from 'react';
 /**
  * Loading fallback component
  */
-const LoadingFallback = () => (
-  <div className="flex items-center justify-center p-8">
-    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-    <span className="ml-2 text-sm text-gray-600">Loading...</span>
+const LoadingFallback = () => (;
+  <div className="flex items-center justify-center p-8">;
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>;
+    <span className="ml-2 text-sm text-gray-600">Loading...</span>;
   </div>
 );
 
@@ -20,7 +20,7 @@ const LoadingFallback = () => (
  * Error fallback component
  */
 const ErrorFallback = ({ error }: { error?: Error }) => (
-  <div className="flex items-center justify-center p-8 text-red-600">
+  <div className="flex items-center justify-center p-8 text-red-600">;
     <span className="text-sm">Failed to load component: {error?.message}</span>
   </div>
 );
@@ -30,43 +30,42 @@ const ErrorFallback = ({ error }: { error?: Error }) => (
  */
 export function createLazyComponent<T = {}>(
   importFn: () => Promise<{ default: ComponentType<T> }>,
-  options: {
+  options: {},
     fallback?: ComponentType;
     errorFallback?: ComponentType<{ error?: Error }>;
     ssr?: boolean;
   } = {}
 ) {
   const {
-    fallback = LoadingFallback,
-    errorFallback = ErrorFallback,
-    ssr = false,
+    fallback = LoadingFallback,;
+    errorFallback = ErrorFallback,;
+    ssr = false,;
   } = options;
 
   return dynamic(importFn, {
     loading: fallback,
-    ssr,
-  });
+    ssr});
 }
 
 /**
  * Lazy load heavy dashboard components
  */
-export const LazyDashboard = createLazyComponent(
+export const LazyDashboard = createLazyComponent(;
   () => import('@/components/Dashboard/Dashboard'),
   { ssr: false }
 );
 
-export const LazyVideoEditor = createLazyComponent(
+export const LazyVideoEditor = createLazyComponent(;
   () => import('@/components/VideoEditor/VideoEditor'),
   { ssr: false }
 );
 
-export const LazyAnalytics = createLazyComponent(
+export const LazyAnalytics = createLazyComponent(;
   () => import('@/components/Analytics/Analytics'),
   { ssr: false }
 );
 
-export const LazyWorkflowCanvas = createLazyComponent(
+export const LazyWorkflowCanvas = createLazyComponent(;
   () => import('@/components/Workflow/WorkflowCanvas'),
   { ssr: false }
 );
@@ -74,12 +73,12 @@ export const LazyWorkflowCanvas = createLazyComponent(
 /**
  * Lazy load heavy form components
  */
-export const LazyBriefUpload = createLazyComponent(
+export const LazyBriefUpload = createLazyComponent(;
   () => import('@/components/Forms/BriefUpload'),
   { ssr: false }
 );
 
-export const LazyAssetManager = createLazyComponent(
+export const LazyAssetManager = createLazyComponent(;
   () => import('@/components/Assets/AssetManager'),
   { ssr: false }
 );
@@ -87,12 +86,12 @@ export const LazyAssetManager = createLazyComponent(
 /**
  * Lazy load admin components
  */
-export const LazyAdminPanel = createLazyComponent(
+export const LazyAdminPanel = createLazyComponent(;
   () => import('@/components/Admin/AdminPanel'),
   { ssr: false }
 );
 
-export const LazyUserManagement = createLazyComponent(
+export const LazyUserManagement = createLazyComponent(;
   () => import('@/components/Admin/UserManagement'),
   { ssr: false }
 );
@@ -114,7 +113,7 @@ export class FeatureLazyLoader {
       return this.cache.get(featureName);
     }
 
-    const promise = importFn().catch((error) => {
+    const promise = importFn().catch((error) => {;
       // Remove failed promise from cache to allow retry
       this.cache.delete(featureName);
       throw error;
@@ -148,17 +147,17 @@ export class FeatureLazyLoader {
 /**
  * Lazy load AI processing modules
  */
-export const loadAIProcessor = () =>
+export const loadAIProcessor = () =>;
   FeatureLazyLoader.loadFeature('ai-processor', () =>
     import('@/lib/ai/processor')
   );
 
-export const loadVideoGenerator = () =>
+export const loadVideoGenerator = () =>;
   FeatureLazyLoader.loadFeature('video-generator', () =>
     import('@/lib/video/generator')
   );
 
-export const loadAnalyticsEngine = () =>
+export const loadAnalyticsEngine = () =>;
   FeatureLazyLoader.loadFeature('analytics-engine', () =>
     import('@/lib/analytics/engine')
   );
@@ -166,7 +165,7 @@ export const loadAnalyticsEngine = () =>
 /**
  * Route-based code splitting utilities
  */
-export const routeBasedComponents = {
+export const routeBasedComponents = {;
   // Dashboard routes
   dashboard: () => import('@/pages/dashboard'),
   campaigns: () => import('@/pages/campaigns'),
@@ -183,8 +182,7 @@ export const routeBasedComponents = {
   
   // User management
   profile: () => import('@/pages/profile'),
-  team: () => import('@/pages/team'),
-};
+  team: () => import('@/pages/team')};
 
 /**
  * Preload critical routes for better UX
@@ -212,19 +210,18 @@ export class BundleMonitor {
     if (typeof window === 'undefined' || this.performanceObserver) return;
 
     try {
-      this.performanceObserver = new PerformanceObserver((list) => {
+      this.performanceObserver = new PerformanceObserver((list) => {;
         const entries = list.getEntries();
         
         entries.forEach((entry) => {
-          if (entry.entryType === 'navigation') {
+          if (entry.entryType === 'navigation') {;
             const navEntry = entry as PerformanceNavigationTiming;
             
             console.log('📊 Bundle Load Performance:', {
               domContentLoaded: navEntry.domContentLoadedEventEnd - navEntry.domContentLoadedEventStart,
               loadComplete: navEntry.loadEventEnd - navEntry.loadEventStart,
               firstPaint: performance.getEntriesByName('first-paint')[0]?.startTime,
-              firstContentfulPaint: performance.getEntriesByName('first-contentful-paint')[0]?.startTime,
-            });
+              firstContentfulPaint: performance.getEntriesByName('first-contentful-paint')[0]?.startTime});
           }
         });
       });
@@ -248,7 +245,7 @@ export class BundleMonitor {
  */
 export function initializeBundleOptimizations() {
   // Start performance monitoring in development
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === 'development') {;
     BundleMonitor.startMonitoring();
   }
   

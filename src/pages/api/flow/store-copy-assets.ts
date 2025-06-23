@@ -69,8 +69,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         ],
         client_id: clientId,
         created_by: user.id,
-        metadata: {
-          copyData: {
+        metadata: {},
+          copyData: {},
             text: copy.text,
             platform: copy.platform,
             motivation: copy.motivation,

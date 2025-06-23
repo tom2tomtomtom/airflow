@@ -54,7 +54,7 @@ const navigationItems: NavItem[] = [
     label: 'Dashboard',
     icon: <Dashboard />,
     href: '/dashboard',
-    description: 'Overview and quick actions'
+    description: 'Overview and quick actions',
   },
   {
     id: 'create',
@@ -66,30 +66,30 @@ const navigationItems: NavItem[] = [
         label: 'Brief to Video',
         icon: <PlayArrow />,
         href: '/flow',
-        description: 'Complete workflow from brief to render'
+        description: 'Complete workflow from brief to render',
       },
       {
         id: 'strategy',
         label: 'Strategy Generator',
         icon: <PlayArrow />,
         href: '/strategy',
-        description: 'AI-powered strategy generation'
+        description: 'AI-powered strategy generation',
       },
       {
         id: 'templates',
         label: 'Templates',
         icon: <VideoLibrary />,
         href: '/templates',
-        description: 'Pre-built video templates'
+        description: 'Pre-built video templates',
       },
       {
         id: 'assets',
         label: 'Assets',
         icon: <Image />,
         href: '/assets',
-        description: 'Manage images, videos, and files'
+        description: 'Manage images, videos, and files',
       },
-    ]
+    ],
   },
   {
     id: 'manage',
@@ -101,23 +101,23 @@ const navigationItems: NavItem[] = [
         label: 'Clients',
         icon: <Group />,
         href: '/clients',
-        description: 'Client management'
+        description: 'Client management',
       },
       {
         id: 'campaigns',
         label: 'Campaigns',
         icon: <Campaign />,
         href: '/campaigns',
-        description: 'Campaign overview'
+        description: 'Campaign overview',
       },
       {
         id: 'matrix',
         label: 'Content Matrix',
         icon: <GridView />,
         href: '/matrix',
-        description: 'Content planning and organization'
+        description: 'Content planning and organization',
       },
-    ]
+    ],
   },
   {
     id: 'execute',
@@ -130,23 +130,23 @@ const navigationItems: NavItem[] = [
         icon: <Approval />,
         href: '/approvals',
         badge: '3',
-        description: 'Review and approve content'
+        description: 'Review and approve content',
       },
       {
         id: 'execute-page',
         label: 'Execute',
         icon: <PlayArrow />,
         href: '/execute',
-        description: 'Launch and monitor campaigns'
+        description: 'Launch and monitor campaigns',
       },
-    ]
+    ],
   },
   {
     id: 'analytics',
     label: 'Analytics',
     icon: <Analytics />,
     href: '/analytics',
-    description: 'Performance metrics and insights'
+    description: 'Performance metrics and insights',
   },
   {
     id: 'settings',
@@ -158,23 +158,23 @@ const navigationItems: NavItem[] = [
         label: 'Webhooks',
         icon: <Settings />,
         href: '/webhooks',
-        description: 'API integrations'
+        description: 'API integrations',
       },
       {
         id: 'social',
         label: 'Social Publishing',
         icon: <Campaign />,
         href: '/social-publishing',
-        description: 'Social media management'
+        description: 'Social media management',
       },
-    ]
+    ],
   },
 ];
 
 export const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
   open,
   onClose,
-  variant = 'temporary'
+  variant = 'temporary',
 }) => {
   const router = useRouter();
   const [expandedItems, setExpandedItems] = useState<string[]>(['create']);
@@ -192,9 +192,7 @@ export const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
 
   const toggleExpanded = (itemId: string) => {
     setExpandedItems(prev =>
-      prev.includes(itemId)
-        ? prev.filter((id: any) => id !== itemId)
-        : [...prev, itemId]
+      prev.includes(itemId) ? prev.filter((id: any) => id !== itemId) : [...prev, itemId]
     );
   };
 
@@ -250,7 +248,13 @@ export const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
                 }
               />
               {hasChildren && (
-                <IconButton size="small" sx={{ color: 'inherit' }} aria-label={isExpanded ? "Collapse section" : "Expand section"}>                  {isExpanded ? <ExpandLess /> : <ExpandMore />}
+                <IconButton
+                  size="small"
+                  sx={{ color: 'inherit' }}
+                  aria-label={isExpanded ? 'Collapse section' : 'Expand section'}
+                >
+                  {' '}
+                  {isExpanded ? <ExpandLess /> : <ExpandMore />}
                 </IconButton>
               )}
             </ListItemButton>
@@ -276,7 +280,9 @@ export const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
           AIrFLOW
         </Typography>
         {variant === 'temporary' && (
-          <IconButton onClick={onClose} size="small" aria-label="Close navigation">            <Close />
+          <IconButton onClick={onClose} size="small" aria-label="Close navigation">
+            {' '}
+            <Close />
           </IconButton>
         )}
       </Box>
@@ -285,9 +291,7 @@ export const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
 
       {/* Navigation Items */}
       <Box sx={{ flex: 1, overflow: 'auto', py: 1 }}>
-        <List>
-          {navigationItems.map((item: any) => renderNavItem(item))}
-        </List>
+        <List>{navigationItems.map((item: any) => renderNavItem(item))}</List>
       </Box>
 
       {/* Footer */}

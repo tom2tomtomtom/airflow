@@ -28,8 +28,7 @@ describe('Application Constants', () => {
       UNAUTHORIZED: 401,
       FORBIDDEN: 403,
       NOT_FOUND: 404,
-      INTERNAL_SERVER_ERROR: 500,
-    };
+      INTERNAL_SERVER_ERROR: 500};
     
     expect(HTTP_STATUS.OK).toBe(200);
     expect(HTTP_STATUS.UNAUTHORIZED).toBe(401);
@@ -40,8 +39,7 @@ describe('Application Constants', () => {
     const RATE_LIMITS = {
       API_REQUESTS_PER_MINUTE: 100,
       AI_REQUESTS_PER_MINUTE: 20,
-      UPLOAD_REQUESTS_PER_MINUTE: 10,
-    };
+      UPLOAD_REQUESTS_PER_MINUTE: 10};
     
     expect(RATE_LIMITS.API_REQUESTS_PER_MINUTE).toBe(100);
     expect(RATE_LIMITS.AI_REQUESTS_PER_MINUTE).toBe(20);

@@ -11,8 +11,7 @@ const SaveContentSchema = z.object({
   content: z.string().min(1),
   client_id: z.string(),
   tags: z.array(z.string()).optional(),
-  metadata: z.record(z.any()).optional(),
-});
+  metadata: z.record(z.any()).optional()});
 
 export default async function handler(
   req: NextApiRequest,
@@ -33,8 +32,7 @@ export default async function handler(
       return res.status(400).json({
         success: false,
         message: 'Invalid input',
-        errors: validationResult.error.errors,
-      });
+        errors: validationResult.error.errors});
     }
 
     const { name, type, content, client_id, tags = [], metadata = {} } = validationResult.data;
@@ -55,13 +53,11 @@ export default async function handler(
         height: null,
         client_id,
         tags,
-        metadata: {
+        metadata: {},
           ...metadata,
           content, // Store the actual text/voice content in metadata
-          saved_at: new Date().toISOString(),
-        },
-        created_at: new Date().toISOString(),
-      })
+          saved_at: new Date().toISOString()},
+        created_at: new Date().toISOString()})
       .select()
       .single();
 
@@ -73,8 +69,7 @@ export default async function handler(
     return res.status(200).json({
       success: true,
       message: 'Content saved successfully',
-      asset,
-    });
+      asset});
 
   } catch (error: any) {
     const message = getErrorMessage(error);
@@ -83,7 +78,6 @@ export default async function handler(
     return res.status(500).json({
       success: false,
       message: 'Failed to save content',
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
+      error: error instanceof Error ? error.message : 'Unknown error'});
   }
 }

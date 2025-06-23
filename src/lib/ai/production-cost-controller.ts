@@ -223,12 +223,12 @@ export class ProductionAICostController {
    */
   private getFallbackModel(service: string, model: string): string | undefined {
     const fallbacks: Record<string, Record<string, string>> = {
-      openai: {
+      openai: {},
         'gpt-4': 'gpt-4o-mini',
         'gpt-4o': 'gpt-4o-mini',
         'gpt-4-turbo': 'gpt-4o-mini'
       },
-      anthropic: {
+      anthropic: {},
         'claude-3-opus': 'claude-3-sonnet',
         'claude-3-sonnet': 'claude-3-haiku'
       }

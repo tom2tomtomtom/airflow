@@ -58,14 +58,12 @@ const SignupPage: React.FC = () => {
 
       // Use the AuthContext signup function
       await signup(email, password, name);
-      
+
       // Redirect to dashboard on successful signup
       router.push('/dashboard');
     } catch (err: any) {
       if (process.env.NODE_ENV === 'development') {
-
         console.error('Signup error:', err);
-
       }
       setError(err.message || 'Failed to create account. Please try again.');
     } finally {
@@ -180,7 +178,8 @@ const SignupPage: React.FC = () => {
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
-                      onClick={() => setShowPassword(!showPassword)} aria-label="Icon button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      aria-label="Icon button"
                       edge="end"
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
@@ -195,7 +194,9 @@ const SignupPage: React.FC = () => {
               label="Confirm Password"
               type={showConfirmPassword ? 'text' : 'password'}
               value={confirmPassword}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setConfirmPassword(e.target.value)
+              }
               disabled={loading}
               sx={{ mb: 3 }}
               data-testid="confirm-password-input"
@@ -208,7 +209,8 @@ const SignupPage: React.FC = () => {
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)} aria-label="Icon button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      aria-label="Icon button"
                       edge="end"
                     >
                       {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
@@ -243,18 +245,24 @@ const SignupPage: React.FC = () => {
           <Box sx={{ textAlign: 'center' }}>
             <Typography variant="body2" color="text.secondary">
               Already have an account?{' '}
-              <Link
-                href="/login"
-                sx={{ color: '#FBBF24', textDecoration: 'none' }}
-              >
+              <Link href="/login" sx={{ color: '#FBBF24', textDecoration: 'none' }}>
                 Sign in
               </Link>
             </Typography>
           </Box>
 
-          <Box sx={{ mt: 3, p: 2, bgcolor: '#111827', borderRadius: 2, border: '1px solid rgba(251, 191, 36, 0.2)' }}>
+          <Box
+            sx={{
+              mt: 3,
+              p: 2,
+              bgcolor: '#111827',
+              borderRadius: 2,
+              border: '1px solid rgba(251, 191, 36, 0.2)',
+            }}
+          >
             <Typography variant="caption" color="text.secondary" align="center" display="block">
-              <strong>Note:</strong> By creating an account, you agree to our Terms of Service and Privacy Policy.
+              <strong>Note:</strong> By creating an account, you agree to our Terms of Service and
+              Privacy Policy.
             </Typography>
           </Box>
         </Paper>

@@ -163,28 +163,28 @@ async function handleHealth(
     timestamp: new Date().toISOString(),
     version: '2.0.0',
     uptime: process.uptime(),
-    memory: {
+    memory: {},
       used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
       total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
       external: Math.round(process.memoryUsage().external / 1024 / 1024),
       rss: Math.round(process.memoryUsage().rss / 1024 / 1024)
     },
-    performance: {
+    performance: {},
       averageResponseTime: performanceTracker.getAverageResponseTime(),
       totalRequests: performanceTracker.getTotalRequests(),
       errorRate: performanceTracker.getErrorRate(),
       slowOperations: performanceTracker.getSlowOperations()
     },
-    ai: {
+    ai: {},
       budgetStatus: await costController.getBudgetStatus(),
       totalSpent: await costController.getTotalSpent(),
       activeOperations: costController.getActiveOperations()
     },
-    database: {
+    database: {},
       status: 'connected', // TODO: Add actual DB health check
       connectionPool: 'healthy'
     },
-    services: {
+    services: {},
       openai: process.env.NEXT_PUBLIC_OPENAI_API_KEY ? 'configured' : 'not_configured',
       anthropic: process.env.ANTHROPIC_API_KEY ? 'configured' : 'not_configured',
       elevenlabs: process.env.ELEVENLABS_API_KEY ? 'configured' : 'not_configured',
@@ -228,7 +228,7 @@ async function handleMetrics(
   const metricsData = {
     timeRange,
     timestamp: new Date().toISOString(),
-    overall: {
+    overall: {},
       totalRequests: performanceTracker.getTotalRequests(),
       averageResponseTime: performanceTracker.getAverageResponseTime(),
       errorRate: performanceTracker.getErrorRate(),
@@ -239,7 +239,7 @@ async function handleMetrics(
       : performanceTracker.getAllOperationMetrics(),
     slowOperations: performanceTracker.getSlowOperations(),
     errors: performanceTracker.getRecentErrors(50),
-    trends: {
+    trends: {},
       responseTime: performanceTracker.getResponseTimeTrend(),
       errorRate: performanceTracker.getErrorRateTrend(),
       throughput: performanceTracker.getThroughputTrend()
@@ -250,7 +250,7 @@ async function handleMetrics(
   if (realtime === 'true') {
     const realtimeData = {
       ...metricsData,
-      realtime: {
+      realtime: {},
         currentRequests: 5,
         activeConnections: 12,
         queueLength: 0,
@@ -310,7 +310,7 @@ async function handleLogs(
         message: 'API v2 request processed',
         requestId: context.requestId,
         userId: context.user?.id || 'anonymous',
-        metadata: {
+        metadata: {},
           route: Array.isArray(context.route) ? context.route.join('/') : 'unknown',
           method: context.method,
           responseTime: Date.now() - (context.startTime || Date.now())
@@ -322,7 +322,7 @@ async function handleLogs(
         level: 'error',
         message: 'Database connection timeout',
         requestId: 'req-123',
-        metadata: {
+        metadata: {},
           error: 'Connection timeout after 5000ms',
           database: 'primary'
         }
@@ -421,7 +421,7 @@ async function getAlerts(req: NextApiRequest, res: NextApiResponse, context: Rou
       severity: 'warning',
       status: 'active',
       createdAt: new Date().toISOString(),
-      metadata: {
+      metadata: {},
         currentValue: 87,
         threshold: 85,
         metric: 'memory_usage'
@@ -482,7 +482,7 @@ async function updateAlert(req: NextApiRequest, res: NextApiResponse, context: R
     acknowledgedAt: acknowledged ? new Date().toISOString() : undefined,
     acknowledgedBy: acknowledged ? context.user.id : undefined,
     createdAt: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
-    metadata: {
+    metadata: {},
       currentValue: 87,
       threshold: 85,
       metric: 'memory_usage'
@@ -508,7 +508,7 @@ async function handlePerformance(
   const performanceTracker = PerformanceTracker.getInstance();
 
   const analysis = {
-    summary: {
+    summary: {},
       totalOperations: performanceTracker.getTotalRequests(),
       averageResponseTime: performanceTracker.getAverageResponseTime(),
       p95ResponseTime: performanceTracker.getPercentileResponseTime(95),
@@ -517,7 +517,7 @@ async function handlePerformance(
     },
     bottlenecks: performanceTracker.getBottlenecks(),
     recommendations: performanceTracker.getPerformanceRecommendations(),
-    trends: {
+    trends: {},
       hourly: performanceTracker.getHourlyTrends(),
       daily: performanceTracker.getDailyTrends()
     }
@@ -543,15 +543,15 @@ async function handleSystem(
   const cpuUsage = process.cpuUsage();
 
   const system = {
-    cpu: {
-      usage: {
+    cpu: {},
+      usage: {},
         user: cpuUsage.user,
         system: cpuUsage.system
       },
       loadAverage: [0.5, 0.3, 0.2], // Mock load average
       cores: 8 // Mock CPU cores
     },
-    memory: {
+    memory: {},
       total: memoryUsage.heapTotal,
       used: memoryUsage.heapUsed,
       free: memoryUsage.heapTotal - memoryUsage.heapUsed,
@@ -559,34 +559,34 @@ async function handleSystem(
       rss: memoryUsage.rss,
       arrayBuffers: memoryUsage.arrayBuffers
     },
-    disk: {
+    disk: {},
       total: 500 * 1024 * 1024 * 1024, // 500GB mock
       used: 250 * 1024 * 1024 * 1024,  // 250GB mock
       free: 250 * 1024 * 1024 * 1024,  // 250GB mock
       usage: 50 // 50% usage
     },
-    network: {
+    network: {},
       bytesReceived: 1024 * 1024 * 100, // 100MB mock
       bytesSent: 1024 * 1024 * 50,      // 50MB mock
       packetsReceived: 10000,
       packetsSent: 8000
     },
-    node: {
+    node: {},
       version: process.version,
       platform: process.platform,
       arch: process.arch,
       uptime: process.uptime()
     },
-    environment: {
+    environment: {},
       nodeEnv: process.env.NODE_ENV,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       locale: Intl.DateTimeFormat().resolvedOptions().locale
     },
-    resources: {
+    resources: {},
       memory: memoryUsage,
       cpu: cpuUsage
     },
-    features: {
+    features: {},
       apiV2: true,
       costTracking: true,
       performanceMonitoring: true,

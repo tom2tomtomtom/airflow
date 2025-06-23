@@ -28,7 +28,7 @@ const rateLimitStore: RateLimitStore = {};
  */
 function cleanupExpiredEntries(): void {
   const now = Date.now();
-  Object.keys(rateLimitStore).forEach((key: any) => {
+  Object.keys(rateLimitStore).forEach((key: unknown) => {
     const entry = rateLimitStore[key];
     if (entry && entry.resetTime < now) {
       delete rateLimitStore[key];
@@ -45,7 +45,7 @@ function getClientId(req: NextApiRequest): string {
   if (userId) {
     return `user:${userId}`;
   }
-  
+
   // Fall back to IP address
   const forwarded = req.headers['x-forwarded-for'] as string;
   const ip = forwarded ? forwarded.split(',')[0] : req.connection.remoteAddress;
@@ -58,14 +58,15 @@ function getClientId(req: NextApiRequest): string {
 export function createRateLimit(config: RateLimitConfig) {
   return async (req: NextApiRequest, res: NextApiResponse, next?: () => void) => {
     // Clean up expired entries periodically
-    if (Math.random() < 0.01) { // 1% chance
+    if (Math.random() < 0.01) {
+      // 1% chance
       cleanupExpiredEntries();
     }
-    
+
     const clientId = getClientId(req);
     const key = `${req.url}:${clientId}`;
     const now = Date.now();
-    
+
     // Get or create rate limit entry
     let entry = rateLimitStore[key];
     if (!entry || entry.resetTime < now) {
@@ -75,11 +76,11 @@ export function createRateLimit(config: RateLimitConfig) {
       };
       rateLimitStore[key] = entry;
     }
-    
+
     // Check if rate limit exceeded
     if (entry.count >= config.maxRequests) {
       const resetIn = Math.ceil((entry.resetTime - now) / 1000);
-      
+
       res.status(429).json({
         error: config.message || 'Too many requests',
         code: 'RATE_LIMIT_EXCEEDED',
@@ -87,15 +88,15 @@ export function createRateLimit(config: RateLimitConfig) {
       });
       return;
     }
-    
+
     // Increment counter
     entry.count++;
-    
+
     // Add rate limit headers
     res.setHeader('X-RateLimit-Limit', config.maxRequests);
     res.setHeader('X-RateLimit-Remaining', Math.max(0, config.maxRequests - entry.count));
     res.setHeader('X-RateLimit-Reset', Math.ceil(entry.resetTime / 1000));
-    
+
     // Continue to next middleware or handler
     if (next) {
       next();
@@ -113,28 +114,28 @@ export const rateLimiters = {
     maxRequests: 5, // 5 attempts per 15 minutes
     message: 'Too many authentication attempts, please try again later',
   }),
-  
+
   // Moderate rate limiting for API endpoints
   api: createRateLimit({
     windowMs: 60 * 1000, // 1 minute
     maxRequests: 60, // 60 requests per minute
     message: 'Too many API requests, please slow down',
   }),
-  
+
   // Strict rate limiting for AI generation endpoints
   aiGeneration: createRateLimit({
     windowMs: 60 * 1000, // 1 minute
     maxRequests: 10, // 10 generations per minute
     message: 'Too many AI generation requests, please wait before trying again',
   }),
-  
+
   // Lenient rate limiting for general endpoints
   general: createRateLimit({
     windowMs: 60 * 1000, // 1 minute
     maxRequests: 100, // 100 requests per minute
     message: 'Too many requests, please slow down',
   }),
-  
+
   // Very strict rate limiting for expensive operations
   expensive: createRateLimit({
     windowMs: 5 * 60 * 1000, // 5 minutes
@@ -157,7 +158,7 @@ export function withRateLimit(
         nextCalled = true;
         handler(req, res).then(resolve).catch(reject);
       });
-      
+
       // If next wasn't called, the rate limit was hit
       if (!nextCalled) {
         resolve();
@@ -169,7 +170,10 @@ export function withRateLimit(
 /**
  * Check if request is rate limited without incrementing counter
  */
-export function checkRateLimit(req: NextApiRequest, config: RateLimitConfig): {
+export function checkRateLimit(
+  req: NextApiRequest,
+  config: RateLimitConfig
+): {
   limited: boolean;
   remaining: number;
   resetTime: number;
@@ -177,7 +181,7 @@ export function checkRateLimit(req: NextApiRequest, config: RateLimitConfig): {
   const clientId = getClientId(req);
   const key = `${req.url}:${clientId}`;
   const now = Date.now();
-  
+
   const entry = rateLimitStore[key];
   if (!entry || entry.resetTime < now) {
     return {
@@ -186,7 +190,7 @@ export function checkRateLimit(req: NextApiRequest, config: RateLimitConfig): {
       resetTime: now + config.windowMs,
     };
   }
-  
+
   return {
     limited: entry.count >= config.maxRequests,
     remaining: Math.max(0, config.maxRequests - entry.count),
@@ -212,10 +216,8 @@ export function getRateLimitStats(): {
   topEndpoints: Array<{ endpoint: string; requests: number }>;
 } {
   const now = Date.now();
-  const activeEntries = Object.entries(rateLimitStore).filter(
-    ([, entry]) => entry.resetTime > now
-  );
-  
+  const activeEntries = Object.entries(rateLimitStore).filter(([, entry]) => entry.resetTime > now);
+
   const endpointCounts: { [endpoint: string]: number } = {};
   activeEntries.forEach(([key, entry]) => {
     const endpoint = key.split(':')[0];
@@ -223,12 +225,12 @@ export function getRateLimitStats(): {
       endpointCounts[endpoint] = (endpointCounts[endpoint] || 0) + entry.count;
     }
   });
-  
+
   const topEndpoints = Object.entries(endpointCounts)
     .sort(([, a], [, b]) => b - a)
     .slice(0, 10)
     .map(([endpoint, requests]) => ({ endpoint, requests }));
-  
+
   return {
     totalEntries: Object.keys(rateLimitStore).length,
     activeEntries: activeEntries.length,
@@ -240,5 +242,5 @@ export function getRateLimitStats(): {
  * Clear all rate limit entries (for testing)
  */
 export function clearRateLimitStore(): void {
-  Object.keys(rateLimitStore).forEach((key: any) => delete rateLimitStore[key]);
+  Object.keys(rateLimitStore).forEach((key: unknown) => delete rateLimitStore[key]);
 }

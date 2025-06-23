@@ -21,8 +21,7 @@ export default async function handler(
   if (!job_id && !asset_id) {
     return res.status(400).json({
       success: false,
-      message: 'Must provide either job_id or asset_id',
-    });
+      message: 'Must provide either job_id or asset_id'});
   }
 
   try {
@@ -39,8 +38,7 @@ export default async function handler(
       if (error || !asset?.metadata?.generation_job_id) {
         return res.status(404).json({
           success: false,
-          message: 'Asset not found or no generation job associated',
-        });
+          message: 'Asset not found or no generation job associated'});
       }
       
       jobId = asset.metadata.generation_job_id;
@@ -50,8 +48,7 @@ export default async function handler(
     if (!hasCreatomate) {
       return res.status(503).json({
         success: false,
-        message: 'Video generation service not available',
-      });
+        message: 'Video generation service not available'});
     }
 
     const job = await creatomateService.getRenderStatus(jobId);
@@ -69,18 +66,16 @@ export default async function handler(
 
     return res.status(200).json({
       success: true,
-      job: {
+      job: {},
         id: job.id,
         status: job.status,
         progress: (job as any).progress || 0,
         created_at: job.created_at,
         completed_at: job.completed_at,
         url: job.url,
-        error: job.error,
-      },
+        error: job.error},
       asset,
-      message: getStatusMessage(job.status, (job as any).progress),
-    });
+      message: getStatusMessage(job.status, (job as any).progress)});
 
   } catch (error: any) {
     const message = getErrorMessage(error);
@@ -89,15 +84,13 @@ export default async function handler(
     if (error instanceof Error && error.message.includes('not found')) {
       return res.status(404).json({
         success: false,
-        message: 'Render job not found',
-      });
+        message: 'Render job not found'});
     }
     
     return res.status(500).json({
       success: false,
       message: 'Failed to check video status',
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
+      error: error instanceof Error ? error.message : 'Unknown error'});
   }
 }
 

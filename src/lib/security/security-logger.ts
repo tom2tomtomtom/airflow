@@ -55,7 +55,7 @@ export interface SecurityEvent {
     city?: string;
     timezone?: string;
   };
-  threat: {
+  threat: {},
     score: number; // 0-100
     category: string;
     indicators: string[];
@@ -76,7 +76,7 @@ export interface SecurityAlert {
   title: string;
   description: string;
   events: string[]; // Event IDs related to this alert
-  metrics: {
+  metrics: {},
     eventCount: number;
     timeWindow: string;
     affectedUsers: number;
@@ -218,48 +218,42 @@ class ThreatDetectionEngine {
       timeWindow: 5 * 60 * 1000, // 5 minutes
       threshold: 10,
       severity: 'HIGH',
-      description: 'Multiple failed authentication attempts from same IP',
-    },
+      description: 'Multiple failed authentication attempts from same IP'},
     {
       name: 'Account Enumeration',
       events: ['AUTHENTICATION_FAILURE'],
       timeWindow: 10 * 60 * 1000, // 10 minutes
       threshold: 50,
       severity: 'MEDIUM',
-      description: 'High volume of failed logins across different accounts',
-    },
+      description: 'High volume of failed logins across different accounts'},
     {
       name: 'Session Hijacking Pattern',
       events: ['SESSION_HIJACK_ATTEMPT'],
       timeWindow: 1 * 60 * 1000, // 1 minute
       threshold: 3,
       severity: 'CRITICAL',
-      description: 'Multiple session hijacking attempts detected',
-    },
+      description: 'Multiple session hijacking attempts detected'},
     {
       name: 'Injection Attack Pattern',
       events: ['XSS_ATTEMPT', 'SQL_INJECTION_ATTEMPT', 'COMMAND_INJECTION_ATTEMPT'],
       timeWindow: 15 * 60 * 1000, // 15 minutes
       threshold: 5,
       severity: 'HIGH',
-      description: 'Multiple injection attack attempts detected',
-    },
+      description: 'Multiple injection attack attempts detected'},
     {
       name: 'Security Scanner',
       events: ['SECURITY_SCAN_DETECTED', 'PATH_TRAVERSAL_ATTEMPT'],
       timeWindow: 5 * 60 * 1000, // 5 minutes
       threshold: 20,
       severity: 'MEDIUM',
-      description: 'Automated security scanning detected',
-    },
+      description: 'Automated security scanning detected'},
     {
       name: 'Privilege Escalation',
       events: ['PRIVILEGE_ESCALATION_ATTEMPT', 'AUTHORIZATION_FAILURE'],
       timeWindow: 10 * 60 * 1000, // 10 minutes
       threshold: 10,
       severity: 'HIGH',
-      description: 'Multiple unauthorized access attempts to privileged resources',
-    },
+      description: 'Multiple unauthorized access attempts to privileged resources'},
   ];
 
   detectThreats(events: SecurityEvent[]): SecurityAlert[] {
@@ -304,14 +298,12 @@ class ThreatDetectionEngine {
           title: `${pattern.name} detected from ${ip}`,
           description: `${pattern.description}. ${ipEvents.length} events in ${pattern.timeWindow / 60000} minutes.`,
           events: ipEvents.map(e => e.id),
-          metrics: {
+          metrics: {},
             eventCount: ipEvents.length,
             timeWindow: `${pattern.timeWindow / 60000} minutes`,
             affectedUsers: new Set(ipEvents.map(e => e.userId).filter(Boolean)).size,
-            affectedIPs: 1,
-          },
-          status: 'OPEN',
-        };
+            affectedIPs: 1},
+          status: 'OPEN'};
 
         alerts.push(alert);
       }
@@ -364,8 +356,7 @@ export class SecurityLogger {
       endpoint: req.url || 'Unknown',
       method: req.method || 'Unknown',
       details,
-      threat: this.calculateThreatScore(type, details),
-    };
+      threat: this.calculateThreatScore(type, details)};
 
     // Store the event
     eventStore.addEvent(event);
@@ -387,7 +378,7 @@ export class SecurityLogger {
   /**
    * Get security events with filtering
    */
-  getEvents(filters: {
+  getEvents(filters: {},
     userId?: string;
     ip?: string;
     type?: SecurityEventType;
@@ -464,8 +455,7 @@ export class SecurityLogger {
       eventsByType,
       eventsBySeverity,
       topIPs,
-      activeAlerts: eventStore.getOpenAlerts().length,
-    };
+      activeAlerts: eventStore.getOpenAlerts().length};
   }
 
   private generateEventId(): string {
@@ -499,8 +489,7 @@ export class SecurityLogger {
       'SESSION_DESTROYED': 'LOW',
       'PASSWORD_RESET_REQUEST': 'LOW',
       'PROFILE_MODIFICATION': 'LOW',
-      'UNUSUAL_ACTIVITY': 'LOW',
-    };
+      'UNUSUAL_ACTIVITY': 'LOW'};
 
     return severityMap[type] || 'MEDIUM';
   }
@@ -540,8 +529,7 @@ export class SecurityLogger {
       'MALICIOUS_QUERY_DETECTED': 40,
       'INVALID_API_REQUEST': 25,
       'API_ERROR': 20,
-      'API_USAGE': 5,
-    };
+      'API_USAGE': 5};
 
     score = baseScores[type] || 50;
 
@@ -592,8 +580,7 @@ export class SecurityLogger {
           id: alert.id,
           severity: alert.severity,
           description: alert.description,
-          metrics: alert.metrics,
-        });
+          metrics: alert.metrics});
       }
     }
   }
@@ -608,8 +595,7 @@ export class SecurityLogger {
       method: event.method,
       userId: event.userId || 'anonymous',
       threat: event.threat,
-      timestamp: event.timestamp.toISOString(),
-    };
+      timestamp: event.timestamp.toISOString()};
 
     switch (event.severity) {
       case 'CRITICAL':
@@ -636,8 +622,7 @@ export class SecurityLogger {
         fetch(process.env.SECURITY_WEBHOOK_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(event),
-        }).catch(error => {
+          body: JSON.stringify(event)}).catch(error => {
           console.error('Failed to send security event to external system:', error);
         });
       }
@@ -674,7 +659,6 @@ export const SecurityEvents = {
     securityLogger.logEvent('CSRF_VIOLATION', req, { 
       expectedToken: expectedToken.slice(0, 8), 
       receivedToken: receivedToken.slice(0, 8) 
-    }),
-};
+    })};
 
 export default securityLogger;

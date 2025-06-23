@@ -10,7 +10,7 @@ const TestFlowPage: React.FC = () => {
 
   const handleWorkflowComplete = (data: any) => {
     setOpenWorkflow(false);
-      };
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -23,7 +23,7 @@ const TestFlowPage: React.FC = () => {
           <Typography variant="body1" paragraph>
             This is a test page to verify the Flow workflow functionality without authentication.
           </Typography>
-          
+
           <Button
             variant="contained"
             size="large"
@@ -47,7 +47,7 @@ const TestFlowPage: React.FC = () => {
 // Override getServerSideProps to prevent auth redirect
 export async function getServerSideProps() {
   return {
-    props: {}
+    props: {},
   };
 }
 

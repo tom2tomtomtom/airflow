@@ -1,0 +1,36 @@
+{
+  "initialErrors": 0,
+  "finalErrors": 0,
+  "fixedErrors": 0,
+  "categories": {
+    "any-types": {
+      "found": 2429,
+      "fixed": 83
+    },
+    "console-statements": {
+      "found": 824,
+      "fixed": 26
+    },
+    "unused-vars": {
+      "found": 5,
+      "fixed": 0
+    },
+    "missing-types": {
+      "found": 22,
+      "fixed": 0
+    },
+    "formatting": {
+      "found": 0,
+      "fixed": 4
+    },
+    "imports": {
+      "found": 0,
+      "fixed": 0
+    }
+  },
+  "performance": {
+    "startTime": 1750673510507,
+    "endTime": 1750673524240,
+    "duration": 13733
+  }
+}

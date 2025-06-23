@@ -6,7 +6,7 @@ vi.mock('next/router', () => ({
   useRouter: () => ({
     route: '/',
     pathname: '/',
-    query: Record<string, unknown>$1
+    query: {}
     asPath: '/',
     push: vi.fn(),
     replace: vi.fn(),
@@ -14,13 +14,10 @@ vi.mock('next/router', () => ({
     back: vi.fn(),
     prefetch: vi.fn(),
     beforePopState: vi.fn(),
-    events: {
+    events: {},
       on: vi.fn(),
       off: vi.fn(),
-      emit: vi.fn(),
-    },
-  }),
-}));
+      emit: vi.fn()}})}));
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
@@ -33,16 +30,13 @@ Object.defineProperty(window, 'matchMedia', {
     removeListener: vi.fn(), // deprecated
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  })),
-});
+    dispatchEvent: vi.fn()}))});
 
 // Mock IntersectionObserver
 global.IntersectionObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
-  disconnect: vi.fn(),
-}));
+  disconnect: vi.fn()}));
 
 // Mock fetch
 global.fetch = vi.fn();

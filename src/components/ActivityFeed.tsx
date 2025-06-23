@@ -19,8 +19,7 @@ import {
   Collapse,
   Stack,
   TextField,
-  InputAdornment,
-} from '@mui/material';
+  InputAdornment} from '@mui/material';
 import {
   Notifications as NotificationsIcon,
   MoreVert as MoreIcon,
@@ -35,8 +34,7 @@ import {
   TrendingUp as AnalyticsIcon,
   Send as SendIcon,
   Circle as OnlineIcon,
-  Refresh as RefreshIcon,
-} from '@mui/icons-material';
+  Refresh as RefreshIcon} from '@mui/icons-material';
 import { formatDistanceToNow } from 'date-fns';
 import { useClient } from '@/contexts/ClientContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -47,14 +45,14 @@ interface Activity {
   id: string;
   type: 'campaign_created' | 'asset_uploaded' | 'matrix_updated' | 'approval_requested' | 
         'comment_added' | 'team_joined' | 'analytics_milestone' | 'content_published';
-  user: {
+  user: {},
     id: string;
     name: string;
     avatar?: string;
     isOnline?: boolean;
   };
   timestamp: Date;
-  data: {
+  data: {},
     entityId?: string;
     entityName?: string;
     message?: string;
@@ -79,8 +77,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
   maxHeight = 600,
   showHeader = true,
   filterTypes,
-  realtime = true,
-}) => {
+  realtime = true}) => {
   const { activeClient } = useClient();
   const { user: _user } = useAuth();
   const { showNotification } = useNotification();
@@ -110,53 +107,45 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
         type: 'campaign_created',
         user: { id: 'u1', name: 'Sarah Johnson', isOnline: true },
         timestamp: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
-        data: {
+        data: {},
           entityId: 'camp-1',
           entityName: 'Summer Fitness Campaign',
-          message: 'created a new campaign',
-        },
+          message: 'created a new campaign'},
         reactions: { likes: 3, comments: 1, hasLiked: false },
-        isRead: false,
-      },
+        isRead: false},
       {
         id: 'act-2',
         type: 'asset_uploaded',
         user: { id: 'u2', name: 'Mike Chen', isOnline: true },
         timestamp: new Date(Date.now() - 1000 * 60 * 15), // 15 minutes ago
-        data: {
+        data: {},
           entityId: 'asset-1',
           entityName: 'Hero Banner Image',
           message: 'uploaded 5 new assets',
-          metadata: { count: 5, type: 'image' },
-        },
+          metadata: { count: 5, type: 'image' }},
         reactions: { likes: 1, comments: 0 },
-        isRead: true,
-      },
+        isRead: true},
       {
         id: 'act-3',
         type: 'approval_requested',
         user: { id: 'u3', name: 'Emily Davis', isOnline: false },
         timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
-        data: {
+        data: {},
           entityId: 'matrix-1',
           entityName: 'Instagram Story Matrix',
-          message: 'requested approval for',
-        },
+          message: 'requested approval for'},
         reactions: { likes: 0, comments: 2 },
-        isRead: false,
-      },
+        isRead: false},
       {
         id: 'act-4',
         type: 'analytics_milestone',
         user: { id: 'system', name: 'AIrFLOW System' },
         timestamp: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
-        data: {
+        data: {},
           message: 'Campaign "Spring Collection" reached 100K views! 🎉',
-          metadata: { milestone: '100K views', campaignId: 'camp-2' },
-        },
+          metadata: { milestone: '100K views', campaignId: 'camp-2' }},
         reactions: { likes: 8, comments: 3, hasLiked: true },
-        isRead: true,
-      },
+        isRead: true},
     ];
 
     setActivities(initialActivities);
@@ -168,20 +157,17 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
       const newActivity: Activity = {
         id: data.id || `act-${Date.now()}`,
         type: data.type || 'comment_added',
-        user: {
+        user: {},
           id: data.userId || _user?.id || 'unknown',
           name: data.userName || _user?.name || 'Unknown User',
-          isOnline: true,
-        },
+          isOnline: true},
         timestamp: new Date(data.timestamp || Date.now()),
-        data: {
+        data: {},
           entityId: data.entityId || '',
           entityName: data.entityName || '',
-          message: data.message || data.description || '',
-        },
+          message: data.message || data.description || ''},
         reactions: { likes: 0, comments: 0, hasLiked: false },
-        isRead: false,
-      };
+        isRead: false};
       
       setActivities(prev => [newActivity, ...prev].slice(0, 50));
       setUnreadCount(prev => prev + 1);
@@ -193,20 +179,17 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
       const renderActivity: Activity = {
         id: `render-${data.renderId}`,
         type: 'content_published',
-        user: {
+        user: {},
           id: _user?.id || 'system',
           name: 'Video Generator',
-          isOnline: true,
-        },
+          isOnline: true},
         timestamp: new Date(data.timestamp),
-        data: {
+        data: {},
           entityId: data.renderId,
           entityName: 'Video Render',
-          message: `render progress: ${data.progress}%`,
-        },
+          message: `render progress: ${data.progress}%`},
         reactions: { likes: 0, comments: 0, hasLiked: false },
-        isRead: false,
-      };
+        isRead: false};
       
       // Update existing render activity or add new one
       setActivities(prev => {
@@ -225,20 +208,17 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
       const completeActivity: Activity = {
         id: `complete-${data.renderId}`,
         type: 'content_published',
-        user: {
+        user: {},
           id: _user?.id || 'system',
           name: 'Video Generator',
-          isOnline: true,
-        },
+          isOnline: true},
         timestamp: new Date(data.timestamp),
-        data: {
+        data: {},
           entityId: data.assetId,
           entityName: 'Video Render Complete',
-          message: 'video render completed successfully',
-        },
+          message: 'video render completed successfully'},
         reactions: { likes: 0, comments: 0, hasLiked: false },
-        isRead: false,
-      };
+        isRead: false};
       
       setActivities(prev => [completeActivity, ...prev].slice(0, 50));
       setUnreadCount(prev => prev + 1);
@@ -282,13 +262,12 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
       activity.id === activityId
         ? {
             ...activity,
-            reactions: {
+            reactions: {},
               ...activity.reactions!,
               likes: activity.reactions!.hasLiked 
                 ? activity.reactions!.likes - 1 
                 : activity.reactions!.likes + 1,
-              hasLiked: !activity.reactions!.hasLiked,
-            }
+              hasLiked: !activity.reactions!.hasLiked}
           }
         : activity
     ));
@@ -302,10 +281,9 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
       activity.id === activityId
         ? {
             ...activity,
-            reactions: {
+            reactions: {},
               ...activity.reactions!,
-              comments: activity.reactions!.comments + 1,
-            }
+              comments: activity.reactions!.comments + 1}
           }
         : activity
     ));
@@ -391,8 +369,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
                 <ListItem
                   sx={{
                     opacity: activity.isRead ? 0.8 : 1,
-                    bgcolor: activity.isRead ? 'transparent' : 'action.hover',
-                  }}
+                    bgcolor: activity.isRead ? 'transparent' : 'action.hover'}}
                 >
                   <ListItemAvatar>
                     <Badge
@@ -478,8 +455,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
                                       <SendIcon />
                                     </IconButton>
                                   </InputAdornment>
-                                ),
-                              }}
+                                )}}
                             />
                           </Box>
                         </Collapse>

@@ -17,8 +17,7 @@ const AnalyticsQuerySchema = z.object({
   metrics: z
     .array(z.enum(['campaigns', 'videos', 'views', 'engagement', 'conversion', 'revenue']))
     .default(['campaigns', 'videos', 'views']),
-  granularity: z.enum(['hour', 'day', 'week', 'month']).default('day'),
-});
+  granularity: z.enum(['hour', 'day', 'week', 'month']).default('day')});
 
 interface AnalyticsMetric {
   date: string;
@@ -29,10 +28,10 @@ interface AnalyticsMetric {
 
 interface AnalyticsResponse {
   success: true;
-  data: {
+  data: {},
     [metric: string]: AnalyticsMetric[];
   };
-  summary: {
+  summary: {},
     total_campaigns: number;
     total_videos: number;
     total_views: number;
@@ -86,12 +85,10 @@ class AnalyticsAggregator {
     if (cached) {
       return {
         ...cached,
-        summary: {
+        summary: {},
           ...cached.summary,
           cache_hit: true,
-          query_time: Date.now() - startTime,
-        },
-      };
+          query_time: Date.now() - startTime}};
     }
 
     // Fetch fresh data
@@ -101,14 +98,12 @@ class AnalyticsAggregator {
     const response: AnalyticsResponse = {
       success: true,
       data,
-      summary: {
+      summary: {},
         ...summary,
         period_start: start_date,
         period_end: end_date,
         cache_hit: false,
-        query_time: Date.now() - startTime,
-      },
-    };
+        query_time: Date.now() - startTime}};
 
     // Cache the result (analytics can be cached longer)
     await this.setCachedAnalytics(cacheKey, response, 15 * 60 * 1000); // 15 minutes
@@ -129,8 +124,7 @@ class AnalyticsAggregator {
     // Build optimized queries for each metric
     const queries = params.metrics.map(metric => ({
       metric,
-      query: this.buildMetricQuery(metric, params, startDate, endDate),
-    }));
+      query: this.buildMetricQuery(metric, params, startDate, endDate)}));
 
     // Execute queries in parallel with batching
     const results = await Promise.all(
@@ -223,8 +217,7 @@ class AnalyticsAggregator {
         date,
         value,
         change: 0, // Could calculate change from previous period
-        percentage_change: 0,
-      };
+        percentage_change: 0};
     });
   }
 
@@ -294,8 +287,7 @@ class AnalyticsAggregator {
       const { data: summaryData, error } = await this.supabase.rpc('get_analytics_summary', {
         start_date: startDate,
         end_date: endDate,
-        client_id_param: params.client_id || null,
-      });
+        client_id_param: params.client_id || null});
 
       if (!error && summaryData && summaryData.length > 0) {
         const summary = summaryData[0];
@@ -303,8 +295,7 @@ class AnalyticsAggregator {
           total_campaigns: summary.campaign_count || 0,
           total_videos: summary.video_count || 0,
           total_views: summary.total_views || 0,
-          avg_engagement: summary.avg_engagement || 0,
-        };
+          avg_engagement: summary.avg_engagement || 0};
       }
     } catch (error) {
       console.warn('Analytics summary RPC failed, falling back to individual queries');
@@ -396,8 +387,7 @@ class AnalyticsAggregator {
 
     return {
       start_date: start.toISOString(),
-      end_date: end.toISOString(),
-    };
+      end_date: end.toISOString()};
   }
 
   private buildCacheKey(params: any, startDate: string, endDate: string): string {
@@ -430,8 +420,7 @@ class AnalyticsAggregator {
       await this.supabase.from('analytics_cache').upsert({
         cache_key: key,
         data,
-        expires_at: expiresAt.toISOString(),
-      });
+        expires_at: expiresAt.toISOString()});
     } catch (error) {
       console.warn('Failed to cache analytics:', error);
     }
@@ -470,8 +459,7 @@ async function handler(
     console.error('Analytics API error:', error);
     res.status(500).json({
       success: false,
-      error: error instanceof Error ? error.message : 'Internal server error',
-    });
+      error: error instanceof Error ? error.message : 'Internal server error'});
   }
 }
 
@@ -480,5 +468,4 @@ export default withAPIOptimization(handler, {
   enableCaching: true,
   cacheTTL: 15 * 60 * 1000, // 15 minutes for analytics
   enableCompression: true,
-  enableMetrics: true,
-});
+  enableMetrics: true});

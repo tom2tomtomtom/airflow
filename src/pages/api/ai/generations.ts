@@ -20,10 +20,7 @@ type ResponseData = {
   generations?: Generation[];
 };
 
-async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
-): Promise<void> {
+async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>): Promise<void> {
   if (req.method !== 'GET') {
     return res.status(405).json({ success: false, message: 'Method not allowed' });
   }
@@ -70,9 +67,9 @@ async function handler(
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error fetching generations:', error);
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Failed to fetch generations' 
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch generations',
     });
   }
 }

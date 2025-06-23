@@ -59,20 +59,17 @@ export const FormSelect: React.FC<FormSelectProps> = ({
   const errorMessage = error?.message as string;
 
   // Create accessible field props
-  const { fieldProps, labelProps, descriptionProps, errorProps } = createAccessibleField(
-    label,
-    {
-      required: Boolean(rules.required),
-      invalid: hasError,
-      description,
-      errorMessage,
-    }
-  );
+  const { fieldProps, labelProps, descriptionProps, errorProps } = createAccessibleField(label, {
+    required: Boolean(rules.required),
+    invalid: hasError,
+    description,
+    errorMessage,
+  });
 
   const renderValue = (selected: unknown) => {
     if (allowMultiple && Array.isArray(selected)) {
       if (selected.length === 0) return <em>None selected</em>;
-      
+
       return (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
           {selected.map((val: any) => {
@@ -181,9 +178,7 @@ export const FormSelect: React.FC<FormSelectProps> = ({
                     }}
                   >
                     {option.icon && (
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        {option.icon}
-                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>{option.icon}</Box>
                     )}
                     <Box sx={{ flex: 1 }}>
                       <Typography variant="body2">{option.label}</Typography>

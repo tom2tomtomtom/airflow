@@ -12,13 +12,13 @@ import {
   TableBody,
   TextField,
   Button,
-  IconButton
+  IconButton,
 } from '@mui/material';
 import {
   Check as CheckIcon,
   Close as CloseIcon,
   Edit as EditIcon,
-  Refresh as RefreshIcon
+  Refresh as RefreshIcon,
 } from '@mui/icons-material';
 import { Template, Asset } from '@/types/models';
 
@@ -27,11 +27,14 @@ export interface MatrixProject {
   name: string;
   description: string;
   templates: Template[];
-  fieldAssignments: Record<string, {
-    assetId?: string;
-    value?: string;
-    status: 'empty' | 'in-progress' | 'completed';
-  }>;
+  fieldAssignments: Record<
+    string,
+    {
+      assetId?: string;
+      value?: string;
+      status: 'empty' | 'in-progress' | 'completed';
+    }
+  >;
 }
 
 interface MatrixEditorProps {
@@ -72,12 +75,7 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({
             {template.name}
           </Typography>
           <Chip label={template.platform} size="small" sx={{ ml: 1 }} />
-          <Chip
-            label={template.aspectRatio}
-            size="small"
-            variant="outlined"
-            sx={{ ml: 1 }}
-          />
+          <Chip label={template.aspectRatio} size="small" variant="outlined" sx={{ ml: 1 }} />
         </Box>
         <TableContainer component={Paper} variant="outlined" sx={{ mb: 3 }}>
           <Table>
@@ -93,9 +91,7 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({
               {template.dynamicFields?.map((field: any) => {
                 const key = `${template.id}-${field.id}`;
                 const assignment = project.fieldAssignments[key];
-                const asset = assignment?.assetId
-                  ? getAssetById(assignment.assetId)
-                  : undefined;
+                const asset = assignment?.assetId ? getAssetById(assignment.assetId) : undefined;
                 return (
                   <TableRow key={field.id}>
                     <TableCell>
@@ -140,7 +136,9 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({
                           <IconButton
                             size="small"
                             sx={{ ml: 'auto' }}
-                            onClick={() => handleOpenAssetDialog(template.id, field.id)} aria-label="Icon button">
+                            onClick={() => handleOpenAssetDialog(template.id, field.id)}
+                            aria-label="Icon button"
+                          >
                             <EditIcon fontSize="small" />
                           </IconButton>
                         </Box>
@@ -155,18 +153,30 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({
                     </TableCell>
                     <TableCell>
                       <Chip
-                        label={assignment?.status === 'completed'
-                          ? 'Completed'
-                          : assignment?.status === 'in-progress'
-                          ? 'In Progress'
-                          : 'Empty'}
-                        color={assignment?.status === 'completed'
-                          ? 'success'
-                          : assignment?.status === 'in-progress'
-                          ? 'primary'
-                          : 'default'}
+                        label={
+                          assignment?.status === 'completed'
+                            ? 'Completed'
+                            : assignment?.status === 'in-progress'
+                              ? 'In Progress'
+                              : 'Empty'
+                        }
+                        color={
+                          assignment?.status === 'completed'
+                            ? 'success'
+                            : assignment?.status === 'in-progress'
+                              ? 'primary'
+                              : 'default'
+                        }
                         size="small"
-                        icon={assignment?.status === 'completed' ? <CheckIcon /> : assignment?.status === 'in-progress' ? <RefreshIcon /> : <CloseIcon />}
+                        icon={
+                          assignment?.status === 'completed' ? (
+                            <CheckIcon />
+                          ) : assignment?.status === 'in-progress' ? (
+                            <RefreshIcon />
+                          ) : (
+                            <CloseIcon />
+                          )
+                        }
                       />
                     </TableCell>
                   </TableRow>

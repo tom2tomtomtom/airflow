@@ -22,13 +22,13 @@ interface WorkflowHealthStatus {
   overall: 'healthy' | 'degraded' | 'unhealthy';
   timestamp: number;
   checks: HealthCheckResult[];
-  summary: {
+  summary: {},
     totalChecks: number;
     healthyChecks: number;
     degradedChecks: number;
     unhealthyChecks: number;
   };
-  metrics: {
+  metrics: {},
     activeSessions: number;
     averageResponseTime: number;
     errorRate: number;
@@ -54,8 +54,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(500).json({
       overall: 'unhealthy',
       error: 'Health check system failure',
-      timestamp: Date.now(),
-    });
+      timestamp: Date.now()});
   }
 }
 
@@ -95,8 +94,7 @@ async function performHealthChecks(): Promise<WorkflowHealthStatus> {
     totalChecks: checks.length,
     healthyChecks: checks.filter((c: any) => c.status === 'healthy').length,
     degradedChecks: checks.filter((c: any) => c.status === 'degraded').length,
-    unhealthyChecks: checks.filter((c: any) => c.status === 'unhealthy').length,
-  };
+    unhealthyChecks: checks.filter((c: any) => c.status === 'unhealthy').length};
 
   // Determine overall status
   let overall: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
@@ -114,8 +112,7 @@ async function performHealthChecks(): Promise<WorkflowHealthStatus> {
     timestamp: Date.now(),
     checks,
     summary,
-    metrics,
-  };
+    metrics};
 }
 
 /**
@@ -141,8 +138,7 @@ async function checkRedisHealth(): Promise<HealthCheckResult> {
           status: responseTime < 100 ? 'healthy' : 'degraded',
           responseTime,
           details: responseTime < 100 ? 'All operations working normally' : 'Slow response times detected',
-          lastChecked: Date.now(),
-        };
+          lastChecked: Date.now()};
       }
     }
     
@@ -151,16 +147,14 @@ async function checkRedisHealth(): Promise<HealthCheckResult> {
       status: 'unhealthy',
       responseTime,
       details: 'Redis operations failing',
-      lastChecked: Date.now(),
-    };
+      lastChecked: Date.now()};
   } catch (error: any) {
     return {
       service: 'Redis',
       status: 'unhealthy',
       responseTime: Date.now() - startTime,
       details: `Redis error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      lastChecked: Date.now(),
-    };
+      lastChecked: Date.now()};
   }
 }
 
@@ -205,16 +199,14 @@ async function checkAIServicesHealth(): Promise<HealthCheckResult> {
       status: overallStatus,
       responseTime,
       details,
-      lastChecked: Date.now(),
-    };
+      lastChecked: Date.now()};
   } catch (error: any) {
     return {
       service: 'AI Services',
       status: 'unhealthy',
       responseTime: Date.now() - startTime,
       details: `Circuit breaker check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      lastChecked: Date.now(),
-    };
+      lastChecked: Date.now()};
   }
 }
 
@@ -237,16 +229,14 @@ async function checkCacheHealth(): Promise<HealthCheckResult> {
       status,
       responseTime,
       details,
-      lastChecked: Date.now(),
-    };
+      lastChecked: Date.now()};
   } catch (error: any) {
     return {
       service: 'AI Cache',
       status: 'unhealthy',
       responseTime: Date.now() - startTime,
       details: `Cache check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      lastChecked: Date.now(),
-    };
+      lastChecked: Date.now()};
   }
 }
 
@@ -276,16 +266,14 @@ async function checkMetricsHealth(): Promise<HealthCheckResult> {
       status,
       responseTime,
       details,
-      lastChecked: Date.now(),
-    };
+      lastChecked: Date.now()};
   } catch (error: any) {
     return {
       service: 'Workflow Metrics',
       status: 'unhealthy',
       responseTime: Date.now() - startTime,
       details: `Metrics check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      lastChecked: Date.now(),
-    };
+      lastChecked: Date.now()};
   }
 }
 
@@ -316,16 +304,14 @@ async function checkCostMonitorHealth(): Promise<HealthCheckResult> {
       status,
       responseTime,
       details,
-      lastChecked: Date.now(),
-    };
+      lastChecked: Date.now()};
   } catch (error: any) {
     return {
       service: 'Cost Monitor',
       status: 'unhealthy',
       responseTime: Date.now() - startTime,
       details: `Cost monitor check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      lastChecked: Date.now(),
-    };
+      lastChecked: Date.now()};
   }
 }
 
@@ -339,8 +325,7 @@ async function checkDatabaseHealth(): Promise<HealthCheckResult> {
     // Test database connection with a simple query
     const response = await fetch('/api/health/database', {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    });
+      headers: { 'Content-Type': 'application/json' }});
     
     const responseTime = Date.now() - startTime;
     
@@ -351,16 +336,14 @@ async function checkDatabaseHealth(): Promise<HealthCheckResult> {
         status: responseTime < 200 ? 'healthy' : 'degraded',
         responseTime,
         details: data.details || 'Database connection successful',
-        lastChecked: Date.now(),
-      };
+        lastChecked: Date.now()};
     } else {
       return {
         service: 'Database',
         status: 'unhealthy',
         responseTime,
         details: `Database check failed with status ${response.status}`,
-        lastChecked: Date.now(),
-      };
+        lastChecked: Date.now()};
     }
   } catch (error: any) {
     return {
@@ -368,8 +351,7 @@ async function checkDatabaseHealth(): Promise<HealthCheckResult> {
       status: 'unhealthy',
       responseTime: Date.now() - startTime,
       details: `Database check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      lastChecked: Date.now(),
-    };
+      lastChecked: Date.now()};
   }
 }
 
@@ -407,15 +389,13 @@ async function getWorkflowMetrics(): Promise<{
       activeSessions: realtimeStatus.activeSessions,
       averageResponseTime: avgResponseTime,
       errorRate,
-      cacheHitRate,
-    };
+      cacheHitRate};
   } catch (error: any) {
     console.error('Error getting workflow metrics:', error);
     return {
       activeSessions: 0,
       averageResponseTime: 0,
       errorRate: 0,
-      cacheHitRate: 0,
-    };
+      cacheHitRate: 0};
   }
 }

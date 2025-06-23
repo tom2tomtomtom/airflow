@@ -15,7 +15,7 @@ export interface RenderedCampaign {
   outputFiles: RenderOutput[];
   metadata: RenderMetadata;
   quality: 'draft' | 'preview' | 'high' | 'print';
-  dimensions: {
+  dimensions: {},
     width: number;
     height: number;
     dpi?: number;
@@ -34,12 +34,12 @@ export interface RenderOutput {
   format: 'png' | 'jpg' | 'webp' | 'svg' | 'pdf' | 'mp4' | 'gif' | 'html';
   url: string;
   fileSize: number;
-  dimensions: {
+  dimensions: {},
     width: number;
     height: number;
   };
   quality: number; // 0-100
-  metadata: {
+  metadata: {},
     colorSpace?: 'sRGB' | 'CMYK' | 'RGB';
     compression?: string;
     layers?: string[];
@@ -59,7 +59,7 @@ export interface RenderMetadata {
   fonts: string[];
   estimatedPrintCost?: number;
   estimatedFileSize: number;
-  optimization: {
+  optimization: {},
     compression: number;
     quality: number;
     webOptimized: boolean;
@@ -171,7 +171,7 @@ export class CampaignRenderer {
         description: `Rendered campaign from ${populatedTemplate.name}`,
         renderFormat: format,
         outputFiles: [],
-        metadata: {
+        metadata: {},
           renderEngine: this.selectRenderEngine(format),
           totalElements: populatedTemplate.populatedComponents.length,
           renderLayers: this.calculateRenderLayers(populatedTemplate),
@@ -181,7 +181,7 @@ export class CampaignRenderer {
           colorProfile: 'sRGB',
           fonts: this.extractFonts(populatedTemplate),
           estimatedFileSize: 0,
-          optimization: {
+          optimization: {},
             compression: optimization.compress ? 85 : 100,
             quality: this.QUALITY_SETTINGS[quality].quality,
             webOptimized: optimization.webOptimize || false,
@@ -632,7 +632,7 @@ export class CampaignRenderer {
         fileSize: converted.length,
         dimensions: campaign.dimensions,
         quality: campaign.metadata.optimization.quality,
-        metadata: {
+        metadata: {},
           colorSpace: 'sRGB',
           compression: format === 'jpg' ? 'jpeg' : 'lossless'
         }

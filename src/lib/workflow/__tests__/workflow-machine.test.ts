@@ -9,8 +9,7 @@ import {
   Motivation,
   CopyVariation,
   Asset,
-  Template,
-} from '../workflow-types';
+  Template} from '../workflow-types';
 
 describe('Workflow State Machine', () => {
   let service: ReturnType<typeof interpret>;
@@ -69,8 +68,7 @@ describe('Workflow State Machine', () => {
         deliverables: ['Video ads'],
         timeline: '2 weeks',
         budget: '$5000',
-        additionalNotes: 'Important campaign',
-      };
+        additionalNotes: 'Important campaign'};
 
       service.send({ 
         type: 'CONFIRM_BRIEF', 
@@ -129,8 +127,7 @@ describe('Workflow State Machine', () => {
         deliverables: ['Video ads'],
         timeline: '2 weeks',
         budget: '$5000',
-        additionalNotes: 'Important campaign',
-      };
+        additionalNotes: 'Important campaign'};
 
       service.send({ 
         type: 'CONFIRM_BRIEF', 
@@ -209,8 +206,7 @@ describe('Workflow State Machine', () => {
         deliverables: ['Video ads'],
         timeline: '2 weeks',
         budget: '$5000',
-        additionalNotes: 'Important campaign',
-      };
+        additionalNotes: 'Important campaign'};
 
       service.send({ 
         type: 'CONFIRM_BRIEF', 
@@ -294,8 +290,7 @@ describe('Workflow State Machine', () => {
         deliverables: ['Video ads'],
         timeline: '2 weeks',
         budget: '$5000',
-        additionalNotes: 'Important campaign',
-      };
+        additionalNotes: 'Important campaign'};
 
       service.send({ 
         type: 'CONFIRM_BRIEF', 
@@ -320,8 +315,7 @@ describe('Workflow State Machine', () => {
         name: 'Test Asset',
         url: 'https://example.com/asset.jpg',
         type: 'image',
-        category: 'logo',
-      };
+        category: 'logo'};
 
       service.send({ 
         type: 'SELECT_ASSET', 
@@ -337,8 +331,7 @@ describe('Workflow State Machine', () => {
         name: 'Test Asset',
         url: 'https://example.com/asset.jpg',
         type: 'image',
-        category: 'logo',
-      };
+        category: 'logo'};
 
       service.send({ 
         type: 'SELECT_ASSET', 
@@ -358,8 +351,7 @@ describe('Workflow State Machine', () => {
         name: 'Test Asset',
         url: 'https://example.com/asset.jpg',
         type: 'image',
-        category: 'logo',
-      };
+        category: 'logo'};
 
       service.send({ 
         type: 'SELECT_ASSET', 
@@ -393,8 +385,7 @@ describe('Workflow State Machine', () => {
         deliverables: ['Video ads'],
         timeline: '2 weeks',
         budget: '$5000',
-        additionalNotes: 'Important campaign',
-      };
+        additionalNotes: 'Important campaign'};
 
       service.send({ 
         type: 'CONFIRM_BRIEF', 
@@ -414,8 +405,7 @@ describe('Workflow State Machine', () => {
         name: 'Test Asset',
         url: 'https://example.com/asset.jpg',
         type: 'image',
-        category: 'logo',
-      };
+        category: 'logo'};
 
       service.send({ type: 'NEXT_STEP' });
       service.send({ type: 'NEXT_STEP' });
@@ -434,8 +424,7 @@ describe('Workflow State Machine', () => {
         thumbnailUrl: 'https://example.com/thumb.jpg',
         category: 'social',
         duration: 30,
-        aspectRatio: '16:9',
-      };
+        aspectRatio: '16:9'};
 
       service.send({ 
         type: 'SELECT_TEMPLATE', 
@@ -453,8 +442,7 @@ describe('Workflow State Machine', () => {
         thumbnailUrl: 'https://example.com/thumb.jpg',
         category: 'social',
         duration: 30,
-        aspectRatio: '16:9',
-      };
+        aspectRatio: '16:9'};
 
       service.send({ 
         type: 'SELECT_TEMPLATE', 
@@ -488,8 +476,7 @@ describe('Workflow State Machine', () => {
         deliverables: ['Video ads'],
         timeline: '2 weeks',
         budget: '$5000',
-        additionalNotes: 'Important campaign',
-      };
+        additionalNotes: 'Important campaign'};
 
       const mockTemplate: Template = {
         id: 'template-1',
@@ -498,16 +485,14 @@ describe('Workflow State Machine', () => {
         thumbnailUrl: 'https://example.com/thumb.jpg',
         category: 'social',
         duration: 30,
-        aspectRatio: '16:9',
-      };
+        aspectRatio: '16:9'};
 
       const mockAsset: Asset = {
         id: 'asset-1',
         name: 'Test Asset',
         url: 'https://example.com/asset.jpg',
         type: 'image',
-        category: 'logo',
-      };
+        category: 'logo'};
 
       service.send({ 
         type: 'CONFIRM_BRIEF', 
@@ -562,8 +547,7 @@ describe('Workflow State Machine', () => {
         deliverables: ['Video ads'],
         timeline: '2 weeks',
         budget: '$5000',
-        additionalNotes: 'Important campaign',
-      };
+        additionalNotes: 'Important campaign'};
 
       service.send({ 
         type: 'CONFIRM_BRIEF', 
@@ -583,8 +567,7 @@ describe('Workflow State Machine', () => {
         name: 'Test Asset',
         url: 'https://example.com/asset.jpg',
         type: 'image',
-        category: 'logo',
-      }];
+        category: 'logo'}];
 
       service.state.context.selectedTemplate = {
         id: 'template-1',
@@ -593,8 +576,7 @@ describe('Workflow State Machine', () => {
         thumbnailUrl: 'https://example.com/thumb.jpg',
         category: 'social',
         duration: 30,
-        aspectRatio: '16:9',
-      };
+        aspectRatio: '16:9'};
     });
 
     it('should allow direct navigation to valid steps', () => {
@@ -657,8 +639,7 @@ describe('Workflow State Machine', () => {
         deliverables: ['Video ads'],
         timeline: '2 weeks',
         budget: '$5000',
-        additionalNotes: 'Important campaign',
-      };
+        additionalNotes: 'Important campaign'};
 
       service.send({ 
         type: 'CONFIRM_BRIEF', 
@@ -698,16 +679,14 @@ describe('Workflow State Machine', () => {
         deliverables: ['Video ads'],
         timeline: '2 weeks',
         budget: '$5000',
-        additionalNotes: 'Important campaign',
-      };
+        additionalNotes: 'Important campaign'};
 
       const mockAsset: Asset = {
         id: 'asset-1',
         name: 'Test Asset',
         url: 'https://example.com/asset.jpg',
         type: 'image',
-        category: 'logo',
-      };
+        category: 'logo'};
 
       const mockTemplate: Template = {
         id: 'template-1',
@@ -716,8 +695,7 @@ describe('Workflow State Machine', () => {
         thumbnailUrl: 'https://example.com/thumb.jpg',
         category: 'social',
         duration: 30,
-        aspectRatio: '16:9',
-      };
+        aspectRatio: '16:9'};
 
       // Complete workflow execution
       service.send({ type: 'CONFIRM_BRIEF', briefData: mockBriefData });
@@ -769,8 +747,7 @@ describe('Workflow State Machine', () => {
         deliverables: ['Video ads'],
         timeline: '2 weeks',
         budget: '$5000',
-        additionalNotes: 'Important campaign',
-      };
+        additionalNotes: 'Important campaign'};
 
       // Start workflow
       service.send({ type: 'CONFIRM_BRIEF', briefData: mockBriefData });
@@ -798,8 +775,7 @@ describe('Workflow State Machine', () => {
         deliverables: ['Banner ads'],
         timeline: '1 week',
         budget: '$2000',
-        additionalNotes: 'New campaign',
-      };
+        additionalNotes: 'New campaign'};
 
       service.send({ type: 'CONFIRM_BRIEF', briefData: newBriefData });
       expect(service.state.context.briefData).toEqual(newBriefData);

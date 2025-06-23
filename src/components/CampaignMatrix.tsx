@@ -26,8 +26,7 @@ import {
   Slider,
   Alert,
   LinearProgress,
-  Stack,
-} from '@mui/material';
+  Stack} from '@mui/material';
 import {
   Add as AddIcon,
   Delete as DeleteIcon,
@@ -40,8 +39,7 @@ import {
   VideoLibrary as VideoIcon,
   MusicNote as MusicIcon,
   TextFields as TextIcon,
-  Palette as ColorIcon,
-} from '@mui/icons-material';
+  Palette as ColorIcon} from '@mui/icons-material';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
 
@@ -50,7 +48,7 @@ interface MatrixRow {
   id: string;
   name: string;
   locked: boolean;
-  cells: {
+  cells: {},
     [fieldId: string]: {
       type: 'asset' | 'text' | 'color';
       value?: string;
@@ -93,8 +91,7 @@ const defaultFields: MatrixField[] = [
 
 export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
   campaignId,
-  onRender,
-}) => {
+  onRender}) => {
   const { activeClient } = useClient();
   const { showNotification } = useNotification();
 
@@ -156,8 +153,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
     // Initialize cells for all fields
     fields.forEach((field: any) => {
       newRow.cells[field.id] = {
-        type: field.type === 'color' ? 'color' : field.type === 'text' ? 'text' : 'asset',
-      };
+        type: field.type === 'color' ? 'color' : field.type === 'text' ? 'text' : 'asset'};
     });
 
     setRows([...rows, newRow]);
@@ -171,8 +167,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
       ...row,
       id: `row-${Date.now()}`,
       name: `${row.name} (Copy)`,
-      locked: false,
-    };
+      locked: false};
 
     setRows([...rows, newRow]);
     showNotification('Row duplicated successfully', 'success');
@@ -201,12 +196,11 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
       if (row.id === rowId) {
         return {
           ...row,
-          cells: {
+          cells: {},
             ...row.cells,
             [fieldId]: {
               ...row.cells[fieldId],
-              locked: !row.cells[fieldId]?.locked,
-            }
+              locked: !row.cells[fieldId]?.locked}
           }
         };
       }
@@ -219,12 +213,11 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
       if (row.id === rowId) {
         return {
           ...row,
-          cells: {
+          cells: {},
             ...row.cells,
             [fieldId]: {
               ...row.cells[fieldId],
-              ...updates,
-            }
+              ...updates}
           }
         };
       }
@@ -242,8 +235,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
     const { rowId, fieldId } = selectedAssetDialog;
     updateCell(rowId, fieldId, {
       assetId: asset.id,
-      value: asset.name,
-    });
+      value: asset.name});
 
     setSelectedAssetDialog(null);
     showNotification('Asset assigned successfully', 'success');
@@ -358,8 +350,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
               border: '1px solid',
               borderColor: 'divider',
               borderRadius: 1,
-              cursor: 'pointer',
-            }}
+              cursor: 'pointer'}}
             onClick={() => {
               const newColor = prompt('Enter color (hex):', cell?.value || '#000000');
               if (newColor) {

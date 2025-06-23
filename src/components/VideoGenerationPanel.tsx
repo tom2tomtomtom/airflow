@@ -21,8 +21,7 @@ import {
   Slider,
   FormControlLabel,
   Switch,
-  Grid,
-} from '@mui/material';
+  Grid} from '@mui/material';
 import {
   PlayArrow as RenderIcon,
   Refresh as RefreshIcon,
@@ -31,8 +30,7 @@ import {
   Stop as StopIcon,
   CheckCircle as CompleteIcon,
   Error as ErrorIcon,
-  Schedule as PendingIcon,
-} from '@mui/icons-material';
+  Schedule as PendingIcon} from '@mui/icons-material';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
 
@@ -81,8 +79,7 @@ const qualities = [
 const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
   combinations = [],
   campaignId,
-  onComplete,
-}) => {
+  onComplete}) => {
   const { activeClient } = useClient();
   const { showNotification } = useNotification();
 
@@ -150,37 +147,30 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
       const videoConfig = {
         type: campaignId ? 'campaign_based' : 'standalone',
         campaign_id: campaignId,
-        video_config: {
+        video_config: {},
           prompt,
           style,
           duration,
           platform,
           quality,
-          aspect_ratio: getAspectRatioForPlatform(platform),
-        },
-        content_elements: {
+          aspect_ratio: getAspectRatioForPlatform(platform)},
+        content_elements: {},
           voice_over: includeVoiceOver ? {
             text: voiceOverText || prompt,
             voice: 'neural',
-            language: 'en',
-          } : undefined,
-          background_music: true,
-        },
-        generation_settings: {
+            language: 'en'} : undefined,
+          background_music: true},
+        generation_settings: {},
           variations_count: variationsCount,
           include_captions: includeCaptions,
           auto_optimize_for_platform: true,
-          save_to_assets: true,
-        },
-      };
+          save_to_assets: true}};
 
       const response = await fetch('/api/video/generate', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(videoConfig),
-      });
+        headers: {},
+          'Content-Type': 'application/json'},
+        body: JSON.stringify(videoConfig)});
 
       const data = await response.json();
       if (data.data) {
@@ -191,8 +181,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
           status: result.status,
           render_job_id: result.render_job_id,
           estimated_completion: result.estimated_completion,
-          created_at: new Date().toISOString(),
-        }));
+          created_at: new Date().toISOString()}));
         setJobs(newJobs);
         showNotification(`Started generation of ${newJobs.length} videos`, 'success');
       } else {
@@ -221,8 +210,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
       tiktok: '9:16',
       facebook: '16:9',
       linkedin: '16:9',
-      twitter: '16:9',
-    };
+      twitter: '16:9'};
     return ratios[platform] || '16:9';
   };
 

@@ -27,8 +27,7 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemIcon,
-} from '@mui/material';
+  ListItemIcon} from '@mui/material';
 import {
   PlayArrow as PlayIcon,
   Stop as StopIcon,
@@ -40,8 +39,7 @@ import {
   Pending as PendingIcon,
   Cancel as CancelIcon,
   Analytics as AnalyticsIcon,
-  Timeline as TimelineIcon,
-} from '@mui/icons-material';
+  Timeline as TimelineIcon} from '@mui/icons-material';
 import { useNotification } from '@/contexts/NotificationContext';
 import { useClient } from '@/contexts/ClientContext';
 import { useExecutionEvents } from '@/hooks/useRealtime';
@@ -93,8 +91,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
   showHeader = true,
   realtime = true,
   campaignId,
-  matrixId,
-}) => {
+  matrixId}) => {
   const { activeClient } = useClient();
   const { showNotification } = useNotification();
   const { executionEvents, connectionStatus } = useExecutionEvents();
@@ -110,8 +107,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
     priority: 'normal',
     reset_attempts: false,
     delay_seconds: 0,
-    retry_reason: '',
-  });
+    retry_reason: ''});
 
   // Fetch executions
   const fetchExecutions = async () => {
@@ -125,14 +121,11 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
         sort_order: 'desc',
         ...filters,
         ...(campaignId && { campaign_id: campaignId }),
-        ...(matrixId && { matrix_id: matrixId }),
-      });
+        ...(matrixId && { matrix_id: matrixId })});
 
       const response = await fetch(`/api/executions?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
+        headers: {},
+          'Authorization': `Bearer ${localStorage.getItem('token')}`}});
 
       if (response.ok) {
         const data = await response.json();
@@ -153,12 +146,10 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
     try {
       const response = await fetch(`/api/executions/${selectedExecution.id}/retry`, {
         method: 'POST',
-        headers: {
+        headers: {},
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify(retryOptions),
-      });
+          'Authorization': `Bearer ${localStorage.getItem('token')}`},
+        body: JSON.stringify(retryOptions)});
 
       if (response.ok) {
         const data = await response.json();
@@ -182,15 +173,12 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
     try {
       const response = await fetch(`/api/executions/${selectedExecution.id}/cancel`, {
         method: 'POST',
-        headers: {
+        headers: {},
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+          'Authorization': `Bearer ${localStorage.getItem('token')}`},
         body: JSON.stringify({
           reason: 'User requested cancellation',
-          cleanup_resources: true,
-        }),
-      });
+          cleanup_resources: true})});
 
       if (response.ok) {
         showNotification('Execution cancelled successfully', 'success');
@@ -232,8 +220,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
       twitter: { color: '#1DA1F2', name: 'Twitter' },
       linkedin: { color: '#0A66C2', name: 'LinkedIn' },
       youtube: { color: '#FF0000', name: 'YouTube' },
-      tiktok: { color: '#000000', name: 'TikTok' },
-    };
+      tiktok: { color: '#000000', name: 'TikTok' }};
     return displays[platform as keyof typeof displays] || { color: '#666', name: platform };
   };
 

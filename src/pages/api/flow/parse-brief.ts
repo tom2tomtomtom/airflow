@@ -11,10 +11,8 @@ import pdfParse from 'pdf-parse';
 
 // Configure to handle file uploads
 export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+  api: {},
+    bodyParser: false}};
 
 interface BriefData {
   title: string;
@@ -35,8 +33,7 @@ interface BriefData {
 
 // Initialize OpenAI client
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+  apiKey: process.env.OPENAI_API_KEY});
 
 // Function to estimate token count (rough approximation: 1 token ≈ 4 characters)
 function estimateTokenCount(text: string): number {
@@ -149,8 +146,7 @@ Return only the JSON object.`;
             }
           ],
           temperature: 0.1,
-          max_tokens: 1500,
-        }),
+          max_tokens: 1500}),
         new Promise((_, reject) => 
           setTimeout(() => reject(new Error('OpenAI chunk request timeout')), 20000)
         )
@@ -325,8 +321,7 @@ Respond ONLY with the JSON object, no additional text or explanation.`;
           }
         ],
         temperature: 0.1,
-        max_tokens: 2000,
-      }),
+        max_tokens: 2000}),
       new Promise((_, reject) => 
         setTimeout(() => reject(new Error('OpenAI request timeout')), 30000)
       )
@@ -398,8 +393,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       uploadDir: '/tmp',
       keepExtensions: true,
       maxFileSize: 10 * 1024 * 1024, // 10MB
-      multiples: false,
-    });
+      multiples: false});
 
         const [fields, files] = await form.parse(req);
     console.log('File upload parsing completed. Files:', Object.keys(files));

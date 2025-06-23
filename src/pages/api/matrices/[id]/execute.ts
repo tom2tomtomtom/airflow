@@ -18,9 +18,7 @@ const ExecuteRequestSchema = z.object({
     formats: z.array(z.string()).default(['mp4', 'jpg']),
     resolutions: z.array(z.string()).default(['1920x1080']),
     include_previews: z.boolean().default(true),
-    notify_on_completion: z.boolean().default(true),
-  }).optional(),
-});
+    notify_on_completion: z.boolean().default(true)}).optional()});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -165,17 +163,15 @@ async function handleExecute(req: NextApiRequest, res: NextApiResponse, user: an
     .update({
       status: 'active',
       last_executed_at: new Date().toISOString(),
-      last_executed_by: user.id,
-    })
+      last_executed_by: user.id})
     .eq('id', matrixId);
 
   return res.json({
     message: 'Matrix execution initiated successfully',
-    data: {
+    data: {},
       execution_plan: executionPlan,
       execution_result: executionResult,
-      estimated_completion: calculateEstimatedCompletion(executionPlan),
-    }
+      estimated_completion: calculateEstimatedCompletion(executionPlan)}
   });
 }
 
@@ -254,15 +250,13 @@ async function createExecutionPlan(
           matrix.variations.find((v: any) => v.id === varId)
         ).filter(Boolean),
         field_data: extractFieldDataForCombination(matrix, combination),
-        template_data: {
+        template_data: {},
           id: matrix.templates.id,
           name: matrix.templates.name,
           is_creatomate: matrix.templates.is_creatomate,
-          creatomate_id: matrix.templates.creatomate_id,
-        },
+          creatomate_id: matrix.templates.creatomate_id},
         estimated_duration: calculateExecutionDuration(matrix.templates, platform),
-        created_by: userId,
-      };
+        created_by: userId};
 
       executions.push(execution);
     }
@@ -276,8 +270,7 @@ async function createExecutionPlan(
     schedule_type: executeData.schedule_type,
     batch_size: executeData.batch_size,
     created_at: new Date().toISOString(),
-    created_by: userId,
-  };
+    created_by: userId};
 }
 
 async function executeImmediate(executionPlan: any): Promise<any> {
@@ -296,15 +289,13 @@ async function executeImmediate(executionPlan: any): Promise<any> {
           content_type: execution.content_type,
           platform: execution.platform,
           status: 'pending',
-          metadata: {
+          metadata: {},
             combination_name: execution.combination_name,
             template_data: execution.template_data,
             field_data: execution.field_data,
             settings: execution.settings,
-            priority: execution.priority,
-          },
-          created_by: execution.created_by,
-        })
+            priority: execution.priority},
+          created_by: execution.created_by})
         .select()
         .single();
 
@@ -313,8 +304,7 @@ async function executeImmediate(executionPlan: any): Promise<any> {
         results.push({
           execution_id: execution.id,
           status: 'failed',
-          error: error.message,
-        });
+          error: error.message});
         continue;
       }
 
@@ -327,11 +317,10 @@ async function executeImmediate(executionPlan: any): Promise<any> {
         .update({
           status: renderResult.success ? 'processing' : 'failed',
           render_url: renderResult.render_url,
-          metadata: {
+          metadata: {},
             ...executionRecord.metadata,
             render_job_id: renderResult.job_id,
-            render_started_at: new Date().toISOString(),
-          }
+            render_started_at: new Date().toISOString()}
         })
         .eq('id', execution.id);
 
@@ -339,8 +328,7 @@ async function executeImmediate(executionPlan: any): Promise<any> {
         execution_id: execution.id,
         status: renderResult.success ? 'processing' : 'failed',
         render_job_id: renderResult.job_id,
-        estimated_completion: renderResult.estimated_completion,
-      });
+        estimated_completion: renderResult.estimated_completion});
 
     } catch (error: any) {
       const message = getErrorMessage(error);
@@ -348,8 +336,7 @@ async function executeImmediate(executionPlan: any): Promise<any> {
       results.push({
         execution_id: execution.id,
         status: 'failed',
-        error: message,
-      });
+        error: message});
     }
   }
 
@@ -358,8 +345,7 @@ async function executeImmediate(executionPlan: any): Promise<any> {
     total_executions: executionPlan.executions.length,
     successful: results.filter((r: any) => r.status === 'processing').length,
     failed: results.filter((r: any) => r.status === 'failed').length,
-    results,
-  };
+    results};
 }
 
 async function scheduleExecution(executionPlan: any, scheduledFor?: string): Promise<any> {
@@ -369,8 +355,7 @@ async function scheduleExecution(executionPlan: any, scheduledFor?: string): Pro
   const scheduledExecutions = executionPlan.executions.map((execution: any) => ({
     ...execution,
     status: 'scheduled',
-    scheduled_for: scheduledTime.toISOString(),
-  }));
+    scheduled_for: scheduledTime.toISOString()}));
 
   // Save to database with scheduled status
   const { data: executionRecords, error } = await supabase
@@ -383,15 +368,13 @@ async function scheduleExecution(executionPlan: any, scheduledFor?: string): Pro
       content_type: exec.content_type,
       platform: exec.platform,
       status: 'scheduled',
-      metadata: {
+      metadata: {},
         combination_name: exec.combination_name,
         template_data: exec.template_data,
         field_data: exec.field_data,
         settings: exec.settings,
-        scheduled_for: scheduledTime.toISOString(),
-      },
-      created_by: exec.created_by,
-    })))
+        scheduled_for: scheduledTime.toISOString()},
+      created_by: exec.created_by})))
     .select();
 
   if (error) {
@@ -403,8 +386,7 @@ async function scheduleExecution(executionPlan: any, scheduledFor?: string): Pro
     type: 'scheduled',
     scheduled_for: scheduledTime.toISOString(),
     total_executions: executionPlan.executions.length,
-    execution_ids: executionRecords?.map((r: any) => r.id) || [],
-  };
+    execution_ids: executionRecords?.map((r: any) => r.id) || []};
 }
 
 async function executeBatch(executionPlan: any, batchSize: number): Promise<any> {
@@ -428,8 +410,7 @@ async function executeBatch(executionPlan: any, batchSize: number): Promise<any>
     
     const batchExecutionPlan = {
       ...executionPlan,
-      executions: batch,
-    };
+      executions: batch};
 
     const batchResult = await scheduleExecution(batchExecutionPlan, batchScheduleTime.toISOString());
     
@@ -437,8 +418,7 @@ async function executeBatch(executionPlan: any, batchSize: number): Promise<any>
       batch_number: i + 1,
       execution_count: batch.length,
       scheduled_for: batchScheduleTime.toISOString(),
-      execution_ids: batchResult.execution_ids,
-    });
+      execution_ids: batchResult.execution_ids});
   }
 
   return {
@@ -446,8 +426,7 @@ async function executeBatch(executionPlan: any, batchSize: number): Promise<any>
     total_batches: batches.length,
     batch_size: batchSize,
     total_executions: executions.length,
-    batches: batchResults,
-  };
+    batches: batchResults};
 }
 
 async function triggerRenderJob(execution: any): Promise<any> {
@@ -463,8 +442,7 @@ async function triggerRenderJob(execution: any): Promise<any> {
     console.error('Error triggering render job:', error);
     return {
       success: false,
-      error: message,
-    };
+      error: message};
   }
 }
 
@@ -476,8 +454,7 @@ async function triggerCreatomateRender(execution: any): Promise<any> {
     template_id: execution.template_data.creatomate_id,
     modifications: convertFieldDataToCreatomateFormat(execution.field_data),
     output_format: execution.settings.formats || ['mp4'],
-    quality: execution.settings.quality || 'standard',
-  };
+    quality: execution.settings.quality || 'standard'};
 
   // Simulate API call
   const jobId = `creatomate-${Date.now()}`;
@@ -526,8 +503,7 @@ function extractFieldDataForCombination(matrix: any, combination: any): any {
       
       fieldData[fieldId] = {
         content: content?.content || '',
-        asset_id: asset?.assetId,
-      };
+        asset_id: asset?.assetId};
     });
   }
   

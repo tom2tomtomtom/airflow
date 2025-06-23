@@ -28,11 +28,7 @@ export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
   onPrevious,
 }) => {
   const { state, actions } = useWorkflow();
-  const {
-    briefData,
-    selectedTemplate,
-    lastError,
-  } = state;
+  const { briefData, selectedTemplate, lastError } = state;
 
   // State for template loading
   const [templates, setTemplates] = useState<Template[]>([]);
@@ -41,33 +37,46 @@ export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
   const [loadError, setLoadError] = useState<string | null>(null);
 
   // Convert CreatomateTemplate to workflow Template
-  const convertCreatomateTemplate = useCallback((creatomateTemplate: CreatomateTemplate): Template => {
-    // Determine category based on template properties
-    let category = 'General';
-    const tags = creatomateTemplate.tags || [];
-    const name = creatomateTemplate.name.toLowerCase();
+  const convertCreatomateTemplate = useCallback(
+    (creatomateTemplate: CreatomateTemplate): Template => {
+      // Determine category based on template properties
+      let category = 'General';
+      const tags = creatomateTemplate.tags || [];
+      const name = creatomateTemplate.name.toLowerCase();
 
-    if (tags.includes('social') || name.includes('social') || creatomateTemplate.width < creatomateTemplate.height) {
-      category = 'Social';
-    } else if (tags.includes('business') || name.includes('corporate') || name.includes('business')) {
-      category = 'Business';
-    } else if (tags.includes('product') || name.includes('product')) {
-      category = 'Product';
-    } else if (tags.includes('marketing') || name.includes('marketing')) {
-      category = 'Marketing';
-    } else if (tags.includes('education') || name.includes('explainer')) {
-      category = 'Educational';
-    }
+      if (
+        tags.includes('social') ||
+        name.includes('social') ||
+        creatomateTemplate.width < creatomateTemplate.height
+      ) {
+        category = 'Social';
+      } else if (
+        tags.includes('business') ||
+        name.includes('corporate') ||
+        name.includes('business')
+      ) {
+        category = 'Business';
+      } else if (tags.includes('product') || name.includes('product')) {
+        category = 'Product';
+      } else if (tags.includes('marketing') || name.includes('marketing')) {
+        category = 'Marketing';
+      } else if (tags.includes('education') || name.includes('explainer')) {
+        category = 'Educational';
+      }
 
-    return {
-      id: creatomateTemplate.id,
-      name: creatomateTemplate.name,
-      description: creatomateTemplate.description || `${creatomateTemplate.width}x${creatomateTemplate.height} video template (${creatomateTemplate.duration}s)`,
-      thumbnail: creatomateTemplate.thumbnail || creatomateTemplate.preview,
-      category,
-      selected: false,
-    };
-  }, []);
+      return {
+        id: creatomateTemplate.id,
+        name: creatomateTemplate.name,
+        description:
+          creatomateTemplate.description ||
+          `${creatomateTemplate.width}x${creatomateTemplate.height} video template (${creatomateTemplate.duration}s)`,
+        thumbnail: creatomateTemplate.thumbnail || creatomateTemplate.preview,
+        category,
+        selected: false,
+      };
+    },
+    []
+  );
 
   // Load templates from Creatomate
   const loadTemplates = useCallback(async () => {
@@ -81,7 +90,6 @@ export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
       // Convert to workflow templates
       const workflowTemplates = creatomateTemplates.map(convertCreatomateTemplate);
       setTemplates(workflowTemplates);
-
     } catch (error: any) {
       console.error('Error loading templates:', error);
       setLoadError('Failed to load templates. Using default template.');
@@ -102,9 +110,12 @@ export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
   }, [loadTemplates]);
 
   // Handle template selection
-  const handleSelectTemplate = useCallback((template: Template) => {
-    actions.selectTemplate(template);
-  }, [actions]);
+  const handleSelectTemplate = useCallback(
+    (template: Template) => {
+      actions.selectTemplate(template);
+    },
+    [actions]
+  );
 
   // Handle next step
   const handleNext = useCallback(() => {
@@ -128,13 +139,16 @@ export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
   }, [loadTemplates]);
 
   // Group templates by category
-  const templatesByCategory = templates.reduce((acc, template) => {
-    if (!acc[template.category]) {
-      acc[template.category] = [];
-    }
-    acc[template.category].push(template);
-    return acc;
-  }, {} as Record<string, Template[]>);
+  const templatesByCategory = templates.reduce(
+    (acc, template) => {
+      if (!acc[template.category]) {
+        acc[template.category] = [];
+      }
+      acc[template.category].push(template);
+      return acc;
+    },
+    {} as Record<string, Template[]>
+  );
 
   // Get recommended templates based on brief data
   const getRecommendedTemplates = () => {
@@ -148,7 +162,11 @@ export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
     let recommendedTemplates: Template[] = [];
 
     // Platform-based recommendations
-    if (platforms.includes('Instagram') || platforms.includes('TikTok') || platforms.includes('social')) {
+    if (
+      platforms.includes('Instagram') ||
+      platforms.includes('TikTok') ||
+      platforms.includes('social')
+    ) {
       recommendedTemplates = templates.filter((t: any) => t.category === 'Social');
     } else if (platforms.includes('LinkedIn') || platforms.includes('business')) {
       recommendedTemplates = templates.filter((t: any) => t.category === 'Business');
@@ -156,16 +174,22 @@ export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
 
     // Content-based recommendations
     if (objective.includes('product') || objective.includes('showcase')) {
-      recommendedTemplates = [...recommendedTemplates, ...templates.filter((t: any) => t.category === 'Product')];
+      recommendedTemplates = [
+        ...recommendedTemplates,
+        ...templates.filter((t: any) => t.category === 'Product'),
+      ];
     }
 
     if (objective.includes('explain') || objective.includes('educate')) {
-      recommendedTemplates = [...recommendedTemplates, ...templates.filter((t: any) => t.category === 'Educational')];
+      recommendedTemplates = [
+        ...recommendedTemplates,
+        ...templates.filter((t: any) => t.category === 'Educational'),
+      ];
     }
 
     // Remove duplicates and limit to 3
-    const uniqueRecommended = recommendedTemplates.filter((template, index, self) =>
-      index === self.findIndex(t => t.id === template.id)
+    const uniqueRecommended = recommendedTemplates.filter(
+      (template, index, self) => index === self.findIndex(t => t.id === template.id)
     );
 
     return uniqueRecommended.slice(0, 3);
@@ -197,21 +221,13 @@ export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
 
       {/* Error Alerts */}
       {lastError && (
-        <Alert
-          severity="error"
-          sx={{ mb: 3 }}
-          onClose={handleClearError}
-        >
+        <Alert severity="error" sx={{ mb: 3 }} onClose={handleClearError}>
           {lastError}
         </Alert>
       )}
 
       {loadError && (
-        <Alert
-          severity="warning"
-          sx={{ mb: 3 }}
-          onClose={() => setLoadError(null)}
-        >
+        <Alert severity="warning" sx={{ mb: 3 }} onClose={() => setLoadError(null)}>
           {loadError}
         </Alert>
       )}
@@ -250,21 +266,38 @@ export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
           {/* Recommended Templates */}
           {recommendedTemplates.length > 0 && (
             <Box sx={{ mb: 4 }}>
-              <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography
+                variant="h6"
+                gutterBottom
+                sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+              >
                 <VideoLibraryIcon />
                 Recommended for Your Campaign
               </Typography>
-              <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr', lg: '1fr 1fr 1fr' }, mb: 3 }}>
+              <Box
+                sx={{
+                  display: 'grid',
+                  gap: 3,
+                  gridTemplateColumns: { xs: '1fr', md: '1fr 1fr', lg: '1fr 1fr 1fr' },
+                  mb: 3,
+                }}
+              >
                 {recommendedTemplates.map((template: any) => {
-                  const creatomateTemplate = creatomateTemplates.find((ct: any) => ct.id === template.id);
+                  const creatomateTemplate = creatomateTemplates.find(
+                    (ct: any) => ct.id === template.id
+                  );
                   return (
                     <Box key={template.id}>
                       <Card
                         sx={{
                           cursor: 'pointer',
                           border: selectedTemplate?.id === template.id ? 2 : 1,
-                          borderColor: selectedTemplate?.id === template.id ? 'primary.main' : 'grey.300',
-                          bgcolor: selectedTemplate?.id === template.id ? 'primary.50' : 'background.paper',
+                          borderColor:
+                            selectedTemplate?.id === template.id ? 'primary.main' : 'grey.300',
+                          bgcolor:
+                            selectedTemplate?.id === template.id
+                              ? 'primary.50'
+                              : 'background.paper',
                           transition: 'all 0.2s ease-in-out',
                           '&:hover': {
                             borderColor: 'primary.main',
@@ -278,7 +311,9 @@ export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
                         <Box
                           sx={{
                             height: 200,
-                            backgroundImage: template.thumbnail ? `url(${template.thumbnail})` : 'none',
+                            backgroundImage: template.thumbnail
+                              ? `url(${template.thumbnail})`
+                              : 'none',
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
                             bgcolor: template.thumbnail ? 'transparent' : 'grey.200',
@@ -363,17 +398,29 @@ export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
                     {category} ({categoryTemplates.length})
                   </Typography>
 
-                  <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr', lg: '1fr 1fr 1fr' } }}>
+                  <Box
+                    sx={{
+                      display: 'grid',
+                      gap: 3,
+                      gridTemplateColumns: { xs: '1fr', md: '1fr 1fr', lg: '1fr 1fr 1fr' },
+                    }}
+                  >
                     {categoryTemplates.map((template: any) => {
-                      const creatomateTemplate = creatomateTemplates.find((ct: any) => ct.id === template.id);
+                      const creatomateTemplate = creatomateTemplates.find(
+                        (ct: any) => ct.id === template.id
+                      );
                       return (
                         <Box key={template.id}>
                           <Card
                             sx={{
                               cursor: 'pointer',
                               border: selectedTemplate?.id === template.id ? 2 : 1,
-                              borderColor: selectedTemplate?.id === template.id ? 'primary.main' : 'grey.300',
-                              bgcolor: selectedTemplate?.id === template.id ? 'primary.50' : 'background.paper',
+                              borderColor:
+                                selectedTemplate?.id === template.id ? 'primary.main' : 'grey.300',
+                              bgcolor:
+                                selectedTemplate?.id === template.id
+                                  ? 'primary.50'
+                                  : 'background.paper',
                               transition: 'all 0.2s ease-in-out',
                               '&:hover': {
                                 borderColor: 'primary.main',
@@ -387,7 +434,9 @@ export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
                             <Box
                               sx={{
                                 height: 200,
-                                backgroundImage: template.thumbnail ? `url(${template.thumbnail})` : 'none',
+                                backgroundImage: template.thumbnail
+                                  ? `url(${template.thumbnail})`
+                                  : 'none',
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center',
                                 bgcolor: template.thumbnail ? 'transparent' : 'grey.200',
@@ -452,7 +501,8 @@ export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
           ) : (
             !loading && (
               <Alert severity="info" sx={{ mb: 4 }}>
-                No templates available. Please check your Creatomate API connection or try refreshing.
+                No templates available. Please check your Creatomate API connection or try
+                refreshing.
               </Alert>
             )
           )}
@@ -461,11 +511,7 @@ export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
 
       {/* Action Buttons */}
       <Box sx={{ display: 'flex', gap: 2, justifyContent: 'space-between', mt: 4 }}>
-        <Button
-          variant="outlined"
-          onClick={onPrevious}
-          startIcon={<ArrowBackIcon />}
-        >
+        <Button variant="outlined" onClick={onPrevious} startIcon={<ArrowBackIcon />}>
           Back to Assets
         </Button>
 

@@ -271,7 +271,7 @@ export class CacheMiddleware {
   
   private createCachedResponse(
     cached: any,
-    options: {
+    options: {},
       isPrivate: boolean;
       maxAge: number;
       staleWhileRevalidate: number;
@@ -302,7 +302,7 @@ export class CacheMiddleware {
   
   private addCacheHeaders(
     response: NextResponse,
-    options: {
+    options: {},
       isPrivate: boolean;
       maxAge: number;
       staleWhileRevalidate: number;

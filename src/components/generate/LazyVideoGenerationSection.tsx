@@ -100,7 +100,7 @@ const LazyVideoGenerationSection: React.FC<LazyVideoGenerationSectionProps> = ({
                 variant="outlined"
                 placeholder="Describe the video you want to generate..."
                 value={videoPrompt}
-                onChange={(e) => setVideoPrompt(e.target.value)}
+                onChange={e => setVideoPrompt(e.target.value)}
                 sx={{ mb: 1 }}
               />
               <Typography variant="caption" color="text.secondary">
@@ -137,7 +137,7 @@ const LazyVideoGenerationSection: React.FC<LazyVideoGenerationSectionProps> = ({
                   <Select
                     value={videoStyle}
                     label="Style"
-                    onChange={(e) => setVideoStyle(e.target.value)}
+                    onChange={e => setVideoStyle(e.target.value)}
                   >
                     <MenuItem value="cinematic">Cinematic</MenuItem>
                     <MenuItem value="documentary">Documentary</MenuItem>
@@ -153,7 +153,7 @@ const LazyVideoGenerationSection: React.FC<LazyVideoGenerationSectionProps> = ({
                   <Select
                     value={videoResolution}
                     label="Resolution"
-                    onChange={(e) => setVideoResolution(e.target.value)}
+                    onChange={e => setVideoResolution(e.target.value)}
                   >
                     <MenuItem value="720p">720p (HD)</MenuItem>
                     <MenuItem value="1080p">1080p (Full HD)</MenuItem>
@@ -178,10 +178,10 @@ const LazyVideoGenerationSection: React.FC<LazyVideoGenerationSectionProps> = ({
 
         <Grid size={{ xs: 12, md: 8 }}>
           <Box>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-              <Typography variant="h6">
-                Generated Videos ({generatedVideos.length})
-              </Typography>
+            <Box
+              sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}
+            >
+              <Typography variant="h6">Generated Videos ({generatedVideos.length})</Typography>
               <Stack direction="row" spacing={1}>
                 <Chip label="All" size="small" color="primary" />
                 <Chip label="Favorites" size="small" variant="outlined" />
@@ -272,8 +272,8 @@ const LazyVideoGenerationSection: React.FC<LazyVideoGenerationSectionProps> = ({
                                   video.status === 'completed'
                                     ? 'success'
                                     : video.status === 'processing'
-                                    ? 'info'
-                                    : 'error'
+                                      ? 'info'
+                                      : 'error'
                                 }
                               />
                               <Chip label={video.resolution} size="small" variant="outlined" />

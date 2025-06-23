@@ -71,7 +71,7 @@ export interface Template {
 export interface WorkflowState {
   // Current step
   currentStep: number;
-  
+
   // Data for each step
   briefData: BriefData | null;
   originalBriefData: BriefData | null;
@@ -79,14 +79,14 @@ export interface WorkflowState {
   copyVariations: CopyVariation[];
   selectedAssets: Asset[];
   selectedTemplate: Template | null;
-  
+
   // UI state
   processing: boolean;
   uploadedFile: File | null;
   showBriefReview: boolean;
   briefConfirmed: boolean;
   lastError: string | null;
-  
+
   // Client context
   clientId: string | null;
 }
@@ -96,32 +96,32 @@ export interface WorkflowActions {
   nextStep: () => void;
   previousStep: () => void;
   goToStep: (step: number) => void;
-  
+
   // Brief handling
   uploadBrief: (file: File) => Promise<void>;
   confirmBrief: (briefData: BriefData) => void;
   resetBrief: () => void;
-  
+
   // Motivations
   generateMotivations: () => Promise<void>;
   selectMotivation: (id: string) => void;
-  
+
   // Copy generation
   generateCopy: () => Promise<void>;
   selectCopy: (id: string) => void;
   storeCopyVariations: (selectedCopy: CopyVariation[]) => Promise<any>;
-  
+
   // Asset selection
   selectAsset: (asset: Asset) => void;
   removeAsset: (id: string) => void;
-  
+
   // Template selection
   selectTemplate: (template: Template) => void;
-  
+
   // Error handling
   clearError: () => void;
   setError: (error: string) => void;
-  
+
   // Reset workflow
   resetWorkflow: () => void;
 }
@@ -201,7 +201,15 @@ export interface CostCheckResponse {
 export function isValidBriefData(data: any): data is BriefData {
   if (!data || typeof data !== 'object') return false;
 
-  const required = ['title', 'objective', 'targetAudience', 'keyMessages', 'platforms', 'budget', 'timeline'];
+  const required = [
+    'title',
+    'objective',
+    'targetAudience',
+    'keyMessages',
+    'platforms',
+    'budget',
+    'timeline',
+  ];
 
   for (const field of required) {
     if (!data[field]) return false;
@@ -362,7 +370,10 @@ export function getPreviousStep(currentStep: WorkflowStep): WorkflowStep | null 
 /**
  * Check if workflow can proceed to a specific step
  */
-export function canProceedToStep(context: WorkflowMachineContext, targetStep: WorkflowStep): boolean {
+export function canProceedToStep(
+  context: WorkflowMachineContext,
+  targetStep: WorkflowStep
+): boolean {
   switch (targetStep) {
     case WorkflowStep.BRIEF_UPLOAD:
       return true;

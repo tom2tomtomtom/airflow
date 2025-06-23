@@ -11,8 +11,7 @@ export const validationPatterns = {
   alphanumeric: /^[a-zA-Z0-9]+$/,
   alphanumericWithSpaces: /^[a-zA-Z0-9\s]+$/,
   noSpecialChars: /^[a-zA-Z0-9\s\-_]+$/,
-  strongPassword: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-};
+  strongPassword: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8}$/};
 
 // Common validation messages
 export const validationMessages = {
@@ -27,8 +26,7 @@ export const validationMessages = {
   strongPassword: 'Password must contain at least 8 characters, including uppercase, lowercase, number, and special character',
   confirmPassword: 'Passwords do not match',
   fileSize: (maxSizeMB: number) => `File size must not exceed ${maxSizeMB}MB`,
-  fileType: (allowedTypes: string[]) => `Only ${allowedTypes.join(', ')} files are allowed`,
-};
+  fileType: (allowedTypes: string[]) => `Only ${allowedTypes.join(', ')} files are allowed`};
 
 // Zod schema builders for common patterns
 export const createValidationSchema = {
@@ -77,61 +75,51 @@ export const createValidationSchema = {
     const schema = z.instanceof(File);
     // Note: File validation in Zod is complex, so we'll handle this in the form validation hook
     return required ? schema : schema.optional();
-  },
-};
+  }};
 
 // React Hook Form validation rules
 export const createValidationRules = {
   required: (message = validationMessages.required): RegisterOptions => ({
-    required: { value: true, message },
-  }),
+    required: { value: true, message }}),
 
   email: (required = true): RegisterOptions => ({
     ...(required && { required: { value: true, message: validationMessages.required } }),
-    pattern: { value: validationPatterns.email, message: validationMessages.email },
-  }),
+    pattern: { value: validationPatterns.email, message: validationMessages.email }}),
 
   password: (required = true, strong = false): RegisterOptions => ({
     ...(required && { required: { value: true, message: validationMessages.required } }),
     minLength: { value: strong ? 8 : 6, message: validationMessages.minLength(strong ? 8 : 6) },
     ...(strong && {
-      pattern: { value: validationPatterns.strongPassword, message: validationMessages.strongPassword },
-    }),
-  }),
+      pattern: { value: validationPatterns.strongPassword, message: validationMessages.strongPassword }})}),
 
   text: (required = true, min?: number, max?: number): RegisterOptions => ({
     ...(required && { required: { value: true, message: validationMessages.required } }),
     ...(min && { minLength: { value: min, message: validationMessages.minLength(min) } }),
-    ...(max && { maxLength: { value: max, message: validationMessages.maxLength(max) } }),
-  }),
+    ...(max && { maxLength: { value: max, message: validationMessages.maxLength(max) } })}),
 
   number: (required = true, min?: number, max?: number): RegisterOptions => ({
     ...(required && { required: { value: true, message: validationMessages.required } }),
     ...(min !== undefined && { min: { value: min, message: validationMessages.min(min) } }),
     ...(max !== undefined && { max: { value: max, message: validationMessages.max(max) } }),
-    valueAsNumber: true,
-  }),
+    valueAsNumber: true}),
 
   url: (required = true): RegisterOptions => ({
     ...(required && { required: { value: true, message: validationMessages.required } }),
-    pattern: { value: validationPatterns.url, message: validationMessages.url },
-  }),
+    pattern: { value: validationPatterns.url, message: validationMessages.url }}),
 
   phone: (required = true): RegisterOptions => ({
     ...(required && { required: { value: true, message: validationMessages.required } }),
-    pattern: { value: validationPatterns.phone, message: validationMessages.phone },
-  }),
+    pattern: { value: validationPatterns.phone, message: validationMessages.phone }}),
 
   file: (required = true, maxSizeMB?: number, allowedTypes?: string[]): RegisterOptions => ({
     ...(required && { required: { value: true, message: validationMessages.required } }),
-    validate: {
+    validate: {},
       ...(maxSizeMB && {
         fileSize: (files: FileList) => {
           if (!files || files.length === 0) return true;
           const file = files[0];
           return file.size <= maxSizeMB * 1024 * 1024 || validationMessages.fileSize(maxSizeMB);
-        },
-      }),
+        }}),
       ...(allowedTypes && {
         fileType: (files: FileList) => {
           if (!files || files.length === 0) return true;
@@ -143,11 +131,7 @@ export const createValidationRules = {
               fileType.includes(type) || (fileExtension && type.includes(fileExtension))
             ) || validationMessages.fileType(allowedTypes)
           );
-        },
-      }),
-    },
-  }),
-};
+        }})}})};
 
 // Enhanced form hook with common patterns
 interface UseFormValidationOptions<T extends FieldValues> extends UseFormProps<T> {
@@ -168,8 +152,7 @@ export function useFormValidation<T extends FieldValues>({
 }: UseFormValidationOptions<T> = {}) {
   const form = useForm<T>({
     ...formOptions,
-    resolver: schema ? zodResolver(schema) : undefined,
-  });
+    resolver: schema ? zodResolver(schema) : undefined});
 
   const { handleSubmit, watch, formState: { errors, isSubmitting, isDirty } } = form;
 
@@ -247,8 +230,7 @@ export function useFormValidation<T extends FieldValues>({
         validate: (value: string) => {
           const passwordValue = form.getValues(passwordField);
           return value === passwordValue || validationMessages.confirmPassword;
-        },
-      };
+        }};
     },
     [form]
   );
@@ -300,35 +282,30 @@ export function useFormValidation<T extends FieldValues>({
     canSubmit,
     // Convenience getters
     isLoading: isSubmitting,
-    isDirty,
-  };
+    isDirty};
 }
 
 // Common form schemas
 export const commonSchemas = {
   login: z.object({
     email: createValidationSchema.email(),
-    password: createValidationSchema.password(),
-  }),
+    password: createValidationSchema.password()}),
 
   signup: z.object({
     firstName: createValidationSchema.text(true, 2, 50),
     lastName: createValidationSchema.text(true, 2, 50),
     email: createValidationSchema.email(),
     password: createValidationSchema.password(true, true),
-    confirmPassword: createValidationSchema.confirmPassword('password'),
-  }).refine((data) => data.password === data.confirmPassword, {
+    confirmPassword: createValidationSchema.confirmPassword('password')}).refine((data) => data.password === data.confirmPassword, {
     message: validationMessages.confirmPassword,
-    path: ['confirmPassword'],
-  }),
+    path: ['confirmPassword']}),
 
   profile: z.object({
     firstName: createValidationSchema.text(true, 2, 50),
     lastName: createValidationSchema.text(true, 2, 50),
     email: createValidationSchema.email(),
     phone: createValidationSchema.phone(false),
-    bio: createValidationSchema.text(false, 0, 500),
-  }),
+    bio: createValidationSchema.text(false, 0, 500)}),
 
   client: z.object({
     name: createValidationSchema.text(true, 2, 100),
@@ -336,8 +313,7 @@ export const commonSchemas = {
     phone: createValidationSchema.phone(false),
     industry: createValidationSchema.text(false, 0, 50),
     website: createValidationSchema.url(false),
-    description: createValidationSchema.text(false, 0, 1000),
-  }),
+    description: createValidationSchema.text(false, 0, 1000)}),
 
   campaign: z.object({
     name: createValidationSchema.text(true, 2, 100),
@@ -345,9 +321,6 @@ export const commonSchemas = {
     clientId: createValidationSchema.text(true),
     startDate: z.date(),
     endDate: z.date(),
-    budget: createValidationSchema.number(false, 0),
-  }).refine((data) => data.endDate >= data.startDate, {
+    budget: createValidationSchema.number(false, 0)}).refine((data) => data.endDate >= data.startDate, {
     message: 'End date must be after start date',
-    path: ['endDate'],
-  }),
-};
+    path: ['endDate']})};

@@ -33,8 +33,7 @@ import {
   errorResponse,
   handleApiError,
   methodNotAllowed,
-  ApiErrorCode,
-} from '@/lib/api-response';
+  ApiErrorCode} from '@/lib/api-response';
 // Simple stubs for missing modules
 class AICostController {
   static getInstance() {
@@ -115,8 +114,7 @@ async function validateAndSanitizeInput(req: NextApiRequest, body: any): Promise
         securityLogger.logEvent('MALICIOUS_INPUT_DETECTED', req, {
           field: key,
           pattern_type: 'multiple',
-          value_preview: value.slice(0, 100),
-        });
+          value_preview: value.slice(0, 100)});
         throw new Error(`Malicious content detected in field: ${key}`);
       }
       
@@ -125,8 +123,7 @@ async function validateAndSanitizeInput(req: NextApiRequest, body: any): Promise
         allowHTML: false,
         maxLength: 10000,
         removeControlChars: true,
-        normalizeUnicode: true,
-      });
+        normalizeUnicode: true});
     } else if (typeof value === 'object' && value !== null) {
       // Recursively sanitize nested objects
       sanitized[key] = await validateAndSanitizeInput(req, value);
@@ -148,15 +145,13 @@ async function validateAndSanitizeQuery(req: NextApiRequest, query: any): Promis
       if (securityValidation.containsMaliciousPattern(value)) {
         securityLogger.logEvent('MALICIOUS_QUERY_DETECTED', req, {
           parameter: key,
-          value_preview: value.slice(0, 100),
-        });
+          value_preview: value.slice(0, 100)});
         // For query parameters, we'll sanitize rather than reject
         sanitized[key] = sanitization.sanitizeInput(value, {
           allowHTML: false,
           maxLength: 1000,
           removeControlChars: true,
-          normalizeUnicode: true,
-        });
+          normalizeUnicode: true});
       } else {
         sanitized[key] = value;
       }
@@ -192,8 +187,7 @@ async function universalHandler(req: NextApiRequest, res: NextApiResponse): Prom
     body: req.body,
     query: req.query,
     startTime,
-    requestId,
-  };
+    requestId};
 
   // Start performance tracking
   const performanceTracker = PerformanceTracker.getInstance();
@@ -205,8 +199,7 @@ async function universalHandler(req: NextApiRequest, res: NextApiResponse): Prom
       securityLogger.logEvent('API_USAGE', req, {
         route: route.join('/'),
         requestId,
-        authenticated: true,
-      }, user.id, sessionId);
+        authenticated: true}, user.id, sessionId);
     }
 
     // Security: Validate and sanitize input data
@@ -261,8 +254,7 @@ async function universalHandler(req: NextApiRequest, res: NextApiResponse): Prom
       route: route.join('/'),
       error: error.message,
       stack: error.stack?.slice(0, 500),
-      requestId,
-    }, user?.id, sessionId);
+      requestId}, user?.id, sessionId);
 
     console.error(`[API v2] Error in ${context.method} /${route.join('/')}:`, error);
     return handleApiError(res, error, `api_v2_${route.join('_')}`);
@@ -297,21 +289,17 @@ async function handleHealthCheck(
     version: '2.0.0',
     uptime: process.uptime(),
     memory: process.memoryUsage(),
-    performance: {
+    performance: {},
       averageResponseTime: performanceTracker.getAverageResponseTime(),
       totalRequests: performanceTracker.getTotalRequests(),
-      errorRate: performanceTracker.getErrorRate(),
-    },
-    ai: {
+      errorRate: performanceTracker.getErrorRate()},
+    ai: {},
       budgetStatus: await costController.getBudgetStatus(),
-      totalSpent: await costController.getTotalSpent(),
-    },
-  };
+      totalSpent: await costController.getTotalSpent()}};
 
   return successResponse(res, health, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString(),
-  });
+    timestamp: new Date().toISOString()});
 }
 
 // Middleware pipeline wrapper
@@ -375,8 +363,7 @@ export async function withCostTracking(
       await costController.trackUsage('openai', 'gpt-4', 1000, actualCost, context.user.id, {
         operation,
         route: context.route.join('/'),
-        requestId: context.requestId,
-      });
+        requestId: context.requestId});
     };
 
     return true;

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
-const safeTextSchema = z.string()
+const safeTextSchema = z
+  .string()
   .transform(str => str.trim())
   .refine(str => !/<script[^>]*>.*?<\/script>/gi.test(str), 'Script tags not allowed');
 
@@ -14,10 +15,24 @@ const safeTextWithLength = (min?: number, max?: number) => {
 };
 
 const industrySchema = z.enum([
-  'technology', 'healthcare', 'finance', 'retail', 'education', 
-  'manufacturing', 'real-estate', 'hospitality', 'automotive', 
-  'food-beverage', 'fashion', 'sports', 'entertainment', 
-  'non-profit', 'government', 'consulting', 'marketing', 'other'
+  'technology',
+  'healthcare',
+  'finance',
+  'retail',
+  'education',
+  'manufacturing',
+  'real-estate',
+  'hospitality',
+  'automotive',
+  'food-beverage',
+  'fashion',
+  'sports',
+  'entertainment',
+  'non-profit',
+  'government',
+  'consulting',
+  'marketing',
+  'other',
 ]);
 
 export const createClientSchema = z.object({
@@ -25,20 +40,23 @@ export const createClientSchema = z.object({
   industry: industrySchema,
   description: safeTextWithLength(undefined, 1000).optional(),
   website: z.string().url('Invalid URL format').optional(),
-  primaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid color format').optional()
+  primaryColor: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid color format')
+    .optional(),
 });
 
 export function validateClientInput(input: unknown) {
   const result = createClientSchema.safeParse(input);
-  
+
   if (!result.success) {
     const errors = result.error.issues.map((issue: any) => ({
       field: issue.path.join('.'),
-      message: issue.message
+      message: issue.message,
     }));
-    
+
     return { success: false, errors, data: null };
   }
-  
+
   return { success: true, errors: [], data: result.data };
 }

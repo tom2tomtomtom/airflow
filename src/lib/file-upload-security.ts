@@ -83,7 +83,7 @@ export class FileUploadSecurity {
     this.checkClamAV();
   }
 
-  private async checkClamAV() : Promise<void> {
+  private async checkClamAV(): Promise<void> {
     try {
       await execAsync('clamscan --version');
       this.clamAvAvailable = true;
@@ -220,7 +220,7 @@ export class FileUploadSecurity {
       };
     } catch (error: any) {
       loggers.storage.error('Virus scan failed', error, { filePath });
-      
+
       return {
         clean: false,
         infected: false,
@@ -237,7 +237,7 @@ export class FileUploadSecurity {
   ): Promise<FileValidationResult> {
     // Check for malicious patterns in content
     const content = buffer.toString('utf8', 0, Math.min(buffer.length, 8192)); // Check first 8KB
-    
+
     if (this.containsMaliciousPatterns(content)) {
       return {
         valid: false,
@@ -260,14 +260,14 @@ export class FileUploadSecurity {
   private validateImageContent(buffer: Buffer): FileValidationResult {
     // Check for common image file signatures
     const signatures = {
-      jpg: [0xFF, 0xD8, 0xFF],
-      png: [0x89, 0x50, 0x4E, 0x47],
+      jpg: [0xff, 0xd8, 0xff],
+      png: [0x89, 0x50, 0x4e, 0x47],
       gif: [0x47, 0x49, 0x46],
       webp: [0x52, 0x49, 0x46, 0x46],
     };
 
     let validSignature = false;
-    
+
     for (const [format, signature] of Object.entries(signatures)) {
       if (this.checkFileSignature(buffer, signature)) {
         validSignature = true;
@@ -306,11 +306,11 @@ export class FileUploadSecurity {
   // Check file signature
   private checkFileSignature(buffer: Buffer, signature: number[]): boolean {
     if (buffer.length < signature.length) return false;
-    
+
     for (let i = 0; i < signature.length; i++) {
       if (buffer[i] !== signature[i]) return false;
     }
-    
+
     return true;
   }
 
@@ -318,22 +318,22 @@ export class FileUploadSecurity {
   private sanitizeFileName(fileName: string): string {
     // Remove path traversal attempts
     let sanitized = path.basename(fileName);
-    
+
     // Replace special characters
     sanitized = sanitized.replace(/[^a-zA-Z0-9._-]/g, '_');
-    
+
     // Limit length
     if (sanitized.length > 255) {
       const ext = path.extname(sanitized);
       const name = path.basename(sanitized, ext);
       sanitized = name.substring(0, 255 - ext.length) + ext;
     }
-    
+
     // Add timestamp to ensure uniqueness
     const timestamp = Date.now();
     const ext = path.extname(sanitized);
     const name = path.basename(sanitized, ext);
-    
+
     return `${name}_${timestamp}${ext}`;
   }
 
@@ -369,16 +369,9 @@ export class FileUploadSecurity {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    
+
     // Create path structure: /uploads/userId/year/month/day/fileName
-    return path.join(
-      'uploads',
-      userId,
-      year.toString(),
-      month,
-      day,
-      fileName
-    );
+    return path.join('uploads', userId, year.toString(), month, day, fileName);
   }
 }
 

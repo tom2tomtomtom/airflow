@@ -63,7 +63,7 @@ export class RedisCache {
         url: config.url,
         password: config.password,
         database: config.db,
-        socket: {
+        socket: {},
           reconnectStrategy: (retries) => Math.min(retries * 50, 500),
           connectTimeout: 5000,
           commandTimeout: 5000

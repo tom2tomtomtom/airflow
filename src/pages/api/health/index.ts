@@ -17,7 +17,7 @@ interface HealthResponse {
   version: string;
   environment: string;
   checks: HealthCheck[];
-  summary: {
+  summary: {},
     total: number;
     healthy: number;
     unhealthy: number;
@@ -44,7 +44,7 @@ const checkDatabase = async (): Promise<HealthCheck> => {
       service: 'database',
       status: 'healthy',
       responseTime: Date.now() - start,
-      details: {
+      details: {},
         connection: 'active',
         queryExecuted: true
       }
@@ -70,7 +70,7 @@ const checkRedis = async (): Promise<HealthCheck> => {
         service: 'redis',
         status: 'degraded',
         responseTime: Date.now() - start,
-        details: {
+        details: {},
           message: 'Redis not configured or using default local instance'
         }
       };
@@ -88,7 +88,7 @@ const checkRedis = async (): Promise<HealthCheck> => {
       service: 'redis',
       status: 'healthy',
       responseTime: Date.now() - start,
-      details: {
+      details: {},
         connection: 'active',
         pingSuccessful: true
       }
@@ -112,7 +112,7 @@ const checkExternalAPIs = async (): Promise<HealthCheck[]> => {
     const start = Date.now();
     try {
       const response = await fetch('https://api.openai.com/v1/models', {
-        headers: {
+        headers: {},
           'Authorization': `Bearer ${config.OPENAI_API_KEY}`,
           'Content-Type': 'application/json'
         },
@@ -123,7 +123,7 @@ const checkExternalAPIs = async (): Promise<HealthCheck[]> => {
         service: 'openai',
         status: response.ok ? 'healthy' : 'degraded',
         responseTime: Date.now() - start,
-        details: {
+        details: {},
           statusCode: response.status,
           available: response.ok
         }
@@ -149,7 +149,7 @@ const checkExternalAPIs = async (): Promise<HealthCheck[]> => {
       service: 'supabase',
       status: response.ok ? 'healthy' : 'degraded',
       responseTime: Date.now() - start,
-      details: {
+      details: {},
         statusCode: response.status,
         available: response.ok
       }
@@ -189,13 +189,13 @@ const checkSystemResources = (): HealthCheck => {
     return {
       service: 'system',
       status,
-      details: {
+      details: {},
         memory: memoryInMB,
         heapUsagePercent: Math.round(heapUsagePercent),
         uptime: process.uptime(),
         nodeVersion: process.version,
         platform: process.platform,
-        cpu: {
+        cpu: {},
           user: cpuUsage.user,
           system: cpuUsage.system
         }

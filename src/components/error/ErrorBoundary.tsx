@@ -63,8 +63,7 @@ function DefaultErrorFallback({ error, errorInfo, resetError, eventId }: ErrorFa
         justifyContent: 'center',
         minHeight: '400px',
         padding: 3,
-        textAlign: 'center',
-      }}
+        textAlign: 'center'}}
     >
       <BugReportOutlined sx={{ fontSize: 64, color: 'error.main', mb: 2 }} />
       
@@ -135,8 +134,7 @@ function DefaultErrorFallback({ error, errorInfo, resetError, eventId }: ErrorFa
               backgroundColor: 'rgba(0,0,0,0.05)',
               padding: 1,
               borderRadius: 1,
-              mb: 2,
-            }}>
+              mb: 2}}>
               {error.stack}
             </Typography>
             
@@ -150,8 +148,7 @@ function DefaultErrorFallback({ error, errorInfo, resetError, eventId }: ErrorFa
                   fontSize: '0.8rem',
                   backgroundColor: 'rgba(0,0,0,0.05)',
                   padding: 1,
-                  borderRadius: 1,
-                }}>
+                  borderRadius: 1}}>
                   {errorInfo.componentStack}
                 </Typography>
               </Box>
@@ -174,16 +171,14 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       hasError: false,
       error: null,
       errorInfo: null,
-      eventId: null,
-    };
+      eventId: null};
   }
 
   static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
     // Update state so the next render will show the fallback UI
     return {
       hasError: true,
-      error,
-    };
+      error};
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
@@ -193,8 +188,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     this.setState({
       error,
       errorInfo,
-      eventId,
-    });
+      eventId});
 
     // Log error locally
     // eslint-disable-next-line no-console
@@ -231,17 +225,14 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             eventId,
-            error: {
+            error: {},
               name: error.name,
               message: error.message,
-              stack: error.stack,
-            },
+              stack: error.stack},
             errorInfo,
             timestamp: new Date().toISOString(),
             userAgent: navigator.userAgent,
-            url: window.location.href,
-          }),
-        }).catch(reportingError => {
+            url: window.location.href})}).catch(reportingError => {
           console.error('Failed to report error:', reportingError);
         });
       }
@@ -255,8 +246,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       hasError: false,
       error: null,
       errorInfo: null,
-      eventId: null,
-    });
+      eventId: null});
   };
 
   render() {
@@ -318,15 +308,12 @@ export function FeatureErrorBoundary({ children, feature }: { children: ReactNod
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         feature,
-        error: {
+        error: {},
           name: error.name,
           message: error.message,
-          stack: error.stack,
-        },
+          stack: error.stack},
         errorInfo,
-        timestamp: new Date().toISOString(),
-      }),
-    }).catch(console.error);
+        timestamp: new Date().toISOString()})}).catch(console.error);
   };
 
   const CustomFallback = ({ error, resetError }: ErrorFallbackProps) => (

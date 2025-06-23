@@ -9,13 +9,13 @@ process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'TEST_JWT_TOKEN_PLACEHOLDER';
 
 // Mock Supabase client before importing handlers
 jest.mock('@/lib/supabase/client', () => ({
-  supabase: {
+  supabase: {},
     from: jest.fn(() => ({
       select: jest.fn(() => ({
         eq: jest.fn(() => ({
           eq: jest.fn(() => ({
             single: jest.fn(() => Promise.resolve({
-              data: {
+              data: {},
                 id: 'test-workflow-id',
                 user_id: 'test-user-123',
                 current_step: 0,
@@ -44,7 +44,7 @@ jest.mock('@/lib/supabase/client', () => ({
       upsert: jest.fn(() => ({
         select: jest.fn(() => ({
           single: jest.fn(() => Promise.resolve({
-            data: {
+            data: {},
               id: 'test-workflow-id',
               user_id: 'test-user-123',
               current_step: 0,
@@ -89,8 +89,7 @@ const createMockResponse = () => {
     status: jest.fn().mockReturnThis(),
     json: jest.fn().mockReturnThis(),
     end: jest.fn().mockReturnThis(),
-    setHeader: jest.fn().mockReturnThis(),
-  } as unknown as NextApiResponse;
+    setHeader: jest.fn().mockReturnThis()} as unknown as NextApiResponse;
   return res;
 };
 
@@ -106,18 +105,16 @@ const createMockRequest = (method: string = 'GET', body: any = {}) => {
 
 // Mock route context
 const createMockContext = (userId: string = 'test-user-123', method: string = 'GET'): RouteContext => ({
-  user: {
+  user: {},
     id: userId,
     email: 'test@example.com',
-    role: 'user',
-  },
+    role: 'user'},
   route: [],
   method,
   body: Record<string, unknown>$1
   query: Record<string, unknown>$1
   requestId: 'test-request-123',
-  startTime: Date.now(),
-});
+  startTime: Date.now()});
 
 describe('API v2 Handlers', () => {
   describe('Workflow Routes', () => {
@@ -133,8 +130,7 @@ describe('API v2 Handlers', () => {
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
           success: true,
-          data: expect.any(Object),
-        })
+          data: expect.any(Object)})
       );
     });
 
@@ -165,8 +161,7 @@ describe('API v2 Handlers', () => {
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
-          success: true,
-        })
+          success: true})
       );
     });
 
@@ -182,9 +177,7 @@ describe('API v2 Handlers', () => {
         expect.objectContaining({
           success: false,
           error: expect.objectContaining({
-            message: expect.stringContaining('not found'),
-          }),
-        })
+            message: expect.stringContaining('not found')})})
       );
     });
 
@@ -200,9 +193,7 @@ describe('API v2 Handlers', () => {
         expect.objectContaining({
           success: false,
           error: expect.objectContaining({
-            message: expect.stringContaining('Authentication required'),
-          }),
-        })
+            message: expect.stringContaining('Authentication required')})})
       );
     });
   });
@@ -212,15 +203,13 @@ describe('API v2 Handlers', () => {
       const req = createMockRequest('POST', {
         service: 'openai',
         model: 'gpt-4',
-        estimatedTokens: 1000,
-      });
+        estimatedTokens: 1000});
       const res = createMockResponse();
       const context = createMockContext('test-user-123', 'POST');
       context.body = {
         service: 'openai',
         model: 'gpt-4',
-        estimatedTokens: 1000,
-      };
+        estimatedTokens: 1000};
 
       await handleAIRoutes(req, res, context, ['cost-check']);
 
@@ -230,9 +219,7 @@ describe('API v2 Handlers', () => {
           success: true,
           data: expect.objectContaining({
             allowed: expect.any(Boolean),
-            budgetRemaining: expect.any(Number),
-          }),
-        })
+            budgetRemaining: expect.any(Number)})})
       );
     });
 
@@ -247,8 +234,7 @@ describe('API v2 Handlers', () => {
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
           success: true,
-          data: expect.any(Object),
-        })
+          data: expect.any(Object)})
       );
     });
 
@@ -263,8 +249,7 @@ describe('API v2 Handlers', () => {
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
           success: true,
-          data: expect.any(Object),
-        })
+          data: expect.any(Object)})
       );
     });
 
@@ -280,9 +265,7 @@ describe('API v2 Handlers', () => {
         expect.objectContaining({
           success: false,
           error: expect.objectContaining({
-            message: expect.stringContaining('Authentication required'),
-          }),
-        })
+            message: expect.stringContaining('Authentication required')})})
       );
     });
   });
@@ -300,12 +283,9 @@ describe('API v2 Handlers', () => {
         expect.objectContaining({
           success: true,
           data: expect.objectContaining({
-            assets: expect.any(Array),
-          }),
+            assets: expect.any(Array)}),
           meta: expect.objectContaining({
-            pagination: expect.any(Object),
-          }),
-        })
+            pagination: expect.any(Object)})})
       );
     });
 
@@ -327,8 +307,7 @@ describe('API v2 Handlers', () => {
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
-          success: true,
-        })
+          success: true})
       );
     });
   });
@@ -347,9 +326,7 @@ describe('API v2 Handlers', () => {
           success: true,
           data: expect.objectContaining({
             status: expect.any(String),
-            timestamp: expect.any(String),
-          }),
-        })
+            timestamp: expect.any(String)})})
       );
     });
 
@@ -364,8 +341,7 @@ describe('API v2 Handlers', () => {
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
           success: true,
-          data: expect.any(Object),
-        })
+          data: expect.any(Object)})
       );
     });
   });
@@ -394,8 +370,7 @@ describe('API v2 Handlers', () => {
       expect(res.status).toHaveBeenCalledWith(404);
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
-          success: false,
-        })
+          success: false})
       );
     });
   });

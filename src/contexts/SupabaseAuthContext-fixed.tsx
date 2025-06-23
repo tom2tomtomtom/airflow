@@ -25,8 +25,7 @@ const SupabaseAuthContext = createContext<SupabaseAuthContextType>({
   login: async () => ({ success: false }),
   signup: async () => ({ success: false }),
   logout: async () => {},
-  refreshSession: async () => ({ success: false }),
-});
+  refreshSession: async () => ({ success: false })});
 
 export const useSupabaseAuth = () => {
   const context = useContext(SupabaseAuthContext);
@@ -41,8 +40,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
     user: null,
     session: null,
     loading: true,
-    isAuthenticated: false,
-  });
+    isAuthenticated: false});
   const router = useRouter();
 
   // Get the unified Supabase client
@@ -60,8 +58,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
             user: null,
             session: null,
             loading: false,
-            isAuthenticated: false,
-          });
+            isAuthenticated: false});
           return;
         }
 
@@ -70,8 +67,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
             user: session.user,
             session,
             loading: false,
-            isAuthenticated: true,
-          });
+            isAuthenticated: true});
           
           // Store user data in localStorage for compatibility with other parts of the app
           if (typeof window !== 'undefined' && session.user) {
@@ -80,8 +76,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
               email: session.user.email || '',
               name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
               token: session.access_token,
-              role: session.user.user_metadata?.role || 'user',
-            };
+              role: session.user.user_metadata?.role || 'user'};
             localStorage.setItem('airwave_user', JSON.stringify(userData));
                       }
         } else {
@@ -89,22 +84,20 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
             user: null,
             session: null,
             loading: false,
-            isAuthenticated: false,
-          });
+            isAuthenticated: false});
           
           // Clear localStorage when logged out
           if (typeof window !== 'undefined') {
             localStorage.removeItem('airwave_user');
           }
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('💥 Session check error:', error);
         setAuthState({
           user: null,
           session: null,
           loading: false,
-          isAuthenticated: false,
-        });
+          isAuthenticated: false});
       }
     };
 
@@ -118,8 +111,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
             user: session.user,
             session,
             loading: false,
-            isAuthenticated: true,
-          });
+            isAuthenticated: true});
           
           // Store user data in localStorage for compatibility with other parts of the app
           if (typeof window !== 'undefined' && session.user) {
@@ -128,8 +120,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
               email: session.user.email || '',
               name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
               token: session.access_token,
-              role: session.user.user_metadata?.role || 'user',
-            };
+              role: session.user.user_metadata?.role || 'user'};
             localStorage.setItem('airwave_user', JSON.stringify(userData));
                       }
         } else {
@@ -137,8 +128,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
             user: null,
             session: null,
             loading: false,
-            isAuthenticated: false,
-          });
+            isAuthenticated: false});
           
           // Clear localStorage when logged out
           if (typeof window !== 'undefined') {
@@ -165,8 +155,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
     try {
             const { data, error } = await supabaseClient.auth.signInWithPassword({
         email,
-        password,
-      });
+        password});
 
       if (error) {
         console.error('❌ Login error:', error);
@@ -183,7 +172,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
 
       throw new Error('No session returned from login');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('💥 Login error:', error);
       return { success: false, error: error.message };
     }
@@ -194,13 +183,10 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
             const { data, error } = await supabaseClient.auth.signUp({
         email,
         password,
-        options: {
-          data: {
+        options: {},
+          data: {},
             name,
-            role: 'authenticated',
-          },
-        },
-      });
+            role: 'authenticated'}}});
 
       if (error) {
         console.error('❌ Signup error:', error);
@@ -208,7 +194,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
 
             return { success: true, user: data.user || undefined };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('💥 Signup error:', error);
       return { success: false, error: error.message };
     }
@@ -223,7 +209,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
       
             // The onAuthStateChange listener will handle the state update and redirect
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('💥 Logout error:', error);
     }
   };
@@ -242,7 +228,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
       
             return { success: false };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('💥 Session refresh error:', error);
       return { success: false, error: error.message };
     }
@@ -255,8 +241,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         login,
         signup,
         logout,
-        refreshSession,
-      }}
+        refreshSession}}
     >
       {children}
     </SupabaseAuthContext.Provider>

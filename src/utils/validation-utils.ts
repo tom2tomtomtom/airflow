@@ -52,21 +52,18 @@ export const validationSchemas = {
     page: z.number().int().min(1).default(1),
     limit: z.number().int().min(1).max(100).default(20),
     sortBy: z.string().optional(),
-    sortOrder: z.enum(['asc', 'desc']).default('desc'),
-  }),
+    sortOrder: z.enum(['asc', 'desc']).default('desc')}),
 
   // Date range
   dateRange: z
     .object({
       startDate: z.string().datetime().optional(),
-      endDate: z.string().datetime().optional(),
-    })
+      endDate: z.string().datetime().optional()})
     .refine(
       data =>
         !data.startDate || !data.endDate || new Date(data.startDate) <= new Date(data.endDate),
       'Start date must be before end date'
-    ),
-};
+    )};
 
 // Sanitize string to prevent SQL injection
 export function sanitizeSQLString(input: string): string {
@@ -108,8 +105,7 @@ const fileAllowedTypes = {
     'application/msword',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     'text/plain',
-  ],
-};
+  ]};
 
 const fileMaxSizes = {
   image: 10 * 1024 * 1024, // 10MB
@@ -171,8 +167,7 @@ export const fileValidation: FileValidation = {
       'application/pdf': ['pdf'],
       'application/msword': ['doc'],
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['docx'],
-      'text/plain': ['txt'],
-    };
+      'text/plain': ['txt']};
 
     const validExtensions = expectedExtensions[file.type];
     if (validExtensions && extension && !validExtensions.includes(extension)) {
@@ -180,16 +175,14 @@ export const fileValidation: FileValidation = {
     }
 
     return true;
-  },
-};
+  }};
 
 // Export validation schemas for specific API routes
 export const apiValidationSchemas = {
   // Auth schemas
   login: z.object({
     email: validationSchemas.email,
-    password: z.string().min(1, 'Password is required'),
-  }),
+    password: z.string().min(1, 'Password is required')}),
 
   signup: z.object({
     email: validationSchemas.email,
@@ -199,8 +192,7 @@ export const apiValidationSchemas = {
       .min(2, 'Name must be at least 2 characters')
       .transform(str => str.trim())
       .refine(str => !/<[^>]*>/.test(str), 'HTML tags are not allowed')
-      .refine(str => !/[<>'"`;]/.test(str), 'Special characters not allowed'),
-  }),
+      .refine(str => !/[<>'"`;]/.test(str), 'Special characters not allowed')}),
 
   // Client schemas
   createClient: z.object({
@@ -218,15 +210,13 @@ export const apiValidationSchemas = {
     secondaryColor: z
       .string()
       .regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid color format')
-      .optional(),
-  }),
+      .optional()}),
 
   // Asset schemas
   uploadAsset: z.object({
     clientId: validationSchemas.uuid,
     category: z.enum(['image', 'video', 'audio', 'document']),
-    tags: z.array(validationSchemas.safeString).optional(),
-  }),
+    tags: z.array(validationSchemas.safeString).optional()}),
 
   // Brief schemas
   createBrief: z.object({
@@ -239,9 +229,7 @@ export const apiValidationSchemas = {
       .refine(str => !/[<>'"`;]/.test(str), 'Special characters not allowed'),
     content: validationSchemas.safeText,
     objectives: z.array(validationSchemas.safeText).optional(),
-    targetAudience: validationSchemas.safeText.optional(),
-  }),
-};
+    targetAudience: validationSchemas.safeText.optional()})};
 
 // Enhanced input sanitization functions
 export const sanitization = {
@@ -286,7 +274,7 @@ export const sanitization = {
   sanitizeFilename(filename: string): string {
     return filename
       .replace(/[^a-zA-Z0-9.-]/g, '_') // Replace non-alphanumeric chars
-      .replace(/\.{2,}/g, '.') // Replace multiple dots
+      .replace(/\.{2}/g, '.') // Replace multiple dots
       .replace(/^\.+|\.+$/g, '') // Remove leading/trailing dots
       .substring(0, 255); // Limit length
   },
@@ -322,7 +310,7 @@ export const sanitization = {
   },
 
   // Complete input sanitization for API inputs
-  sanitizeInput(input: string, options: {
+  sanitizeInput(input: string, options: {},
     allowHTML?: boolean;
     maxLength?: number;
     removeControlChars?: boolean;
@@ -332,8 +320,7 @@ export const sanitization = {
       allowHTML = false,
       maxLength = 10000,
       removeControlChars = true,
-      normalizeUnicode = true,
-    } = options;
+      normalizeUnicode = true} = options;
 
     let sanitized = input;
 
@@ -361,8 +348,7 @@ export const sanitization = {
     }
 
     return sanitized;
-  },
-};
+  }};
 
 // Security validation helpers
 export const securityValidation = {
@@ -505,7 +491,7 @@ export const securityValidation = {
   },
 
   // Validate and sanitize input comprehensively
-  validateAndSanitize(input: string, options: {
+  validateAndSanitize(input: string, options: {},
     allowHTML?: boolean;
     maxLength?: number;
     checkMalicious?: boolean;
@@ -515,8 +501,7 @@ export const securityValidation = {
       allowHTML = false,
       maxLength = 10000,
       checkMalicious = true,
-      throwOnMalicious = false,
-    } = options;
+      throwOnMalicious = false} = options;
 
     const warnings: string[] = [];
     let isValid = true;
@@ -550,9 +535,7 @@ export const securityValidation = {
       allowHTML,
       maxLength,
       removeControlChars: true,
-      normalizeUnicode: true,
-    });
+      normalizeUnicode: true});
 
     return { sanitized, isValid, warnings };
-  },
-};
+  }};

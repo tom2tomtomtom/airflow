@@ -19,8 +19,7 @@ const BriefCreateSchema = z.object({
   platforms: z.array(z.string()).optional(),
   budget: z.number().optional(),
   timeline: z.any().optional(),
-  client_id: z.string().uuid('Invalid client ID'),
-});
+  client_id: z.string().uuid('Invalid client ID')});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -105,7 +104,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   return res.json({ 
     data: data || [],
     count,
-    pagination: {
+    pagination: {},
       limit: parseInt(limit as string),
       offset: parseInt(offset as string),
       total: count || 0
@@ -143,8 +142,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
     .insert({
       ...briefData,
       created_by: user.id,
-      parsing_status: briefData.raw_content ? 'pending' : 'completed',
-    })
+      parsing_status: briefData.raw_content ? 'pending' : 'completed'})
     .select(`
       *,
       clients(name, slug),
@@ -162,15 +160,12 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
     try {
       await fetch(`${req.headers.origin}/api/brief-parse`, {
         method: 'POST',
-        headers: {
+        headers: {},
           'Content-Type': 'application/json',
-          'Authorization': req.headers.authorization || '',
-        },
+          'Authorization': req.headers.authorization || ''},
         body: JSON.stringify({
           brief_id: brief.id,
-          content: briefData.raw_content,
-        }),
-      });
+          content: briefData.raw_content})});
     } catch (parseError: any) {
       console.error('Error triggering brief parsing:', parseError);
       // Don't fail the request, just log the error

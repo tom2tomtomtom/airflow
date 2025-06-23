@@ -17,7 +17,7 @@ export default async function handler(
   try {
     // Get token from cookies
     const token = req.cookies.airwave_token;
-    
+
     if (token) {
       // Try to sign out from Supabase
       try {
@@ -31,26 +31,25 @@ export default async function handler(
     // Clear authentication cookies
     res.setHeader('Set-Cookie', [
       'airwave_token=; HttpOnly; Secure; SameSite=Strict; Max-Age=0; Path=/',
-      'airwave_refresh_token=; HttpOnly; Secure; SameSite=Strict; Max-Age=0; Path=/'
+      'airwave_refresh_token=; HttpOnly; Secure; SameSite=Strict; Max-Age=0; Path=/',
     ]);
 
     return res.status(200).json({
       success: true,
-      message: 'Logged out successfully'
+      message: 'Logged out successfully',
     });
-
   } catch (error: any) {
     console.error('Logout error:', error);
-    
+
     // Still clear cookies even if there's an error
     res.setHeader('Set-Cookie', [
       'airwave_token=; HttpOnly; Secure; SameSite=Strict; Max-Age=0; Path=/',
-      'airwave_refresh_token=; HttpOnly; Secure; SameSite=Strict; Max-Age=0; Path=/'
+      'airwave_refresh_token=; HttpOnly; Secure; SameSite=Strict; Max-Age=0; Path=/',
     ]);
-    
+
     return res.status(200).json({
       success: true,
-      message: 'Logged out successfully'
+      message: 'Logged out successfully',
     });
   }
 }

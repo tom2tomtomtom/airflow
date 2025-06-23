@@ -31,7 +31,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(200).json({
     success: true,
     data: errors,
-    meta: {
+    meta: {},
       count: errors.length,
       timestamp: new Date().toISOString()
     }
@@ -41,8 +41,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 describe('/api/errors', () => {
   it('should return errors list successfully', async () => {
     const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-      method: 'GET',
-    });
+      method: 'GET'});
 
     await handler(req, res);
 
@@ -54,9 +53,7 @@ describe('/api/errors', () => {
       data: expect.any(Array),
       meta: expect.objectContaining({
         count: expect.any(Number),
-        timestamp: expect.any(String),
-      }),
-    });
+        timestamp: expect.any(String)})});
     
     expect(data.data.length).toBeGreaterThan(0);
     expect(data.data[0]).toHaveProperty('id');
@@ -65,8 +62,7 @@ describe('/api/errors', () => {
 
   it('should reject non-GET methods', async () => {
     const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-      method: 'POST',
-    });
+      method: 'POST'});
 
     await handler(req, res);
 
@@ -81,8 +77,7 @@ describe('/api/errors', () => {
     
     for (const method of methods) {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-        method,
-      });
+        method});
 
       await handler(req, res);
       expect(res._getStatusCode()).toBe(405);

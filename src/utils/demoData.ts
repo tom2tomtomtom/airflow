@@ -46,7 +46,7 @@ export const demoAssets = [
     created_at: new Date('2024-03-03').toISOString(),
     updated_at: new Date('2024-03-03').toISOString(),
   },
-  
+
   // Uploaded Assets
   {
     id: '4',
@@ -168,7 +168,7 @@ export const demoTemplates = [
     category: 'social',
     content_type: 'post',
     usage_count: 156,
-    performance_score: 0.90,
+    performance_score: 0.9,
     is_public: true,
     created_at: new Date('2024-01-25').toISOString(),
     updated_at: new Date('2024-03-01').toISOString(),

@@ -5,10 +5,9 @@
 
 import { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
-import { alerting, AlertRule, AlertSeverity } from '@/lib/monitoring/alerting-system';
+import { alerting, AlertRule } from '@/lib/monitoring/alerting-system';
 import { withAuth } from '@/middleware/withAuth';
 import { withRateLimit } from '@/middleware/withRateLimit';
-import { withValidation } from '@/middleware/withValidation';
 
 // Validation schemas
 const CreateAlertRuleSchema = z.object({
@@ -27,19 +26,25 @@ const CreateAlertRuleSchema = z.object({
     intervalSeconds: z.number().min(30).max(3600),
     forDuration: z.number().min(0).max(3600),
   }),
-  notifications: z.array(z.object({
-    channel: z.enum(['email', 'slack', 'pagerduty', 'webhook', 'sms']),
-    target: z.string(),
-    template: z.string().optional(),
-    conditions: z.object({
-      severity: z.array(z.enum(['critical', 'high', 'medium', 'low', 'info'])).optional(),
-      tags: z.record(z.string()).optional(),
-      timeRange: z.object({
-        start: z.string(),
-        end: z.string(),
-      }).optional(),
-    }).optional(),
-  })),
+  notifications: z.array(
+    z.object({
+      channel: z.enum(['email', 'slack', 'pagerduty', 'webhook', 'sms']),
+      target: z.string(),
+      template: z.string().optional(),
+      conditions: z
+        .object({
+          severity: z.array(z.enum(['critical', 'high', 'medium', 'low', 'info'])).optional(),
+          tags: z.record(z.string()).optional(),
+          timeRange: z
+            .object({
+              start: z.string(),
+              end: z.string(),
+            })
+            .optional(),
+        })
+        .optional(),
+    })
+  ),
   runbook: z.string().url().optional(),
   tags: z.record(z.string()).optional(),
   enabled: z.boolean().default(true),
@@ -109,9 +114,9 @@ async function handleGetAlerts(req: NextApiRequest, res: NextApiResponse) {
       return res.status(200).json({
         success: true,
         data: { rules },
-        meta: { 
+        meta: {
           count: rules.length,
-          timestamp: new Date().toISOString() 
+          timestamp: new Date().toISOString(),
         },
       });
     }
@@ -143,12 +148,12 @@ async function handleGetAlerts(req: NextApiRequest, res: NextApiResponse) {
 
     return res.status(200).json({
       success: true,
-      data: { 
+      data: {
         alerts: alerts.map(alert => ({
           ...alert,
           duration: alert.lastSeen.getTime() - alert.firstSeen.getTime(),
         })),
-        stats 
+        stats,
       },
       meta: { timestamp: new Date().toISOString() },
     });
@@ -181,10 +186,10 @@ async function handleCreateRule(req: NextApiRequest, res: NextApiResponse) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({
         success: false,
-        error: { 
-          code: 'VALIDATION_ERROR', 
+        error: {
+          code: 'VALIDATION_ERROR',
           message: 'Invalid rule data',
-          details: error.errors 
+          details: error.errors,
         },
       });
     }
@@ -230,10 +235,10 @@ async function handleUpdateRule(req: NextApiRequest, res: NextApiResponse) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({
         success: false,
-        error: { 
-          code: 'VALIDATION_ERROR', 
+        error: {
+          code: 'VALIDATION_ERROR',
           message: 'Invalid rule data',
-          details: error.errors 
+          details: error.errors,
         },
       });
     }
@@ -327,11 +332,11 @@ async function handleAcknowledgeAlert(req: NextApiRequest, res: NextApiResponse)
 
     return res.status(200).json({
       success: true,
-      data: { 
-        acknowledged: true, 
-        alertId, 
+      data: {
+        acknowledged: true,
+        alertId,
         acknowledgedBy,
-        comment 
+        comment,
       },
       meta: { timestamp: new Date().toISOString() },
     });
@@ -339,10 +344,10 @@ async function handleAcknowledgeAlert(req: NextApiRequest, res: NextApiResponse)
     if (error instanceof z.ZodError) {
       return res.status(400).json({
         success: false,
-        error: { 
-          code: 'VALIDATION_ERROR', 
+        error: {
+          code: 'VALIDATION_ERROR',
           message: 'Invalid acknowledgment data',
-          details: error.errors 
+          details: error.errors,
         },
       });
     }
@@ -369,9 +374,9 @@ async function handleSilenceAlert(req: NextApiRequest, res: NextApiResponse) {
 
     return res.status(200).json({
       success: true,
-      data: { 
-        silenced: true, 
-        alertId, 
+      data: {
+        silenced: true,
+        alertId,
         duration,
         reason,
         until: new Date(Date.now() + duration * 1000).toISOString(),
@@ -382,10 +387,10 @@ async function handleSilenceAlert(req: NextApiRequest, res: NextApiResponse) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({
         success: false,
-        error: { 
-          code: 'VALIDATION_ERROR', 
+        error: {
+          code: 'VALIDATION_ERROR',
           message: 'Invalid silence data',
-          details: error.errors 
+          details: error.errors,
         },
       });
     }
@@ -419,8 +424,8 @@ async function handleResolveAlert(req: NextApiRequest, res: NextApiResponse) {
 
   return res.status(200).json({
     success: true,
-    data: { 
-      resolved: true, 
+    data: {
+      resolved: true,
       alertId,
       resolvedAt: alert.resolvedAt.toISOString(),
     },
@@ -429,6 +434,4 @@ async function handleResolveAlert(req: NextApiRequest, res: NextApiResponse) {
 }
 
 // Apply middleware pipeline
-export default withAuth(
-  withRateLimit('api')(handler)
-);
+export default withAuth(withRateLimit('api')(handler));

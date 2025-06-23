@@ -14,21 +14,14 @@ import { handleAIRoutes } from '../ai';
 
 // Mock dependencies
 jest.mock('@/lib/supabase', () => ({
-  supabase: {
+  supabase: {},
     from: jest.fn(() => ({
       select: jest.fn(() => ({
         eq: jest.fn(() => ({
-          single: jest.fn(() => Promise.resolve({ data: null, error: null })),
-        })),
-      })),
+          single: jest.fn(() => Promise.resolve({ data: null, error: null }))}))})),
       insert: jest.fn(() => ({
         select: jest.fn(() => ({
-          single: jest.fn(() => Promise.resolve({ data: { id: 'test-id' }, error: null })),
-        })),
-      })),
-    })),
-  },
-}));
+          single: jest.fn(() => Promise.resolve({ data: { id: 'test-id' }, error: null }))}))}))}))}}));
 
 // Mock console methods
 const _mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -55,21 +48,17 @@ describe('API v2 AI Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         url: '/api/v2/ai/generate',
-        body: {
+        body: {},
           type: 'copy',
           prompt: 'Generate social media copy for a tech startup',
-          context: {
+          context: {},
             platform: 'facebook',
             tone: 'professional',
-            length: 'short',
-          },
-          options: {
+            length: 'short'},
+          options: {},
             model: 'gpt-4',
             temperature: 0.7,
-            maxTokens: 150,
-          },
-        },
-      });
+            maxTokens: 150}}});
 
       const postContext = { ...mockContext, method: 'POST', body: req.body };
       await handleAIRoutes(req, res, postContext, ['generate']);
@@ -85,16 +74,13 @@ describe('API v2 AI Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         url: '/api/v2/ai/generate',
-        body: {
+        body: {},
           type: 'motivations',
           briefContent: 'Launch a new fitness app targeting millennials',
           count: 5,
-          options: {
+          options: {},
             model: 'gpt-4',
-            creativity: 'high',
-          },
-        },
-      });
+            creativity: 'high'}}});
 
       const postContext = { ...mockContext, method: 'POST', body: req.body };
       await handleAIRoutes(req, res, postContext, ['generate']);
@@ -110,17 +96,14 @@ describe('API v2 AI Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         url: '/api/v2/ai/generate',
-        body: {
+        body: {},
           type: 'image',
           prompt: 'Professional business team in modern office',
           style: 'corporate',
           dimensions: { width: 1080, height: 1080 },
-          options: {
+          options: {},
             model: 'dall-e-3',
-            quality: 'hd',
-          },
-        },
-      });
+            quality: 'hd'}}});
 
       const postContext = { ...mockContext, method: 'POST', body: req.body };
       await handleAIRoutes(req, res, postContext, ['generate']);
@@ -135,10 +118,9 @@ describe('API v2 AI Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         url: '/api/v2/ai/generate',
-        body: {
+        body: {},
           // Missing required fields
-        },
-      });
+        }});
 
       const postContext = { ...mockContext, method: 'POST', body: req.body };
       await handleAIRoutes(req, res, postContext, ['generate']);
@@ -153,11 +135,9 @@ describe('API v2 AI Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         url: '/api/v2/ai/generate',
-        body: {
+        body: {},
           type: 'unsupported_type',
-          prompt: 'Test prompt',
-        },
-      });
+          prompt: 'Test prompt'}});
 
       const postContext = { ...mockContext, method: 'POST', body: req.body };
       await handleAIRoutes(req, res, postContext, ['generate']);
@@ -174,13 +154,11 @@ describe('API v2 AI Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         url: '/api/v2/ai/cost-check',
-        body: {
+        body: {},
           service: 'openai',
           model: 'gpt-4',
           estimatedTokens: 1000,
-          operation: 'copy_generation',
-        },
-      });
+          operation: 'copy_generation'}});
 
       const postContext = { ...mockContext, method: 'POST', body: req.body };
       await handleAIRoutes(req, res, postContext, ['cost-check']);
@@ -197,13 +175,11 @@ describe('API v2 AI Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         url: '/api/v2/ai/cost-check',
-        body: {
+        body: {},
           service: 'openai',
           model: 'gpt-4',
           estimatedTokens: 100000, // Very high token count
-          operation: 'bulk_generation',
-        },
-      });
+          operation: 'bulk_generation'}});
 
       const postContext = { ...mockContext, method: 'POST', body: req.body };
       await handleAIRoutes(req, res, postContext, ['cost-check']);
@@ -219,10 +195,9 @@ describe('API v2 AI Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         url: '/api/v2/ai/cost-check',
-        body: {
+        body: {},
           // Missing required fields
-        },
-      });
+        }});
 
       const postContext = { ...mockContext, method: 'POST', body: req.body };
       await handleAIRoutes(req, res, postContext, ['cost-check']);
@@ -239,11 +214,9 @@ describe('API v2 AI Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         url: '/api/v2/ai/usage',
-        query: {
+        query: {},
           timeRange: '30d',
-          service: 'openai',
-        },
-      });
+          service: 'openai'}});
 
       const getContext = { ...mockContext, query: req.query };
       await handleAIRoutes(req, res, getContext, ['usage']);
@@ -261,11 +234,9 @@ describe('API v2 AI Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         url: '/api/v2/ai/usage',
-        query: {
+        query: {},
           timeRange: '7d',
-          groupBy: 'operation',
-        },
-      });
+          groupBy: 'operation'}});
 
       const getContext = { ...mockContext, query: req.query };
       await handleAIRoutes(req, res, getContext, ['usage']);
@@ -280,11 +251,9 @@ describe('API v2 AI Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         url: '/api/v2/ai/usage',
-        query: {
+        query: {},
           timeRange: '1d',
-          groupBy: 'model',
-        },
-      });
+          groupBy: 'model'}});
 
       const getContext = { ...mockContext, query: req.query };
       await handleAIRoutes(req, res, getContext, ['usage']);
@@ -299,10 +268,8 @@ describe('API v2 AI Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         url: '/api/v2/ai/usage',
-        query: {
-          timeRange: 'invalid_range',
-        },
-      });
+        query: {},
+          timeRange: 'invalid_range'}});
 
       const getContext = { ...mockContext, query: req.query };
       await handleAIRoutes(req, res, getContext, ['usage']);
@@ -318,8 +285,7 @@ describe('API v2 AI Handler', () => {
     test('should handle available models request', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        url: '/api/v2/ai/models',
-      });
+        url: '/api/v2/ai/models'});
 
       await handleAIRoutes(req, res, mockContext, ['models']);
 
@@ -334,8 +300,7 @@ describe('API v2 AI Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         url: '/api/v2/ai/models',
-        query: { service: 'openai' },
-      });
+        query: { service: 'openai' }});
 
       const getContext = { ...mockContext, query: req.query };
       await handleAIRoutes(req, res, getContext, ['models']);
@@ -350,8 +315,7 @@ describe('API v2 AI Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         url: '/api/v2/ai/models',
-        query: { capability: 'text_generation' },
-      });
+        query: { capability: 'text_generation' }});
 
       const getContext = { ...mockContext, query: req.query };
       await handleAIRoutes(req, res, getContext, ['models']);
@@ -366,8 +330,7 @@ describe('API v2 AI Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         url: '/api/v2/ai/models',
-        query: { includePricing: 'true' },
-      });
+        query: { includePricing: 'true' }});
 
       const getContext = { ...mockContext, query: req.query };
       await handleAIRoutes(req, res, getContext, ['models']);
@@ -386,8 +349,7 @@ describe('API v2 AI Handler', () => {
     test('should handle unknown AI endpoints', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        url: '/api/v2/ai/unknown',
-      });
+        url: '/api/v2/ai/unknown'});
 
       await handleAIRoutes(req, res, mockContext, ['unknown']);
 
@@ -401,8 +363,7 @@ describe('API v2 AI Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         url: '/api/v2/ai/generate',
-        body: { type: 'copy', prompt: 'test' },
-      });
+        body: { type: 'copy', prompt: 'test' }});
 
       const unauthContext = { ...mockContext, user: null };
       await handleAIRoutes(req, res, unauthContext, ['generate']);
@@ -416,8 +377,7 @@ describe('API v2 AI Handler', () => {
     test('should handle method not allowed', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'DELETE',
-        url: '/api/v2/ai/models',
-      });
+        url: '/api/v2/ai/models'});
 
       const deleteContext = { ...mockContext, method: 'DELETE' };
       await handleAIRoutes(req, res, deleteContext, ['models']);
@@ -432,14 +392,11 @@ describe('API v2 AI Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         url: '/api/v2/ai/generate',
-        body: {
+        body: {},
           type: 'copy',
           prompt: 'test prompt',
-          options: {
-            model: 'invalid_model',
-          },
-        },
-      });
+          options: {},
+            model: 'invalid_model'}}});
 
       const postContext = { ...mockContext, method: 'POST', body: req.body };
       await handleAIRoutes(req, res, postContext, ['generate']);
@@ -452,11 +409,9 @@ describe('API v2 AI Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         url: '/api/v2/ai/generate',
-        body: {
+        body: {},
           type: 'copy',
-          prompt: 'test prompt',
-        },
-      });
+          prompt: 'test prompt'}});
 
       // Simulate rate limit exceeded
       const rateLimitedContext = { 
@@ -477,8 +432,7 @@ describe('API v2 AI Handler', () => {
     test('should return consistent response format', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        url: '/api/v2/ai/models',
-      });
+        url: '/api/v2/ai/models'});
 
       await handleAIRoutes(req, res, mockContext, ['models']);
 
@@ -496,11 +450,9 @@ describe('API v2 AI Handler', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         url: '/api/v2/ai/generate',
-        body: {
+        body: {},
           type: 'copy',
-          prompt: 'test prompt',
-        },
-      });
+          prompt: 'test prompt'}});
 
       const postContext = { ...mockContext, method: 'POST', body: req.body };
       await handleAIRoutes(req, res, postContext, ['generate']);

@@ -98,8 +98,7 @@ interface ValidationMessageProps {
 export const ValidationMessage: React.FC<ValidationMessageProps> = ({
   error,
   touched = true,
-  showIcon = true,
-}) => {
+  showIcon = true}) => {
   if (!error || !touched) return null;
 
   return (
@@ -117,8 +116,7 @@ interface FormValidationSummaryProps {
 
 export const FormValidationSummary: React.FC<FormValidationSummaryProps> = ({
   errors,
-  touched = {},
-}) => {
+  touched = {}}) => {
   const errorMessages = Object.entries(errors)
     .filter(([key, error]) => error && (touched[key] !== false))
     .map(([key, error]) => ({ field: key, message: error }));
@@ -132,8 +130,7 @@ export const FormValidationSummary: React.FC<FormValidationSummaryProps> = ({
         color: 'error.dark',
         p: 2,
         borderRadius: 1,
-        mb: 2,
-      }}
+        mb: 2}}
     >
       <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
         Please fix the following errors:
@@ -153,31 +150,26 @@ export const FormValidationSummary: React.FC<FormValidationSummaryProps> = ({
 
 // Common validation rules
 export const commonValidationRules = {
-  email: {
+  email: {},
     required: true,
-    email: true,
-  } as ValidationRules,
+    email: true} as ValidationRules,
 
-  password: {
+  password: {},
     required: true,
     minLength: 8,
     custom: [
       {
         validate: (value: string) => /[A-Z]/.test(value),
-        message: 'Password must contain at least one uppercase letter',
-      },
+        message: 'Password must contain at least one uppercase letter'},
       {
         validate: (value: string) => /[a-z]/.test(value),
-        message: 'Password must contain at least one lowercase letter',
-      },
+        message: 'Password must contain at least one lowercase letter'},
       {
         validate: (value: string) => /[0-9]/.test(value),
-        message: 'Password must contain at least one number',
-      },
-    ],
-  } as ValidationRules,
+        message: 'Password must contain at least one number'},
+    ]} as ValidationRules,
 
-  username: {
+  username: {},
     required: true,
     minLength: 3,
     maxLength: 20,
@@ -185,33 +177,26 @@ export const commonValidationRules = {
     custom: [
       {
         validate: (value: string) => !/^[0-9]/.test(value),
-        message: 'Username cannot start with a number',
-      },
-    ],
-  } as ValidationRules,
+        message: 'Username cannot start with a number'},
+    ]} as ValidationRules,
 
-  phoneNumber: {
+  phoneNumber: {},
     required: true,
     pattern: /^\+?[1-9]\d{1,14}$/,
     custom: [
       {
         validate: (value: string) => value.replace(/\D/g, '').length >= 10,
-        message: 'Phone number must be at least 10 digits',
-      },
-    ],
-  } as ValidationRules,
+        message: 'Phone number must be at least 10 digits'},
+    ]} as ValidationRules,
 
-  url: {
+  url: {},
     required: true,
-    url: true,
-  } as ValidationRules,
+    url: true} as ValidationRules,
 
-  positiveNumber: {
+  positiveNumber: {},
     required: true,
     number: true,
-    min: 0,
-  } as ValidationRules,
-};
+    min: 0} as ValidationRules};
 
 // Hook for form validation
 export const useFormValidation = <T extends Record<string, any>>(
@@ -268,6 +253,5 @@ export const useFormValidation = <T extends Record<string, any>>(
     handleBlur,
     validateForm,
     resetForm,
-    isValid: Object.values(errors).every((error) => !error),
-  };
+    isValid: Object.values(errors).every((error) => !error)};
 };

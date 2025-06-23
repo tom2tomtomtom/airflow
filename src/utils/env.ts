@@ -1,5 +1,5 @@
 import { getErrorMessage } from '@/utils/errorUtils';
-import { z } from 'zod'
+import { z } from 'zod';
 
 // Environment validation schema
 const envSchema = z.object({
@@ -8,9 +8,7 @@ const envSchema = z.object({
   NEXT_PUBLIC_API_URL: z.string().url('Invalid API URL'),
 
   // Authentication
-  JWT_SECRET: z
-    .string()
-    .min(32, 'JWT_SECRET must be at least 32 characters long'),
+  JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters long'),
   JWT_EXPIRY: z.string().default('7d'),
   REFRESH_TOKEN_EXPIRY: z.string().default('30d'),
 
@@ -21,50 +19,90 @@ const envSchema = z.object({
   SUPABASE_SERVICE_KEY: z.string().min(1, 'Supabase service key is required'),
 
   // AI Services
-  OPENAI_API_KEY: z
-    .string()
-    .startsWith('sk-', 'OpenAI API key must start with sk-'),
+  OPENAI_API_KEY: z.string().startsWith('sk-', 'OpenAI API key must start with sk-'),
   ELEVENLABS_API_KEY: z.string().min(1, 'ElevenLabs API key is required'),
 
   // Optional services
   CREATOMATE_API_KEY: z.string().optional(),
-  
+
   // Storage
   STORAGE_BUCKET: z.string().default('airwave-assets'),
-  MAX_FILE_SIZE: z.string().transform(val => parseInt(val)).pipe(z.number().positive()).default('52428800'),
+  MAX_FILE_SIZE: z
+    .string()
+    .transform(val => parseInt(val))
+    .pipe(z.number().positive())
+    .default('52428800'),
 
   // Email (optional for development)
   SMTP_HOST: z.string().optional(),
-  SMTP_PORT: z.string().transform(val => parseInt(val)).pipe(z.number()).optional(),
+  SMTP_PORT: z
+    .string()
+    .transform(val => parseInt(val))
+    .pipe(z.number())
+    .optional(),
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
 
   // Security & Performance (production specific)
   ALLOWED_ORIGINS: z.string().optional(),
-  RATE_LIMIT_MAX: z.string().transform(val => parseInt(val)).pipe(z.number().positive()).optional(),
-  RATE_LIMIT_WINDOW: z.string().transform(val => parseInt(val)).pipe(z.number().positive()).optional(),
-  
+  RATE_LIMIT_MAX: z
+    .string()
+    .transform(val => parseInt(val))
+    .pipe(z.number().positive())
+    .optional(),
+  RATE_LIMIT_WINDOW: z
+    .string()
+    .transform(val => parseInt(val))
+    .pipe(z.number().positive())
+    .optional(),
+
   // Database
-  DB_POOL_SIZE: z.string().transform(val => parseInt(val)).pipe(z.number().positive()).optional(),
-  DB_TIMEOUT: z.string().transform(val => parseInt(val)).pipe(z.number().positive()).optional(),
+  DB_POOL_SIZE: z
+    .string()
+    .transform(val => parseInt(val))
+    .pipe(z.number().positive())
+    .optional(),
+  DB_TIMEOUT: z
+    .string()
+    .transform(val => parseInt(val))
+    .pipe(z.number().positive())
+    .optional(),
 
   // Monitoring
   LOG_LEVEL: z.enum(['error', 'warn', 'info', 'debug']).optional(),
-  ENABLE_REQUEST_LOGGING: z.string().transform(val => val === 'true').optional(),
+  ENABLE_REQUEST_LOGGING: z
+    .string()
+    .transform(val => val === 'true')
+    .optional(),
   SENTRY_DSN: z.string().url().optional().or(z.literal('')),
-  PERFORMANCE_MONITORING: z.string().transform(val => val === 'true').optional(),
+  PERFORMANCE_MONITORING: z
+    .string()
+    .transform(val => val === 'true')
+    .optional(),
 
   // CDN & Assets
   CDN_URL: z.string().url().optional().or(z.literal('')),
-  ASSET_OPTIMIZATION: z.string().transform(val => val === 'true').optional(),
+  ASSET_OPTIMIZATION: z
+    .string()
+    .transform(val => val === 'true')
+    .optional(),
 
   // Feature Flags
-  ENABLE_AI_GENERATION: z.string().transform(val => val === 'true').default('true'),
-  ENABLE_VIDEO_RENDERING: z.string().transform(val => val === 'true').default('true'),
-  ENABLE_ANALYTICS: z.string().transform(val => val === 'true').default('true'),
-})
+  ENABLE_AI_GENERATION: z
+    .string()
+    .transform(val => val === 'true')
+    .default('true'),
+  ENABLE_VIDEO_RENDERING: z
+    .string()
+    .transform(val => val === 'true')
+    .default('true'),
+  ENABLE_ANALYTICS: z
+    .string()
+    .transform(val => val === 'true')
+    .default('true'),
+});
 
-export type Env = z.infer<typeof envSchema>
+export type Env = z.infer<typeof envSchema>;
 
 /**
  * Validates environment variables
@@ -74,14 +112,16 @@ export type Env = z.infer<typeof envSchema>
  */
 export function validateEnv(env: Record<string, string | undefined> = process.env): Env {
   try {
-    return envSchema.parse(env)
+    return envSchema.parse(env);
   } catch (error: any) {
     const message = getErrorMessage(error);
     if (error instanceof z.ZodError) {
-      const errors = error.errors.map((err: any) => `${err.path.join('.')}: ${err.message}`).join('\n')
-      throw new Error(`Environment validation failed:\n${errors}`)
+      const errors = error.errors
+        .map((err: any) => `${err.path.join('.')}: ${err.message}`)
+        .join('\n');
+      throw new Error(`Environment validation failed:\n${errors}`);
     }
-    throw error
+    throw error;
   }
 }
 
@@ -92,11 +132,11 @@ export function validateEnv(env: Record<string, string | undefined> = process.en
  * @returns Environment variable value
  */
 export function getEnvVar(key: keyof Env, defaultValue?: string): string {
-  const value = process.env[key] || defaultValue
+  const value = process.env[key] || defaultValue;
   if (!value) {
-    throw new Error(`Environment variable ${key} is required but not set`)
+    throw new Error(`Environment variable ${key} is required but not set`);
   }
-  return value
+  return value;
 }
 
 /**
@@ -104,79 +144,79 @@ export function getEnvVar(key: keyof Env, defaultValue?: string): string {
  * @returns Object with validation status and missing variables
  */
 export function checkProductionReadiness(): {
-  isReady: boolean
-  missingVars: string[]
-  warnings: string[]
+  isReady: boolean;
+  missingVars: string[];
+  warnings: string[];
 } {
   const requiredForProduction = [
     'JWT_SECRET',
     'NEXT_PUBLIC_SUPABASE_URL',
-    'NEXT_PUBLIC_SUPABASE_ANON_KEY', 
+    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
     'SUPABASE_SERVICE_KEY',
     'OPENAI_API_KEY',
     'ELEVENLABS_API_KEY',
-  ] as const
+  ] as const;
 
   const recommendedForProduction = [
     'SENTRY_DSN',
     'SMTP_HOST',
     'ALLOWED_ORIGINS',
     'CDN_URL',
-  ] as const
+  ] as const;
 
-  const missingVars: string[] = []
-  const warnings: string[] = []
+  const missingVars: string[] = [];
+  const warnings: string[] = [];
 
   // Check required variables
   for (const key of requiredForProduction) {
     if (!process.env[key]) {
-      missingVars.push(key)
+      missingVars.push(key);
     }
   }
 
   // Check recommended variables
   for (const key of recommendedForProduction) {
     if (!process.env[key]) {
-      warnings.push(`Recommended: ${key} is not set`)
+      warnings.push(`Recommended: ${key} is not set`);
     }
   }
 
   // Check JWT secret strength
-  const jwtSecret = process.env.JWT_SECRET
+  const jwtSecret = process.env.JWT_SECRET;
   if (jwtSecret && jwtSecret.length < 32) {
-    warnings.push('JWT_SECRET should be at least 32 characters for production')
+    warnings.push('JWT_SECRET should be at least 32 characters for production');
   }
 
   // Check NODE_ENV
   if (process.env.NODE_ENV !== 'production') {
-    warnings.push('NODE_ENV should be set to "production"')
+    warnings.push('NODE_ENV should be set to "production"');
   }
 
   return {
     isReady: missingVars.length === 0,
     missingVars,
     warnings,
-  }
+  };
 }
 
 // Export validated environment variables (only when needed)
-let validatedEnv: Env | null = null
+let validatedEnv: Env | null = null;
 
 export function getValidatedEnv(): Env {
   if (!validatedEnv) {
-    validatedEnv = validateEnv()
+    validatedEnv = validateEnv();
   }
-  return validatedEnv
+  return validatedEnv;
 }
 
 // Development helper to check environment setup
 export function logEnvironmentStatus(): void {
   try {
-    const env = validateEnv()
+    const env = validateEnv();
     if (process.env.NODE_ENV === 'development') {
       console.log('Environment validated successfully');
     }
-    
+
     if (env.NODE_ENV === 'production') {
       const readiness = checkProductionReadiness();
       if (readiness.isReady) {
@@ -202,10 +242,8 @@ export function logEnvironmentStatus(): void {
   } catch (error: any) {
     const message = getErrorMessage(error);
     if (process.env.NODE_ENV === 'development') {
-
-      console.error('❌ Environment validation failed:', error)
-
+      console.error('❌ Environment validation failed:', error);
     }
-    process.exit(1)
+    process.exit(1);
   }
 }

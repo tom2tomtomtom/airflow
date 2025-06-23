@@ -18,8 +18,7 @@ const MotivationCreateSchema = z.object({
   tags: z.array(z.string()).default([]),
   target_emotions: z.array(z.string()).default([]),
   use_cases: z.array(z.string()).default([]),
-  effectiveness_rating: z.number().min(1).max(5).optional(),
-});
+  effectiveness_rating: z.number().min(1).max(5).optional()});
 
 const MotivationUpdateSchema = MotivationCreateSchema.partial().omit(['client_id'] as any);
 
@@ -59,8 +58,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     search,
     sort_by = 'relevance_score',
     sort_order = 'desc',
-    include_usage = false,
-  } = req.query;
+    include_usage = false} = req.query;
 
   let query = supabase
     .from('motivations')
@@ -131,8 +129,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       const usageStats = await getMotivationUsageStats(motivation.id);
       return {
         ...motivation,
-        usage_stats: usageStats,
-      };
+        usage_stats: usageStats};
     }));
   }
 
@@ -142,12 +139,11 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   return res.json({ 
     data: enrichedData,
     count,
-    statistics: {
+    statistics: {},
       category_distribution: categoryStats,
       avg_relevance_score: data?.length ? data.reduce((sum, m) => sum + (m.relevance_score || 0), 0) / data.length : 0,
-      ai_generated_percentage: data?.length ? (data.filter((m: any) => m.is_ai_generated).length / data.length) * 100 : 0,
-    },
-    pagination: {
+      ai_generated_percentage: data?.length ? (data.filter((m: any) => m.is_ai_generated).length / data.length) * 100 : 0},
+    pagination: {},
       limit: parseInt(limit as string),
       offset: parseInt(offset as string),
       total: count || 0
@@ -206,8 +202,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
     .from('motivations')
     .insert({
       ...motivationData,
-      created_by: user.id,
-    })
+      created_by: user.id})
     .select(`
       *,
       clients(name, slug),
@@ -249,8 +244,7 @@ async function getMotivationUsageStats(motivationId: string): Promise<any> {
       strategy_usage: strategyUsage || 0,
       content_usage: contentUsage || 0,
       copy_usage: copyUsage || 0,
-      total_usage: (strategyUsage || 0) + (contentUsage || 0) + (copyUsage || 0),
-    };
+      total_usage: (strategyUsage || 0) + (contentUsage || 0) + (copyUsage || 0)};
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error calculating usage stats:', error);
@@ -258,8 +252,7 @@ async function getMotivationUsageStats(motivationId: string): Promise<any> {
       strategy_usage: 0,
       content_usage: 0,
       copy_usage: 0,
-      total_usage: 0,
-    };
+      total_usage: 0};
   }
 }
 

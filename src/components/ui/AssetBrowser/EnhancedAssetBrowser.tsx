@@ -130,10 +130,11 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
     // Apply search filter
     if (searchTerm.trim()) {
       const search = searchTerm.toLowerCase();
-      filtered = filtered.filter((asset: any) =>
-        asset.name.toLowerCase().includes(search) ||
-        asset.description?.toLowerCase().includes(search) ||
-        asset.tags.some((tag: string) => tag.toLowerCase().includes(search))
+      filtered = filtered.filter(
+        (asset: any) =>
+          asset.name.toLowerCase().includes(search) ||
+          asset.description?.toLowerCase().includes(search) ||
+          asset.tags.some((tag: string) => tag.toLowerCase().includes(search))
       );
     }
 
@@ -201,12 +202,15 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
     onAssetFavorite?.(asset.id, !asset.isFavorite);
   };
 
-  const handleUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      onAssetUpload?.(files);
-    }
-  }, [onAssetUpload]);
+  const handleUpload = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const files = event.target.files;
+      if (files) {
+        onAssetUpload?.(files);
+      }
+    },
+    [onAssetUpload]
+  );
 
   const getAssetIcon = (type: Asset['type']) => {
     switch (type) {
@@ -326,7 +330,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
               >
                 <IconButton
                   size="small"
-                  onClick={(e) => handleFavoriteToggle(asset, e)}
+                  onClick={e => handleFavoriteToggle(asset, e)}
                   sx={{
                     backgroundColor: 'rgba(255, 255, 255, 0.9)',
                     '&:hover': {
@@ -334,15 +338,11 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
                     },
                   }}
                 >
-                  {asset.isFavorite ? (
-                    <FavoriteIcon color="error" />
-                  ) : (
-                    <FavoriteBorderIcon />
-                  )}
+                  {asset.isFavorite ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
                 </IconButton>
                 <IconButton
                   size="small"
-                  onClick={(e) => handleAssetMenu(asset, e)}
+                  onClick={e => handleAssetMenu(asset, e)}
                   sx={{
                     backgroundColor: 'rgba(255, 255, 255, 0.9)',
                     '&:hover': {
@@ -502,20 +502,10 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
           </Box>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <IconButton
-              size="small"
-              onClick={(e) => handleFavoriteToggle(asset, e)}
-            >
-              {asset.isFavorite ? (
-                <FavoriteIcon color="error" />
-              ) : (
-                <FavoriteBorderIcon />
-              )}
+            <IconButton size="small" onClick={e => handleFavoriteToggle(asset, e)}>
+              {asset.isFavorite ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
             </IconButton>
-            <IconButton
-              size="small"
-              onClick={(e) => handleAssetMenu(asset, e)}
-            >
+            <IconButton size="small" onClick={e => handleAssetMenu(asset, e)}>
               <MoreVertIcon />
             </IconButton>
           </Box>
@@ -529,15 +519,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
   }
 
   if (error) {
-    return (
-      <ErrorState
-        type="error"
-        message={error}
-        showRetry
-        onRetry={onRefresh}
-        variant="card"
-      />
-    );
+    return <ErrorState type="error" message={error} showRetry onRetry={onRefresh} variant="card" />;
   }
 
   return (
@@ -548,7 +530,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
             Asset Library
           </Typography>
-          
+
           <Box sx={{ display: 'flex', gap: 1 }}>
             {allowUpload && (
               <Button
@@ -567,7 +549,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
                 />
               </Button>
             )}
-            
+
             <IconButton onClick={onRefresh} size="small">
               <RefreshIcon />
             </IconButton>
@@ -581,7 +563,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
               size="small"
               placeholder="Search assets..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -604,7 +586,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
               <Select
                 value={filterType}
                 label="Type"
-                onChange={(e) => setFilterType(e.target.value as FilterType)}
+                onChange={e => setFilterType(e.target.value as FilterType)}
               >
                 <MenuItem value="all">All Types</MenuItem>
                 <MenuItem value="image">Images</MenuItem>
@@ -620,7 +602,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
               <Select
                 value={sortBy}
                 label="Sort by"
-                onChange={(e) => setSortBy(e.target.value as SortOption)}
+                onChange={e => setSortBy(e.target.value as SortOption)}
               >
                 <MenuItem value="date">Date</MenuItem>
                 <MenuItem value="name">Name</MenuItem>
@@ -688,19 +670,17 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
           </Typography>
         </Box>
       ) : viewMode === 'list' ? (
-        <Stack spacing={1}>
-          {filteredAssets.map(renderListItem)}
-        </Stack>
+        <Stack spacing={1}>{filteredAssets.map(renderListItem)}</Stack>
       ) : (
         <Grid container spacing={viewMode === 'compact' ? 1 : 2}>
           {filteredAssets.map((asset: any) => (
             <Grid
               key={asset.id}
-              size={{ 
+              size={{
                 xs: viewMode === 'compact' ? 6 : 12,
                 sm: viewMode === 'compact' ? 4 : 6,
                 md: viewMode === 'compact' ? 3 : 4,
-                lg: viewMode === 'compact' ? 2 : 3
+                lg: viewMode === 'compact' ? 2 : 3,
               }}
             >
               {renderAssetCard(asset)}
@@ -758,7 +738,9 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
       >
         {previewAsset && (
           <>
-            <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <DialogTitle
+              sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+            >
               {previewAsset.name}
               <IconButton onClick={() => setPreviewAsset(null)}>
                 <CloseIcon />

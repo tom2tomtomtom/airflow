@@ -12,16 +12,14 @@ import {
   List,
   ListItem,
   ListItemIcon,
-  ListItemText,
-} from '@mui/material';
+  ListItemText} from '@mui/material';
 import {
   CloudUpload,
   Close,
   InsertDriveFile,
   Image as ImageIcon,
   VideoFile,
-  AudioFile,
-} from '@mui/icons-material';
+  AudioFile} from '@mui/icons-material';
 import { useDropzone } from 'react-dropzone';
 import { useNotification } from '@/contexts/NotificationContext';
 
@@ -47,8 +45,7 @@ const getFileIcon = (type: string) => {
 export const AssetUploadModal: React.FC<AssetUploadModalProps> = ({
   open,
   onClose,
-  onUploadComplete,
-}) => {
+  onUploadComplete}) => {
   const [files, setFiles] = useState<FilePreview[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -58,18 +55,16 @@ export const AssetUploadModal: React.FC<AssetUploadModalProps> = ({
     const newFiles = acceptedFiles.map((file: any) => ({
       file,
       preview: URL.createObjectURL(file),
-      type: file.type,
-    }));
+      type: file.type}));
     setFiles((prev) => [...prev, ...newFiles]);
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: {
+    accept: {},
       'image/*': ['.png', '.jpg', '.jpeg', '.gif', '.webp'],
       'video/*': ['.mp4', '.mov', '.avi', '.webm'],
-      'audio/*': ['.mp3', '.wav', '.m4a', '.ogg'],
-    },
+      'audio/*': ['.mp3', '.wav', '.m4a', '.ogg']},
     multiple: true,
     maxSize: 100 * 1024 * 1024, // 100MB
   });
@@ -104,8 +99,7 @@ export const AssetUploadModal: React.FC<AssetUploadModalProps> = ({
 
       const response = await fetch('/api/assets/upload', {
         method: 'POST',
-        body: formData,
-      });
+        body: formData});
 
       clearInterval(progressInterval);
       setUploadProgress(100);
@@ -169,9 +163,7 @@ export const AssetUploadModal: React.FC<AssetUploadModalProps> = ({
             transition: 'all 0.2s',
             '&:hover': {
               borderColor: 'primary.main',
-              backgroundColor: 'action.hover',
-            },
-          }}
+              backgroundColor: 'action.hover'}}}
         >
           <input {...getInputProps()} data-testid="file-input" />
           <CloudUpload sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />

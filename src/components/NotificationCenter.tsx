@@ -51,15 +51,8 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
 }) => {
   const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const {
-    notifications,
-    unreadNotifications,
-    markAsRead,
-    dismiss,
-    loading,
-    error,
-    refresh,
-  } = useNotifications();
+  const { notifications, unreadNotifications, markAsRead, dismiss, loading, error, refresh } =
+    useNotifications();
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -127,7 +120,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
   const getNotificationColor = (type: string, priority: string) => {
     if (priority === 'urgent') return 'error';
     if (priority === 'high') return 'warning';
-    
+
     switch (type) {
       case 'success':
         return 'success';
@@ -142,7 +135,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
 
   const getPriorityChip = (priority: string) => {
     if (priority === 'low' || priority === 'normal') return null;
-    
+
     return (
       <Chip
         size="small"
@@ -159,15 +152,9 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
   return (
     <Box>
       <Tooltip title="Notifications">
-        <IconButton
-          color="inherit"
-          onClick={handleClick} aria-label="notifications">
+        <IconButton color="inherit" onClick={handleClick} aria-label="notifications">
           <Badge badgeContent={unreadNotifications.length} color="error">
-            {unreadNotifications.length > 0 ? (
-              <NotificationActiveIcon />
-            ) : (
-              <NotificationIcon />
-            )}
+            {unreadNotifications.length > 0 ? <NotificationActiveIcon /> : <NotificationIcon />}
           </Badge>
         </IconButton>
       </Tooltip>
@@ -194,21 +181,13 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
                     Notifications
                   </Typography>
                   {unreadNotifications.length > 0 && (
-                    <Chip
-                      size="small"
-                      label={unreadNotifications.length}
-                      color="primary"
-                    />
+                    <Chip size="small" label={unreadNotifications.length} color="primary" />
                   )}
                 </Box>
                 <Stack direction="row" spacing={1}>
                   <Tooltip title="Refresh">
                     <IconButton size="small" onClick={refresh} disabled={loading}>
-                      {loading ? (
-                        <CircularProgress size={16} />
-                      ) : (
-                        <RefreshIcon />
-                      )}
+                      {loading ? <CircularProgress size={16} /> : <RefreshIcon />}
                     </IconButton>
                   </Tooltip>
                   {unreadNotifications.length > 0 && (
@@ -265,7 +244,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
                           {getNotificationIcon(notification.type, notification.category)}
                         </Avatar>
                       </ListItemIcon>
-                      
+
                       <ListItemText
                         primary={
                           <Stack direction="row" spacing={1} alignItems="center">
@@ -294,13 +273,11 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
                               {notification.message}
                             </Typography>
                             <Stack direction="row" spacing={1} alignItems="center">
-                              <Chip
-                                size="small"
-                                label={notification.category}
-                                variant="outlined"
-                              />
+                              <Chip size="small" label={notification.category} variant="outlined" />
                               <Typography variant="caption" color="text.secondary">
-                                {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+                                {formatDistanceToNow(new Date(notification.created_at), {
+                                  addSuffix: true,
+                                })}
                               </Typography>
                             </Stack>
                           </Box>
@@ -325,7 +302,9 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
                           <Tooltip title="Dismiss">
                             <IconButton
                               size="small"
-                              onClick={(e: React.MouseEvent<HTMLElement>) => handleDismiss(notification.id, e)}
+                              onClick={(e: React.MouseEvent<HTMLElement>) =>
+                                handleDismiss(notification.id, e)
+                              }
                             >
                               <DeleteIcon fontSize="small" />
                             </IconButton>

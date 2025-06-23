@@ -14,8 +14,7 @@ const ApprovalDecisionSchema = z.object({
     field: z.string(),
     current_value: z.string().optional(),
     requested_value: z.string().optional(),
-    reason: z.string().optional(),
-  })).optional(),
+    reason: z.string().optional()})).optional(),
   conditions: z.array(z.string()).optional(), // Approval conditions
   due_date: z.string().optional(), // For changes requested
 });
@@ -25,8 +24,7 @@ const ApprovalUpdateSchema = z.object({
   priority: z.enum(['low', 'normal', 'high', 'urgent']).optional(),
   due_date: z.string().optional(),
   notes: z.string().optional(),
-  metadata: z.any().optional(),
-});
+  metadata: z.any().optional()});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -100,13 +98,12 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
   const permissions = calculateUserPermissions(approval, user.id, clientAccess.role);
 
   return res.json({
-    data: {
+    data: {},
       ...approval,
       item_details: itemDetails,
       history: approvalHistory,
       related_approvals: relatedApprovals,
-      permissions,
-    }
+      permissions}
   });
 }
 
@@ -177,8 +174,7 @@ async function handleDecision(req: NextApiRequest, res: NextApiResponse, user: a
     changes_requested: decision.changes_requested,
     conditions: decision.conditions,
     decided_by: user.id,
-    decided_at: new Date().toISOString(),
-  };
+    decided_at: new Date().toISOString()};
 
   // Update approval
   const { data: updatedApproval, error: updateError } = await supabase
@@ -187,8 +183,7 @@ async function handleDecision(req: NextApiRequest, res: NextApiResponse, user: a
       status: newStatus,
       decision_data: decisionData,
       updated_at: new Date().toISOString(),
-      ...(decision.due_date && { due_date: decision.due_date }),
-    })
+      ...(decision.due_date && { due_date: decision.due_date })})
     .eq('id', approvalId)
     .select(`
       *,
@@ -220,8 +215,7 @@ async function handleDecision(req: NextApiRequest, res: NextApiResponse, user: a
 
   return res.json({ 
     data: updatedApproval,
-    decision: decisionData,
-  });
+    decision: decisionData});
 }
 
 async function handleUpdate(req: NextApiRequest, res: NextApiResponse, user: any, approvalId: string): Promise<void> {
@@ -258,8 +252,7 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse, user: any
     .from('approvals')
     .update({
       ...updateData,
-      updated_at: new Date().toISOString(),
-    })
+      updated_at: new Date().toISOString()})
     .eq('id', approvalId)
     .select(`
       *,
@@ -318,8 +311,7 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
       status: 'cancelled',
       cancelled_by: user.id,
       cancelled_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    })
+      updated_at: new Date().toISOString()})
     .eq('id', approvalId);
 
   if (error) {
@@ -412,8 +404,7 @@ async function getApprovalHistory(approvalId: string): Promise<any[]> {
       {
         timestamp: approval.created_at,
         action: 'created',
-        description: 'Approval request created',
-      }
+        description: 'Approval request created'}
     ];
 
     if (approval.decision_data) {
@@ -421,10 +412,9 @@ async function getApprovalHistory(approvalId: string): Promise<any[]> {
         timestamp: approval.decision_data.decided_at,
         action: approval.decision_data.action,
         description: `Approval ${approval.decision_data.action}`,
-        details: {
+        details: {},
           comments: approval.decision_data.comments,
-          decided_by: approval.decision_data.decided_by,
-        }
+          decided_by: approval.decision_data.decided_by}
       });
     }
 
@@ -464,8 +454,7 @@ function calculateUserPermissions(approval: any, userId: string, userRole: strin
     can_decide: approval.assigned_to === userId || ['manager', 'director'].includes(userRole),
     can_update: approval.created_by === userId || approval.assigned_to === userId || ['manager', 'director'].includes(userRole),
     can_delete: approval.created_by === userId || ['manager', 'director'].includes(userRole),
-    can_reassign: ['manager', 'director'].includes(userRole),
-  };
+    can_reassign: ['manager', 'director'].includes(userRole)};
 }
 
 async function verifyApprovalPermission(approval: any, userId: string, action: string): Promise<boolean> {
@@ -484,8 +473,7 @@ async function verifyApprovalPermission(approval: any, userId: string, action: s
       view: true,
       decide: approval.assigned_to === userId || ['manager', 'director'].includes(userClient.role),
       update: approval.created_by === userId || approval.assigned_to === userId || ['manager', 'director'].includes(userClient.role),
-      delete: approval.created_by === userId || ['manager', 'director'].includes(userClient.role),
-    };
+      delete: approval.created_by === userId || ['manager', 'director'].includes(userClient.role)};
 
     return permissions[action] || false;
   } catch (error: any) {
@@ -510,8 +498,7 @@ async function updateItemStatusAfterDecision(itemType: string, itemId: string, d
       .from(table)
       .update({
         approval_status: newStatus,
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString()})
       .eq('id', itemId);
   } catch (error: any) {
     const message = getErrorMessage(error);
@@ -535,8 +522,7 @@ async function triggerPostDecisionWorkflow(approval: any, decision: any): Promis
           .from('campaigns')
           .update({
             status: 'active',
-            activated_at: new Date().toISOString(),
-          })
+            activated_at: new Date().toISOString()})
           .eq('id', approval.item_id);
       }
     }
@@ -582,8 +568,7 @@ async function triggerApprovalWebhooks(approval: any, action: string, user: any)
     const eventMapping = {
       approve: WEBHOOK_EVENTS.APPROVAL_APPROVED,
       reject: WEBHOOK_EVENTS.APPROVAL_REJECTED,
-      request_changes: WEBHOOK_EVENTS.APPROVAL_CHANGES_REQUESTED,
-    };
+      request_changes: WEBHOOK_EVENTS.APPROVAL_CHANGES_REQUESTED};
 
     const eventType = eventMapping[action as keyof typeof eventMapping];
     if (!eventType) return;
@@ -596,17 +581,14 @@ async function triggerApprovalWebhooks(approval: any, action: string, user: any)
       type: approval.type,
       status: approval.status,
       action,
-      decided_by: {
+      decided_by: {},
         id: user.id,
-        name: user.full_name || user.email,
-      },
+        name: user.full_name || user.email},
       decision_data: approval.decision_data,
-      client: {
+      client: {},
         id: approval.client_id,
-        name: approval.clients?.name,
-      },
-      timestamp: new Date().toISOString(),
-    };
+        name: approval.clients?.name},
+      timestamp: new Date().toISOString()};
 
     // Trigger the webhook
     await triggerWebhookEvent(eventType, webhookData, approval.client_id);

@@ -41,10 +41,8 @@ class APIPerformanceMonitor {
   static startTracking(endpoint: string): PerformanceMetrics {
     const metrics: PerformanceMetrics = {
       startTime: Date.now(),
-      memoryUsage: {
-        before: process.memoryUsage(),
-      },
-    };
+      memoryUsage: {},
+        before: process.memoryUsage()}};
 
     // Store metrics for analysis
     if (!this.metrics.has(endpoint)) {
@@ -99,7 +97,7 @@ class QueryOptimizer {
   private static queryCache = new Map<string, any>();
   private static queryCount = new Map<string, number>();
 
-  static trackQuery(endpoint: string, query: string, result: any): void {
+  static trackQuery(endpoint: string, query: string, result: unknown): void {
     // Track query count per endpoint
     const currentCount = this.queryCount.get(endpoint) || 0;
     this.queryCount.set(endpoint, currentCount + 1);
@@ -109,15 +107,14 @@ class QueryOptimizer {
     this.queryCache.set(cacheKey, {
       result,
       timestamp: Date.now(),
-      endpoint,
-    });
+      endpoint});
   }
 
   static getQueryCount(endpoint: string): number {
     return this.queryCount.get(endpoint) || 0;
   }
 
-  static getCachedQuery(endpoint: string, query: string): any | null {
+  static getCachedQuery(endpoint: string, query: string): unknown | null {
     const cacheKey = `${endpoint}:${this.hashQuery(query)}`;
     const cached = this.queryCache.get(cacheKey);
     
@@ -161,7 +158,7 @@ class QueryOptimizer {
 /**
  * Response compression utility
  */
-function compressResponse(data: any): string {
+function compressResponse(data: unknown): string {
   // Simple JSON minification
   return JSON.stringify(data, null, 0);
 }
@@ -179,8 +176,7 @@ export function withAPIOptimization(
     cacheTTL = 5 * 60 * 1000, // 5 minutes default
     enableCompression = true,
     enableMetrics = true,
-    enableQueryOptimization = true,
-  } = options;
+    enableQueryOptimization = true} = options;
 
   return async (req: NextApiRequest, res: NextApiResponse) => {
     const endpoint = req.url || 'unknown';
@@ -219,9 +215,9 @@ export function withAPIOptimization(
 
       // Set up response interception for caching
       const originalJson = res.json;
-      let responseData: any = null;
+      let responseData: unknown = null;
 
-      res.json = function(data: any) {
+      res.json = function(data: unknown) {
         responseData = data;
         return originalJson.call(this, data);
       };
@@ -244,8 +240,7 @@ export function withAPIOptimization(
       if (enableCaching && req.method === 'GET' && responseData && res.statusCode >= 200 && res.statusCode < 300) {
         await cacheManager.set('api-responses', requestCacheKey, responseData, {
           ttl: cacheTTL,
-          staleWhileRevalidate: true,
-        });
+          staleWhileRevalidate: true});
       }
 
       // Set performance headers
@@ -277,14 +272,12 @@ export function withAPIOptimization(
         res.status(500).json({
           success: false,
           error: error.message,
-          timestamp: new Date().toISOString(),
-        });
+          timestamp: new Date().toISOString()});
       } else {
         res.status(500).json({
           success: false,
           error: 'Internal server error',
-          timestamp: new Date().toISOString(),
-        });
+          timestamp: new Date().toISOString()});
       }
     }
   };
@@ -307,7 +300,7 @@ function generateCacheKey(req: NextApiRequest): string {
 /**
  * Database query optimization helper
  */
-export function optimizeQuery(query: string, params?: any[]): string {
+export function optimizeQuery(query: string, params?: unknown[]): string {
   // Add LIMIT if not present and no specific limit needed
   if (!query.toLowerCase().includes('limit') && query.toLowerCase().includes('select')) {
     query += ' LIMIT 100';
@@ -399,12 +392,10 @@ export class BatchProcessor<T, R> {
 export function getAPIPerformanceStats() {
   return {
     monitor: APIPerformanceMonitor.getMetrics(),
-    queryOptimizer: {
+    queryOptimizer: {},
       cacheSize: QueryOptimizer['queryCache'].size,
-      totalQueries: Array.from(QueryOptimizer['queryCount'].values()).reduce((a, b) => a + b, 0),
-    },
-    cache: cacheManager.getStats(),
-  };
+      totalQueries: Array.from(QueryOptimizer['queryCount'].values()).reduce((a, b) => a + b, 0)},
+    cache: cacheManager.getStats()};
 }
 
 /**

@@ -9,7 +9,7 @@ process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'TEST_JWT_TOKEN_PLACEHOLDER';
 
 // Mock Supabase client
 jest.mock('@/lib/supabase/client', () => ({
-  supabase: {
+  supabase: {},
     from: jest.fn((table: string) => {
       if (table === 'video_generations') {
         return {
@@ -30,7 +30,7 @@ jest.mock('@/lib/supabase/client', () => ({
                 error: null
               })),
               single: jest.fn(() => Promise.resolve({
-                data: {
+                data: {},
                   id: 'test-generation-1',
                   generation_id: 'test-gen-123',
                   client_id: 'test-client-1',
@@ -72,7 +72,7 @@ jest.mock('@/lib/supabase/client', () => ({
       }
       return {};
     }),
-    storage: {
+    storage: {},
       from: jest.fn(() => ({
         upload: jest.fn(() => Promise.resolve({
           data: { path: 'test/path/video.mp4' },
@@ -88,7 +88,7 @@ jest.mock('@/lib/supabase/client', () => ({
 
 // Mock creatomate service
 jest.mock('@/services/creatomate', () => ({
-  creatomateService: {
+  creatomateService: {},
     getRenderStatus: jest.fn(() => Promise.resolve({
       status: 'succeeded',
       url: 'https://example.com/video.mp4',
@@ -124,8 +124,7 @@ describe('/api/video/status', () => {
 
   test('should return 405 for non-GET requests', async () => {
     const { req, res } = createMocks({
-      method: 'POST',
-    });
+      method: 'POST'});
 
     await handler(req, res);
 
@@ -161,7 +160,7 @@ describe('/api/video/status', () => {
     
     const data = JSON.parse(res._getData());
     expect(data).toMatchObject({
-      data: {
+      data: {},
         generation_id: 'test-gen-123',
         total_jobs: expect.any(Number),
         progress: expect.objectContaining({
@@ -186,7 +185,7 @@ describe('/api/video/status', () => {
     
     const data = JSON.parse(res._getData());
     expect(data).toMatchObject({
-      data: {
+      data: {},
         id: 'test-generation-1',
         status: expect.any(String),
         progress: expect.objectContaining({

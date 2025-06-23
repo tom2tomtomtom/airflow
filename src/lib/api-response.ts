@@ -38,8 +38,7 @@ export enum ApiErrorCode {
   INTERNAL_ERROR = 'INTERNAL_ERROR',
   DATABASE_ERROR = 'DATABASE_ERROR',
   EXTERNAL_SERVICE_ERROR = 'EXTERNAL_SERVICE_ERROR',
-  TIMEOUT_ERROR = 'TIMEOUT_ERROR',
-}
+  TIMEOUT_ERROR = 'TIMEOUT_ERROR'}
 
 // Success response helper
 export function successResponse<T>(
@@ -51,11 +50,9 @@ export function successResponse<T>(
   const response: ApiResponse<T> = {
     success: true,
     data,
-    meta: {
+    meta: {},
       timestamp: new Date().toISOString(),
-      ...meta,
-    },
-  };
+      ...meta}};
   
   res.status(statusCode).json(response);
 }
@@ -70,15 +67,12 @@ export function errorResponse(
 ): void {
   const response: ApiResponse = {
     success: false,
-    error: {
+    error: {},
       code,
       message,
-      ...(details && { details }),
-    },
-    meta: {
-      timestamp: new Date().toISOString(),
-    },
-  };
+      ...(details && { details })},
+    meta: {},
+      timestamp: new Date().toISOString()}};
   
   res.status(statusCode).json(response);
 }
@@ -172,8 +166,7 @@ export function createPaginationMeta(
     page,
     limit,
     total,
-    totalPages: Math.ceil(total / limit),
-  };
+    totalPages: Math.ceil(total / limit)};
 }
 
 // Validation helper

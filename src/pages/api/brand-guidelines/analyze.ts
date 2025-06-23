@@ -9,24 +9,22 @@ import mammoth from 'mammoth';
 import pdf from 'pdf-parse';
 
 export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+  api: {},
+    bodyParser: false}};
 
 interface BrandGuidelines {
-  colors: {
+  colors: {},
     primary: string[];
     secondary: string[];
     accent: string[];
   };
-  toneOfVoice: {
+  toneOfVoice: {},
     personality: string[];
     communication_style: string;
     dos: string[];
     donts: string[];
   };
-  typography: {
+  typography: {},
     primary_font: string;
     secondary_font: string;
     font_weights: string[];
@@ -51,8 +49,7 @@ interface AnalysisResponse {
 
 // Initialize OpenAI client
 const openai = hasOpenAI ? new OpenAI({
-  apiKey: env.OPENAI_API_KEY,
-}) : null;
+  apiKey: env.OPENAI_API_KEY}) : null;
 
 async function extractTextFromFile(file: formidable.File): Promise<string> {
   const buffer = await fs.readFile(file.filepath);
@@ -124,8 +121,7 @@ async function analyzeBrandGuidelines(text: string): Promise<BrandGuidelines> {
         }
       ],
       temperature: 0.3,
-      max_tokens: 1500,
-    });
+      max_tokens: 1500});
 
     const content = completion.choices[0]?.message?.content;
     if (!content) {
@@ -164,8 +160,7 @@ export default async function handler(
 
     const form = formidable({
       maxFileSize: 10 * 1024 * 1024, // 10MB limit
-      maxFiles: 1,
-    });
+      maxFiles: 1});
 
     const [fields, files] = await form.parse(req);
     const file = Array.isArray(files.file) ? files.file[0] : files.file;

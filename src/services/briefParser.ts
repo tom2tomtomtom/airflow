@@ -18,7 +18,7 @@ export interface ParsedBrief {
   rawContent: string;
   extractedSections: Record<string, string>;
   confidence: number;
-  metadata: {
+  metadata: {},
     fileType: string;
     wordCount: number;
     extractedAt: Date;
@@ -84,7 +84,7 @@ export class BriefParser {
         rawContent: extractedText,
         extractedSections: parsed.extractedSections || {},
         confidence: parsed.confidence || 0,
-        metadata: {
+        metadata: {},
           fileType: file.type,
           wordCount: extractedText.split(/\s+/).length,
           extractedAt: new Date(),
@@ -252,7 +252,7 @@ If information is not clearly stated, use null for that field. Be accurate and d
       platforms: ["social media", "digital"],
       budget: null,
       timeline: null,
-      extractedSections: {
+      extractedSections: {},
         background: "Company background information",
         target: "Target audience details",
         strategy: "Strategic approach"
@@ -443,7 +443,7 @@ If information is not clearly stated, use null for that field. Be accurate and d
     return {
       ...brief,
       ...enhancements,
-      metadata: {
+      metadata: {},
         ...brief.metadata,
         enhanced: true,
         enhancedAt: new Date()

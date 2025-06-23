@@ -24,18 +24,18 @@ export const getSupabaseClient = () => {
       supabaseUrl,
       supabaseAnonKey,
       {
-        auth: {
+        auth: {},
           autoRefreshToken: true,
           persistSession: true,
           detectSessionInUrl: true,
           storageKey: 'airwave-auth-token', // Use specific storage key to avoid conflicts
         },
-        global: {
-          headers: {
+        global: {},
+          headers: {},
             'x-application-name': 'airwave'
           }
         },
-        cookies: {
+        cookies: {},
           get(name: string) {
             return getCookie(name);
           },
@@ -44,9 +44,7 @@ export const getSupabaseClient = () => {
           },
           remove(name: string, options: any) {
             removeCookie(name, options);
-          },
-        },
-      }
+          }}}
     );
   }
   return supabaseInstance;
@@ -230,5 +228,4 @@ export type {
   UserClient,
   Tables,
   Inserts,
-  Updates,
-} from '@/types/database';
+  Updates} from '@/types/database';

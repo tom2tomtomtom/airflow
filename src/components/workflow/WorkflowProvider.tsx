@@ -18,9 +18,7 @@ interface WorkflowProviderProps {
   children: ReactNode;
 }
 
-export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({
-  children,
-}) => {
+export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({ children }) => {
   const { activeClient } = useClient();
   const [state, dispatch] = useReducer(workflowReducer, {
     ...initialWorkflowState,
@@ -37,7 +35,7 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({
 
   // Initialize custom hooks
   const { withErrorHandling, clearError, setError } = useErrorHandling({ dispatch });
-  
+
   const { nextStep, previousStep, goToStep } = useNavigationActions({
     state: { currentStep: state.currentStep },
     dispatch,
@@ -74,52 +72,61 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({
   }, []);
 
   // Memoize actions object to prevent unnecessary re-renders
-  const actions: WorkflowActions = useMemo(() => ({
-    nextStep,
-    previousStep,
-    goToStep,
-    uploadBrief,
-    confirmBrief,
-    resetBrief,
-    generateMotivations,
-    selectMotivation,
-    generateCopy,
-    selectCopy,
-    storeCopyVariations,
-    selectAsset,
-    removeAsset,
-    selectTemplate,
-    clearError,
-    setError,
-    resetWorkflow,
-  }), [
-    nextStep,
-    previousStep,
-    goToStep,
-    uploadBrief,
-    confirmBrief,
-    resetBrief,
-    generateMotivations,
-    selectMotivation,
-    generateCopy,
-    selectCopy,
-    storeCopyVariations,
-    selectAsset,
-    removeAsset,
-    selectTemplate,
-    clearError,
-    setError,
-    resetWorkflow,
-  ]);
+  const actions: WorkflowActions = useMemo(
+    () => ({
+      nextStep,
+      previousStep,
+      goToStep,
+      uploadBrief,
+      confirmBrief,
+      resetBrief,
+      generateMotivations,
+      selectMotivation,
+      generateCopy,
+      selectCopy,
+      storeCopyVariations,
+      selectAsset,
+      removeAsset,
+      selectTemplate,
+      clearError,
+      setError,
+      resetWorkflow,
+    }),
+    [
+      nextStep,
+      previousStep,
+      goToStep,
+      uploadBrief,
+      confirmBrief,
+      resetBrief,
+      generateMotivations,
+      selectMotivation,
+      generateCopy,
+      selectCopy,
+      storeCopyVariations,
+      selectAsset,
+      removeAsset,
+      selectTemplate,
+      clearError,
+      setError,
+      resetWorkflow,
+    ]
+  );
 
   // Memoize context value to prevent unnecessary re-renders
-  const contextValue: WorkflowContext = useMemo(() => ({
-    state,
-    actions,
-  }), [state, actions]);
+  const contextValue: WorkflowContext = useMemo(
+    () => ({
+      state,
+      actions,
+    }),
+    [state, actions]
+  );
 
   return (
-    <WorkflowErrorBoundary context="WorkflowProvider" showDetails={process.env.NODE_ENV === 'development'}>
+    <WorkflowErrorBoundary
+      context="WorkflowProvider"
+      showDetails={process.env.NODE_ENV === 'development'}
+    >
       <WorkflowContextProvider.Provider value={contextValue}>
         {children}
       </WorkflowContextProvider.Provider>

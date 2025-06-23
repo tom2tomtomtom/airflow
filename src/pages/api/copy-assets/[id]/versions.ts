@@ -9,8 +9,7 @@ import { z } from 'zod';
 const VersionCreateSchema = z.object({
   content: z.string().min(1, 'Content is required'),
   notes: z.string().optional(),
-  is_major: z.boolean().default(false),
-});
+  is_major: z.boolean().default(false)});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -108,8 +107,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
     first_created: versions && versions.length > 0 
       ? versions[versions.length - 1].created_at 
       : currentVersion?.updated_at,
-    last_updated: currentVersion?.updated_at,
-  };
+    last_updated: currentVersion?.updated_at};
 
   // Enrich versions with change analysis
   const enrichedVersions = versions?.map((version, index) => {
@@ -119,8 +117,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
     return {
       ...version,
       change_analysis: changes,
-      is_current: false,
-    };
+      is_current: false};
   }) || [];
 
   // Add current version as the first item
@@ -137,22 +134,19 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
       change_analysis: versions && versions.length > 0 
         ? analyzeContentChanges(versions[0].content, currentVersion.content)
         : null,
-      is_current: true,
-    });
+      is_current: true});
   }
 
   return res.json({
-    data: {
+    data: {},
       asset_title: asset.title,
       versions: enrichedVersions,
-      statistics: versionStats,
-    },
+      statistics: versionStats},
     count: versionStats.total_versions,
-    pagination: {
+    pagination: {},
       limit: parseInt(limit as string),
       offset: parseInt(offset as string),
-      total: versionStats.total_versions,
-    }
+      total: versionStats.total_versions}
   });
 }
 
@@ -219,8 +213,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
       content: asset.content,
       notes: `Previous version (auto-saved before update)`,
       is_major: false,
-      created_by: user.id,
-    });
+      created_by: user.id});
 
   if (versionError) {
     console.error('Error creating version:', versionError);
@@ -233,11 +226,10 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
     character_count: versionData.content.length,
     word_count: versionData.content.split(/\s+/).length,
     updated_at: new Date().toISOString(),
-    metadata: {
+    metadata: {},
       version_notes: versionData.notes,
       is_major_update: versionData.is_major,
-      previous_version: nextVersionNumber,
-    }
+      previous_version: nextVersionNumber}
   };
 
   const { data: updatedAsset, error: updateError } = await supabase
@@ -265,8 +257,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
         content: versionData.content,
         notes: versionData.notes || 'Major version update',
         is_major: true,
-        created_by: user.id,
-      });
+        created_by: user.id});
   }
 
   // Analyze changes
@@ -274,11 +265,10 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
 
   return res.status(201).json({
     message: 'Copy asset version created successfully',
-    data: {
+    data: {},
       asset: updatedAsset,
       version_number: versionData.is_major ? nextVersionNumber + 1 : nextVersionNumber,
-      change_analysis: changeAnalysis,
-    }
+      change_analysis: changeAnalysis}
   });
 }
 
@@ -293,8 +283,7 @@ function analyzeContentChanges(oldContent: string, newContent: string): any {
     word_change: newWords.length - oldWords.length,
     similarity_score: calculateSimilarity(oldContent, newContent),
     change_type: determineChangeType(oldContent, newContent),
-    key_changes: identifyKeyChanges(oldContent, newContent),
-  };
+    key_changes: identifyKeyChanges(oldContent, newContent)};
 
   return changes;
 }

@@ -143,8 +143,7 @@ export class AssetManager {
       autoOptimize = true,
       generateThumbnail = true,
       analyzeWithAI = true,
-      collectionId,
-    } = options;
+      collectionId} = options;
 
     try {
       logger.info('Starting asset upload', {
@@ -152,8 +151,7 @@ export class AssetManager {
         fileSize: file.size,
         briefId,
         category,
-        usage,
-      });
+        usage});
 
       // Validate file
       this.validateFile(file);
@@ -174,19 +172,17 @@ export class AssetManager {
         mimeType: file.type,
         fileSize: file.size,
         url: '',
-        metadata: {
+        metadata: {},
           description,
           altText,
-          keywords: tags,
-        },
+          keywords: tags},
         tags,
         category,
         usage,
         status: 'uploading',
         uploadedAt: new Date(),
         updatedAt: new Date(),
-        uploadedBy,
-      };
+        uploadedBy};
 
       // Update status to processing
       asset.status = 'processing';
@@ -268,15 +264,13 @@ export class AssetManager {
         assetId,
         fileName,
         fileSize: asset.fileSize,
-        url: asset.url,
-      });
+        url: asset.url});
 
       return asset;
     } catch (error: any) {
       const classified = classifyError(error as Error, {
         route: 'asset-manager',
-        metadata: { fileName: file.name, briefId, fileSize: file.size },
-      });
+        metadata: { fileName: file.name, briefId, fileSize: file.size }});
 
       logger.error('Asset upload failed', classified.originalError);
       throw error;
@@ -298,8 +292,7 @@ export class AssetManager {
       sortBy = 'uploadedAt',
       sortOrder = 'desc',
       limit = 20,
-      offset = 0,
-    } = options;
+      offset = 0} = options;
 
     try {
       const supabase = await this.getSupabase();
@@ -338,8 +331,7 @@ export class AssetManager {
       return {
         assets,
         total,
-        hasMore,
-      };
+        hasMore};
     } catch (error: any) {
       logger.error('Asset search failed', error);
       throw error;
@@ -400,7 +392,7 @@ export class AssetManager {
     name: string,
     description: string,
     createdBy: string,
-    options: {
+    options: {},
       category?: AssetCollection['category'];
       usage?: AssetCollection['usage'];
       tags?: string[];
@@ -421,8 +413,7 @@ export class AssetManager {
         usage,
         createdAt: new Date(),
         updatedAt: new Date(),
-        createdBy,
-      };
+        createdBy};
 
       // Save to database
       await this.saveCollectionToDatabase(collection);
@@ -582,8 +573,7 @@ export class AssetManager {
     // Optimize main image
     const optimized = await optimizeImage(buffer, {
       quality: 90,
-      format: 'webp',
-    });
+      format: 'webp'});
 
     // Generate thumbnail if requested
     let thumbnail: Buffer | null = null;
@@ -592,24 +582,21 @@ export class AssetManager {
         width: 300,
         height: 300,
         quality: 80,
-        format: 'jpeg',
-      });
+        format: 'jpeg'});
       thumbnail = thumbResult.buffer;
     }
 
     return {
       main: optimized.buffer,
       thumbnail,
-      dimensions: {
+      dimensions: {},
         width: analysis.metadata.width,
-        height: analysis.metadata.height,
-      },
+        height: analysis.metadata.height},
       colorPalette: [analysis.dominantColor],
       dominantColor: analysis.dominantColor,
       format: analysis.metadata.format,
       hasTransparency: analysis.hasTransparency,
-      isAnimated: analysis.isAnimated,
-    };
+      isAnimated: analysis.isAnimated};
   }
 
   private async processVideo(file: File): Promise<{
@@ -624,8 +611,7 @@ export class AssetManager {
       duration: 0,
       fps: 30,
       codec: 'h264',
-      dimensions: { width: 1920, height: 1080 },
-    };
+      dimensions: { width: 1920, height: 1080 }};
   }
 
   private async processDocument(file: File): Promise<{
@@ -636,8 +622,7 @@ export class AssetManager {
     // In production, would parse PDF/DOC files
     return {
       pageCount: 1,
-      wordCount: 0,
-    };
+      wordCount: 0};
   }
 
   private async uploadFileToStorage(
@@ -648,8 +633,7 @@ export class AssetManager {
     try {
       const supabase = await this.getSupabase();
       const { data, error } = await supabase.storage.from(bucket).upload(path, file, {
-        upsert: true,
-      });
+        upsert: true});
 
       if (error) {
         return { success: false, error: error.message };
@@ -659,13 +643,11 @@ export class AssetManager {
 
       return {
         success: true,
-        url: urlData.publicUrl,
-      };
+        url: urlData.publicUrl};
     } catch (error: any) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
-      };
+        error: error instanceof Error ? error.message : 'Unknown error'};
     }
   }
 
@@ -686,8 +668,7 @@ export class AssetManager {
       objects: ['object1', 'object2'],
       mood: 'professional',
       style: 'modern',
-      confidence: 0.85,
-    };
+      confidence: 0.85};
   }
 
   private async saveAssetToDatabase(asset: Asset): Promise<void> {
@@ -712,8 +693,7 @@ export class AssetManager {
       status: asset.status,
       uploaded_at: asset.uploadedAt.toISOString(),
       updated_at: asset.updatedAt.toISOString(),
-      uploaded_by: asset.uploadedBy,
-    });
+      uploaded_by: asset.uploadedBy});
 
     if (error) {
       throw error;
@@ -733,8 +713,7 @@ export class AssetManager {
       usage: collection.usage,
       created_at: collection.createdAt.toISOString(),
       updated_at: collection.updatedAt.toISOString(),
-      created_by: collection.createdBy,
-    });
+      created_by: collection.createdBy});
 
     if (error) {
       throw error;
@@ -746,8 +725,7 @@ export class AssetManager {
     const { error } = await supabase.from('collection_assets').upsert({
       collection_id: collectionId,
       asset_id: assetId,
-      added_at: new Date().toISOString(),
-    });
+      added_at: new Date().toISOString()});
 
     if (error) {
       throw error;
@@ -802,8 +780,7 @@ export class AssetManager {
       status: row.status,
       uploadedAt: new Date(row.uploaded_at),
       updatedAt: new Date(row.updated_at),
-      uploadedBy: row.uploaded_by,
-    };
+      uploadedBy: row.uploaded_by};
   }
 
   private mapRowToCollection(row: any): AssetCollection {
@@ -819,8 +796,7 @@ export class AssetManager {
       usage: row.usage,
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),
-      createdBy: row.created_by,
-    };
+      createdBy: row.created_by};
   }
 
   private getStoragePathFromUrl(url: string): string {

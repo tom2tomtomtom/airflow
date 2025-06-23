@@ -22,13 +22,17 @@ export function getSchedule(campaign: Campaign | UICampaign) {
   return undefined;
 }
 
-export function getBudgetTotal(budget: number | { total: number; spent: number; currency: string; } | undefined): number {
+export function getBudgetTotal(
+  budget: number | { total: number; spent: number; currency: string } | undefined
+): number {
   if (!budget) return 0;
   if (typeof budget === 'number') return budget;
   return budget.total;
 }
 
-export function getBudgetSpent(budget: number | { total: number; spent: number; currency: string; } | undefined): number {
+export function getBudgetSpent(
+  budget: number | { total: number; spent: number; currency: string } | undefined
+): number {
   if (!budget) return 0;
   if (typeof budget === 'number') return 0; // If it's just a number, there's no spent amount
   return budget.spent;

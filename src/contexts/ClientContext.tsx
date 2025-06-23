@@ -26,8 +26,7 @@ const ClientContext = createContext<ClientContextType>({
   updateClient: async () => {
     throw new Error('ClientContext not initialized');
   },
-  deleteClient: async () => {},
-});
+  deleteClient: async () => {}});
 
 export const useClient = () => useContext(ClientContext);
 
@@ -64,10 +63,8 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           
           // Fetch clients from API
           const response = await fetch("/api/clients", {
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-            },
-          });
+            headers: {},
+              Authorization: `Bearer ${user.token}`}});
           
           const data = await response.json();
           
@@ -99,7 +96,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
               localStorage.setItem('airwave_active_client', JSON.stringify(parsedClients[0]));
             }
           }
-        } catch (error: any) {
+        } catch (error: unknown) {
     const message = getErrorMessage(error);
           console.error('Error loading clients:', error);
           
@@ -151,12 +148,10 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       // Call API to create client
       const response = await fetch("/api/clients", {
         method: "POST",
-        headers: {
+        headers: {},
           "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token || "mock_token"}`,
-        },
-        body: JSON.stringify(clientData),
-      });
+          Authorization: `Bearer ${user.token || "mock_token"}`},
+        body: JSON.stringify(clientData)});
       
       const data = await response.json();
       
@@ -178,7 +173,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       } else {
         throw new Error("Invalid response from server");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
     const message = getErrorMessage(error);
       console.error('Error creating client:', error);
       
@@ -197,8 +192,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         brand_guidelines: clientData.brand_guidelines || {
           voiceTone: '',
           targetAudience: '',
-          keyMessages: [],
-        },
+          keyMessages: []},
         tenantId: 'tenant-1',
         isActive: true,
         dateCreated: new Date().toISOString(),
@@ -233,12 +227,10 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       // Call API to update client
       const response = await fetch(`/api/clients/${id}`, {
         method: "PUT",
-        headers: {
+        headers: {},
           "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token || "mock_token"}`,
-        },
-        body: JSON.stringify(clientData),
-      });
+          Authorization: `Bearer ${user.token || "mock_token"}`},
+        body: JSON.stringify(clientData)});
       
       const data = await response.json();
       
@@ -248,7 +240,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       
       if (data.success && data.client) {
         // Update clients list
-        const updatedClients = clients.map((c: any) => c.id === id ? data.client : c);
+        const updatedClients = clients.map((c: unknown) => c.id === id ? data.client : c);
         setClients(updatedClients);
         
         // Update active client if it's the one being updated
@@ -260,7 +252,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       } else {
         throw new Error("Invalid response from server");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
     const message = getErrorMessage(error);
       console.error('Error updating client:', error);
       
@@ -280,8 +272,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         ...clientData,
         name: clientData.name || existingClient.name, // Ensure name is always defined
         lastModified: new Date().toISOString(),
-        version: existingClient.version + 1,
-      };
+        version: existingClient.version + 1};
       
       const updatedClients = [...clients];
       updatedClients[clientIndex] = updatedClient;
@@ -310,10 +301,8 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       // Call API to delete client
       const response = await fetch(`/api/clients/${id}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${user.token || "mock_token"}`,
-        },
-      });
+        headers: {},
+          Authorization: `Bearer ${user.token || "mock_token"}`}});
       
       const data = await response.json();
       
@@ -323,7 +312,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       
       if (data.success) {
         // Update local state
-        const updatedClients = clients.filter((c: any) => c.id !== id);
+        const updatedClients = clients.filter((c: unknown) => c.id !== id);
         setClients(updatedClients);
         localStorage.setItem('airwave_clients', JSON.stringify(updatedClients));
 
@@ -336,12 +325,12 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           }
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
     const message = getErrorMessage(error);
       console.error('Error deleting client:', error);
       
       // Fallback to local deletion
-      const updatedClients = clients.filter((c: any) => c.id !== id);
+      const updatedClients = clients.filter((c: unknown) => c.id !== id);
       setClients(updatedClients);
       localStorage.setItem('airwave_clients', JSON.stringify(updatedClients));
 
@@ -364,8 +353,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setActiveClient: handleSetActiveClient,
         createClient,
         updateClient,
-        deleteClient,
-      }}
+        deleteClient}}
     >
       {children}
     </ClientContext.Provider>

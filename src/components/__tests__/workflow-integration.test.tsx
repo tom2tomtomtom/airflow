@@ -10,7 +10,7 @@ const mockFetch = jest.fn();
 // Mock API responses
 const mockBriefParseResponse = {
   success: true,
-  data: {
+  data: {},
     title: 'Test Campaign',
     industry: 'Technology',
     product: 'AI Platform',
@@ -78,7 +78,7 @@ const mockCostCheckResponse = {
   allowed: true,
   budgetRemaining: 850.50,
   fallbackModel: null,
-  usageStats: {
+  usageStats: {},
     percentOfBudget: 15.5
   }
 };
@@ -96,8 +96,7 @@ describe('Workflow Integration Tests', () => {
   const defaultProps = {
     open: true,
     onClose: jest.fn(),
-    onComplete: jest.fn(),
-  };
+    onComplete: jest.fn()};
 
   beforeAll(() => {
     global.fetch = mockFetch;
@@ -109,24 +108,19 @@ describe('Workflow Integration Tests', () => {
     mockFetch
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => mockBriefParseResponse,
-      } as Response)
+        json: async () => mockBriefParseResponse} as Response)
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => mockCostCheckResponse,
-      } as Response)
+        json: async () => mockCostCheckResponse} as Response)
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => mockMotivationsResponse,
-      } as Response)
+        json: async () => mockMotivationsResponse} as Response)
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => mockCostCheckResponse,
-      } as Response)
+        json: async () => mockCostCheckResponse} as Response)
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => mockCopyResponse,
-      } as Response);
+        json: async () => mockCopyResponse} as Response);
   });
 
   const renderWorkflow = (props: Record<string, any> = {}) => {
@@ -163,8 +157,7 @@ describe('Workflow Integration Tests', () => {
       json: async () => ({
         success: false,
         message: 'Failed to parse brief'
-      }),
-    } as Response);
+      })} as Response);
 
     renderWorkflow();
 
@@ -183,16 +176,14 @@ describe('Workflow Integration Tests', () => {
     mockFetch
       .mockResolvedValueOnce({
         ok: true,
-        json: async () => mockBriefParseResponse,
-      } as Response)
+        json: async () => mockBriefParseResponse} as Response)
       .mockResolvedValueOnce({
         ok: true,
         json: async () => ({
           allowed: false,
           reason: 'Monthly budget limit exceeded',
           budgetRemaining: 0
-        }),
-      } as Response);
+        })} as Response);
 
     renderWorkflow();
 

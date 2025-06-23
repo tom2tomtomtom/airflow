@@ -1,8 +1,8 @@
 // Re-export from the consolidated module
-export { 
-  createSupabaseBrowserClient, 
+export {
+  createSupabaseBrowserClient,
   getSupabaseBrowserClient,
-  resetSupabaseBrowserClient 
+  resetSupabaseBrowserClient,
 } from '@/lib/supabase/client';
 
 // Default export for backward compatibility

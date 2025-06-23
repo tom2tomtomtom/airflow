@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  Typography,
-  Paper,
-  Button,
-} from '@mui/material';
+import { Box, Typography, Paper, Button } from '@mui/material';
 
 // Simple placeholder component for ImageGenerationTab
 interface ImageGenerationTabProps {

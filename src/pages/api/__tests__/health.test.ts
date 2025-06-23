@@ -17,7 +17,7 @@ jest.mock('@supabase/supabase-js', () => ({
         }))
       }))
     })),
-    storage: {
+    storage: {},
       listBuckets: jest.fn(() => Promise.resolve({ data: [], error: null }))
     }
   }))
@@ -40,8 +40,7 @@ jest.mock('@aws-sdk/client-s3', () => ({
 global.fetch = jest.fn(() =>
   Promise.resolve({
     ok: true,
-    json: () => Promise.resolve({}),
-  })
+    json: () => Promise.resolve({})})
 ) as jest.Mock;
 
 describe('/api/health', () => {
@@ -54,8 +53,7 @@ describe('/api/health', () => {
 
   it('should return health status with basic structure', async () => {
     const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-      method: 'GET',
-    });
+      method: 'GET'});
 
     await handler(req, res);
 
@@ -70,27 +68,22 @@ describe('/api/health', () => {
       environment: expect.any(String),
       deployment: expect.objectContaining({
         platform: expect.any(String),
-        region: expect.any(String),
-      }),
+        region: expect.any(String)}),
       checks: expect.objectContaining({
         database: expect.any(Object),
         redis: expect.any(Object),
         storage: expect.any(Object),
         creatomate: expect.any(Object),
         email: expect.any(Object),
-        ai_services: expect.any(Object),
-      }),
+        ai_services: expect.any(Object)}),
       performance: expect.objectContaining({
         memory_usage: expect.any(Number),
-        response_time: expect.any(Number),
-      }),
-    });
+        response_time: expect.any(Number)})});
   });
 
   it('should reject non-GET methods', async () => {
     const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-      method: 'POST',
-    });
+      method: 'POST'});
 
     await handler(req, res);
 
@@ -100,8 +93,7 @@ describe('/api/health', () => {
 
   it('should set cache headers', async () => {
     const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-      method: 'GET',
-    });
+      method: 'GET'});
 
     await handler(req, res);
 
@@ -110,8 +102,7 @@ describe('/api/health', () => {
 
   it('should include performance metrics', async () => {
     const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-      method: 'GET',
-    });
+      method: 'GET'});
 
     await handler(req, res);
 

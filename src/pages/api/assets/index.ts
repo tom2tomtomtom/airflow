@@ -187,7 +187,15 @@ import { createClient } from '@/lib/supabase/server';
 const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withAPIRateLimit } from '@/lib/rate-limiter';
-import { successResponse, errorResponse, handleApiError, methodNotAllowed, validateRequiredFields, createPaginationMeta, ApiErrorCode } from '@/lib/api-response';
+import {
+  successResponse,
+  errorResponse,
+  handleApiError,
+  methodNotAllowed,
+  validateRequiredFields,
+  createPaginationMeta,
+  ApiErrorCode,
+} from '@/lib/api-response';
 
 export interface Asset {
   id: string;
@@ -256,11 +264,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 }
 
 // GET - Fetch assets with proper schema mapping
-async function getAssets(
-  req: NextApiRequest,
-  res: NextApiResponse,
-  user: any
-): Promise<void> {
+async function getAssets(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   try {
     const userId = user?.id;
     if (!userId) {
@@ -274,7 +278,7 @@ async function getAssets(
       type = '',
       clientId = '',
       sortBy = 'created_at',
-      sortOrder = 'desc'
+      sortOrder = 'desc',
     } = req.query;
 
     const pageNum = parseInt(page as string, 10);
@@ -282,9 +286,8 @@ async function getAssets(
     const offset = (pageNum - 1) * limitNum;
 
     // Build query with proper field selection
-    let query = supabase
-      .from('assets')
-      .select(`
+    let query = supabase.from('assets').select(
+      `
         id,
         name,
         type,
@@ -301,7 +304,9 @@ async function getAssets(
         dimensions,
         created_at,
         updated_at
-      `, { count: 'exact' });
+      `,
+      { count: 'exact' }
+    );
 
     // Filter by client if provided
     if (clientId) {
@@ -321,7 +326,7 @@ async function getAssets(
         const paginationMeta = createPaginationMeta(pageNum, limitNum, 0);
         return successResponse(res, [], 200, {
           pagination: paginationMeta,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         });
       }
     }
@@ -356,20 +361,15 @@ async function getAssets(
 
     return successResponse(res, assets, 200, {
       pagination: paginationMeta,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-
   } catch (error: any) {
     return handleApiError(res, error, 'getAssets');
   }
 }
 
 // POST - Create a new asset with proper field mapping
-async function createAsset(
-  req: NextApiRequest,
-  res: NextApiResponse,
-  user: any
-): Promise<void> {
+async function createAsset(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   try {
     const userId = user?.id;
     if (!userId) {
@@ -377,8 +377,19 @@ async function createAsset(
     }
 
     const {
-      name, type, url, thumbnailUrl, description, tags, clientId,
-      metadata, size, mimeType, duration, width, height
+      name,
+      type,
+      url,
+      thumbnailUrl,
+      description,
+      tags,
+      clientId,
+      metadata,
+      size,
+      mimeType,
+      duration,
+      width,
+      height,
     } = req.body;
 
     // Validate required fields
@@ -394,9 +405,9 @@ async function createAsset(
 
     // Validate asset type
     if (!['image', 'video', 'text', 'voice'].includes(type)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Type must be one of: image, video, text, voice' 
+      return res.status(400).json({
+        success: false,
+        message: 'Type must be one of: image, video, text, voice',
       });
     }
 
@@ -416,13 +427,14 @@ async function createAsset(
       duration,
       dimensions: width && height ? { width, height } : null,
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     const { data, error } = await supabase
       .from('assets')
       .insert(assetData)
-      .select(`
+      .select(
+        `
         id,
         name,
         type,
@@ -438,14 +450,15 @@ async function createAsset(
         duration,
         dimensions,
         created_at
-      `)
+      `
+      )
       .single();
 
     if (error) {
       console.error('Database error creating asset:', error);
       return res.status(500).json({
         success: false,
-        message: 'Failed to create asset'
+        message: 'Failed to create asset',
       });
     }
 
@@ -455,25 +468,20 @@ async function createAsset(
     return res.status(201).json({
       success: true,
       message: 'Asset created successfully',
-      asset
+      asset,
     });
-
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Create asset error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to create asset'
+      message: 'Failed to create asset',
     });
   }
 }
 
 // PUT - Update an asset
-async function updateAsset(
-  req: NextApiRequest,
-  res: NextApiResponse,
-  user: any
-): Promise<void> {
+async function updateAsset(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   try {
     const userId = user?.id;
     if (!userId) {
@@ -489,7 +497,7 @@ async function updateAsset(
 
     // Map frontend fields to database fields
     const dbUpdates: any = {
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     if (updates.name) dbUpdates.name = updates.name;
@@ -505,7 +513,8 @@ async function updateAsset(
       .update(dbUpdates)
       .eq('id', id)
       .eq('created_by', userId) // Ensure user owns the asset
-      .select(`
+      .select(
+        `
         id,
         name,
         type,
@@ -522,21 +531,22 @@ async function updateAsset(
         dimensions,
         created_at,
         updated_at
-      `)
+      `
+      )
       .single();
 
     if (error) {
       console.error('Database error updating asset:', error);
       return res.status(500).json({
         success: false,
-        message: 'Failed to update asset'
+        message: 'Failed to update asset',
       });
     }
 
     if (!data) {
       return res.status(404).json({
         success: false,
-        message: 'Asset not found or access denied'
+        message: 'Asset not found or access denied',
       });
     }
 
@@ -546,25 +556,20 @@ async function updateAsset(
     return res.status(200).json({
       success: true,
       message: 'Asset updated successfully',
-      asset
+      asset,
     });
-
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Update asset error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to update asset'
+      message: 'Failed to update asset',
     });
   }
 }
 
 // DELETE - Delete an asset
-async function deleteAsset(
-  req: NextApiRequest,
-  res: NextApiResponse,
-  user: any
-): Promise<void> {
+async function deleteAsset(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   try {
     const userId = user?.id;
     if (!userId) {
@@ -588,7 +593,7 @@ async function deleteAsset(
     if (fetchError || !asset) {
       return res.status(404).json({
         success: false,
-        message: 'Asset not found or access denied'
+        message: 'Asset not found or access denied',
       });
     }
 
@@ -603,21 +608,20 @@ async function deleteAsset(
       console.error('Database error deleting asset:', deleteError);
       return res.status(500).json({
         success: false,
-        message: 'Failed to delete asset'
+        message: 'Failed to delete asset',
       });
     }
 
     return res.status(200).json({
       success: true,
-      message: 'Asset deleted successfully'
+      message: 'Asset deleted successfully',
     });
-
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Delete asset error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to delete asset'
+      message: 'Failed to delete asset',
     });
   }
 }

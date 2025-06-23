@@ -19,8 +19,7 @@ const GenerationsFilterSchema = z.object({
   offset: z.number().min(0).default(0),
   sort_by: z.enum(['created_at', 'updated_at', 'status']).default('created_at'),
   sort_order: z.enum(['asc', 'desc']).default('desc'),
-  include_jobs: z.boolean().default(false),
-});
+  include_jobs: z.boolean().default(false)});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -67,8 +66,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     return res.json({ 
       data: [], 
       count: 0,
-      summary: getEmptySummary(),
-    });
+      summary: getEmptySummary()});
   }
 
   const clientIds = userClients.map((uc: any) => uc.client_id);
@@ -151,7 +149,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     count: processedData.length,
     total_jobs: count || 0,
     summary,
-    pagination: {
+    pagination: {},
       limit: filters.limit,
       offset: filters.offset,
       total: count || 0
@@ -295,8 +293,7 @@ function groupByGeneration(generations: any[]): any[] {
         created_at: gen.created_at,
         jobs: [],
         status: 'pending',
-        progress: { percentage: 0, completed: 0, total: 0 },
-      };
+        progress: { percentage: 0, completed: 0, total: 0 }};
     }
 
     grouped[genId].jobs.push({
@@ -308,8 +305,7 @@ function groupByGeneration(generations: any[]): any[] {
       error_message: gen.error_message,
       config: gen.config,
       created_at: gen.created_at,
-      updated_at: gen.updated_at,
-    });
+      updated_at: gen.updated_at});
   });
 
   // Calculate progress for each generation
@@ -321,8 +317,7 @@ function groupByGeneration(generations: any[]): any[] {
     gen.progress = {
       percentage: totalJobs > 0 ? Math.round((completedJobs / totalJobs) * 100) : 0,
       completed: completedJobs,
-      total: totalJobs,
-    };
+      total: totalJobs};
 
     // Determine overall status
     if (completedJobs === totalJobs) {
@@ -367,8 +362,7 @@ function enhanceGenerationData(generation: any): any {
     error_message: generation.error_message,
     config: generation.config,
     created_at: generation.created_at,
-    updated_at: generation.updated_at,
-  };
+    updated_at: generation.updated_at};
 }
 
 function getContextInfo(generation: any): any {
@@ -377,27 +371,23 @@ function getContextInfo(generation: any): any {
       type: 'brief',
       id: generation.brief_id,
       name: generation.briefs.name,
-      client: generation.briefs.clients,
-    };
+      client: generation.briefs.clients};
   } else if (generation.matrices) {
     return {
       type: 'matrix',
       id: generation.matrix_id,
       name: generation.matrices.name,
-      campaign: generation.matrices.campaigns,
-    };
+      campaign: generation.matrices.campaigns};
   } else if (generation.campaigns) {
     return {
       type: 'campaign',
       id: generation.campaign_id,
       name: generation.campaigns.name,
-      client: generation.campaigns.clients,
-    };
+      client: generation.campaigns.clients};
   } else {
     return {
       type: 'standalone',
-      client_id: generation.client_id,
-    };
+      client_id: generation.client_id};
   }
 }
 
@@ -430,19 +420,17 @@ function calculateSummary(generations: any[]): any {
     status_breakdown: byStatus,
     today_count: todayGenerations,
     weekly_count: weeklyGenerations,
-    completion_rate: total > 0 ? Math.round(((byStatus.completed || 0) / total) * 100) : 0,
-  };
+    completion_rate: total > 0 ? Math.round(((byStatus.completed || 0) / total) * 100) : 0};
 }
 
 function getEmptySummary(): any {
   return {
     total_jobs: 0,
     total_generations: 0,
-    status_breakdown: Record<string, unknown>$1
+    status_breakdown: {}
     today_count: 0,
     weekly_count: 0,
-    completion_rate: 0,
-  };
+    completion_rate: 0};
 }
 
 export default withAuth(withSecurityHeaders(handler));

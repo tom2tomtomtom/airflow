@@ -43,17 +43,18 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
       const platforms: Platform[] = supportedPlatforms.map((platform: any) => {
         const connection = connections?.find((c: any) => c.platform === platform.name);
-        
+
         // Check if token is expired
-        const isExpired = connection?.token_expires_at && new Date(connection.token_expires_at) < new Date();
-        
+        const isExpired =
+          connection?.token_expires_at && new Date(connection.token_expires_at) < new Date();
+
         return {
           ...platform,
           isConnected: !!connection,
           accountName: connection?.platform_username || undefined,
           permissions: connection?.scope?.split(',') || [],
           lastSync: connection?.connected_at || undefined,
-          status: isExpired ? 'expired' : (connection ? 'active' : 'active'),
+          status: isExpired ? 'expired' : connection ? 'active' : 'active',
         };
       });
 

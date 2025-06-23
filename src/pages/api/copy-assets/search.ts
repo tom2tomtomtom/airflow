@@ -30,8 +30,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       tags,
       sentiment,
       limit = 20,
-      offset = 0,
-    } = req.query;
+      offset = 0} = req.query;
 
     if (!query || typeof query !== 'string' || query.trim().length < 2) {
       return res.status(400).json({ 
@@ -140,8 +139,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       ...result,
       search_relevance: calculateRelevanceScore(result, searchTerm),
       highlighted_content: highlightMatches(result.content, searchTerm),
-      highlighted_title: result.title ? highlightMatches(result.title, searchTerm) : null,
-    }));
+      highlighted_title: result.title ? highlightMatches(result.title, searchTerm) : null}));
 
     // Sort by relevance
     enrichedResults.sort((a, b) => b.search_relevance - a.search_relevance);
@@ -151,14 +149,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       count,
       query: searchTerm,
       suggestions,
-      filters_applied: {
+      filters_applied: {},
         type, platform, tone, ai_generated, sentiment,
         performance_range: performance_min || performance_max ? [performance_min, performance_max] : null,
         character_range: character_min || character_max ? [character_min, character_max] : null,
         word_range: word_min || word_max ? [word_min, word_max] : null,
-        tags: tags ? (typeof tags === 'string' ? tags.split(',').map((t: any) => t.trim()) : tags) : null,
-      },
-      pagination: {
+        tags: tags ? (typeof tags === 'string' ? tags.split(',').map((t: any) => t.trim()) : tags) : null},
+      pagination: {},
         limit: parseInt(limit as string),
         offset: parseInt(offset as string),
         total: count || 0

@@ -18,16 +18,14 @@ export function createMiddlewareSupabaseClient(
   const config = validateSupabaseConfig();
   
   let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  });
+    request: {},
+      headers: request.headers}});
 
   const supabase = createServerClient<Database>(
     config.url,
     config.anonKey,
     {
-      cookies: {
+      cookies: {},
         get(name: string) {
           return request.cookies.get(name)?.value;
         },
@@ -36,39 +34,29 @@ export function createMiddlewareSupabaseClient(
           request.cookies.set({
             name,
             value,
-            ...options,
-          });
+            ...options});
           response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          });
+            request: {},
+              headers: request.headers}});
           response?.cookies?.set({
             name,
             value,
-            ...options,
-          });
+            ...options});
         },
         remove(name: string, options: CookieOptions) {
           // Remove from both request and response
           request.cookies.set({
             name,
             value: '',
-            ...options,
-          });
+            ...options});
           response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          });
+            request: {},
+              headers: request.headers}});
           response?.cookies?.set({
             name,
             value: '',
-            ...options,
-          });
-        },
-      },
-    }
+            ...options});
+        }}}
   );
 
   return { response, supabase };

@@ -21,8 +21,7 @@ import {
   DialogActions,
   CircularProgress,
   Alert,
-  InputAdornment,
-} from '@mui/material';
+  InputAdornment} from '@mui/material';
 import {
   Search,
   Clear,
@@ -34,8 +33,7 @@ import {
   VideoFile,
   AudioFile,
   TextFields,
-  Refresh,
-} from '@mui/icons-material';
+  Refresh} from '@mui/icons-material';
 
 interface Asset {
   id: string;
@@ -67,15 +65,13 @@ const assetTypeIcons = {
   image: <Image />,
   video: <VideoFile />,
   voice: <AudioFile />,
-  text: <TextFields />,
-};
+  text: <TextFields />};
 
 const assetTypeColors = {
   image: '#4CAF50',
   video: '#2196F3',
   voice: '#FF9800',
-  text: '#9C27B0',
-};
+  text: '#9C27B0'};
 
 export default function AssetBrowser({ 
   clientId, 
@@ -104,8 +100,7 @@ export default function AssetBrowser({
       const params = new URLSearchParams({
         limit: '20',
         sortBy,
-        sortOrder,
-      });
+        sortOrder});
 
       if (searchTerm) params.append('search', searchTerm);
       if (selectedType) params.append('type', selectedType);
@@ -155,16 +150,12 @@ export default function AssetBrowser({
       const newFavoriteStatus = !asset.favorite;
       const response = await fetch(`/api/assets/${asset.id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {},
+          'Content-Type': 'application/json'},
         body: JSON.stringify({
-          metadata: {
+          metadata: {},
             ...asset.metadata,
-            favorite: newFavoriteStatus,
-          },
-        }),
-      });
+            favorite: newFavoriteStatus}})});
 
       if (response.ok) {
         setAssets(assets.map((a: any) => 
@@ -199,8 +190,7 @@ export default function AssetBrowser({
                   <InputAdornment position="start">
                     <Search />
                   </InputAdornment>
-                ),
-              }}
+                )}}
             />
           </Grid>
           
@@ -269,8 +259,7 @@ export default function AssetBrowser({
                 sx={{
                   cursor: 'pointer',
                   '&:hover': { transform: 'translateY(-2px)' },
-                  transition: 'transform 0.2s',
-                }}
+                  transition: 'transform 0.2s'}}
                 onClick={() => handleAssetClick(asset)}
               >
                 <Box position="relative">

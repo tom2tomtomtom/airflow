@@ -67,7 +67,9 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   }
 
   return (
-    <Box sx={{ position: 'relative', width: fill ? '100%' : width, height: fill ? '100%' : height }}>
+    <Box
+      sx={{ position: 'relative', width: fill ? '100%' : width, height: fill ? '100%' : height }}
+    >
       {isLoading && (
         <Skeleton
           variant="rectangular"
@@ -81,7 +83,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
           }}
         />
       )}
-      
+
       <Image
         src={src}
         alt={alt}

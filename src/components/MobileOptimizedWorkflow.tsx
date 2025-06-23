@@ -14,8 +14,7 @@ import {
   Slide,
   Zoom,
   Chip,
-  Avatar,
-} from '@mui/material';
+  Avatar} from '@mui/material';
 import {
   Close,
   ArrowBack,
@@ -27,8 +26,7 @@ import {
   VideoLibrary,
   Send,
   SwipeLeft,
-  SwipeRight,
-} from '@mui/icons-material';
+  SwipeRight} from '@mui/icons-material';
 import { useSwipeable } from 'react-swipeable';
 
 interface MobileWorkflowStep {
@@ -49,8 +47,7 @@ interface MobileOptimizedWorkflowProps {
 export const MobileOptimizedWorkflow: React.FC<MobileOptimizedWorkflowProps> = ({
   open,
   onClose,
-  onComplete,
-}) => {
+  onComplete}) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [activeStep, setActiveStep] = useState(0);
@@ -109,8 +106,7 @@ export const MobileOptimizedWorkflow: React.FC<MobileOptimizedWorkflowProps> = (
     onSwipedRight: () => handleBack(),
     trackMouse: false,
     trackTouch: true,
-    delta: 50,
-  });
+    delta: 50});
 
   const handleNext = () => {
     if (activeStep < steps.length - 1) {
@@ -149,9 +145,8 @@ export const MobileOptimizedWorkflow: React.FC<MobileOptimizedWorkflowProps> = (
       onClose={onClose}
       fullScreen
       PaperProps={{
-        sx: {
-          bgcolor: 'background.default',
-        }
+        sx: {},
+          bgcolor: 'background.default'}
       }}
     >
       <DialogContent sx={{ p: 0, height: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -164,8 +159,7 @@ export const MobileOptimizedWorkflow: React.FC<MobileOptimizedWorkflowProps> = (
             borderColor: 'divider',
             position: 'sticky',
             top: 0,
-            zIndex: 1,
-          }}
+            zIndex: 1}}
         >
           <Box display="flex" alignItems="center" justifyContent="between" mb={2}>
             <IconButton onClick={onClose} edge="start" aria-label="Icon button">              <Close />
@@ -185,8 +179,7 @@ export const MobileOptimizedWorkflow: React.FC<MobileOptimizedWorkflowProps> = (
                 height: 6,
                 borderRadius: 3,
                 '& .MuiLinearProgress-bar': {
-                  borderRadius: 3,
-                }
+                  borderRadius: 3}
               }}
             />
             <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
@@ -201,8 +194,7 @@ export const MobileOptimizedWorkflow: React.FC<MobileOptimizedWorkflowProps> = (
           sx={{
             flex: 1,
             overflow: 'hidden',
-            position: 'relative',
-          }}
+            position: 'relative'}}
         >
           <Slide
             direction="left"
@@ -218,8 +210,7 @@ export const MobileOptimizedWorkflow: React.FC<MobileOptimizedWorkflowProps> = (
                     width: 60,
                     height: 60,
                     mx: 'auto',
-                    mb: 2,
-                  }}
+                    mb: 2}}
                 >
                   {steps[activeStep].icon}
                 </Avatar>
@@ -252,8 +243,7 @@ export const MobileOptimizedWorkflow: React.FC<MobileOptimizedWorkflowProps> = (
                   px: 2,
                   py: 1,
                   borderRadius: 2,
-                  animation: 'pulse 2s infinite',
-                }}
+                  animation: 'pulse 2s infinite'}}
               >
                 <SwipeLeft />
                 <Typography variant="caption">Swipe to navigate</Typography>
@@ -272,8 +262,7 @@ export const MobileOptimizedWorkflow: React.FC<MobileOptimizedWorkflowProps> = (
             borderColor: 'divider',
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
+            alignItems: 'center'}}
         >
           <Button
             onClick={handleBack}
@@ -318,10 +307,8 @@ const MobileUploadStep: React.FC<{ onUpload: (data: any) => void }> = ({ onUploa
         bgcolor: 'primary.light',
         cursor: 'pointer',
         '&:active': {
-          transform: 'scale(0.98)',
-        },
-        transition: 'transform 0.1s ease',
-      }}
+          transform: 'scale(0.98)'},
+        transition: 'transform 0.1s ease'}}
       onClick={() => onUpload({ fileName: 'sample-brief.pdf' })}
     >
       <CloudUpload sx={{ fontSize: 60, color: 'primary.main', mb: 2 }} />
@@ -367,10 +354,8 @@ const MobileMotivationsStep: React.FC<{ onSelect: (data: any) => void }> = ({ on
             borderColor: selected.includes(motivation.id) ? 'primary.main' : 'transparent',
             cursor: 'pointer',
             '&:active': {
-              transform: 'scale(0.98)',
-            },
-            transition: 'all 0.2s ease',
-          }}
+              transform: 'scale(0.98)'},
+            transition: 'all 0.2s ease'}}
           onClick={() => handleToggle(motivation.id)}
         >
           <CardContent>

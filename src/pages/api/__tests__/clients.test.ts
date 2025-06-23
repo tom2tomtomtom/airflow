@@ -19,7 +19,7 @@ import handler from '../clients';
 
 // Mock environment
 jest.mock('@/lib/env', () => ({
-  env: {
+  env: {},
     NEXT_PUBLIC_SUPABASE_URL: 'https://test.supabase.co',
     SUPABASE_SERVICE_ROLE_KEY: 'test-service-key'
   }
@@ -48,7 +48,7 @@ jest.mock('@supabase/supabase-js', () => ({
       insert: jest.fn(() => ({
         select: jest.fn(() => ({
           single: jest.fn(() => Promise.resolve({
-            data: {
+            data: {},
               id: 'test-client-id',
               name: 'Test Client',
               slug: 'test-client',
@@ -82,7 +82,7 @@ jest.mock('@/lib/rate-limiter', () => ({
 
 // Mock environment
 jest.mock('@/lib/env', () => ({
-  env: {
+  env: {},
     NEXT_PUBLIC_SUPABASE_URL: 'https://test.supabase.co',
     SUPABASE_SERVICE_ROLE_KEY: 'test-service-key'
   }
@@ -124,7 +124,7 @@ describe('/api/clients', () => {
     test('should handle pagination parameters', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        query: {
+        query: {},
           limit: '25',
           offset: '50',
           sort_by: 'created_at',
@@ -192,7 +192,7 @@ describe('/api/clients', () => {
     test('should return 400 for missing required fields', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           description: 'Missing name and industry'
         }
       });
@@ -211,7 +211,7 @@ describe('/api/clients', () => {
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           name: 'Existing Client',
           industry: 'Technology'
         }
@@ -228,7 +228,7 @@ describe('/api/clients', () => {
     test('should generate correct slug from client name', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           name: 'Test Client & Company!',
           industry: 'Technology'
         }
@@ -289,7 +289,7 @@ describe('/api/clients', () => {
     test('should validate client name length', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           name: 'A', // Too short
           industry: 'Technology'
         }
@@ -304,7 +304,7 @@ describe('/api/clients', () => {
     test('should validate industry field', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           name: 'Valid Client Name',
           industry: '' // Empty industry
         }
@@ -320,7 +320,7 @@ describe('/api/clients', () => {
     test('should validate website URL format', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           name: 'Valid Client Name',
           industry: 'Technology',
           website: 'invalid-url'
@@ -336,7 +336,7 @@ describe('/api/clients', () => {
     test('should validate color format', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           name: 'Valid Client Name',
           industry: 'Technology',
           primaryColor: 'invalid-color'
@@ -430,7 +430,7 @@ describe('/api/clients', () => {
       const longName = 'A'.repeat(1000);
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           name: longName,
           industry: 'Technology'
         }
@@ -445,7 +445,7 @@ describe('/api/clients', () => {
     test('should handle special characters in client name', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           name: 'Client with émojis 🚀 and spëcial chars!',
           industry: 'Technology'
         }

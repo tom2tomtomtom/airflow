@@ -190,8 +190,7 @@ async function handleCreateEvent(req: NextApiRequest, res: NextApiResponse, user
         client_id,
         timestamp: new Date().toISOString(),
         read: false,
-        created_by: user.id,
-      };
+        created_by: user.id};
 
       return supabase
         .from('realtime_events')
@@ -302,7 +301,7 @@ async function triggerWebhookNotifications(
     // Send webhook (fire and forget)
     fetch(webhookSettings.url, {
       method: 'POST',
-      headers: {
+      headers: {},
         'Content-Type': 'application/json',
         'User-Agent': 'AIrFLOW-Webhook/1.0',
         ...(webhookSettings.secret && {
@@ -356,8 +355,7 @@ export async function broadcastEvent(
         user_id: userId,
         client_id: clientId,
         timestamp: new Date().toISOString(),
-        read: false,
-      };
+        read: false};
 
       return supabase
         .from('realtime_events')

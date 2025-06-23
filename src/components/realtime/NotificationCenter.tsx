@@ -62,7 +62,7 @@ const NotificationCenter: React.FC = () => {
     pushEnabled: true,
     emailEnabled: false,
   });
-  
+
   const {
     notifications,
     unreadNotifications,
@@ -90,21 +90,30 @@ const NotificationCenter: React.FC = () => {
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case 'success': return <CheckIcon color="success" />;
-      case 'error': return <ErrorIcon color="error" />;
-      case 'warning': return <WarningIcon color="warning" />;
-      case 'info': 
-      default: return <InfoIcon color="info" />;
+      case 'success':
+        return <CheckIcon color="success" />;
+      case 'error':
+        return <ErrorIcon color="error" />;
+      case 'warning':
+        return <WarningIcon color="warning" />;
+      case 'info':
+      default:
+        return <InfoIcon color="info" />;
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'urgent': return 'error';
-      case 'high': return 'warning';
-      case 'normal': return 'primary';
-      case 'low': return 'default';
-      default: return 'default';
+      case 'urgent':
+        return 'error';
+      case 'high':
+        return 'warning';
+      case 'normal':
+        return 'primary';
+      case 'low':
+        return 'default';
+      default:
+        return 'default';
     }
   };
 
@@ -180,21 +189,26 @@ const NotificationCenter: React.FC = () => {
             key={notification.id}
             sx={{
               borderLeft: `4px solid ${
-                notification.read ? 'transparent' : 
-                notification.priority === 'urgent' ? 'error.main' :
-                notification.priority === 'high' ? 'warning.main' : 'primary.main'
+                notification.read
+                  ? 'transparent'
+                  : notification.priority === 'urgent'
+                    ? 'error.main'
+                    : notification.priority === 'high'
+                      ? 'warning.main'
+                      : 'primary.main'
               }`,
               backgroundColor: notification.read ? 'transparent' : 'action.hover',
               '&:hover': { backgroundColor: 'action.selected' },
             }}
           >
-            <ListItemIcon>
-              {getNotificationIcon(notification.type)}
-            </ListItemIcon>
+            <ListItemIcon>{getNotificationIcon(notification.type)}</ListItemIcon>
             <ListItemText
               primary={
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: notification.read ? 'normal' : 'bold' }}>
+                  <Typography
+                    variant="subtitle2"
+                    sx={{ fontWeight: notification.read ? 'normal' : 'bold' }}
+                  >
                     {notification.title}
                   </Typography>
                   <Chip
@@ -231,7 +245,9 @@ const NotificationCenter: React.FC = () => {
                   <Tooltip title="Mark as read">
                     <IconButton
                       size="small"
-                      onClick={() => handleMarkAsRead(notification.id)} aria-label="Icon button">
+                      onClick={() => handleMarkAsRead(notification.id)}
+                      aria-label="Icon button"
+                    >
                       <MarkReadIcon fontSize="small" />
                     </IconButton>
                   </Tooltip>
@@ -239,7 +255,9 @@ const NotificationCenter: React.FC = () => {
                 <Tooltip title="Dismiss">
                   <IconButton
                     size="small"
-                    onClick={() => handleDismiss(notification.id)} aria-label="Icon button">
+                    onClick={() => handleDismiss(notification.id)}
+                    aria-label="Icon button"
+                  >
                     <DeleteIcon fontSize="small" />
                   </IconButton>
                 </Tooltip>
@@ -253,10 +271,9 @@ const NotificationCenter: React.FC = () => {
 
   return (
     <>
-      <IconButton
-        color="inherit"
-        onClick={handleClick}
-        disabled={loading} aria-label="Icon button">        <Badge badgeContent={unreadNotifications.length} color="error">
+      <IconButton color="inherit" onClick={handleClick} disabled={loading} aria-label="Icon button">
+        {' '}
+        <Badge badgeContent={unreadNotifications.length} color="error">
           <NotificationsIcon />
         </Badge>
       </IconButton>
@@ -274,43 +291,58 @@ const NotificationCenter: React.FC = () => {
           horizontal: 'right',
         }}
         PaperProps={{
-          sx: { width: 400, maxHeight: 600 }
+          sx: { width: 400, maxHeight: 600 },
         }}
       >
         <Box sx={{ p: 2 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Box
+            sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
+          >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Typography variant="h6" component="div">
                 Notifications
               </Typography>
               {unreadNotifications.length > 0 && (
-                <Chip
-                  label={`${unreadNotifications.length} unread`}
-                  size="small"
-                  color="primary"
-                />
+                <Chip label={`${unreadNotifications.length} unread`} size="small" color="primary" />
               )}
             </Box>
             <Stack direction="row" spacing={1}>
               <Tooltip title="Refresh">
-                <IconButton size="small" onClick={refresh} disabled={loading} aria-label="Icon button">                  {loading ? <CircularProgress size={16} /> : <RefreshIcon />}
+                <IconButton
+                  size="small"
+                  onClick={refresh}
+                  disabled={loading}
+                  aria-label="Icon button"
+                >
+                  {' '}
+                  {loading ? <CircularProgress size={16} /> : <RefreshIcon />}
                 </IconButton>
               </Tooltip>
               <Tooltip title="Mark all as read">
                 <IconButton
                   size="small"
                   onClick={handleMarkAllAsRead}
-                  disabled={unreadNotifications.length === 0} aria-label="Icon button">                  <MarkReadIcon />
+                  disabled={unreadNotifications.length === 0}
+                  aria-label="Icon button"
+                >
+                  {' '}
+                  <MarkReadIcon />
                 </IconButton>
               </Tooltip>
               <Tooltip title="Clear all">
                 <IconButton
                   size="small"
                   onClick={handleClearAll}
-                  disabled={notifications.length === 0} aria-label="Icon button">                  <ClearAllIcon />
+                  disabled={notifications.length === 0}
+                  aria-label="Icon button"
+                >
+                  {' '}
+                  <ClearAllIcon />
                 </IconButton>
               </Tooltip>
-              <IconButton size="small" onClick={handleClose} aria-label="Icon button">                <CloseIcon />
+              <IconButton size="small" onClick={handleClose} aria-label="Icon button">
+                {' '}
+                <CloseIcon />
               </IconButton>
             </Stack>
           </Box>
@@ -328,20 +360,17 @@ const NotificationCenter: React.FC = () => {
             scrollButtons="auto"
             sx={{ borderBottom: 1, borderColor: 'divider', mb: 1 }}
           >
-            <Tab 
-              label={`All (${allNotifications.length})`} 
+            <Tab label={`All (${allNotifications.length})`} sx={{ minWidth: 'auto', px: 1 }} />
+            <Tab
+              label={`Executions (${executionNotifications.length})`}
               sx={{ minWidth: 'auto', px: 1 }}
             />
-            <Tab 
-              label={`Executions (${executionNotifications.length})`} 
+            <Tab
+              label={`Approvals (${approvalNotifications.length})`}
               sx={{ minWidth: 'auto', px: 1 }}
             />
-            <Tab 
-              label={`Approvals (${approvalNotifications.length})`} 
-              sx={{ minWidth: 'auto', px: 1 }}
-            />
-            <Tab 
-              label={`System (${systemNotifications.length})`} 
+            <Tab
+              label={`System (${systemNotifications.length})`}
               sx={{ minWidth: 'auto', px: 1 }}
             />
           </Tabs>
@@ -372,7 +401,7 @@ const NotificationCenter: React.FC = () => {
                 control={
                   <Switch
                     checked={settings.soundEnabled}
-                    onChange={(e) => setSettings({ ...settings, soundEnabled: e.target.checked })}
+                    onChange={e => setSettings({ ...settings, soundEnabled: e.target.checked })}
                     size="small"
                   />
                 }
@@ -382,7 +411,7 @@ const NotificationCenter: React.FC = () => {
                 control={
                   <Switch
                     checked={settings.pushEnabled}
-                    onChange={(e) => setSettings({ ...settings, pushEnabled: e.target.checked })}
+                    onChange={e => setSettings({ ...settings, pushEnabled: e.target.checked })}
                     size="small"
                   />
                 }
@@ -392,7 +421,7 @@ const NotificationCenter: React.FC = () => {
                 control={
                   <Switch
                     checked={settings.emailEnabled}
-                    onChange={(e) => setSettings({ ...settings, emailEnabled: e.target.checked })}
+                    onChange={e => setSettings({ ...settings, emailEnabled: e.target.checked })}
                     size="small"
                   />
                 }

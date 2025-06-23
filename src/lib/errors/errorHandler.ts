@@ -35,19 +35,19 @@ export const ErrorCodes = {
   UNAUTHORIZED: 'UNAUTHORIZED',
   FORBIDDEN: 'FORBIDDEN',
   TOKEN_EXPIRED: 'TOKEN_EXPIRED',
-  
+
   // Validation errors
   VALIDATION_ERROR: 'VALIDATION_ERROR',
   INVALID_INPUT: 'INVALID_INPUT',
-  
+
   // Resource errors
   NOT_FOUND: 'NOT_FOUND',
   ALREADY_EXISTS: 'ALREADY_EXISTS',
-  
+
   // External service errors
   EXTERNAL_SERVICE_ERROR: 'EXTERNAL_SERVICE_ERROR',
   RATE_LIMIT_EXCEEDED: 'RATE_LIMIT_EXCEEDED',
-  
+
   // Internal errors
   INTERNAL_ERROR: 'INTERNAL_ERROR',
   DATABASE_ERROR: 'DATABASE_ERROR',
@@ -73,12 +73,7 @@ export function handleError(error: unknown, context?: ErrorContext): AppError {
   });
 
   // Return a standardized error
-  return new AppError(
-    message,
-    500,
-    ErrorCodes.INTERNAL_ERROR,
-    context
-  );
+  return new AppError(message, 500, ErrorCodes.INTERNAL_ERROR, context);
 }
 
 /**

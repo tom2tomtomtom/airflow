@@ -111,7 +111,7 @@ const LiveCollaboration: React.FC<LiveCollaborationProps> = ({
 
     // Simulate presence updates
     const interval = setInterval(() => {
-      setPresenceData(prev => 
+      setPresenceData(prev =>
         prev.map((p: any) => ({
           ...p,
           last_seen: p.status === 'online' ? new Date().toISOString() : p.last_seen,
@@ -124,19 +124,27 @@ const LiveCollaboration: React.FC<LiveCollaborationProps> = ({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'online': return '#4caf50';
-      case 'away': return '#ff9800';
-      case 'busy': return '#f44336';
-      case 'offline': return '#9e9e9e';
-      default: return '#9e9e9e';
+      case 'online':
+        return '#4caf50';
+      case 'away':
+        return '#ff9800';
+      case 'busy':
+        return '#f44336';
+      case 'offline':
+        return '#9e9e9e';
+      default:
+        return '#9e9e9e';
     }
   };
 
   const getActivityIcon = (activity?: string) => {
     switch (activity) {
-      case 'editing': return <EditingIcon fontSize="small" />;
-      case 'viewing': return <ViewingIcon fontSize="small" />;
-      default: return <ScheduleIcon fontSize="small" />;
+      case 'editing':
+        return <EditingIcon fontSize="small" />;
+      case 'viewing':
+        return <ViewingIcon fontSize="small" />;
+      default:
+        return <ScheduleIcon fontSize="small" />;
     }
   };
 
@@ -157,11 +165,14 @@ const LiveCollaboration: React.FC<LiveCollaborationProps> = ({
       key={user.id}
       title={
         <Box>
-          <Typography variant="body2" fontWeight="bold">{user.name}</Typography>
+          <Typography variant="body2" fontWeight="bold">
+            {user.name}
+          </Typography>
           <Typography variant="caption">{user.role}</Typography>
           <Typography variant="caption" display="block">
-            {user.status === 'online' ? 'Online now' : 
-             `Last seen ${formatDistanceToNow(new Date(user.last_seen), { addSuffix: true })}`}
+            {user.status === 'online'
+              ? 'Online now'
+              : `Last seen ${formatDistanceToNow(new Date(user.last_seen), { addSuffix: true })}`}
           </Typography>
           {user.current_page && (
             <Typography variant="caption" display="block">
@@ -216,7 +227,9 @@ const LiveCollaboration: React.FC<LiveCollaborationProps> = ({
     <>
       <Card>
         <CardContent>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+          <Box
+            sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
+          >
             <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <PeopleIcon />
               Live Collaboration
@@ -241,20 +254,18 @@ const LiveCollaboration: React.FC<LiveCollaborationProps> = ({
           {showDetails && (
             <>
               <Divider sx={{ my: 2 }} />
-              
+
               <List dense>
                 {onlineUsers.map((user: any) => (
                   <ListItem key={user.id} sx={{ px: 0 }}>
-                    <ListItemAvatar>
-                      {renderUserAvatar(user)}
-                    </ListItemAvatar>
+                    <ListItemAvatar>{renderUserAvatar(user)}</ListItemAvatar>
                     <ListItemText
                       primary={
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <Typography variant="body2">{user.name}</Typography>
-                          <Chip 
-                            label={user.activity} 
-                            size="small" 
+                          <Chip
+                            label={user.activity}
+                            size="small"
                             icon={getActivityIcon(user.activity)}
                             variant="outlined"
                           />
@@ -286,23 +297,22 @@ const LiveCollaboration: React.FC<LiveCollaborationProps> = ({
                     onClick={() => setShowAllUsers(!showAllUsers)}
                     endIcon={<ExpandIcon />}
                   >
-                    {showAllUsers ? 'Hide' : 'Show'} other users ({awayUsers.length + busyUsers.length})
+                    {showAllUsers ? 'Hide' : 'Show'} other users (
+                    {awayUsers.length + busyUsers.length})
                   </Button>
 
                   {showAllUsers && (
                     <List dense>
                       {[...busyUsers, ...awayUsers].map((user: any) => (
                         <ListItem key={user.id} sx={{ px: 0, opacity: 0.7 }}>
-                          <ListItemAvatar>
-                            {renderUserAvatar(user)}
-                          </ListItemAvatar>
+                          <ListItemAvatar>{renderUserAvatar(user)}</ListItemAvatar>
                           <ListItemText
                             primary={
                               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                 <Typography variant="body2">{user.name}</Typography>
-                                <Chip 
-                                  label={user.status} 
-                                  size="small" 
+                                <Chip
+                                  label={user.status}
+                                  size="small"
                                   color={user.status === 'busy' ? 'error' : 'warning'}
                                   variant="outlined"
                                 />
@@ -310,7 +320,8 @@ const LiveCollaboration: React.FC<LiveCollaborationProps> = ({
                             }
                             secondary={
                               <Typography variant="caption" color="text.secondary">
-                                Last seen {formatDistanceToNow(new Date(user.last_seen), { addSuffix: true })}
+                                Last seen{' '}
+                                {formatDistanceToNow(new Date(user.last_seen), { addSuffix: true })}
                               </Typography>
                             }
                           />
@@ -324,7 +335,7 @@ const LiveCollaboration: React.FC<LiveCollaborationProps> = ({
           )}
 
           <Divider sx={{ my: 2 }} />
-          
+
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Button
               variant="outlined"

@@ -39,7 +39,7 @@ export interface User {
 
 export interface UserPreferences {
   theme: 'light' | 'dark' | 'system';
-  notifications: {
+  notifications: {},
     email: boolean;
     inApp: boolean;
     approvals: boolean;

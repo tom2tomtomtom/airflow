@@ -29,7 +29,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     // Get execution statistics
     const { data: executions, error: executionsError } = await supabase
       .from('executions')
-      .select(`
+      .select(
+        `
         id,
         status,
         created_at,
@@ -37,7 +38,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         matrices!inner(
           client_id
         )
-      `)
+      `
+      )
       .eq('matrices.client_id', client_id);
 
     if (executionsError) {
@@ -47,8 +49,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     const totalExecutions = executions?.length || 0;
     const pendingExecutions = executions?.filter((e: any) => e.status === 'pending').length || 0;
-    const processingExecutions = executions?.filter((e: any) => e.status === 'processing').length || 0;
-    const completedExecutions = executions?.filter((e: any) => e.status === 'completed').length || 0;
+    const processingExecutions =
+      executions?.filter((e: any) => e.status === 'processing').length || 0;
+    const completedExecutions =
+      executions?.filter((e: any) => e.status === 'completed').length || 0;
     const failedExecutions = executions?.filter((e: any) => e.status === 'failed').length || 0;
 
     // Calculate success rate
@@ -56,9 +60,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const successRate = finishedExecutions > 0 ? completedExecutions / finishedExecutions : 0;
 
     // Calculate average completion time (in minutes)
-    const completedWithTimes = executions?.filter((e: any) => 
-      e.status === 'completed' && e.created_at && e.completed_at
-    ) || [];
+    const completedWithTimes =
+      executions?.filter((e: any) => e.status === 'completed' && e.created_at && e.completed_at) ||
+      [];
 
     let averageCompletionTime = 0;
     let totalProcessingTime = 0;

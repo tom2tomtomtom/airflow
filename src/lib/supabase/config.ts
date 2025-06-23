@@ -11,8 +11,7 @@ export interface SupabaseConfig {
 const ENV_VARS = {
   URL: 'NEXT_PUBLIC_SUPABASE_URL',
   ANON_KEY: 'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-  SERVICE_ROLE_KEY: 'SUPABASE_SERVICE_ROLE_KEY',
-} as const;
+  SERVICE_ROLE_KEY: 'SUPABASE_SERVICE_ROLE_KEY'} as const;
 
 // Validate and clean Supabase configuration
 export function validateSupabaseConfig(): SupabaseConfig {
@@ -73,8 +72,7 @@ export function validateSupabaseConfig(): SupabaseConfig {
   return {
     url: url.trim(),
     anonKey: cleanedAnonKey,
-    serviceRoleKey: cleanedServiceRoleKey,
-  };
+    serviceRoleKey: cleanedServiceRoleKey};
 }
 
 // Get Supabase URL for public access
@@ -96,26 +94,19 @@ export const STORAGE_BUCKETS = {
   AVATARS: 'avatars',
   CAMPAIGNS: 'campaigns',
   CAMPAIGN_ASSETS: 'campaign-assets',
-  ASSET_THUMBNAILS: 'asset-thumbnails',
-} as const;
+  ASSET_THUMBNAILS: 'asset-thumbnails'} as const;
 
 // Default Supabase client options
 export const DEFAULT_CLIENT_OPTIONS = {
-  auth: {
+  auth: {},
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
-    storageKey: 'airwave-auth-token',
-  },
-  global: {
-    headers: {
-      'x-application-name': 'airwave',
-    },
-  },
-  db: {
-    schema: 'public',
-  },
-  realtime: {
-    enabled: false,
-  },
-} as const;
+    storageKey: 'airwave-auth-token'},
+  global: {},
+    headers: {},
+      'x-application-name': 'airwave'}},
+  db: {},
+    schema: 'public'},
+  realtime: {},
+    enabled: false}} as const;

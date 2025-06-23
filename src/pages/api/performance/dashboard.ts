@@ -9,8 +9,8 @@ import { cacheManager } from '@/lib/cache/strategy';
 
 interface PerformanceDashboard {
   success: true;
-  data: {
-    overview: {
+  data: {},
+    overview: {},
       total_requests: number;
       average_response_time: number;
       cache_hit_rate: number;
@@ -18,7 +18,7 @@ interface PerformanceDashboard {
       slow_endpoints: string[];
       error_rate: number;
     };
-    endpoints: {
+    endpoints: {},
       [endpoint: string]: {
         request_count: number;
         average_response_time: number;
@@ -31,7 +31,7 @@ interface PerformanceDashboard {
         performance_grade: 'A' | 'B' | 'C' | 'D' | 'F';
       };
     };
-    cache: {
+    cache: {},
       memory_usage: any;
       total_cached_items: number;
       cache_efficiency: number;
@@ -42,7 +42,7 @@ interface PerformanceDashboard {
         last_accessed: string;
       }>;
     };
-    system: {
+    system: {},
       memory_usage: NodeJS.MemoryUsage;
       uptime: number;
       cpu_usage?: number;
@@ -56,7 +56,7 @@ interface PerformanceDashboard {
       action: string;
     }>;
   };
-  meta: {
+  meta: {},
     generated_at: string;
     data_window: string;
     auto_refresh_interval: number;
@@ -86,8 +86,7 @@ class PerformanceAnalyzer {
       endpoints: endpointAnalysis,
       cache,
       system,
-      recommendations,
-    };
+      recommendations};
   }
 
   /**
@@ -134,8 +133,7 @@ class PerformanceAnalyzer {
         cache_misses: cacheMisses,
         error_count: errors,
         last_accessed: lastAccessed,
-        performance_grade: performanceGrade,
-      };
+        performance_grade: performanceGrade};
     }
 
     return endpoints;
@@ -170,8 +168,7 @@ class PerformanceAnalyzer {
       cache_hit_rate: Math.round(cacheHitRate * 100) / 100,
       total_endpoints: endpoints.length,
       slow_endpoints: slowEndpoints,
-      error_rate: Math.round(errorRate * 100) / 100,
-    };
+      error_rate: Math.round(errorRate * 100) / 100};
   }
 
   /**
@@ -190,22 +187,19 @@ class PerformanceAnalyzer {
         key: 'api-responses:clients',
         namespace: 'api-responses',
         access_count: 45,
-        last_accessed: new Date().toISOString(),
-      },
+        last_accessed: new Date().toISOString()},
       {
         key: 'api-responses:analytics',
         namespace: 'api-responses', 
         access_count: 32,
-        last_accessed: new Date().toISOString(),
-      },
+        last_accessed: new Date().toISOString()},
     ];
 
     return {
       memory_usage: cacheStats.memoryStats,
       total_cached_items: totalCachedItems,
       cache_efficiency: cacheEfficiency,
-      top_cached_items: topCachedItems,
-    };
+      top_cached_items: topCachedItems};
   }
 
   /**
@@ -237,8 +231,7 @@ class PerformanceAnalyzer {
           severity: 'high',
           message: `Endpoint ${endpoint} has slow response time (${data.average_response_time}ms)`,
           endpoint,
-          action: 'Optimize database queries, add caching, or implement pagination',
-        });
+          action: 'Optimize database queries, add caching, or implement pagination'});
       }
 
       if (data.cache_hits / (data.cache_hits + data.cache_misses) < 0.3 && data.request_count > 10) {
@@ -247,8 +240,7 @@ class PerformanceAnalyzer {
           severity: 'medium',
           message: `Low cache hit rate for ${endpoint} (${((data.cache_hits / (data.cache_hits + data.cache_misses)) * 100).toFixed(1)}%)`,
           endpoint,
-          action: 'Increase cache TTL or improve cache key strategy',
-        });
+          action: 'Increase cache TTL or improve cache key strategy'});
       }
 
       if (data.error_count / data.request_count > 0.05) {
@@ -257,8 +249,7 @@ class PerformanceAnalyzer {
           severity: 'high',
           message: `High error rate for ${endpoint} (${((data.error_count / data.request_count) * 100).toFixed(1)}%)`,
           endpoint,
-          action: 'Investigate error causes and improve error handling',
-        });
+          action: 'Investigate error causes and improve error handling'});
       }
     });
 
@@ -268,8 +259,7 @@ class PerformanceAnalyzer {
         type: 'cache',
         severity: 'medium',
         message: `Cache efficiency is below optimal (${cache.cache_efficiency}%)`,
-        action: 'Review cache strategy and increase cache hit rate',
-      });
+        action: 'Review cache strategy and increase cache hit rate'});
     }
 
     // Check memory usage
@@ -279,8 +269,7 @@ class PerformanceAnalyzer {
         type: 'system',
         severity: 'high',
         message: `High memory usage (${memoryUsagePercent.toFixed(1)}%)`,
-        action: 'Investigate memory leaks or increase available memory',
-      });
+        action: 'Investigate memory leaks or increase available memory'});
     }
 
     return recommendations;
@@ -332,12 +321,10 @@ export default async function handler(
       res.status(200).json({
         success: true,
         data: {} as any,
-        meta: {
+        meta: {},
           generated_at: new Date().toISOString(),
           data_window: 'cleared',
-          auto_refresh_interval: 30,
-        },
-      });
+          auto_refresh_interval: 30}});
       return;
     }
 
@@ -354,12 +341,11 @@ export default async function handler(
     const response: PerformanceDashboard = {
       success: true,
       data,
-      meta: {
+      meta: {},
         generated_at: new Date().toISOString(),
         data_window: 'last_hour', // Could be configurable
         auto_refresh_interval: 30, // seconds
-      },
-    };
+      }};
 
     // Set cache headers (short cache for real-time data)
     res.setHeader('Cache-Control', 'public, max-age=30');
@@ -370,7 +356,6 @@ export default async function handler(
     console.error('Performance dashboard error:', error);
     res.status(500).json({
       success: false,
-      error: error instanceof Error ? error.message : 'Internal server error',
-    });
+      error: error instanceof Error ? error.message : 'Internal server error'});
   }
 }

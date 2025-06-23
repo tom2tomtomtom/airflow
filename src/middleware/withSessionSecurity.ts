@@ -66,8 +66,7 @@ const DEFAULT_OPTIONS: Required<SessionSecurityOptions> = {
   strictFingerprinting: false,
   logSecurityEvents: true,
   allowDeviceRemembering: true,
-  deviceRememberDays: 30,
-};
+  deviceRememberDays: 30};
 
 /**
  * In-memory session store (use Redis in production)
@@ -134,8 +133,7 @@ class SessionStore {
       userId: event.userId,
       ip: event.ip.replace(/\d+$/, '***'), // Mask last IP octet
       timestamp: event.timestamp.toISOString(),
-      details: event.details,
-    });
+      details: event.details});
   }
 
   getSecurityEvents(userId?: string): SecurityEvent[] {
@@ -187,8 +185,7 @@ function generateFingerprint(req: NextApiRequest): SessionFingerprint {
     acceptLanguage,
     acceptEncoding,
     ip,
-    subnet,
-  };
+    subnet};
 }
 
 /**
@@ -338,17 +335,14 @@ export function withSessionSecurity(
             ip: currentFingerprint.ip,
             userAgent: currentFingerprint.userAgent,
             timestamp: now,
-            details: { reason: 'session_not_found' },
-          });
+            details: { reason: 'session_not_found' }});
         }
         
         return res.status(401).json({
           success: false,
-          error: {
+          error: {},
             code: 'SESSION_INVALID',
-            message: 'Session not found or expired',
-          },
-        });
+            message: 'Session not found or expired'}});
       }
       
       // Check session timeout
@@ -364,17 +358,14 @@ export function withSessionSecurity(
             ip: currentFingerprint.ip,
             userAgent: currentFingerprint.userAgent,
             timestamp: now,
-            details: { age: sessionAge },
-          });
+            details: { age: sessionAge }});
         }
         
         return res.status(401).json({
           success: false,
-          error: {
+          error: {},
             code: 'SESSION_EXPIRED',
-            message: 'Session has expired',
-          },
-        });
+            message: 'Session has expired'}});
       }
       
       // Validate fingerprint
@@ -395,24 +386,20 @@ export function withSessionSecurity(
               ip: currentFingerprint.ip,
               userAgent: currentFingerprint.userAgent,
               timestamp: now,
-              details: {
+              details: {},
                 score: validation.score,
                 differences: validation.differences,
                 original_ip: session.fingerprint.ip,
-                current_ip: currentFingerprint.ip,
-              },
-            });
+                current_ip: currentFingerprint.ip}});
           }
           
           sessionStore.removeSession(sessionId);
           
           return res.status(401).json({
             success: false,
-            error: {
+            error: {},
               code: 'SESSION_SECURITY_VIOLATION',
-              message: 'Session security validation failed',
-            },
-          });
+              message: 'Session security validation failed'}});
         }
       }
       
@@ -438,8 +425,7 @@ export function withSessionSecurity(
               ip: currentFingerprint.ip,
               userAgent: currentFingerprint.userAgent,
               timestamp: now,
-              details: { removed_sessions: sessionsToRemove.length },
-            });
+              details: { removed_sessions: sessionsToRemove.length }});
           }
         }
       }
@@ -474,8 +460,7 @@ export function withSessionSecurity(
               ip: currentFingerprint.ip,
               userAgent: currentFingerprint.userAgent,
               timestamp: now,
-              details: { old_session_id: sessionId },
-            });
+              details: { old_session_id: sessionId }});
           }
           
           // Update session reference for handler
@@ -505,11 +490,9 @@ export function withSessionSecurity(
       
       return res.status(500).json({
         success: false,
-        error: {
+        error: {},
           code: 'SESSION_SECURITY_ERROR',
-          message: 'Session security validation failed',
-        },
-      });
+          message: 'Session security validation failed'}});
     }
     
     // Execute the original handler
@@ -556,8 +539,7 @@ export function createSecureSession(
       ip: fingerprint.ip,
       userAgent: fingerprint.userAgent,
       timestamp: now,
-      details: { device_id: deviceId },
-    });
+      details: { device_id: deviceId }});
   }
   
   return session;

@@ -22,7 +22,7 @@ if (typeof window === 'undefined') {
 }
 
 interface UseCopyActionsProps {
-  state: {
+  state: {},
     briefData: BriefData | null;
     motivations: Motivation[];
   };
@@ -33,8 +33,7 @@ interface UseCopyActionsProps {
 export const useCopyActions = ({
   state,
   dispatch,
-  userId,
-}: UseCopyActionsProps) => {
+  userId}: UseCopyActionsProps) => {
   const { showNotification } = useNotification();
   const { makeCSRFRequest } = useCSRF();
   const { activeClient } = useClient();
@@ -98,7 +97,7 @@ export const useCopyActions = ({
           model: 'gpt-4o-mini',
           estimatedTokens,
           operation: 'generate-copy',
-          operationData: {
+          operationData: {},
             motivations: selectedMotivations,
             briefData: state.briefData,
             platforms: state?.briefData?.platforms
@@ -134,8 +133,7 @@ export const useCopyActions = ({
               briefData: state.briefData,
               model: fallbackModel || 'gpt-4o-mini',
               budgetAware: true
-            }),
-          });
+            })});
         },
         async () => {
           // Fallback: provide generic copy variations
@@ -209,8 +207,7 @@ export const useCopyActions = ({
           selectedCopy,
           briefTitle: state.briefData?.title || 'Untitled Brief',
           clientId: activeClient?.id || 'default-client'
-        }),
-      });
+        })});
 
       if (!response.ok) {
         throw new Error('Failed to store copy assets');
@@ -236,6 +233,5 @@ export const useCopyActions = ({
   return {
     generateCopy,
     selectCopy,
-    storeCopyVariations,
-  };
+    storeCopyVariations};
 };

@@ -25,8 +25,7 @@ import {
   Menu,
   MenuItem as MenuItemComponent,
   Divider,
-  Paper,
-} from '@mui/material';
+  Paper} from '@mui/material';
 import {
   Edit as EditIcon,
   Delete as DeleteIcon,
@@ -41,8 +40,7 @@ import {
   Image as ImageIcon,
   VideoLibrary as VideoIcon,
   Link as LinkIcon,
-  Event as EventIcon,
-} from '@mui/icons-material';
+  Event as EventIcon} from '@mui/icons-material';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -51,7 +49,7 @@ import { useNotification } from '@/contexts/NotificationContext';
 
 interface ScheduledPost {
   id: string;
-  content: {
+  content: {},
     text: string;
     images?: string[];
     video?: string;
@@ -77,8 +75,7 @@ interface ScheduledPostsProps {
 
 const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
   clientId,
-  onScheduleUpdate,
-}) => {
+  onScheduleUpdate}) => {
   const { showNotification } = useNotification();
   const [posts, setPosts] = useState<ScheduledPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -101,47 +98,40 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
       const mockPosts: ScheduledPost[] = [
         {
           id: '1',
-          content: {
+          content: {},
             text: 'Exciting news! Our new product launch is just around the corner. Stay tuned for more updates! 🚀 #ProductLaunch #Innovation',
             images: ['/placeholder-image1.jpg'],
-            link: 'https://example.com/product-launch',
-          },
+            link: 'https://example.com/product-launch'},
           platforms: ['facebook', 'twitter', 'linkedin'],
           scheduledAt: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
           status: 'scheduled',
           createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-          updatedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-        },
+          updatedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString()},
         {
           id: '2',
-          content: {
+          content: {},
             text: 'Behind the scenes of our creative process. Here\'s how we bring ideas to life! 💡✨',
-            video: '/placeholder-video.mp4',
-          },
+            video: '/placeholder-video.mp4'},
           platforms: ['instagram', 'youtube'],
           scheduledAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Tomorrow
           status: 'scheduled',
           createdAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
-          updatedAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
-        },
+          updatedAt: new Date(Date.now() - 60 * 60 * 1000).toISOString()},
         {
           id: '3',
-          content: {
+          content: {},
             text: 'Weekly industry insights and trends. What are your thoughts on the latest developments?',
-            images: ['/placeholder-chart.jpg'],
-          },
+            images: ['/placeholder-chart.jpg']},
           platforms: ['linkedin', 'twitter'],
           scheduledAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // Next week
           status: 'scheduled',
           createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        },
+          updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()},
         {
           id: '4',
-          content: {
+          content: {},
             text: 'Thank you to everyone who joined our webinar yesterday! The recording is now available.',
-            link: 'https://example.com/webinar-recording',
-          },
+            link: 'https://example.com/webinar-recording'},
           platforms: ['facebook', 'linkedin'],
           scheduledAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 minutes ago
           status: 'published',
@@ -150,8 +140,7 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
           publishResults: [
             { platform: 'facebook', success: true, postId: 'fb_123456' },
             { platform: 'linkedin', success: true, postId: 'li_789012' },
-          ],
-        },
+          ]},
       ];
 
       const filteredPosts = filter === 'all' ? mockPosts : mockPosts.filter((post: any) => post.status === filter);
@@ -249,8 +238,7 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
                 publishResults: p.platforms.map((platform: any) => ({
                   platform,
                   success: Math.random() > 0.2, // 80% success rate
-                  postId: `${platform}_${Math.random().toString(36).substr(2, 9)}`,
-                }))
+                  postId: `${platform}_${Math.random().toString(36).substr(2, 9)}`}))
               }
             : p
         ));

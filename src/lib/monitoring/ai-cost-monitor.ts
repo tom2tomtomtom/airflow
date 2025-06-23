@@ -33,9 +33,9 @@ interface CostMetrics {
 }
 
 interface AlertThresholds {
-  warning: number;    // 80%
-  critical: number;   // 90%
-  emergency: number;  // 95%
+  warning: number; // 80%
+  critical: number; // 90%
+  emergency: number; // 95%
 }
 
 export class AICostMonitor {
@@ -46,8 +46,8 @@ export class AICostMonitor {
 
   // Alert thresholds (percentages)
   private alertThresholds: AlertThresholds = {
-    warning: 0.80,   // 80%
-    critical: 0.90,  // 90%
+    warning: 0.8, // 80%
+    critical: 0.9, // 90%
     emergency: 0.95, // 95%
   };
 
@@ -90,9 +90,12 @@ export class AICostMonitor {
    */
   private startMonitoring(): void {
     // Check costs every 5 minutes
-    setInterval(async () => {
-      await this.checkAllUserCosts();
-    }, 5 * 60 * 1000);
+    setInterval(
+      async () => {
+        await this.checkAllUserCosts();
+      },
+      5 * 60 * 1000
+    );
 
     // Daily summary at midnight
     setInterval(async () => {
@@ -139,7 +142,14 @@ export class AICostMonitor {
       if (percentUsed >= this.alertThresholds.emergency * 100) {
         await this.createAlert(userId, service, 'emergency', usage.totalCost, budget, percentUsed);
       } else if (percentUsed >= this.alertThresholds.critical * 100) {
-        await this.createAlert(userId, service, 'monthly_limit', usage.totalCost, budget, percentUsed);
+        await this.createAlert(
+          userId,
+          service,
+          'monthly_limit',
+          usage.totalCost,
+          budget,
+          percentUsed
+        );
       } else if (percentUsed >= this.alertThresholds.warning * 100) {
         await this.createAlert(userId, service, 'threshold', usage.totalCost, budget, percentUsed);
       }
@@ -156,7 +166,7 @@ export class AICostMonitor {
       // This would typically query all active users from the database
       // For now, we'll check users who have recent activity
       const activeUsers = await this.getActiveUsers();
-      
+
       for (const userId of activeUsers) {
         for (const service of Object.keys(this.budgetLimits)) {
           await this.checkUserCosts(userId, service);
@@ -185,7 +195,13 @@ export class AICostMonitor {
     }
 
     const severity = this.determineSeverity(percentUsed);
-    const message = this.generateAlertMessage(service, alertType, percentUsed, currentUsage, budgetLimit);
+    const message = this.generateAlertMessage(
+      service,
+      alertType,
+      percentUsed,
+      currentUsage,
+      budgetLimit
+    );
 
     const alert: CostAlert = {
       id: `alert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -228,7 +244,7 @@ export class AICostMonitor {
     budgetLimit: number
   ): string {
     const remaining = budgetLimit - currentUsage;
-    
+
     switch (alertType) {
       case 'emergency':
         return `🚨 EMERGENCY: ${service.toUpperCase()} usage at ${percentUsed.toFixed(1)}% of monthly budget! Only $${remaining.toFixed(2)} remaining.`;
@@ -251,7 +267,7 @@ export class AICostMonitor {
       try {
         await redisManager.lpush('ai_cost_alerts', alert);
         await redisManager.expire('ai_cost_alerts', 30 * 24 * 60 * 60); // 30 days TTL
-        
+
         // Also store by user for quick lookup
         await redisManager.lpush(`ai_cost_alerts:${alert.userId}`, alert);
         await redisManager.expire(`ai_cost_alerts:${alert.userId}`, 30 * 24 * 60 * 60);
@@ -262,7 +278,7 @@ export class AICostMonitor {
 
     // Always store locally as fallback
     this.localAlerts.push(alert);
-    
+
     // Trim local alerts to prevent memory issues
     if (this.localAlerts.length > 1000) {
       this.localAlerts = this.localAlerts.slice(-1000);
@@ -275,7 +291,7 @@ export class AICostMonitor {
   private async sendAlert(alert: CostAlert): Promise<void> {
     // TODO: Integrate with actual notification system (email, Slack, etc.)
     console.log(`📧 Alert sent: ${alert.message}`);
-    
+
     // For now, just log to console
     if (alert.severity === 'critical') {
       console.error(`CRITICAL ALERT: ${alert.message}`);
@@ -292,13 +308,13 @@ export class AICostMonitor {
     service: string,
     alertType: CostAlert['alertType']
   ): Promise<CostAlert | null> {
-    const oneHourAgo = Date.now() - (60 * 60 * 1000);
-    
+    const oneHourAgo = Date.now() - 60 * 60 * 1000;
+
     if (this.useRedis) {
       try {
         const client = await redisManager.getClient();
         const alerts = await client.lrange(`ai_cost_alerts:${userId}`, 0, 50);
-        
+
         for (const alertJson of alerts) {
           try {
             const alert = JSON.parse(alertJson);
@@ -320,13 +336,16 @@ export class AICostMonitor {
     }
 
     // Check local alerts
-    return this.localAlerts.find((alert: any) =>
-      alert.userId === userId &&
-      alert.service === service &&
-      alert.alertType === alertType &&
-      alert.timestamp > oneHourAgo &&
-      !alert.acknowledged
-    ) || null;
+    return (
+      this.localAlerts.find(
+        (alert: any) =>
+          alert.userId === userId &&
+          alert.service === service &&
+          alert.alertType === alertType &&
+          alert.timestamp > oneHourAgo &&
+          !alert.acknowledged
+      ) || null
+    );
   }
 
   /**
@@ -341,7 +360,11 @@ export class AICostMonitor {
   /**
    * Update real-time metrics
    */
-  private async updateRealTimeMetrics(userId: string, service: string, cost: number): Promise<void> {
+  private async updateRealTimeMetrics(
+    userId: string,
+    service: string,
+    cost: number
+  ): Promise<void> {
     if (this.useRedis) {
       try {
         const key = `ai_cost_realtime:${userId}:${service}`;
@@ -395,7 +418,7 @@ export class AICostMonitor {
       try {
         const client = await redisManager.getClient();
         const alertsJson = await client.lrange(`ai_cost_alerts:${userId}`, 0, limit - 1);
-        
+
         for (const alertJson of alertsJson) {
           try {
             alerts.push(JSON.parse(alertJson));
@@ -412,13 +435,11 @@ export class AICostMonitor {
     const localUserAlerts = this.localAlerts
       .filter((alert: any) => alert.userId === userId)
       .slice(-limit);
-    
+
     alerts.push(...localUserAlerts);
-    
+
     // Sort by timestamp (newest first) and deduplicate
-    const uniqueAlerts = alerts
-      .sort((a, b) => b.timestamp - a.timestamp)
-      .slice(0, limit);
+    const uniqueAlerts = alerts.sort((a, b) => b.timestamp - a.timestamp).slice(0, limit);
 
     return uniqueAlerts;
   }
@@ -453,7 +474,7 @@ export class AICostMonitor {
    */
   private async generateDailySummary(): Promise<void> {
     console.log('📊 Generating daily AI cost summary...');
-    
+
     // This would generate and send daily cost summaries
     // TODO: Implement actual daily summary generation
   }

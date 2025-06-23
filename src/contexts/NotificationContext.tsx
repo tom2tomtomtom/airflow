@@ -25,18 +25,17 @@ export const useNotification = () => {
 export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  const showNotification = useCallback((
-    message: string, 
-    severity: AlertColor = 'info', 
-    duration: number = 5000
-  ) => {
-    const id = Date.now().toString();
-    const notification: Notification = { id, message, severity, duration };
-    setNotifications(prev => [...prev, notification]);
-  }, []);
+  const showNotification = useCallback(
+    (message: string, severity: AlertColor = 'info', duration: number = 5000) => {
+      const id = Date.now().toString();
+      const notification: Notification = { id, message, severity, duration };
+      setNotifications(prev => [...prev, notification]);
+    },
+    []
+  );
 
   const handleClose = (id: string) => {
-    setNotifications(prev => prev.filter((n: any) => n.id !== id));
+    setNotifications(prev => prev.filter((n: unknown) => n.id !== id));
   };
 
   return (
@@ -52,8 +51,8 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
           TransitionComponent={Slide as any}
           sx={{ bottom: { xs: 16, sm: 16 + index * 70 } }}
         >
-          <Alert 
-            onClose={() => handleClose(notification.id)} 
+          <Alert
+            onClose={() => handleClose(notification.id)}
             severity={notification.severity}
             variant="filled"
             sx={{ width: '100%' }}

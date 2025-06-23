@@ -13,9 +13,9 @@ interface CircuitBreakerConfig {
 }
 
 enum CircuitState {
-  CLOSED = 'CLOSED',     // Normal operation
-  OPEN = 'OPEN',         // Circuit is open, calls are rejected
-  HALF_OPEN = 'HALF_OPEN' // Testing if service has recovered
+  CLOSED = 'CLOSED', // Normal operation
+  OPEN = 'OPEN', // Circuit is open, calls are rejected
+  HALF_OPEN = 'HALF_OPEN', // Testing if service has recovered
 }
 
 interface CircuitBreakerStats {
@@ -35,25 +35,25 @@ export class AICircuitBreaker {
 
   // Default configurations for different AI services
   private configs: Record<string, CircuitBreakerConfig> = {
-    'openai': {
-      failureThreshold: 5,      // Open after 5 failures
-      recoveryTimeout: 60000,   // 1 minute recovery timeout
+    openai: {
+      failureThreshold: 5, // Open after 5 failures
+      recoveryTimeout: 60000, // 1 minute recovery timeout
       monitoringPeriod: 300000, // 5 minute monitoring window
-      halfOpenMaxCalls: 3,      // Allow 3 test calls in half-open state
+      halfOpenMaxCalls: 3, // Allow 3 test calls in half-open state
     },
-    'anthropic': {
+    anthropic: {
       failureThreshold: 5,
       recoveryTimeout: 60000,
       monitoringPeriod: 300000,
       halfOpenMaxCalls: 3,
     },
-    'elevenlabs': {
-      failureThreshold: 3,      // More sensitive for voice services
-      recoveryTimeout: 30000,   // Shorter recovery timeout
+    elevenlabs: {
+      failureThreshold: 3, // More sensitive for voice services
+      recoveryTimeout: 30000, // Shorter recovery timeout
       monitoringPeriod: 180000, // 3 minute monitoring window
       halfOpenMaxCalls: 2,
     },
-    'default': {
+    default: {
       failureThreshold: 5,
       recoveryTimeout: 60000,
       monitoringPeriod: 300000,
@@ -109,12 +109,12 @@ export class AICircuitBreaker {
       case CircuitState.OPEN:
         await this.incrementRejectedCalls(circuitKey);
         console.warn(`🚫 Circuit breaker OPEN for ${circuitKey} - rejecting call`);
-        
+
         if (fallback) {
           console.log(`🔄 Using fallback for ${circuitKey}`);
           return await fallback();
         }
-        
+
         throw new Error(`Service ${circuitKey} is currently unavailable (circuit breaker open)`);
 
       case CircuitState.HALF_OPEN:
@@ -123,14 +123,16 @@ export class AICircuitBreaker {
         if (halfOpenCalls >= config.halfOpenMaxCalls) {
           await this.incrementRejectedCalls(circuitKey);
           console.warn(`🚫 Circuit breaker HALF_OPEN for ${circuitKey} - max test calls reached`);
-          
+
           if (fallback) {
             return await fallback();
           }
-          
-          throw new Error(`Service ${circuitKey} is being tested for recovery (circuit breaker half-open)`);
+
+          throw new Error(
+            `Service ${circuitKey} is being tested for recovery (circuit breaker half-open)`
+          );
         }
-        
+
         await this.incrementHalfOpenCalls(circuitKey);
         console.log(`🔍 Circuit breaker HALF_OPEN for ${circuitKey} - testing service recovery`);
         break;
@@ -157,7 +159,10 @@ export class AICircuitBreaker {
   private async getStats(circuitKey: string): Promise<CircuitBreakerStats> {
     if (this.useRedis) {
       try {
-        const stats = await redisManager.hget<CircuitBreakerStats>('circuit_breaker_stats', circuitKey);
+        const stats = await redisManager.hget<CircuitBreakerStats>(
+          'circuit_breaker_stats',
+          circuitKey
+        );
         if (stats) {
           return stats;
         }
@@ -167,15 +172,17 @@ export class AICircuitBreaker {
     }
 
     // Fallback to local stats
-    return this.localStats.get(circuitKey) || {
-      state: CircuitState.CLOSED,
-      failureCount: 0,
-      successCount: 0,
-      lastFailureTime: 0,
-      lastSuccessTime: 0,
-      totalCalls: 0,
-      rejectedCalls: 0,
-    };
+    return (
+      this.localStats.get(circuitKey) || {
+        state: CircuitState.CLOSED,
+        failureCount: 0,
+        successCount: 0,
+        lastFailureTime: 0,
+        lastSuccessTime: 0,
+        totalCalls: 0,
+        rejectedCalls: 0,
+      }
+    );
   }
 
   /**
@@ -198,7 +205,10 @@ export class AICircuitBreaker {
   /**
    * Determine current circuit state
    */
-  private async determineState(stats: CircuitBreakerStats, config: CircuitBreakerConfig): Promise<CircuitState> {
+  private async determineState(
+    stats: CircuitBreakerStats,
+    config: CircuitBreakerConfig
+  ): Promise<CircuitState> {
     const now = Date.now();
 
     switch (stats.state) {
@@ -334,14 +344,16 @@ export class AICircuitBreaker {
   /**
    * Get current circuit breaker status for all services
    */
-  async getStatus(): Promise<Record<string, CircuitBreakerStats & { config: CircuitBreakerConfig }>> {
+  async getStatus(): Promise<
+    Record<string, CircuitBreakerStats & { config: CircuitBreakerConfig }>
+  > {
     const status: Record<string, CircuitBreakerStats & { config: CircuitBreakerConfig }> = {};
 
     if (this.useRedis) {
       try {
         const client = await redisManager.getClient();
         const allStats = await client.hgetall('circuit_breaker_stats');
-        
+
         for (const [key, statsJson] of Object.entries(allStats)) {
           try {
             const stats = JSON.parse(statsJson);
@@ -403,7 +415,7 @@ export class AICircuitBreaker {
    */
   updateConfig(service: string, config: Partial<CircuitBreakerConfig>): void {
     this.configs[service] = {
-      ...this.configs[service] || this.configs.default,
+      ...(this.configs[service] || this.configs.default),
       ...config,
     };
   }

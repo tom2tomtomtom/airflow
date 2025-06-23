@@ -7,9 +7,7 @@ import { NotificationProvider } from '@/contexts/NotificationContext';
 
 // Mock the notification context
 const MockNotificationProvider = ({ children }: { children: React.ReactNode }) => (
-  <NotificationProvider>
-    {children}
-  </NotificationProvider>
+  <NotificationProvider>{children}</NotificationProvider>
 );
 
 // Mock sessionStorage
@@ -40,7 +38,7 @@ describe('UnifiedBriefWorkflow State Management', () => {
   beforeEach(() => {
     mockSessionStorage.clear();
     jest.clearAllMocks();
-    
+
     // Reset console methods
     jest.spyOn(console, 'log').mockImplementation(() => {});
     jest.spyOn(console, 'warn').mockImplementation(() => {});
@@ -74,7 +72,11 @@ describe('UnifiedBriefWorkflow State Management', () => {
     expect(screen.getByText('Upload Brief')).toBeInTheDocument();
     // Wait for lazy-loaded component to render and check for unique text
     await waitFor(() => {
-      expect(screen.getByText('Start by uploading your campaign brief. Our AI will parse the content and extract key information.')).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          'Start by uploading your campaign brief. Our AI will parse the content and extract key information.'
+        )
+      ).toBeInTheDocument();
     });
   });
 
@@ -129,7 +131,9 @@ describe('UnifiedBriefWorkflow State Management', () => {
       fireEvent.click(startOverButton);
 
       await waitFor(() => {
-        expect(mockSessionStorage.removeItem).toHaveBeenCalledWith('airwave_unified_workflow_state');
+        expect(mockSessionStorage.removeItem).toHaveBeenCalledWith(
+          'airwave_unified_workflow_state'
+        );
       });
     }
   });

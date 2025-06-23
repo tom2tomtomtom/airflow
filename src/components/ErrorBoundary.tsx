@@ -22,8 +22,7 @@ class ErrorBoundary extends Component<Props, State> {
       hasError: false,
       error: null,
       errorInfo: null,
-      errorId: this.generateErrorId(),
-    };
+      errorId: this.generateErrorId()};
   }
 
   static getDerivedStateFromError(error: Error): Partial<State> {
@@ -44,8 +43,7 @@ class ErrorBoundary extends Component<Props, State> {
 
     this.setState({
       error,
-      errorInfo,
-    });
+      errorInfo});
   }
 
   private async reportError(error: Error, errorInfo: ErrorInfo) : Promise<void> {
@@ -54,26 +52,20 @@ class ErrorBoundary extends Component<Props, State> {
       await errorReporter.reportError(error, {
         action: 'error_boundary',
         component: 'ErrorBoundary',
-        metadata: {
+        metadata: {},
           componentStack: errorInfo.componentStack,
           errorId: this.state.errorId,
-          errorBoundary: true,
-        },
-      });
+          errorBoundary: true}});
 
       // Also send to Sentry if available
       if (typeof window !== 'undefined' && (window as any).Sentry) {
         (window as any).Sentry.captureException(error, {
-          contexts: {
-            react: {
-              componentStack: errorInfo.componentStack,
-            },
-          },
-          tags: {
+          contexts: {},
+            react: {},
+              componentStack: errorInfo.componentStack}},
+          tags: {},
             errorBoundary: true,
-            errorId: this.state.errorId,
-          },
-        });
+            errorId: this.state.errorId}});
       }
     } catch (reportingError: any) {
       // Silently fail if error reporting fails
@@ -90,8 +82,7 @@ class ErrorBoundary extends Component<Props, State> {
       hasError: false,
       error: null,
       errorInfo: null,
-      errorId: this.generateErrorId(),
-    });
+      errorId: this.generateErrorId()});
   };
 
   handleGoHome = () => {
@@ -114,15 +105,13 @@ class ErrorBoundary extends Component<Props, State> {
               p: 4,
               textAlign: 'center',
               borderTop: 4,
-              borderColor: 'error.main',
-            }}
+              borderColor: 'error.main'}}
           >
             <ErrorOutline
               sx={{
                 fontSize: 64,
                 color: 'error.main',
-                mb: 2,
-              }}
+                mb: 2}}
             />
 
             <Typography variant="h4" gutterBottom>
@@ -144,8 +133,7 @@ class ErrorBoundary extends Component<Props, State> {
                   sx={{
                     fontFamily: 'monospace',
                     whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-word',
-                  }}
+                    wordBreak: 'break-word'}}
                 >
                   {this.state.error.toString()}
                 </Typography>
@@ -157,8 +145,7 @@ class ErrorBoundary extends Component<Props, State> {
                       fontFamily: 'monospace',
                       whiteSpace: 'pre-wrap',
                       wordBreak: 'break-word',
-                      mt: 1,
-                    }}
+                      mt: 1}}
                   >
                     {this.state.errorInfo.componentStack}
                   </Typography>

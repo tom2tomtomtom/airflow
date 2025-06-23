@@ -31,18 +31,15 @@ export default async function handler(
     OPENAI_API_KEY: process.env.OPENAI_API_KEY ? '✅ Set' : '❌ Missing',
     CREATOMATE_API_KEY: process.env.CREATOMATE_API_KEY ? '✅ Set' : '❌ Missing',
     ELEVENLABS_API_KEY: process.env.ELEVENLABS_API_KEY ? '✅ Set' : '❌ Missing',
-    RUNWAY_API_KEY: process.env.RUNWAY_API_KEY ? '✅ Set' : '❌ Missing',
-  };
+    RUNWAY_API_KEY: process.env.RUNWAY_API_KEY ? '✅ Set' : '❌ Missing'};
 
   // Test Supabase connection if configured
   let supabaseStatus = 'Not configured';
   if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/`, {
-        headers: {
-          'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-        },
-      });
+        headers: {},
+          'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}});
       supabaseStatus = response.ok ? '✅ Connected' : `❌ Error: ${response.status}`;
     } catch (error: any) {
     const message = getErrorMessage(error);
@@ -65,19 +62,16 @@ export default async function handler(
     status: isConfigured ? 'ready' : 'incomplete',
     timestamp: new Date().toISOString(),
     environment: envStatus,
-    supabase: {
+    supabase: {},
       status: supabaseStatus,
-      url: process.env.NEXT_PUBLIC_SUPABASE_URL ? process.env.NEXT_PUBLIC_SUPABASE_URL.replace(/https:\/\/(.+?)\.supabase\.co.*/, 'https://***.supabase.co') : 'not set',
-    },
-    configuration: {
+      url: process.env.NEXT_PUBLIC_SUPABASE_URL ? process.env.NEXT_PUBLIC_SUPABASE_URL.replace(/https:\/\/(.+?)\.supabase\.co.*/, 'https://***.supabase.co') : 'not set'},
+    configuration: {},
       isDemoMode: isDemo,
       isConfigured,
-      missingRequired: missingRequired.length > 0 ? missingRequired : null,
-    },
-    deployment: {
+      missingRequired: missingRequired.length > 0 ? missingRequired : null},
+    deployment: {},
       platform: process.env.VERCEL ? 'Vercel' : process.env.NETLIFY ? 'Netlify' : 'Unknown',
-      region: process.env.VERCEL_REGION || process.env.AWS_REGION || 'Unknown',
-    },
+      region: process.env.VERCEL_REGION || process.env.AWS_REGION || 'Unknown'},
     recommendations: isConfigured ? null : {
       message: 'Some required environment variables are missing',
       steps: [
@@ -85,7 +79,5 @@ export default async function handler(
         'Ensure JWT_SECRET is at least 32 characters long',
         'Verify Supabase project is active and credentials are correct',
         'Restart/redeploy after setting environment variables',
-      ],
-    },
-  });
+      ]}});
 }

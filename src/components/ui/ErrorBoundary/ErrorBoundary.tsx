@@ -1,13 +1,5 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import {
-  Box,
-  Typography,
-  Paper,
-  Button,
-  Collapse,
-  Alert,
-  AlertTitle,
-} from '@mui/material';
+import { Box, Typography, Paper, Button, Collapse, Alert, AlertTitle } from '@mui/material';
 import {
   Error as ErrorIcon,
   Refresh as RefreshIcon,
@@ -62,7 +54,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
     // Generate a unique error ID for tracking
     const errorId = `error-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
+
     return {
       hasError: true,
       error,
@@ -105,8 +97,8 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
     // Reset error boundary when resetKeys change
     if (hasError && resetKeys) {
-      const hasResetKeyChanged = resetKeys.some((key, index) => 
-        prevProps.resetKeys?.[index] !== key
+      const hasResetKeyChanged = resetKeys.some(
+        (key, index) => prevProps.resetKeys?.[index] !== key
       );
 
       if (hasResetKeyChanged) {
@@ -175,11 +167,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
     // Wrap children in error isolation if enabled
     if (isolate) {
-      return (
-        <Box sx={{ isolation: 'isolate' }}>
-          {children}
-        </Box>
-      );
+      return <Box sx={{ isolation: 'isolate' }}>{children}</Box>;
     }
 
     return children;
@@ -238,23 +226,15 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
               mb: 2,
             }}
           />
-          
-          <Typography
-            variant={isPageLevel ? 'h4' : 'h6'}
-            sx={{ fontWeight: 600, mb: 1 }}
-          >
+
+          <Typography variant={isPageLevel ? 'h4' : 'h6'} sx={{ fontWeight: 600, mb: 1 }}>
             {isPageLevel ? 'Something went wrong' : 'Error occurred'}
           </Typography>
-          
-          <Typography
-            variant="body1"
-            color="text.secondary"
-            sx={{ mb: 3 }}
-          >
+
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
             {isPageLevel
               ? "We're sorry, but something unexpected happened. Please try refreshing the page or contact support if the problem persists."
-              : 'This section encountered an error and could not be displayed properly.'
-            }
+              : 'This section encountered an error and could not be displayed properly.'}
           </Typography>
         </Box>
 
@@ -267,13 +247,9 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
           >
             Try Again
           </Button>
-          
+
           {isPageLevel && (
-            <Button
-              variant="outlined"
-              onClick={() => window.location.href = '/'}
-              size="large"
-            >
+            <Button variant="outlined" onClick={() => (window.location.href = '/')} size="large">
               Go Home
             </Button>
           )}
@@ -290,7 +266,7 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
           >
             {showDetails ? 'Hide' : 'Show'} Technical Details
           </Button>
-          
+
           <Collapse in={showDetails}>
             <Alert
               severity="error"
@@ -304,15 +280,15 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
               }}
             >
               <AlertTitle>Error Details</AlertTitle>
-              
+
               <Typography variant="body2" sx={{ mb: 1 }}>
                 <strong>Error ID:</strong> {errorId}
               </Typography>
-              
+
               <Typography variant="body2" sx={{ mb: 2 }}>
                 <strong>Message:</strong> {error.message}
               </Typography>
-              
+
               {error.stack && (
                 <Box
                   component="pre"
@@ -333,7 +309,7 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
                   {error.stack}
                 </Box>
               )}
-              
+
               {errorInfo.componentStack && (
                 <Box sx={{ mt: 2 }}>
                   <Typography variant="body2" sx={{ mb: 1 }}>
@@ -386,7 +362,7 @@ export const withErrorBoundary = <P extends object>(
   );
 
   WrappedComponent.displayName = `withErrorBoundary(${Component.displayName || Component.name})`;
-  
+
   return WrappedComponent;
 };
 

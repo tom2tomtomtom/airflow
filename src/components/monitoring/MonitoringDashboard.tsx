@@ -30,8 +30,7 @@ import {
   Tabs,
   Tab,
   Paper,
-  useTheme,
-} from '@mui/material';
+  useTheme} from '@mui/material';
 import {
   Refresh as RefreshIcon,
   Warning as WarningIcon,
@@ -42,8 +41,7 @@ import {
   Settings as SettingsIcon,
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
-  TrendingFlat as TrendingFlatIcon,
-} from '@mui/icons-material';
+  TrendingFlat as TrendingFlatIcon} from '@mui/icons-material';
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -55,8 +53,7 @@ import {
   Title,
   Tooltip as ChartTooltip,
   Legend,
-  ArcElement,
-} from 'chart.js';
+  ArcElement} from 'chart.js';
 
 // Register Chart.js components
 ChartJS.register(
@@ -94,7 +91,7 @@ interface Alert {
 }
 
 interface DashboardData {
-  overview: {
+  overview: {},
     health: 'healthy' | 'degraded' | 'critical';
     uptime: number;
     activeAlerts: number;
@@ -210,8 +207,7 @@ const MonitoringDashboard: React.FC = () => {
         body: JSON.stringify({
           alertId,
           acknowledgedBy: 'current-user', // In real app, get from auth context
-        }),
-      });
+        })});
 
       if (response.ok) {
         fetchDashboardData(); // Refresh data
@@ -255,8 +251,7 @@ const MonitoringDashboard: React.FC = () => {
             label={metric.status}
             sx={{
               backgroundColor: getStatusColor(metric.status),
-              color: 'white',
-            }}
+              color: 'white'}}
           />
         </Box>
       </CardContent>
@@ -275,36 +270,25 @@ const MonitoringDashboard: React.FC = () => {
           data: chart.data.map((d: any) => d.value),
           borderColor: chart.config.colors?.[0] || theme.palette.primary.main,
           backgroundColor: `${chart.config.colors?.[0] || theme.palette.primary.main}20`,
-          tension: 0.4,
-        },
-      ],
-    };
+          tension: 0.4},
+      ]};
 
     const options = {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: false,
-        },
-        title: {
-          display: false,
-        },
-      },
-      scales: {
-        y: {
+      plugins: {},
+        legend: {},
+          display: false},
+        title: {},
+          display: false}},
+      scales: {},
+        y: {},
           beginAtZero: true,
-          grid: {
-            color: theme.palette.divider,
-          },
-        },
-        x: {
-          grid: {
-            color: theme.palette.divider,
-          },
-        },
-      },
-    };
+          grid: {},
+            color: theme.palette.divider}},
+        x: {},
+          grid: {},
+            color: theme.palette.divider}}}};
 
     switch (chart.type) {
       case 'line':
@@ -485,8 +469,7 @@ const MonitoringDashboard: React.FC = () => {
                     borderColor: 'divider',
                     borderRadius: 1,
                     mb: 1,
-                    backgroundColor: 'background.paper',
-                  }}
+                    backgroundColor: 'background.paper'}}
                 >
                   <ListItemIcon>
                     {getSeverityIcon(alert.severity)}

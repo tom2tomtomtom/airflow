@@ -13,8 +13,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
     return res.status(405).json({
       success: false,
-      error: { code: 'METHOD_NOT_ALLOWED', message: 'Method not allowed' },
-    });
+      error: { code: 'METHOD_NOT_ALLOWED', message: 'Method not allowed' }});
   }
 
   try {
@@ -31,38 +30,32 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const recentEvents = securityLogger.getEvents({
       severity: 'HIGH',
       minutes: timeRangeHours * 60,
-      limit: 50,
-    });
+      limit: 50});
 
     const dashboard = {
-      overview: {
+      overview: {},
         timeRange: `${timeRangeHours} hours`,
         totalEvents: metrics.totalEvents,
         activeAlerts: metrics.activeAlerts,
         threatLevel: calculateThreatLevel(metrics),
-        lastUpdate: new Date().toISOString(),
-      },
-      metrics: {
+        lastUpdate: new Date().toISOString()},
+      metrics: {},
         eventsByType: metrics.eventsByType,
         eventsBySeverity: metrics.eventsBySeverity,
-        topIPs: metrics.topIPs,
-      },
+        topIPs: metrics.topIPs},
       alerts: alerts.slice(0, 10), // Most recent 10 alerts
       recentThreats: recentEvents.slice(0, 20), // Most recent 20 high-severity events
-      healthScore: calculateSecurityHealthScore(metrics),
-    };
+      healthScore: calculateSecurityHealthScore(metrics)};
 
     return res.status(200).json({
       success: true,
       data: dashboard,
-      meta: { timestamp: new Date().toISOString() },
-    });
+      meta: { timestamp: new Date().toISOString() }});
   } catch (error) {
     console.error('Security dashboard error:', error);
     return res.status(500).json({
       success: false,
-      error: { code: 'INTERNAL_ERROR', message: 'Failed to generate security dashboard' },
-    });
+      error: { code: 'INTERNAL_ERROR', message: 'Failed to generate security dashboard' }});
   }
 }
 

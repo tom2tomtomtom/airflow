@@ -5,32 +5,32 @@ import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 
 interface DashboardStats {
-  totalAssets: {
+  totalAssets: {},
     count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
-  aiGenerated: {
+  aiGenerated: {},
     count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
-  activeCampaigns: {
+  activeCampaigns: {},
     count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
-  templatesUsed: {
+  templatesUsed: {},
     count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
-  totalClients: {
+  totalClients: {},
     count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
-  pendingApprovals: {
+  pendingApprovals: {},
     count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
@@ -44,7 +44,7 @@ interface DashboardStats {
     user: string;
     client?: string;
   }>;
-  performanceMetrics: {
+  performanceMetrics: {},
     totalImpressions: number;
     totalClicks: number;
     averageCTR: number;
@@ -191,32 +191,32 @@ async function getDashboardStats(userId: string): Promise<DashboardStats> {
   const approvalsChange = '+0%'; // TODO: Calculate trend
 
   return {
-    totalAssets: {
+    totalAssets: {},
       count: totalAssetsCount,
       change: assetChange,
       trend: getTrend(assetChange)
     },
-    aiGenerated: {
+    aiGenerated: {},
       count: aiGeneratedCount,
       change: aiChange,
       trend: getTrend(aiChange)
     },
-    activeCampaigns: {
+    activeCampaigns: {},
       count: activeCampaignsCount,
       change: campaignChange,
       trend: getTrend(campaignChange)
     },
-    templatesUsed: {
+    templatesUsed: {},
       count: templatesUsedCount,
       change: templatesChange,
       trend: 'neutral'
     },
-    totalClients: {
+    totalClients: {},
       count: totalClientsCount,
       change: clientsChange,
       trend: 'neutral'
     },
-    pendingApprovals: {
+    pendingApprovals: {},
       count: pendingApprovalsCount,
       change: approvalsChange,
       trend: 'neutral'
@@ -383,7 +383,7 @@ function getEmptyStats(): DashboardStats {
     totalClients: { count: 0, change: '0%', trend: 'neutral' },
     pendingApprovals: { count: 0, change: '0%', trend: 'neutral' },
     recentActivity: [],
-    performanceMetrics: {
+    performanceMetrics: {},
       totalImpressions: 0,
       totalClicks: 0,
       averageCTR: 0,

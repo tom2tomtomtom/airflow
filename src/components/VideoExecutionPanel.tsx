@@ -38,8 +38,7 @@ import {
   Error as ErrorIcon, 
   Schedule as ScheduleIcon, 
   Delete as DeleteIcon, 
-  RocketLaunch as RocketLaunchIcon,
-} from '@mui/icons-material';
+  RocketLaunch as RocketLaunchIcon} from '@mui/icons-material';
 import { useNotification } from '@/contexts/NotificationContext';
 import { getErrorMessage } from '@/utils/errorUtils';
 
@@ -64,8 +63,7 @@ interface VideoExecution {
 const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
   matrixId,
   combinations,
-  onExecutionComplete,
-}) => {
+  onExecutionComplete}) => {
   const { showNotification } = useNotification();
 
   // State
@@ -80,8 +78,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
     variations_per_combination: 2,
     platform_optimization: true,
     save_to_assets: true,
-    include_captions: false,
-  });
+    include_captions: false});
 
   // Auto-refresh active executions
   useEffect(() => {
@@ -111,7 +108,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
     try {
       setLoading(true);
       const response = await fetch(`/api/executions?matrix_id=${matrixId}&content_type=video`, {
-        headers: {
+        headers: {},
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
@@ -139,7 +136,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
 
       const statusPromises = activeExecutions.map((exec: any) =>
         fetch(`/api/executions/${exec.id}`, {
-          headers: {
+          headers: {},
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         }).then(res => res.ok ? res.json() : null)
@@ -159,8 +156,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
             status: updatedExec.data.status,
             progress: updatedExec.data.progress?.percentage || exec.progress,
             video_url: updatedExec.data.render_url || exec.video_url,
-            error_message: updatedExec.data.metadata?.error || exec.error_message,
-          };
+            error_message: updatedExec.data.metadata?.error || exec.error_message};
         }
         return exec;
       }));
@@ -194,30 +190,26 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
         platforms: ['youtube', 'instagram', 'tiktok'], // Multi-platform execution
         priority: 'normal',
         schedule_type: 'immediate',
-        execution_settings: {
+        execution_settings: {},
           quality: executionSettings.quality,
           formats: ['mp4'],
           resolutions: ['1920x1080', '1080x1920'], // Horizontal and vertical
           include_previews: true,
           notify_on_completion: true,
-          video_specific: {
+          video_specific: {},
             auto_generate_variations: executionSettings.auto_generate_variations,
             variations_per_combination: executionSettings.variations_per_combination,
             platform_optimization: executionSettings.platform_optimization,
             save_to_assets: executionSettings.save_to_assets,
-            include_captions: executionSettings.include_captions,
-          }
-        },
-      };
+            include_captions: executionSettings.include_captions}
+        }};
 
       const response = await fetch(`/api/matrices/${matrixId}/execute`, {
         method: 'POST',
-        headers: {
+        headers: {},
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify(executeData),
-      });
+          'Authorization': `Bearer ${localStorage.getItem('token')}`},
+        body: JSON.stringify(executeData)});
 
       if (response.ok) {
         const data = await response.json();
@@ -249,7 +241,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
     try {
       const response = await fetch(`/api/executions/${executionId}/retry`, {
         method: 'POST',
-        headers: {
+        headers: {},
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
@@ -271,7 +263,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
     try {
       const response = await fetch(`/api/executions/${executionId}`, {
         method: 'DELETE',
-        headers: {
+        headers: {},
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
@@ -410,8 +402,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
                   sx={{
                     cursor: 'pointer',
                     border: selectedCombinations.includes(combination.id) ? '2px solid' : '1px solid',
-                    borderColor: selectedCombinations.includes(combination.id) ? 'primary.main' : 'divider',
-                  }}
+                    borderColor: selectedCombinations.includes(combination.id) ? 'primary.main' : 'divider'}}
                   onClick={() => {
                     setSelectedCombinations(prev =>
                       prev.includes(combination.id)

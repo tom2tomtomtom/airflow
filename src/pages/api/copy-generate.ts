@@ -14,12 +14,10 @@ const CopyGenerateSchema = z.object({
   variations_per_platform: z.number().min(1).max(10).default(3),
   target_audience: z.string().optional(),
   campaign_objectives: z.string().optional(),
-  brand_guidelines: z.string().optional(),
-});
+  brand_guidelines: z.string().optional()});
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+  apiKey: process.env.OPENAI_API_KEY});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   if (req.method !== 'POST') {
@@ -81,8 +79,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       'YouTube': { maxLength: 5000, format: 'Video description with call-to-action' },
       'Twitter': { maxLength: 280, format: 'Concise tweet' },
       'Email': { maxLength: 1000, format: 'Email subject and body' },
-      'Website': { maxLength: 500, format: 'Website copy with headline' },
-    };
+      'Website': { maxLength: 500, format: 'Website copy with headline' }};
 
     const createdCopyAssets = [];
 
@@ -133,8 +130,7 @@ Make each variation unique while staying within the ${platformSpec.maxLength} ch
           { role: 'user', content: userPrompt }
         ],
         temperature: 0.8,
-        max_tokens: 2000,
-      });
+        max_tokens: 2000});
 
       const aiResponse = completion.choices[0]?.message?.content;
       if (!aiResponse) {
@@ -165,13 +161,13 @@ Make each variation unique while staying within the ${platformSpec.maxLength} ch
             body_text: variation.body,
             call_to_action: variation.call_to_action,
             hashtags: variation.hashtags || [],
-            metadata: {
+            metadata: {},
               tone,
               style,
               emotional_hook: variation.emotional_hook,
               key_motivation: variation.key_motivation,
               character_count: (variation.headline + variation.body + variation.call_to_action).length,
-              generation_context: {
+              generation_context: {},
                 model: 'gpt-4o',
                 temperature: 0.8,
                 variation_number: i + 1,
@@ -180,8 +176,7 @@ Make each variation unique while staying within the ${platformSpec.maxLength} ch
             },
             performance_score: Math.floor(Math.random() * 20) + 80, // Simulated initial score
             is_ai_generated: true,
-            created_by: user.id,
-          })
+            created_by: user.id})
           .select(`
             *,
             clients(name, slug)

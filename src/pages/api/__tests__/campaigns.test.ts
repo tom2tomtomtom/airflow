@@ -94,12 +94,11 @@ describe('/api/campaigns', () => {
         status_distribution: Record<string, unknown>$1
         priority_distribution: Record<string, unknown>$1
         type_distribution: Record<string, unknown>$1
-        budget_summary: {
+        budget_summary: {},
           total_budget: 0,
           total_spent: 0,
           remaining_budget: 0,
-          utilization_rate: 0,
-        }
+          utilization_rate: 0}
       });
     });
   });
@@ -116,7 +115,7 @@ describe('/api/campaigns', () => {
         budget: 10000,
         start_date: '2024-01-01',
         end_date: '2024-12-31',
-        targeting: {
+        targeting: {},
           demographics: ['18-35', 'tech-savvy'],
           interests: ['technology', 'innovation']
         },
@@ -253,7 +252,7 @@ describe('/api/campaigns', () => {
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           client_id: '123e4567-e89b-12d3-a456-426614174000',
           name: 'Test Campaign',
           objective: 'Test objective',
@@ -316,7 +315,7 @@ describe('/api/campaigns', () => {
       // Test POST
       const { req: postReq, res: postRes } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           client_id: '123e4567-e89b-12d3-a456-426614174000',
           name: 'Test Campaign',
           objective: 'Test objective'
@@ -333,7 +332,7 @@ describe('/api/campaigns', () => {
       // Mock an error by providing invalid JSON that would cause parsing issues
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           client_id: 'client-123',
           name: 'Test Campaign',
           type: 'brand_awareness',
@@ -393,7 +392,7 @@ describe('/api/campaigns', () => {
     test('should validate date format', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           client_id: '123e4567-e89b-12d3-a456-426614174000',
           name: 'Test Campaign',
           objective: 'Test objective',
@@ -410,7 +409,7 @@ describe('/api/campaigns', () => {
     test('should validate end date after start date', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           client_id: '123e4567-e89b-12d3-a456-426614174000',
           name: 'Test Campaign',
           objective: 'Test objective',
@@ -428,7 +427,7 @@ describe('/api/campaigns', () => {
     test('should validate platforms array', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           client_id: '123e4567-e89b-12d3-a456-426614174000',
           name: 'Test Campaign',
           objective: 'Test objective',
@@ -445,7 +444,7 @@ describe('/api/campaigns', () => {
     test('should validate targeting object structure', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           client_id: '123e4567-e89b-12d3-a456-426614174000',
           name: 'Test Campaign',
           objective: 'Test objective',
@@ -463,7 +462,7 @@ describe('/api/campaigns', () => {
       const longName = 'A'.repeat(1000);
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           client_id: '123e4567-e89b-12d3-a456-426614174000',
           name: longName,
           objective: 'Test objective'
@@ -479,7 +478,7 @@ describe('/api/campaigns', () => {
     test('should handle special characters in campaign name', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: {
+        body: {},
           client_id: '123e4567-e89b-12d3-a456-426614174000',
           name: 'Campaign with émojis 🚀 and spëcial chars!',
           objective: 'Test objective'

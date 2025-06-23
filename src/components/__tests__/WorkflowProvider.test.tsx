@@ -8,52 +8,38 @@ import { ClientProvider } from '@/contexts/ClientContext';
 // Mock dependencies
 jest.mock('@/hooks/useCSRF', () => ({
   useCSRF: () => ({
-    makeCSRFRequest: jest.fn(),
-  }),
-}));
+    makeCSRFRequest: jest.fn()})}));
 
 jest.mock('@/lib/performance/performance-tracker', () => ({
-  performanceTracker: {
+  performanceTracker: {},
     start: jest.fn(),
     end: jest.fn(),
     getInstance: jest.fn(() => ({
       start: jest.fn(),
-      end: jest.fn(),
-    })),
-  },
-}));
+      end: jest.fn()}))}}));
 
 jest.mock('@/lib/rate-limiting/ai-rate-limiter', () => ({
-  aiRateLimiter: {
-    checkLimit: jest.fn().mockResolvedValue({ allowed: true }),
-  },
-}));
+  aiRateLimiter: {},
+    checkLimit: jest.fn().mockResolvedValue({ allowed: true })}}));
 
 jest.mock('@/lib/caching/ai-response-cache', () => ({
-  aiResponseCache: {
+  aiResponseCache: {},
     get: jest.fn().mockResolvedValue(null),
-    set: jest.fn().mockResolvedValue(true),
-  },
-}));
+    set: jest.fn().mockResolvedValue(true)}}));
 
 jest.mock('@/lib/circuit-breaker/ai-circuit-breaker', () => ({
-  aiCircuitBreaker: {
-    execute: jest.fn(),
-  },
-}));
+  aiCircuitBreaker: {},
+    execute: jest.fn()}}));
 
 jest.mock('@/lib/monitoring/workflow-metrics', () => ({
-  workflowMetrics: {
+  workflowMetrics: {},
     trackStepCompletion: jest.fn(),
     trackStepStart: jest.fn(),
-    trackAIOperation: jest.fn(),
-  },
-}));
+    trackAIOperation: jest.fn()}}));
 
 jest.mock('@/utils/ai-cost-estimation', () => ({
   estimateTokensForMotivations: jest.fn().mockReturnValue(1000),
-  estimateTokensForCopy: jest.fn().mockReturnValue(1500),
-}));
+  estimateTokensForCopy: jest.fn().mockReturnValue(1500)}));
 
 // Mock validation functions
 jest.mock('@/lib/validation/workflow-validation', () => ({
@@ -61,8 +47,7 @@ jest.mock('@/lib/validation/workflow-validation', () => ({
   validateBriefData: jest.fn().mockReturnValue({ valid: true, data: null }),
   validateMotivations: jest.fn().mockReturnValue({ valid: true, data: [] }),
   validateCopyVariations: jest.fn().mockReturnValue({ valid: true, data: [] }),
-  sanitizeApiResponse: jest.fn().mockImplementation(data => data),
-}));
+  sanitizeApiResponse: jest.fn().mockImplementation(data => data)}));
 
 // Test component to access workflow context
 const TestComponent: React.FC = () => {
@@ -84,8 +69,7 @@ const WorkflowContextTestComponent: React.FC = () => {
     } catch (error: any) {
       setContextValue({
         available: false,
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
+        error: error instanceof Error ? error.message : 'Unknown error'});
     }
   }, []);
 

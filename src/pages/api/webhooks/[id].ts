@@ -17,16 +17,13 @@ const WebhookUpdateSchema = z.object({
   retry_policy: z.object({
     max_attempts: z.number().min(1).max(10).default(3),
     backoff_strategy: z.enum(['linear', 'exponential']).default('exponential'),
-    initial_delay_ms: z.number().min(1000).default(1000),
-  }).optional(),
+    initial_delay_ms: z.number().min(1000).default(1000)}).optional(),
   headers: z.record(z.string()).optional(),
-  timeout_ms: z.number().min(1000).max(30000).optional(),
-});
+  timeout_ms: z.number().min(1000).max(30000).optional()});
 
 const WebhookTestSchema = z.object({
   event_type: z.string().min(1, 'Event type is required'),
-  test_data: z.record(z.any()).optional(),
-});
+  test_data: z.record(z.any()).optional()});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -113,7 +110,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, w
     const stats = calculateDeliveryStatistics(deliveries || []);
 
     return res.json({ 
-      data: {
+      data: {},
         ...webhook,
         secret: webhook.secret ? `${webhook.secret.substring(0, 8)}...` : null // Mask secret
       },
@@ -199,8 +196,7 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse, user: any
       .from('webhooks')
       .update({
         ...updateData,
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString()})
       .eq('id', webhookId)
       .select(`
         *,
@@ -218,11 +214,10 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse, user: any
     await logWebhookEvent(webhookId, 'updated', user.id, {
       changes: updateData,
       previous_url: existingWebhook.url,
-      previous_events: existingWebhook.events,
-    });
+      previous_events: existingWebhook.events});
 
     return res.json({ 
-      data: {
+      data: {},
         ...webhook,
         secret: webhook.secret ? `${webhook.secret.substring(0, 8)}...` : null
       }
@@ -268,8 +263,7 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
     await logWebhookEvent(webhookId, 'deleted', user.id, {
       url: webhook.url,
       events: webhook.events,
-      total_deliveries: webhook.total_deliveries,
-    });
+      total_deliveries: webhook.total_deliveries});
 
     // Delete webhook (cascade will handle deliveries and logs)
     const { error } = await supabase
@@ -359,8 +353,7 @@ async function handleTestWebhook(req: NextApiRequest, res: NextApiResponse, user
       data: test_data || {
         message: `Test webhook for event: ${event_type}`,
         user: user.email || user.id,
-        client_id: webhook.client_id,
-      }
+        client_id: webhook.client_id}
     };
 
     // Deliver test webhook
@@ -370,8 +363,7 @@ async function handleTestWebhook(req: NextApiRequest, res: NextApiResponse, user
     await logWebhookEvent(webhookId, 'tested', user.id, {
       event_type,
       test_data,
-      result,
-    });
+      result});
 
     return res.json({ 
       success: result.success,
@@ -423,8 +415,7 @@ async function handleRegenerateSecret(req: NextApiRequest, res: NextApiResponse,
       .from('webhooks')
       .update({
         secret: newSecret,
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString()})
       .eq('id', webhookId)
       .select('*')
       .single();
@@ -437,8 +428,7 @@ async function handleRegenerateSecret(req: NextApiRequest, res: NextApiResponse,
     // Log secret regeneration
     await logWebhookEvent(webhookId, 'secret_regenerated', user.id, {
       previous_secret_length: webhook.secret?.length || 0,
-      new_secret_length: newSecret.length,
-    });
+      new_secret_length: newSecret.length});
 
     return res.json({ 
       success: true,
@@ -488,8 +478,7 @@ async function handleToggleWebhook(req: NextApiRequest, res: NextApiResponse, us
       .from('webhooks')
       .update({
         active: newActiveState,
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString()})
       .eq('id', webhookId)
       .select('*')
       .single();
@@ -502,8 +491,7 @@ async function handleToggleWebhook(req: NextApiRequest, res: NextApiResponse, us
     // Log toggle action
     await logWebhookEvent(webhookId, newActiveState ? 'activated' : 'deactivated', user.id, {
       previous_state: webhook.active,
-      new_state: newActiveState,
-    });
+      new_state: newActiveState});
 
     return res.json({ 
       success: true,
@@ -528,18 +516,16 @@ async function testWebhookUrl(url: string, timeoutMs: number = 10000): Promise<{
 
     const response = await fetch(url, {
       method: 'POST',
-      headers: {
+      headers: {},
         'Content-Type': 'application/json',
         'User-Agent': 'AIrFLOW-Webhook-Test/1.0',
-        'X-AIrFLOW-Test': 'true',
-      },
+        'X-AIrFLOW-Test': 'true'},
       body: JSON.stringify({
         event: 'webhook.test',
         timestamp: new Date().toISOString(),
         data: { message: 'This is a webhook test from AIrFLOW' }
       }),
-      signal: controller.signal,
-    });
+      signal: controller.signal});
 
     clearTimeout(timeoutId);
 
@@ -572,8 +558,7 @@ async function logWebhookEvent(webhookId: string, action: string, userId: string
         action,
         user_id: userId,
         metadata,
-        timestamp: new Date().toISOString(),
-      });
+        timestamp: new Date().toISOString()});
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error logging webhook event:', error);
@@ -612,8 +597,7 @@ function calculateDeliveryStatistics(deliveries: any[]): any {
     success_rate: deliveries.length > 0 ? Math.round((successful / deliveries.length) * 100) : 0,
     recent_failures: recentFailures,
     last_delivery: deliveries[0]?.delivered_at || null,
-    status_distribution: statusDistribution,
-  };
+    status_distribution: statusDistribution};
 }
 
 function getStatusRange(status: number): string {

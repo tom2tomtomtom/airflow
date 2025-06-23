@@ -12,15 +12,13 @@ import {
   ListItemText,
   CircularProgress,
   TextField,
-  InputAdornment,
-} from '@mui/material';
+  InputAdornment} from '@mui/material';
 import {
   ArrowDropDown as ArrowDropDownIcon,
   Business as BusinessIcon,
   Check as CheckIcon,
   Add as AddIcon,
-  Search as SearchIcon,
-} from '@mui/icons-material';
+  Search as SearchIcon} from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import { useClient } from '@/contexts/ClientContext';
 // import { useClients } from '@/hooks/useData';
@@ -35,8 +33,7 @@ interface ClientSelectorProps {
 const ClientSelector: React.FC<ClientSelectorProps> = ({
   variant = 'button',
   showAddOption = true,
-  onClientChange,
-}) => {
+  onClientChange}) => {
   const router = useRouter();
   const { activeClient, setActiveClient } = useClient();
   // Use context clients instead of hook for better test support
@@ -114,8 +111,7 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
               cursor: 'pointer',
               p: 1,
               borderRadius: 1,
-              '&:hover': { bgcolor: 'action.hover' },
-            }}
+              '&:hover': { bgcolor: 'action.hover' }}}
           >
             {activeClient ? (
               <>
@@ -174,11 +170,9 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
         open={Boolean(anchorEl)}
         onClose={handleClose}
         PaperProps={{
-          sx: {
+          sx: {},
             maxHeight: 400,
-            width: 280,
-          },
-        }}
+            width: 280}}}
       >
         {clients && clients.length > 3 && (
           <Box px={2} py={1}>
@@ -193,8 +187,7 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
                   <InputAdornment position="start">
                     <SearchIcon fontSize="small" />
                   </InputAdornment>
-                ),
-              }}
+                )}}
               autoFocus
             />
           </Box>

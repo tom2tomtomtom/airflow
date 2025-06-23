@@ -12,8 +12,7 @@ import {
   Chip,
   LinearProgress,
   IconButton,
-  Fade,
-} from '@mui/material';
+  Fade} from '@mui/material';
 import {
   Close,
   PlayArrow,
@@ -25,8 +24,7 @@ import {
   ArrowForward,
   Lightbulb,
   Speed,
-  Group,
-} from '@mui/icons-material';
+  Group} from '@mui/icons-material';
 
 interface OnboardingStep {
   id: string;
@@ -80,8 +78,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               '@keyframes pulse': {
                 '0%': { transform: 'scale(1)' },
                 '50%': { transform: 'scale(1.05)' },
-                '100%': { transform: 'scale(1)' },
-              }
+                '100%': { transform: 'scale(1)' }}
             }}
           >
             <PlayArrow sx={{ fontSize: 60, color: 'white' }} />
@@ -321,7 +318,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           </Typography>
         </Box>
       ),
-      action: {
+      action: {},
         label: 'Get Started',
         onClick: onComplete
       }
@@ -384,8 +381,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 height: 8, 
                 borderRadius: 1,
                 '& .MuiLinearProgress-bar': {
-                  borderRadius: 1,
-                }
+                  borderRadius: 1}
               }} 
             />
           </Box>

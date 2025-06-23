@@ -304,11 +304,7 @@ const CampaignBuilderPage: React.FC = () => {
               >
                 Browse Templates
               </Button>
-              <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={handleQuickCreate}
-              >
+              <Button variant="contained" startIcon={<AddIcon />} onClick={handleQuickCreate}>
                 Quick Create
               </Button>
             </Stack>
@@ -332,7 +328,8 @@ const CampaignBuilderPage: React.FC = () => {
                           Choose Your Campaign Type
                         </Typography>
                         <Typography variant="body2" color="text.secondary" paragraph>
-                          Select a pre-built template to get started quickly, or create a custom campaign from scratch.
+                          Select a pre-built template to get started quickly, or create a custom
+                          campaign from scratch.
                         </Typography>
 
                         <Grid container spacing={2}>
@@ -351,7 +348,12 @@ const CampaignBuilderPage: React.FC = () => {
                                 onClick={() => handleTemplateSelect(template)}
                               >
                                 <CardContent>
-                                  <Box display="flex" alignItems="center" justifyContent="between" mb={2}>
+                                  <Box
+                                    display="flex"
+                                    alignItems="center"
+                                    justifyContent="between"
+                                    mb={2}
+                                  >
                                     <Typography variant="h6" component="div">
                                       {template.name}
                                     </Typography>
@@ -366,7 +368,12 @@ const CampaignBuilderPage: React.FC = () => {
                                   </Typography>
                                   <Box display="flex" flexWrap="wrap" gap={0.5} mb={2}>
                                     {template.platforms.map((platform: any) => (
-                                      <Chip key={platform} label={platform} size="small" variant="outlined" />
+                                      <Chip
+                                        key={platform}
+                                        label={platform}
+                                        size="small"
+                                        variant="outlined"
+                                      />
                                     ))}
                                   </Box>
                                   <Box display="flex" alignItems="center" justifyContent="between">
@@ -418,7 +425,9 @@ const CampaignBuilderPage: React.FC = () => {
                             {campaigns.slice(0, 5).map((campaign, index) => (
                               <React.Fragment key={campaign.id}>
                                 {index > 0 && <Divider />}
-                                <ListItemButton onClick={() => router.push(`/campaigns/${campaign.id}`)}>
+                                <ListItemButton
+                                  onClick={() => router.push(`/campaigns/${campaign.id}`)}
+                                >
                                   <ListItemIcon>
                                     <Avatar sx={{ bgcolor: 'primary.main', width: 32, height: 32 }}>
                                       <CampaignIcon fontSize="small" />
@@ -429,7 +438,8 @@ const CampaignBuilderPage: React.FC = () => {
                                     secondary={
                                       <Box>
                                         <Typography variant="caption" color="text.secondary">
-                                          {campaign.status} • {campaign.platforms?.length || 0} platforms
+                                          {campaign.status} • {campaign.platforms?.length || 0}{' '}
+                                          platforms
                                         </Typography>
                                       </Box>
                                     }
@@ -509,7 +519,7 @@ const CampaignBuilderPage: React.FC = () => {
                             <Step key={step.id}>
                               <StepLabel
                                 StepIconProps={{
-                                  style: { color: getStepStatusColor(step.status) }
+                                  style: { color: getStepStatusColor(step.status) },
                                 }}
                               >
                                 <Box>
@@ -547,7 +557,8 @@ const CampaignBuilderPage: React.FC = () => {
                         </Box>
 
                         <Typography variant="body1" color="text.secondary" paragraph>
-                          {campaignSteps[activeStep]?.description || 'Configure your campaign settings.'}
+                          {campaignSteps[activeStep]?.description ||
+                            'Configure your campaign settings.'}
                         </Typography>
 
                         {/* Wizard content would go here */}
@@ -559,8 +570,8 @@ const CampaignBuilderPage: React.FC = () => {
                             sx={{ textTransform: 'none' }}
                           >
                             Advanced Campaign Builder
-                          </Button>
-                          {' '}to create campaigns.
+                          </Button>{' '}
+                          to create campaigns.
                         </Alert>
 
                         <Box display="flex" justifyContent="between" mt={4}>
@@ -571,17 +582,10 @@ const CampaignBuilderPage: React.FC = () => {
                             Back to Templates
                           </Button>
                           <Stack direction="row" spacing={2}>
-                            <Button
-                              variant="outlined"
-                              onClick={handleQuickCreate}
-                            >
+                            <Button variant="outlined" onClick={handleQuickCreate}>
                               Use Advanced Builder
                             </Button>
-                            <Button
-                              variant="contained"
-                              startIcon={<SaveIcon />}
-                              disabled
-                            >
+                            <Button variant="contained" startIcon={<SaveIcon />} disabled>
                               Continue
                             </Button>
                           </Stack>
@@ -640,9 +644,7 @@ const CampaignBuilderPage: React.FC = () => {
             </Grid>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setShowTemplateDialog(false)}>
-              Close
-            </Button>
+            <Button onClick={() => setShowTemplateDialog(false)}>Close</Button>
           </DialogActions>
         </Dialog>
       </DashboardLayout>

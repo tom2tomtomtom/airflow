@@ -66,10 +66,9 @@ export default async function handler(
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: {
-          name: name,
-        }
+      options: {},
+        data: {},
+          name: name}
       }
     });
 
@@ -108,8 +107,7 @@ export default async function handler(
       process.env.NODE_ENV === 'development' && console.log('Email confirmation required');
       return res.status(200).json({
         success: true,
-        message: 'Please check your email for a confirmation link before logging in.',
-      });
+        message: 'Please check your email for a confirmation link before logging in.'});
     }
 
     // If no email confirmation required, create user profile
@@ -136,8 +134,7 @@ export default async function handler(
           last_name: name.split(' ').slice(1).join(' ') || '',
           role: 'user',
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        });
+          updated_at: new Date().toISOString()});
 
       if (profileError) {
         console.error('Error creating profile:', profileError);
@@ -147,14 +144,12 @@ export default async function handler(
 
     return res.status(200).json({
       success: true,
-      user: {
+      user: {},
         id: authData.user.id,
         email: authData.user.email || email,
         name: name,
         role: 'user',
-        token: authData.session?.access_token || '',
-      },
-    });
+        token: authData.session?.access_token || ''}});
 
   } catch (error: any) {
     const message = getErrorMessage(error);

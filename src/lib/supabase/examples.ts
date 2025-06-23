@@ -4,21 +4,17 @@ import { getErrorMessage } from '@/utils/errorUtils';
  * These examples demonstrate best practices for different scenarios
  */
 
-import { 
-  getSupabaseBrowserClient, 
+import {
+  getSupabaseBrowserClient,
   createServerSupabaseClient,
-  getAdminSupabaseClient 
+  getAdminSupabaseClient,
 } from '@/lib/supabase';
-import { 
-  handleSupabaseError, 
-  getErrorMessage,
-  isAuthError 
-} from '@/lib/supabase/errors';
+import { handleSupabaseError, getErrorMessage, isAuthError } from '@/lib/supabase/errors';
 import {
   withRetry,
   queryWithCache,
   paginatedQuery,
-  upsertWithConflict
+  upsertWithConflict,
 } from '@/lib/supabase/helpers';
 
 // ============================================
@@ -26,14 +22,11 @@ import {
 // ============================================
 export async function ClientComponentExample() {
   const supabase = getSupabaseBrowserClient();
-  
+
   try {
     // Simple query with error handling
-    const { data, error } = await supabase
-      .from('clients')
-      .select('*')
-      .eq('is_active', true);
-      
+    const { data, error } = await supabase.from('clients').select('*').eq('is_active', true);
+
     if (error) throw error;
     return data;
   } catch (error: any) {
@@ -49,18 +42,20 @@ export async function ClientComponentExample() {
 // ============================================
 export async function ServerComponentExample() {
   const supabase = createServerSupabaseClient();
-  
+
   // Using retry for resilience
   return withRetry(async () => {
     const { data, error } = await supabase
       .from('campaigns')
-      .select(`
+      .select(
+        `
         *,
         client:clients(name, logo_url),
         executions(count)
-      `)
+      `
+      )
       .order('created_at', { ascending: false });
-      
+
     if (error) throw error;
     return data;
   });
@@ -71,7 +66,7 @@ export async function ServerComponentExample() {
 // ============================================
 export async function APIRouteExample(userId: string) {
   const supabase = getAdminSupabaseClient();
-  
+
   try {
     // Admin operations bypass RLS
     const { data: profile, error: profileError } = await supabase
@@ -79,29 +74,29 @@ export async function APIRouteExample(userId: string) {
       .select('*')
       .eq('id', userId)
       .single();
-      
+
     if (profileError) {
       await handleSupabaseError(profileError, {
         operation: 'fetchProfile',
         table: 'profiles',
-        userId
+        userId,
       });
     }
-    
+
     // Batch operation with conflict handling
     const updates = await upsertWithConflict(
       supabase,
       'user_settings',
       [
         { user_id: userId, key: 'theme', value: 'dark' },
-        { user_id: userId, key: 'language', value: 'en' }
+        { user_id: userId, key: 'language', value: 'en' },
       ],
       {
         onConflict: 'user_id,key',
-        ignoreDuplicates: false
+        ignoreDuplicates: false,
       }
     );
-    
+
     return { profile, settings: updates };
   } catch (error: any) {
     // Error is already logged by handleSupabaseError
@@ -122,7 +117,7 @@ export async function CachedQueryExample(clientId: string) {
         .select('*')
         .eq('client_id', clientId)
         .order('created_at', { ascending: false });
-        
+
       if (error) throw error;
       return data;
     },
@@ -135,12 +130,12 @@ export async function CachedQueryExample(clientId: string) {
 // ============================================
 export async function PaginatedQueryExample(page: number = 1) {
   const supabase = getSupabaseBrowserClient();
-  
+
   return paginatedQuery(supabase, 'campaigns', {
     page,
     pageSize: 20,
     orderBy: 'created_at',
-    ascending: false
+    ascending: false,
   });
 }
 
@@ -149,45 +144,45 @@ export async function PaginatedQueryExample(page: number = 1) {
 // ============================================
 export async function AuthenticationExample(email: string, password: string) {
   const supabase = getSupabaseBrowserClient();
-  
+
   try {
     // Sign in
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
-      password
+      password,
     });
-    
+
     if (error) {
       if (isAuthError(error)) {
         // Special handling for auth errors
         if (error.message.includes('Email not confirmed')) {
-          return { 
-            success: false, 
+          return {
+            success: false,
             needsVerification: true,
-            message: 'Please verify your email before signing in' 
+            message: 'Please verify your email before signing in',
           };
         }
       }
       throw error;
     }
-    
+
     // Get user profile
     const { data: profile } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', data.user.id)
       .single();
-      
-    return { 
-      success: true, 
-      user: data.user, 
+
+    return {
+      success: true,
+      user: data.user,
       profile,
-      session: data.session 
+      session: data.session,
     };
   } catch (error: any) {
     await handleSupabaseError(error, {
       operation: 'signIn',
-      metadata: { email }
+      metadata: { email },
     });
   }
 }
@@ -197,40 +192,36 @@ export async function AuthenticationExample(email: string, password: string) {
 // ============================================
 export async function FileUploadExample(file: File, bucket: string) {
   const supabase = getSupabaseBrowserClient();
-  
+
   try {
     // Generate unique filename
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
     const filePath = `uploads/${fileName}`;
-    
+
     // Upload file
-    const { error: uploadError } = await supabase.storage
-      .from(bucket)
-      .upload(filePath, file, {
-        cacheControl: '3600',
-        upsert: false
-      });
-      
+    const { error: uploadError } = await supabase.storage.from(bucket).upload(filePath, file, {
+      cacheControl: '3600',
+      upsert: false,
+    });
+
     if (uploadError) throw uploadError;
-    
+
     // Get public URL
-    const { data } = supabase.storage
-      .from(bucket)
-      .getPublicUrl(filePath);
-      
+    const { data } = supabase.storage.from(bucket).getPublicUrl(filePath);
+
     return {
       url: data.publicUrl,
-      path: filePath
+      path: filePath,
     };
   } catch (error: any) {
     await handleSupabaseError(error, {
       operation: 'fileUpload',
-      metadata: { 
+      metadata: {
         fileName: file.name,
         fileSize: file.size,
-        bucket 
-      }
+        bucket,
+      },
     });
   }
 }
@@ -238,12 +229,9 @@ export async function FileUploadExample(file: File, bucket: string) {
 // ============================================
 // Realtime Subscription Example
 // ============================================
-export function RealtimeSubscriptionExample(
-  campaignId: string,
-  onUpdate: (payload: any) => void
-) {
+export function RealtimeSubscriptionExample(campaignId: string, onUpdate: (payload: any) => void) {
   const supabase = getSupabaseBrowserClient();
-  
+
   // Subscribe to changes
   const channel = supabase
     .channel(`campaign:${campaignId}`)
@@ -253,15 +241,15 @@ export function RealtimeSubscriptionExample(
         event: '*',
         schema: 'public',
         table: 'executions',
-        filter: `campaign_id=eq.${campaignId}`
+        filter: `campaign_id=eq.${campaignId}`,
       },
-      (payload) => {
+      payload => {
         console.log('Execution update:', payload);
         onUpdate(payload);
       }
     )
     .subscribe();
-    
+
   // Return cleanup function
   return () => {
     supabase.removeChannel(channel);
@@ -271,12 +259,9 @@ export function RealtimeSubscriptionExample(
 // ============================================
 // Complex Transaction Example (when available)
 // ============================================
-export async function ComplexOperationExample(
-  clientId: string,
-  campaignData: any
-) {
+export async function ComplexOperationExample(clientId: string, campaignData: any) {
   const supabase = createServerSupabaseClient();
-  
+
   try {
     // Note: Supabase doesn't support transactions in JS client yet
     // This is how it would work when available:
@@ -300,38 +285,33 @@ export async function ComplexOperationExample(
       return campaign;
     });
     */
-    
+
     // For now, use manual error handling
     const { data: campaign, error: campaignError } = await supabase
       .from('campaigns')
       .insert({ ...campaignData, client_id: clientId })
       .select()
       .single();
-      
+
     if (campaignError) throw campaignError;
-    
-    const { error: executionError } = await supabase
-      .from('executions')
-      .insert({
-        campaign_id: campaign.id,
-        status: 'draft'
-      });
-      
+
+    const { error: executionError } = await supabase.from('executions').insert({
+      campaign_id: campaign.id,
+      status: 'draft',
+    });
+
     if (executionError) {
       // Rollback by deleting the campaign
-      await supabase
-        .from('campaigns')
-        .delete()
-        .eq('id', campaign.id);
+      await supabase.from('campaigns').delete().eq('id', campaign.id);
       throw executionError;
     }
-    
+
     return campaign;
   } catch (error: any) {
     await handleSupabaseError(error, {
       operation: 'createCampaign',
       table: 'campaigns',
-      metadata: { clientId }
+      metadata: { clientId },
     });
   }
 }
