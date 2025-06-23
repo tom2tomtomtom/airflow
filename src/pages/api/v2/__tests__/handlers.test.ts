@@ -140,6 +140,9 @@ describe('API v2 Handlers', () => {
 
     test('should handle workflow brief endpoint', async () => {
       const briefData = {
+        workflowId: 'workflow-123',
+        briefContent: 'Campaign brief: AI Platform for tech professionals. Objective: Increase brand awareness.',
+        briefType: 'text',
         title: 'Test Campaign',
         industry: 'Technology',
         product: 'AI Platform',
@@ -155,6 +158,7 @@ describe('API v2 Handlers', () => {
       const req = createMockRequest('POST', briefData);
       const res = createMockResponse();
       const context = createMockContext('test-user-123', 'POST');
+      context.body = briefData;
 
       await handleWorkflowRoutes(req, res, context, ['brief']);
 
@@ -295,24 +299,28 @@ describe('API v2 Handlers', () => {
       expect(res.json).toHaveBeenCalledWith(
         expect.objectContaining({
           success: true,
-          data: expect.any(Array),
+          data: expect.objectContaining({
+            assets: expect.any(Array),
+          }),
+          meta: expect.objectContaining({
+            pagination: expect.any(Object),
+          }),
         })
       );
     });
 
     test('should handle asset upload endpoint', async () => {
-      const req = createMockRequest('POST', {
-        name: 'test-image.jpg',
-        type: 'image',
-        size: 1024000,
-      });
+      const uploadData = {
+        fileName: 'test-image.jpg',
+        fileType: 'image/jpeg',
+        fileSize: 1024000,
+        clientId: 'client-123'
+      };
+
+      const req = createMockRequest('POST', uploadData);
       const res = createMockResponse();
       const context = createMockContext('test-user-123', 'POST');
-      context.body = {
-        name: 'test-image.jpg',
-        type: 'image',
-        size: 1024000,
-      };
+      context.body = uploadData;
 
       await handleAssetsRoutes(req, res, context, ['upload']);
 
