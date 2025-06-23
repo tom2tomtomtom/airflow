@@ -653,7 +653,7 @@ export class TemplateEngine {
     for (const component of components) {
       const populatedComponent: PopulatedComponent = {
         componentId: component.id,
-        content: {},
+        content: Record<string, unknown>$1
         finalStyling: { ...component.styling },
         finalPosition: { ...component.position }
       };

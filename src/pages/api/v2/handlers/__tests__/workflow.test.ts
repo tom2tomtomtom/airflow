@@ -43,8 +43,8 @@ describe('API v2 Workflow Handler', () => {
     user: { id: 'user123', email: 'test@example.com' },
     requestId: 'req123',
     method: 'GET',
-    query: {},
-    body: {},
+    query: Record<string, unknown>$1
+    body: Record<string, unknown>$1
   };
 
   beforeEach(() => {

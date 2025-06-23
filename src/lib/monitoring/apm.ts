@@ -1,4 +1,3 @@
-import { getErrorMessage } from '@/utils/errorUtils';
 import * as Sentry from '@sentry/nextjs';
 import { StatsD } from 'node-statsd';
 import { getMonitoringConfig } from '@/lib/config';

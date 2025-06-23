@@ -19,7 +19,7 @@ jest.mock('@/lib/supabase/client', () => ({
                 id: 'test-workflow-id',
                 user_id: 'test-user-123',
                 current_step: 0,
-                brief_data: {},
+                brief_data: Record<string, unknown>$1
                 motivations: [],
                 copy_variations: [],
                 selected_assets: [],
@@ -48,7 +48,7 @@ jest.mock('@/lib/supabase/client', () => ({
               id: 'test-workflow-id',
               user_id: 'test-user-123',
               current_step: 0,
-              brief_data: {},
+              brief_data: Record<string, unknown>$1
               motivations: [],
               copy_variations: [],
               selected_assets: [],
@@ -99,8 +99,8 @@ const createMockRequest = (method: string = 'GET', body: any = {}) => {
   return {
     method,
     body,
-    query: {},
-    headers: {},
+    query: Record<string, unknown>$1
+    headers: Record<string, unknown>$1
   } as NextApiRequest;
 };
 
@@ -113,8 +113,8 @@ const createMockContext = (userId: string = 'test-user-123', method: string = 'G
   },
   route: [],
   method,
-  body: {},
-  query: {},
+  body: Record<string, unknown>$1
+  query: Record<string, unknown>$1
   requestId: 'test-request-123',
   startTime: Date.now(),
 });

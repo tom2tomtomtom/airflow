@@ -36,7 +36,7 @@ export class TestDataFactory {
       id: 'test-workflow-123',
       user_id: 'test-user-123',
       current_step: 0,
-      brief_data: {},
+      brief_data: Record<string, unknown>$1
       motivations: [],
       copy_variations: [],
       selected_assets: [],

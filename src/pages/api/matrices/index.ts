@@ -242,7 +242,7 @@ async function getMatrixExecutionStats(matrixId: string): Promise<any> {
       .select('status, platform, content_type, created_at')
       .eq('matrix_id', matrixId);
 
-    if (!executions) return { total: 0, by_status: {}, by_platform: {} };
+    if (!executions) return { total: 0, by_status: Record<string, unknown>$1 by_platform: {} };
 
     const statusBreakdown = executions.reduce((acc, exec) => {
       acc[exec.status] = (acc[exec.status] || 0) + 1;
@@ -263,7 +263,7 @@ async function getMatrixExecutionStats(matrixId: string): Promise<any> {
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting execution stats:', error);
-    return { total: 0, by_status: {}, by_platform: {} };
+    return { total: 0, by_status: Record<string, unknown>$1 by_platform: {} };
   }
 }
 
@@ -377,7 +377,7 @@ async function generateMatrixContent(matrixData: any, template: any, userId: str
     return {
       variations: [],
       combinations: [],
-      field_assignments: {},
+      field_assignments: Record<string, unknown>$1
     };
   }
 }

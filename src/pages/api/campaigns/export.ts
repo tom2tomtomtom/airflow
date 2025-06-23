@@ -77,7 +77,7 @@ async function handleExport(req: NextApiRequest, res: NextApiResponse, user: any
 
 async function gatherCampaignData(campaignId: string, includeAssets: boolean, includeVideos: boolean): Promise<any> {
   const data: any = {
-    campaign: {},
+    campaign: Record<string, unknown>$1
     strategy: { motivations: [], copy_assets: [] },
     matrix: { combinations: [] },
     assets: [],

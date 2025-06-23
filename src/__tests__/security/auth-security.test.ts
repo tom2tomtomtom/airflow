@@ -148,7 +148,7 @@ describe('Authentication & Authorization Security Tests', () => {
       const mockHandler = jest.fn();
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        cookies: {},
+        cookies: Record<string, unknown>$1
       });
 
       const protectedHandler = withAuth(mockHandler);

@@ -163,7 +163,7 @@ describe('API Helper Services', () => {
       
       expect(isNetworkError({ code: 'NETWORK_ERROR' })).toBe(true);
       expect(isNetworkError({ message: 'Network Error' })).toBe(true);
-      expect(isNetworkError({ request: {}, response: undefined })).toBe(true);
+      expect(isNetworkError({ request: Record<string, unknown>$1 response: undefined })).toBe(true);
       expect(isNetworkError({ response: { status: 500 } })).toBe(false);
     });
   });

@@ -91,9 +91,9 @@ describe('/api/campaigns', () => {
       const data = JSON.parse(res._getData());
       expect(data.portfolio_stats).toEqual({
         total_campaigns: 0,
-        status_distribution: {},
-        priority_distribution: {},
-        type_distribution: {},
+        status_distribution: Record<string, unknown>$1
+        priority_distribution: Record<string, unknown>$1
+        type_distribution: Record<string, unknown>$1
         budget_summary: {
           total_budget: 0,
           total_spent: 0,

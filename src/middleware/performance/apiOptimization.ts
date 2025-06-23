@@ -4,7 +4,7 @@
  */
 
 import { NextApiRequest, NextApiResponse } from 'next';
-import { cacheManager, CACHE_CONFIGS } from '@/lib/cache/strategy';
+import { cacheManager } from '@/lib/cache/strategy';
 
 interface PerformanceMetrics {
   startTime: number;

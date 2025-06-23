@@ -101,7 +101,7 @@ const ClientsPage: React.FC = () => {
     logo: '',
     primaryColor: '#2196F3',
     secondaryColor: '#FF9800',
-    socialMedia: {},
+    socialMedia: Record<string, unknown>$1
     contacts: [],
     brand_guidelines: {
       voiceTone: '',
@@ -197,7 +197,7 @@ const ClientsPage: React.FC = () => {
         logo: '',
         primaryColor: '#2196F3',
         secondaryColor: '#FF9800',
-        socialMedia: {},
+        socialMedia: Record<string, unknown>$1
         contacts: [],
         brand_guidelines: {
           voiceTone: '',

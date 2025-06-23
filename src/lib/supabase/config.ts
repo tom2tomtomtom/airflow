@@ -1,4 +1,3 @@
-import { getErrorMessage } from '@/utils/errorUtils';
 import { loggers } from '@/lib/logger';
 
 // Supabase configuration types

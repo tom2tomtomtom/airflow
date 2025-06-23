@@ -269,7 +269,7 @@ describe('API v2 Universal Router', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         url: '/api/v2/',
-        query: {},
+        query: Record<string, unknown>$1
         headers: {
           'x-user-id': 'user123',
           'x-user-email': 'test@example.com',

@@ -356,7 +356,7 @@ export class WorkflowMetricsCollector {
         averageDuration: 0,
         errorRate: 0,
         abandonmentRate: 0,
-        commonErrors: {},
+        commonErrors: Record<string, unknown>$1
       };
     }
 

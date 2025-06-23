@@ -319,7 +319,7 @@ export function cached<T extends (...args: any[]) => Promise<any>>(
       const key = keyGenerator(...args);
       
       // Try to get from cache
-      let cachedData = await cacheManager.get(namespace, key);
+      const cachedData = await cacheManager.get(namespace, key);
       
       if (cachedData && !cacheManager.isStale(namespace, key)) {
         return cachedData;
@@ -371,7 +371,7 @@ export function useCachedData<T>(
         setError(null);
 
         // Try cache first
-        let cachedData = await cacheManager.get<T>(namespace, key);
+        const cachedData = await cacheManager.get<T>(namespace, key);
         
         if (cachedData && !cacheManager.isStale(namespace, key)) {
           if (mounted) {

@@ -363,7 +363,7 @@ export class MetricsCollector {
     // This would come from error logging
     return {
       total: 0,
-      byType: {},
+      byType: Record<string, unknown>$1
       byRoute: {}
     };
   }

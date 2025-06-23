@@ -382,9 +382,9 @@ function getEmptyStatistics() {
     unread: 0,
     read: 0,
     recent_24h: 0,
-    by_type: {},
-    by_category: {},
-    by_priority: {},
+    by_type: Record<string, unknown>$1
+    by_category: Record<string, unknown>$1
+    by_priority: Record<string, unknown>$1
   };
 }
 

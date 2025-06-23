@@ -1,4 +1,3 @@
-import { getErrorMessage } from '@/utils/errorUtils';
 // Secure environment variable validation
 import { loggers } from './logger';
 import { AppError, ErrorCode } from '@/types/errors';

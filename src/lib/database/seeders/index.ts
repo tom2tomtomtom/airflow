@@ -344,7 +344,7 @@ export class DatabaseSeeder {
         budget: 25000,
         start_date: '2024-01-15',
         end_date: '2024-02-15',
-        metrics: {},
+        metrics: Record<string, unknown>$1
         created_by: '22222222-2222-2222-2222-222222222222'
       }
     ];

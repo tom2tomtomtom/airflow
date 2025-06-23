@@ -130,7 +130,7 @@ export const useClients = () => {
       const response = await fetch('/api/clients', {
         headers: {
           'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+          ...(token ? { 'Authorization': `Bearer ${token}` } : Record<string, unknown>$1,
         },
         credentials: 'include', // Include cookies for authentication
       });
