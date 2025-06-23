@@ -33,10 +33,20 @@ const DEFAULT_OPTIONS: Required<CsrfOptions> = {
   skipPaths: ['/api/auth/callback', '/api/webhooks'],
   generateToken: () => crypto.randomBytes(32).toString('hex'),
   validateToken: (token: string, cookieToken: string) => {
-    return crypto.timingSafeEqual(
-      Buffer.from(token, 'hex'),
-      Buffer.from(cookieToken, 'hex')
-    );
+    try {
+      const tokenBuffer = Buffer.from(token, 'hex');
+      const cookieBuffer = Buffer.from(cookieToken, 'hex');
+
+      // Ensure buffers are the same length for timing-safe comparison
+      if (tokenBuffer.length !== cookieBuffer.length) {
+        return false;
+      }
+
+      return crypto.timingSafeEqual(tokenBuffer, cookieBuffer);
+    } catch (error) {
+      // If there's any error with hex decoding or comparison, tokens are invalid
+      return false;
+    }
   },
 };
 
@@ -61,10 +71,7 @@ function validateCsrfToken(token: string, cookieToken: string): boolean {
       return false;
     }
 
-    return crypto.timingSafeEqual(
-      Buffer.from(token, 'hex'),
-      Buffer.from(cookieToken, 'hex')
-    );
+    return crypto.timingSafeEqual(Buffer.from(token, 'hex'), Buffer.from(cookieToken, 'hex'));
   } catch (error) {
     console.error('CSRF token validation error:', error);
     return false;
@@ -77,6 +84,14 @@ function validateCsrfToken(token: string, cookieToken: string): boolean {
 function extractTokenFromRequest(req: NextApiRequest, headerName: string): string | null {
   // Try header first
   const headerToken = req.headers[headerName] as string;
+
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('ExtractToken Debug:', {
+      headerName,
+      headerToken,
+      allHeaders: req.headers,
+    });
+  }
   if (headerToken) {
     return headerToken;
   }
@@ -106,15 +121,13 @@ function parseCookies(cookieHeader: string | undefined): Record<string, string> 
     return {};
   }
 
-  return cookieHeader
-    .split(';')
-    .reduce((cookies: Record<string, string>, cookie) => {
-      const [name, value] = cookie.trim().split('=');
-      if (name && value) {
-        cookies[name] = decodeURIComponent(value);
-      }
-      return cookies;
-    }, {});
+  return cookieHeader.split(';').reduce((cookies: Record<string, string>, cookie) => {
+    const [name, value] = cookie.trim().split('=');
+    if (name && value) {
+      cookies[name] = decodeURIComponent(value);
+    }
+    return cookies;
+  }, {});
 }
 
 /**
@@ -132,11 +145,7 @@ function shouldSkipPath(path: string, skipPaths: (string | RegExp)[]): boolean {
 /**
  * Set CSRF cookie with secure options
  */
-function setCsrfCookie(
-  res: NextApiResponse,
-  token: string,
-  options: Required<CsrfOptions>
-): void {
+function setCsrfCookie(res: NextApiResponse, token: string, options: Required<CsrfOptions>): void {
   const cookieOptions = [
     `${options.cookieName}=${token}`,
     `Max-Age=${options.maxAge}`,
@@ -169,11 +178,8 @@ export function withCsrfProtection(
       const method = req.method?.toUpperCase();
       const path = req.url || '';
 
-      // Skip CSRF protection for safe methods and specified paths
-      if (
-        config.ignoreMethods.includes(method || '') ||
-        shouldSkipPath(path, config.skipPaths)
-      ) {
+      // Skip CSRF protection entirely for specified paths
+      if (shouldSkipPath(path, config.skipPaths)) {
         return handler(req, res);
       }
 
@@ -181,55 +187,64 @@ export function withCsrfProtection(
       const cookies = parseCookies(req.headers.cookie);
       const existingToken = cookies[config.cookieName];
 
-      // Generate new token if none exists
+      // Generate new token if none exists and set cookie
       let csrfToken = existingToken;
       if (!csrfToken) {
         csrfToken = config.generateToken();
         setCsrfCookie(res, csrfToken, config);
-        
-        // For first request without token, allow it but set the cookie
-        if (method === 'GET') {
-          return handler(req, res);
-        }
+      }
+
+      // Skip token validation for safe methods
+      if (config.ignoreMethods.includes(method || '')) {
+        // Add CSRF token to response headers for client access
+        res.setHeader('X-CSRF-Token', csrfToken);
+        (req as any).csrfToken = csrfToken;
+        return handler(req, res);
       }
 
       // For state-changing methods, validate the token
-      if (!config.ignoreMethods.includes(method || '')) {
-        const submittedToken = extractTokenFromRequest(req, config.headerName);
+      const submittedToken = extractTokenFromRequest(req, config.headerName);
 
-        if (!submittedToken) {
-          console.warn(`CSRF protection: Missing token for ${method} ${path}`, {
-            userAgent: req.headers['user-agent'],
-            ip: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
-            referer: req.headers.referer,
-          });
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('CSRF Debug:', {
+          method,
+          submittedToken: submittedToken ? submittedToken.slice(0, 8) + '...' : 'null',
+          expectedToken: csrfToken.slice(0, 8) + '...',
+          headers: Object.keys(req.headers || {}),
+          headerName: config.headerName,
+        });
+      }
 
-          return res.status(403).json({
-            success: false,
-            error: {
-              code: 'CSRF_TOKEN_MISSING',
-              message: 'CSRF token is required for this request',
-            },
-          });
-        }
+      if (!submittedToken) {
+        console.warn(`CSRF protection: Missing token for ${method} ${path}`, {
+          userAgent: req.headers?.['user-agent'] || 'unknown',
+          ip:
+            req.headers?.['x-forwarded-for'] || (req as any).connection?.remoteAddress || 'unknown',
+          referer: req.headers?.referer || 'unknown',
+        });
 
-        if (!config.validateToken(submittedToken, csrfToken)) {
-          console.warn(`CSRF protection: Invalid token for ${method} ${path}`, {
-            submittedToken: submittedToken.slice(0, 8) + '...',
-            expectedToken: csrfToken.slice(0, 8) + '...',
-            userAgent: req.headers['user-agent'],
-            ip: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
-            referer: req.headers.referer,
-          });
+        return res.status(403).json({
+          success: false,
+          error: 'CSRF token missing',
+          code: 'FORBIDDEN',
+        });
+      }
 
-          return res.status(403).json({
-            success: false,
-            error: {
-              code: 'CSRF_TOKEN_INVALID',
-              message: 'Invalid CSRF token',
-            },
-          });
-        }
+      if (!config.validateToken(submittedToken, csrfToken)) {
+        console.warn(`CSRF protection: Invalid token for ${method} ${path}`, {
+          submittedToken: submittedToken.slice(0, 8) + '...',
+          expectedToken: csrfToken.slice(0, 8) + '...',
+          userAgent: req.headers?.['user-agent'] || 'unknown',
+          ip:
+            req.headers?.['x-forwarded-for'] || (req as any).connection?.remoteAddress || 'unknown',
+          referer: req.headers?.referer || 'unknown',
+        });
+
+        return res.status(403).json({
+          success: false,
+          error: 'Invalid CSRF token',
+          code: 'FORBIDDEN',
+        });
       }
 
       // Add CSRF token to response headers for client access
@@ -242,10 +257,9 @@ export function withCsrfProtection(
       if (process.env.NODE_ENV === 'development') {
         console.log(`[CSRF] Token validated for ${method} ${path}`);
       }
-
     } catch (error) {
       console.error('CSRF middleware error:', error);
-      
+
       return res.status(500).json({
         success: false,
         error: {
@@ -269,9 +283,9 @@ export async function generateCsrfTokenAPI(
 ): Promise<void> {
   const options = { ...DEFAULT_OPTIONS };
   const token = options.generateToken();
-  
+
   setCsrfCookie(res, token, options);
-  
+
   res.status(200).json({
     success: true,
     data: { token },
@@ -287,15 +301,13 @@ export function getCsrfTokenFromCookie(cookieName: string = '_csrf'): string | n
     return null; // Server-side
   }
 
-  const cookies = document.cookie
-    .split(';')
-    .reduce((acc: Record<string, string>, cookie) => {
-      const [name, value] = cookie.trim().split('=');
-      if (name && value) {
-        acc[name] = decodeURIComponent(value);
-      }
-      return acc;
-    }, {});
+  const cookies = document.cookie.split(';').reduce((acc: Record<string, string>, cookie) => {
+    const [name, value] = cookie.trim().split('=');
+    if (name && value) {
+      acc[name] = decodeURIComponent(value);
+    }
+    return acc;
+  }, {});
 
   return cookies[cookieName] || null;
 }
@@ -311,7 +323,7 @@ export const CsrfConfigs = {
     maxAge: 3600, // 1 hour
     skipPaths: [], // No paths skipped in strict mode
   },
-  
+
   moderate: {
     sameSite: 'lax' as const,
     secure: process.env.NODE_ENV === 'production',
@@ -319,7 +331,7 @@ export const CsrfConfigs = {
     maxAge: 86400, // 24 hours
     skipPaths: ['/api/auth/callback', '/api/webhooks'],
   },
-  
+
   relaxed: {
     sameSite: 'lax' as const,
     secure: false,
@@ -335,11 +347,11 @@ export const CsrfConfigs = {
 export function getCsrfConfig(): CsrfOptions {
   const securityLevel = process.env.CSRF_SECURITY_LEVEL || 'moderate';
   const env = process.env.NODE_ENV || 'development';
-  
+
   if (env === 'production') {
     return CsrfConfigs[securityLevel as keyof typeof CsrfConfigs] || CsrfConfigs.moderate;
   }
-  
+
   return CsrfConfigs.relaxed;
 }
 

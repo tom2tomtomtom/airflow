@@ -273,19 +273,37 @@ describe('Security Headers & CSRF Protection Tests', () => {
         res.status(200).json({ success: true });
       });
 
-      const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-        method: 'POST',
-        headers: {
-          'x-csrf-token': 'valid-csrf-token',
-          'origin': 'https://airwave.com',
-        },
+      // First, simulate a GET request to establish the CSRF token
+      const { req: getReq, res: getRes } = createMocks<NextApiRequest, NextApiResponse>({
+        method: 'GET',
+        headers: {},
       });
 
       const protectedHandler = withCsrfProtection(mockHandler);
+      await protectedHandler(getReq, getRes);
+
+      // Extract the CSRF token from the Set-Cookie header
+      const setCookieHeader = getRes._getHeaders()['set-cookie'];
+      if (!setCookieHeader || !setCookieHeader[0]) {
+        throw new Error('CSRF cookie not set');
+      }
+      const cookieValue = setCookieHeader[0].split(';')[0].split('=')[1];
+      const csrfToken = cookieValue;
+
+      // Now make the POST request with the token in both cookie and header
+      const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
+        method: 'POST',
+        headers: {
+          'x-csrf-token': csrfToken,
+          'origin': 'https://airwave.com',
+          'cookie': `_csrf=${csrfToken}`,
+        },
+      });
+
       await protectedHandler(req, res);
 
       expect(res._getStatusCode()).toBe(200);
-      expect(mockHandler).toHaveBeenCalled();
+      expect(mockHandler).toHaveBeenCalledTimes(2); // Once for GET, once for POST
     });
 
     it('should validate origin header for CSRF protection', async () => {
@@ -312,19 +330,37 @@ describe('Security Headers & CSRF Protection Tests', () => {
         res.status(200).json({ success: true });
       });
 
-      const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
-        method: 'POST',
-        headers: {
-          'x-csrf-token': 'valid-csrf-token',
-          'referer': 'https://airwave.com/dashboard',
-        },
+      // First, simulate a GET request to establish the CSRF token
+      const { req: getReq, res: getRes } = createMocks<NextApiRequest, NextApiResponse>({
+        method: 'GET',
+        headers: {},
       });
 
       const protectedHandler = withCsrfProtection(mockHandler);
+      await protectedHandler(getReq, getRes);
+
+      // Extract the CSRF token from the Set-Cookie header
+      const setCookieHeader = getRes._getHeaders()['set-cookie'];
+      if (!setCookieHeader || !setCookieHeader[0]) {
+        throw new Error('CSRF cookie not set');
+      }
+      const cookieValue = setCookieHeader[0].split(';')[0].split('=')[1];
+      const csrfToken = cookieValue;
+
+      // Now make the POST request with the token and referer header
+      const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
+        method: 'POST',
+        headers: {
+          'x-csrf-token': csrfToken,
+          'referer': 'https://airwave.com/dashboard',
+          'cookie': `_csrf=${csrfToken}`,
+        },
+      });
+
       await protectedHandler(req, res);
 
       expect(res._getStatusCode()).toBe(200);
-      expect(mockHandler).toHaveBeenCalled();
+      expect(mockHandler).toHaveBeenCalledTimes(2); // Once for GET, once for POST
     });
   });
 
