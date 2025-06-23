@@ -41,10 +41,13 @@ export function validateCSRFToken(req: NextApiRequest): boolean {
 // Set CSRF token in response
 export function setCSRFToken(res: NextApiResponse, token: string): void {
   // Set as HTTP-only cookie
-  res.setHeader('Set-Cookie', [
-    `${CSRF_COOKIE_NAME}=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=3600`,
-    ...(process.env.NODE_ENV === 'production' ? ['Secure'] : [])
-  ].join('; '));
+  res.setHeader(
+    'Set-Cookie',
+    [
+      `${CSRF_COOKIE_NAME}=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=3600`,
+      ...(process.env.NODE_ENV === 'production' ? ['Secure'] : []),
+    ].join('; ')
+  );
 
   // Also send in response header for client-side access
   res.setHeader('X-CSRF-Token', token);
@@ -66,8 +69,10 @@ export function withCSRFProtection(
     if (!validateCSRFToken(req)) {
       return res.status(403).json({
         success: false,
-        error: 'CSRF token validation failed',
-        code: 'CSRF_INVALID'
+        error: {
+          code: 'FORBIDDEN',
+          message: 'CSRF token missing',
+        },
       });
     }
 
@@ -87,6 +92,6 @@ export async function handleCSRFToken(req: NextApiRequest, res: NextApiResponse)
   return res.status(200).json({
     success: true,
     token,
-    message: 'CSRF token generated'
+    message: 'CSRF token generated',
   });
 }
