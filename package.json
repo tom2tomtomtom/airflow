@@ -90,6 +90,15 @@
     "fix:lint": "node scripts/fix-lint-issues.js",
     "analyze:bundle": "node scripts/analyze-bundle.js",
     "audit:security": "node scripts/security-audit.js",
+    "load:test": "node scripts/run-load-tests.js",
+    "load:test:database": "node scripts/run-load-tests.js database-optimization",
+    "load:test:api": "node scripts/run-load-tests.js api-performance",
+    "load:test:endurance": "node scripts/run-load-tests.js endurance",
+    "load:test:all": "node scripts/run-load-tests.js --verbose",
+    "load:test:dry-run": "node scripts/run-load-tests.js --dry-run",
+    "perf:baseline": "node scripts/create-performance-baseline.js",
+    "db:optimize": "node scripts/optimize-database.js",
+    "db:optimize:verify": "node scripts/optimize-database.js --verify",
     "prepare": "husky"
   },
   "lint-staged": {
