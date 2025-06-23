@@ -28,7 +28,7 @@ interface PerformanceMetrics {
     conversion_rate: number;
     roas: number;
   }>;
-  aggregatedMetrics: {},
+  aggregatedMetrics: Record<string, unknown>$1
   total_impressions: number;
     total_clicks: number;
     total_conversions: number;
@@ -38,20 +38,20 @@ interface PerformanceMetrics {
     average_conversion_rate: number;
     average_roas: number;
   };
-  comparisons: {},
-  previous_period: {},
+  comparisons: Record<string, unknown>$1
+  previous_period: Record<string, unknown>$1
   impressions_change: number;
       clicks_change: number;
       conversions_change: number;
       spend_change: number;
     };
-    benchmarks: {},
+    benchmarks: Record<string, unknown>$1
   industry_avg_ctr: number;
       industry_avg_conversion_rate: number;
       performance_score: number;
     };
   };
-  topPerformers: {},
+  topPerformers: Record<string, unknown>$1
   campaigns: Array<{
       id: string;
       name: string;
@@ -323,12 +323,12 @@ function calculateComparisons(current: any, previous: any): any {
   };
 
   return {
-    previous_period: {},
+    previous_period: Record<string, unknown>$1
   impressions_change: calculateChange(current.total_impressions, previous.total_impressions),
       clicks_change: calculateChange(current.total_clicks, previous.total_clicks),
       conversions_change: calculateChange(current.total_conversions, previous.total_conversions),
       spend_change: calculateChange(current.total_spend, previous.total_spend)},
-    benchmarks: {},
+    benchmarks: Record<string, unknown>$1
   industry_avg_ctr: 2.5, // Industry benchmark
       industry_avg_conversion_rate: 3.8, // Industry benchmark
       performance_score: calculatePerformanceScore(current)}};

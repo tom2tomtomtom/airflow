@@ -41,7 +41,7 @@ class APIPerformanceMonitor {
   static startTracking(endpoint: string): PerformanceMetrics {
     const metrics: PerformanceMetrics = {,
     startTime: Date.now(),
-      memoryUsage: {},
+      memoryUsage: Record<string, unknown>$1
   before: process.memoryUsage() };
 
     // Store metrics for analysis
@@ -392,7 +392,7 @@ export class BatchProcessor<T, R> {
 export function getAPIPerformanceStats() {
   return {
     monitor: APIPerformanceMonitor.getMetrics(),
-    queryOptimizer: {},
+    queryOptimizer: Record<string, unknown>$1
   cacheSize: QueryOptimizer['queryCache'].size,
       totalQueries: Array.from(QueryOptimizer['queryCount'].values()).reduce((a, b) => a + b, 0)},
     cache: cacheManager.getStats()};

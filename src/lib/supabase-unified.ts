@@ -24,19 +24,19 @@ export const getSupabaseClient = () => {
       supabaseUrl,
       supabaseAnonKey,
       {
-        auth: {},
+        auth: Record<string, unknown>$1
   autoRefreshToken: true,
           persistSession: true,
           detectSessionInUrl: true,
           storageKey: 'airwave-auth-token', // Use specific storage key to avoid conflicts
         },
-        global: {},
+        global: Record<string, unknown>$1
   headers: {
         'x-application-name': 'airwave'
           
       }
         },
-        cookies: {},
+        cookies: Record<string, unknown>$1
   get(name: string) {
             return getCookie(name);
           },

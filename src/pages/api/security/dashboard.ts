@@ -33,13 +33,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       limit: 50});
 
     const dashboard = {
-      overview: {},
+      overview: Record<string, unknown>$1
   timeRange: `${timeRangeHours} hours`,
         totalEvents: metrics.totalEvents,
         activeAlerts: metrics.activeAlerts,
         threatLevel: calculateThreatLevel(metrics),
         lastUpdate: new Date().toISOString() },
-  metrics: {},
+  metrics: Record<string, unknown>$1
   eventsByType: metrics.eventsByType,
         eventsBySeverity: metrics.eventsBySeverity,
         topIPs: metrics.topIPs },

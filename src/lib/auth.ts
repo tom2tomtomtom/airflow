@@ -82,7 +82,7 @@ export async function signUp(
       localStorage.setItem('airwave_user', JSON.stringify(user));
     }
 
-    const result: {},
+    const result: Record<string, unknown>$1
   user: User;
       token?: string;
       emailConfirmationRequired?: boolean;

@@ -51,12 +51,12 @@ export default async function handler(
 
     return res.status(200).json({
       success: true,
-      session: {},
+      session: Record<string, unknown>$1
   access_token: newSession.access_token,
         refresh_token: newSession.refresh_token,
         expires_at: newSession.expires_at,
         expires_in: newSession.expires_in,
-        user: {},
+        user: Record<string, unknown>$1
   id: newSession.user.id,
           email: newSession.user.email,
           role: newSession.user.user_metadata?.role || 'authenticated'

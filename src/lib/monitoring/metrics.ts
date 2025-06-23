@@ -8,7 +8,7 @@ const logger = getLogger('metrics');
 
 export interface SystemMetrics {
   timestamp: number;,
-  cpu: {},
+  cpu: Record<string, unknown>$1
   usage: number;,
     load: [number, number, number]; // 1min, 5min, 15min
   };
@@ -32,7 +32,7 @@ export interface SystemMetrics {
 
 export interface ApplicationMetrics {
   timestamp: number;,
-  requests: {},
+  requests: Record<string, unknown>$1
   total: number;,
     successful: number;
     failed: number;,
@@ -67,7 +67,7 @@ export interface ApplicationMetrics {
 
 export interface BusinessMetrics {
   timestamp: number;,
-  clients: {},
+  clients: Record<string, unknown>$1
   total: number;,
     active: number;
     newSignups: number;
@@ -83,7 +83,7 @@ export interface BusinessMetrics {
     created: number;,
     completed: number;
   };
-  revenue: {},
+  revenue: Record<string, unknown>$1
   mrr?: number;
     arr?: number;
     churn?: number;
@@ -360,7 +360,7 @@ export class MetricsCollector {
     // This would come from error logging
     return {
       total: 0,
-      byType: {},
+      byType: Record<string, unknown>$1
   byRoute: {}
     };
   }

@@ -136,7 +136,7 @@ Generate 8 diverse motivational concepts that would drive this audience to take 
           target_emotions: motivation.target_emotions || [],
           use_cases: motivation.use_cases || [],
           is_ai_generated: true,
-          generation_context: {},
+          generation_context: Record<string, unknown>$1
   model: 'gpt-4o',
             temperature: 0.7,
             target_audience,

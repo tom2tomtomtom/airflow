@@ -315,7 +315,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           </Typography>
         </Box>
       ),
-      action: {},
+      action: Record<string, unknown>$1
   label: 'Get Started',
         onClick: onComplete
       }

@@ -9,7 +9,7 @@ jest.mock('@supabase/ssr', () => ({
 
 // Mock next/server
 jest.mock('next/server', () => ({
-  NextResponse: {},
+  NextResponse: Record<string, unknown>$1
   next: jest.fn()
   }
 }));
@@ -33,7 +33,7 @@ describe('supabase-middleware utilities', () => {
     // Mock NextResponse
     const { NextResponse } = require('next/server');
     mockNextResponse = {
-      cookies: {},
+      cookies: Record<string, unknown>$1
   set: jest.fn()
       }
     };
@@ -52,7 +52,7 @@ describe('supabase-middleware utilities', () => {
   describe('updateSession', () => {
     it('should create server client with correct parameters', async () => {
       const mockSupabaseClient = {
-        auth: {},
+        auth: Record<string, unknown>$1
   getUser: jest.fn().mockResolvedValue({
             data: { user: { id: 'user-123', email: 'test@example.com' } },
             error: null
@@ -63,7 +63,7 @@ describe('supabase-middleware utilities', () => {
 
       const mockRequest = {
         headers: new Headers(),
-        cookies: {},
+        cookies: Record<string, unknown>$1
   get: jest.fn(),
           set: jest.fn()
         }
@@ -87,7 +87,7 @@ describe('supabase-middleware utilities', () => {
     it('should return response and user data', async () => {
       const mockUser = { id: 'user-123', email: 'test@example.com' };
       const mockSupabaseClient = {
-        auth: {},
+        auth: Record<string, unknown>$1
   getUser: jest.fn().mockResolvedValue({
             data: { user: mockUser  },
   error: null
@@ -98,7 +98,7 @@ describe('supabase-middleware utilities', () => {
 
       const mockRequest = {
         headers: new Headers(),
-        cookies: {},
+        cookies: Record<string, unknown>$1
   get: jest.fn(),
           set: jest.fn()
         }
@@ -115,7 +115,7 @@ describe('supabase-middleware utilities', () => {
     it('should handle authentication errors', async () => {
       const mockError = new Error('Authentication failed');
       const mockSupabaseClient = {
-        auth: {},
+        auth: Record<string, unknown>$1
   getUser: jest.fn().mockResolvedValue({
             data: { user: null  },
   error: mockError
@@ -126,7 +126,7 @@ describe('supabase-middleware utilities', () => {
 
       const mockRequest = {
         headers: new Headers(),
-        cookies: {},
+        cookies: Record<string, unknown>$1
   get: jest.fn(),
           set: jest.fn()
         }
@@ -146,7 +146,7 @@ describe('supabase-middleware utilities', () => {
 
       beforeEach(() => {
         const mockSupabaseClient = {
-          auth: {},
+          auth: Record<string, unknown>$1
   getUser: jest.fn().mockResolvedValue({
               data: { user: null  },
   error: null
@@ -161,7 +161,7 @@ describe('supabase-middleware utilities', () => {
 
         mockRequest = {
           headers: new Headers(),
-          cookies: {},
+          cookies: Record<string, unknown>$1
   get: jest.fn(),
             set: jest.fn()
           }
@@ -243,7 +243,7 @@ describe('supabase-middleware utilities', () => {
 
           // Should call NextResponse.next to create new response
           expect(NextResponse.next).toHaveBeenCalledWith({
-            request: {},
+            request: Record<string, unknown>$1
   headers: mockRequest.headers
             }
           });
@@ -299,7 +299,7 @@ describe('supabase-middleware utilities', () => {
 
           // Should call NextResponse.next to create new response
           expect(NextResponse.next).toHaveBeenCalledWith({
-            request: {},
+            request: Record<string, unknown>$1
   headers: mockRequest.headers
             }
           });
@@ -310,7 +310,7 @@ describe('supabase-middleware utilities', () => {
     describe('authentication flow', () => {
       it('should call getUser to refresh session', async () => {
         const mockSupabaseClient = {
-          auth: {},
+          auth: Record<string, unknown>$1
   getUser: jest.fn().mockResolvedValue({
               data: { user: { id: 'user-123' } },
               error: null
@@ -321,7 +321,7 @@ describe('supabase-middleware utilities', () => {
 
         const mockRequest = {
           headers: new Headers(),
-          cookies: {},
+          cookies: Record<string, unknown>$1
   get: jest.fn(),
             set: jest.fn()
           }
@@ -334,7 +334,7 @@ describe('supabase-middleware utilities', () => {
 
       it('should handle getUser promise rejection', async () => {
         const mockSupabaseClient = {
-          auth: {},
+          auth: Record<string, unknown>$1
   getUser: jest.fn().mockRejectedValue(new Error('Network error'))
           }
         };
@@ -342,7 +342,7 @@ describe('supabase-middleware utilities', () => {
 
         const mockRequest = {
           headers: new Headers(),
-          cookies: {},
+          cookies: Record<string, unknown>$1
   get: jest.fn(),
             set: jest.fn()
           }
@@ -361,7 +361,7 @@ describe('supabase-middleware utilities', () => {
         };
 
         const mockSupabaseClient = {
-          auth: {},
+          auth: Record<string, unknown>$1
   getUser: jest.fn().mockResolvedValue({
               data: { user: mockUser  },
   error: null
@@ -374,7 +374,7 @@ describe('supabase-middleware utilities', () => {
           headers: new Headers({
             'authorization': 'Bearer valid-token'
           }),
-          cookies: {},
+          cookies: Record<string, unknown>$1
   get: jest.fn().mockReturnValue({ value: 'session-cookie' }),
             set: jest.fn()
           }
@@ -388,7 +388,7 @@ describe('supabase-middleware utilities', () => {
 
       it('should work with expired session', async () => {
         const mockSupabaseClient = {
-          auth: {},
+          auth: Record<string, unknown>$1
   getUser: jest.fn().mockResolvedValue({
               data: { user: null  },
   error: { message: 'JWT expired' }
@@ -399,7 +399,7 @@ describe('supabase-middleware utilities', () => {
 
         const mockRequest = {
           headers: new Headers(),
-          cookies: {},
+          cookies: Record<string, unknown>$1
   get: jest.fn().mockReturnValue({ value: 'expired-session' }),
             set: jest.fn()
           }
@@ -418,7 +418,7 @@ describe('supabase-middleware utilities', () => {
         delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
         const mockSupabaseClient = {
-          auth: {},
+          auth: Record<string, unknown>$1
   getUser: jest.fn().mockResolvedValue({
               data: { user: null  },
   error: null
@@ -429,7 +429,7 @@ describe('supabase-middleware utilities', () => {
 
         const mockRequest = {
           headers: new Headers(),
-          cookies: {},
+          cookies: Record<string, unknown>$1
   get: jest.fn(),
             set: jest.fn()
           }
@@ -447,7 +447,7 @@ describe('supabase-middleware utilities', () => {
 
       it('should handle request with no cookies', async () => {
         const mockSupabaseClient = {
-          auth: {},
+          auth: Record<string, unknown>$1
   getUser: jest.fn().mockResolvedValue({
               data: { user: null  },
   error: null
@@ -458,7 +458,7 @@ describe('supabase-middleware utilities', () => {
 
         const mockRequest = {
           headers: new Headers(),
-          cookies: {},
+          cookies: Record<string, unknown>$1
   get: jest.fn().mockReturnValue(undefined),
             set: jest.fn()
           }
@@ -477,7 +477,7 @@ describe('supabase-middleware utilities', () => {
         NextResponse.next = jest.fn().mockReturnValue(responseWithoutCookies);
 
         const mockSupabaseClient = {
-          auth: {},
+          auth: Record<string, unknown>$1
   getUser: jest.fn().mockResolvedValue({
               data: { user: null  },
   error: null
@@ -494,7 +494,7 @@ describe('supabase-middleware utilities', () => {
 
         const mockRequest = {
           headers: new Headers(),
-          cookies: {},
+          cookies: Record<string, unknown>$1
   get: jest.fn(),
             set: jest.fn()
           }
@@ -510,7 +510,7 @@ describe('supabase-middleware utilities', () => {
       it('should work in complete middleware flow', async () => {
         const mockUser = { id: 'user-123', email: 'test@example.com' };
         const mockSupabaseClient = {
-          auth: {},
+          auth: Record<string, unknown>$1
   getUser: jest.fn().mockResolvedValue({
               data: { user: mockUser  },
   error: null
@@ -537,7 +537,7 @@ describe('supabase-middleware utilities', () => {
           headers: new Headers({
             'cookie': 'sb-access-token=old-token'
           }),
-          cookies: {},
+          cookies: Record<string, unknown>$1
   get: jest.fn().mockReturnValue({ value: 'old-token' }),
             set: jest.fn()
           }
@@ -556,7 +556,7 @@ describe('supabase-middleware utilities', () => {
 
       it('should handle multiple cookie operations', async () => {
         const mockSupabaseClient = {
-          auth: {},
+          auth: Record<string, unknown>$1
   getUser: jest.fn().mockResolvedValue({
               data: { user: null  },
   error: null
@@ -574,7 +574,7 @@ describe('supabase-middleware utilities', () => {
 
         const mockRequest = {
           headers: new Headers(),
-          cookies: {},
+          cookies: Record<string, unknown>$1
   get: jest.fn(),
             set: jest.fn()
           }

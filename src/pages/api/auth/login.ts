@@ -169,12 +169,14 @@ async function handler(
 
     return res.status(200).json({
       success: true,
-      user: {},
-  id: userProfile.id,
+      user: {
+        id: userProfile.id,
         email: authData.user.email || email,
         name: userName || 'User',
         role: userProfile.role || 'user',
-        token: authData.session?.access_token || ''}});
+        token: authData.session?.access_token || ''
+      }
+    });
 
   } catch (error: any) {
     const message = getErrorMessage(error);

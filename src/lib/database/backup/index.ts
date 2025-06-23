@@ -285,7 +285,7 @@ export class DatabaseBackupManager {
   }
   
   // Schedule automated backups
-  async scheduleBackups(schedule: {},
+  async scheduleBackups(schedule: Record<string, unknown>$1
     full: { enabled: boolean; cron: string; retention: number };
     incremental: { enabled: boolean; cron: string; retention: number };
     destination: string;

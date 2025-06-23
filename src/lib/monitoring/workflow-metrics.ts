@@ -298,7 +298,7 @@ export class WorkflowMetricsCollector {
           for (const metricJson of dayMetrics) {
             try {
               const metric = JSON.parse(metricJson);
-              if (!userId || metric.userId === userId) {;
+              if (!userId || metric.userId === userId) {
                 allMetrics.push(metric);
               }
             } catch (error: any) {
@@ -314,7 +314,7 @@ export class WorkflowMetricsCollector {
     }
 
     // Include local metrics
-    const filteredLocalMetrics = this.localMetrics.filter((metric: any) => {;
+    const filteredLocalMetrics = this.localMetrics.filter((metric: any) => {
       const metricDate = new Date(metric.timestamp);
       const matchesDate = metricDate >= startDate && metricDate <= endDate;
       const matchesUser = !userId || metric.userId === userId;
@@ -359,7 +359,7 @@ export class WorkflowMetricsCollector {
     const stepCompletions: Record<string, number[]> = {};
     
     for (const metric of metrics) {
-      if (metric.action === 'step_completion' && stepMetrics[metric.workflowStep]) {;
+      if (metric.action === 'step_completion' && stepMetrics[metric.workflowStep]) {
         const step = stepMetrics[metric.workflowStep];
         step.totalAttempts++;
         
@@ -391,7 +391,7 @@ export class WorkflowMetricsCollector {
     }
 
     // Calculate user journey and drop-off rates
-    const userJourney = this.workflowSteps.map((step, index) => {;
+    const userJourney = this.workflowSteps.map((step, index) => {
       const stepAttempts = stepMetrics[step].totalAttempts;
       const previousStepAttempts = index > 0 ? stepMetrics[this.workflowSteps[index - 1]].totalAttempts : sessions.size;
       
@@ -448,7 +448,7 @@ export class WorkflowMetricsCollector {
     const latestStepBySession: Record<string, string> = {};
     
     for (const metric of recentMetrics) {
-      if (metric.action === 'step_start') {;
+      if (metric.action === 'step_start') {
         latestStepBySession[metric.sessionId] = metric.workflowStep;
       }
     }

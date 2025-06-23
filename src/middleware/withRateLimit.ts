@@ -211,10 +211,10 @@ export function withRateLimit(
           
           return res.status(429).json({
             success: false,
-            error: {},
+            error: Record<string, unknown>$1
   code: 'RATE_LIMIT_EXCEEDED',
               message: 'Too many requests. Please try again later.',
-              details: {},
+              details: Record<string, unknown>$1
   limit: maxRequests,
                 window: windowMs,
                 resetTime: limitInfo.resetTime.toISOString() });

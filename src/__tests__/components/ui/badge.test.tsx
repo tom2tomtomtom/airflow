@@ -1,7 +1,6 @@
 
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import badge from '@/components/badge';
 
 describe('badge', () => {
   it('renders correctly', () => {

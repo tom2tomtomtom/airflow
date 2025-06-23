@@ -140,7 +140,7 @@ async function handleCancel(req: NextApiRequest, res: NextApiResponse, user: any
 
   return res.json({
     message: 'Execution cancelled successfully',
-    data: {},
+    data: Record<string, unknown>$1
   execution: cancelledExecution,
       cleanup_results: cleanupResults,
       related_executions: relatedResults,

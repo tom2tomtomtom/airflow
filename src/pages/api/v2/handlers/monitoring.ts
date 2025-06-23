@@ -163,24 +163,24 @@ async function handleHealth(
     timestamp: new Date().toISOString(),
     version: '2.0.0',
     uptime: process.uptime(),
-    memory: {},
+    memory: Record<string, unknown>$1
   used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
       total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
       external: Math.round(process.memoryUsage().external / 1024 / 1024),
       rss: Math.round(process.memoryUsage().rss / 1024 / 1024) },
-  performance: {},
+  performance: Record<string, unknown>$1
   averageResponseTime: performanceTracker.getAverageResponseTime(),
       totalRequests: performanceTracker.getTotalRequests(),
       errorRate: performanceTracker.getErrorRate(),
       slowOperations: performanceTracker.getSlowOperations() },
-  ai: {},
+  ai: Record<string, unknown>$1
   budgetStatus: await costController.getBudgetStatus(),
       totalSpent: await costController.getTotalSpent(),
       activeOperations: costController.getActiveOperations() },
-  database: {},
+  database: Record<string, unknown>$1
   status: 'connected', // TODO: Add actual DB health check
       connectionPool: 'healthy' },
-  services: {},
+  services: Record<string, unknown>$1
   openai: process.env.NEXT_PUBLIC_OPENAI_API_KEY ? 'configured' : 'not_configured',
       anthropic: process.env.ANTHROPIC_API_KEY ? 'configured' : 'not_configured',
       elevenlabs: process.env.ELEVENLABS_API_KEY ? 'configured' : 'not_configured',
@@ -224,7 +224,7 @@ async function handleMetrics(
   const metricsData = {
     timeRange,
     timestamp: new Date().toISOString(),
-    overall: {},
+    overall: Record<string, unknown>$1
   totalRequests: performanceTracker.getTotalRequests(),
       averageResponseTime: performanceTracker.getAverageResponseTime(),
       errorRate: performanceTracker.getErrorRate(),
@@ -234,7 +234,7 @@ async function handleMetrics(
       : performanceTracker.getAllOperationMetrics(),
     slowOperations: performanceTracker.getSlowOperations(),
     errors: performanceTracker.getRecentErrors(50),
-    trends: {},
+    trends: Record<string, unknown>$1
   responseTime: performanceTracker.getResponseTimeTrend(),
       errorRate: performanceTracker.getErrorRateTrend(),
       throughput: performanceTracker.getThroughputTrend()
@@ -245,7 +245,7 @@ async function handleMetrics(
   if (realtime === 'true') {
     const realtimeData = {
       ...metricsData,
-      realtime: {},
+      realtime: Record<string, unknown>$1
   currentRequests: 5,
         activeConnections: 12,
         queueLength: 0,
@@ -507,7 +507,7 @@ async function handlePerformance(
   const performanceTracker = PerformanceTracker.getInstance();
 
   const analysis = {
-    summary: {},
+    summary: Record<string, unknown>$1
   totalOperations: performanceTracker.getTotalRequests(),
       averageResponseTime: performanceTracker.getAverageResponseTime(),
       p95ResponseTime: performanceTracker.getPercentileResponseTime(95),
@@ -515,7 +515,7 @@ async function handlePerformance(
       errorRate: performanceTracker.getErrorRate() },
   bottlenecks: performanceTracker.getBottlenecks(),
     recommendations: performanceTracker.getPerformanceRecommendations(),
-    trends: {},
+    trends: Record<string, unknown>$1
   hourly: performanceTracker.getHourlyTrends(),
       daily: performanceTracker.getDailyTrends()
     }
@@ -541,42 +541,42 @@ async function handleSystem(
   const cpuUsage = process.cpuUsage();
 
   const system = {
-    cpu: {},
-  usage: {},
+    cpu: Record<string, unknown>$1
+  usage: Record<string, unknown>$1
   user: cpuUsage.user,
         system: cpuUsage.system },
   loadAverage: [0.5, 0.3, 0.2], // Mock load average
       cores: 8 // Mock CPU cores },
-  memory: {},
+  memory: Record<string, unknown>$1
   total: memoryUsage.heapTotal,
       used: memoryUsage.heapUsed,
       free: memoryUsage.heapTotal - memoryUsage.heapUsed,
       external: memoryUsage.external,
       rss: memoryUsage.rss,
       arrayBuffers: memoryUsage.arrayBuffers },
-  disk: {},
+  disk: Record<string, unknown>$1
   total: 500 * 1024 * 1024 * 1024, // 500GB mock
       used: 250 * 1024 * 1024 * 1024,  // 250GB mock
       free: 250 * 1024 * 1024 * 1024,  // 250GB mock
       usage: 50 // 50% usage },
-  network: {},
+  network: Record<string, unknown>$1
   bytesReceived: 1024 * 1024 * 100, // 100MB mock
       bytesSent: 1024 * 1024 * 50,      // 50MB mock
       packetsReceived: 10000,
       packetsSent: 8000 },
-  node: {},
+  node: Record<string, unknown>$1
   version: process.version,
       platform: process.platform,
       arch: process.arch,
       uptime: process.uptime() },
-  environment: {},
+  environment: Record<string, unknown>$1
   nodeEnv: process.env.NODE_ENV,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       locale: Intl.DateTimeFormat().resolvedOptions().locale },
-  resources: {},
+  resources: Record<string, unknown>$1
   memory: memoryUsage,
       cpu: cpuUsage },
-  features: {},
+  features: Record<string, unknown>$1
   apiV2: true,
       costTracking: true,
       performanceMonitoring: true,

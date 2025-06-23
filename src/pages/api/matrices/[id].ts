@@ -473,7 +473,7 @@ function calculateMatrixQuality(matrix: any): any {
   return {
     score: Math.max(0, qualityScore),
     grade: qualityScore >= 90 ? 'A' : qualityScore >= 80 ? 'B' : qualityScore >= 70 ? 'C' : qualityScore >= 60 ? 'D' : 'F',
-    completeness: {},
+    completeness: Record<string, unknown>$1
   variations: variationsCount > 0,
       combinations: combinationsCount > 0,
       field_assignments: assignedFields > 0,

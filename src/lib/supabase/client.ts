@@ -8,6 +8,11 @@ import { loggers } from '@/lib/logger';
 let browserClientInstance: SupabaseClient<Database> | null = null;
 
 export function createSupabaseBrowserClient(): SupabaseClient<Database> {
+  // Check if running on client side
+  if (typeof window === 'undefined') {
+    throw new Error('Supabase browser client can only be used on the client side');
+  }
+
   // Return existing instance if already created
   if (browserClientInstance) {
     return browserClientInstance;
@@ -27,7 +32,8 @@ export function createSupabaseBrowserClient(): SupabaseClient<Database> {
           persistSession: true,
           detectSessionInUrl: true,
           storageKey: 'airwave-auth-token',
-          storage: window.localStorage },
+          storage: window.localStorage,
+        },
         global: {
           headers: {
             'x-application-name': 'airwave',
@@ -35,7 +41,8 @@ export function createSupabaseBrowserClient(): SupabaseClient<Database> {
           },
         },
         db: {
-          schema: 'public' },
+          schema: 'public',
+        },
         realtime: {
           enabled: false, // Disable realtime by default
         },

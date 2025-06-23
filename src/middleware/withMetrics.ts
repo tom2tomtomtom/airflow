@@ -36,7 +36,7 @@ const DEFAULT_CONFIG: Required<MetricsConfig> = {,
   trackRequestCount: true,
   trackErrorRate: true,
   trackUserActions: true,
-  customTags: {},
+  customTags: Record<string, unknown>$1
   samplingRate: 1.0 };
 
 /**

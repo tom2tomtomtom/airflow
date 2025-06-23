@@ -1,7 +1,6 @@
 
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import textarea from '@/components/textarea';
 
 describe('textarea', () => {
   it('renders correctly', () => {

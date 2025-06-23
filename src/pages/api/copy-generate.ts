@@ -167,7 +167,7 @@ Make each variation unique while staying within the ${platformSpec.maxLength} ch
               emotional_hook: variation.emotional_hook,
               key_motivation: variation.key_motivation,
               character_count: (variation.headline + variation.body + variation.call_to_action).length,
-              generation_context: {},
+              generation_context: Record<string, unknown>$1
   model: 'gpt-4o',
                 temperature: 0.8,
                 variation_number: i + 1,

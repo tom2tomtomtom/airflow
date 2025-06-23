@@ -107,7 +107,7 @@ export interface ComponentVariation {
   id: string;,
   name: string;
   description: string;,
-  changes: {},
+  changes: Record<string, unknown>$1
   position?: Partial<TemplateComponent['position']>;
     styling?: Partial<TemplateComponent['styling']>;
     content?: Partial<ComponentContent>;
@@ -124,7 +124,7 @@ export interface PopulatedTemplate {
   selectedCopy: CopyVariant[];,
   selectedMotivation: PsychologicalMotivation;
   customizations: TemplateCustomization[];,
-  renderData: {},
+  renderData: Record<string, unknown>$1
   html?: string;
     css?: string;
     js?: string;
@@ -144,7 +144,7 @@ export interface PopulatedTemplate {
 
 export interface PopulatedComponent {
   componentId: string;,
-  content: {},
+  content: Record<string, unknown>$1
   text?: string;
     assetUrl?: string;
     assetId?: string;
@@ -196,7 +196,7 @@ export class TemplateEngine {
     templates: Array<{
       template: CampaignTemplate;
       matchScore: number;,
-      compatibility: {},
+      compatibility: Record<string, unknown>$1
   assets: number;,
         copy: number;
         platform: number;,
@@ -388,7 +388,7 @@ export class TemplateEngine {
   async createCustomTemplate(
     baseTemplate: CampaignTemplate,
     name: string,
-    modifications: {},
+    modifications: Record<string, unknown>$1
   components?: Partial<TemplateComponent>[];
       designSystem?: Partial<CampaignTemplate['designSystem']>;
       requirements?: Partial<CampaignTemplate['requirements']>;
@@ -653,7 +653,7 @@ export class TemplateEngine {
     for (const component of components) {
       const populatedComponent: PopulatedComponent = {;
         componentId: component.id,
-        content: {},
+        content: Record<string, unknown>$1
   finalStyling: { ...component.styling  },
   finalPosition: { ...component.position }
       };

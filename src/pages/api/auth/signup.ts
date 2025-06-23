@@ -158,7 +158,7 @@ export default async function handler(
 
     return res.status(200).json({
       success: true,
-      user: {},
+      user: Record<string, unknown>$1
   id: authData.user.id,
         email: authData.user.email || email,
         name: name,

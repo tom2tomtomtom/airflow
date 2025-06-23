@@ -6,7 +6,7 @@ import { getLogger } from '@/lib/logger';
 const logger = getLogger('apm');
 
 export interface APMConfig {
-  sentry: {},
+  sentry: Record<string, unknown>$1
   enabled: boolean;
     dsn: string;
     environment: string;
@@ -14,7 +14,7 @@ export interface APMConfig {
     tracesSampleRate: number;
     profilesSampleRate: number;
   };
-  datadog: {},
+  datadog: Record<string, unknown>$1
   enabled: boolean;
     host: string;
     port: number;
@@ -58,14 +58,14 @@ export class APMManager {
     const monitoring = getMonitoringConfig();
     
     return {
-      sentry: {},
+      sentry: Record<string, unknown>$1
   enabled: monitoring.sentry?.enabled || false,
         dsn: monitoring.sentry?.dsn || '',
         environment: process.env.NODE_ENV || 'development',
         release: process.env.VERCEL_GIT_COMMIT_SHA || process.env.APP_VERSION,
         tracesSampleRate: monitoring.sentry?.tracesSampleRate || 0.1,
         profilesSampleRate: monitoring.sentry?.profilesSampleRate || 0.1 },
-  datadog: {},
+  datadog: Record<string, unknown>$1
   enabled: monitoring.datadog?.enabled || false,
         host: monitoring.datadog?.host || 'localhost',
         port: monitoring.datadog?.port || 8125,
@@ -452,7 +452,7 @@ export const createAPMMiddleware = () => {
       
       trace.finish({
         success: res.statusCode < 400,
-        tags: {},
+        tags: Record<string, unknown>$1
   method: req.method,
           status_code: res.statusCode.toString(),
           route: req.route?.path || req.path },

@@ -194,7 +194,7 @@ async function generateWorkflowAssets(
         ai_generated: true,
             original_prompt: prompt.text,
             enhanced_prompt: enhancedPrompt,
-            generation_settings: {},
+            generation_settings: Record<string, unknown>$1
   size: prompt.size || '1024x1024',
               quality: prompt.quality || 'standard',
               style: prompt.style || 'vivid' },
@@ -286,7 +286,7 @@ async function generateWorkflowAssets(
 }
 
 // Mock image generation function - replace with actual DALL-E API call
-async function generateImage(params: {},
+async function generateImage(params: Record<string, unknown>$1
   prompt: string;
   size: string;
   quality: string;

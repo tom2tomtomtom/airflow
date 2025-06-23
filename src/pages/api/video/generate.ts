@@ -100,7 +100,7 @@ async function handleGenerate(req: NextApiRequest, res: NextApiResponse, user: a
 
   return res.json({
     message: 'Video generation initiated successfully',
-    data: {},
+    data: Record<string, unknown>$1
   generation_id: jobs.generation_id,
       job_count: jobs.jobs.length,
       estimated_completion: jobs.estimated_completion,

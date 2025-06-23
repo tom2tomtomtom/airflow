@@ -140,7 +140,7 @@ async function handleRetry(req: NextApiRequest, res: NextApiResponse, user: any,
     .update({
       metadata: {
         ...execution.metadata,
-        retry_info: {},
+        retry_info: Record<string, unknown>$1
   retried_at: new Date().toISOString(),
           retried_by: user.id,
           retry_execution_id: retryExecution.id,
@@ -160,7 +160,7 @@ async function handleRetry(req: NextApiRequest, res: NextApiResponse, user: any,
 
   return res.json({
     message: 'Execution retry initiated successfully',
-    data: {},
+    data: Record<string, unknown>$1
   original_execution_id: executionId,
       retry_execution: retryExecution,
       trigger_result: triggerResult,
@@ -288,7 +288,7 @@ async function prepareRetryExecution(originalExecution: any, retryData: any, use
       scheduled_for: retryData.delay_seconds > 0 
         ? new Date(Date.now() + retryData.delay_seconds * 1000).toISOString()
         : null,
-      retry_config: {},
+      retry_config: Record<string, unknown>$1
   force: retryData.force,
         reset_attempts: retryData.reset_attempts,
         delay_seconds: retryData.delay_seconds}
@@ -392,25 +392,25 @@ async function triggerExecutionRetryWebhook(retryExecution: any, originalExecuti
     const webhookData = {
       execution_id: retryExecution.id,
       original_execution_id: originalExecution.id,
-      campaign: {},
+      campaign: Record<string, unknown>$1
   id: retryExecution.matrices?.campaigns?.id,
         name: retryExecution.matrices?.campaigns?.name },
-  matrix: {},
+  matrix: Record<string, unknown>$1
   id: retryExecution.matrix_id,
         name: retryExecution.matrices?.name },
   platform: retryExecution.platform,
       content_type: retryExecution.content_type,
       status: retryExecution.status,
       retry_reason: retryData.retry_reason,
-      retried_by: {},
+      retried_by: Record<string, unknown>$1
   id: user.id,
         name: user.full_name || user.email },
-  retry_options: {},
+  retry_options: Record<string, unknown>$1
   force: retryData.force,
         priority: retryData.priority,
         delay_seconds: retryData.delay_seconds,
         reset_attempts: retryData.reset_attempts },
-  original_failure: {},
+  original_failure: Record<string, unknown>$1
   status: originalExecution.status,
         error_message: originalExecution.error_message,
         failed_at: originalExecution.updated_at },

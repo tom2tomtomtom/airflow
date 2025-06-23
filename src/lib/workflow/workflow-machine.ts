@@ -133,123 +133,123 @@ export const workflowMachine = createMachine<WorkflowMachineContext, WorkflowEve
   initial: 'briefUpload',
   context: initialContext,
   predictableActionArguments: true,
-  states: {},
-  briefUpload: {},
-  on: {},
-  UPLOAD_BRIEF: {},
+  states: Record<string, unknown>$1
+  briefUpload: Record<string, unknown>$1
+  on: Record<string, unknown>$1
+  UPLOAD_BRIEF: Record<string, unknown>$1
   actions: ['setUploadedFile', 'setProcessing']},
-        CONFIRM_BRIEF: {},
+        CONFIRM_BRIEF: Record<string, unknown>$1
   target: 'motivationSelection',
           actions: ['setBriefData'],
           cond: 'hasBriefData' },
-  SET_ERROR: {},
+  SET_ERROR: Record<string, unknown>$1
   actions: ['setError'] },
-  CLEAR_ERROR: {},
+  CLEAR_ERROR: Record<string, unknown>$1
   actions: ['clearError']}}},
     
-    motivationSelection: {},
+    motivationSelection: Record<string, unknown>$1
   entry: ['clearError'],
-      on: {},
-  GENERATE_MOTIVATIONS: {},
+      on: Record<string, unknown>$1
+  GENERATE_MOTIVATIONS: Record<string, unknown>$1
   actions: ['setProcessing'] },
-  SELECT_MOTIVATION: {},
+  SELECT_MOTIVATION: Record<string, unknown>$1
   actions: ['selectMotivation'] },
-  NEXT_STEP: {},
+  NEXT_STEP: Record<string, unknown>$1
   target: 'copyGeneration',
           cond: 'hasSelectedMotivations',
           actions: ['nextStep'] },
-  PREVIOUS_STEP: {},
+  PREVIOUS_STEP: Record<string, unknown>$1
   target: 'briefUpload',
           actions: ['previousStep'] },
-  SET_ERROR: {},
+  SET_ERROR: Record<string, unknown>$1
   actions: ['setError'] },
-  CLEAR_ERROR: {},
+  CLEAR_ERROR: Record<string, unknown>$1
   actions: ['clearError']}}},
     
-    copyGeneration: {},
+    copyGeneration: Record<string, unknown>$1
   entry: ['clearError'],
-      on: {},
-  GENERATE_COPY: {},
+      on: Record<string, unknown>$1
+  GENERATE_COPY: Record<string, unknown>$1
   actions: ['setProcessing'] },
-  SELECT_COPY: {},
+  SELECT_COPY: Record<string, unknown>$1
   actions: ['selectCopy'] },
-  NEXT_STEP: {},
+  NEXT_STEP: Record<string, unknown>$1
   target: 'assetSelection',
           cond: 'hasSelectedCopy',
           actions: ['nextStep'] },
-  PREVIOUS_STEP: {},
+  PREVIOUS_STEP: Record<string, unknown>$1
   target: 'motivationSelection',
           actions: ['previousStep'] },
-  SET_ERROR: {},
+  SET_ERROR: Record<string, unknown>$1
   actions: ['setError'] },
-  CLEAR_ERROR: {},
+  CLEAR_ERROR: Record<string, unknown>$1
   actions: ['clearError']}}},
     
-    assetSelection: {},
+    assetSelection: Record<string, unknown>$1
   entry: ['clearError'],
-      on: {},
-  SELECT_ASSET: {},
+      on: Record<string, unknown>$1
+  SELECT_ASSET: Record<string, unknown>$1
   actions: ['selectAsset'] },
-  NEXT_STEP: {},
+  NEXT_STEP: Record<string, unknown>$1
   target: 'templateSelection',
           cond: 'hasSelectedAssets',
           actions: ['nextStep'] },
-  PREVIOUS_STEP: {},
+  PREVIOUS_STEP: Record<string, unknown>$1
   target: 'copyGeneration',
           actions: ['previousStep'] },
-  SET_ERROR: {},
+  SET_ERROR: Record<string, unknown>$1
   actions: ['setError'] },
-  CLEAR_ERROR: {},
+  CLEAR_ERROR: Record<string, unknown>$1
   actions: ['clearError']}}},
     
-    templateSelection: {},
+    templateSelection: Record<string, unknown>$1
   entry: ['clearError'],
-      on: {},
-  SELECT_TEMPLATE: {},
+      on: Record<string, unknown>$1
+  SELECT_TEMPLATE: Record<string, unknown>$1
   actions: ['selectTemplate'] },
-  NEXT_STEP: {},
+  NEXT_STEP: Record<string, unknown>$1
   target: 'matrixBuild',
           cond: 'hasSelectedTemplate',
           actions: ['nextStep'] },
-  PREVIOUS_STEP: {},
+  PREVIOUS_STEP: Record<string, unknown>$1
   target: 'assetSelection',
           actions: ['previousStep'] },
-  SET_ERROR: {},
+  SET_ERROR: Record<string, unknown>$1
   actions: ['setError'] },
-  CLEAR_ERROR: {},
+  CLEAR_ERROR: Record<string, unknown>$1
   actions: ['clearError']}}},
     
-    matrixBuild: {},
+    matrixBuild: Record<string, unknown>$1
   entry: ['clearError'],
-      on: {},
-  NEXT_STEP: {},
+      on: Record<string, unknown>$1
+  NEXT_STEP: Record<string, unknown>$1
   target: 'rendering',
           cond: 'canProceedToRender',
           actions: ['nextStep'] },
-  PREVIOUS_STEP: {},
+  PREVIOUS_STEP: Record<string, unknown>$1
   target: 'templateSelection',
           actions: ['previousStep'] },
-  SET_ERROR: {},
+  SET_ERROR: Record<string, unknown>$1
   actions: ['setError'] },
-  CLEAR_ERROR: {},
+  CLEAR_ERROR: Record<string, unknown>$1
   actions: ['clearError']}}},
     
-    rendering: {},
+    rendering: Record<string, unknown>$1
   entry: ['clearError'],
-      on: {},
-  PREVIOUS_STEP: {},
+      on: Record<string, unknown>$1
+  PREVIOUS_STEP: Record<string, unknown>$1
   target: 'matrixBuild',
           actions: ['previousStep'] },
-  RESET_WORKFLOW: {},
+  RESET_WORKFLOW: Record<string, unknown>$1
   target: 'briefUpload',
           actions: ['resetWorkflow'] },
-  SET_ERROR: {},
+  SET_ERROR: Record<string, unknown>$1
   actions: ['setError'] },
-  CLEAR_ERROR: {},
+  CLEAR_ERROR: Record<string, unknown>$1
   actions: ['clearError']}}}},
   
   // Global transitions
-  on: {},
+  on: Record<string, unknown>$1
   GO_TO_STEP: [
       {
         target: 'briefUpload',
@@ -280,7 +280,7 @@ export const workflowMachine = createMachine<WorkflowMachineContext, WorkflowEve
         cond: (context, event) => event.step === 6 && guards.canProceedToRender(context),
         actions: ['goToStep'] }
     ],
-    RESET_WORKFLOW: {},
+    RESET_WORKFLOW: Record<string, unknown>$1
   target: 'briefUpload',
       actions: ['resetWorkflow']}}}, {
   guards,

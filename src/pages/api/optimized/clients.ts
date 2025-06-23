@@ -30,7 +30,7 @@ interface Client {
 interface ClientsResponse {
   success: true;
   data: Client[];
-  meta: {},
+  meta: Record<string, unknown>$1
   total: number;
     limit: number;
     offset: number;
@@ -120,7 +120,7 @@ async function getOptimizedClients(
   return {
     success: true,
     data: clients,
-    meta: {},
+    meta: Record<string, unknown>$1
   total,
       limit: params.limit,
       offset: params.offset,

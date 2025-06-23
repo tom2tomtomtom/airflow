@@ -100,7 +100,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       .insert({
         execution_id: null, // Queue-level action
         action: `queue_${action}`,
-        details: {},
+        details: Record<string, unknown>$1
   queue_id: queueId,
           matrix_id: matrixId,
           campaign_id: campaignId,
@@ -112,7 +112,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     res.status(200).json({
       success: true,
       message: `Queue ${action} completed successfully`,
-      data: {},
+      data: Record<string, unknown>$1
   queue_id: queueId,
         action,
         affected_executions: executionIds.length

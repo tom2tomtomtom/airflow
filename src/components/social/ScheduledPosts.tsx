@@ -49,7 +49,7 @@ import { useNotification } from '@/contexts/NotificationContext';
 
 interface ScheduledPost {
   id: string;
-  content: {},
+  content: Record<string, unknown>$1
   text: string;
     images?: string[];
     video?: string;
@@ -98,7 +98,7 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
       const mockPosts: ScheduledPost[] = [
         {
           id: '1',
-          content: {},
+          content: Record<string, unknown>$1
   text: 'Exciting news! Our new product launch is just around the corner. Stay tuned for more updates! 🚀 #ProductLaunch #Innovation',
             images: ['/placeholder-image1.jpg'],
             link: 'https://example.com/product-launch' },
@@ -109,7 +109,7 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
           updatedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString() }
         {
           id: '2',
-          content: {},
+          content: Record<string, unknown>$1
   text: 'Behind the scenes of our creative process. Here\'s how we bring ideas to life! 💡✨',
             video: '/placeholder-video.mp4' },
   platforms: ['instagram', 'youtube'],
@@ -119,7 +119,7 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
           updatedAt: new Date(Date.now() - 60 * 60 * 1000).toISOString() }
         {
           id: '3',
-          content: {},
+          content: Record<string, unknown>$1
   text: 'Weekly industry insights and trends. What are your thoughts on the latest developments?',
             images: ['/placeholder-chart.jpg'] },
   platforms: ['linkedin', 'twitter'],
@@ -129,7 +129,7 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
           updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() }
         {
           id: '4',
-          content: {},
+          content: Record<string, unknown>$1
   text: 'Thank you to everyone who joined our webinar yesterday! The recording is now available.',
             link: 'https://example.com/webinar-recording' },
   platforms: ['facebook', 'linkedin'],

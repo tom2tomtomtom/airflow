@@ -104,9 +104,9 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, m
   const recommendations = generateScoringRecommendations(motivation, detailedScoring, comparativeScoring);
 
   return res.json({
-    data: {},
+    data: Record<string, unknown>$1
   motivation_id: motivationId,
-      current_scores: {},
+      current_scores: Record<string, unknown>$1
   relevance_score: motivation.relevance_score,
         effectiveness_rating: motivation.effectiveness_rating },
   detailed_scoring: detailedScoring,
@@ -165,7 +165,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
       effectiveness_rating: autoScoring.effectiveness_rating,
       generation_context: { }
         ...(motivation as any).generation_context,
-        auto_scoring: {},
+        auto_scoring: Record<string, unknown>$1
   timestamp: new Date().toISOString(),
           scores: autoScoring.detailed_scores,
           calculated_by: user.id}
@@ -182,7 +182,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
 
   return res.json({
     message: 'Motivation scoring calculated successfully',
-    data: {},
+    data: Record<string, unknown>$1
   motivation: updatedMotivation,
       scoring_details: autoScoring}
   });
@@ -238,7 +238,7 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, m
   // Update generation context with manual scoring info
   updateData.generation_context = {
     ...motivation.generation_context,
-    manual_scoring: {},
+    manual_scoring: Record<string, unknown>$1
   timestamp: new Date().toISOString(),
       scored_by: user.id,
       manual_override: scoreData.manual_override,

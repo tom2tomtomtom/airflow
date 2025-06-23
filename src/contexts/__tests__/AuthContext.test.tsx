@@ -6,8 +6,8 @@ import React from 'react';
 
 // Mock the Supabase client
 jest.mock('@/lib/supabase/client', () => ({
-  supabase: {},
-  auth: {},
+  supabase: Record<string, unknown>$1
+  auth: Record<string, unknown>$1
   getSession: jest.fn(),
       signInWithPassword: jest.fn(),
       signUp: jest.fn(),
@@ -136,8 +136,8 @@ describe('AuthContext', () => {
     const { supabase } = await import('@/lib/supabase/client');
 
     jest.mocked(supabase.auth.getSession).mockResolvedValueOnce({
-      data: {},
-  session: {},
+      data: Record<string, unknown>$1
+  session: Record<string, unknown>$1
   access_token: 'token',
           user: mockUser  },
   error: null});

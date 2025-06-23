@@ -354,7 +354,7 @@ export const EnhancedClientSelector: React.FC<EnhancedClientSelectorProps> = ({
         open={isOpen}
         onClose={handleClose}
         PaperProps={{
-          sx: {},
+          sx: Record<string, unknown>$1
   maxHeight: maxMenuHeight,
             width: Math.max(anchorEl?.getBoundingClientRect().width || 0, 300),
             mt: 1}}}

@@ -64,7 +64,7 @@ class AICostController {
   async getUsageBreakdown(userId: string, type: 'operation' | 'model') : Promise<void> {
     if (type === 'operation') {
       return {
-        operationBreakdown: {},
+        operationBreakdown: Record<string, unknown>$1
   copy_generation: { count: 5, cost: 0.15, tokens: 1500  },
   image_generation: { count: 2, cost: 0.08, tokens: 0  },
   motivation_analysis: { count: 3, cost: 0.09, tokens: 900 }}};
@@ -403,8 +403,8 @@ async function handleModels(
         maxTokens: 200000,
         capabilities: ['text', 'reasoning', 'analysis'],
         pricing: { input: 0.015, output: 0.075 }}},
-    elevenlabs: {},
-  eleven_multilingual_v2: {},
+    elevenlabs: Record<string, unknown>$1
+  eleven_multilingual_v2: Record<string, unknown>$1
   name: 'Multilingual v2',
         description: 'High-quality voice synthesis',
         cost: 0.18,

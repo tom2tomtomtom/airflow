@@ -32,7 +32,7 @@ interface AnalyticsInsights {
     priority_score: number;
     actions: string[];
   }>;
-  trend_analysis: {},
+  trend_analysis: Record<string, unknown>$1
   emerging_trends: Array<{
       trend: string;
       growth_rate: number;
@@ -54,8 +54,8 @@ interface AnalyticsInsights {
     description: string;
     possible_causes: string[];
   }>;
-  predictions: {},
-  next_30_days: {},
+  predictions: Record<string, unknown>$1
+  next_30_days: Record<string, unknown>$1
   expected_impressions: number;
       expected_conversions: number;
       expected_spend: number;
@@ -69,7 +69,7 @@ interface AnalyticsInsights {
       expected_improvement: string;
     }>;
   };
-  content_performance: {},
+  content_performance: Record<string, unknown>$1
   top_performing_content_types: Array<{
       type: string;
       avg_engagement: number;
@@ -83,7 +83,7 @@ interface AnalyticsInsights {
       improvement_suggestions: string[];
     }>;
   };
-  competitive_insights: {},
+  competitive_insights: Record<string, unknown>$1
   market_share_estimate: number;
     competitive_position: 'leading' | 'competitive' | 'lagging';
     opportunities: string[];
@@ -486,7 +486,7 @@ function generatePredictions(data: any): any {
   const avgDailySpend = recentData.reduce((sum: number, item: any) => sum + parseFloat(item.spend || '0'), 0) / recentData.length;
 
   return {
-    next_30_days: {},
+    next_30_days: Record<string, unknown>$1
   expected_impressions: Math.round(avgDailyImpressions * 30 * 1.05), // 5% growth assumption
       expected_conversions: Math.round(avgDailyConversions * 30 * 1.03), // 3% growth assumption
       expected_spend: Math.round(avgDailySpend * 30 * 1.02 * 100) / 100, // 2% growth assumption

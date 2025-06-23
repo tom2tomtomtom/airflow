@@ -192,13 +192,13 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
         platforms: ['youtube', 'instagram', 'tiktok'], // Multi-platform execution
         priority: 'normal',
         schedule_type: 'immediate',
-        execution_settings: {},
+        execution_settings: Record<string, unknown>$1
   quality: executionSettings.quality,
           formats: ['mp4'],
           resolutions: ['1920x1080', '1080x1920'], // Horizontal and vertical
           include_previews: true,
           notify_on_completion: true,
-          video_specific: {},
+          video_specific: Record<string, unknown>$1
   auto_generate_variations: executionSettings.auto_generate_variations,
             variations_per_combination: executionSettings.variations_per_combination,
             platform_optimization: executionSettings.platform_optimization,

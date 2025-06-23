@@ -36,7 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ...errorReport,
       serverTimestamp: new Date().toISOString(),
       ip: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
-      buildInfo: {},
+      buildInfo: Record<string, unknown>$1
   version: process.env.npm_package_version || '1.0.0',
         commit: process.env.VERCEL_GITHUB_COMMIT_SHA || process.env.GIT_COMMIT,
         environment: process.env.NODE_ENV}};

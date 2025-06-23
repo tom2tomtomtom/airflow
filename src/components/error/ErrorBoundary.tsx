@@ -227,7 +227,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       },
           body: JSON.stringify({
             eventId,
-            error: {},
+            error: Record<string, unknown>$1
   name: error.name,
               message: error.message,
               stack: error.stack }
@@ -312,7 +312,7 @@ export function FeatureErrorBoundary({ children, feature }: { children: ReactNod
       },
       body: JSON.stringify({
         feature,
-        error: {},
+        error: Record<string, unknown>$1
   name: error.name,
           message: error.message,
           stack: error.stack }

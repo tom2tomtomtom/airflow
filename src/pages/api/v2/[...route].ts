@@ -289,11 +289,11 @@ async function handleHealthCheck(
     version: '2.0.0',
     uptime: process.uptime(),
     memory: process.memoryUsage(),
-    performance: {},
+    performance: Record<string, unknown>$1
   averageResponseTime: performanceTracker.getAverageResponseTime(),
       totalRequests: performanceTracker.getTotalRequests(),
       errorRate: performanceTracker.getErrorRate() },
-  ai: {},
+  ai: Record<string, unknown>$1
   budgetStatus: await costController.getBudgetStatus(),
       totalSpent: await costController.getTotalSpent()}};
 

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { User, Session } from '@supabase/supabase-js';
-import { createSupabaseBrowserClient } from '@/utils/supabase-browser';
+import { createSupabaseBrowserClient } from '@/lib/supabase/client';
 
 interface AuthState {
   user: User | null;
@@ -34,19 +34,34 @@ export const useSupabaseAuth = () => {
   return context;
 };
 
-// Create the Supabase client once, outside of the component
-const supabaseClient = createSupabaseBrowserClient();
-
 export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [authState, setAuthState] = useState<AuthState>({
     user: null,
     session: null,
     loading: true,
-    isAuthenticated: false });
+    isAuthenticated: false,
+  });
+  const [supabaseClient, setSupabaseClient] = useState<ReturnType<typeof createSupabaseBrowserClient> | null>(null);
   const router = useRouter();
 
+  // Initialize Supabase client only on the client side
   useEffect(() => {
-    // Check active session
+    if (typeof window !== 'undefined') {
+      try {
+        const client = createSupabaseBrowserClient();
+        setSupabaseClient(client);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Failed to initialize Supabase client:', error);
+        setAuthState(prev => ({ ...prev, loading: false }));
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    // Check active session only after client is initialized
+    if (!supabaseClient) return;
+
     const checkSession = async () => {
       try {
         const { data: { session }, error } = await supabaseClient.auth.getSession();
@@ -150,9 +165,13 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
     return () => {
       subscription.unsubscribe();
     };
-  }, [router]);
+  }, [router, supabaseClient]);
 
   const login = async (email: string, password: string) => {
+    if (!supabaseClient) {
+      return { success: false, error: 'Supabase client not initialized' };
+    }
+
     try {
       // Validate inputs before making the call
       if (!email || !password) {
@@ -187,6 +206,10 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   const signup = async (email: string, password: string, name: string) => {
+    if (!supabaseClient) {
+      return { success: false, error: 'Supabase client not initialized' };
+    }
+
     try {
       const { data, error } = await supabaseClient.auth.signUp({
         email,
@@ -207,6 +230,10 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   const logout = async () => {
+    if (!supabaseClient) {
+      return;
+    }
+
     try {
       const { error } = await supabaseClient.auth.signOut();
       if (error) throw error;
@@ -218,6 +245,10 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   const refreshSession = async () => {
+    if (!supabaseClient) {
+      return { success: false, error: 'Supabase client not initialized' };
+    }
+
     try {
       const { data: { session }, error } = await supabaseClient.auth.refreshSession();
       

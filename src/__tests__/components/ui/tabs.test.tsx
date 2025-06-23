@@ -1,7 +1,6 @@
 
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import tabs from '@/components/tabs';
 
 describe('tabs', () => {
   it('renders correctly', () => {

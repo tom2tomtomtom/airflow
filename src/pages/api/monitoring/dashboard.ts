@@ -63,7 +63,7 @@ async function handleGetDashboard(req: NextApiRequest, res: NextApiResponse) {
       const alertingHealth = await alerting.healthCheck();
       const systemHealth = {
         overall: 'healthy',
-        components: {},
+        components: Record<string, unknown>$1
   alerting: alertingHealth,
           dashboard: true,
           api: true}};

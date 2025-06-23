@@ -62,7 +62,7 @@ describe('API Helper Services', () => {
     });
 
     it('should handle request headers', () => {
-      const buildHeaders = (options: {},
+      const buildHeaders = (options: Record<string, unknown>$1
         contentType?: string;
         authorization?: string;
         custom?: Record<string, string>;

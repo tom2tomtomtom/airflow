@@ -38,7 +38,7 @@ async function handler(
 
     return res.status(200).json({
       success: true,
-      data: {},
+      data: Record<string, unknown>$1
   qrCodeUrl: mfaResult.qrCodeUrl,
         backupCodes: mfaResult.backupCodes,
         // Only include secret in development for testing

@@ -39,7 +39,7 @@ export interface User {
 
 export interface UserPreferences {
   theme: 'light' | 'dark' | 'system';,
-    notifications: {},
+    notifications: Record<string, unknown>$1
   email: boolean;,
     inApp: boolean;,
     approvals: boolean;,

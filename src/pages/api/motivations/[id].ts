@@ -249,7 +249,7 @@ async function getDetailedUsageStats(motivationId: string): Promise<any> {
       content_variations: contentUsage || [],
       copy_assets: copyUsage || [],
       executions: executionUsage || [],
-      totals: {},
+      totals: Record<string, unknown>$1
   strategy_count: strategyUsage?.length || 0,
         content_count: contentUsage?.length || 0,
         copy_count: copyUsage?.length || 0,
@@ -414,11 +414,11 @@ async function getMotivationPerformanceHistory(motivationId: string): Promise<an
     return {
       has_data: true,
       daily_performance: performanceArray,
-      summary: {},
+      summary: Record<string, unknown>$1
   avg_ctr: Math.round(avgCTR * 100) / 100,
         total_impressions: totalImpressions,
         total_clicks: totalClicks,
-        date_range: {},
+        date_range: Record<string, unknown>$1
   start: performanceArray[0]?.date,
           end: performanceArray[performanceArray.length - 1]?.date}
       }

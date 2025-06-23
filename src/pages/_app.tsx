@@ -15,7 +15,7 @@ import { AuthRefreshHandler } from '@/components/AuthRefreshHandler';
 import { ClientProvider } from '@/contexts/ClientContext';
 import { NotificationProvider } from '@/contexts/NotificationContext';
 import createEmotionCache from '@/lib/createEmotionCache';
-import { lightTheme, darkTheme } from '@/styles/theme';
+import { getThemeConfig } from '@/styles/theme';
 import { ThemeModeProvider, useThemeMode } from '@/contexts/ThemeContext';
 import { LoadingProvider } from '@/contexts/LoadingContext';
 
@@ -77,7 +77,7 @@ function AppProviders({ children }: { children: React.ReactNode }) {
 function ThemedApp(props: MyAppProps) {
   const { Component, pageProps } = props;
   const { mode } = useThemeMode();
-  const theme = mode === 'light' ? lightTheme : darkTheme;
+  const theme = getThemeConfig(mode);
 
   return (
     <ThemeProvider theme={theme}>

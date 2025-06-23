@@ -69,7 +69,7 @@ export function withCSRFProtection(
     if (!validateCSRFToken(req)) {
       return res.status(403).json({
         success: false,
-        error: {},
+        error: Record<string, unknown>$1
   code: 'FORBIDDEN',
           message: 'CSRF token missing'}});
     }

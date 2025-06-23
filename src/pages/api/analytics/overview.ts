@@ -32,7 +32,7 @@ interface AnalyticsOverview {
     campaignId: string;
     matrixId?: string;
   }>;
-  kpiSummary: {},
+  kpiSummary: Record<string, unknown>$1
   totalImpressions: number;
     totalClicks: number;
     totalConversions: number;
@@ -42,13 +42,13 @@ interface AnalyticsOverview {
     averageCPC: number;
     roas: number;
   };
-  trends: {},
+  trends: Record<string, unknown>$1
   impressions: { value: number; change: number };
     clicks: { value: number; change: number };
     conversions: { value: number; change: number };
     spend: { value: number; change: number };
   };
-  dateRange: {},
+  dateRange: Record<string, unknown>$1
   start: string;
     end: string;
   };
@@ -92,7 +92,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
 async function getAnalyticsOverview(
   userId: string, 
-  filters: {},
+  filters: Record<string, unknown>$1
   clientId?: string;
     startDate?: string;
     endDate?: string;
@@ -165,7 +165,7 @@ async function getAnalyticsOverview(
     topPerformingContent,
     kpiSummary,
     trends,
-    dateRange: {},
+    dateRange: Record<string, unknown>$1
   start: startDate.toISOString(),
       end: endDate.toISOString()}};
 }
@@ -358,16 +358,16 @@ async function calculateTrends(
     const previousMetrics = calculatePeriodMetrics(previousCampaigns || []);
 
     return {
-      impressions: {},
+      impressions: Record<string, unknown>$1
   value: currentMetrics.impressions,
         change: calculatePercentageChange(currentMetrics.impressions, previousMetrics.impressions)},
-      clicks: {},
+      clicks: Record<string, unknown>$1
   value: currentMetrics.clicks,
         change: calculatePercentageChange(currentMetrics.clicks, previousMetrics.clicks)},
-      conversions: {},
+      conversions: Record<string, unknown>$1
   value: currentMetrics.conversions,
         change: calculatePercentageChange(currentMetrics.conversions, previousMetrics.conversions)},
-      spend: {},
+      spend: Record<string, unknown>$1
   value: currentMetrics.spend,
         change: calculatePercentageChange(currentMetrics.spend, previousMetrics.spend)}};
 
@@ -409,7 +409,7 @@ function getEmptyAnalytics(startDate: Date, endDate: Date): AnalyticsOverview {
     performanceData: [],
     platformData: [],
     topPerformingContent: [],
-    kpiSummary: {},
+    kpiSummary: Record<string, unknown>$1
   totalImpressions: 0,
       totalClicks: 0,
       totalConversions: 0,
@@ -418,12 +418,12 @@ function getEmptyAnalytics(startDate: Date, endDate: Date): AnalyticsOverview {
       averageConversionRate: 0,
       averageCPC: 0,
       roas: 0 },
-  trends: {},
+  trends: Record<string, unknown>$1
   impressions: { value: 0, change: 0  },
   clicks: { value: 0, change: 0  },
   conversions: { value: 0, change: 0  },
   spend: { value: 0, change: 0 }},
-    dateRange: {},
+    dateRange: Record<string, unknown>$1
   start: startDate.toISOString(),
       end: endDate.toISOString()}};
 }

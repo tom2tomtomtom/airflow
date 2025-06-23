@@ -78,7 +78,7 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({
       label: config.label,
       color: config.color,
       size: size,
-      sx: {},
+      sx: Record<string, unknown>$1
   fontWeight: 500,
         '& .MuiChip-icon': {
           fontSize: size === 'small' ? '16px' : '20px'}},

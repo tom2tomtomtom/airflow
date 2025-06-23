@@ -46,7 +46,7 @@ export default async function handler(
 
         return res.status(200).json({ 
           success: true, 
-          data: {},
+          data: Record<string, unknown>$1
   message: 'Creatomate integration is working perfectly! Ready for AIrFLOW video generation.',
             templateCount: testResponse.data.length,
             rateLimitRemaining: testResponse.headers['x-ratelimit-remaining'] || 'Unknown' },
@@ -61,7 +61,7 @@ export default async function handler(
             headers: {
         'Authorization': `Bearer ${apiKey
       }`},
-            params: {},
+            params: Record<string, unknown>$1
   limit: req.query.limit || 10,
               offset: req.query.offset || 0,
               tags: req.query.tags
@@ -128,7 +128,7 @@ export default async function handler(
 
           return res.status(200).json({ 
             success: true, 
-            data: {},
+            data: Record<string, unknown>$1
   plan: accountResponse.data.plan,
               creditsRemaining: accountResponse.data.credits_remaining,
               creditsUsed: accountResponse.data.credits_used,
@@ -190,7 +190,7 @@ export default async function handler(
 }
 
 export const config = {
-  api: {},
+  api: Record<string, unknown>$1
   externalResolver: true },
   maxDuration: 60, // Longer timeout for video rendering operations
 };

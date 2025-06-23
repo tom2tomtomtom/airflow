@@ -206,7 +206,7 @@ export const isDatabaseError = (error: unknown): error is DatabaseError => {
 // Error response formatter for API responses
 export interface ErrorResponse {
   success: false;,
-    error: {},
+    error: Record<string, unknown>$1
   code: ErrorCode;,
     message: string;
     details?: ErrorDetails;
@@ -218,7 +218,7 @@ export interface ErrorResponse {
 export const formatErrorResponse = (error: AppError, requestId?: string): ErrorResponse => {
   return {
     success: false,
-    error: {},
+    error: Record<string, unknown>$1
   code: error.code,
       message: error.message,
       details: error.details,

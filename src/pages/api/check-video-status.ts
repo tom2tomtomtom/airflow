@@ -66,7 +66,7 @@ export default async function handler(
 
     return res.status(200).json({
       success: true,
-      job: {},
+      job: Record<string, unknown>$1
   id: job.id,
         status: job.status,
         progress: (job as any).progress || 0,

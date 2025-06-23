@@ -117,7 +117,7 @@ export interface ReviewComment {
 
 export interface ReviewAnalytics {
   workflowId: string;
-  performance: {},
+  performance: Record<string, unknown>$1
   totalTime: number;
     averageStageTime: number;
     bottlenecks: Array<{
@@ -128,7 +128,7 @@ export interface ReviewAnalytics {
     }>;
     efficiency: number; // 0-100 score
   };
-  participation: {},
+  participation: Record<string, unknown>$1
   totalReviewers: number;
     activeReviewers: number;
     averageResponseTime: number;
@@ -139,7 +139,7 @@ export interface ReviewAnalytics {
       qualityScore: number;
     }>;
   };
-  quality: {},
+  quality: Record<string, unknown>$1
   totalComments: number;
     issuesFound: number;
     issuesResolved: number;
@@ -170,7 +170,7 @@ export class ReviewSystem {
   async createReviewWorkflow(
     campaign: RenderedCampaign | PopulatedTemplate,
     workflowTemplate: 'standard' | 'expedited' | 'comprehensive' | 'custom',
-    options: {},
+    options: Record<string, unknown>$1
   name?: string;
       description?: string;
       reviewers?: Reviewer[];
@@ -634,20 +634,20 @@ export class ReviewSystem {
 
     return {
       workflowId: workflow.id,
-      performance: {},
+      performance: Record<string, unknown>$1
   totalTime,
         averageStageTime,
         bottlenecks: [], // Would calculate based on stage times
         efficiency
       },
-      participation: {},
+      participation: Record<string, unknown>$1
   totalReviewers: workflow.stages.reduce((sum, stage) => sum + stage.reviewers.length, 0),
         activeReviewers: workflow.stages.reduce((sum, stage) => 
           sum + stage.reviewers.filter((r: any) => r.status === 'reviewing').length, 0
         ),
         averageResponseTime: 0, // Would calculate from submission data
         topPerformers: [] // Would rank reviewers by performance },
-  quality: {},
+  quality: Record<string, unknown>$1
   totalComments: 0, // Would count from comments table
         issuesFound: 0,
         issuesResolved: 0,

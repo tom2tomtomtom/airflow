@@ -1,7 +1,7 @@
 // CSS optimization configuration
 module.exports = {
-  plugins: [
-    require('postcss-preset-env')({
+  plugins: {
+    'postcss-preset-env': {
       autoprefixer: {
         flexbox: 'no-2009'
       },
@@ -9,14 +9,14 @@ module.exports = {
       features: {
         'custom-properties': false
       }
-    }),
-    require('cssnano')({
+    },
+    cssnano: process.env.NODE_ENV === 'production' ? {
       preset: ['default', {
         discardComments: {
           removeAll: true,
         },
         normalizeWhitespace: true,
       }]
-    })
-  ]
+    } : false
+  }
 };

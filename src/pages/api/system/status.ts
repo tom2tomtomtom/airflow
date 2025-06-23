@@ -63,14 +63,14 @@ export default async function handler(
     status: isConfigured ? 'ready' : 'incomplete',
     timestamp: new Date().toISOString(),
     environment: envStatus,
-    supabase: {},
+    supabase: Record<string, unknown>$1
   status: supabaseStatus,
       url: process.env.NEXT_PUBLIC_SUPABASE_URL ? process.env.NEXT_PUBLIC_SUPABASE_URL.replace(/https:\/\/(.+?)\.supabase\.co.*/, 'https://***.supabase.co') : 'not set'},
-    configuration: {},
+    configuration: Record<string, unknown>$1
   isDemoMode: isDemo,
       isConfigured,
       missingRequired: missingRequired.length > 0 ? missingRequired : null },
-  deployment: {},
+  deployment: Record<string, unknown>$1
   platform: process.env.VERCEL ? 'Vercel' : process.env.NETLIFY ? 'Netlify' : 'Unknown',
       region: process.env.VERCEL_REGION || process.env.AWS_REGION || 'Unknown' },
   recommendations: isConfigured ? null : {

@@ -5,32 +5,32 @@ import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 
 interface DashboardStats {
-  totalAssets: {},
+  totalAssets: Record<string, unknown>$1
   count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
-  aiGenerated: {},
+  aiGenerated: Record<string, unknown>$1
   count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
-  activeCampaigns: {},
+  activeCampaigns: Record<string, unknown>$1
   count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
-  templatesUsed: {},
+  templatesUsed: Record<string, unknown>$1
   count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
-  totalClients: {},
+  totalClients: Record<string, unknown>$1
   count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
-  pendingApprovals: {},
+  pendingApprovals: Record<string, unknown>$1
   count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
@@ -44,7 +44,7 @@ interface DashboardStats {
     user: string;
     client?: string;
   }>;
-  performanceMetrics: {},
+  performanceMetrics: Record<string, unknown>$1
   totalImpressions: number;
     totalClicks: number;
     averageCTR: number;
@@ -191,27 +191,27 @@ async function getDashboardStats(userId: string): Promise<DashboardStats> {
   const approvalsChange = '+0%'; // TODO: Calculate trend
 
   return {
-    totalAssets: {},
+    totalAssets: Record<string, unknown>$1
   count: totalAssetsCount,
       change: assetChange,
       trend: getTrend(assetChange) },
-  aiGenerated: {},
+  aiGenerated: Record<string, unknown>$1
   count: aiGeneratedCount,
       change: aiChange,
       trend: getTrend(aiChange) },
-  activeCampaigns: {},
+  activeCampaigns: Record<string, unknown>$1
   count: activeCampaignsCount,
       change: campaignChange,
       trend: getTrend(campaignChange) },
-  templatesUsed: {},
+  templatesUsed: Record<string, unknown>$1
   count: templatesUsedCount,
       change: templatesChange,
       trend: 'neutral' },
-  totalClients: {},
+  totalClients: Record<string, unknown>$1
   count: totalClientsCount,
       change: clientsChange,
       trend: 'neutral' },
-  pendingApprovals: {},
+  pendingApprovals: Record<string, unknown>$1
   count: pendingApprovalsCount,
       change: approvalsChange,
       trend: 'neutral' },
@@ -377,7 +377,7 @@ function getEmptyStats(): DashboardStats {
   totalClients: { count: 0, change: '0%', trend: 'neutral'  },
   pendingApprovals: { count: 0, change: '0%', trend: 'neutral'  },
   recentActivity: [],
-    performanceMetrics: {},
+    performanceMetrics: Record<string, unknown>$1
   totalImpressions: 0,
       totalClicks: 0,
       averageCTR: 0,

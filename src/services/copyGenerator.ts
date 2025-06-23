@@ -246,7 +246,7 @@ export class CopyGenerator {
   private buildCopyPrompt(
     brief: ParsedBrief,
     motivation: PsychologicalMotivation,
-    config: {},
+    config: Record<string, unknown>$1
   type: CopyVariant['type'];
       tone: CopyVariant['tone'];
       platform: CopyVariant['platform'];
@@ -352,7 +352,7 @@ Do not include explanations or alternatives - just the final copy.
   private async parseCopyResponse(
     response: string,
     motivationId: string,
-    config: {},
+    config: Record<string, unknown>$1
   type: CopyVariant['type'];
       tone: CopyVariant['tone'];
       platform: CopyVariant['platform'];
@@ -399,7 +399,7 @@ Do not include explanations or alternatives - just the final copy.
 
   private calculateQualityScores(
     content: string,
-    config: {},
+    config: Record<string, unknown>$1
   type: CopyVariant['type'];
       tone: CopyVariant['tone'];
       platform: CopyVariant['platform'];
@@ -591,7 +591,7 @@ Do not include explanations or alternatives - just the final copy.
 
   async refineCopySet(
     copySet: CopySet,
-    refinements: {},
+    refinements: Record<string, unknown>$1
   improveQuality?: boolean;
       adjustTone?: CopyVariant['tone'];
       focusPlatform?: CopyVariant['platform'];

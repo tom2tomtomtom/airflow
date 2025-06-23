@@ -50,7 +50,7 @@ async function handler(
 
     return res.status(200).json({
       success: true,
-      data: {},
+      data: Record<string, unknown>$1
   isConfigured: status?.is_configured || false,
         isEnabled: status?.is_enabled || false,
         isRequired: status?.is_required || false,

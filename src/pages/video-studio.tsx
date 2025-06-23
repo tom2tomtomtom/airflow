@@ -200,7 +200,7 @@ const VideoStudioPage: React.FC = () => {
     if (activeClient) {
       setContentElements(prev => ({
         ...prev,
-        brand_elements: {},
+        brand_elements: Record<string, unknown>$1
   logo_url: activeClient.logo,
           color_scheme: [activeClient.primaryColor, activeClient.secondaryColor]}}));
     }
@@ -736,7 +736,7 @@ const VideoStudioPage: React.FC = () => {
                                     if (e.target.checked) {
                                       setContentElements({
                                         ...contentElements,
-                                        voice_over: {},
+                                        voice_over: Record<string, unknown>$1
   text: videoConfig.prompt,
                                           voice: 'neural',
                                           language: 'en'}});

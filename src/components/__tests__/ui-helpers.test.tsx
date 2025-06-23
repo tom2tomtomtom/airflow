@@ -106,7 +106,7 @@ describe('UI Helper Components', () => {
     });
 
     it('should generate ARIA attributes', () => {
-      const getAriaAttributes = (options: {},
+      const getAriaAttributes = (options: Record<string, unknown>$1
         expanded?: boolean;
         selected?: boolean;
         disabled?: boolean;

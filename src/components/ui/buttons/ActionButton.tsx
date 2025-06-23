@@ -47,7 +47,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
       case 'primary':
         return {
           variant: 'contained' as const,
-          sx: {},
+          sx: Record<string, unknown>$1
   background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
             color: '#FFFFFF',
             fontWeight: 600,
@@ -70,7 +70,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
       case 'secondary':
         return {
           variant: 'contained' as const,
-          sx: {},
+          sx: Record<string, unknown>$1
   backgroundColor: theme.palette.secondary.main,
             color: theme.palette.secondary.contrastText,
             fontWeight: 500,
@@ -81,7 +81,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
       case 'outline':
         return {
           variant: 'outlined' as const,
-          sx: {},
+          sx: Record<string, unknown>$1
   borderColor: theme.palette.primary.main,
             color: theme.palette.primary.main,
             borderWidth: 2,
@@ -95,7 +95,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
       case 'ghost':
         return {
           variant: 'text' as const,
-          sx: {},
+          sx: Record<string, unknown>$1
   color: theme.palette.primary.main,
             fontWeight: 500,
             '&:hover': {
@@ -105,7 +105,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
       case 'danger':
         return {
           variant: 'contained' as const,
-          sx: {},
+          sx: Record<string, unknown>$1
   backgroundColor: theme.palette.error.main,
             color: theme.palette.error.contrastText,
             fontWeight: 500,

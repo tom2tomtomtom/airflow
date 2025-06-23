@@ -133,7 +133,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   // Calculate analytics for each copy asset
   const enrichedData = data?.map((asset: any) => ({
     ...asset,
-    analytics: {},
+    analytics: Record<string, unknown>$1
   character_count: asset.content.length,
       word_count: asset.content.split(/\s+/).length,
       readability_score: calculateReadabilityScore(asset.content),
@@ -143,7 +143,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   return res.json({ 
     data: enrichedData,
     count,
-    pagination: {},
+    pagination: Record<string, unknown>$1
   limit: parseInt(limit as string),
       offset: parseInt(offset as string),
       total: count || 0

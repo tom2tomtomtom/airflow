@@ -148,7 +148,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       count: webhooks?.length || 0,
       statistics,
       events: Object.values(WEBHOOK_EVENTS),
-      pagination: {},
+      pagination: Record<string, unknown>$1
   limit: filters.limit,
         offset: filters.offset,
         total: count || 0
@@ -384,7 +384,7 @@ async function triggerTestWebhook(webhook: any): Promise<void> {
       event: 'webhook.test',
       timestamp: new Date().toISOString(),
       webhook_id: webhook.id,
-      data: {},
+      data: Record<string, unknown>$1
   message: 'Webhook successfully configured!',
         client_id: webhook.client_id,
         events: webhook.events}

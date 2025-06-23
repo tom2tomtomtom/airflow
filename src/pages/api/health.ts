@@ -21,21 +21,21 @@ interface HealthCheckResponse {
   version: string;
   uptime: number;
   environment: string;
-  deployment: {},
-  platform: string;
+  deployment: {
+    platform: string;
     region: string;
     commit?: string;
   };
-  checks: {},
-  database: ServiceCheck;
+  checks: {
+    database: ServiceCheck;
     redis: ServiceCheck;
     storage: ServiceCheck;
     creatomate: ServiceCheck;
     email: ServiceCheck;
     ai_services: ServiceCheck;
   };
-  performance: {},
-  memory_usage: number;
+  performance: {
+    memory_usage: number;
     cpu_load?: number;
     response_time: number;
   };
@@ -115,12 +115,15 @@ async function checkStorage(): Promise<ServiceCheck> {
     if (process.env.AWS_S3_BUCKET && process.env.AWS_ACCESS_KEY_ID) {
       const s3Client = new S3Client({
         region: process.env.AWS_REGION || 'us-east-1',
-        credentials: {},
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!}});
+        credentials: {
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!
+        }
+      });
 
       const command = new HeadBucketCommand({
-        Bucket: process.env.AWS_S3_BUCKET});
+        Bucket: process.env.AWS_S3_BUCKET
+      });
 
       await s3Client.send(command);
 
@@ -305,14 +308,17 @@ export default async function handler(
     version: process.env.npm_package_version || '1.0.0',
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'development',
-    deployment: {},
-  platform: process.env.VERCEL ? 'Vercel' : process.env.NETLIFY ? 'Netlify' : 'Unknown',
+    deployment: {
+      platform: process.env.VERCEL ? 'Vercel' : process.env.NETLIFY ? 'Netlify' : 'Unknown',
       region: process.env.VERCEL_REGION || process.env.AWS_REGION || 'Unknown',
-      commit: process.env.VERCEL_GIT_COMMIT_SHA || process.env.COMMIT_REF || undefined }
+      commit: process.env.VERCEL_GIT_COMMIT_SHA || process.env.COMMIT_REF || undefined
+    },
     checks,
-    performance: {},
-  memory_usage: (process.memoryUsage().heapUsed / process.memoryUsage().heapTotal) * 100,
-      response_time: Date.now() - startTime}};
+    performance: {
+      memory_usage: (process.memoryUsage().heapUsed / process.memoryUsage().heapTotal) * 100,
+      response_time: Date.now() - startTime
+    }
+  };
 
   // Set appropriate status code - always return 200 for basic health check
   const statusCode = 200; // Always return 200 unless completely broken

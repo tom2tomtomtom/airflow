@@ -51,7 +51,7 @@ export interface BundleAnalysis {
     version?: string;
   }>;
   recommendations: BundleRecommendation[];
-  treeshaking: {},
+  treeshaking: Record<string, unknown>$1
   eliminatedModules: string[];
     unusedExports: Array<{
       module: string;
@@ -173,7 +173,7 @@ export class BundleAnalyzer {
     currentAnalysis: BundleAnalysis,
     previousAnalysis: BundleAnalysis
   ): Promise<{
-    sizeChange: {},
+    sizeChange: Record<string, unknown>$1
   total: number;
       chunks: Array<{ name: string; change: number }>;
       assets: Array<{ name: string; change: number }>;

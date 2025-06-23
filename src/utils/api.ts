@@ -23,7 +23,7 @@ export const errorResponse = (
 ) => {
   return res.status(statusCode).json({
     success: false,
-    error: {},
+    error: Record<string, unknown>$1
   code,
       message });
 };
@@ -91,7 +91,7 @@ export const authApi = {
   login: async (email: string, password: string) => {
     return apiRequest<{
       success: boolean;,
-    user: {},
+    user: Record<string, unknown>$1
   id: string;,
     email: string;,
     name: string;,
@@ -105,7 +105,7 @@ export const authApi = {
   signup: async (email: string, password: string, name: string) => {
     return apiRequest<{
       success: boolean;,
-    user: {},
+    user: Record<string, unknown>$1
   id: string;,
     email: string;,
     name: string;,

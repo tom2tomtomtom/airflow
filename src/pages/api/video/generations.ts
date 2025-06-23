@@ -149,7 +149,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     count: processedData.length,
     total_jobs: count || 0,
     summary,
-    pagination: {},
+    pagination: Record<string, unknown>$1
   limit: filters.limit,
       offset: filters.offset,
       total: count || 0
@@ -427,7 +427,7 @@ function getEmptySummary(): any {
   return {
     total_jobs: 0,
     total_generations: 0,
-    status_breakdown: {},
+    status_breakdown: Record<string, unknown>$1
   today_count: 0,
     weekly_count: 0,
     completion_rate: 0};

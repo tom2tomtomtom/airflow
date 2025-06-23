@@ -18,14 +18,14 @@ export function createMiddlewareSupabaseClient(
   const config = validateSupabaseConfig();
   
   let response = NextResponse.next({
-    request: {},
+    request: Record<string, unknown>$1
   headers: request.headers}});
 
   const supabase = createServerClient<Database>(
     config.url,
     config.anonKey,
     {
-      cookies: {},
+      cookies: Record<string, unknown>$1
   get(name: string) {
           return request.cookies.get(name)?.value;
         },
@@ -36,7 +36,7 @@ export function createMiddlewareSupabaseClient(
             value,
             ...options});
           response = NextResponse.next({
-            request: {},
+            request: Record<string, unknown>$1
   headers: request.headers}});
           response?.cookies?.set({
             name,
@@ -50,7 +50,7 @@ export function createMiddlewareSupabaseClient(
             value: '',
             ...options});
           response = NextResponse.next({
-            request: {},
+            request: Record<string, unknown>$1
   headers: request.headers}});
           response?.cookies?.set({
             name,

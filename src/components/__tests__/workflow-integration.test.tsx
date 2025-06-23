@@ -10,7 +10,7 @@ const mockFetch = jest.fn();
 // Mock API responses
 const mockBriefParseResponse = {
   success: true,
-  data: {},
+  data: Record<string, unknown>$1
   title: 'Test Campaign',
     industry: 'Technology',
     product: 'AI Platform',
@@ -74,7 +74,7 @@ const mockCostCheckResponse = {
   allowed: true,
   budgetRemaining: 850.50,
   fallbackModel: null,
-  usageStats: {},
+  usageStats: Record<string, unknown>$1
   percentOfBudget: 15.5
   }
 };

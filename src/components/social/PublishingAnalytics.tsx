@@ -61,12 +61,12 @@ interface PublishingAnalyticsProps {
 }
 
 interface AnalyticsData {
-  overview: {},
+  overview: Record<string, unknown>$1
   totalPosts: number;
     totalReach: number;
     totalEngagement: number;
     avgEngagementRate: number;
-    trends: {},
+    trends: Record<string, unknown>$1
   posts: number;
       reach: number;
       engagement: number;
@@ -97,7 +97,7 @@ interface AnalyticsData {
     content: string;
     platform: string;
     publishedAt: string;
-    metrics: {},
+    metrics: Record<string, unknown>$1
   reach: number;
       likes: number;
       comments: number;
@@ -178,12 +178,12 @@ const PublishingAnalytics: React.FC<PublishingAnalyticsProps> = ({
       const totalEngagement = timeSeriesData.reduce((sum, day) => sum + day.engagement, 0);
 
       const analyticsData: AnalyticsData = {
-        overview: {},
+        overview: Record<string, unknown>$1
   totalPosts,
           totalReach,
           totalEngagement,
           avgEngagementRate: totalReach > 0 ? (totalEngagement / totalReach) * 100 : 0,
-          trends: {},
+          trends: Record<string, unknown>$1
   posts: Math.floor(Math.random() * 40) - 20, // -20% to +20%
             reach: Math.floor(Math.random() * 60) - 30, // -30% to +30%
             engagement: Math.floor(Math.random() * 50) - 25, // -25% to +25%
@@ -233,7 +233,7 @@ const PublishingAnalytics: React.FC<PublishingAnalyticsProps> = ({
             content: 'Exciting news! Our new product launch is just around the corner...',
             platform: 'Facebook',
             publishedAt: '2024-01-15T10:00:00Z',
-            metrics: {},
+            metrics: Record<string, unknown>$1
   reach: 12500,
               likes: 340,
               comments: 67,
@@ -244,7 +244,7 @@ const PublishingAnalytics: React.FC<PublishingAnalyticsProps> = ({
             content: 'Behind the scenes of our creative process. Here\'s how we bring ideas to life!',
             platform: 'Instagram',
             publishedAt: '2024-01-14T14:30:00Z',
-            metrics: {},
+            metrics: Record<string, unknown>$1
   reach: 8900,
               likes: 520,
               comments: 43,
@@ -255,7 +255,7 @@ const PublishingAnalytics: React.FC<PublishingAnalyticsProps> = ({
             content: 'Weekly industry insights and trends. What are your thoughts?',
             platform: 'LinkedIn',
             publishedAt: '2024-01-13T09:15:00Z',
-            metrics: {},
+            metrics: Record<string, unknown>$1
   reach: 5600,
               likes: 180,
               comments: 34,

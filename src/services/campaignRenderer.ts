@@ -15,7 +15,7 @@ export interface RenderedCampaign {
   outputFiles: RenderOutput[];
   metadata: RenderMetadata;
   quality: 'draft' | 'preview' | 'high' | 'print';
-  dimensions: {},
+  dimensions: Record<string, unknown>$1
   width: number;
     height: number;
     dpi?: number;
@@ -34,7 +34,7 @@ export interface RenderOutput {
   format: 'png' | 'jpg' | 'webp' | 'svg' | 'pdf' | 'mp4' | 'gif' | 'html';
   url: string;
   fileSize: number;
-  dimensions: {},
+  dimensions: Record<string, unknown>$1
   width: number;
     height: number;
   };
@@ -60,7 +60,7 @@ export interface RenderMetadata {
   fonts: string[];
   estimatedPrintCost?: number;
   estimatedFileSize: number;
-  optimization: {},
+  optimization: Record<string, unknown>$1
   compression: number;
     quality: number;
     webOptimized: boolean;
@@ -182,7 +182,7 @@ export class CampaignRenderer {
           colorProfile: 'sRGB',
           fonts: this.extractFonts(populatedTemplate),
           estimatedFileSize: 0,
-          optimization: {},
+          optimization: Record<string, unknown>$1
   compression: optimization.compress ? 85 : 100,
             quality: this.QUALITY_SETTINGS[quality].quality,
             webOptimized: optimization.webOptimize || false,

@@ -124,7 +124,7 @@ async function handleGenerationStatus(req: NextApiRequest, res: NextApiResponse,
   const overallProgress = calculateOverallProgress(updatedJobs);
 
   return res.json({
-    data: {},
+    data: Record<string, unknown>$1
   generation_id: generationId,
       total_jobs: updatedJobs.length,
       progress: overallProgress,
@@ -217,7 +217,7 @@ async function handleJobStatus(req: NextApiRequest, res: NextApiResponse, user: 
   }
 
   return res.json({
-    data: {},
+    data: Record<string, unknown>$1
   id: updatedGeneration.id,
       generation_id: updatedGeneration.generation_id,
       variation_index: updatedGeneration.variation_index,

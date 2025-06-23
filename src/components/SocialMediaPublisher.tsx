@@ -114,7 +114,7 @@ export default function SocialMediaPublisher() {
       },
         body: JSON.stringify({
           platforms: selectedPlatforms,
-          content: {},
+          content: Record<string, unknown>$1
   text: content,
             link: link || undefined}})});
 

@@ -295,7 +295,7 @@ async function getAssetById(
     tags: ['test'],
     client_id: 'client123',
     created_by: context.user.id,
-    metadata: {},
+    metadata: Record<string, unknown>$1
   file_size: 1024000,
     mime_type: 'image/jpeg',
     duration: null,
@@ -426,7 +426,7 @@ async function handleSearch(req: NextApiRequest, res: NextApiResponse, context: 
       clientId: 'client1',
       userId: context.user.id,
       favorite: false,
-      metadata: {},
+      metadata: Record<string, unknown>$1
   size: 1024000,
       mimeType: 'image/jpeg' }
   ];

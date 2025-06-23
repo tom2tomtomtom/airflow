@@ -93,7 +93,7 @@ export function withCSRFProtection(
       if (!isValidOrigin) {
         return res.status(403).json({
           success: false,
-          error: {},
+          error: Record<string, unknown>$1
   code: 'FORBIDDEN',
             message: 'Invalid origin'}
         });
@@ -106,7 +106,7 @@ export function withCSRFProtection(
     if (!csrfToken) {
       return res.status(403).json({
         success: false,
-        error: {},
+        error: Record<string, unknown>$1
   code: 'FORBIDDEN',
           message: 'CSRF token missing'}
       });
@@ -115,7 +115,7 @@ export function withCSRFProtection(
     if (!verifyCSRFToken(csrfToken, sessionId)) {
       return res.status(403).json({
         success: false,
-        error: {},
+        error: Record<string, unknown>$1
   code: 'FORBIDDEN',
           message: 'Invalid CSRF token'}
       });

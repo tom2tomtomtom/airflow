@@ -1,7 +1,6 @@
 
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import card from '@/components/card';
 
 describe('card', () => {
   it('renders correctly', () => {

@@ -5,7 +5,7 @@ jest.mock('next/router', () => ({
   useRouter: () => ({
     route: '/',
     pathname: '/',
-    query: {},
+    query: Record<string, unknown>$1
   asPath: '/',
     push: jest.fn(),
     replace: jest.fn(),

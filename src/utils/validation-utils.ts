@@ -80,7 +80,7 @@ export function sanitizeSQLString(input: string): string {
 // Sanitize object keys to prevent prototype pollution
 export function sanitizeObject<T extends Record<string, unknown>>(obj: T): T {
   const dangerous = ['__proto__', 'constructor', 'prototype'];
-  const cleaned = {} as Record<string, unknown> & Record<string, unknown> & T;
+  const cleaned = {} as Record<string, unknown> & Record<string, unknown> & Record<string, unknown> & T;
 
   for (const [key, value] of Object.entries(obj)) {
     if (!dangerous.includes(key)) {
@@ -310,7 +310,7 @@ export const sanitization = {
   },
 
   // Complete input sanitization for API inputs
-  sanitizeInput(input: string, options: {},
+  sanitizeInput(input: string, options: Record<string, unknown>$1
   allowHTML?: boolean;
     maxLength?: number;
     removeControlChars?: boolean;
@@ -491,7 +491,7 @@ export const securityValidation = {
   },
 
   // Validate and sanitize input comprehensively
-  validateAndSanitize(input: string, options: {},
+  validateAndSanitize(input: string, options: Record<string, unknown>$1
   allowHTML?: boolean;
     maxLength?: number;
     checkMalicious?: boolean;

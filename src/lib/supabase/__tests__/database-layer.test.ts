@@ -9,13 +9,13 @@ import { jest } from '@jest/globals';
 // Mock Supabase client
 const mockSupabaseClient = {
   from: jest.fn(),
-  auth: {},
+  auth: Record<string, unknown>$1
   getUser: jest.fn(),
     signInWithPassword: jest.fn(),
     signOut: jest.fn(),
     onAuthStateChange: jest.fn() },
   rpc: jest.fn(),
-  storage: {},
+  storage: Record<string, unknown>$1
   from: jest.fn() },
   channel: jest.fn(),
   removeChannel: jest.fn()};
@@ -188,9 +188,9 @@ describe('Database Layer Testing', () => {
         avatar_url: 'https://example.com/avatar.jpg',
         role: 'admin',
         permissions: ['read', 'write', 'admin'],
-        preferences: {},
+        preferences: Record<string, unknown>$1
   theme: 'dark',
-          notifications: {},
+          notifications: Record<string, unknown>$1
   email: true,
             inApp: true,
             exports: true,
@@ -222,7 +222,7 @@ describe('Database Layer Testing', () => {
         description: 'Modern story template',
         height: 1920,
         width: 1080,
-        structure: {},
+        structure: Record<string, unknown>$1
   layers: [
             { type: 'background', color: '#ffffff'  }
             { type: 'text', content: 'Hello World'  }
@@ -514,7 +514,7 @@ describe('Database Layer Testing', () => {
         {
           id: 'brief-123',
           name: 'Test Brief',
-          client: {},
+          client: Record<string, unknown>$1
   id: 'client-123',
             name: 'Test Client',
             industry: 'Technology' },
@@ -698,12 +698,12 @@ describe('Database Layer Testing', () => {
   describe('Authentication Integration', () => {
     it('should handle user authentication', async () => {
       const mockAuthResponse = {
-        data: {},
-  user: {},
+        data: Record<string, unknown>$1
+  user: Record<string, unknown>$1
   id: 'user-123',
             email: 'test@example.com',
             user_metadata: { first_name: 'John', last_name: 'Doe' }},
-          session: {},
+          session: Record<string, unknown>$1
   access_token: 'access-token',
             refresh_token: 'refresh-token',
             expires_at: Date.now() + 3600000}},
@@ -722,7 +722,7 @@ describe('Database Layer Testing', () => {
     it('should handle authentication errors', async () => {
       const mockAuthError = {
         data: { user: null, session: null  },
-  error: {},
+  error: Record<string, unknown>$1
   message: 'Invalid login credentials',
           status: 400}};
 
@@ -738,8 +738,8 @@ describe('Database Layer Testing', () => {
 
     it('should handle user session retrieval', async () => {
       const mockUserResponse = {
-        data: {},
-  user: {},
+        data: Record<string, unknown>$1
+  user: Record<string, unknown>$1
   id: 'user-123',
             email: 'test@example.com',
             role: 'authenticated'}},

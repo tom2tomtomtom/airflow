@@ -587,7 +587,7 @@ Make them diverse, authentic, and psychologically grounded.
 
   async refineMotivations(
     motivationSet: MotivationSet,
-    refinements: {},
+    refinements: Record<string, unknown>$1
   enhanceConfidence?: boolean;
       increaseDiversity?: boolean;
       balancePsychology?: boolean;

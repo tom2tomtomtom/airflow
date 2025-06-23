@@ -12,14 +12,14 @@ export class APITestPatterns {
    * Complete CRUD test suite for an API endpoint
    */
   static createCRUDTestSuite(
-    handlers: {},
+    handlers: Record<string, unknown>$1
   create?: NextApiHandler;
       read?: NextApiHandler;
       update?: NextApiHandler;
       delete?: NextApiHandler;
       list?: NextApiHandler;
     },
-    testData: {},
+    testData: Record<string, unknown>$1
   validCreateData: unknown;,
     validUpdateData: unknown;,
     invalidData: unknown;,
@@ -164,7 +164,7 @@ export class APITestPatterns {
   /**
    * Authentication endpoint test patterns
    */
-  static createAuthTestSuite(handlers: {},
+  static createAuthTestSuite(handlers: Record<string, unknown>$1
     login?: NextApiHandler;
     logout?: NextApiHandler;
     signup?: NextApiHandler;
@@ -336,7 +336,7 @@ export class APITestPatterns {
   /**
    * Workflow endpoint test patterns
    */
-  static createWorkflowTestSuite(handlers: {},
+  static createWorkflowTestSuite(handlers: Record<string, unknown>$1
     state?: NextApiHandler;
     brief?: NextApiHandler;
     motivations?: NextApiHandler;
@@ -402,7 +402,7 @@ export class APITestPatterns {
   /**
    * AI service endpoint test patterns
    */
-  static createAIServiceTestSuite(handlers: {},
+  static createAIServiceTestSuite(handlers: Record<string, unknown>$1
     costCheck?: NextApiHandler;
     usage?: NextApiHandler;
     models?: NextApiHandler;
@@ -566,7 +566,7 @@ export class APITestPatterns {
   static testInputValidation(
     handler: NextApiHandler,
     endpoint: string,
-    testCases: {},
+    testCases: Record<string, unknown>$1
   valid: unknown;,
     invalid: Array<{ data: unknown; expectedError: string }>;
     }

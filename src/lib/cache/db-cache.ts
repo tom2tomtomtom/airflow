@@ -306,7 +306,7 @@ export class DBCacheUtils {
     query: string,
     queryFn: () => Promise<T>,
     params?: any[],
-    options: {},
+    options: Record<string, unknown>$1
   ttl?: number;
       tags?: string[];
       namespace?: string;

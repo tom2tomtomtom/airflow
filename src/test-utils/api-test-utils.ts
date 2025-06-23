@@ -34,7 +34,7 @@ export class TestDataFactory {
       id: 'test-workflow-123',
       user_id: 'test-user-123',
       current_step: 0,
-      brief_data: {},
+      brief_data: Record<string, unknown>$1
   motivations: [],
       copy_variations: [],
       selected_assets: [],
@@ -190,7 +190,7 @@ export class DatabaseMockManager {
         limit: jest.fn().mockReturnThis(),
         single: jest.fn(() => Promise.resolve({ data: null, error: null })),
         maybeSingle: jest.fn(() => Promise.resolve({ data: null, error: null }))})),
-      auth: {},
+      auth: Record<string, unknown>$1
   getUser: jest.fn(() =>
           Promise.resolve({
             data: { user: TestDataFactory.createUser()  },
@@ -348,8 +348,8 @@ export const mockExternalServices = () => {;
   // Mock OpenAI
   jest.mock('openai', () => ({
     OpenAI: jest.fn().mockImplementation(() => ({,
-    chat: {},
-  completions: {},
+    chat: Record<string, unknown>$1
+  completions: Record<string, unknown>$1
   create: jest.fn().mockResolvedValue({,
     choices: [{ message: { content: 'Mock AI response' } }],
             usage: { total_tokens: 100, prompt_tokens: 50, completion_tokens: 50 })) }))}));
@@ -374,7 +374,7 @@ export const mockExternalServices = () => {;
           null,
           {},
           {
-            file: {},
+            file: Record<string, unknown>$1
   filepath: '/tmp/test-file',
               originalFilename: 'test.jpg',
               mimetype: 'image/jpeg',

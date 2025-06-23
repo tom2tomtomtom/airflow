@@ -58,9 +58,9 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   
   const portfolioStats = {;
     total_campaigns: 0,
-    status_distribution: {},
-  priority_distribution: {},
-  type_distribution: {},
+    status_distribution: Record<string, unknown>$1
+  priority_distribution: Record<string, unknown>$1
+  type_distribution: Record<string, unknown>$1
   budget_summary: {
       total_budget: 0,
       total_spent: 0,
@@ -169,7 +169,7 @@ async function getCampaignStats(campaignId: string): Promise<any> {
     return {
       matrices_count: 0,
       executions_count: 0,
-      execution_status: {},
+      execution_status: Record<string, unknown>$1
   performance: { impressions: 0, clicks: 0, conversions: 0, spend: 0, ctr: 0, conversion_rate: 0 }
     };
   }

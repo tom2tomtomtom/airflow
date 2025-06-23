@@ -166,7 +166,7 @@ export function formatErrorResponse(
     case 'latest':
       return {
         success: false,
-        error: {},
+        error: Record<string, unknown>$1
   message: errorMessage,
           code: errorCode,
           timestamp: new Date().toISOString(),

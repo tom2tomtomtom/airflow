@@ -345,96 +345,96 @@ export function validateData(data: unknown, schema: ValidationSchema): Validatio
  */
 export const validationSchemas = {
   // User registration
-  userRegistration: {},
-  email: {},
+  userRegistration: Record<string, unknown>$1
+  email: Record<string, unknown>$1
   required: true,
       type: 'email' as const,
       maxLength: 255 },
-  password: {},
+  password: Record<string, unknown>$1
   required: true,
       type: 'string' as const,
       minLength: 8,
       maxLength: 128,
       pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/ },
-  name: {},
+  name: Record<string, unknown>$1
   required: true,
       type: 'string' as const,
       minLength: 2,
       maxLength: 100  }
   // User login
-  login: {},
-  email: {},
+  login: Record<string, unknown>$1
+  email: Record<string, unknown>$1
   required: true,
       type: 'email' as const,
       maxLength: 255 },
-  password: {},
+  password: Record<string, unknown>$1
   required: true,
       type: 'string' as const,
       minLength: 1,
       maxLength: 128  }
   // User signup
-  signup: {},
-  email: {},
+  signup: Record<string, unknown>$1
+  email: Record<string, unknown>$1
   required: true,
       type: 'email' as const,
       maxLength: 255 },
-  password: {},
+  password: Record<string, unknown>$1
   required: true,
       type: 'string' as const,
       minLength: 8,
       maxLength: 128,
       pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/ },
-  name: {},
+  name: Record<string, unknown>$1
   required: true,
       type: 'string' as const,
       minLength: 2,
       maxLength: 100  }
   // Client creation
-  clientCreation: {},
-  name: {},
+  clientCreation: Record<string, unknown>$1
+  name: Record<string, unknown>$1
   required: true,
       type: 'string' as const,
       minLength: 2,
       maxLength: 100 },
-  industry: {},
+  industry: Record<string, unknown>$1
   required: false,
       type: 'string' as const,
       maxLength: 100 },
-  description: {},
+  description: Record<string, unknown>$1
   required: false,
       type: 'string' as const,
       maxLength: 1000  }
   // Campaign creation
-  campaignCreation: {},
-  name: {},
+  campaignCreation: Record<string, unknown>$1
+  name: Record<string, unknown>$1
   required: true,
       type: 'string' as const,
       minLength: 2,
       maxLength: 200 },
-  description: {},
+  description: Record<string, unknown>$1
   required: false,
       type: 'string' as const,
       maxLength: 2000 },
-  budget: {},
+  budget: Record<string, unknown>$1
   required: false,
       type: 'number' as const,
       custom: (value: number) => value >= 0 || 'Budget must be positive'  }
   // AI generation request
-  aiGeneration: {},
-  prompt: {},
+  aiGeneration: Record<string, unknown>$1
+  prompt: Record<string, unknown>$1
   required: true,
       type: 'string' as const,
       minLength: 10,
       maxLength: 2000 },
-  type: {},
+  type: Record<string, unknown>$1
   required: true,
       type: 'string' as const,
       pattern: /^(text|image|video|voice)$/ },
-  clientId: {},
+  clientId: Record<string, unknown>$1
   required: true,
       type: 'string' as const,
       minLength: 1 },
-  style: {},
+  style: Record<string, unknown>$1
   required: false,
       type: 'string' as const,
       maxLength: 100 };

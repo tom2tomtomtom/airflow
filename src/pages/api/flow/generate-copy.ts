@@ -306,27 +306,27 @@ function generateCopyWithTemplates(motivations: Motivation[], briefData: BriefDa
 
   // Platform-specific adaptations
   const platformAdaptations: Record<string, { maxWords: number; style: string; emojis: boolean; hashtags: boolean }> = {
-    Instagram: {},
+    Instagram: Record<string, unknown>$1
   maxWords: 8,
       style: 'visual',
       emojis: true,
       hashtags: true },
-  Facebook: {},
+  Facebook: Record<string, unknown>$1
   maxWords: 10,
       style: 'conversational',
       emojis: false,
       hashtags: false },
-  LinkedIn: {},
+  LinkedIn: Record<string, unknown>$1
   maxWords: 10,
       style: 'professional',
       emojis: false,
       hashtags: false },
-  Twitter: {},
+  Twitter: Record<string, unknown>$1
   maxWords: 6,
       style: 'concise',
       emojis: true,
       hashtags: true },
-  TikTok: {},
+  TikTok: Record<string, unknown>$1
   maxWords: 7,
       style: 'trendy',
       emojis: true,

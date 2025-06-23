@@ -22,7 +22,7 @@ export interface Client extends BaseModel {
     secondaryColor: string;,
     description: string;,
     website: string;,
-    socialMedia: {},
+    socialMedia: Record<string, unknown>$1
   instagram?: string;
     facebook?: string;
     twitter?: string;
@@ -222,7 +222,7 @@ export interface Asset extends BaseModel {
   clientId: string;,
     tags: string[];,
     status: 'active' | 'archived' | 'deleted';,
-    permissions: {},
+    permissions: Record<string, unknown>$1
   public: boolean;,
     userIds: string[];,
     roleIds: string[];
@@ -301,13 +301,13 @@ export interface Strategy extends BaseModel {
     description: string;,
     clientId: string;,
     objectives: string[];,
-    targetAudience: {},
+    targetAudience: Record<string, unknown>$1
   demographics: string[];,
     interests: string[];,
     behaviors: string[];
   };
   keyMessages: string[];,
-    contentPlan: {},
+    contentPlan: Record<string, unknown>$1
   platforms: string[];,
     contentTypes: string[];,
     frequency: string;,

@@ -412,7 +412,7 @@ async function getApprovalHistory(approvalId: string): Promise<any[]> {
         timestamp: approval.decision_data.decided_at,
         action: approval.decision_data.action,
         description: `Approval ${approval.decision_data.action}`,
-        details: {},
+        details: Record<string, unknown>$1
   comments: approval.decision_data.comments,
           decided_by: approval.decision_data.decided_by}
       });
@@ -581,11 +581,11 @@ async function triggerApprovalWebhooks(approval: any, action: string, user: any)
       type: approval.type,
       status: approval.status,
       action,
-      decided_by: {},
+      decided_by: Record<string, unknown>$1
   id: user.id,
         name: user.full_name || user.email },
   decision_data: approval.decision_data,
-      client: {},
+      client: Record<string, unknown>$1
   id: approval.client_id,
         name: approval.clients?.name },
   timestamp: new Date().toISOString()};

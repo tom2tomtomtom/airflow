@@ -42,7 +42,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(200).json({
     success: true,
     data: filteredTemplates,
-    meta: {},
+    meta: Record<string, unknown>$1
   total: filteredTemplates.length,
       categories: ['marketing', 'product', 'social'],
       timestamp: new Date().toISOString()

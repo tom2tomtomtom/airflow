@@ -43,7 +43,7 @@ class StatsDBackend implements MetricsBackend {
           host: process.env.STATSD_HOST || 'localhost',
           port: parseInt(process.env.STATSD_PORT || '8125'),
           prefix: 'airwave.',
-          globalTags: {},
+          globalTags: Record<string, unknown>$1
   env: process.env.NODE_ENV || 'development',
             service: 'airwave-web'}});
       } catch (error) {

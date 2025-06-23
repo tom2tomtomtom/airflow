@@ -10,7 +10,7 @@ import mammoth from 'mammoth';
 import { PDFExtract } from 'pdf.js-extract';
 
 export const config = {
-  api: {},
+  api: Record<string, unknown>$1
   bodyParser: false}};
 
 // Request schema
@@ -165,7 +165,7 @@ export default async function handler(
     return res.status(200).json({
       success: true,
       message: 'Brief uploaded successfully. AI parsing in progress.',
-      brief: {},
+      brief: Record<string, unknown>$1
   id: brief.id,
         name: brief.name,
         document_url: brief.document_url,

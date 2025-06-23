@@ -140,7 +140,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
       return res.json({
         message: 'Brief reparsing initiated successfully',
-        data: {},
+        data: Record<string, unknown>$1
   brief_id: id,
           name: brief.name,
           status: 'processing',

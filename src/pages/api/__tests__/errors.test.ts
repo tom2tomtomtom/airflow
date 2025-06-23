@@ -30,7 +30,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(200).json({
     success: true,
     data: errors,
-    meta: {},
+    meta: Record<string, unknown>$1
   count: errors.length,
       timestamp: new Date().toISOString()
     }

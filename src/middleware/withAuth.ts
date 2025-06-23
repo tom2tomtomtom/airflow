@@ -34,7 +34,7 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
-        cookies: {},
+        cookies: Record<string, unknown>$1
   get(name: string) {
             return req.cookies[name];
           },
@@ -67,7 +67,7 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
-          cookies: {},
+          cookies: Record<string, unknown>$1
   get: () => undefined,
             set: () => { },
   remove: () => { }
@@ -93,7 +93,7 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
-          cookies: {},
+          cookies: Record<string, unknown>$1
   get: () => undefined,
             set: () => { },
   remove: () => { }

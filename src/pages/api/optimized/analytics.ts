@@ -31,7 +31,7 @@ interface AnalyticsResponse {
   data: { }
     [metric: string]: AnalyticsMetric[];
   };
-  summary: {},
+  summary: Record<string, unknown>$1
   total_campaigns: number;
     total_videos: number;
     total_views: number;

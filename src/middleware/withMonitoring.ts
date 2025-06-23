@@ -29,9 +29,9 @@ const DEFAULT_CONFIG: Required<MonitoringConfig> = {,
     collectMetrics: true,
   trackPerformance: true,
   enableAlerting: true,
-  customTags: {},
+  customTags: Record<string, unknown>$1
   samplingRate: 1.0,
-  performanceThresholds: {},
+  performanceThresholds: Record<string, unknown>$1
   responseTime: 2000, // 2 seconds
     errorRate: 0.05, // 5%
     memoryUsage: 0.8, // 80% };
@@ -408,7 +408,7 @@ export function withAIMonitoring(config: MonitoringConfig = {}) {
     customTags: { }
       ...config.customTags,
       service_type: 'ai' },
-  performanceThresholds: {},
+  performanceThresholds: Record<string, unknown>$1
   responseTime: 30000, // AI operations can take longer
       errorRate: 0.1, // Higher error tolerance for AI
       memoryUsage: 0.9, // AI operations are memory intensive
@@ -421,7 +421,7 @@ export function withVideoMonitoring(config: MonitoringConfig = {}) {
     customTags: { }
       ...config.customTags,
       service_type: 'video' },
-  performanceThresholds: {},
+  performanceThresholds: Record<string, unknown>$1
   responseTime: 60000, // Video operations take longer
       errorRate: 0.05,
       memoryUsage: 0.85,
@@ -434,7 +434,7 @@ export function withDatabaseMonitoring(config: MonitoringConfig = {}) {
     customTags: { }
       ...config.customTags,
       service_type: 'database' },
-  performanceThresholds: {},
+  performanceThresholds: Record<string, unknown>$1
   responseTime: 1000, // Database operations should be fast
       errorRate: 0.01, // Very low error tolerance
       memoryUsage: 0.8,

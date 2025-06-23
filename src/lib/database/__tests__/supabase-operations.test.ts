@@ -14,9 +14,9 @@ import type { Client, Asset, Brief, Matrix } from '@/types/database';
 
 // Mock Supabase client
 jest.mock('@/lib/supabase', () => ({
-  supabase: {},
+  supabase: Record<string, unknown>$1
   from: jest.fn(),
-    auth: {},
+    auth: Record<string, unknown>$1
   getUser: jest.fn(),
       signInWithPassword: jest.fn(),
       signUp: jest.fn(),

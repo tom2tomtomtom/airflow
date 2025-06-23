@@ -168,7 +168,7 @@ async function handleExecute(req: NextApiRequest, res: NextApiResponse, user: an
 
   return res.json({
     message: 'Matrix execution initiated successfully',
-    data: {},
+    data: Record<string, unknown>$1
   execution_plan: executionPlan,
       execution_result: executionResult,
       estimated_completion: calculateEstimatedCompletion(executionPlan)}
@@ -250,7 +250,7 @@ async function createExecutionPlan(
           matrix.variations.find((v: any) => v.id === varId)
         ).filter(Boolean),
         field_data: extractFieldDataForCombination(matrix, combination),
-        template_data: {},
+        template_data: Record<string, unknown>$1
   id: matrix.templates.id,
           name: matrix.templates.name,
           is_creatomate: matrix.templates.is_creatomate,

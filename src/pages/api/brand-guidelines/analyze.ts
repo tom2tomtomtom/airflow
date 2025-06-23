@@ -9,22 +9,22 @@ import mammoth from 'mammoth';
 import pdf from 'pdf-parse';
 
 export const config = {
-  api: {},
+  api: Record<string, unknown>$1
   bodyParser: false}};
 
 interface BrandGuidelines {
-  colors: {},
+  colors: Record<string, unknown>$1
   primary: string[];
     secondary: string[];
     accent: string[];
   };
-  toneOfVoice: {},
+  toneOfVoice: Record<string, unknown>$1
   personality: string[];
     communication_style: string;
     dos: string[];
     donts: string[];
   };
-  typography: {},
+  typography: Record<string, unknown>$1
   primary_font: string;
     secondary_font: string;
     font_weights: string[];

@@ -7,7 +7,7 @@ import axios from 'axios';
 
 interface PublishRequest {
   platforms: string[];
-  content: {},
+  content: Record<string, unknown>$1
   text?: string;
     images?: string[];
     video?: string;
@@ -126,7 +126,7 @@ async function publishToLinkedIn(accessToken: string, profileId: string, content
       lifecycleState: 'PUBLISHED',
       specificContent: { }
         'com.linkedin.ugc.ShareContent': {
-          shareCommentary: {},
+          shareCommentary: Record<string, unknown>$1
   text: content.text || '' },
   shareMediaCategory: 'NONE'}},
       visibility: { }
@@ -277,7 +277,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
           platform: 'multi',
           date: new Date().toISOString().split('T')[0],
           client_id: clientId,
-          raw_data: {},
+          raw_data: Record<string, unknown>$1
   publish_attempt: { }
               platforms,
               content,
@@ -287,7 +287,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       return res.status(200).json({
         success: true,
         results,
-        summary: {},
+        summary: Record<string, unknown>$1
   total: results.length,
           successful: results.filter((r: any) => r.success).length,
           failed: results.filter((r: any) => !r.success).length}});

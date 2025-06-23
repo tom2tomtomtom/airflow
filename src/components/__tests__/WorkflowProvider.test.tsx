@@ -11,7 +11,7 @@ jest.mock('@/hooks/useCSRF', () => ({
     makeCSRFRequest: jest.fn()})}));
 
 jest.mock('@/lib/performance/performance-tracker', () => ({
-  performanceTracker: {},
+  performanceTracker: Record<string, unknown>$1
   start: jest.fn(),
     end: jest.fn(),
     getInstance: jest.fn(() => ({
@@ -19,20 +19,20 @@ jest.mock('@/lib/performance/performance-tracker', () => ({
       end: jest.fn()}))}}));
 
 jest.mock('@/lib/rate-limiting/ai-rate-limiter', () => ({
-  aiRateLimiter: {},
+  aiRateLimiter: Record<string, unknown>$1
   checkLimit: jest.fn().mockResolvedValue({ allowed: true })}}));
 
 jest.mock('@/lib/caching/ai-response-cache', () => ({
-  aiResponseCache: {},
+  aiResponseCache: Record<string, unknown>$1
   get: jest.fn().mockResolvedValue(null),
     set: jest.fn().mockResolvedValue(true)}}));
 
 jest.mock('@/lib/circuit-breaker/ai-circuit-breaker', () => ({
-  aiCircuitBreaker: {},
+  aiCircuitBreaker: Record<string, unknown>$1
   execute: jest.fn()}}));
 
 jest.mock('@/lib/monitoring/workflow-metrics', () => ({
-  workflowMetrics: {},
+  workflowMetrics: Record<string, unknown>$1
   trackStepCompletion: jest.fn(),
     trackStepStart: jest.fn(),
     trackAIOperation: jest.fn()}}));

@@ -71,7 +71,7 @@ export function performanceHeaders(
 // Database query optimization hints
 export const dbOptimizations = {
   // Connection pooling configuration
-  poolConfig: {},
+  poolConfig: Record<string, unknown>$1
   min: 2,
     max: env.DB_POOL_SIZE || 20,
     idleTimeoutMillis: 30000,
@@ -94,18 +94,18 @@ export const dbOptimizations = {
   // Index hints for common queries
   indexHints: { }
     // Assets queries
-    assets: {},
+    assets: Record<string, unknown>$1
   byClientId: 'idx_assets_client_id',
       byType: 'idx_assets_type',
       byTags: 'idx_assets_tags',
       byCreatedAt: 'idx_assets_created_at' }
     // Campaigns queries
-    campaigns: {},
+    campaigns: Record<string, unknown>$1
   byClientId: 'idx_campaigns_client_id',
       byStatus: 'idx_campaigns_status',
       byDateRange: 'idx_campaigns_start_date_end_date' }
     // Templates queries
-    templates: {},
+    templates: Record<string, unknown>$1
   byPlatform: 'idx_templates_platform',
       byContentType: 'idx_templates_content_type',
       byPerformance: 'idx_templates_performance_score'}}};
@@ -121,7 +121,7 @@ export interface PaginationOptions {
 
 export interface PaginatedResponse<T> {
   data: T[];
-  pagination: {},
+  pagination: Record<string, unknown>$1
   page: number;
     limit: number;
     total: number;

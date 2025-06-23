@@ -23,7 +23,7 @@ const mockInsert = jest.fn();
 
 jest.mock('@supabase/ssr', () => ({
   createServerClient: jest.fn(() => ({,
-    auth: {},
+    auth: Record<string, unknown>$1
   getUser: mockGetUser },
   from: mockFrom}))}));
 
@@ -36,7 +36,7 @@ jest.mock('@/utils/api', () => ({
   errorResponse: jest.fn((res, code, message, status) => {
     res.status(status).json({ success: false, error: { code, message } });
   }),
-  ErrorCode: {},
+  ErrorCode: Record<string, unknown>$1
   UNAUTHORIZED: 'UNAUTHORIZED',
     FORBIDDEN: 'FORBIDDEN',
     VALIDATION_ERROR: 'VALIDATION_ERROR',

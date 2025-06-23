@@ -9,7 +9,7 @@ import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { withUploadRateLimit } from '@/lib/rate-limiter';
 
 export const config = {
-  api: {},
+  api: Record<string, unknown>$1
   bodyParser: false}};
 
 interface UploadResponse {

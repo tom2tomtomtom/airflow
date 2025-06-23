@@ -147,20 +147,20 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
       const videoConfig = {
         type: campaignId ? 'campaign_based' : 'standalone',
         campaign_id: campaignId,
-        video_config: {},
+        video_config: Record<string, unknown>$1
   prompt,
           style,
           duration,
           platform,
           quality,
           aspect_ratio: getAspectRatioForPlatform(platform) },
-  content_elements: {},
+  content_elements: Record<string, unknown>$1
   voice_over: includeVoiceOver ? {
             text: voiceOverText || prompt,
             voice: 'neural',
             language: 'en'} : undefined,
           background_music: true },
-  generation_settings: {},
+  generation_settings: Record<string, unknown>$1
   variations_count: variationsCount,
           include_captions: includeCaptions,
           auto_optimize_for_platform: true,

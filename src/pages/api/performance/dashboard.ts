@@ -9,8 +9,8 @@ import { cacheManager } from '@/lib/cache/strategy';
 
 interface PerformanceDashboard {
   success: true;
-  data: {},
-  overview: {},
+  data: Record<string, unknown>$1
+  overview: Record<string, unknown>$1
   total_requests: number;
       average_response_time: number;
       cache_hit_rate: number;
@@ -31,7 +31,7 @@ interface PerformanceDashboard {
         performance_grade: 'A' | 'B' | 'C' | 'D' | 'F';
       };
     };
-    cache: {},
+    cache: Record<string, unknown>$1
   memory_usage: any;
       total_cached_items: number;
       cache_efficiency: number;
@@ -42,7 +42,7 @@ interface PerformanceDashboard {
         last_accessed: string;
       }>;
     };
-    system: {},
+    system: Record<string, unknown>$1
   memory_usage: NodeJS.MemoryUsage;
       uptime: number;
       cpu_usage?: number;
@@ -56,7 +56,7 @@ interface PerformanceDashboard {
       action: string;
     }>;
   };
-  meta: {},
+  meta: Record<string, unknown>$1
   generated_at: string;
     data_window: string;
     auto_refresh_interval: number;
@@ -321,7 +321,7 @@ export default async function handler(
       res.status(200).json({
         success: true,
         data: {} as any,
-        meta: {},
+        meta: Record<string, unknown>$1
   generated_at: new Date().toISOString(),
           data_window: 'cleared',
           auto_refresh_interval: 30}});
@@ -341,7 +341,7 @@ export default async function handler(
     const response: PerformanceDashboard = {
       success: true,
       data,
-      meta: {},
+      meta: Record<string, unknown>$1
   generated_at: new Date().toISOString(),
         data_window: 'last_hour', // Could be configurable
         auto_refresh_interval: 30, // seconds

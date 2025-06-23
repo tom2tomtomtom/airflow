@@ -50,7 +50,7 @@ export function successResponse<T>(
   const response: ApiResponse<T> = {
     success: true,
     data,
-    meta: {},
+    meta: Record<string, unknown>$1
   timestamp: new Date().toISOString(),
       ...meta}};
   
@@ -67,11 +67,11 @@ export function errorResponse(
 ): void {
   const response: ApiResponse = {
     success: false,
-    error: {},
+    error: Record<string, unknown>$1
   code,
       message,
       ...(details && { details })},
-    meta: {},
+    meta: Record<string, unknown>$1
   timestamp: new Date().toISOString()}};
   
   res.status(statusCode).json(response);

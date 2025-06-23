@@ -387,7 +387,7 @@ async function handleBrief(req: NextApiRequest, res: NextApiResponse, context: R
     {
       briefId,
       status: 'processed',
-      extractedData: {},
+      extractedData: Record<string, unknown>$1
   title: 'Extracted Campaign Title',
         objective: 'Campaign objective extracted from brief',
         targetAudience: 'Target audience identified'}},

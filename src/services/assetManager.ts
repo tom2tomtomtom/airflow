@@ -392,7 +392,7 @@ export class AssetManager {
     name: string,
     description: string,
     createdBy: string,
-    options: {},
+    options: Record<string, unknown>$1
   category?: AssetCollection['category'];
       usage?: AssetCollection['usage'];
       tags?: string[];
@@ -589,7 +589,7 @@ export class AssetManager {
     return {
       main: optimized.buffer,
       thumbnail,
-      dimensions: {},
+      dimensions: Record<string, unknown>$1
   width: analysis.metadata.width,
         height: analysis.metadata.height },
   colorPalette: [analysis.dominantColor],

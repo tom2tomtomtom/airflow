@@ -199,7 +199,7 @@ export default async function handler(
         ai_model: model,
           original_prompt: prompt,
           enhanced_prompt: finalPrompt,
-          generation_settings: {},
+          generation_settings: Record<string, unknown>$1
   size,
             quality,
             style},
@@ -219,7 +219,7 @@ export default async function handler(
       success: true,
       message: 'Image generated successfully',
       asset,
-      generation_details: {},
+      generation_details: Record<string, unknown>$1
   original_prompt: prompt,
         enhanced_prompt: enhance_prompt ? finalPrompt : undefined,
         revised_prompt: generatedImage.revised_prompt,

@@ -254,7 +254,7 @@ If information is not clearly stated, use null for that field. Be accurate and d
       platforms: ["social media", "digital"],
       budget: null,
       timeline: null,
-      extractedSections: {},
+      extractedSections: Record<string, unknown>$1
   background: "Company background information",
         target: "Target audience details",
         strategy: "Strategic approach" },

@@ -138,12 +138,12 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
   }
 
   return res.json({
-    data: {},
+    data: Record<string, unknown>$1
   asset_title: asset.title,
       versions: enrichedVersions,
       statistics: versionStats },
   count: versionStats.total_versions,
-    pagination: {},
+    pagination: Record<string, unknown>$1
   limit: parseInt(limit as string),
       offset: parseInt(offset as string),
       total: versionStats.total_versions}
@@ -266,7 +266,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
 
   return res.status(201).json({
     message: 'Copy asset version created successfully',
-    data: {},
+    data: Record<string, unknown>$1
   asset: updatedAsset,
       version_number: versionData.is_major ? nextVersionNumber + 1 : nextVersionNumber,
       change_analysis: changeAnalysis}

@@ -75,7 +75,7 @@ async function handleExport(req: NextApiRequest, res: NextApiResponse, user: any
 
 async function gatherCampaignData(campaignId: string, includeAssets: boolean, includeVideos: boolean): Promise<any> {
   const data: any = {
-    campaign: {},
+    campaign: Record<string, unknown>$1
   strategy: { motivations: [], copy_assets: []  },
   matrix: { combinations: []  },
   assets: [],
@@ -248,29 +248,29 @@ function generatePlatformSpecificExport(data: any, platform?: string): any {
   }
 
   const platformExports: Record<string, any> = {
-    youtube: {},
+    youtube: Record<string, unknown>$1
   title: data?.campaign?.name,
       description: data?.campaign?.description,
       tags: data?.strategy?.motivations.map((m: any) => m.category).filter(Boolean),
       thumbnails: data?.assets?.filter((a: any) => a.type === 'image').slice(0, 3),
       videos: data?.videos?.filter((v: any) => v.config?.video_config?.platform === 'youtube') },
-  instagram: {},
+  instagram: Record<string, unknown>$1
   posts: data?.strategy?.copy_assets.filter((c: any) => c.platform === 'instagram'),
       stories: data?.videos?.filter((v: any) => v.config?.video_config?.aspect_ratio === '9:16'),
       hashtags: generateHashtags(data?.strategy?.motivations) },
-  tiktok: {},
+  tiktok: Record<string, unknown>$1
   videos: data?.videos?.filter((v: any) => v.config?.video_config?.platform === 'tiktok'),
       captions: data?.strategy?.copy_assets.filter((c: any) => c.platform === 'tiktok'),
       effects: [] },
-  facebook: {},
+  facebook: Record<string, unknown>$1
   posts: data?.strategy?.copy_assets.filter((c: any) => c.platform === 'facebook'),
       ads: data?.matrix?.combinations,
       targeting: extractTargetingData(data?.strategy?.motivations) },
-  linkedin: {},
+  linkedin: Record<string, unknown>$1
   posts: data?.strategy?.copy_assets.filter((c: any) => c.platform === 'linkedin'),
       articles: [],
       company_updates: data?.matrix?.combinations },
-  twitter: {},
+  twitter: Record<string, unknown>$1
   tweets: data?.strategy?.copy_assets.filter((c: any) => c.platform === 'twitter'),
       threads: [],
       hashtags: generateHashtags(data?.strategy?.motivations)}};

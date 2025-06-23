@@ -10,7 +10,7 @@ jest.mock('mixpanel-browser', () => ({
   init: jest.fn(),
   track: jest.fn(),
   identify: jest.fn(),
-  people: {},
+  people: Record<string, unknown>$1
   set: jest.fn(),
     increment: jest.fn() },
   time_event: jest.fn(),

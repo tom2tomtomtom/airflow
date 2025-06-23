@@ -221,7 +221,7 @@ export class ImageOptimizer {
   
   async generatePlaceholder(
     input: Buffer | string,
-    options: {},
+    options: Record<string, unknown>$1
   width?: number;
       height?: number;
       blur?: number;

@@ -286,7 +286,7 @@ export class StructuredLogger {
     // Note: This would typically integrate with a metrics system
     return {
       totalLogs: 0,
-      logsByLevel: {},
+      logsByLevel: Record<string, unknown>$1
   recentErrors: []
     };
   }

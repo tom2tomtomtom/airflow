@@ -183,7 +183,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
             const { data, error } = await supabaseClient.auth.signUp({
         email,
         password,
-        options: {},
+        options: Record<string, unknown>$1
   data: { }
             name,
             role: 'authenticated' });

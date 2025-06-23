@@ -152,7 +152,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     data: enrichedData,
     count: data?.length || 0,
     statistics,
-    pagination: {},
+    pagination: Record<string, unknown>$1
   limit: filters.limit,
       offset: filters.offset,
       total: count || 0

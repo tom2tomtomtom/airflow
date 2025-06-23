@@ -134,7 +134,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       data: notifications || [],
       count: notifications?.length || 0,
       statistics,
-      pagination: {},
+      pagination: Record<string, unknown>$1
   limit: filters.limit,
         offset: filters.offset,
         total: count || 0
@@ -378,8 +378,8 @@ function getEmptyStatistics() {
     unread: 0,
     read: 0,
     recent_24h: 0,
-    by_type: {},
-  by_category: {},
+    by_type: Record<string, unknown>$1
+  by_category: Record<string, unknown>$1
   by_priority: {}
   };
 }

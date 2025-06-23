@@ -55,7 +55,7 @@ export interface SecurityEvent {
     city?: string;
     timezone?: string;
   };
-  threat: {},
+  threat: Record<string, unknown>$1
   score: number; // 0-100
     category: string;
     indicators: string[];
@@ -76,7 +76,7 @@ export interface SecurityAlert {
   title: string;
   description: string;
   events: string[]; // Event IDs related to this alert
-  metrics: {},
+  metrics: Record<string, unknown>$1
   eventCount: number;
     timeWindow: string;
     affectedUsers: number;
@@ -298,7 +298,7 @@ class ThreatDetectionEngine {
           title: `${pattern.name} detected from ${ip}`,
           description: `${pattern.description}. ${ipEvents.length} events in ${pattern.timeWindow / 60000} minutes.`,
           events: ipEvents.map(e => e.id),
-          metrics: {},
+          metrics: Record<string, unknown>$1
   eventCount: ipEvents.length,
             timeWindow: `${pattern.timeWindow / 60000} minutes`,
             affectedUsers: new Set(ipEvents.map(e => e.userId).filter(Boolean)).size,
@@ -378,7 +378,7 @@ export class SecurityLogger {
   /**
    * Get security events with filtering
    */
-  getEvents(filters: {},
+  getEvents(filters: Record<string, unknown>$1
     userId?: string;
     ip?: string;
     type?: SecurityEventType;
@@ -429,8 +429,8 @@ export class SecurityLogger {
   } {
     const events = eventStore.getRecentEvents(timeRange * 60);
     
-    const eventsByType = {} as Record<SecurityEventType, number>;
-    const eventsBySeverity = {} as Record<SecuritySeverity, number>;
+    const eventsByType = {} as Record<string, unknown> & Record<SecurityEventType, number>;
+    const eventsBySeverity = {} as Record<string, unknown> & Record<SecuritySeverity, number>;
     const ipCounts = new Map<string, number>();
 
     for (const event of events) {

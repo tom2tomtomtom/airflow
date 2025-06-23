@@ -133,7 +133,7 @@ export class ErrorClassifier {
       // Network errors
       {
         condition: (error) => this.isNetworkError(error),
-        classification: {},
+        classification: Record<string, unknown>$1
   type: ErrorType.NETWORK,
           category: ErrorCategory.INFRASTRUCTURE,
           severity: ErrorSeverity.MEDIUM,
@@ -145,7 +145,7 @@ export class ErrorClassifier {
       // Database errors
       {
         condition: (error) => this.isDatabaseError(error),
-        classification: {},
+        classification: Record<string, unknown>$1
   type: ErrorType.DATABASE,
           category: ErrorCategory.INFRASTRUCTURE,
           severity: ErrorSeverity.HIGH,
@@ -157,7 +157,7 @@ export class ErrorClassifier {
       // Authentication errors
       {
         condition: (error) => this.isAuthenticationError(error),
-        classification: {},
+        classification: Record<string, unknown>$1
   type: ErrorType.AUTHENTICATION,
           category: ErrorCategory.CLIENT,
           severity: ErrorSeverity.MEDIUM,
@@ -169,7 +169,7 @@ export class ErrorClassifier {
       // Authorization errors
       {
         condition: (error) => this.isAuthorizationError(error),
-        classification: {},
+        classification: Record<string, unknown>$1
   type: ErrorType.AUTHORIZATION,
           category: ErrorCategory.CLIENT,
           severity: ErrorSeverity.MEDIUM,
@@ -181,7 +181,7 @@ export class ErrorClassifier {
       // Validation errors
       {
         condition: (error) => this.isValidationError(error),
-        classification: {},
+        classification: Record<string, unknown>$1
   type: ErrorType.VALIDATION,
           category: ErrorCategory.CLIENT,
           severity: ErrorSeverity.LOW,
@@ -193,7 +193,7 @@ export class ErrorClassifier {
       // Rate limit errors
       {
         condition: (error) => this.isRateLimitError(error),
-        classification: {},
+        classification: Record<string, unknown>$1
   type: ErrorType.RATE_LIMIT,
           category: ErrorCategory.CLIENT,
           severity: ErrorSeverity.MEDIUM,
@@ -205,7 +205,7 @@ export class ErrorClassifier {
       // Timeout errors
       {
         condition: (error) => this.isTimeoutError(error),
-        classification: {},
+        classification: Record<string, unknown>$1
   type: ErrorType.TIMEOUT,
           category: ErrorCategory.INFRASTRUCTURE,
           severity: ErrorSeverity.MEDIUM,
@@ -217,7 +217,7 @@ export class ErrorClassifier {
       // External service errors
       {
         condition: (error) => this.isExternalServiceError(error),
-        classification: {},
+        classification: Record<string, unknown>$1
   type: ErrorType.EXTERNAL_SERVICE,
           category: ErrorCategory.INTEGRATION,
           severity: ErrorSeverity.MEDIUM,
@@ -229,7 +229,7 @@ export class ErrorClassifier {
       // Configuration errors
       {
         condition: (error) => this.isConfigurationError(error),
-        classification: {},
+        classification: Record<string, unknown>$1
   type: ErrorType.CONFIGURATION,
           category: ErrorCategory.SERVER,
           severity: ErrorSeverity.CRITICAL,
@@ -241,7 +241,7 @@ export class ErrorClassifier {
       // System errors (fallback)
       {
         condition: () => true,
-        classification: {},
+        classification: Record<string, unknown>$1
   type: ErrorType.UNKNOWN,
           category: ErrorCategory.SERVER,
           severity: ErrorSeverity.MEDIUM,
@@ -421,14 +421,14 @@ export class ErrorClassifier {
   
   private sendToAPM(error: ClassifiedError): void {
     captureError(error.originalError, {
-      tags: {},
+      tags: Record<string, unknown>$1
   errorType: error.type,
         errorCategory: error.category,
         errorSeverity: error.severity,
         errorId: error.id,
         fingerprint: error.fingerprint },
-  extra: {},
-  classification: {},
+  extra: Record<string, unknown>$1
+  classification: Record<string, unknown>$1
   type: error.type,
           category: error.category,
           severity: error.severity,

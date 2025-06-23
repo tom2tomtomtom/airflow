@@ -136,7 +136,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     data: enrichedData,
     count,
     portfolio_stats: portfolioStats,
-    pagination: {},
+    pagination: Record<string, unknown>$1
   limit: parseInt(limit as string),
       offset: parseInt(offset as string),
       total: count || 0

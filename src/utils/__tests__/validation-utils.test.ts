@@ -144,9 +144,9 @@ describe('Validation Utils', () => {
 
     it('should recursively sanitize nested objects', () => {
       const nestedObject = {
-        user: {},
+        user: Record<string, unknown>$1
   name: 'test',
-          profile: {},
+          profile: Record<string, unknown>$1
   age: 25}}};
       
       // Add dangerous properties to nested objects
@@ -463,9 +463,9 @@ describe('Validation Utils', () => {
 
     it('should handle complex nested sanitization', () => {
       const complexObject = {
-        level1: {},
-  level2: {},
-  level3: {},
+        level1: Record<string, unknown>$1
+  level2: Record<string, unknown>$1
+  level3: Record<string, unknown>$1
   safe: 'value'}}},
         normalField: 'normal'};
       
@@ -488,7 +488,7 @@ describe('Validation Utils', () => {
     it('should handle arrays in object sanitization', () => {
       const objectWithArrays = {
         tags: ['tag1', 'tag2'],
-        nested: {},
+        nested: Record<string, unknown>$1
   items: [{ name: 'item1' }, { name: 'item2' }]}};
       
       // Add dangerous property to test sanitization

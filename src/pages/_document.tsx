@@ -9,7 +9,7 @@ import Document, {
 } from 'next/document';
 import createEmotionServer from '@emotion/server/create-instance';
 import { AppType } from 'next/app';
-import { lightTheme } from '@/styles/theme';
+import { getThemeConfig } from '@/styles/theme';
 import createEmotionCache from '@/lib/createEmotionCache';
 import { MyAppProps } from './_app';
 
@@ -23,7 +23,7 @@ export default class MyDocument extends Document<MyDocumentProps> {
       <Html lang="en">
         <Head>
           {/* PWA primary color */}
-          <meta name="theme-color" content={lightTheme.palette.primary.main} />
+          <meta name="theme-color" content={getThemeConfig('light').palette.primary.main} />
           <link rel="shortcut icon" href="/favicon.ico" />
 
           {/* Using system fonts only - no external font loading for performance */}

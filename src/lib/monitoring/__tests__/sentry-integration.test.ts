@@ -261,7 +261,7 @@ describe('Sentry Integration Tests', () => {
         message: 'User navigated to campaigns page',
         category: 'navigation',
         level: 'info',
-        data: {},
+        data: Record<string, unknown>$1
   from: '/dashboard',
           to: '/campaigns',
           method: 'click'}});
@@ -270,7 +270,7 @@ describe('Sentry Integration Tests', () => {
         message: 'User navigated to campaigns page',
         category: 'navigation',
         level: 'info',
-        data: {},
+        data: Record<string, unknown>$1
   from: '/dashboard',
           to: '/campaigns',
           method: 'click'}});
@@ -284,7 +284,7 @@ describe('Sentry Integration Tests', () => {
         message: 'API call to create campaign',
         category: 'http',
         level: 'info',
-        data: {},
+        data: Record<string, unknown>$1
   url: '/api/campaigns',
           method: 'POST',
           status_code: 201,
@@ -294,7 +294,7 @@ describe('Sentry Integration Tests', () => {
         message: 'API call to create campaign',
         category: 'http',
         level: 'info',
-        data: {},
+        data: Record<string, unknown>$1
   url: '/api/campaigns',
           method: 'POST',
           status_code: 201,
@@ -309,7 +309,7 @@ describe('Sentry Integration Tests', () => {
         message: 'User uploaded asset',
         category: 'user',
         level: 'info',
-        data: {},
+        data: Record<string, unknown>$1
   action: 'upload',
           asset_type: 'image',
           file_size: 1024000,
@@ -319,7 +319,7 @@ describe('Sentry Integration Tests', () => {
         message: 'User uploaded asset',
         category: 'user',
         level: 'info',
-        data: {},
+        data: Record<string, unknown>$1
   action: 'upload',
           asset_type: 'image',
           file_size: 1024000,

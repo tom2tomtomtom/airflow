@@ -103,7 +103,7 @@ async function handleRenderCompleted(payload: CreatomateWebhookPayload): Promise
   await webhookManager.triggerEvent(
     {
       type: WebhookManager.EVENTS.RENDER_COMPLETED,
-      data: {},
+      data: Record<string, unknown>$1
   execution_id: metadata.execution_id,
         render_id,
         url,
@@ -158,7 +158,7 @@ async function handleRenderFailed(payload: CreatomateWebhookPayload): Promise<vo
   await webhookManager.triggerEvent(
     {
       type: WebhookManager.EVENTS.RENDER_FAILED,
-      data: {},
+      data: Record<string, unknown>$1
   execution_id: metadata.execution_id,
         render_id,
         error,

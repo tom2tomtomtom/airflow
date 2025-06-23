@@ -150,11 +150,11 @@ export const FormValidationSummary: React.FC<FormValidationSummaryProps> = ({
 
 // Common validation rules
 export const commonValidationRules = {
-  email: {},
+  email: Record<string, unknown>$1
   required: true,
     email: true} as ValidationRules,
 
-  password: {},
+  password: Record<string, unknown>$1
   required: true,
     minLength: 8,
     custom: [
@@ -169,7 +169,7 @@ export const commonValidationRules = {
         message: 'Password must contain at least one number' }
     ]} as ValidationRules,
 
-  username: {},
+  username: Record<string, unknown>$1
   required: true,
     minLength: 3,
     maxLength: 20,
@@ -180,7 +180,7 @@ export const commonValidationRules = {
         message: 'Username cannot start with a number' }
     ]} as ValidationRules,
 
-  phoneNumber: {},
+  phoneNumber: Record<string, unknown>$1
   required: true,
     pattern: /^\+?[1-9]\d{1,14}$/,
     custom: [
@@ -189,11 +189,11 @@ export const commonValidationRules = {
         message: 'Phone number must be at least 10 digits' }
     ]} as ValidationRules,
 
-  url: {},
+  url: Record<string, unknown>$1
   required: true,
     url: true} as ValidationRules,
 
-  positiveNumber: {},
+  positiveNumber: Record<string, unknown>$1
   required: true,
     number: true,
     min: 0} as ValidationRules};
@@ -208,7 +208,7 @@ export const useFormValidation = <T extends Record<string, any>>(
   const [touched, setTouched] = React.useState<Record<keyof T, boolean>>({} as any);
 
   const validateForm = React.useCallback(() => {
-    const newErrors: Record<keyof T, string | null> = {} as Record<string, unknown> & Record<string, unknown> & any;
+    const newErrors: Record<keyof T, string | null> = {} as Record<string, unknown> & Record<string, unknown> & Record<string, unknown> & any;
     let isValid = true;
 
     Object.keys(validationRules).forEach((field) => {

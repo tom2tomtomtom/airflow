@@ -163,18 +163,18 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
   }
 
   return res.json({
-    data: {},
-  asset_info: {},
+    data: Record<string, unknown>$1
+  asset_info: Record<string, unknown>$1
   id: asset.id,
         title: asset.title,
         type: asset.type,
         platform: asset.platform,
         created_at: asset.created_at },
-  current_scores: {},
+  current_scores: Record<string, unknown>$1
   performance_score: asset.performance_score,
         brand_compliance_score: asset.brand_compliance_score },
   metrics: performanceMetrics,
-      usage_stats: {},
+      usage_stats: Record<string, unknown>$1
   total_campaigns: usageStats?.length || 0,
         active_campaigns: usageStats?.filter((u: any) => u.status === 'active').length || 0,
         campaigns: usageStats || [] },
@@ -182,7 +182,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
       trend_analysis: trendAnalysis,
       insights,
       predictions,
-      period: {},
+      period: Record<string, unknown>$1
   start_date: startDate.toISOString(),
         end_date: endDate.toISOString(),
         period_label: period}
@@ -243,7 +243,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
 
     updateData.metadata = {
       ...currentAsset?.metadata,
-      performance_update: {},
+      performance_update: Record<string, unknown>$1
   timestamp: new Date().toISOString(),
         updated_by: user.id,
         engagement_metrics,
@@ -409,10 +409,10 @@ function generatePerformancePredictions(metrics: any, trend: any): any {
   const trendMultiplier = 1 + (trend.change_percentage / 100);
 
   return {
-    next_7_days: {},
+    next_7_days: Record<string, unknown>$1
   expected_ctr: Math.round(currentCTR * Math.pow(trendMultiplier, 0.25) * 100) / 100,
       confidence: trend.confidence * 0.8 },
-  next_30_days: {},
+  next_30_days: Record<string, unknown>$1
   expected_ctr: Math.round(currentCTR * trendMultiplier * 100) / 100,
       confidence: trend.confidence * 0.6 },
   methodology: 'Predictions based on historical trend analysis and performance indicators'};

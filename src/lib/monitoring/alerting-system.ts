@@ -28,7 +28,7 @@ export interface AlertRule {
   description: string;
   severity: AlertSeverity;
   condition: AlertCondition;
-  evaluation: {},
+  evaluation: Record<string, unknown>$1
   intervalSeconds: number;
     forDuration: number; // How long condition must be true
   };
@@ -264,14 +264,14 @@ export class AlertingSystem {
       name: 'High API Error Rate',
       description: 'API error rate exceeds 5% over 5 minutes',
       severity: AlertSeverity.HIGH,
-      condition: {},
+      condition: Record<string, unknown>$1
   type: 'threshold',
         metric: 'api.requests.error_rate',
         operator: '>',
         value: 0.05,
         timeWindow: 300,
         aggregation: 'avg' },
-  evaluation: {},
+  evaluation: Record<string, unknown>$1
   intervalSeconds: 60,
         forDuration: 300 },
   notifications: [
@@ -291,14 +291,14 @@ export class AlertingSystem {
       name: 'Database Connection Failure',
       description: 'Database connection health check failing',
       severity: AlertSeverity.CRITICAL,
-      condition: {},
+      condition: Record<string, unknown>$1
   type: 'threshold',
         metric: 'system.health.database',
         operator: '<',
         value: 1,
         timeWindow: 60,
         aggregation: 'avg' },
-  evaluation: {},
+  evaluation: Record<string, unknown>$1
   intervalSeconds: 30,
         forDuration: 60 },
   notifications: [
@@ -317,14 +317,14 @@ export class AlertingSystem {
       name: 'AI Budget Threshold Exceeded',
       description: 'Monthly AI budget usage exceeds 80%',
       severity: AlertSeverity.MEDIUM,
-      condition: {},
+      condition: Record<string, unknown>$1
   type: 'threshold',
         metric: 'ai.budget.usage_percent',
         operator: '>',
         value: 0.8,
         timeWindow: 3600,
         aggregation: 'max' },
-  evaluation: {},
+  evaluation: Record<string, unknown>$1
   intervalSeconds: 300,
         forDuration: 0 },
   notifications: [
@@ -340,14 +340,14 @@ export class AlertingSystem {
       name: 'Slow API Response Time',
       description: 'API response time exceeds 2 seconds',
       severity: AlertSeverity.MEDIUM,
-      condition: {},
+      condition: Record<string, unknown>$1
   type: 'threshold',
         metric: 'api.requests.duration',
         operator: '>',
         value: 2000,
         timeWindow: 600,
         aggregation: 'avg' },
-  evaluation: {},
+  evaluation: Record<string, unknown>$1
   intervalSeconds: 120,
         forDuration: 600 },
   notifications: [
@@ -363,14 +363,14 @@ export class AlertingSystem {
       name: 'Video Generation Failure Rate High',
       description: 'Video generation failure rate exceeds 10%',
       severity: AlertSeverity.HIGH,
-      condition: {},
+      condition: Record<string, unknown>$1
   type: 'threshold',
         metric: 'video.generation.failure_rate',
         operator: '>',
         value: 0.1,
         timeWindow: 900,
         aggregation: 'avg' },
-  evaluation: {},
+  evaluation: Record<string, unknown>$1
   intervalSeconds: 180,
         forDuration: 300 },
   notifications: [
@@ -426,7 +426,7 @@ export class AlertingSystem {
         firstSeen: new Date(),
         lastSeen: new Date(),
         labels: rule.tags || { },
-  annotations: {},
+  annotations: Record<string, unknown>$1
   runbook: rule.runbook || ''}};
 
       this.activeAlerts.set(alertId, alert);
