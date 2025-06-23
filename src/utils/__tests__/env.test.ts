@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
 import { validateEnv, getEnvVar, checkProductionReadiness, getValidatedEnv, logEnvironmentStatus } from '../env';
 
 describe('env utilities', () => {
@@ -7,7 +7,7 @@ describe('env utilities', () => {
 
   beforeEach(() => {
     // Reset environment for each test
-    vi.resetModules();
+    jest.resetModules();
     process.env = { ...originalEnv };
   });
 
@@ -136,7 +136,6 @@ describe('env utilities', () => {
 
     it('should identify missing required variables', () => {
       process.env = {
-        ...process.env,
         NODE_ENV: 'production',
         JWT_SECRET: 'a'.repeat(32),
       };
@@ -145,6 +144,7 @@ describe('env utilities', () => {
       expect(result.isReady).toBe(false);
       expect(result.missingVars).toContain('NEXT_PUBLIC_SUPABASE_URL');
       expect(result.missingVars).toContain('OPENAI_API_KEY');
+      expect(result.missingVars).toContain('SUPABASE_SERVICE_KEY');
     });
 
     it('should warn about short JWT_SECRET', () => {
@@ -207,7 +207,7 @@ describe('env utilities', () => {
 
   describe('logEnvironmentStatus', () => {
     it('should log success for valid environment', () => {
-      const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+      const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
       
       process.env = {
         ...process.env,
@@ -224,23 +224,23 @@ describe('env utilities', () => {
 
       logEnvironmentStatus();
       
-      expect(consoleSpy).toHaveBeenCalledWith('✅ Environment validation passed');
+      expect(consoleSpy).toHaveBeenCalledWith('Environment validated successfully');
       consoleSpy.mockRestore();
     });
 
     it('should exit process on validation failure', () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => {
         throw new Error('Process exit');
       });
       
       process.env = {
-        ...process.env,
-        NODE_ENV: 'invalid',
+        NODE_ENV: 'development',
+        // Missing all required variables to trigger validation failure
       };
 
       expect(() => logEnvironmentStatus()).toThrow('Process exit');
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Environment validation failed'), expect.any(Error));
+      expect(consoleSpy).toHaveBeenCalledWith('❌ Environment validation failed:', expect.any(Error));
       
       consoleSpy.mockRestore();
       exitSpy.mockRestore();

@@ -22,7 +22,7 @@ export function middleware(request: NextRequest) {
       loggers.general.warn('Invalid host header', {
         host: request.headers.get('host'),
         pathname,
-        ip: request.ip
+        ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
       });
       
       return new NextResponse('Invalid Host', { status: 400 });
@@ -80,7 +80,7 @@ export function middleware(request: NextRequest) {
       error: error instanceof Error ? error.message : 'Unknown error',
       pathname,
       method: request.method,
-      ip: request.ip
+      ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown'
     });
     
     return new NextResponse('Internal Server Error', { status: 500 });

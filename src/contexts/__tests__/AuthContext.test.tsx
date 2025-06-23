@@ -1,28 +1,28 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useAuth } from '@/contexts/AuthContext';
 import { AuthProvider } from '@/contexts/AuthContext';
 import React from 'react';
 
 // Mock the Supabase client
-vi.mock('@/lib/supabase/client', () => ({
+jest.mock('@/lib/supabase/client', () => ({
   supabase: {
     auth: {
-      getSession: vi.fn(),
-      signInWithPassword: vi.fn(),
-      signUp: vi.fn(),
-      signOut: vi.fn(),
-      onAuthStateChange: vi.fn(() => ({
-        data: { subscription: { unsubscribe: vi.fn() } },
+      getSession: jest.fn(),
+      signInWithPassword: jest.fn(),
+      signUp: jest.fn(),
+      signOut: jest.fn(),
+      onAuthStateChange: jest.fn(() => ({
+        data: { subscription: { unsubscribe: jest.fn() } },
       })),
     },
   },
 }));
 
 // Mock useRouter
-vi.mock('next/router', () => ({
+jest.mock('next/router', () => ({
   useRouter: () => ({
-    push: vi.fn(),
+    push: jest.fn(),
     pathname: '/',
     route: '/',
     asPath: '/',
@@ -32,7 +32,7 @@ vi.mock('next/router', () => ({
 
 describe('AuthContext', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -56,7 +56,7 @@ describe('AuthContext', () => {
 
     const { supabase } = await import('@/lib/supabase/client');
 
-    vi.mocked(supabase.auth.signInWithPassword).mockResolvedValueOnce({
+    jest.mocked(supabase.auth.signInWithPassword).mockResolvedValueOnce({
       data: { user: mockUser, session: { access_token: 'token' } },
       error: null,
     });
@@ -77,7 +77,7 @@ describe('AuthContext', () => {
   it('should handle login error', async () => {
     const { supabase } = await import('@/lib/supabase/client');
 
-    vi.mocked(supabase.auth.signInWithPassword).mockResolvedValueOnce({
+    jest.mocked(supabase.auth.signInWithPassword).mockResolvedValueOnce({
       data: { user: null, session: null },
       error: { message: 'Invalid credentials' },
     });
@@ -102,7 +102,7 @@ describe('AuthContext', () => {
 
     const { supabase } = await import('@/lib/supabase/client');
 
-    vi.mocked(supabase.auth.signUp).mockResolvedValueOnce({
+    jest.mocked(supabase.auth.signUp).mockResolvedValueOnce({
       data: { user: mockUser, session: { access_token: 'token' } },
       error: null,
     });
@@ -125,7 +125,7 @@ describe('AuthContext', () => {
   it('should handle logout', async () => {
     const { supabase } = await import('@/lib/supabase/client');
 
-    vi.mocked(supabase.auth.signOut).mockResolvedValueOnce({
+    jest.mocked(supabase.auth.signOut).mockResolvedValueOnce({
       error: null,
     });
 
@@ -148,7 +148,7 @@ describe('AuthContext', () => {
 
     const { supabase } = await import('@/lib/supabase/client');
 
-    vi.mocked(supabase.auth.getSession).mockResolvedValueOnce({
+    jest.mocked(supabase.auth.getSession).mockResolvedValueOnce({
       data: {
         session: {
           access_token: 'token',

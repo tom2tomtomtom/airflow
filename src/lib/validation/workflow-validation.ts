@@ -88,13 +88,43 @@ function sanitizeText(input: string): string {
   });
 
   // Additional sanitization for common injection patterns
-  return sanitized
+  let result = sanitized
     .replace(/[<>]/g, '') // Remove any remaining angle brackets
     .replace(/javascript:/gi, '') // Remove javascript: protocol
     .replace(/data:/gi, '') // Remove data: protocol
     .replace(/vbscript:/gi, '') // Remove vbscript: protocol
     .replace(/on\w+\s*=/gi, '') // Remove event handlers
     .trim();
+  
+  // First remove SQL comments
+  result = result.replace(/\/\*.*?\*\//g, ' '); // Remove /* */ comments
+  result = result.replace(/--.*$/gm, ''); // Remove -- comments
+  
+  // Remove SQL injection patterns
+  const sqlPatterns = [
+    /\b(DROP\s+TABLE|INSERT\s+INTO|DELETE\s+FROM|UPDATE\s+SET|UNION\s+SELECT|SELECT\s+\*|CREATE\s+TABLE|ALTER\s+TABLE)\b/gi,
+    /\b(UNION|SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|FROM|WHERE|AND|OR)\b/gi, // Individual keywords
+    /1'='1/g,
+    /'.*?OR.*?'/gi,
+  ];
+  
+  for (const pattern of sqlPatterns) {
+    result = result.replace(pattern, ' '); // Replace with space to preserve length
+  }
+  
+  // Remove template injection patterns
+  const templatePatterns = [
+    /\{\{.*?\}\}/g, // Mustache/Handlebars
+    /<%.*?%>/g, // EJS/ERB
+    /\${.*?}/g, // Template literals
+    /#{.*?}/g, // Ruby/OGNL style
+  ];
+  
+  for (const pattern of templatePatterns) {
+    result = result.replace(pattern, '[REMOVED]'); // Replace with placeholder to preserve some content
+  }
+  
+  return result.trim();
 }
 
 /**

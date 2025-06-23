@@ -32,32 +32,33 @@ const _mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => 
 describe('Supabase Database Operations', () => {
   const mockSupabase = supabase as jest.Mocked<typeof supabase>;
 
+  // Setup default mock implementations with proper chaining
+  const createMockChain = () => ({
+    select: jest.fn().mockReturnThis(),
+    insert: jest.fn().mockReturnThis(),
+    update: jest.fn().mockReturnThis(),
+    delete: jest.fn().mockReturnThis(),
+    eq: jest.fn().mockReturnThis(),
+    neq: jest.fn().mockReturnThis(),
+    gt: jest.fn().mockReturnThis(),
+    gte: jest.fn().mockReturnThis(),
+    lt: jest.fn().mockReturnThis(),
+    lte: jest.fn().mockReturnThis(),
+    like: jest.fn().mockReturnThis(),
+    ilike: jest.fn().mockReturnThis(),
+    in: jest.fn().mockReturnThis(),
+    or: jest.fn().mockReturnThis(),
+    and: jest.fn().mockReturnThis(),
+    order: jest.fn().mockReturnThis(),
+    limit: jest.fn().mockReturnThis(),
+    range: jest.fn().mockReturnThis(),
+    single: jest.fn().mockResolvedValue({ data: null, error: null }),
+    maybeSingle: jest.fn().mockResolvedValue({ data: null, error: null }),
+  } as any);
+
   beforeEach(() => {
     jest.clearAllMocks();
-    
-    // Setup default mock implementations
-    mockSupabase.from.mockReturnValue({
-      select: jest.fn().mockReturnThis(),
-      insert: jest.fn().mockReturnThis(),
-      update: jest.fn().mockReturnThis(),
-      delete: jest.fn().mockReturnThis(),
-      eq: jest.fn().mockReturnThis(),
-      neq: jest.fn().mockReturnThis(),
-      gt: jest.fn().mockReturnThis(),
-      gte: jest.fn().mockReturnThis(),
-      lt: jest.fn().mockReturnThis(),
-      lte: jest.fn().mockReturnThis(),
-      like: jest.fn().mockReturnThis(),
-      ilike: jest.fn().mockReturnThis(),
-      in: jest.fn().mockReturnThis(),
-      or: jest.fn().mockReturnThis(),
-      and: jest.fn().mockReturnThis(),
-      order: jest.fn().mockReturnThis(),
-      limit: jest.fn().mockReturnThis(),
-      range: jest.fn().mockReturnThis(),
-      single: jest.fn().mockResolvedValue({ data: null, error: null }),
-      maybeSingle: jest.fn().mockResolvedValue({ data: null, error: null }),
-    } as any);
+    mockSupabase.from.mockReturnValue(createMockChain());
   });
 
   afterEach(() => {
@@ -206,7 +207,12 @@ describe('Supabase Database Operations', () => {
 
     test('should filter assets by type', async () => {
       const mockResponse = { data: [mockAsset], error: null };
-      mockSupabase.from().select().eq().eq.mockResolvedValue(mockResponse);
+      const mockChain = createMockChain();
+      mockChain.eq = jest.fn().mockReturnValue({
+        ...mockChain,
+        eq: jest.fn().mockResolvedValue(mockResponse)
+      });
+      mockSupabase.from.mockReturnValue(mockChain);
 
       const result = await supabase
         .from('assets')
@@ -367,7 +373,12 @@ describe('Supabase Database Operations', () => {
 
     test('should filter campaigns by status', async () => {
       const mockResponse = { data: [mockCampaign], error: null };
-      mockSupabase.from().select().eq().eq.mockResolvedValue(mockResponse);
+      const mockChain = createMockChain();
+      mockChain.eq = jest.fn().mockReturnValue({
+        ...mockChain,
+        eq: jest.fn().mockResolvedValue(mockResponse)
+      });
+      mockSupabase.from.mockReturnValue(mockChain);
 
       const result = await supabase
         .from('campaigns')

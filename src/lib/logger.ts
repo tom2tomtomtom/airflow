@@ -135,6 +135,9 @@ export function createLogger(name: string): Logger {
   return new Logger(name);
 }
 
+// Alias for createLogger (commonly expected name)
+export const getLogger = createLogger;
+
 // Pre-configured loggers for common modules
 export const loggers = {
   api: createLogger('api'),

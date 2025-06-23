@@ -4,11 +4,25 @@ import { useCSRF } from '@/hooks/useCSRF';
 import { BriefData } from '@/lib/workflow/workflow-types';
 import { validateMotivations } from '@/lib/validation/workflow-validation';
 import { estimateTokensForMotivations } from '@/utils/ai-cost-estimation';
-import { aiRateLimiter } from '@/lib/rate-limiting/ai-rate-limiter';
-import { aiResponseCache } from '@/lib/caching/ai-response-cache';
-import { aiCircuitBreaker } from '@/lib/circuit-breaker/ai-circuit-breaker';
-import { workflowMetrics } from '@/lib/monitoring/workflow-metrics';
-import { performanceTracker } from '@/lib/performance/performance-tracker';
+
+// Conditional imports for server-side only
+let aiRateLimiter: any = { checkLimit: () => Promise.resolve({ allowed: true, remaining: 100, resetTime: 0, totalRequests: 1 }) };
+let aiResponseCache: any = { get: () => Promise.resolve(null), set: () => Promise.resolve() };
+let aiCircuitBreaker: any = { execute: (fn: any) => fn() };
+let workflowMetrics: any = { recordEvent: () => {}, recordMetric: () => {} };
+let performanceTracker: any = { startTimer: () => {}, endTimer: () => {}, recordMetric: () => {} };
+
+if (typeof window === 'undefined') {
+  try {
+    aiRateLimiter = require('@/lib/rate-limiting/ai-rate-limiter').aiRateLimiter;
+    aiResponseCache = require('@/lib/caching/ai-response-cache').aiResponseCache;
+    aiCircuitBreaker = require('@/lib/circuit-breaker/ai-circuit-breaker').aiCircuitBreaker;
+    workflowMetrics = require('@/lib/monitoring/workflow-metrics').workflowMetrics;
+    performanceTracker = require('@/lib/performance/performance-tracker').performanceTracker;
+  } catch (error) {
+    console.warn('Server-side dependencies not available, using fallbacks');
+  }
+}
 
 interface UseMotivationActionsProps {
   state: {

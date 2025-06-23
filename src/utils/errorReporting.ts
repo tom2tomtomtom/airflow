@@ -14,7 +14,10 @@ export class ErrorReporter {
 
   constructor() {
     this.sessionId = this.generateSessionId();
-    this.setupGlobalErrorHandlers();
+    // In browser environment, setup global error handlers
+    if (typeof window !== 'undefined' && window?.addEventListener) {
+      this.setupGlobalErrorHandlers();
+    }
   }
 
   static getInstance(): ErrorReporter {
@@ -33,7 +36,6 @@ export class ErrorReporter {
   }
 
   private setupGlobalErrorHandlers() {
-    if (typeof window === 'undefined') return;
 
     // Handle unhandled promise rejections
     window.addEventListener('unhandledrejection', (event) => {
@@ -64,24 +66,28 @@ export class ErrorReporter {
     try {
       const errorReport = {
         message: error.message,
-        stack: error.stack,
+        stack: error.stack || 'No stack trace available',
         errorId: this.generateErrorId(),
         timestamp: new Date().toISOString(),
-        userAgent: navigator.userAgent,
-        url: window.location.href,
+        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown',
+        url: typeof window !== 'undefined' ? window.location.href : 'Unknown',
         userId: this.userId,
         sessionId: this.sessionId,
         context,
       };
 
       // Send to error reporting API
-      await fetch('/api/errors', {
+      const response = await fetch('/api/errors', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(errorReport),
       });
+      
+      if (!response.ok) {
+        throw new Error(`Error reporting failed: ${response.status}`);
+      }
 
     } catch (reportingError) {
       // Fallback: log to console if reporting fails

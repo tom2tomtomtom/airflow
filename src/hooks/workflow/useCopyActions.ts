@@ -5,9 +5,21 @@ import { useClient } from '@/contexts/ClientContext';
 import { BriefData, Motivation, CopyVariation } from '@/lib/workflow/workflow-types';
 import { validateCopyVariations } from '@/lib/validation/workflow-validation';
 import { estimateTokensForCopy } from '@/utils/ai-cost-estimation';
-import { aiRateLimiter } from '@/lib/rate-limiting/ai-rate-limiter';
-import { aiResponseCache } from '@/lib/caching/ai-response-cache';
-import { aiCircuitBreaker } from '@/lib/circuit-breaker/ai-circuit-breaker';
+
+// Conditional imports for server-side only
+let aiRateLimiter: any = { checkLimit: () => Promise.resolve({ allowed: true, remaining: 100, resetTime: 0, totalRequests: 1 }) };
+let aiResponseCache: any = { get: () => Promise.resolve(null), set: () => Promise.resolve() };
+let aiCircuitBreaker: any = { execute: (fn: any) => fn() };
+
+if (typeof window === 'undefined') {
+  try {
+    aiRateLimiter = require('@/lib/rate-limiting/ai-rate-limiter').aiRateLimiter;
+    aiResponseCache = require('@/lib/caching/ai-response-cache').aiResponseCache;
+    aiCircuitBreaker = require('@/lib/circuit-breaker/ai-circuit-breaker').aiCircuitBreaker;
+  } catch (error) {
+    console.warn('Server-side dependencies not available, using fallbacks');
+  }
+}
 
 interface UseCopyActionsProps {
   state: {

@@ -1,3 +1,13 @@
+// Core UI Components
+export { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from './card';
+export { Badge } from './badge';
+export { Button } from './button';
+export { Textarea } from './textarea';
+export { Tabs, TabsContent, TabsList, TabsTrigger } from './tabs';
+export { Slider } from './slider';
+export { Switch } from './switch';
+export { Label } from './label';
+
 // Form Components
 export { FormTextField } from './forms/FormTextField';
 export { FormSelect } from './forms/FormSelect';

