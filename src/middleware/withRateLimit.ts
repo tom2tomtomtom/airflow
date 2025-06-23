@@ -9,11 +9,11 @@ import { getClientIp } from '@/lib/utils/ip';
 
 // Rate limit configuration for different endpoint types
 export const RATE_LIMITS = {
-  auth: 5,           // Authentication endpoints: 5 requests per minute
-  api: 100,          // Standard API endpoints: 100 requests per minute
-  ai: 20,            // AI-powered endpoints: 20 requests per minute
-  upload: 10,        // File upload endpoints: 10 requests per minute
-  public: 200,       // Public endpoints: 200 requests per minute
+  auth: 5,           // Authentication endpoints: 5 requests per minute,
+    api: 100,          // Standard API endpoints: 100 requests per minute,
+    ai: 20,            // AI-powered endpoints: 20 requests per minute,
+    upload: 10,        // File upload endpoints: 10 requests per minute,
+    public: 200,       // Public endpoints: 200 requests per minute
 } as const;
 
 export type RateLimitType = keyof typeof RATE_LIMITS;
@@ -27,10 +27,10 @@ interface RateLimitOptions {
 }
 
 interface RateLimitInfo {
-  totalHits: number;
-  totalTime: number;
-  remaining: number;
-  resetTime: Date;
+  totalHits: number;,
+    totalTime: number;,
+    remaining: number;,
+    resetTime: Date;
 }
 
 /**
@@ -217,7 +217,7 @@ export function withRateLimit(
               details: {},
                 limit: maxRequests,
                 window: windowMs,
-                resetTime: limitInfo.resetTime.toISOString()}}});
+                resetTime: limitInfo.resetTime.toISOString() });
         }
 
         // Store original res.json to intercept response

@@ -22,7 +22,7 @@ const mockSingle = jest.fn();
 const mockInsert = jest.fn();
 
 jest.mock('@supabase/ssr', () => ({
-  createServerClient: jest.fn(() => ({
+  createServerClient: jest.fn(() => ({,
     auth: {},
       getUser: mockGetUser},
     from: mockFrom}))}));
@@ -40,7 +40,7 @@ jest.mock('@/utils/api', () => ({
     UNAUTHORIZED: 'UNAUTHORIZED',
     FORBIDDEN: 'FORBIDDEN',
     VALIDATION_ERROR: 'VALIDATION_ERROR',
-    INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR'}}));
+    INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR' }));
 
 // Setup mocks
 beforeEach(() => {
@@ -58,7 +58,7 @@ describe('withAuth middleware', () => {
     it('should authenticate user with valid cookies', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        cookies: { 'sb-access-token': 'valid-token' }});
+        cookies: { 'sb-access-token': 'valid-token' });
 
       const mockUser = {
         id: 'user-123',
@@ -96,7 +96,7 @@ describe('withAuth middleware', () => {
     it('should authenticate user with Bearer token', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        headers: { authorization: 'Bearer valid-token' }});
+        headers: { authorization: 'Bearer valid-token' });
 
       const mockUser = {
         id: 'user-123',
@@ -132,7 +132,7 @@ describe('withAuth middleware', () => {
     it('should authenticate user with custom auth header', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        headers: { 'x-auth-token': 'custom-token' }});
+        headers: { 'x-auth-token': 'custom-token' });
 
       const mockUser = {
         id: 'user-123',
@@ -182,12 +182,12 @@ describe('withAuth middleware', () => {
     it('should create profile if it does not exist', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        cookies: { 'sb-access-token': 'valid-token' }});
+        cookies: { 'sb-access-token': 'valid-token' });
 
       const mockUser = {
         id: 'user-123',
         email: 'newuser@example.com',
-        user_metadata: { name: 'New User' }};
+        user_metadata: { name: 'New User' };
 
       const mockNewProfile = {
         id: 'user-123',
@@ -228,20 +228,20 @@ describe('withAuth middleware', () => {
     it('should handle profile creation errors gracefully', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        cookies: { 'sb-access-token': 'valid-token' }});
+        cookies: { 'sb-access-token': 'valid-token' });
 
       const mockUser = {
         id: 'user-123',
         email: 'user@example.com',
-        user_metadata: { name: 'Test User' }};
+        user_metadata: { name: 'Test User' };
 
       mockGetUser.mockResolvedValue({ data: { user: mockUser }, error: null });
       
       // Profile not found and creation fails
       mockSingle.mockResolvedValue({ data: null, error: { code: 'PGRST116' } });
       mockInsert.mockReturnValue({
-        select: () => ({
-          single: () => Promise.resolve({ data: null, error: new Error('Creation failed') })
+        select: () => ({,
+    single: () => Promise.resolve({ data: null, error: new Error('Creation failed') })
         })
       });
 
@@ -264,7 +264,7 @@ describe('withAuth middleware', () => {
     it('should handle database connection errors', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        cookies: { 'sb-access-token': 'valid-token' }});
+        cookies: { 'sb-access-token': 'valid-token' });
 
       const mockUser = {
         id: 'user-123',
@@ -290,7 +290,7 @@ describe('withAuth middleware', () => {
     it('should allow access for users with required role', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        cookies: { 'sb-access-token': 'admin-token' }});
+        cookies: { 'sb-access-token': 'admin-token' });
 
       const mockUser = {
         id: 'admin-123',
@@ -320,7 +320,7 @@ describe('withAuth middleware', () => {
     it('should deny access for users without required role', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        cookies: { 'sb-access-token': 'user-token' }});
+        cookies: { 'sb-access-token': 'user-token' });
 
       const mockUser = {
         id: 'user-123',
@@ -348,7 +348,7 @@ describe('withAuth middleware', () => {
     it('should work with multiple allowed roles', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        cookies: { 'sb-access-token': 'editor-token' }});
+        cookies: { 'sb-access-token': 'editor-token' });
 
       const mockUser = {
         id: 'editor-123',
@@ -380,7 +380,7 @@ describe('withAuth middleware', () => {
     it('should allow access for users with required permissions', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        cookies: { 'sb-access-token': 'user-token' }});
+        cookies: { 'sb-access-token': 'user-token' });
 
       const mockUser = {
         id: 'user-123',
@@ -410,7 +410,7 @@ describe('withAuth middleware', () => {
     it('should allow access for users with wildcard permissions', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        cookies: { 'sb-access-token': 'admin-token' }});
+        cookies: { 'sb-access-token': 'admin-token' });
 
       const mockUser = {
         id: 'admin-123',
@@ -440,7 +440,7 @@ describe('withAuth middleware', () => {
     it('should deny access for users without required permissions', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        cookies: { 'sb-access-token': 'user-token' }});
+        cookies: { 'sb-access-token': 'user-token' });
 
       const mockUser = {
         id: 'user-123',
@@ -471,7 +471,7 @@ describe('withAuth middleware', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         query: { clientId: 'client-456' },
-        cookies: { 'sb-access-token': 'admin-token' }});
+        cookies: { 'sb-access-token': 'admin-token' });
 
       const mockUser = {
         id: 'admin-123',
@@ -502,7 +502,7 @@ describe('withAuth middleware', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         query: { clientId: 'client-456' },
-        cookies: { 'sb-access-token': 'user-token' }});
+        cookies: { 'sb-access-token': 'user-token' });
 
       const mockUser = {
         id: 'user-123',
@@ -538,7 +538,7 @@ describe('withAuth middleware', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         query: { clientId: 'client-999' },
-        cookies: { 'sb-access-token': 'user-token' }});
+        cookies: { 'sb-access-token': 'user-token' });
 
       const mockUser = {
         id: 'user-123',
@@ -571,7 +571,7 @@ describe('withAuth middleware', () => {
     it('should handle missing client ID', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        cookies: { 'sb-access-token': 'user-token' }});
+        cookies: { 'sb-access-token': 'user-token' });
 
       const mockUser = {
         id: 'user-123',
@@ -600,7 +600,7 @@ describe('withAuth middleware', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         body: { clientId: 'client-456' },
-        cookies: { 'sb-access-token': 'user-token' }});
+        cookies: { 'sb-access-token': 'user-token' });
 
       const mockUser = {
         id: 'user-123',
@@ -635,7 +635,7 @@ describe('withAuth middleware', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         headers: { 'x-client-id': 'client-456' },
-        cookies: { 'sb-access-token': 'user-token' }});
+        cookies: { 'sb-access-token': 'user-token' });
 
       const mockUser = {
         id: 'user-123',

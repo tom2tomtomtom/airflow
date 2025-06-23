@@ -4,13 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "build:analyze": "ANALYZE=true next build",
+    "build": "NODE_OPTIONS='--max-old-space-size=8192' next build",
+    "build:analyze": "NODE_OPTIONS='--max-old-space-size=8192' ANALYZE=true next build",
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watch",
-    "type-check": "tsc --noEmit",
+    "type-check": "NODE_OPTIONS='--max-old-space-size=8192' tsc --noEmit",
+    "type-check:fast": "NODE_OPTIONS='--max-old-space-size=4096' tsc --noEmit --incremental --assumeChangesOnlyAffectDirectDependencies",
     "type-check:phase1": "tsc --noEmit -p tsconfig.migration-phase1.json",
     "type-check:phase2": "tsc --noEmit -p tsconfig.migration-phase2.json",
     "type-check:final": "tsc --noEmit -p tsconfig.migration-final.json",
@@ -264,5 +265,17 @@
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }

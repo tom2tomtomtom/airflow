@@ -41,8 +41,8 @@ export const createAccessibleField = (
     errorMessage?: string;
   } = {}
 ): {
-  fieldProps: AccessibleFieldProps;
-  labelProps: { htmlFor: string; id: string };
+  fieldProps: AccessibleFieldProps;,
+    labelProps: { htmlFor: string; id: string };
   descriptionProps?: { id: string };
   errorProps?: { id: string; role: string; 'aria-live': 'polite' };
 } => {
@@ -203,8 +203,8 @@ export const meetsWCAGAAA = (foreground: string, background: string, fontSize = 
 
 // Skip link component props
 export interface SkipLinkProps {
-  href: string;
-  children: React.ReactNode;
+  href: string;,
+    children: React.ReactNode;
   className?: string;
 }
 

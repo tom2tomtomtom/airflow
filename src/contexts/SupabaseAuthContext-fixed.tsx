@@ -4,17 +4,17 @@ import { User, Session } from '@supabase/supabase-js';
 import { getSupabaseClient } from '@/lib/supabase-unified';
 
 interface AuthState {
-  user: User | null;
-  session: Session | null;
-  loading: boolean;
-  isAuthenticated: boolean;
+  user: User | null;,
+    session: Session | null;,
+    loading: boolean;,
+    isAuthenticated: boolean;
 }
 
 interface SupabaseAuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   signup: (email: string, password: string, name: string) => Promise<{ success: boolean; error?: string; user?: User }>;
-  logout: () => Promise<void>;
-  refreshSession: () => Promise<{ success: boolean; error?: string }>;
+  logout: () => Promise<void>;,
+    refreshSession: () => Promise<{ success: boolean; error?: string }>;
 }
 
 const SupabaseAuthContext = createContext<SupabaseAuthContextType>({
@@ -186,7 +186,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         options: {},
           data: {},
             name,
-            role: 'authenticated'}}});
+            role: 'authenticated' });
 
       if (error) {
         console.error('❌ Signup error:', error);
@@ -241,7 +241,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         login,
         signup,
         logout,
-        refreshSession}}
+        refreshSession }
     >
       {children}
     </SupabaseAuthContext.Provider>

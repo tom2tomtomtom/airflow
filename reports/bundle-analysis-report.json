@@ -1,0 +1,152 @@
+{
+  "analysis": {
+    "totalSize": 970335742,
+    "directories": {
+      ".next": 482648929,
+      ".next/cache": 482648929,
+      "src": 5020128,
+      "components": 16621,
+      "public": 1135
+    },
+    "largestFiles": [
+      {
+        "path": "./coverage/coverage-final.json",
+        "size": 4925774
+      },
+      {
+        "path": "./tsconfig.tsbuildinfo",
+        "size": 3389497
+      },
+      {
+        "path": "./coverage/clover.xml",
+        "size": 1463373
+      }
+    ],
+    "duplicates": [],
+    "optimizationOpportunities": [
+      {
+        "type": "dependency-optimization",
+        "priority": "high",
+        "description": "Heavy dependencies detected: next",
+        "impact": "high",
+        "effort": "medium"
+      },
+      {
+        "type": "build-optimization",
+        "priority": "critical",
+        "description": ".next directory is extremely large - bundle splitting needed",
+        "impact": "high",
+        "effort": "medium"
+      },
+      {
+        "type": "asset-optimization",
+        "priority": "high",
+        "description": "Large files detected - consider compression or removal",
+        "impact": "medium",
+        "effort": "low"
+      }
+    ],
+    "heavyDependencies": [
+      {
+        "name": "next",
+        "version": "^15.1.0",
+        "size": 137126453
+      },
+      {
+        "name": "typescript",
+        "version": "5.1.6",
+        "size": 40095320
+      },
+      {
+        "name": "supabase",
+        "version": "^2.23.4",
+        "size": 37352151
+      },
+      {
+        "name": "lucide-react",
+        "version": "^0.522.0",
+        "size": 33897455
+      },
+      {
+        "name": "pdf-parse",
+        "version": "^1.1.1",
+        "size": 33365070
+      },
+      {
+        "name": "tsx",
+        "version": "^3.12.7",
+        "size": 29934345
+      },
+      {
+        "name": "date-fns",
+        "version": "^4.1.0",
+        "size": 22601076
+      },
+      {
+        "name": "exceljs",
+        "version": "^4.4.0",
+        "size": 22113743
+      },
+      {
+        "name": "@mui/icons-material",
+        "version": "^7.1.0",
+        "size": 19264897
+      },
+      {
+        "name": "@sentry/nextjs",
+        "version": "^7.0.0",
+        "size": 9364305
+      },
+      {
+        "name": "mixpanel-browser",
+        "version": "^2.65.0",
+        "size": 9207006
+      },
+      {
+        "name": "@faker-js/faker",
+        "version": "^9.8.0",
+        "size": 8651144
+      },
+      {
+        "name": "swagger-ui-react",
+        "version": "^5.25.2",
+        "size": 7390821
+      },
+      {
+        "name": "openai",
+        "version": "^4.103.0",
+        "size": 6284493
+      },
+      {
+        "name": "tailwindcss",
+        "version": "^3.3.3",
+        "size": 5748154
+      },
+      {
+        "name": "@mui/material",
+        "version": "^7.1.0",
+        "size": 5563548
+      },
+      {
+        "name": "msw",
+        "version": "^2.10.2",
+        "size": 4969479
+      },
+      {
+        "name": "pdf.js-extract",
+        "version": "^0.2.1",
+        "size": 4772821
+      },
+      {
+        "name": "recharts",
+        "version": "^2.15.3",
+        "size": 4666804
+      },
+      {
+        "name": "react-dom",
+        "version": "18.2.0",
+        "size": 4502126
+      }
+    ]
+  }
+}

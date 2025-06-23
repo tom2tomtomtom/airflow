@@ -19,8 +19,8 @@ export interface ValidationSchema {
 }
 
 export interface ValidationResult {
-  isValid: boolean;
-  errors: { [key: string]: string };
+  isValid: boolean;,
+    errors: { [key: string]: string };
   sanitizedData: { [key: string]: unknown };
 }
 
@@ -360,7 +360,7 @@ export const validationSchemas = {
       required: true,
       type: 'string' as const,
       minLength: 2,
-      maxLength: 100}},
+      maxLength: 100 },
   
   // User login
   login: {},
@@ -372,7 +372,7 @@ export const validationSchemas = {
       required: true,
       type: 'string' as const,
       minLength: 1,
-      maxLength: 128}},
+      maxLength: 128 },
 
   // User signup
   signup: {},
@@ -390,7 +390,7 @@ export const validationSchemas = {
       required: true,
       type: 'string' as const,
       minLength: 2,
-      maxLength: 100}},
+      maxLength: 100 },
   
   // Client creation
   clientCreation: {},
@@ -406,7 +406,7 @@ export const validationSchemas = {
     description: {},
       required: false,
       type: 'string' as const,
-      maxLength: 1000}},
+      maxLength: 1000 },
   
   // Campaign creation
   campaignCreation: {},
@@ -422,7 +422,7 @@ export const validationSchemas = {
     budget: {},
       required: false,
       type: 'number' as const,
-      custom: (value: number) => value >= 0 || 'Budget must be positive'}},
+      custom: (value: number) => value >= 0 || 'Budget must be positive' },
   
   // AI generation request
   aiGeneration: {},
@@ -442,7 +442,7 @@ export const validationSchemas = {
     style: {},
       required: false,
       type: 'string' as const,
-      maxLength: 100}}};
+      maxLength: 100 };
 
 /**
  * Middleware for request validation
@@ -471,8 +471,8 @@ export function withValidation(
 /**
  * Sanitize file upload data
  */
-export function sanitizeFileData(file: unknown): {
-  isValid: boolean;
+export function sanitizeFileData(file: unknown): {,
+    isValid: boolean;
   error?: string;
   sanitizedFile?: unknown;
 } {
@@ -512,7 +512,7 @@ export function sanitizeFileData(file: unknown): {
     isValid: true,
     sanitizedFile: {},
       ...file,
-      name: sanitizedName}};
+      name: sanitizedName };
 }
 
 /**

@@ -145,8 +145,9 @@ export const MobileOptimizedWorkflow: React.FC<MobileOptimizedWorkflowProps> = (
       onClose={onClose}
       fullScreen
       PaperProps={{
-        sx: {},
-          bgcolor: 'background.default'}
+        sx: {
+          bgcolor: 'background.default'
+        }
       }}
     >
       <DialogContent sx={{ p: 0, height: '100vh', display: 'flex', flexDirection: 'column' }}>

@@ -43,9 +43,20 @@
     "removeComments": false,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "assumeChangesOnlyAffectDirectDependencies": true,
+    "disableSourceOfProjectReferenceRedirect": true,
+    "disableSolutionSearching": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "types/**/*.d.ts"],
+  "include": [
+    "next-env.d.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "pages/**/*.ts",
+    "pages/**/*.tsx",
+    ".next/types/**/*.ts",
+    "types/**/*.d.ts"
+  ],
   "exclude": [
     "node_modules",
     ".next",
@@ -55,10 +66,21 @@
     "dist",
     "build",
     "tests/**/*",
+    "test/**/*",
     "scripts/**/*",
     "playwright.config.ts",
     "playwright.config.*.ts",
     "**/*.spec.ts",
-    "**/*.test.ts"
+    "**/*.test.ts",
+    "**/*.d.ts",
+    "src/__tests__/**/*",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/**/*.spec.ts",
+    "src/**/*.spec.tsx",
+    "reports/**/*",
+    "temp/**/*",
+    "*.js",
+    "src/**/*.js"
   ]
 }

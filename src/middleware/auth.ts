@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase';
 
 export interface AuthenticatedRequest extends NextApiRequest {
   user?: {
-    id: string;
+    id: string;,
     email: string;
     role?: string;
   };

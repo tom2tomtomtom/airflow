@@ -7,11 +7,11 @@ import { createServerClient } from '@supabase/ssr';
 // Extended request with user information
 export interface AuthenticatedRequest extends NextApiRequest {
   user?: {
-    id: string;
-    email: string;
-    role: UserRole;
-    permissions: string[];
-    clientIds: string[];
+    id: string;,
+    email: string;,
+    role: UserRole;,
+    permissions: string[];,
+    clientIds: string[];,
     tenantId: string;
   };
 }
@@ -39,8 +39,7 @@ export function withAuth(handler: AuthenticatedHandler) {
               // We don't need to set cookies in API routes
             },
             remove(name: string, options: unknown) {
-              // We don't need to remove cookies in API routes
-            }}}
+              // We don't need to remove cookies in API routes }
       );
 
       // Get user from Supabase using cookies

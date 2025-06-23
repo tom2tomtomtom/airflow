@@ -26,7 +26,7 @@ interface OptimizationOptions {
   enableMetrics?: boolean;
   enableQueryOptimization?: boolean;
   rateLimit?: {
-    max: number;
+    max: number;,
     window: number;
   };
 }
@@ -39,10 +39,10 @@ class APIPerformanceMonitor {
   private static maxMetricsPerEndpoint = 100;
 
   static startTracking(endpoint: string): PerformanceMetrics {
-    const metrics: PerformanceMetrics = {
-      startTime: Date.now(),
+    const metrics: PerformanceMetrics = {,
+    startTime: Date.now(),
       memoryUsage: {},
-        before: process.memoryUsage()}};
+        before: process.memoryUsage() };
 
     // Store metrics for analysis
     if (!this.metrics.has(endpoint)) {

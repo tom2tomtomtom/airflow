@@ -58,7 +58,7 @@ export const commonSchemas = {
     .refine(path => !path.includes('..') && !path.includes('~'), 'Invalid file path'),
 
   // Pagination
-  pagination: z.object({
+  pagination: z.object({,
     page: z.number().int().min(1).default(1),
     limit: z.number().int().min(1).max(100).default(20),
     sortBy: z.string().optional(),
@@ -110,7 +110,7 @@ export function sanitizeObject<T extends Record<string, unknown>>(obj: T): T {
 
 // Validation error response
 export function validationErrorResponse(error: ZodError): NextResponse {
-  const errors = error.errors.map((err: unknown) => ({
+  const errors = error.errors.map((err: unknown) => ({,
     field: err.path.join('.'),
     message: err.message,
   }));
@@ -220,8 +220,8 @@ const fileMaxSizes = {
 
 // Define file validation object separately to avoid self-referential issues
 interface FileValidation {
-  allowedTypes: typeof fileAllowedTypes;
-  maxSizes: typeof fileMaxSizes;
+  allowedTypes: typeof fileAllowedTypes;,
+    maxSizes: typeof fileMaxSizes;
   validate(
     file: { type: string; size: number; name: string },
     category: keyof typeof fileAllowedTypes
@@ -315,12 +315,12 @@ export function checkAPIRateLimit(
 // Export validation schemas for specific API routes
 export const apiSchemas = {
   // Auth schemas
-  login: z.object({
+  login: z.object({,
     email: commonSchemas.email,
     password: z.string().min(1, 'Password is required'),
   }),
 
-  signup: z.object({
+  signup: z.object({,
     email: commonSchemas.email,
     password: commonSchemas.password,
     name: z
@@ -332,7 +332,7 @@ export const apiSchemas = {
   }),
 
   // Client schemas
-  createClient: z.object({
+  createClient: z.object({,
     name: z
       .string()
       .min(2, 'Client name is required')
@@ -351,14 +351,14 @@ export const apiSchemas = {
   }),
 
   // Asset schemas
-  uploadAsset: z.object({
+  uploadAsset: z.object({,
     clientId: commonSchemas.uuid,
     category: z.enum(['image', 'video', 'audio', 'document']),
     tags: z.array(commonSchemas.safeString).optional(),
   }),
 
   // Brief schemas
-  createBrief: z.object({
+  createBrief: z.object({,
     clientId: commonSchemas.uuid,
     title: z
       .string()

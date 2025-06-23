@@ -52,20 +52,26 @@ class ErrorBoundary extends Component<Props, State> {
       await errorReporter.reportError(error, {
         action: 'error_boundary',
         component: 'ErrorBoundary',
-        metadata: {},
+        metadata: {
           componentStack: errorInfo.componentStack,
           errorId: this.state.errorId,
-          errorBoundary: true}});
+          errorBoundary: true
+        }
+      });
 
       // Also send to Sentry if available
       if (typeof window !== 'undefined' && (window as any).Sentry) {
         (window as any).Sentry.captureException(error, {
-          contexts: {},
-            react: {},
-              componentStack: errorInfo.componentStack}},
-          tags: {},
+          contexts: {
+            react: {
+              componentStack: errorInfo.componentStack
+            }
+          },
+          tags: {
             errorBoundary: true,
-            errorId: this.state.errorId}});
+            errorId: this.state.errorId
+          }
+        });
       }
     } catch (reportingError: any) {
       // Silently fail if error reporting fails

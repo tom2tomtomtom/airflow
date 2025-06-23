@@ -21,9 +21,9 @@ interface MetricsConfig {
 
 // Request context for metrics
 interface RequestContext {
-  startTime: number;
-  endpoint: string;
-  method: string;
+  startTime: number;,
+    endpoint: string;,
+    method: string;
   userAgent?: string;
   clientIp?: string;
   userId?: string;
@@ -31,8 +31,8 @@ interface RequestContext {
 }
 
 // Default configuration
-const DEFAULT_CONFIG: Required<MetricsConfig> = {
-  trackResponseTime: true,
+const DEFAULT_CONFIG: Required<MetricsConfig> = {,
+    trackResponseTime: true,
   trackRequestCount: true,
   trackErrorRate: true,
   trackUserActions: true,

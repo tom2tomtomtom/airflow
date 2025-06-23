@@ -24,8 +24,8 @@ export interface SecurityHeadersOptions {
   hstsPreload?: boolean;
 }
 
-const DEFAULT_OPTIONS: SecurityHeadersOptions = {
-  enableCSP: true,
+const DEFAULT_OPTIONS: SecurityHeadersOptions = {,
+    enableCSP: true,
   enableHSTS: true,
   enablePermissionsPolicy: true,
   hstsMaxAge: 31536000, // 1 year
@@ -272,7 +272,7 @@ export const SecurityConfigs = {
     hstsPreload: true,
     customHeaders: {},
       'Expect-CT': 'max-age=86400, enforce',
-      'Feature-Policy': "camera 'none'; microphone 'none'; geolocation 'none'"}}};
+      'Feature-Policy': "camera 'none'; microphone 'none'; geolocation 'none'" };
 
 /**
  * Utility function to get environment-specific security configuration

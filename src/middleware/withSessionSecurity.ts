@@ -22,21 +22,21 @@ export interface SessionSecurityOptions {
 }
 
 interface SessionFingerprint {
-  userAgent: string;
-  acceptLanguage: string;
-  acceptEncoding: string;
-  ip: string;
-  subnet: string;
+  userAgent: string;,
+    acceptLanguage: string;,
+    acceptEncoding: string;,
+    ip: string;,
+    subnet: string;
 }
 
 interface SessionInfo {
-  id: string;
-  userId: string;
-  fingerprint: SessionFingerprint;
-  createdAt: Date;
-  lastActiveAt: Date;
-  rotatedAt: Date;
-  issuedTokens: string[];
+  id: string;,
+    userId: string;,
+    fingerprint: SessionFingerprint;,
+    createdAt: Date;,
+    lastActiveAt: Date;,
+    rotatedAt: Date;,
+    issuedTokens: string[];
   deviceId?: string;
   trusted: boolean;
   location?: {
@@ -47,17 +47,17 @@ interface SessionInfo {
 }
 
 interface SecurityEvent {
-  type: 'SESSION_CREATED' | 'SESSION_HIJACK_ATTEMPT' | 'SESSION_EXPIRED' | 'SUSPICIOUS_ACTIVITY' | 'TOKEN_ROTATION' | 'CONCURRENT_SESSION_LIMIT';
-  sessionId: string;
-  userId: string;
-  ip: string;
-  userAgent: string;
-  timestamp: Date;
-  details: Record<string, unknown>;
+  type: 'SESSION_CREATED' | 'SESSION_HIJACK_ATTEMPT' | 'SESSION_EXPIRED' | 'SUSPICIOUS_ACTIVITY' | 'TOKEN_ROTATION' | 'CONCURRENT_SESSION_LIMIT';,
+    sessionId: string;,
+    userId: string;,
+    ip: string;,
+    userAgent: string;,
+    timestamp: Date;,
+    details: Record<string, unknown>;
 }
 
-const DEFAULT_OPTIONS: Required<SessionSecurityOptions> = {
-  enableSessionRotation: true,
+const DEFAULT_OPTIONS: Required<SessionSecurityOptions> = {,
+    enableSessionRotation: true,
   enableFingerprintValidation: true,
   enableLocationTracking: false,
   sessionTimeout: 86400, // 24 hours
@@ -335,14 +335,14 @@ export function withSessionSecurity(
             ip: currentFingerprint.ip,
             userAgent: currentFingerprint.userAgent,
             timestamp: now,
-            details: { reason: 'session_not_found' }});
+            details: { reason: 'session_not_found' });
         }
         
         return res.status(401).json({
           success: false,
           error: {},
             code: 'SESSION_INVALID',
-            message: 'Session not found or expired'}});
+            message: 'Session not found or expired' });
       }
       
       // Check session timeout
@@ -358,14 +358,14 @@ export function withSessionSecurity(
             ip: currentFingerprint.ip,
             userAgent: currentFingerprint.userAgent,
             timestamp: now,
-            details: { age: sessionAge }});
+            details: { age: sessionAge });
         }
         
         return res.status(401).json({
           success: false,
           error: {},
             code: 'SESSION_EXPIRED',
-            message: 'Session has expired'}});
+            message: 'Session has expired' });
       }
       
       // Validate fingerprint
@@ -390,7 +390,7 @@ export function withSessionSecurity(
                 score: validation.score,
                 differences: validation.differences,
                 original_ip: session.fingerprint.ip,
-                current_ip: currentFingerprint.ip}});
+                current_ip: currentFingerprint.ip });
           }
           
           sessionStore.removeSession(sessionId);
@@ -399,7 +399,7 @@ export function withSessionSecurity(
             success: false,
             error: {},
               code: 'SESSION_SECURITY_VIOLATION',
-              message: 'Session security validation failed'}});
+              message: 'Session security validation failed' });
         }
       }
       
@@ -425,7 +425,7 @@ export function withSessionSecurity(
               ip: currentFingerprint.ip,
               userAgent: currentFingerprint.userAgent,
               timestamp: now,
-              details: { removed_sessions: sessionsToRemove.length }});
+              details: { removed_sessions: sessionsToRemove.length });
           }
         }
       }
@@ -460,7 +460,7 @@ export function withSessionSecurity(
               ip: currentFingerprint.ip,
               userAgent: currentFingerprint.userAgent,
               timestamp: now,
-              details: { old_session_id: sessionId }});
+              details: { old_session_id: sessionId });
           }
           
           // Update session reference for handler
@@ -492,7 +492,7 @@ export function withSessionSecurity(
         success: false,
         error: {},
           code: 'SESSION_SECURITY_ERROR',
-          message: 'Session security validation failed'}});
+          message: 'Session security validation failed' });
     }
     
     // Execute the original handler
@@ -517,7 +517,7 @@ export function createSecureSession(
     ? generateDeviceId(fingerprint)
     : undefined;
   
-  const session: SessionInfo = {
+  const session: SessionInfo = {,
     id: sessionId,
     userId,
     fingerprint,
@@ -539,7 +539,7 @@ export function createSecureSession(
       ip: fingerprint.ip,
       userAgent: fingerprint.userAgent,
       timestamp: now,
-      details: { device_id: deviceId }});
+      details: { device_id: deviceId });
   }
   
   return session;

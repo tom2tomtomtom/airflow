@@ -35,7 +35,7 @@ interface Webhook {
   description?: string;
   active: boolean;
   secret?: string;
-  retry_policy: {},
+  retry_policy: {
     max_attempts: number;
     backoff_strategy: 'linear' | 'exponential';
     initial_delay_ms: number;
@@ -102,11 +102,13 @@ const WebhookManager: React.FC = () => {
     description: '',
     active: true,
     timeout_ms: 10000,
-    retry_policy: {},
+    retry_policy: {
       max_attempts: 3,
       backoff_strategy: 'exponential' as 'linear' | 'exponential',
-      initial_delay_ms: 1000},
-    headers: {} as Record<string, string>});
+      initial_delay_ms: 1000
+    },
+    headers: {} as Record<string, string>
+  });
   const [testData, setTestData] = useState({
     event_type: '',
     test_data: '{}'});
@@ -117,8 +119,10 @@ const WebhookManager: React.FC = () => {
     try {
       setLoading(true);
       const response = await fetch('/api/webhooks', {
-        headers: {},
-          'Authorization': `Bearer ${localStorage.getItem('token')}`}});
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
       if (response.ok) {
         const data = await response.json();
         setWebhooks(data.data || []);

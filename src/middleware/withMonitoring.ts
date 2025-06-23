@@ -25,8 +25,8 @@ interface MonitoringConfig {
 }
 
 // Default configuration
-const DEFAULT_CONFIG: Required<MonitoringConfig> = {
-  collectMetrics: true,
+const DEFAULT_CONFIG: Required<MonitoringConfig> = {,
+    collectMetrics: true,
   trackPerformance: true,
   enableAlerting: true,
   customTags: {},
@@ -34,8 +34,7 @@ const DEFAULT_CONFIG: Required<MonitoringConfig> = {
   performanceThresholds: {},
     responseTime: 2000, // 2 seconds
     errorRate: 0.05, // 5%
-    memoryUsage: 0.8, // 80%
-  }};
+    memoryUsage: 0.8, // 80% };
 
 /**
  * Comprehensive monitoring middleware that provides:
@@ -413,7 +412,7 @@ export function withAIMonitoring(config: MonitoringConfig = {}) {
       responseTime: 30000, // AI operations can take longer
       errorRate: 0.1, // Higher error tolerance for AI
       memoryUsage: 0.9, // AI operations are memory intensive
-      ...config.performanceThresholds}});
+      ...config.performanceThresholds });
 }
 
 export function withVideoMonitoring(config: MonitoringConfig = {}) {
@@ -426,7 +425,7 @@ export function withVideoMonitoring(config: MonitoringConfig = {}) {
       responseTime: 60000, // Video operations take longer
       errorRate: 0.05,
       memoryUsage: 0.85,
-      ...config.performanceThresholds}});
+      ...config.performanceThresholds });
 }
 
 export function withDatabaseMonitoring(config: MonitoringConfig = {}) {
@@ -439,7 +438,7 @@ export function withDatabaseMonitoring(config: MonitoringConfig = {}) {
       responseTime: 1000, // Database operations should be fast
       errorRate: 0.01, // Very low error tolerance
       memoryUsage: 0.8,
-      ...config.performanceThresholds}});
+      ...config.performanceThresholds });
 }
 
 export default withMonitoring;

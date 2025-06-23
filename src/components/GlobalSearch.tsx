@@ -188,10 +188,11 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
       maxWidth="md"
       fullWidth
       PaperProps={{
-        sx: {},
+        sx: {
           borderRadius: 3,
           overflow: 'hidden',
-          mt: 8}
+          mt: 8
+        }
       }}
     >
       <DialogContent sx={{ p: 0 }}>

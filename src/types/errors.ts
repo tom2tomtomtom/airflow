@@ -205,9 +205,9 @@ export const isDatabaseError = (error: unknown): error is DatabaseError => {
 
 // Error response formatter for API responses
 export interface ErrorResponse {
-  success: false;
-  error: {},
-    code: ErrorCode;
+  success: false;,
+    error: {},
+    code: ErrorCode;,
     message: string;
     details?: ErrorDetails;
     timestamp: Date;
@@ -223,7 +223,7 @@ export const formatErrorResponse = (error: AppError, requestId?: string): ErrorR
       message: error.message,
       details: error.details,
       timestamp: error.timestamp,
-      requestId}};
+      requestId };
 };
 
 // Helper to convert unknown errors to AppError

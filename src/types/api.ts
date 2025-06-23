@@ -13,23 +13,23 @@ export interface BaseApiResponse {
 // Authentication API Responses
 export interface LoginResponse extends BaseApiResponse {
   user?: {
-    id: string;
-    email: string;
-    name: string;
+    id: string;,
+    email: string;,
+    name: string;,
     role: string;
   };
   session?: {
-    access_token: string;
-    refresh_token: string;
+    access_token: string;,
+    refresh_token: string;,
     expires_at: string;
   };
 }
 
 export interface SignupResponse extends BaseApiResponse {
   user?: {
-    id: string;
-    email: string;
-    name: string;
+    id: string;,
+    email: string;,
+    name: string;,
     role: string;
   };
 }
@@ -37,9 +37,9 @@ export interface SignupResponse extends BaseApiResponse {
 export interface SessionResponse extends BaseApiResponse {
   authenticated: boolean;
   user?: {
-    id: string;
-    email: string;
-    name: string;
+    id: string;,
+    email: string;,
+    name: string;,
     role: string;
   };
 }
@@ -47,8 +47,8 @@ export interface SessionResponse extends BaseApiResponse {
 // AI Generation API Responses
 export interface AIGenerationResponse extends BaseApiResponse {
   data?: {
-    id: string;
-    type: 'text' | 'image' | 'video' | 'voice';
+    id: string;,
+    type: 'text' | 'image' | 'video' | 'voice';,
     content: string;
     metadata?: Record<string, unknown>;
     created_at: string;
@@ -57,16 +57,16 @@ export interface AIGenerationResponse extends BaseApiResponse {
 
 export interface GenerationsListResponse extends BaseApiResponse {
   data?: Array<{
-    id: string;
-    type: string;
-    content: string;
-    created_at: string;
+    id: string;,
+    type: string;,
+    content: string;,
+    created_at: string;,
     status: string;
   }>;
   pagination?: {
-    page: number;
-    limit: number;
-    total: number;
+    page: number;,
+    limit: number;,
+    total: number;,
     totalPages: number;
   };
 }
@@ -74,27 +74,27 @@ export interface GenerationsListResponse extends BaseApiResponse {
 // Asset Management API Responses
 export interface AssetUploadResponse extends BaseApiResponse {
   asset?: {
-    id: string;
-    filename: string;
-    url: string;
-    type: string;
-    size: number;
+    id: string;,
+    filename: string;,
+    url: string;,
+    type: string;,
+    size: number;,
     created_at: string;
   };
 }
 
 export interface AssetsListResponse extends BaseApiResponse {
   assets?: Array<{
-    id: string;
-    filename: string;
-    url: string;
-    type: string;
-    size: number;
+    id: string;,
+    filename: string;,
+    url: string;,
+    type: string;,
+    size: number;,
     created_at: string;
   }>;
   pagination?: {
-    page: number;
-    limit: number;
+    page: number;,
+    limit: number;,
     total: number;
   };
 }
@@ -102,21 +102,21 @@ export interface AssetsListResponse extends BaseApiResponse {
 // Campaign API Responses
 export interface CampaignResponse extends BaseApiResponse {
   campaign?: {
-    id: string;
-    name: string;
-    description: string;
-    status: string;
-    created_at: string;
+    id: string;,
+    name: string;,
+    description: string;,
+    status: string;,
+    created_at: string;,
     updated_at: string;
   };
 }
 
 export interface CampaignsListResponse extends BaseApiResponse {
   campaigns?: Array<{
-    id: string;
-    name: string;
-    description: string;
-    status: string;
+    id: string;,
+    name: string;,
+    description: string;,
+    status: string;,
     created_at: string;
   }>;
 }
@@ -124,12 +124,12 @@ export interface CampaignsListResponse extends BaseApiResponse {
 // Analytics API Responses
 export interface AnalyticsResponse extends BaseApiResponse {
   data?: {
-    metrics: Array<{
-      id: string;
-      label: string;
-      value: string | number;
-      change: number;
-      trend: 'up' | 'down' | 'stable';
+    metrics: Array<{,
+    id: string;,
+    label: string;,
+    value: string | number;,
+    change: number;,
+    trend: 'up' | 'down' | 'stable';
     }>;
     charts?: Record<string, unknown>;
     timeRange: string;
@@ -138,8 +138,8 @@ export interface AnalyticsResponse extends BaseApiResponse {
 
 // Health Check Response
 export interface HealthResponse extends BaseApiResponse {
-  status: 'healthy' | 'unhealthy';
-  timestamp: string;
+  status: 'healthy' | 'unhealthy';,
+    timestamp: string;
   services?: Record<string, 'up' | 'down'>;
 }
 
@@ -150,8 +150,8 @@ export interface CSRFTokenResponse extends BaseApiResponse {
 
 // Error Response
 export interface ErrorResponse extends BaseApiResponse {
-  success: false;
-  error: string;
+  success: false;,
+    error: string;
   details?: Record<string, unknown>;
   code?: string;
 }
@@ -171,9 +171,9 @@ export interface SearchParams extends PaginationParams {
 
 // AI Generation Request
 export interface AIGenerationRequest {
-  prompt: string;
-  type: 'text' | 'image' | 'video' | 'voice';
-  clientId: string;
+  prompt: string;,
+    type: 'text' | 'image' | 'video' | 'voice';,
+    clientId: string;
   parameters?: Record<string, unknown>;
 }
 
@@ -194,14 +194,14 @@ export interface CampaignRequest {
 
 // Authentication Request
 export interface LoginRequest {
-  email: string;
-  password: string;
+  email: string;,
+    password: string;
 }
 
 export interface SignupRequest {
-  email: string;
-  password: string;
-  name: string;
+  email: string;,
+    password: string;,
+    name: string;
 }
 
 // Type guards for API responses

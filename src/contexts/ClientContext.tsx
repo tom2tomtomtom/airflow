@@ -11,14 +11,14 @@ interface ClientContextType {
   setActiveClient: (client: Client | null) => void;
   createClient: (clientData: Partial<Client>) => Promise<Client>;
   updateClient: (id: string, clientData: Partial<Client>) => Promise<Client>;
-  deleteClient: (id: string) => Promise<void>;
+    deleteClient: (id: string) => Promise<void>;
 }
 
 const ClientContext = createContext<ClientContextType>({
   clients: [],
-  activeClient: null,
+        activeClient: null,
   loading: true,
-  error: null,
+        error: null,
   setActiveClient: () => {},
   createClient: async () => {
     throw new Error('ClientContext not initialized');
@@ -26,7 +26,10 @@ const ClientContext = createContext<ClientContextType>({
   updateClient: async () => {
     throw new Error('ClientContext not initialized');
   },
-  deleteClient: async () => {}});
+  deleteClient: async () => {
+    throw new Error('ClientContext not initialized');
+  }
+});
 
 export const useClient = () => useContext(ClientContext);
 
@@ -64,7 +67,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           // Fetch clients from API
           const response = await fetch("/api/clients", {
             headers: {},
-              Authorization: `Bearer ${user.token}`}});
+              Authorization: `Bearer ${user.token}` });
           
           const data = await response.json();
           
@@ -148,10 +151,12 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       // Call API to create client
       const response = await fetch("/api/clients", {
         method: "POST",
-        headers: {},
+        headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token || "mock_token"}`},
-        body: JSON.stringify(clientData)});
+          Authorization: `Bearer ${user.token || "mock_token"}`
+        },
+        body: JSON.stringify(clientData)
+      });
       
       const data = await response.json();
       
@@ -179,7 +184,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       
       // Fallback to local creation
       const newClient: Client = {
-        id: 'client_' + Math.random().toString(36).substring(2, 9),
+    id: 'client_' + Math.random().toString(36).substring(2, 9),
         name: clientData.name || 'New Client',
         industry: clientData.industry || 'Other',
         logo: clientData.logo || '',
@@ -192,7 +197,8 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         brand_guidelines: clientData.brand_guidelines || {
           voiceTone: '',
           targetAudience: '',
-          keyMessages: []},
+          keyMessages: []
+        },
         tenantId: 'tenant-1',
         isActive: true,
         dateCreated: new Date().toISOString(),
@@ -302,7 +308,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       const response = await fetch(`/api/clients/${id}`, {
         method: "DELETE",
         headers: {},
-          Authorization: `Bearer ${user.token || "mock_token"}`}});
+          Authorization: `Bearer ${user.token || "mock_token"}` });
       
       const data = await response.json();
       
@@ -353,7 +359,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setActiveClient: handleSetActiveClient,
         createClient,
         updateClient,
-        deleteClient}}
+        deleteClient }
     >
       {children}
     </ClientContext.Provider>

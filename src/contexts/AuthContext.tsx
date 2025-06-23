@@ -94,9 +94,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Call the login API endpoint
       const response = await fetch('/api/auth/login', {
         method: 'POST',
-        headers: {},
-          'Content-Type': 'application/json'},
-        body: JSON.stringify({ email, password })});
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      });
       
       const data = await response.json();
       
@@ -130,9 +132,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Call the signup API endpoint
       const response = await fetch('/api/auth/signup', {
         method: 'POST',
-        headers: {},
-          'Content-Type': 'application/json'},
-        body: JSON.stringify({ email, password, name })});
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password, name })
+      });
       
       const data = await response.json();
       
@@ -189,7 +193,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         signup,
         logout,
-        isAuthenticated: !!user}}
+        isAuthenticated: !!user }
     >
       {children}
     </AuthContext.Provider>

@@ -7,11 +7,11 @@ import { createServerClient } from '@supabase/ssr';
 // Extended request with user information
 export interface AuthenticatedRequest extends NextApiRequest {
   user?: {
-    id: string;
-    email: string;
-    role: UserRole;
-    permissions: string[];
-    clientIds: string[];
+    id: string;,
+    email: string;,
+    role: UserRole;,
+    permissions: string[];,
+    clientIds: string[];,
     tenantId: string;
   };
 }
@@ -42,8 +42,7 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
             // We don't need to set cookies in API routes
           },
           remove(name: string, options: unknown) {
-            // We don't need to remove cookies in API routes
-          }}}
+            // We don't need to remove cookies in API routes }
     );
 
     const {
@@ -70,7 +69,7 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
           cookies: {},
             get: () => undefined,
             set: () => {},
-            remove: () => {}}}
+            remove: () => { }
       );
 
       const {
@@ -96,7 +95,7 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
           cookies: {},
             get: () => undefined,
             set: () => {},
-            remove: () => {}}}
+            remove: () => { }
       );
 
       const {

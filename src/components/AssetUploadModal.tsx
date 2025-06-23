@@ -61,10 +61,11 @@ export const AssetUploadModal: React.FC<AssetUploadModalProps> = ({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: {},
+    accept: {
       'image/*': ['.png', '.jpg', '.jpeg', '.gif', '.webp'],
       'video/*': ['.mp4', '.mov', '.avi', '.webm'],
-      'audio/*': ['.mp3', '.wav', '.m4a', '.ogg']},
+      'audio/*': ['.mp3', '.wav', '.m4a', '.ogg']
+    },
     multiple: true,
     maxSize: 100 * 1024 * 1024, // 100MB
   });

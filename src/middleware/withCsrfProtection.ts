@@ -21,8 +21,8 @@ export interface CsrfOptions {
   validateToken?: (token: string, cookieToken: string) => boolean;
 }
 
-const DEFAULT_OPTIONS: Required<CsrfOptions> = {
-  tokenLength: 32,
+const DEFAULT_OPTIONS: Required<CsrfOptions> = {,
+    tokenLength: 32,
   cookieName: '_csrf',
   headerName: 'x-csrf-token',
   sameSite: 'strict',
@@ -46,8 +46,7 @@ const DEFAULT_OPTIONS: Required<CsrfOptions> = {
     } catch (error) {
       // If there's any error with hex decoding or comparison, tokens are invalid
       return false;
-    }
-  }};
+    } };
 
 /**
  * Generate a cryptographically secure CSRF token
@@ -257,7 +256,7 @@ export function withCsrfProtection(
         success: false,
         error: {},
           code: 'CSRF_VALIDATION_ERROR',
-          message: 'Error validating CSRF token'}});
+          message: 'Error validating CSRF token' });
     }
 
     // Execute the original handler
@@ -280,7 +279,7 @@ export async function generateCsrfTokenAPI(
   res.status(200).json({
     success: true,
     data: { token },
-    meta: { timestamp: new Date().toISOString() }});
+    meta: { timestamp: new Date().toISOString() });
 }
 
 /**
@@ -326,7 +325,7 @@ export const CsrfConfigs = {
     secure: false,
     httpOnly: false,
     maxAge: 86400, // 24 hours
-    skipPaths: ['/api/auth', '/api/webhooks', '/api/public']}};
+    skipPaths: ['/api/auth', '/api/webhooks', '/api/public'] };
 
 /**
  * Get CSRF configuration based on environment

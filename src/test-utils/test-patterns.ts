@@ -20,10 +20,10 @@ export class APITestPatterns {
       list?: NextApiHandler;
     },
     testData: {},
-      validCreateData: unknown;
-      validUpdateData: unknown;
-      invalidData: unknown;
-      resourceName: string;
+      validCreateData: unknown;,
+    validUpdateData: unknown;,
+    invalidData: unknown;,
+    resourceName: string;
     }
   ) {
     const { validCreateData, validUpdateData, invalidData, resourceName } = testData;
@@ -158,8 +158,7 @@ export class APITestPatterns {
           it('should require authentication', async () => {
             await APITestRunner.testAuthRequired(handlers.list!, 'GET');
           });
-        });
-      }};
+        }); };
   }
 
   /**
@@ -271,8 +270,7 @@ export class APITestPatterns {
             const data = JSON.parse(res._getData());
             expect(data.data.session).toBeNull();
           });
-        });
-      }};
+        }); };
   }
 
   /**
@@ -332,8 +330,7 @@ export class APITestPatterns {
       testAuthRequired: () => {
         it('should require authentication', async () => {
           await APITestRunner.testAuthRequired(handler, 'POST');
-        });
-      }};
+        }); };
   }
 
   /**
@@ -399,8 +396,7 @@ export class APITestPatterns {
 
             await APITestRunner.testInvalidInput(handlers.brief!, emptyBrief, 'POST');
           });
-        });
-      }};
+        }); };
   }
 
   /**
@@ -460,8 +456,7 @@ export class APITestPatterns {
             expect(data.data).toHaveProperty('monthlyUsage');
             expect(data.data).toHaveProperty('budgetRemaining');
           });
-        });
-      }};
+        }); };
   }
 
   /**
@@ -572,8 +567,8 @@ export class APITestPatterns {
     handler: NextApiHandler,
     endpoint: string,
     testCases: {},
-      valid: unknown;
-      invalid: Array<{ data: unknown; expectedError: string }>;
+      valid: unknown;,
+    invalid: Array<{ data: unknown; expectedError: string }>;
     }
   ) {
     describe(`✅ Input Validation Tests for ${endpoint}`, () => {
@@ -717,8 +712,7 @@ export class APITestPatterns {
 
           // Check if any responses were rate limited
           // Implementation depends on rate limiting strategy
-        });
-      }};
+        }); };
   }
 }
 

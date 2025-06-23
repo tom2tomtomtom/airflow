@@ -233,7 +233,8 @@ export const WorkflowContainer: React.FC<WorkflowContainerProps> = ({
         <Suspense fallback={<StepSkeleton stepType="Video Rendering" />}>
           <RenderStep onPrevious={handlePrevious} onComplete={handleWorkflowComplete} />
         </Suspense>
-      )};
+      )
+    };
 
     const StepComponent = stepComponents[currentStep as keyof typeof stepComponents];
     return StepComponent ? StepComponent() : null;
@@ -274,9 +275,11 @@ export const WorkflowContainer: React.FC<WorkflowContainerProps> = ({
       fullWidth
       fullScreen={isMobile}
       PaperProps={{
-        sx: {},
+        sx: {
           height: isMobile ? '100vh' : '90vh',
-          maxHeight: isMobile ? '100vh' : '90vh'}}}
+          maxHeight: isMobile ? '100vh' : '90vh'
+        }
+      }}
     >
       <DialogTitle sx={{ 
         display: 'flex', 

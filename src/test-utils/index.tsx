@@ -4,12 +4,12 @@ import { vi } from 'vitest';
 
 // Mock Supabase client
 export const mockSupabaseClient = {;
-  auth: {
+  auth: {,
     getSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
     signIn: vi.fn(),
     signOut: vi.fn(),
     onAuthStateChange: vi.fn().mockReturnValue({ data: null, error: null })},
-  from: vi.fn().mockReturnValue({
+  from: vi.fn().mockReturnValue({,
     select: vi.fn().mockReturnThis(),
     insert: vi.fn().mockReturnThis(),
     update: vi.fn().mockReturnThis(),
@@ -34,7 +34,7 @@ export const createMockRouter = (router: Record<string, unknown> = {}) => ({
   back: vi.fn(),
   prefetch: vi.fn().mockResolvedValue(undefined),
   beforePopState: vi.fn(),
-  events: {
+  events: {,
     on: vi.fn(),
     off: vi.fn(),
     emit: vi.fn()},

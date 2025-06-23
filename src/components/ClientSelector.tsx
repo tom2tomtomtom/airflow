@@ -170,9 +170,11 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
         open={Boolean(anchorEl)}
         onClose={handleClose}
         PaperProps={{
-          sx: {},
+          sx: {
             maxHeight: 400,
-            width: 280}}}
+            width: 280
+          }
+        }}
       >
         {clients && clients.length > 3 && (
           <Box px={2} py={1}>

@@ -3,13 +3,13 @@ export interface AuthState {
   user?: unknown;
   loading: boolean;
   error?: string;
-  lastCheck: number;
-  checkInProgress: boolean;
+  lastCheck: number;,
+    checkInProgress: boolean;
 }
 
 export class AuthStateManager {
   private static instance: AuthStateManager;
-  private state: AuthState = {
+  private state: AuthState = {,
     isAuthenticated: false,
     loading: true,
     lastCheck: 0,

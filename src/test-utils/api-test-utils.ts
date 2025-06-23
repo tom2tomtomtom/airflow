@@ -169,8 +169,8 @@ export class DatabaseMockManager {
 
   static resetMocks() {
     this.supabaseMocks = {;
-      from: jest.fn(() => ({
-        select: jest.fn().mockReturnThis(),
+      from: jest.fn(() => ({,
+    select: jest.fn().mockReturnThis(),
         insert: jest.fn().mockReturnThis(),
         update: jest.fn().mockReturnThis(),
         delete: jest.fn().mockReturnThis(),
@@ -198,7 +198,7 @@ export class DatabaseMockManager {
         ),
         signIn: jest.fn(() => Promise.resolve({ data: null, error: null })),
         signOut: jest.fn(() => Promise.resolve({ error: null })),
-        signUp: jest.fn(() => Promise.resolve({ data: null, error: null }))}};
+        signUp: jest.fn(() => Promise.resolve({ data: null, error: null })) };
 
     return this.supabaseMocks;
   }
@@ -236,8 +236,8 @@ export class APITestRunner {
     expect(res._getStatusCode()).toBe(401);
     expect(JSON.parse(res._getData())).toMatchObject({
       success: false,
-      error: expect.objectContaining({
-        message: expect.stringContaining('Authentication required')})});
+      error: expect.objectContaining({,
+    message: expect.stringContaining('Authentication required')})});
   }
 
   static async testValidInput(handler: unknown, validData: unknown, method: string = 'POST') {;
@@ -266,8 +266,8 @@ export class APITestRunner {
     expect(res._getStatusCode()).toBe(400);
     expect(JSON.parse(res._getData())).toMatchObject({
       success: false,
-      error: expect.objectContaining({
-        message: expect.any(String)})});
+      error: expect.objectContaining({,
+    message: expect.any(String)})});
   }
 
   static async testMethodNotAllowed(handler: unknown, disallowedMethod: string = 'DELETE') {;
@@ -290,8 +290,8 @@ export class APITestRunner {
     expect(res._getStatusCode()).toBe(500);
     expect(JSON.parse(res._getData())).toMatchObject({
       success: false,
-      error: expect.objectContaining({
-        message: expect.stringContaining('Database')})});
+      error: expect.objectContaining({,
+    message: expect.stringContaining('Database')})});
   }
 
   static async testRateLimit(handler: unknown, attempts: number = 6) {;
@@ -347,18 +347,18 @@ export class APITestRunner {
 export const mockExternalServices = () => {;
   // Mock OpenAI
   jest.mock('openai', () => ({
-    OpenAI: jest.fn().mockImplementation(() => ({
-      chat: {},
+    OpenAI: jest.fn().mockImplementation(() => ({,
+    chat: {},
         completions: {},
-          create: jest.fn().mockResolvedValue({
-            choices: [{ message: { content: 'Mock AI response' } }],
-            usage: { total_tokens: 100, prompt_tokens: 50, completion_tokens: 50 }})}}}))}));
+          create: jest.fn().mockResolvedValue({,
+    choices: [{ message: { content: 'Mock AI response' } }],
+            usage: { total_tokens: 100, prompt_tokens: 50, completion_tokens: 50 })) }))}));
 
   // Mock Redis
   jest.mock('ioredis', () => ({
     __esModule: true,
-    default: jest.fn().mockImplementation(() => ({
-      get: jest.fn().mockResolvedValue(null),
+    default: jest.fn().mockImplementation(() => ({,
+    get: jest.fn().mockResolvedValue(null),
       set: jest.fn().mockResolvedValue('OK'),
       del: jest.fn().mockResolvedValue(1),
       incr: jest.fn().mockResolvedValue(1),
@@ -368,8 +368,8 @@ export const mockExternalServices = () => {;
 
   // Mock file upload
   jest.mock('formidable', () => ({
-    IncomingForm: jest.fn().mockImplementation(() => ({
-      parse: jest.fn().mockImplementation((req, callback) => {
+    IncomingForm: jest.fn().mockImplementation(() => ({,
+    parse: jest.fn().mockImplementation((req, callback) => {
         callback(
           null,
           {},
@@ -378,7 +378,7 @@ export const mockExternalServices = () => {;
               filepath: '/tmp/test-file',
               originalFilename: 'test.jpg',
               mimetype: 'image/jpeg',
-              size: 1024000}}
+              size: 1024000 }
         );
       })}))}));
 };
@@ -430,8 +430,7 @@ export const SecurityTestHelpers = {;
     await handler(req, res);
 
     // Should require CSRF token for state-changing operations
-    // This is dependent on actual CSRF middleware implementation
-  }};
+    // This is dependent on actual CSRF middleware implementation };
 
 // Performance test helpers
 export const PerformanceTestHelpers = {;
@@ -449,8 +448,7 @@ export const PerformanceTestHelpers = {;
       handler(req, res)
     );
 
-    expect(executionTime).toBeLessThan(maxTime);
-  }};
+    expect(executionTime).toBeLessThan(maxTime); };
 
 // Export commonly used test utilities
 export const createMockUser = TestDataFactory.createUser;

@@ -25,7 +25,7 @@ export const errorResponse = (
     success: false,
     error: {},
       code,
-      message}});
+      message });
 };
 
 // Get the authentication token from localStorage
@@ -90,12 +90,12 @@ export const apiRequest = async <T>(
 export const authApi = {
   login: async (email: string, password: string) => {
     return apiRequest<{
-      success: boolean;
-      user: {},
-        id: string;
-        email: string;
-        name: string;
-        token: string;
+      success: boolean;,
+    user: {},
+        id: string;,
+    email: string;,
+    name: string;,
+    token: string;
       };
     }>('/api/auth/login', {
       method: 'POST',
@@ -104,25 +104,24 @@ export const authApi = {
   
   signup: async (email: string, password: string, name: string) => {
     return apiRequest<{
-      success: boolean;
-      user: {},
-        id: string;
-        email: string;
-        name: string;
-        token: string;
+      success: boolean;,
+    user: {},
+        id: string;,
+    email: string;,
+    name: string;,
+    token: string;
       };
     }>('/api/auth/signup', {
       method: 'POST',
-      body: JSON.stringify({ email, password, name })});
-  }};
+      body: JSON.stringify({ email, password, name })}); };
 
 // Client API
 export interface Client {
-  id: string;
-  name: string;
-  description: string;
-  primaryColor: string;
-  secondaryColor: string;
+  id: string;,
+    name: string;,
+    description: string;,
+    primaryColor: string;,
+    secondaryColor: string;
   logoUrl?: string;
   userId: string;
 }
@@ -130,15 +129,15 @@ export interface Client {
 export const clientApi = {
   getClients: async () => {
     return apiRequest<{
-      success: boolean;
-      clients: Client[];
+      success: boolean;,
+    clients: Client[];
     }>('/api/clients');
   },
   
   createClient: async (clientData: Omit<Client, 'id' | 'userId'>) => {
     return apiRequest<{
-      success: boolean;
-      client: Client;
+      success: boolean;,
+    client: Client;
     }>('/api/clients', {
       method: 'POST',
       body: JSON.stringify(clientData)});
@@ -146,8 +145,8 @@ export const clientApi = {
   
   updateClient: async (id: string, clientData: Partial<Omit<Client, 'id' | 'userId'>>) => {
     return apiRequest<{
-      success: boolean;
-      client: Client;
+      success: boolean;,
+    client: Client;
     }>(`/api/clients/${id}`, {
       method: 'PUT',
       body: JSON.stringify(clientData)});
@@ -155,40 +154,39 @@ export const clientApi = {
   
   deleteClient: async (id: string) => {
     return apiRequest<{
-      success: boolean;
-      message: string;
-      client: Client;
+      success: boolean;,
+    message: string;,
+    client: Client;
     }>(`/api/clients/${id}`, {
-      method: 'DELETE'});
-  }};
+      method: 'DELETE'}); };
 
 // Assets API
 export interface Asset {
-  id: string;
-  name: string;
-  type: 'image' | 'video' | 'text' | 'voice';
-  url: string;
+  id: string;,
+    name: string;,
+    type: 'image' | 'video' | 'text' | 'voice';,
+    url: string;
   thumbnailUrl?: string;
   description?: string;
-  tags: string[];
-  dateCreated: string;
-  clientId: string;
-  userId: string;
+  tags: string[];,
+    dateCreated: string;,
+    clientId: string;,
+    userId: string;
 }
 
 export const assetApi = {
   getAssets: async (clientId?: string) => {
     const url = clientId ? `/api/assets?clientId=${clientId}` : '/api/assets';
     return apiRequest<{
-      success: boolean;
-      assets: Asset[];
+      success: boolean;,
+    assets: Asset[];
     }>(url);
   },
   
   createAsset: async (assetData: Omit<Asset, 'id' | 'dateCreated' | 'userId'>) => {
     return apiRequest<{
-      success: boolean;
-      asset: Asset;
+      success: boolean;,
+    asset: Asset;
     }>('/api/assets', {
       method: 'POST',
       body: JSON.stringify(assetData)});
@@ -196,8 +194,8 @@ export const assetApi = {
   
   updateAsset: async (id: string, assetData: Partial<Omit<Asset, 'id' | 'userId'>>) => {
     return apiRequest<{
-      success: boolean;
-      asset: Asset;
+      success: boolean;,
+    asset: Asset;
     }>(`/api/assets/${id}`, {
       method: 'PUT',
       body: JSON.stringify(assetData)});
@@ -205,35 +203,34 @@ export const assetApi = {
   
   deleteAsset: async (id: string) => {
     return apiRequest<{
-      success: boolean;
-      message: string;
+      success: boolean;,
+    message: string;
     }>(`/api/assets/${id}`, {
-      method: 'DELETE'});
-  }};
+      method: 'DELETE'}); };
 
 // AI Generation API
 export interface GenerationPrompt {
-  prompt: string;
-  type: 'text' | 'image' | 'video' | 'voice';
+  prompt: string;,
+    type: 'text' | 'image' | 'video' | 'voice';
   parameters?: Record<string, unknown>;
   clientId: string;
 }
 
 export interface GenerationResult {
-  id: string;
-  type: 'text' | 'image' | 'video' | 'voice';
-  content: string | string[]; // URL for media, text content for text
-  prompt: string;
-  dateCreated: string;
-  clientId: string;
-  userId: string;
+  id: string;,
+    type: 'text' | 'image' | 'video' | 'voice';,
+    content: string | string[]; // URL for media, text content for text
+  prompt: string;,
+    dateCreated: string;,
+    clientId: string;,
+    userId: string;
 }
 
 export const aiApi = {
   generate: async (promptData: GenerationPrompt) => {
     return apiRequest<{
-      success: boolean;
-      result: GenerationResult;
+      success: boolean;,
+    result: GenerationResult;
     }>('/api/ai/generate', {
       method: 'POST',
       body: JSON.stringify(promptData)});
@@ -242,10 +239,9 @@ export const aiApi = {
   getGenerations: async (clientId?: string) => {
     const url = clientId ? `/api/ai/generations?clientId=${clientId}` : '/api/ai/generations';
     return apiRequest<{
-      success: boolean;
-      generations: GenerationResult[];
-    }>(url);
-  }};
+      success: boolean;,
+    generations: GenerationResult[];
+    }>(url); };
 
 const api = {
   auth: authApi,

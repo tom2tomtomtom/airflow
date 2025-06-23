@@ -9,9 +9,9 @@ import React, {
 import { PaletteMode } from '@mui/material';
 
 interface ThemeContextType {
-  mode: PaletteMode;
-  toggleMode: () => void;
-  isTransitioning: boolean;
+  mode: PaletteMode;,
+    toggleMode: () => void;,
+    isTransitioning: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -90,7 +90,7 @@ export const ThemeModeProvider: React.FC<ThemeModeProviderProps> = ({ children }
   if (!mounted) {
     return (
       <ThemeContext.Provider
-        value={{ mode: 'light', toggleMode: () => {}, isTransitioning: false }}
+        value={{ mode: 'light', toggleMode: () => {}, isTransitioning: false }
       >
         {children}
       </ThemeContext.Provider>
@@ -98,7 +98,7 @@ export const ThemeModeProvider: React.FC<ThemeModeProviderProps> = ({ children }
   }
 
   return (
-    <ThemeContext.Provider value={{ mode, toggleMode, isTransitioning }}>
+    <ThemeContext.Provider value={{ mode, toggleMode, isTransitioning }>
       {children}
     </ThemeContext.Provider>
   );

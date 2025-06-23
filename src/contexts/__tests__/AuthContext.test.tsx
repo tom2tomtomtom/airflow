@@ -12,12 +12,12 @@ jest.mock('@/lib/supabase/client', () => ({
       signInWithPassword: jest.fn(),
       signUp: jest.fn(),
       signOut: jest.fn(),
-      onAuthStateChange: jest.fn(() => ({
-        data: { subscription: { unsubscribe: jest.fn() } }}))}}}));
+      onAuthStateChange: jest.fn(() => ({,
+    data: { subscription: { unsubscribe: jest.fn() } })) }));
 
 // Mock useRouter
 jest.mock('next/router', () => ({
-  useRouter: () => ({
+  useRouter: () => ({,
     push: jest.fn(),
     pathname: '/',
     route: '/',
@@ -46,7 +46,7 @@ describe('AuthContext', () => {
     const mockUser = {
       id: '123',
       email: 'test@example.com',
-      user_metadata: { full_name: 'Test User' }};
+      user_metadata: { full_name: 'Test User' };
 
     const { supabase } = await import('@/lib/supabase/client');
 
@@ -72,7 +72,7 @@ describe('AuthContext', () => {
 
     jest.mocked(supabase.auth.signInWithPassword).mockResolvedValueOnce({
       data: { user: null, session: null },
-      error: { message: 'Invalid credentials' }});
+      error: { message: 'Invalid credentials' });
 
     const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -89,7 +89,7 @@ describe('AuthContext', () => {
     const mockUser = {
       id: '456',
       email: 'newuser@example.com',
-      user_metadata: { full_name: 'New User' }};
+      user_metadata: { full_name: 'New User' };
 
     const { supabase } = await import('@/lib/supabase/client');
 
@@ -131,7 +131,7 @@ describe('AuthContext', () => {
     const mockUser = {
       id: '789',
       email: 'existing@example.com',
-      user_metadata: { full_name: 'Existing User' }};
+      user_metadata: { full_name: 'Existing User' };
 
     const { supabase } = await import('@/lib/supabase/client');
 
@@ -139,7 +139,7 @@ describe('AuthContext', () => {
       data: {},
         session: {},
           access_token: 'token',
-          user: mockUser}},
+          user: mockUser },
       error: null});
 
     const { result } = renderHook(() => useAuth(), { wrapper });
