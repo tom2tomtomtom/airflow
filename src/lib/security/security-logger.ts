@@ -28,7 +28,12 @@ export type SecurityEventType =
   | 'API_ABUSE'
   | 'UNUSUAL_ACTIVITY'
   | 'SECURITY_SCAN_DETECTED'
-  | 'BRUTE_FORCE_ATTACK';
+  | 'BRUTE_FORCE_ATTACK'
+  | 'API_USAGE'
+  | 'API_ERROR'
+  | 'MALICIOUS_INPUT_DETECTED'
+  | 'MALICIOUS_QUERY_DETECTED'
+  | 'INVALID_API_REQUEST';
 
 export type SecuritySeverity = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
 
@@ -483,6 +488,11 @@ export class SecurityLogger {
       'RATE_LIMIT_EXCEEDED': 'MEDIUM',
       'SUSPICIOUS_FILE_UPLOAD': 'MEDIUM',
       'API_ABUSE': 'MEDIUM',
+      'MALICIOUS_INPUT_DETECTED': 'HIGH',
+      'MALICIOUS_QUERY_DETECTED': 'MEDIUM',
+      'INVALID_API_REQUEST': 'MEDIUM',
+      'API_ERROR': 'MEDIUM',
+      'API_USAGE': 'LOW',
       'SECURITY_SCAN_DETECTED': 'LOW',
       'AUTHENTICATION_SUCCESS': 'LOW',
       'SESSION_CREATED': 'LOW',
@@ -526,6 +536,11 @@ export class SecurityLogger {
       'PASSWORD_RESET_REQUEST': 15,
       'PROFILE_MODIFICATION': 20,
       'UNUSUAL_ACTIVITY': 30,
+      'MALICIOUS_INPUT_DETECTED': 75,
+      'MALICIOUS_QUERY_DETECTED': 40,
+      'INVALID_API_REQUEST': 25,
+      'API_ERROR': 20,
+      'API_USAGE': 5,
     };
 
     score = baseScores[type] || 50;

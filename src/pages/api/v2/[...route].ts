@@ -2,12 +2,15 @@
  * Universal API v2 Router
  *
  * This is the central router for all API v2 endpoints with a standardized middleware pipeline:
- * 1. Error handling
+ * 1. Security headers (CSP, HSTS, etc.)
  * 2. Authentication
- * 3. Rate limiting
- * 4. Input validation
- * 5. Cost tracking (for AI operations)
- * 6. Route handling
+ * 3. CSRF protection
+ * 4. Session security
+ * 5. Rate limiting
+ * 6. Input validation & sanitization
+ * 7. Cost tracking (for AI operations)
+ * 8. Security event logging
+ * 9. Route handling
  *
  * All API v2 endpoints follow consistent patterns for:
  * - Response format
@@ -19,7 +22,12 @@
 
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withAuth } from '@/middleware/withAuth';
-import { withAPIRateLimit } from '@/lib/rate-limiter';
+import { withRateLimit } from '@/middleware/withRateLimit';
+import { withSecurityHeaders, getSecurityConfig } from '@/middleware/withSecurityHeaders';
+import { withCsrfProtection, getCsrfConfig } from '@/middleware/withCsrfProtection';
+import { withSessionSecurity } from '@/middleware/withSessionSecurity';
+import { securityLogger, SecurityEvents } from '@/lib/security/security-logger';
+import { securityValidation, sanitization } from '@/utils/validation-utils';
 import {
   successResponse,
   errorResponse,
@@ -96,10 +104,80 @@ interface RouteContext {
   requestId: string;
 }
 
+// Security validation and sanitization functions
+async function validateAndSanitizeInput(req: NextApiRequest, body: any): Promise<any> {
+  const sanitized: any = {};
+  
+  for (const [key, value] of Object.entries(body)) {
+    if (typeof value === 'string') {
+      // Check for malicious patterns
+      if (securityValidation.containsMaliciousPattern(value)) {
+        securityLogger.logEvent('MALICIOUS_INPUT_DETECTED', req, {
+          field: key,
+          pattern_type: 'multiple',
+          value_preview: value.slice(0, 100),
+        });
+        throw new Error(`Malicious content detected in field: ${key}`);
+      }
+      
+      // Sanitize the input
+      sanitized[key] = sanitization.sanitizeInput(value, {
+        allowHTML: false,
+        maxLength: 10000,
+        removeControlChars: true,
+        normalizeUnicode: true,
+      });
+    } else if (typeof value === 'object' && value !== null) {
+      // Recursively sanitize nested objects
+      sanitized[key] = await validateAndSanitizeInput(req, value);
+    } else {
+      // Keep non-string values as is (numbers, booleans, etc.)
+      sanitized[key] = value;
+    }
+  }
+  
+  return sanitized;
+}
+
+async function validateAndSanitizeQuery(req: NextApiRequest, query: any): Promise<any> {
+  const sanitized: any = {};
+  
+  for (const [key, value] of Object.entries(query)) {
+    if (typeof value === 'string') {
+      // Check for malicious patterns in query parameters
+      if (securityValidation.containsMaliciousPattern(value)) {
+        securityLogger.logEvent('MALICIOUS_QUERY_DETECTED', req, {
+          parameter: key,
+          value_preview: value.slice(0, 100),
+        });
+        // For query parameters, we'll sanitize rather than reject
+        sanitized[key] = sanitization.sanitizeInput(value, {
+          allowHTML: false,
+          maxLength: 1000,
+          removeControlChars: true,
+          normalizeUnicode: true,
+        });
+      } else {
+        sanitized[key] = value;
+      }
+    } else if (Array.isArray(value)) {
+      // Handle array query parameters
+      sanitized[key] = value.map(v => 
+        typeof v === 'string' ? sanitization.sanitizeInput(v, { maxLength: 1000 }) : v
+      );
+    } else {
+      sanitized[key] = value;
+    }
+  }
+  
+  return sanitized;
+}
+
 async function universalHandler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const startTime = Date.now();
   const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   const user = (req as any).user;
+  const sessionId = (req as any).sessionId;
 
   // Extract route from URL
   const { route: routeParams } = req.query;
@@ -122,11 +200,31 @@ async function universalHandler(req: NextApiRequest, res: NextApiResponse): Prom
   const operation = performanceTracker.startOperation(`api_v2_${route.join('_')}`);
 
   try {
-    // Log request
-    console.log(`[API v2] ${context.method} /${route.join('/')} - ${requestId}`);
+    // Security: Log API access
+    if (user?.id) {
+      securityLogger.logEvent('API_USAGE', req, {
+        route: route.join('/'),
+        requestId,
+        authenticated: true,
+      }, user.id, sessionId);
+    }
+
+    // Security: Validate and sanitize input data
+    if (req.body && typeof req.body === 'object') {
+      context.body = await validateAndSanitizeInput(req, req.body);
+    }
+
+    // Security: Validate query parameters
+    if (req.query && typeof req.query === 'object') {
+      context.query = await validateAndSanitizeQuery(req, req.query);
+    }
+
+    // Log request with security context
+    console.log(`[API v2] ${context.method} /${route.join('/')} - ${requestId} - User: ${user?.id || 'anonymous'}`);
 
     // Validate route
     if (!route || route.length === 0) {
+      securityLogger.logEvent('INVALID_API_REQUEST', req, { reason: 'missing_route' });
       return errorResponse(res, ApiErrorCode.INVALID_REQUEST, 'API v2 route not specified', 400);
     }
 
@@ -158,6 +256,14 @@ async function universalHandler(req: NextApiRequest, res: NextApiResponse): Prom
         );
     }
   } catch (error: any) {
+    // Security: Log API errors for monitoring
+    securityLogger.logEvent('API_ERROR', req, {
+      route: route.join('/'),
+      error: error.message,
+      stack: error.stack?.slice(0, 500),
+      requestId,
+    }, user?.id, sessionId);
+
     console.error(`[API v2] Error in ${context.method} /${route.join('/')}:`, error);
     return handleApiError(res, error, `api_v2_${route.join('_')}`);
   } finally {
@@ -294,5 +400,21 @@ export function validateInput(schema: any) {
   };
 }
 
-// Export the handler with middleware pipeline
-export default withMiddlewarePipeline(withAuth(withAPIRateLimit(universalHandler)));
+// Security-enhanced middleware pipeline
+// Order: Security Headers → Auth → CSRF → Session → Rate Limiting → Handler
+const securityEnhancedHandler = withSecurityHeaders(
+  withAuth(
+    withCsrfProtection(
+      withSessionSecurity(
+        withRateLimit('api')(
+          universalHandler
+        )
+      ),
+      getCsrfConfig()
+    )
+  ),
+  getSecurityConfig()
+);
+
+// Export the handler with complete security middleware pipeline
+export default withMiddlewarePipeline(securityEnhancedHandler);

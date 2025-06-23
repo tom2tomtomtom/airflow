@@ -16,6 +16,8 @@ import {
   methodNotAllowed,
   ApiErrorCode,
 } from '@/lib/api-response';
+import { securityLogger, SecurityEvents } from '@/lib/security/security-logger';
+import { securityValidation, sanitization } from '@/utils/validation-utils';
 // Simple AICostController stub
 class AICostController {
   static getInstance() {
