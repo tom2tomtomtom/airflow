@@ -59,7 +59,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         }
       } catch (error) {
-    const message = getErrorMessage(error);
+        const message = getErrorMessage(error);
         if (process.env.NODE_ENV === 'development') {
           console.error('Authentication error:', error);
         }
@@ -93,32 +93,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     try {
       // Call the login API endpoint
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch('/api/auth/login-simple', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
       });
-      
+
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.error || data.message || 'Login failed');
       }
-      
+
       if (data.success && data.user) {
         if (typeof window !== 'undefined') {
           localStorage.setItem('airwave_user', JSON.stringify(data.user));
         }
         setUser(data.user);
-        
+
         // Don't redirect here - let the login page handle it to avoid middleware loops
       } else {
         throw new Error('Invalid response from server');
       }
     } catch (error) {
-    const message = getErrorMessage(error);
+      const message = getErrorMessage(error);
       console.error('Login error:', error);
       throw error;
     } finally {
@@ -131,33 +131,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     try {
       // Call the signup API endpoint
-      const response = await fetch('/api/auth/signup', {
+      const response = await fetch('/api/auth/signup-simple', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password, name }),
       });
-      
+
       const data = await response.json();
-      
+
       if (!response.ok) {
         // Throw the actual error from the API
         throw new Error(data.error || data.message || 'Signup failed');
       }
-      
+
       // Check if email confirmation is required
       if (data.message && data?.message?.includes('check your email')) {
         // Don't log the user in, just show the message
         throw new Error(data.message);
       }
-      
+
       if (data.success && data.user) {
         if (typeof window !== 'undefined') {
           localStorage.setItem('airwave_user', JSON.stringify(data.user));
         }
         setUser(data.user);
-        
+
         // Redirect to dashboard after signup
         router.push('/dashboard');
       } else if (data.success && data.message) {
@@ -167,7 +167,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error('Invalid response from server');
       }
     } catch (error) {
-    const message = getErrorMessage(error);
+      const message = getErrorMessage(error);
       console.error('Signup error:', error);
       throw error;
     } finally {

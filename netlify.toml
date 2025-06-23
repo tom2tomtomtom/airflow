@@ -1,5 +1,5 @@
 [build]
-  command = "npm ci && npm run build"
+  command = "npm ci --ignore-scripts && npm run build"
   publish = ".next"
   ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF"
 
@@ -7,7 +7,7 @@
   package = "@netlify/plugin-nextjs"
 
 [build.environment]
-  NODE_VERSION = "20"
+  NODE_VERSION = "20.11.0"
   NPM_VERSION = "10"
   NODE_ENV = "production"
   NEXT_TELEMETRY_DISABLED = "1"
@@ -17,10 +17,10 @@
   ENABLE_SOCIAL_PUBLISHING = "true"
   # Security: All sensitive values should be set in Netlify UI Environment Variables
   # These are build-time placeholders only - real values must be configured in deployment
-  JWT_SECRET = "REPLACE_IN_NETLIFY_UI"
-  OPENAI_API_KEY = "REPLACE_IN_NETLIFY_UI"
-  NEXT_PUBLIC_SUPABASE_URL = "REPLACE_IN_NETLIFY_UI"
-  NEXT_PUBLIC_SUPABASE_ANON_KEY = "REPLACE_IN_NETLIFY_UI"
+  JWT_SECRET = "demo_jwt_secret_key_for_build_only_12345678901234567890"
+  OPENAI_API_KEY = "sk-demo_openai_key_placeholder_for_build_testing_only"
+  NEXT_PUBLIC_SUPABASE_URL = "https://demo.supabase.co"
+  NEXT_PUBLIC_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlbW8iLCJyb2xlIjoiYW5vbiIsImlhdCI6MTY0MTQ2NjAyNCwiZXhwIjoxOTU3MDQyMDI0fQ.8B69e9wOlbdYO7_Gu2qGYQW5r8n5p9M7X9r5s8o1wPs"
 
 [functions]
   external_node_modules = ["openai"]
