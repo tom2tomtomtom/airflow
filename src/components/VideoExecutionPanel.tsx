@@ -108,8 +108,9 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
     try {
       setLoading(true);
       const response = await fetch(`/api/executions?matrix_id=${matrixId}&content_type=video`, {
-        headers: {},
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')
+      }`
         }
       });
 
@@ -136,8 +137,9 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
 
       const statusPromises = activeExecutions.map((exec: any) =>
         fetch(`/api/executions/${exec.id}`, {
-          headers: {},
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')
+      }`
           }
         }).then(res => res.ok ? res.json() : null)
       );
@@ -191,13 +193,13 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
         priority: 'normal',
         schedule_type: 'immediate',
         execution_settings: {},
-          quality: executionSettings.quality,
+  quality: executionSettings.quality,
           formats: ['mp4'],
           resolutions: ['1920x1080', '1080x1920'], // Horizontal and vertical
           include_previews: true,
           notify_on_completion: true,
           video_specific: {},
-            auto_generate_variations: executionSettings.auto_generate_variations,
+  auto_generate_variations: executionSettings.auto_generate_variations,
             variations_per_combination: executionSettings.variations_per_combination,
             platform_optimization: executionSettings.platform_optimization,
             save_to_assets: executionSettings.save_to_assets,
@@ -206,9 +208,10 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
 
       const response = await fetch(`/api/matrices/${matrixId}/execute`, {
         method: 'POST',
-        headers: {},
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`},
+        headers: {
+        'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')
+      }`},
         body: JSON.stringify(executeData)});
 
       if (response.ok) {
@@ -241,8 +244,9 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
     try {
       const response = await fetch(`/api/executions/${executionId}/retry`, {
         method: 'POST',
-        headers: {},
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')
+      }`
         }
       });
 
@@ -263,8 +267,9 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
     try {
       const response = await fetch(`/api/executions/${executionId}`, {
         method: 'DELETE',
-        headers: {},
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')
+      }`
         }
       });
 

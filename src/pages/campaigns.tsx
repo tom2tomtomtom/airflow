@@ -206,8 +206,7 @@ const CampaignsPage: React.FC = () => {
                     transition: 'transform 0.2s, box-shadow 0.2s',
                     '&:hover': {
                       transform: 'translateY(-4px)',
-                      boxShadow: 3,
-                    },
+                      boxShadow: 3 },
                   }}
                   onClick={() => handleViewCampaign(campaign.id)}
                 >
@@ -245,8 +244,7 @@ const CampaignsPage: React.FC = () => {
                         textOverflow: 'ellipsis',
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                      }}
+                        WebkitBoxOrient: 'vertical' }}
                     >
                       {campaign.description || campaign.objective}
                     </Typography>

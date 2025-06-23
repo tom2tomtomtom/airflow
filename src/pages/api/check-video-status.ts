@@ -67,13 +67,13 @@ export default async function handler(
     return res.status(200).json({
       success: true,
       job: {},
-        id: job.id,
+  id: job.id,
         status: job.status,
         progress: (job as any).progress || 0,
         created_at: job.created_at,
         completed_at: job.completed_at,
         url: job.url,
-        error: job.error},
+        error: job.error }
       asset,
       message: getStatusMessage(job.status, (job as any).progress)});
 

@@ -8,8 +8,7 @@ const redis =
   env.UPSTASH_REDIS_REST_URL && env.UPSTASH_REDIS_REST_TOKEN
     ? new Redis({
         url: env.UPSTASH_REDIS_REST_URL,
-        token: env.UPSTASH_REDIS_REST_TOKEN,
-      })
+        token: env.UPSTASH_REDIS_REST_TOKEN })
     : undefined;
 
 // Log Redis status
@@ -24,48 +23,42 @@ export const rateLimiters = {
     redis: redis || (new Map() as any), // Fallback to memory
     limiter: Ratelimit.slidingWindow(5, '15 m'), // 5 attempts per 15 minutes
     analytics: true,
-    prefix: 'auth',
-  }),
+    prefix: 'auth' }),
 
   // General API endpoints - moderate
   api: new Ratelimit({
     redis: redis || (new Map() as any),
     limiter: Ratelimit.slidingWindow(100, '1 m'), // 100 requests per minute
     analytics: true,
-    prefix: 'api',
-  }),
+    prefix: 'api' }),
 
   // AI generation endpoints - expensive operations
   ai: new Ratelimit({
     redis: redis || (new Map() as any),
     limiter: Ratelimit.slidingWindow(20, '1 h'), // 20 AI requests per hour
     analytics: true,
-    prefix: 'ai',
-  }),
+    prefix: 'ai' }),
 
   // File upload endpoints - resource intensive
   upload: new Ratelimit({
     redis: redis || (new Map() as any),
     limiter: Ratelimit.slidingWindow(10, '5 m'), // 10 uploads per 5 minutes
     analytics: true,
-    prefix: 'upload',
-  }),
+    prefix: 'upload' }),
 
   // Flow workflow endpoints - critical business logic
   flow: new Ratelimit({
     redis: redis || (new Map() as any),
     limiter: Ratelimit.slidingWindow(30, '5 m'), // 30 flow operations per 5 minutes
     analytics: true,
-    prefix: 'flow',
-  }),
+    prefix: 'flow' }),
 
   // Email sending - prevent spam
   email: new Ratelimit({
     redis: redis || (new Map() as any),
     limiter: Ratelimit.slidingWindow(5, '1 h'), // 5 emails per hour
     analytics: true,
-    prefix: 'email',
-  }),
+    prefix: 'email' }),
 };
 
 // Get identifier for rate limiting (user ID or IP)
@@ -122,8 +115,7 @@ export function withRateLimit(
             success: false,
             error: 'Too many requests',
             message: 'Please try again later',
-            retryAfter: Math.ceil((result.reset - Date.now()) / 1000),
-          });
+            retryAfter: Math.ceil((result.reset - Date.now()) / 1000) });
         }
 
         return handler(req, res);
@@ -150,8 +142,7 @@ export const checkRateLimit = async (
     return {
       allowed: result.success,
       remaining: result.remaining,
-      resetAt: new Date(result.reset),
-    };
+      resetAt: new Date(result.reset) };
   } catch (error: any) {
     // Fail open in case of errors
     if (process.env.NODE_ENV === 'development') {

@@ -31,7 +31,7 @@ interface ClientsResponse {
   success: true;
   data: Client[];
   meta: {},
-    total: number;
+  total: number;
     limit: number;
     offset: number;
     has_more: boolean;
@@ -121,7 +121,7 @@ async function getOptimizedClients(
     success: true,
     data: clients,
     meta: {},
-      total,
+  total,
       limit: params.limit,
       offset: params.offset,
       has_more: params.offset + params.limit < total,

@@ -6,7 +6,7 @@ import DashboardLayout from '@/components/DashboardLayout';
 const SocialPublishingPage: React.FC = () => {
   return (
     <>
-      <Head>
+       <Head>
         <title>Social Publishing | AIRFLOW</title>
       </Head>
       <DashboardLayout title="Social Publishing">

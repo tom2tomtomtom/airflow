@@ -108,7 +108,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, b
     .order('created_at', { ascending: false });
 
   return res.json({
-    data: {},
+    data: { }
       ...brief,
       content_variations: contentVariations || [],
       related_strategies: strategies || []}

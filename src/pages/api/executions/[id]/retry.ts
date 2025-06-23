@@ -138,10 +138,10 @@ async function handleRetry(req: NextApiRequest, res: NextApiResponse, user: any,
   await supabase
     .from('executions')
     .update({
-      metadata: {},
+      metadata: {
         ...execution.metadata,
         retry_info: {},
-          retried_at: new Date().toISOString(),
+  retried_at: new Date().toISOString(),
           retried_by: user.id,
           retry_execution_id: retryExecution.id,
           retry_reason: retryData.retry_reason}
@@ -161,7 +161,7 @@ async function handleRetry(req: NextApiRequest, res: NextApiResponse, user: any,
   return res.json({
     message: 'Execution retry initiated successfully',
     data: {},
-      original_execution_id: executionId,
+  original_execution_id: executionId,
       retry_execution: retryExecution,
       trigger_result: triggerResult,
       estimated_start: retryData.delay_seconds > 0 
@@ -278,8 +278,8 @@ async function prepareRetryExecution(originalExecution: any, retryData: any, use
     content_type: originalExecution.content_type,
     platform: originalExecution.platform,
     status: retryData.delay_seconds > 0 ? 'scheduled' : 'pending',
-    metadata: {},
-      ...originalExecution.metadata,
+    metadata: {
+        ...originalExecution.metadata,
       is_retry: true,
       original_execution_id: originalExecution.id,
       retry_attempts: retryAttempts,
@@ -289,7 +289,7 @@ async function prepareRetryExecution(originalExecution: any, retryData: any, use
         ? new Date(Date.now() + retryData.delay_seconds * 1000).toISOString()
         : null,
       retry_config: {},
-        force: retryData.force,
+  force: retryData.force,
         reset_attempts: retryData.reset_attempts,
         delay_seconds: retryData.delay_seconds}
     },
@@ -318,10 +318,11 @@ async function triggerRetryExecution(retryExecution: any, delaySeconds: number):
       .from('executions')
       .update({
         status: triggerResult.success ? 'processing' : 'failed',
-        metadata: {},
-          ...retryExecution.metadata,
+        metadata: {
+        ...retryExecution.metadata,
           trigger_result: triggerResult,
-          triggered_at: new Date().toISOString()}
+          triggered_at: new Date().toISOString()
+      }
       })
       .eq('id', retryExecution.id);
 
@@ -392,28 +393,28 @@ async function triggerExecutionRetryWebhook(retryExecution: any, originalExecuti
       execution_id: retryExecution.id,
       original_execution_id: originalExecution.id,
       campaign: {},
-        id: retryExecution.matrices?.campaigns?.id,
-        name: retryExecution.matrices?.campaigns?.name},
-      matrix: {},
-        id: retryExecution.matrix_id,
-        name: retryExecution.matrices?.name},
-      platform: retryExecution.platform,
+  id: retryExecution.matrices?.campaigns?.id,
+        name: retryExecution.matrices?.campaigns?.name },
+  matrix: {},
+  id: retryExecution.matrix_id,
+        name: retryExecution.matrices?.name },
+  platform: retryExecution.platform,
       content_type: retryExecution.content_type,
       status: retryExecution.status,
       retry_reason: retryData.retry_reason,
       retried_by: {},
-        id: user.id,
-        name: user.full_name || user.email},
-      retry_options: {},
-        force: retryData.force,
+  id: user.id,
+        name: user.full_name || user.email },
+  retry_options: {},
+  force: retryData.force,
         priority: retryData.priority,
         delay_seconds: retryData.delay_seconds,
-        reset_attempts: retryData.reset_attempts},
-      original_failure: {},
-        status: originalExecution.status,
+        reset_attempts: retryData.reset_attempts },
+  original_failure: {},
+  status: originalExecution.status,
         error_message: originalExecution.error_message,
-        failed_at: originalExecution.updated_at},
-      timestamp: new Date().toISOString()};
+        failed_at: originalExecution.updated_at },
+  timestamp: new Date().toISOString()};
 
     // Trigger the webhook
     await triggerWebhookEvent(WEBHOOK_EVENTS.EXECUTION_STARTED, webhookData, clientId);

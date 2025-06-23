@@ -42,11 +42,12 @@ const BriefUploadStepComponent: React.FC<BriefUploadStepProps> = ({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: {},
+    accept: {
       'application/pdf': ['.pdf'],
       'application/msword': ['.doc'],
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
-      'text/plain': ['.txt']},
+      'text/plain': ['.txt'],
+    },
     multiple: false,
     maxSize: 10 * 1024 * 1024, // 10MB
   });

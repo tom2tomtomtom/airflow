@@ -52,8 +52,7 @@ export function validateClientInput(input: unknown) {
   if (!result.success) {
     const errors = result.error.issues.map((issue: any) => ({
       field: issue.path.join('.'),
-      message: issue.message,
-    }));
+      message: issue.message }));
 
     return { success: false, errors, data: null };
   }

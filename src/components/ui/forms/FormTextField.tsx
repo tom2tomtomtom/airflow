@@ -34,7 +34,7 @@ export const FormTextField: React.FC<FormTextFieldProps> = ({
 }) => {
   const {
     control,
-    formState: { errors },
+    formState: { errors  }
     watch,
   } = useFormContext();
 
@@ -62,8 +62,7 @@ export const FormTextField: React.FC<FormTextFieldProps> = ({
             color: 'text.primary',
             display: 'flex',
             alignItems: 'center',
-            gap: 0.5,
-          }}
+            gap: 0.5 }}
           {...labelProps}
         >
           {label}
@@ -104,8 +103,7 @@ export const FormTextField: React.FC<FormTextFieldProps> = ({
                 backgroundColor: 'background.paper',
                 '&.Mui-error .MuiOutlinedInput-notchedOutline': {
                   borderColor: 'error.main',
-                  borderWidth: 2,
-                },
+                  borderWidth: 2 },
                 '&.Mui-focused.Mui-error .MuiOutlinedInput-notchedOutline': {
                   boxShadow: '0 0 0 4px rgba(239, 68, 68, 0.1)',
                 },
@@ -134,8 +132,7 @@ export const FormTextField: React.FC<FormTextFieldProps> = ({
             variant="caption"
             sx={{
               color: value.length > maxLength * 0.9 ? 'warning.main' : 'text.secondary',
-              fontWeight: value.length > maxLength * 0.9 ? 600 : 400,
-            }}
+              fontWeight: value.length > maxLength * 0.9 ? 600 : 400 }}
           >
             {value.length}/{maxLength}
           </Typography>

@@ -26,33 +26,28 @@ const platformOptions = [
     value: 'facebook',
     label: 'Facebook',
     icon: <Facebook sx={{ color: '#1877F2' }} />,
-    color: '#1877F2',
-  },
+    color: '#1877F2' },
   {
     value: 'instagram',
     label: 'Instagram',
     icon: <Instagram sx={{ color: '#E4405F' }} />,
-    color: '#E4405F',
-  },
+    color: '#E4405F' },
   {
     value: 'twitter',
     label: 'Twitter/X',
     icon: <Twitter sx={{ color: '#1DA1F2' }} />,
-    color: '#1DA1F2',
-  },
+    color: '#1DA1F2' },
   {
     value: 'linkedin',
     label: 'LinkedIn',
     icon: <LinkedIn sx={{ color: '#0A66C2' }} />,
-    color: '#0A66C2',
-  },
+    color: '#0A66C2' },
   {
     value: 'youtube',
     label: 'YouTube',
     icon: <YouTube sx={{ color: '#FF0000' }} />,
-    color: '#FF0000',
-  },
-  { value: 'tiktok', label: 'TikTok', icon: <TikTok sx={{ color: '#000' }} />, color: '#000' },
+    color: '#FF0000' },
+  { value: 'tiktok', label: 'TikTok', icon: <TikTok sx={{ color: '#000' }} />, color: '#000'  }
 ];
 interface PlatformSelectionProps {
   campaignData: any;
@@ -98,7 +93,7 @@ const PlatformSelection: React.FC<PlatformSelectionProps> = ({
                     border: campaignData.platforms?.includes(platform.value)
                       ? `2px solid ${platform.color}`
                       : '1px solid #e0e0e0',
-                    '&:hover': { borderColor: platform.color },
+                    '&:hover': { borderColor: platform.color  }
                   }}
                   onClick={() => {
                     const isSelected = campaignData.platforms?.includes(platform.value);
@@ -143,8 +138,8 @@ const PlatformSelection: React.FC<PlatformSelectionProps> = ({
           disabled={!isValid}
           endIcon={<ArrowForwardIcon />}
         >
-          {' '}
-          Next: Schedule{' '}
+          {' '},
+  Next: Schedule{' '}
         </Button>{' '}
       </Box>{' '}
     </Box>

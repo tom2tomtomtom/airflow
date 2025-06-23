@@ -48,8 +48,7 @@ export class MigrationManager {
 
     try {
       const { error } = await this.supabase.rpc('exec_sql', {
-        sql: createMigrationsTable,
-      });
+        sql: createMigrationsTable });
 
       if (error) {
         throw new Error(`Failed to initialize migrations table: ${error.message}`);
@@ -165,8 +164,7 @@ export class MigrationManager {
         down: '',
         checksum: row.checksum,
         appliedAt: row.applied_at,
-        executionTime: row.execution_time_ms,
-      }));
+        executionTime: row.execution_time_ms }));
     } catch (error: any) {
       loggers.general.error('Failed to get applied migrations', error);
       throw error;
@@ -191,8 +189,7 @@ export class MigrationManager {
 
       // Execute the migration SQL
       const { error: sqlError } = await this.supabase.rpc('exec_sql', {
-        sql: migration.up,
-      });
+        sql: migration.up });
 
       if (sqlError) {
         throw new Error(`Migration SQL failed: ${sqlError.message}`);
@@ -206,8 +203,7 @@ export class MigrationManager {
         name: migration.name,
         version: migration.version,
         checksum: migration.checksum,
-        execution_time_ms: executionTime,
-      });
+        execution_time_ms: executionTime });
 
       if (recordError) {
         throw new Error(`Failed to record migration: ${recordError.message}`);
@@ -255,8 +251,7 @@ export class MigrationManager {
 
       // Execute rollback SQL
       const { error: sqlError } = await this.supabase.rpc('exec_sql', {
-        sql: migration.down,
-      });
+        sql: migration.down });
 
       if (sqlError) {
         throw new Error(`Rollback SQL failed: ${sqlError.message}`);
@@ -324,8 +319,7 @@ export class MigrationManager {
       if (!result.success) {
         loggers.general.error('Migration failed, stopping execution', {
           failedMigration: migration.name,
-          error: result.error,
-        });
+          error: result.error });
         break;
       }
     }
@@ -379,8 +373,7 @@ export class MigrationManager {
       if (!result.success) {
         loggers.general.error('Rollback failed, stopping execution', {
           failedMigration: fullMigration.name,
-          error: result.error,
-        });
+          error: result.error });
         break;
       }
     }

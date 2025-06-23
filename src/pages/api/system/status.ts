@@ -38,8 +38,9 @@ export default async function handler(
   if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/`, {
-        headers: {},
-          'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}});
+        headers: {
+        'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      }});
       supabaseStatus = response.ok ? '✅ Connected' : `❌ Error: ${response.status}`;
     } catch (error: any) {
     const message = getErrorMessage(error);
@@ -63,16 +64,16 @@ export default async function handler(
     timestamp: new Date().toISOString(),
     environment: envStatus,
     supabase: {},
-      status: supabaseStatus,
+  status: supabaseStatus,
       url: process.env.NEXT_PUBLIC_SUPABASE_URL ? process.env.NEXT_PUBLIC_SUPABASE_URL.replace(/https:\/\/(.+?)\.supabase\.co.*/, 'https://***.supabase.co') : 'not set'},
     configuration: {},
-      isDemoMode: isDemo,
+  isDemoMode: isDemo,
       isConfigured,
-      missingRequired: missingRequired.length > 0 ? missingRequired : null},
-    deployment: {},
-      platform: process.env.VERCEL ? 'Vercel' : process.env.NETLIFY ? 'Netlify' : 'Unknown',
-      region: process.env.VERCEL_REGION || process.env.AWS_REGION || 'Unknown'},
-    recommendations: isConfigured ? null : {
+      missingRequired: missingRequired.length > 0 ? missingRequired : null },
+  deployment: {},
+  platform: process.env.VERCEL ? 'Vercel' : process.env.NETLIFY ? 'Netlify' : 'Unknown',
+      region: process.env.VERCEL_REGION || process.env.AWS_REGION || 'Unknown' },
+  recommendations: isConfigured ? null : {
       message: 'Some required environment variables are missing',
       steps: [
         'Set all required environment variables in your deployment platform',

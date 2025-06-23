@@ -69,18 +69,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         ],
         client_id: clientId,
         created_by: user.id,
-        metadata: {},
-          copyData: {},
-            text: copy.text,
+        metadata: {
+        copyData: {},
+  text: copy.text,
             platform: copy.platform,
             motivation: copy.motivation,
             wordCount: copy.wordCount,
             tone: copy.tone,
             cta: copy.cta,
             generatedFrom: 'flow_workflow',
-            briefTitle: briefTitle
-          },
-          type: 'generated_copy',
+            briefTitle: briefTitle },
+  type: 'generated_copy',
           workflow_step: 'copy_generation'
         }
       };

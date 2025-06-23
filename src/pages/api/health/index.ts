@@ -43,16 +43,14 @@ const checkDatabase = async (): Promise<HealthCheck> => {
       responseTime: Date.now() - start,
       details: {
         connection: 'active',
-        queryExecuted: true,
-      },
+        queryExecuted: true },
     };
   } catch (error) {
     return {
       service: 'database',
       status: 'unhealthy',
       responseTime: Date.now() - start,
-      error: error instanceof Error ? error.message : 'Unknown database error',
-    };
+      error: error instanceof Error ? error.message : 'Unknown database error' };
   }
 };
 
@@ -68,8 +66,7 @@ const checkRedis = async (): Promise<HealthCheck> => {
         status: 'degraded',
         responseTime: Date.now() - start,
         details: {
-          message: 'Redis not configured or using default local instance',
-        },
+          message: 'Redis not configured or using default local instance' },
       };
     }
 
@@ -79,16 +76,14 @@ const checkRedis = async (): Promise<HealthCheck> => {
       status: 'degraded',
       responseTime: Date.now() - start,
       details: {
-        message: 'Redis check disabled for deployment',
-      },
+        message: 'Redis check disabled for deployment' },
     };
   } catch (error) {
     return {
       service: 'redis',
       status: 'unhealthy',
       responseTime: Date.now() - start,
-      error: error instanceof Error ? error.message : 'Unknown Redis error',
-    };
+      error: error instanceof Error ? error.message : 'Unknown Redis error' };
   }
 };
 
@@ -114,16 +109,14 @@ const checkExternalAPIs = async (): Promise<HealthCheck[]> => {
         responseTime: Date.now() - start,
         details: {
           statusCode: response.status,
-          available: response.ok,
-        },
+          available: response.ok },
       });
     } catch (error) {
       checks.push({
         service: 'openai',
         status: 'unhealthy',
         responseTime: Date.now() - start,
-        error: error instanceof Error ? error.message : 'OpenAI API check failed',
-      });
+        error: error instanceof Error ? error.message : 'OpenAI API check failed' });
     }
   }
 
@@ -131,8 +124,7 @@ const checkExternalAPIs = async (): Promise<HealthCheck[]> => {
   const start = Date.now();
   try {
     const response = await fetch(`${config.NEXT_PUBLIC_SUPABASE_URL}/health`, {
-      signal: AbortSignal.timeout(5000),
-    });
+      signal: AbortSignal.timeout(5000) });
 
     checks.push({
       service: 'supabase',
@@ -140,16 +132,14 @@ const checkExternalAPIs = async (): Promise<HealthCheck[]> => {
       responseTime: Date.now() - start,
       details: {
         statusCode: response.status,
-        available: response.ok,
-      },
+        available: response.ok },
     });
   } catch (error) {
     checks.push({
       service: 'supabase',
       status: 'unhealthy',
       responseTime: Date.now() - start,
-      error: error instanceof Error ? error.message : 'Supabase health check failed',
-    });
+      error: error instanceof Error ? error.message : 'Supabase health check failed' });
   }
 
   return checks;
@@ -165,8 +155,7 @@ const checkSystemResources = (): HealthCheck => {
       rss: Math.round(memoryUsage.rss / 1024 / 1024),
       heapTotal: Math.round(memoryUsage.heapTotal / 1024 / 1024),
       heapUsed: Math.round(memoryUsage.heapUsed / 1024 / 1024),
-      external: Math.round(memoryUsage.external / 1024 / 1024),
-    };
+      external: Math.round(memoryUsage.external / 1024 / 1024) };
 
     // Simple health check based on heap usage
     const heapUsagePercent = (memoryUsage.heapUsed / memoryUsage.heapTotal) * 100;
@@ -186,16 +175,14 @@ const checkSystemResources = (): HealthCheck => {
         platform: process.platform,
         cpu: {
           user: cpuUsage.user,
-          system: cpuUsage.system,
-        },
+          system: cpuUsage.system },
       },
     };
   } catch (error) {
     return {
       service: 'system',
       status: 'unhealthy',
-      error: error instanceof Error ? error.message : 'System resource check failed',
-    };
+      error: error instanceof Error ? error.message : 'System resource check failed' };
   }
 };
 
@@ -209,7 +196,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       version: '1.0.0',
       environment: 'unknown',
       checks: [],
-      summary: { total: 0, healthy: 0, unhealthy: 1, degraded: 0 },
+      summary: { total: 0, healthy: 0, unhealthy: 1, degraded: 0  }
     });
   }
 
@@ -232,8 +219,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       total: allChecks.length,
       healthy: allChecks.filter(check => check.status === 'healthy').length,
       unhealthy: allChecks.filter(check => check.status === 'unhealthy').length,
-      degraded: allChecks.filter(check => check.status === 'degraded').length,
-    };
+      degraded: allChecks.filter(check => check.status === 'degraded').length };
 
     // Determine overall status
     let overallStatus: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
@@ -277,10 +263,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         {
           service: 'health-check',
           status: 'unhealthy',
-          error: error instanceof Error ? error.message : 'Health check execution failed',
-        },
+          error: error instanceof Error ? error.message : 'Health check execution failed' },
       ],
-      summary: { total: 1, healthy: 0, unhealthy: 1, degraded: 0 },
+      summary: { total: 1, healthy: 0, unhealthy: 1, degraded: 0  }
     });
   }
 }

@@ -31,8 +31,7 @@ type ResponseData = {
 // Initialize OpenAI client
 const openai = hasOpenAI
   ? new OpenAI({
-      apiKey: env.OPENAI_API_KEY,
-    })
+      apiKey: env.OPENAI_API_KEY })
   : null;
 
 // Real AI generation functions
@@ -56,12 +55,10 @@ const generateText = async (
         },
         {
           role: 'user',
-          content: `Create content variations for: "${prompt}". ${parameters?.tone ? `Tone: ${parameters.tone}. ` : ''}${parameters?.style ? `Style: ${parameters.style}. ` : ''}${parameters?.purpose ? `Purpose: ${parameters.purpose}. ` : ''}Provide 3 distinct variations.`,
-        },
+          content: `Create content variations for: "${prompt}". ${parameters?.tone ? `Tone: ${parameters.tone}. ` : ''}${parameters?.style ? `Style: ${parameters.style}. ` : ''}${parameters?.purpose ? `Purpose: ${parameters.purpose}. ` : ''}Provide 3 distinct variations.` },
       ],
       temperature: 0.8,
-      max_tokens: 500,
-    });
+      max_tokens: 500 });
 
     const content = completion.choices[0]?.message?.content || '';
     // Parse the content into variations (split by numbered lists or line breaks)
@@ -104,8 +101,7 @@ const generateImage = async (prompt: string, parameters?: Record<string, any>): 
       size: (parameters?.size as '1024x1024' | '1792x1024' | '1024x1792') || '1024x1024',
       quality: (parameters?.quality as 'standard' | 'hd') || 'standard',
       style: (parameters?.style as 'vivid' | 'natural') || 'vivid',
-      n: 1,
-    });
+      n: 1 });
 
     const imageUrl = response.data?.[0]?.url;
     if (!imageUrl) throw new Error('No image URL returned');
@@ -135,12 +131,10 @@ const enhanceImagePrompt = async (
         },
         {
           role: 'user',
-          content: `Enhance this image prompt for DALL-E 3: "${prompt}". ${parameters?.purpose ? `Purpose: ${parameters.purpose}. ` : ''}${parameters?.style ? `Artistic style: ${parameters.style}. ` : ''}Make it more specific and visually descriptive while keeping the original intent.`,
-        },
+          content: `Enhance this image prompt for DALL-E 3: "${prompt}". ${parameters?.purpose ? `Purpose: ${parameters.purpose}. ` : ''}${parameters?.style ? `Artistic style: ${parameters.style}. ` : ''}Make it more specific and visually descriptive while keeping the original intent.` },
       ],
       temperature: 0.3,
-      max_tokens: 200,
-    });
+      max_tokens: 200 });
 
     return completion.choices[0]?.message?.content?.trim() || prompt;
   } catch (error: any) {

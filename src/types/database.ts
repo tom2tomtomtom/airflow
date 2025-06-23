@@ -3,10 +3,10 @@
 
 export interface Database {
   public: {},
-    Tables: {},
-      analytics: {},
-        Row: {},
-          id: string;,
+  Tables: {},
+  analytics: {},
+  Row: {},
+  id: string;,
     campaign_id: string;,
     variation_id: string | null;,
     metrics: Record<string, unknown> | null;
@@ -14,7 +14,7 @@ export interface Database {
           created_at: string | null;
         };
         Insert: {},
-          id?: string;
+  id?: string;
           campaign_id: string;
           variation_id?: string | null;
           metrics?: Record<string, unknown> | null;
@@ -22,7 +22,7 @@ export interface Database {
           created_at?: string | null;
         };
         Update: {},
-          id?: string;
+  id?: string;
           campaign_id?: string;
           variation_id?: string | null;
           metrics?: Record<string, unknown> | null;
@@ -31,8 +31,8 @@ export interface Database {
         };
       };
       approval_comments: {},
-        Row: {},
-          id: string;,
+  Row: {},
+  id: string;,
     workflow_id: string | null;,
     asset_id: string | null;,
     comment: string;,
@@ -43,7 +43,7 @@ export interface Database {
     updated_at: string | null;
         };
         Insert: {},
-          id?: string;
+  id?: string;
           workflow_id?: string | null;
           asset_id?: string | null;
           comment: string;
@@ -54,7 +54,7 @@ export interface Database {
           updated_at?: string | null;
         };
         Update: {},
-          id?: string;
+  id?: string;
           workflow_id?: string | null;
           asset_id?: string | null;
           comment?: string;
@@ -66,8 +66,8 @@ export interface Database {
         };
       };
       approval_workflows: {},
-        Row: {},
-          id: string;,
+  Row: {},
+  id: string;,
     execution_id: string | null;,
     client_id: string | null;,
     status: string | null;,
@@ -80,7 +80,7 @@ export interface Database {
     updated_at: string | null;
         };
         Insert: {},
-          id?: string;
+  id?: string;
           execution_id?: string | null;
           client_id?: string | null;
           status?: string | null;
@@ -93,7 +93,7 @@ export interface Database {
           updated_at?: string | null;
         };
         Update: {},
-          id?: string;
+  id?: string;
           execution_id?: string | null;
           client_id?: string | null;
           status?: string | null;
@@ -107,8 +107,8 @@ export interface Database {
         };
       };
       approvals: {},
-        Row: {},
-          id: string;,
+  Row: {},
+  id: string;,
     execution_id: string | null;,
     user_id: string | null;,
     action: string;,
@@ -117,7 +117,7 @@ export interface Database {
     created_at: string | null;
         };
         Insert: {},
-          id?: string;
+  id?: string;
           execution_id?: string | null;
           user_id?: string | null;
           action: string;
@@ -126,7 +126,7 @@ export interface Database {
           created_at?: string | null;
         };
         Update: {},
-          id?: string;
+  id?: string;
           execution_id?: string | null;
           user_id?: string | null;
           action?: string;
@@ -136,8 +136,8 @@ export interface Database {
         };
       };
       assets: {},
-        Row: {},
-          id: string;,
+  Row: {},
+  id: string;,
     name: string;,
     type: string;,
     url: string;,
@@ -155,7 +155,7 @@ export interface Database {
     updated_at: string | null;
         };
         Insert: {},
-          id?: string;
+  id?: string;
           name: string;,
     type: string;,
     url: string;
@@ -173,7 +173,7 @@ export interface Database {
           updated_at?: string | null;
         };
         Update: {},
-          id?: string;
+  id?: string;
           name?: string;
           type?: string;
           url?: string;
@@ -192,8 +192,8 @@ export interface Database {
         };
       };
       briefs: {},
-        Row: {},
-          id: string;,
+  Row: {},
+  id: string;,
     name: string;,
     description: string | null;,
     document_url: string | null;,
@@ -215,7 +215,7 @@ export interface Database {
     updated_at: string | null;
         };
         Insert: {},
-          id?: string;
+  id?: string;
           name: string;
           description?: string | null;
           document_url?: string | null;
@@ -237,7 +237,7 @@ export interface Database {
           updated_at?: string | null;
         };
         Update: {},
-          id?: string;
+  id?: string;
           name?: string;
           description?: string | null;
           document_url?: string | null;
@@ -260,8 +260,8 @@ export interface Database {
         };
       };
       campaign_analytics: {},
-        Row: {},
-          id: string;,
+  Row: {},
+  id: string;,
     execution_id: string | null;,
     platform: string;,
     date: string;,
@@ -280,7 +280,7 @@ export interface Database {
     updated_at: string | null;
         };
         Insert: {},
-          id?: string;
+  id?: string;
           execution_id?: string | null;
           platform: string;,
     date: string;
@@ -299,7 +299,7 @@ export interface Database {
           updated_at?: string | null;
         };
         Update: {},
-          id?: string;
+  id?: string;
           execution_id?: string | null;
           platform?: string;
           date?: string;
@@ -319,8 +319,8 @@ export interface Database {
         };
       };
       clients: {},
-        Row: {},
-          id: string;,
+  Row: {},
+  id: string;,
     name: string;,
     slug: string;,
     description: string | null;,
@@ -337,7 +337,7 @@ export interface Database {
     updated_at: string | null;
         };
         Insert: {},
-          id?: string;
+  id?: string;
           name: string;,
     slug: string;
           description?: string | null;
@@ -354,7 +354,7 @@ export interface Database {
           updated_at?: string | null;
         };
         Update: {},
-          id?: string;
+  id?: string;
           name?: string;
           slug?: string;
           description?: string | null;
@@ -372,8 +372,8 @@ export interface Database {
         };
       };
       client_contacts: {},
-        Row: {},
-          id: string;,
+  Row: {},
+  id: string;,
     client_id: string;,
     name: string;,
     role: string | null;,
@@ -385,7 +385,7 @@ export interface Database {
     updated_at: string | null;
         };
         Insert: {},
-          id?: string;
+  id?: string;
           client_id: string;,
     name: string;
           role?: string | null;
@@ -397,7 +397,7 @@ export interface Database {
           updated_at?: string | null;
         };
         Update: {},
-          id?: string;
+  id?: string;
           client_id?: string;
           name?: string;
           role?: string | null;
@@ -418,8 +418,8 @@ export interface Database {
         ];
       };
       content_variations: {},
-        Row: {},
-          id: string;,
+  Row: {},
+  id: string;,
     content: string;,
     content_type: string;,
     platform: string | null;,
@@ -437,7 +437,7 @@ export interface Database {
     updated_at: string | null;
         };
         Insert: {},
-          id?: string;
+  id?: string;
           content: string;,
     content_type: string;
           platform?: string | null;
@@ -455,7 +455,7 @@ export interface Database {
           updated_at?: string | null;
         };
         Update: {},
-          id?: string;
+  id?: string;
           content?: string;
           content_type?: string;
           platform?: string | null;
@@ -474,8 +474,8 @@ export interface Database {
         };
       };
       copy_assets: {},
-        Row: {},
-          id: string;,
+  Row: {},
+  id: string;,
     content: string | null;,
     type: string | null;,
     tags: string[] | null;,
@@ -486,7 +486,7 @@ export interface Database {
     updated_at: string | null;
         };
         Insert: {},
-          id?: string;
+  id?: string;
           content?: string | null;
           type?: string | null;
           tags?: string[] | null;
@@ -497,7 +497,7 @@ export interface Database {
           updated_at?: string | null;
         };
         Update: {},
-          id?: string;
+  id?: string;
           content?: string | null;
           type?: string | null;
           tags?: string[] | null;
@@ -509,8 +509,8 @@ export interface Database {
         };
       };
       copy_texts: {},
-        Row: {},
-          id: string;,
+  Row: {},
+  id: string;,
     type: string;,
     content: string;,
     metadata: Record<string, unknown> | null;
@@ -521,7 +521,7 @@ export interface Database {
     updated_at: string | null;
         };
         Insert: {},
-          id?: string;
+  id?: string;
           type: string;,
     content: string;
           metadata?: Record<string, unknown> | null;
@@ -532,7 +532,7 @@ export interface Database {
           updated_at?: string | null;
         };
         Update: {},
-          id?: string;
+  id?: string;
           type?: string;
           content?: string;
           metadata?: Record<string, unknown> | null;
@@ -544,8 +544,8 @@ export interface Database {
         };
       };
       executions: {},
-        Row: {},
-          id: string;,
+  Row: {},
+  id: string;,
     name: string;,
     description: string | null;,
     status: string;,
@@ -560,7 +560,7 @@ export interface Database {
     updated_at: string | null;
         };
         Insert: {},
-          id?: string;
+  id?: string;
           name: string;
           description?: string | null;
           status: string;
@@ -575,7 +575,7 @@ export interface Database {
           updated_at?: string | null;
         };
         Update: {},
-          id?: string;
+  id?: string;
           name?: string;
           description?: string | null;
           status?: string;
@@ -591,8 +591,8 @@ export interface Database {
         };
       };
       generated_content: {},
-        Row: {},
-          id: string;,
+  Row: {},
+  id: string;,
     selected_motivation_id: string | null;,
     content: Record<string, unknown> | null;
           content_types: string[] | null;,
@@ -602,7 +602,7 @@ export interface Database {
     created_at: string | null;
         };
         Insert: {},
-          id?: string;
+  id?: string;
           selected_motivation_id?: string | null;
           content?: Record<string, unknown> | null;
           content_types?: string[] | null;
@@ -612,7 +612,7 @@ export interface Database {
           created_at?: string | null;
         };
         Update: {},
-          id?: string;
+  id?: string;
           selected_motivation_id?: string | null;
           content?: Record<string, unknown> | null;
           content_types?: string[] | null;
@@ -623,8 +623,8 @@ export interface Database {
         };
       };
       matrices: {},
-        Row: {},
-          id: string;,
+  Row: {},
+  id: string;,
     name: string;,
     description: string | null;,
     structure: Record<string, unknown>;
@@ -635,7 +635,7 @@ export interface Database {
     updated_at: string | null;
         };
         Insert: {},
-          id?: string;
+  id?: string;
           name: string;
           description?: string | null;
           structure: Record<string, unknown>;
@@ -646,7 +646,7 @@ export interface Database {
           updated_at?: string | null;
         };
         Update: {},
-          id?: string;
+  id?: string;
           name?: string;
           description?: string | null;
           structure?: Record<string, unknown>;
@@ -658,8 +658,8 @@ export interface Database {
         };
       };
       motivations: {},
-        Row: {},
-          id: string;,
+  Row: {},
+  id: string;,
     title: string;,
     description: string | null;,
     category: string | null;,
@@ -673,7 +673,7 @@ export interface Database {
     updated_at: string | null;
         };
         Insert: {},
-          id?: string;
+  id?: string;
           title: string;
           description?: string | null;
           category?: string | null;
@@ -687,7 +687,7 @@ export interface Database {
           updated_at?: string | null;
         };
         Update: {},
-          id?: string;
+  id?: string;
           title?: string;
           description?: string | null;
           category?: string | null;
@@ -702,8 +702,8 @@ export interface Database {
         };
       };
       platform_integrations: {},
-        Row: {},
-          id: string;,
+  Row: {},
+  id: string;,
     platform: string;,
     account_id: string | null;,
     account_name: string | null;,
@@ -719,7 +719,7 @@ export interface Database {
     updated_at: string | null;
         };
         Insert: {},
-          id?: string;
+  id?: string;
           platform: string;
           account_id?: string | null;
           account_name?: string | null;
@@ -735,7 +735,7 @@ export interface Database {
           updated_at?: string | null;
         };
         Update: {},
-          id?: string;
+  id?: string;
           platform?: string;
           account_id?: string | null;
           account_name?: string | null;
@@ -752,8 +752,8 @@ export interface Database {
         };
       };
       profiles: {},
-        Row: {},
-          id: string;,
+  Row: {},
+  id: string;,
     first_name: string | null;,
     last_name: string | null;,
     avatar_url: string | null;,
@@ -766,7 +766,7 @@ export interface Database {
     updated_at: string | null;
         };
         Insert: {},
-          id: string;
+  id: string;
           first_name?: string | null;
           last_name?: string | null;
           avatar_url?: string | null;
@@ -779,7 +779,7 @@ export interface Database {
           updated_at?: string | null;
         };
         Update: {},
-          id?: string;
+  id?: string;
           first_name?: string | null;
           last_name?: string | null;
           avatar_url?: string | null;
@@ -793,8 +793,8 @@ export interface Database {
         };
       };
       selected_motivations: {},
-        Row: {},
-          id: string;,
+  Row: {},
+  id: string;,
     strategy_id: string | null;,
     selected: string[] | null;,
     custom: string[] | null;,
@@ -802,7 +802,7 @@ export interface Database {
     created_at: string | null;
         };
         Insert: {},
-          id?: string;
+  id?: string;
           strategy_id?: string | null;
           selected?: string[] | null;
           custom?: string[] | null;
@@ -810,7 +810,7 @@ export interface Database {
           created_at?: string | null;
         };
         Update: {},
-          id?: string;
+  id?: string;
           strategy_id?: string | null;
           selected?: string[] | null;
           custom?: string[] | null;
@@ -819,8 +819,8 @@ export interface Database {
         };
       };
       strategies: {},
-        Row: {},
-          id: string;,
+  Row: {},
+  id: string;,
     name: string;,
     description: string | null;,
     target_audience: string | null;,
@@ -832,7 +832,7 @@ export interface Database {
     updated_at: string | null;
         };
         Insert: {},
-          id?: string;
+  id?: string;
           name: string;
           description?: string | null;
           target_audience?: string | null;
@@ -844,7 +844,7 @@ export interface Database {
           updated_at?: string | null;
         };
         Update: {},
-          id?: string;
+  id?: string;
           name?: string;
           description?: string | null;
           target_audience?: string | null;
@@ -857,22 +857,22 @@ export interface Database {
         };
       };
       strategy_motivations: {},
-        Row: {},
-          id: string;,
+  Row: {},
+  id: string;,
     strategy_id: string | null;,
     motivation_id: string | null;,
     order_position: number | null;,
     created_at: string | null;
         };
         Insert: {},
-          id?: string;
+  id?: string;
           strategy_id?: string | null;
           motivation_id?: string | null;
           order_position?: number | null;
           created_at?: string | null;
         };
         Update: {},
-          id?: string;
+  id?: string;
           strategy_id?: string | null;
           motivation_id?: string | null;
           order_position?: number | null;
@@ -880,8 +880,8 @@ export interface Database {
         };
       };
       templates: {},
-        Row: {},
-          id: string;,
+  Row: {},
+  id: string;,
     name: string;,
     aspect_ratio: string;,
     platform: string;,
@@ -896,7 +896,7 @@ export interface Database {
     updated_at: string | null;
         };
         Insert: {},
-          id?: string;
+  id?: string;
           name: string;,
     aspect_ratio: string;,
     platform: string;
@@ -911,7 +911,7 @@ export interface Database {
           updated_at?: string | null;
         };
         Update: {},
-          id?: string;
+  id?: string;
           name?: string;
           aspect_ratio?: string;
           platform?: string;
@@ -927,33 +927,33 @@ export interface Database {
         };
       };
       user_clients: {},
-        Row: {},
-          id: string;,
+  Row: {},
+  id: string;,
     user_id: string;,
     client_id: string;,
     created_at: string | null;
         };
         Insert: {},
-          id?: string;
+  id?: string;
           user_id: string;,
     client_id: string;
           created_at?: string | null;
         };
         Update: {},
-          id?: string;
+  id?: string;
           user_id?: string;
           client_id?: string;
           created_at?: string | null;
         };
       };
     };
-    Views: {},
+    Views: { }
       [_ in never]: never;
     };
-    Functions: {},
+    Functions: { }
       [_ in never]: never;
     };
-    Enums: {},
+    Enums: { }
       [_ in never]: never;
     };
   };

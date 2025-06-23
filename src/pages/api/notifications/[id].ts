@@ -10,8 +10,7 @@ const NotificationUpdateSchema = z.object({
   read: z.boolean().optional(),
   archived: z.boolean().optional(),
   snoozed_until: z.string().optional(),
-  metadata: z.any().optional(),
-});
+  metadata: z.any().optional() });
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -38,8 +37,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Notification API error:', error);
     return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? message : undefined,
-    });
+      details: process.env.NODE_ENV === 'development' ? message : undefined });
   }
 }
 
@@ -144,8 +142,7 @@ async function handleGet(
         .from('notifications')
         .update({
           read: true,
-          read_at: new Date().toISOString(),
-        })
+          read_at: new Date().toISOString() })
         .eq('id', notificationId)
         .eq('user_id', user.id);
 
@@ -172,8 +169,7 @@ async function handlePut(
   if (!validationResult.success) {
     return res.status(400).json({
       error: 'Validation failed',
-      details: validationResult.error.issues,
-    });
+      details: validationResult.error.issues });
   }
 
   const updateData = validationResult.data;
@@ -206,8 +202,7 @@ async function handlePut(
     // Prepare update data
     const updates: any = {
       ...updateData,
-      updated_at: new Date().toISOString(),
-    };
+      updated_at: new Date().toISOString() };
 
     // Set read timestamp if marking as read
     if (updateData.read === true && !existingNotification.read) {

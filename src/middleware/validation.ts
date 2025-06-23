@@ -69,8 +69,7 @@ export const commonSchemas = {
   dateRange: z
     .object({
       startDate: z.string().datetime().optional(),
-      endDate: z.string().datetime().optional(),
-    })
+      endDate: z.string().datetime().optional() })
     .refine(
       data =>
         !data.startDate || !data.endDate || new Date(data.startDate) <= new Date(data.endDate),
@@ -112,8 +111,7 @@ export function sanitizeObject<T extends Record<string, unknown>>(obj: T): T {
 export function validationErrorResponse(error: ZodError): NextResponse {
   const errors = error.errors.map((err: unknown) => ({,
     field: err.path.join('.'),
-    message: err.message,
-  }));
+    message: err.message }));
 
   logger.warn('Validation error', {
     message: 'Validation failed',
@@ -170,7 +168,7 @@ export async function validateRequest<T>(
         return {
           data: {} as T,
           error: NextResponse.json(
-            { success: false, message: 'Invalid JSON body' },
+            { success: false, message: 'Invalid JSON body'  }
             { status: 400 }
           ),
         };
@@ -191,7 +189,7 @@ export async function validateRequest<T>(
     return {
       data: {} as T,
       error: NextResponse.json(
-        { success: false, message: 'Internal validation error' },
+        { success: false, message: 'Internal validation error'  }
         { status: 500 }
       ),
     };
@@ -223,8 +221,8 @@ interface FileValidation {
   allowedTypes: typeof fileAllowedTypes;,
     maxSizes: typeof fileMaxSizes;
   validate(
-    file: { type: string; size: number; name: string },
-    category: keyof typeof fileAllowedTypes
+    file: { type: string; size: number; name: string  },
+  category: keyof typeof fileAllowedTypes
   ): boolean;
 }
 
@@ -237,8 +235,8 @@ export const fileValidation: FileValidation = {
 
   // Validate file
   validate(
-    file: { type: string; size: number; name: string },
-    category: keyof typeof fileAllowedTypes
+    file: { type: string; size: number; name: string  },
+  category: keyof typeof fileAllowedTypes
   ) {
     const allowedTypes = fileAllowedTypes[category];
     const maxSize = fileMaxSizes[category];
@@ -292,8 +290,7 @@ export async function validateCSRFToken(request: NextRequest): Promise<boolean> 
     logger.warn('CSRF token validation failed', {
       hasHeaderToken: !!token,
       hasCookieToken: !!cookieToken,
-      tokensMatch: token === cookieToken,
-    });
+      tokensMatch: token === cookieToken });
     return false;
   }
 
@@ -354,8 +351,7 @@ export const apiSchemas = {
   uploadAsset: z.object({,
     clientId: commonSchemas.uuid,
     category: z.enum(['image', 'video', 'audio', 'document']),
-    tags: z.array(commonSchemas.safeString).optional(),
-  }),
+    tags: z.array(commonSchemas.safeString).optional() }),
 
   // Brief schemas
   createBrief: z.object({,
@@ -368,6 +364,5 @@ export const apiSchemas = {
       .refine(str => !/[<>'"`;]/.test(str), 'Special characters not allowed'),
     content: commonSchemas.safeText,
     objectives: z.array(commonSchemas.safeText).optional(),
-    targetAudience: commonSchemas.safeText.optional(),
-  }),
+    targetAudience: commonSchemas.safeText.optional() }),
 };

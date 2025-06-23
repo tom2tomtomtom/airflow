@@ -22,21 +22,24 @@ export function createSupabaseBrowserClient(): SupabaseClient<Database> {
       config.url,
       config.anonKey,
       {
-        auth: {},
+        auth: {
           autoRefreshToken: true,
           persistSession: true,
           detectSessionInUrl: true,
           storageKey: 'airwave-auth-token',
-          storage: window.localStorage},
-        global: {},
-          headers: {},
+          storage: window.localStorage },
+        global: {
+          headers: {
             'x-application-name': 'airwave',
-            'x-client-info': 'airwave-web'}},
-        db: {},
-          schema: 'public'},
-        realtime: {},
+            'x-client-info': 'airwave-web',
+          },
+        },
+        db: {
+          schema: 'public' },
+        realtime: {
           enabled: false, // Disable realtime by default
-        }}
+        },
+      }
     );
 
     loggers.supabase.info('Browser Supabase client initialized');

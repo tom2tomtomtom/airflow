@@ -6,8 +6,7 @@ import { z } from 'zod';
 import OpenAI from 'openai';
 
 const BriefParseSchema = z.object({
-  brief_id: z.string().uuid(),
-});
+  brief_id: z.string().uuid() });
 
 async function extractTextFromFile(fileUrl: string): Promise<string> {
   try {
@@ -60,8 +59,7 @@ async function extractTextFromFile(fileUrl: string): Promise<string> {
 async function aiParseBrief(text: string): Promise<string> {
   // Initialize OpenAI client
   const openai = new OpenAI({
-    apiKey: env.OPENAI_API_KEY,
-  });
+    apiKey: env.OPENAI_API_KEY });
 
   // Call OpenAI to extract structured info
   const prompt = `Extract the following information from the campaign brief and return it as a valid JSON object:
@@ -84,17 +82,13 @@ Return ONLY the JSON object, no additional text or formatting.`;
     messages: [
       {
         role: 'system',
-        content:
-          'You are an expert campaign strategist. Extract information from briefs and return it as valid JSON only.',
-      },
+        content: 'You are an expert campaign strategist. Extract information from briefs and return it as valid JSON only.' },
       {
         role: 'user',
-        content: `${prompt}\n\nBrief Content:\n${text}`,
-      },
+        content: `${prompt}\n\nBrief Content:\n${text}` },
     ],
     temperature: 0.1,
-    max_tokens: 1000,
-  });
+    max_tokens: 1000 });
 
   const result = completion.choices[0]?.message?.content;
   if (!result) {

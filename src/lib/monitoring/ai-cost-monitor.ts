@@ -55,8 +55,7 @@ export class AICostMonitor {
   private budgetLimits = {
     openai: 1000,
     anthropic: 500,
-    elevenlabs: 300,
-  };
+    elevenlabs: 300 };
 
   static getInstance(): AICostMonitor {
     if (!AICostMonitor.instance) {
@@ -404,8 +403,7 @@ export class AICostMonitor {
       projectedMonthlyUsage,
       averageDailyCost,
       trend,
-      lastUpdated: Date.now(),
-    };
+      lastUpdated: Date.now() };
   }
 
   /**

@@ -11,16 +11,14 @@ import { useNotification } from '@/contexts/NotificationContext';
 const UnifiedBriefWorkflow = dynamic(
   () =>
     import('@/components/UnifiedBriefWorkflow').then(mod => ({
-      default: mod.UnifiedBriefWorkflow,
-    })),
+      default: mod.UnifiedBriefWorkflow })),
   {
     loading: () => (
       <Box display="flex" justifyContent="center" py={4}>
         <CircularProgress />
       </Box>
     ),
-    ssr: false,
-  }
+    ssr: false }
 );
 
 const FlowPage: React.FC = () => {
@@ -46,7 +44,7 @@ const FlowPage: React.FC = () => {
 
   return (
     <>
-      <Head>
+       <Head>
         <title>Flow - AI Content Workflow | AIrFLOW</title>
         <meta name="description" content="AI-powered content generation workflow" />
       </Head>
@@ -88,8 +86,7 @@ const FlowPage: React.FC = () => {
                   py: 2,
                   px: 4,
                   fontSize: '1.1rem',
-                  borderRadius: 2,
-                }}
+                  borderRadius: 2 }}
               >
                 {openWorkflow ? 'Hide Workflow' : 'Start Flow'}
               </Button>
@@ -104,8 +101,7 @@ const FlowPage: React.FC = () => {
                   display: 'grid',
                   gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
                   gap: 2,
-                  mt: 2,
-                }}
+                  mt: 2 }}
               >
                 <Box>
                   <Typography variant="subtitle2" color="primary.main">

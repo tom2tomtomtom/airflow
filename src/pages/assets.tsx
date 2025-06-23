@@ -68,20 +68,18 @@ const AssetsPage = () => {
     {
       icon: <Upload />,
       name: 'Upload Files',
-      action: () => setShowUploadModal(true),
-    },
+      action: () => setShowUploadModal(true) },
     {
       icon: <AutoAwesome />,
       name: 'AI Generate',
-      action: () => console.log('AI Generate clicked'),
-    },
+      action: () => console.log('AI Generate clicked') },
   ];
 
   // Mock assets data for testing
   const mockAssets = [
     { id: 1, name: 'Sample Image 1', type: 'image', url: '/api/placeholder/300/200' },
     { id: 2, name: 'Sample Image 2', type: 'image', url: '/api/placeholder/300/200' },
-    { id: 3, name: 'Sample Video 1', type: 'video', url: '/api/placeholder/300/200' },
+    { id: 3, name: 'Sample Video 1', type: 'video', url: '/api/placeholder/300/200' }
   ];
 
   const handleUploadComplete = () => {
@@ -123,8 +121,7 @@ const AssetsPage = () => {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      position: 'relative',
-                    }}
+                      position: 'relative' }}
                   >
                     <Typography variant="h6" color="text.secondary">
                       {asset.type.toUpperCase()}

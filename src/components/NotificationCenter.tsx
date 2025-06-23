@@ -165,12 +165,10 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
         onClose={handleClose}
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'right',
-        }}
+          horizontal: 'right' }}
         transformOrigin={{
           vertical: 'top',
-          horizontal: 'right',
-        }}
+          horizontal: 'right' }}
       >
         <Card sx={{ width: 400, maxHeight: 600 }}>
           {showHeader && (
@@ -229,8 +227,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
                       sx={{
                         backgroundColor: notification.read ? 'transparent' : 'action.hover',
                         '&:hover': {
-                          backgroundColor: 'action.selected',
-                        },
+                          backgroundColor: 'action.selected' },
                       }}
                     >
                       <ListItemIcon>
@@ -238,8 +235,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
                           sx={{
                             bgcolor: `${getNotificationColor(notification.type, notification.priority)}.main`,
                             width: 32,
-                            height: 32,
-                          }}
+                            height: 32 }}
                         >
                           {getNotificationIcon(notification.type, notification.category)}
                         </Avatar>
@@ -252,8 +248,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
                               variant="subtitle2"
                               sx={{
                                 fontWeight: notification.read ? 'normal' : 'bold',
-                                flex: 1,
-                              }}
+                                flex: 1 }}
                             >
                               {notification.title}
                             </Typography>
@@ -267,8 +262,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
                               color="text.secondary"
                               sx={{
                                 fontWeight: notification.read ? 'normal' : 500,
-                                mb: 0.5,
-                              }}
+                                mb: 0.5 }}
                             >
                               {notification.message}
                             </Typography>
@@ -276,8 +270,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
                               <Chip size="small" label={notification.category} variant="outlined" />
                               <Typography variant="caption" color="text.secondary">
                                 {formatDistanceToNow(new Date(notification.created_at), {
-                                  addSuffix: true,
-                                })}
+                                  addSuffix: true })}
                               </Typography>
                             </Stack>
                           </Box>

@@ -55,7 +55,9 @@ export class AICostController {
     try {
       const response = await fetch('/api/ai/cost-check', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+        'Content-Type': 'application/json' 
+      },
         body: JSON.stringify({
           service,
           model,
@@ -67,8 +69,7 @@ export class AICostController {
       if (!response.ok) {
         return {
           allowed: false,
-          reason: `Cost check failed: HTTP ${response.status}`,
-        };
+          reason: `Cost check failed: HTTP ${response.status}` };
       }
 
       const result = await response.json();
@@ -76,8 +77,7 @@ export class AICostController {
     } catch (error: any) {
       return {
         allowed: false,
-        reason: `Cost check failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      };
+        reason: `Cost check failed: ${error instanceof Error ? error.message : 'Unknown error'}` };
     }
   }
 
@@ -91,7 +91,9 @@ export class AICostController {
     try {
       const response = await fetch('/api/ai/track-usage', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+        'Content-Type': 'application/json' 
+      },
         body: JSON.stringify({
           service,
           model,
@@ -104,8 +106,7 @@ export class AICostController {
       if (!response.ok) {
         return {
           success: false,
-          error: `Usage tracking failed: HTTP ${response.status}`,
-        };
+          error: `Usage tracking failed: HTTP ${response.status}` };
       }
 
       const result = await response.json();
@@ -113,8 +114,7 @@ export class AICostController {
     } catch (error: any) {
       return {
         success: false,
-        error: `Usage tracking failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      };
+        error: `Usage tracking failed: ${error instanceof Error ? error.message : 'Unknown error'}` };
     }
   }
 
@@ -122,7 +122,9 @@ export class AICostController {
     try {
       const response = await fetch(`/api/ai/usage-stats?userId=${userId}`, {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+        'Content-Type': 'application/json' 
+      },
       });
 
       if (!response.ok) {
@@ -142,7 +144,9 @@ export class AICostController {
     try {
       const response = await fetch('/api/ai/emergency-shutdown', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+        'Content-Type': 'application/json' 
+      },
         body: JSON.stringify({
           userId,
           reason,
@@ -153,8 +157,7 @@ export class AICostController {
         return {
           success: false,
           shutdownTriggered: false,
-          reason: `Emergency shutdown failed: HTTP ${response.status}`,
-        };
+          reason: `Emergency shutdown failed: HTTP ${response.status}` };
       }
 
       const result = await response.json();
@@ -163,8 +166,7 @@ export class AICostController {
       return {
         success: false,
         shutdownTriggered: false,
-        reason: `Emergency shutdown failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      };
+        reason: `Emergency shutdown failed: ${error instanceof Error ? error.message : 'Unknown error'}` };
     }
   }
 
@@ -183,8 +185,7 @@ export class AICostController {
       return {
         proceed: false,
         model,
-        reason: budgetCheck.reason,
-      };
+        reason: budgetCheck.reason };
     }
 
     // Use fallback model if suggested
@@ -196,8 +197,7 @@ export class AICostController {
 
     return {
       proceed: true,
-      model: finalModel,
-    };
+      model: finalModel };
   }
 
   // Post-operation tracking
@@ -257,8 +257,7 @@ export class AICostController {
       return {
         status: 'critical',
         alerts: ['Unable to check budget health'],
-        recommendations: ['Check system connectivity and try again'],
-      };
+        recommendations: ['Check system connectivity and try again'] };
     }
   }
 }

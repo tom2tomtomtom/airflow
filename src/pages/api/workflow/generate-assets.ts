@@ -190,16 +190,15 @@ async function generateWorkflowAssets(
           tags: ['ai-generated', prompt.purpose || 'general', 'workflow'],
           client_id: clientId || workflow.client_id,
           created_by: userId,
-          metadata: {},
-            ai_generated: true,
+          metadata: {
+        ai_generated: true,
             original_prompt: prompt.text,
             enhanced_prompt: enhancedPrompt,
             generation_settings: {},
-              size: prompt.size || '1024x1024',
+  size: prompt.size || '1024x1024',
               quality: prompt.quality || 'standard',
-              style: prompt.style || 'vivid'
-            },
-            workflow_id: workflowId,
+              style: prompt.style || 'vivid' },
+  workflow_id: workflowId,
             brief_context: briefData ? {
               title: briefData.title,
               targetAudience: briefData.targetAudience,
@@ -252,16 +251,15 @@ async function generateWorkflowAssets(
           id: asset.id,
           type: 'image',
           url: asset.file_url,
-          metadata: {},
-            ...asset.metadata,
+          metadata: {
+        ...asset.metadata,
             name: asset.name,
             description: asset.description,
             tags: asset.tags,
             thumbnailUrl: asset.thumbnail_url,
             dateCreated: asset.created_at,
-            aiGenerated: true
-          },
-          selected: false
+            aiGenerated: true },
+  selected: false
         });
 
       } catch (error: any) {

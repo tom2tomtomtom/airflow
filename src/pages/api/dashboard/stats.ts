@@ -6,32 +6,32 @@ import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 
 interface DashboardStats {
   totalAssets: {},
-    count: number;
+  count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
   aiGenerated: {},
-    count: number;
+  count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
   activeCampaigns: {},
-    count: number;
+  count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
   templatesUsed: {},
-    count: number;
+  count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
   totalClients: {},
-    count: number;
+  count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
   pendingApprovals: {},
-    count: number;
+  count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
@@ -45,7 +45,7 @@ interface DashboardStats {
     client?: string;
   }>;
   performanceMetrics: {},
-    totalImpressions: number;
+  totalImpressions: number;
     totalClicks: number;
     averageCTR: number;
     totalSpend: number;
@@ -192,36 +192,30 @@ async function getDashboardStats(userId: string): Promise<DashboardStats> {
 
   return {
     totalAssets: {},
-      count: totalAssetsCount,
+  count: totalAssetsCount,
       change: assetChange,
-      trend: getTrend(assetChange)
-    },
-    aiGenerated: {},
-      count: aiGeneratedCount,
+      trend: getTrend(assetChange) },
+  aiGenerated: {},
+  count: aiGeneratedCount,
       change: aiChange,
-      trend: getTrend(aiChange)
-    },
-    activeCampaigns: {},
-      count: activeCampaignsCount,
+      trend: getTrend(aiChange) },
+  activeCampaigns: {},
+  count: activeCampaignsCount,
       change: campaignChange,
-      trend: getTrend(campaignChange)
-    },
-    templatesUsed: {},
-      count: templatesUsedCount,
+      trend: getTrend(campaignChange) },
+  templatesUsed: {},
+  count: templatesUsedCount,
       change: templatesChange,
-      trend: 'neutral'
-    },
-    totalClients: {},
-      count: totalClientsCount,
+      trend: 'neutral' },
+  totalClients: {},
+  count: totalClientsCount,
       change: clientsChange,
-      trend: 'neutral'
-    },
-    pendingApprovals: {},
-      count: pendingApprovalsCount,
+      trend: 'neutral' },
+  pendingApprovals: {},
+  count: pendingApprovalsCount,
       change: approvalsChange,
-      trend: 'neutral'
-    },
-    recentActivity: recentActivities,
+      trend: 'neutral' },
+  recentActivity: recentActivities,
     performanceMetrics: analytics
   };
 }
@@ -376,15 +370,15 @@ function getTrend(change: string): 'up' | 'down' | 'neutral' {
 
 function getEmptyStats(): DashboardStats {
   return {
-    totalAssets: { count: 0, change: '0%', trend: 'neutral' },
-    aiGenerated: { count: 0, change: '0%', trend: 'neutral' },
-    activeCampaigns: { count: 0, change: '0%', trend: 'neutral' },
-    templatesUsed: { count: 0, change: '0%', trend: 'neutral' },
-    totalClients: { count: 0, change: '0%', trend: 'neutral' },
-    pendingApprovals: { count: 0, change: '0%', trend: 'neutral' },
-    recentActivity: [],
+    totalAssets: { count: 0, change: '0%', trend: 'neutral'  },
+  aiGenerated: { count: 0, change: '0%', trend: 'neutral'  },
+  activeCampaigns: { count: 0, change: '0%', trend: 'neutral'  },
+  templatesUsed: { count: 0, change: '0%', trend: 'neutral'  },
+  totalClients: { count: 0, change: '0%', trend: 'neutral'  },
+  pendingApprovals: { count: 0, change: '0%', trend: 'neutral'  },
+  recentActivity: [],
     performanceMetrics: {},
-      totalImpressions: 0,
+  totalImpressions: 0,
       totalClicks: 0,
       averageCTR: 0,
       totalSpend: 0

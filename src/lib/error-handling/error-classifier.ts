@@ -134,7 +134,7 @@ export class ErrorClassifier {
       {
         condition: (error) => this.isNetworkError(error),
         classification: {},
-          type: ErrorType.NETWORK,
+  type: ErrorType.NETWORK,
           category: ErrorCategory.INFRASTRUCTURE,
           severity: ErrorSeverity.MEDIUM,
           retryable: true,
@@ -146,7 +146,7 @@ export class ErrorClassifier {
       {
         condition: (error) => this.isDatabaseError(error),
         classification: {},
-          type: ErrorType.DATABASE,
+  type: ErrorType.DATABASE,
           category: ErrorCategory.INFRASTRUCTURE,
           severity: ErrorSeverity.HIGH,
           retryable: true,
@@ -158,7 +158,7 @@ export class ErrorClassifier {
       {
         condition: (error) => this.isAuthenticationError(error),
         classification: {},
-          type: ErrorType.AUTHENTICATION,
+  type: ErrorType.AUTHENTICATION,
           category: ErrorCategory.CLIENT,
           severity: ErrorSeverity.MEDIUM,
           retryable: false,
@@ -170,7 +170,7 @@ export class ErrorClassifier {
       {
         condition: (error) => this.isAuthorizationError(error),
         classification: {},
-          type: ErrorType.AUTHORIZATION,
+  type: ErrorType.AUTHORIZATION,
           category: ErrorCategory.CLIENT,
           severity: ErrorSeverity.MEDIUM,
           retryable: false,
@@ -182,7 +182,7 @@ export class ErrorClassifier {
       {
         condition: (error) => this.isValidationError(error),
         classification: {},
-          type: ErrorType.VALIDATION,
+  type: ErrorType.VALIDATION,
           category: ErrorCategory.CLIENT,
           severity: ErrorSeverity.LOW,
           retryable: false,
@@ -194,7 +194,7 @@ export class ErrorClassifier {
       {
         condition: (error) => this.isRateLimitError(error),
         classification: {},
-          type: ErrorType.RATE_LIMIT,
+  type: ErrorType.RATE_LIMIT,
           category: ErrorCategory.CLIENT,
           severity: ErrorSeverity.MEDIUM,
           retryable: true,
@@ -206,7 +206,7 @@ export class ErrorClassifier {
       {
         condition: (error) => this.isTimeoutError(error),
         classification: {},
-          type: ErrorType.TIMEOUT,
+  type: ErrorType.TIMEOUT,
           category: ErrorCategory.INFRASTRUCTURE,
           severity: ErrorSeverity.MEDIUM,
           retryable: true,
@@ -218,7 +218,7 @@ export class ErrorClassifier {
       {
         condition: (error) => this.isExternalServiceError(error),
         classification: {},
-          type: ErrorType.EXTERNAL_SERVICE,
+  type: ErrorType.EXTERNAL_SERVICE,
           category: ErrorCategory.INTEGRATION,
           severity: ErrorSeverity.MEDIUM,
           retryable: true,
@@ -230,7 +230,7 @@ export class ErrorClassifier {
       {
         condition: (error) => this.isConfigurationError(error),
         classification: {},
-          type: ErrorType.CONFIGURATION,
+  type: ErrorType.CONFIGURATION,
           category: ErrorCategory.SERVER,
           severity: ErrorSeverity.CRITICAL,
           retryable: false,
@@ -242,7 +242,7 @@ export class ErrorClassifier {
       {
         condition: () => true,
         classification: {},
-          type: ErrorType.UNKNOWN,
+  type: ErrorType.UNKNOWN,
           category: ErrorCategory.SERVER,
           severity: ErrorSeverity.MEDIUM,
           retryable: false,
@@ -422,24 +422,21 @@ export class ErrorClassifier {
   private sendToAPM(error: ClassifiedError): void {
     captureError(error.originalError, {
       tags: {},
-        errorType: error.type,
+  errorType: error.type,
         errorCategory: error.category,
         errorSeverity: error.severity,
         errorId: error.id,
-        fingerprint: error.fingerprint
-      },
-      extra: {},
-        classification: {},
-          type: error.type,
+        fingerprint: error.fingerprint },
+  extra: {},
+  classification: {},
+  type: error.type,
           category: error.category,
           severity: error.severity,
-          retryable: error.retryable
-        },
-        context: error.context,
+          retryable: error.retryable },
+  context: error.context,
         metadata: error.metadata,
-        recoveryActions: error.recoveryActions
-      },
-      user: error.context.userId ? {
+        recoveryActions: error.recoveryActions },
+  user: error.context.userId ? {
         id: error.context.userId,
         clientId: error.context.clientId
       } : undefined

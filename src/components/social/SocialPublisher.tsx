@@ -204,8 +204,9 @@ const SocialPublisher: React.FC<SocialPublisherProps> = ({
 
       const response = await fetch('/api/social/publish', {
         method: 'POST',
-        headers: {},
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')
+      }`,
           'x-client-id': clientId},
         body: formData});
 

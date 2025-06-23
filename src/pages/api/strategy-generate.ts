@@ -100,7 +100,7 @@ Generate 8 diverse motivational concepts that would drive this audience to take 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
-        { role: 'system', content: systemPrompt },
+        { role: 'system', content: systemPrompt  }
         { role: 'user', content: userPrompt }
       ],
       temperature: 0.7,
@@ -137,13 +137,13 @@ Generate 8 diverse motivational concepts that would drive this audience to take 
           use_cases: motivation.use_cases || [],
           is_ai_generated: true,
           generation_context: {},
-            model: 'gpt-4o',
+  model: 'gpt-4o',
             temperature: 0.7,
             target_audience,
             campaign_objectives,
             feedback: feedback || null,
-            psychological_rationale: motivation.psychological_rationale},
-          created_by: user.id})
+            psychological_rationale: motivation.psychological_rationale },
+  created_by: user.id})
         .select(`
           *,
           clients(name, slug),

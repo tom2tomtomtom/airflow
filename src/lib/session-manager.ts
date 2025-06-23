@@ -17,8 +17,7 @@ const redis = env.REDIS_URL
         const delay = Math.min(times * 50, 2000);
         return delay;
       },
-      maxRetriesPerRequest: 3,
-    })
+      maxRetriesPerRequest: 3 })
   : null;
 
 export interface Session {
@@ -79,8 +78,7 @@ class SessionManager {
       lastActivity: new Date(),
       ipAddress: data.ipAddress,
       userAgent: data.userAgent,
-      metadata: data.metadata,
-    };
+      metadata: data.metadata };
 
     if (this.useMemoryFallback) {
       this.memorySessions.set(sessionId, session);
@@ -141,8 +139,7 @@ class SessionManager {
     loggers.auth.info('Session created', {
       sessionId,
       userId: data.userId,
-      role: data.role,
-    });
+      role: data.role });
 
     return session;
   }
@@ -183,8 +180,7 @@ class SessionManager {
     const updatedSession = {
       ...session,
       ...updates,
-      lastActivity: new Date(),
-    };
+      lastActivity: new Date() };
 
     if (this.useMemoryFallback) {
       this.memorySessions.set(sessionId, updatedSession);
@@ -227,8 +223,7 @@ class SessionManager {
 
     loggers.auth.info('Session deleted', {
       sessionId,
-      userId: session.userId,
-    });
+      userId: session.userId });
 
     return true;
   }
@@ -263,8 +258,7 @@ class SessionManager {
             sessions.push(JSON.parse(result[1] as string));
           } catch (error: any) {
             loggers.auth.error('Failed to parse session data', error, {
-              sessionId: sessionIds[index],
-            });
+              sessionId: sessionIds[index] });
           }
         }
       });
@@ -302,8 +296,7 @@ class SessionManager {
 
     loggers.auth.info('User sessions deleted', {
       userId,
-      count: sessionIds.length,
-    });
+      count: sessionIds.length });
 
     return sessionIds.length;
   }
@@ -352,8 +345,7 @@ class SessionManager {
     }
 
     loggers.auth.info('All sessions invalidated', {
-      sessionCount: keys.length,
-    });
+      sessionCount: keys.length });
   }
 }
 

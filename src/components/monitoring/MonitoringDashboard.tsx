@@ -92,7 +92,7 @@ interface Alert {
 
 interface DashboardData {
   overview: {},
-    health: 'healthy' | 'degraded' | 'critical';
+  health: 'healthy' | 'degraded' | 'critical';
     uptime: number;
     activeAlerts: number;
     lastUpdated: string;
@@ -203,7 +203,9 @@ const MonitoringDashboard: React.FC = () => {
     try {
       const response = await fetch('/api/monitoring/alerts?action=acknowledge', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+        'Content-Type': 'application/json' 
+      },
         body: JSON.stringify({
           alertId,
           acknowledgedBy: 'current-user', // In real app, get from auth context
@@ -270,25 +272,25 @@ const MonitoringDashboard: React.FC = () => {
           data: chart.data.map((d: any) => d.value),
           borderColor: chart.config.colors?.[0] || theme.palette.primary.main,
           backgroundColor: `${chart.config.colors?.[0] || theme.palette.primary.main}20`,
-          tension: 0.4},
+          tension: 0.4 }
       ]};
 
     const options = {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {},
-        legend: {},
-          display: false},
-        title: {},
-          display: false}},
+  legend: {},
+  display: false },
+  title: {},
+  display: false}},
       scales: {},
-        y: {},
-          beginAtZero: true,
+  y: {},
+  beginAtZero: true,
           grid: {},
-            color: theme.palette.divider}},
+  color: theme.palette.divider}},
         x: {},
-          grid: {},
-            color: theme.palette.divider}}}};
+  grid: {},
+  color: theme.palette.divider}}}};
 
     switch (chart.type) {
       case 'line':

@@ -7,8 +7,7 @@ import DashboardLayout from '../DashboardLayout';
 import { ThemeModeProvider } from '../../contexts/ThemeContext';
 
 jest.mock('next/router', () => ({
-  useRouter: jest.fn(),
-}));
+  useRouter: jest.fn() }));
 
 describe('DashboardLayout', () => {
   const mockPush = jest.fn();
@@ -21,8 +20,7 @@ describe('DashboardLayout', () => {
   beforeEach(() => {
     (useRouter as ReturnType<typeof jest.fn>).mockReturnValue({
       pathname: '/',
-      push: mockPush,
-    });
+      push: mockPush });
   });
 
   it('renders children correctly', () => {
@@ -50,8 +48,7 @@ describe('DashboardLayout', () => {
   it('highlights active route', () => {
     (useRouter as ReturnType<typeof jest.fn>).mockReturnValue({
       pathname: '/dashboard',
-      push: mockPush,
-    });
+      push: mockPush });
 
     renderWithTheme(
       <DashboardLayout>

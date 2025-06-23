@@ -12,7 +12,7 @@ import pdfParse from 'pdf-parse';
 // Configure to handle file uploads
 export const config = {
   api: {},
-    bodyParser: false}};
+  bodyParser: false}};
 
 interface BriefData {
   title: string;

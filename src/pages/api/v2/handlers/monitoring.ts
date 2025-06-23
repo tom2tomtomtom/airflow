@@ -164,28 +164,24 @@ async function handleHealth(
     version: '2.0.0',
     uptime: process.uptime(),
     memory: {},
-      used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
+  used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
       total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
       external: Math.round(process.memoryUsage().external / 1024 / 1024),
-      rss: Math.round(process.memoryUsage().rss / 1024 / 1024)
-    },
-    performance: {},
-      averageResponseTime: performanceTracker.getAverageResponseTime(),
+      rss: Math.round(process.memoryUsage().rss / 1024 / 1024) },
+  performance: {},
+  averageResponseTime: performanceTracker.getAverageResponseTime(),
       totalRequests: performanceTracker.getTotalRequests(),
       errorRate: performanceTracker.getErrorRate(),
-      slowOperations: performanceTracker.getSlowOperations()
-    },
-    ai: {},
-      budgetStatus: await costController.getBudgetStatus(),
+      slowOperations: performanceTracker.getSlowOperations() },
+  ai: {},
+  budgetStatus: await costController.getBudgetStatus(),
       totalSpent: await costController.getTotalSpent(),
-      activeOperations: costController.getActiveOperations()
-    },
-    database: {},
-      status: 'connected', // TODO: Add actual DB health check
-      connectionPool: 'healthy'
-    },
-    services: {},
-      openai: process.env.NEXT_PUBLIC_OPENAI_API_KEY ? 'configured' : 'not_configured',
+      activeOperations: costController.getActiveOperations() },
+  database: {},
+  status: 'connected', // TODO: Add actual DB health check
+      connectionPool: 'healthy' },
+  services: {},
+  openai: process.env.NEXT_PUBLIC_OPENAI_API_KEY ? 'configured' : 'not_configured',
       anthropic: process.env.ANTHROPIC_API_KEY ? 'configured' : 'not_configured',
       elevenlabs: process.env.ELEVENLABS_API_KEY ? 'configured' : 'not_configured',
       creatomate: process.env.CREATOMATE_API_KEY ? 'configured' : 'not_configured'
@@ -229,18 +225,17 @@ async function handleMetrics(
     timeRange,
     timestamp: new Date().toISOString(),
     overall: {},
-      totalRequests: performanceTracker.getTotalRequests(),
+  totalRequests: performanceTracker.getTotalRequests(),
       averageResponseTime: performanceTracker.getAverageResponseTime(),
       errorRate: performanceTracker.getErrorRate(),
-      throughput: performanceTracker.getThroughput()
-    },
-    operations: operation
+      throughput: performanceTracker.getThroughput() },
+  operations: operation
       ? performanceTracker.getOperationMetrics(operation as string)
       : performanceTracker.getAllOperationMetrics(),
     slowOperations: performanceTracker.getSlowOperations(),
     errors: performanceTracker.getRecentErrors(50),
     trends: {},
-      responseTime: performanceTracker.getResponseTimeTrend(),
+  responseTime: performanceTracker.getResponseTimeTrend(),
       errorRate: performanceTracker.getErrorRateTrend(),
       throughput: performanceTracker.getThroughputTrend()
     }
@@ -251,7 +246,7 @@ async function handleMetrics(
     const realtimeData = {
       ...metricsData,
       realtime: {},
-        currentRequests: 5,
+  currentRequests: 5,
         activeConnections: 12,
         queueLength: 0,
         lastUpdate: new Date().toISOString()
@@ -310,11 +305,12 @@ async function handleLogs(
         message: 'API v2 request processed',
         requestId: context.requestId,
         userId: context.user?.id || 'anonymous',
-        metadata: {},
-          route: Array.isArray(context.route) ? context.route.join('/') : 'unknown',
+        metadata: {
+        route: Array.isArray(context.route) ? context.route.join('/') : 'unknown',
           method: context.method,
           responseTime: Date.now() - (context.startTime || Date.now())
-        }
+        
+      }
       },
       {
         id: 'log-2',
@@ -322,10 +318,11 @@ async function handleLogs(
         level: 'error',
         message: 'Database connection timeout',
         requestId: 'req-123',
-        metadata: {},
-          error: 'Connection timeout after 5000ms',
+        metadata: {
+        error: 'Connection timeout after 5000ms',
           database: 'primary'
-        }
+        
+      }
       }
     ];
 
@@ -421,10 +418,11 @@ async function getAlerts(req: NextApiRequest, res: NextApiResponse, context: Rou
       severity: 'warning',
       status: 'active',
       createdAt: new Date().toISOString(),
-      metadata: {},
+      metadata: {
         currentValue: 87,
         threshold: 85,
         metric: 'memory_usage'
+      
       }
     }
   ];
@@ -482,11 +480,12 @@ async function updateAlert(req: NextApiRequest, res: NextApiResponse, context: R
     acknowledgedAt: acknowledged ? new Date().toISOString() : undefined,
     acknowledgedBy: acknowledged ? context.user.id : undefined,
     createdAt: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
-    metadata: {},
-      currentValue: 87,
+    metadata: {
+        currentValue: 87,
       threshold: 85,
       metric: 'memory_usage'
-    }
+    
+      }
   };
 
   return successResponse(res, { alert: updatedAlert }, 200, {
@@ -509,16 +508,15 @@ async function handlePerformance(
 
   const analysis = {
     summary: {},
-      totalOperations: performanceTracker.getTotalRequests(),
+  totalOperations: performanceTracker.getTotalRequests(),
       averageResponseTime: performanceTracker.getAverageResponseTime(),
       p95ResponseTime: performanceTracker.getPercentileResponseTime(95),
       p99ResponseTime: performanceTracker.getPercentileResponseTime(99),
-      errorRate: performanceTracker.getErrorRate()
-    },
-    bottlenecks: performanceTracker.getBottlenecks(),
+      errorRate: performanceTracker.getErrorRate() },
+  bottlenecks: performanceTracker.getBottlenecks(),
     recommendations: performanceTracker.getPerformanceRecommendations(),
     trends: {},
-      hourly: performanceTracker.getHourlyTrends(),
+  hourly: performanceTracker.getHourlyTrends(),
       daily: performanceTracker.getDailyTrends()
     }
   };
@@ -544,50 +542,42 @@ async function handleSystem(
 
   const system = {
     cpu: {},
-      usage: {},
-        user: cpuUsage.user,
-        system: cpuUsage.system
-      },
-      loadAverage: [0.5, 0.3, 0.2], // Mock load average
-      cores: 8 // Mock CPU cores
-    },
-    memory: {},
-      total: memoryUsage.heapTotal,
+  usage: {},
+  user: cpuUsage.user,
+        system: cpuUsage.system },
+  loadAverage: [0.5, 0.3, 0.2], // Mock load average
+      cores: 8 // Mock CPU cores },
+  memory: {},
+  total: memoryUsage.heapTotal,
       used: memoryUsage.heapUsed,
       free: memoryUsage.heapTotal - memoryUsage.heapUsed,
       external: memoryUsage.external,
       rss: memoryUsage.rss,
-      arrayBuffers: memoryUsage.arrayBuffers
-    },
-    disk: {},
-      total: 500 * 1024 * 1024 * 1024, // 500GB mock
+      arrayBuffers: memoryUsage.arrayBuffers },
+  disk: {},
+  total: 500 * 1024 * 1024 * 1024, // 500GB mock
       used: 250 * 1024 * 1024 * 1024,  // 250GB mock
       free: 250 * 1024 * 1024 * 1024,  // 250GB mock
-      usage: 50 // 50% usage
-    },
-    network: {},
-      bytesReceived: 1024 * 1024 * 100, // 100MB mock
+      usage: 50 // 50% usage },
+  network: {},
+  bytesReceived: 1024 * 1024 * 100, // 100MB mock
       bytesSent: 1024 * 1024 * 50,      // 50MB mock
       packetsReceived: 10000,
-      packetsSent: 8000
-    },
-    node: {},
-      version: process.version,
+      packetsSent: 8000 },
+  node: {},
+  version: process.version,
       platform: process.platform,
       arch: process.arch,
-      uptime: process.uptime()
-    },
-    environment: {},
-      nodeEnv: process.env.NODE_ENV,
+      uptime: process.uptime() },
+  environment: {},
+  nodeEnv: process.env.NODE_ENV,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      locale: Intl.DateTimeFormat().resolvedOptions().locale
-    },
-    resources: {},
-      memory: memoryUsage,
-      cpu: cpuUsage
-    },
-    features: {},
-      apiV2: true,
+      locale: Intl.DateTimeFormat().resolvedOptions().locale },
+  resources: {},
+  memory: memoryUsage,
+      cpu: cpuUsage },
+  features: {},
+  apiV2: true,
       costTracking: true,
       performanceMonitoring: true,
       errorTracking: true

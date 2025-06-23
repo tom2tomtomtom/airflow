@@ -47,8 +47,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       error: null,
       errorInfo: null,
       errorId: '',
-      showDetails: false,
-    };
+      showDetails: false };
   }
 
   static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
@@ -72,8 +71,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     loggers.general.error('React Error Boundary caught an error', error, {
       errorId,
       componentStack: errorInfo.componentStack,
-      errorBoundary: this.constructor.name,
-    });
+      errorBoundary: this.constructor.name });
 
     // Call custom error handler
     onError?.(error, errorInfo, errorId);
@@ -123,14 +121,12 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       error: null,
       errorInfo: null,
       errorId: '',
-      showDetails: false,
-    });
+      showDetails: false });
   };
 
   toggleDetails = () => {
     this.setState(prevState => ({
-      showDetails: !prevState.showDetails,
-    }));
+      showDetails: !prevState.showDetails }));
   };
 
   render() {
@@ -191,22 +187,18 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
       minHeight: '60vh',
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'center',
-    }),
+      justifyContent: 'center' }),
     ...(isSectionLevel && {
       minHeight: '200px',
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'center',
-    }),
-    p: isPageLevel ? 4 : 2,
-  };
+      justifyContent: 'center' }),
+    p: isPageLevel ? 4 : 2 };
 
   const contentSx = {
     textAlign: 'center' as const,
     maxWidth: isPageLevel ? '600px' : '400px',
-    width: '100%',
-  };
+    width: '100%' };
 
   return (
     <Box sx={containerSx}>
@@ -215,16 +207,14 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
         sx={{
           ...contentSx,
           p: isPageLevel ? 4 : 3,
-          borderRadius: 3,
-        }}
+          borderRadius: 3 }}
       >
         <Box sx={{ mb: 3 }}>
           <ErrorIcon
             sx={{
               fontSize: isPageLevel ? 64 : 48,
               color: 'error.main',
-              mb: 2,
-            }}
+              mb: 2 }}
           />
 
           <Typography variant={isPageLevel ? 'h4' : 'h6'} sx={{ fontWeight: 600, mb: 1 }}>
@@ -275,8 +265,7 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
                 mt: 2,
                 textAlign: 'left',
                 '& .MuiAlert-message': {
-                  width: '100%',
-                },
+                  width: '100%' },
               }}
             >
               <AlertTitle>Error Details</AlertTitle>
@@ -303,8 +292,7 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
                     borderColor: 'divider',
                     fontFamily: 'monospace',
                     whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-word',
-                  }}
+                    wordBreak: 'break-word' }}
                 >
                   {error.stack}
                 </Box>
@@ -328,8 +316,7 @@ const DefaultErrorFallback: React.FC<ErrorFallbackProps> = ({
                       borderColor: 'divider',
                       fontFamily: 'monospace',
                       whiteSpace: 'pre-wrap',
-                      wordBreak: 'break-word',
-                    }}
+                      wordBreak: 'break-word' }}
                   >
                     {errorInfo.componentStack}
                   </Box>

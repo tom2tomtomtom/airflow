@@ -134,7 +134,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   const enrichedData = data?.map((asset: any) => ({
     ...asset,
     analytics: {},
-      character_count: asset.content.length,
+  character_count: asset.content.length,
       word_count: asset.content.split(/\s+/).length,
       readability_score: calculateReadabilityScore(asset.content),
       sentiment: analyzeSentiment(asset.content)}
@@ -144,7 +144,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     data: enrichedData,
     count,
     pagination: {},
-      limit: parseInt(limit as string),
+  limit: parseInt(limit as string),
       offset: parseInt(offset as string),
       total: count || 0
     }
@@ -191,12 +191,12 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
       title,
       character_count: characterCount,
       word_count: wordCount,
-      metadata: {},
+      metadata: {
         ...assetData.metadata,
         readability_score: calculateReadabilityScore(content),
         sentiment: analyzeSentiment(content),
-        created_timestamp: new Date().toISOString()},
-      created_by: user.id})
+        created_timestamp: new Date().toISOString() },
+  created_by: user.id})
     .select(`
       *,
       clients(name, slug),

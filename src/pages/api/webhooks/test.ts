@@ -39,10 +39,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
         type: event,
         data: data || {
           test: true,
-          timestamp: new Date().toISOString()},
-        metadata: {},
-          source: 'test_endpoint',
-          triggered_at: new Date().toISOString()}},
+          timestamp: new Date().toISOString() },
+  metadata: {
+        source: 'test_endpoint',
+          triggered_at: new Date().toISOString()
+      }},
       client_id
     );
     

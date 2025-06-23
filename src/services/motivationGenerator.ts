@@ -38,13 +38,14 @@ export interface MotivationSet {
   motivations: PsychologicalMotivation[];
   generatedAt: Date;
   version: number;
-  metadata: {},
-    totalMotivations: number;
+  metadata: {
+        totalMotivations: number;
     diversityScore: number;
     averageConfidence: number;
     psychologyDistribution: Record<string, number>;
     targetCoverage: string[];
-  };
+  
+      };
 }
 
 export interface MotivationGenerationOptions {
@@ -243,8 +244,7 @@ Make them diverse, authentic, and psychologically grounded.
           copyDirection: "Future-focused language with emphasis on competitive advantage and market leadership",
           examples: ["Industry leaders are already using this", "The future of [industry] starts here", "Join the innovators"],
           intensity: "high",
-          confidence: 0.9
-        },
+          confidence: 0.9 }
         {
           title: "Trusted by Experts",
           description: "Leverages authority and credibility to reduce risk perception. Appeals to customers who value expert validation.",
@@ -256,8 +256,7 @@ Make them diverse, authentic, and psychologically grounded.
           copyDirection: "Authoritative tone with credible testimonials and expert endorsements",
           examples: ["Recommended by 9/10 specialists", "Chosen by Fortune 500 companies", "Expert-approved solution"],
           intensity: "medium",
-          confidence: 0.85
-        },
+          confidence: 0.85 }
         {
           title: "Exclusive Community Access",
           description: "Taps into belonging and status needs. Creates desire through exclusivity and community membership.",
@@ -269,8 +268,7 @@ Make them diverse, authentic, and psychologically grounded.
           copyDirection: "Inclusive yet exclusive language emphasizing community and shared values",
           examples: ["Member-only benefits", "Private community access", "Connect with industry leaders"],
           intensity: "medium",
-          confidence: 0.8
-        },
+          confidence: 0.8 }
         {
           title: "Effortless Results",
           description: "Appeals to convenience-seekers who want maximum results with minimal effort. Reduces friction and complexity.",
@@ -282,8 +280,7 @@ Make them diverse, authentic, and psychologically grounded.
           copyDirection: "Simple, clear language emphasizing ease of use and quick results",
           examples: ["Set it and forget it", "Results in minutes, not hours", "Automated for your convenience"],
           intensity: "medium",
-          confidence: 0.88
-        },
+          confidence: 0.88 }
         {
           title: "Risk-Free Investment",
           description: "Reduces purchase anxiety through guarantees and risk mitigation. Appeals to cautious buyers.",
@@ -295,8 +292,7 @@ Make them diverse, authentic, and psychologically grounded.
           copyDirection: "Reassuring tone with emphasis on guarantees and customer protection",
           examples: ["30-day money-back guarantee", "No-risk trial", "100% satisfaction guaranteed"],
           intensity: "low",
-          confidence: 0.92
-        },
+          confidence: 0.92 }
         {
           title: "Limited Time Opportunity",
           description: "Creates urgency through time-based scarcity. Motivates immediate action to avoid regret.",
@@ -308,8 +304,7 @@ Make them diverse, authentic, and psychologically grounded.
           copyDirection: "Urgent, time-sensitive language with clear deadlines",
           examples: ["Limited time offer", "Only 48 hours left", "Expires at midnight"],
           intensity: "high",
-          confidence: 0.87
-        },
+          confidence: 0.87 }
         {
           title: "Proven Track Record",
           description: "Uses social proof and past success to build confidence. Appeals to evidence-based decision makers.",
@@ -321,8 +316,7 @@ Make them diverse, authentic, and psychologically grounded.
           copyDirection: "Evidence-based language with statistics and success stories",
           examples: ["10,000+ satisfied customers", "98% success rate", "Real results from real people"],
           intensity: "medium",
-          confidence: 0.9
-        },
+          confidence: 0.9 }
         {
           title: "Achieve Your Dreams",
           description: "Connects product to personal aspirations and life goals. Appeals to ambitious individuals.",
@@ -334,8 +328,7 @@ Make them diverse, authentic, and psychologically grounded.
           copyDirection: "Inspirational tone focusing on personal transformation and achievement",
           examples: ["Unlock your potential", "Live the life you've imagined", "Make your dreams reality"],
           intensity: "high",
-          confidence: 0.83
-        },
+          confidence: 0.83 }
         {
           title: "Industry Recognition",
           description: "Appeals to status and professional recognition needs. Creates desire for peer acknowledgment.",
@@ -347,8 +340,7 @@ Make them diverse, authentic, and psychologically grounded.
           copyDirection: "Professional tone emphasizing career advancement and recognition",
           examples: ["Stand out from the crowd", "Earn industry respect", "Become the go-to expert"],
           intensity: "medium",
-          confidence: 0.81
-        },
+          confidence: 0.81 }
         {
           title: "Family Protection Priority",
           description: "Taps into protective instincts and family responsibility. Appeals to parents and caregivers.",
@@ -360,8 +352,7 @@ Make them diverse, authentic, and psychologically grounded.
           copyDirection: "Caring, protective tone emphasizing family benefits and safety",
           examples: ["Keep your family safe", "For those who matter most", "Peace of mind for parents"],
           intensity: "high",
-          confidence: 0.89
-        },
+          confidence: 0.89 }
         {
           title: "Return the Favor",
           description: "Uses reciprocity principle by highlighting value received. Appeals to fairness-minded individuals.",
@@ -373,8 +364,7 @@ Make them diverse, authentic, and psychologically grounded.
           copyDirection: "Appreciative tone emphasizing mutual benefit and relationship",
           examples: ["Return the favor", "Help us help others", "Be part of our success story"],
           intensity: "low",
-          confidence: 0.75
-        },
+          confidence: 0.75 }
         {
           title: "Smart Investment Choice",
           description: "Appeals to rational buyers focused on ROI and long-term value. Emphasizes financial wisdom.",
@@ -598,7 +588,7 @@ Make them diverse, authentic, and psychologically grounded.
   async refineMotivations(
     motivationSet: MotivationSet,
     refinements: {},
-      enhanceConfidence?: boolean;
+  enhanceConfidence?: boolean;
       increaseDiversity?: boolean;
       balancePsychology?: boolean;
       targetSegments?: string[];

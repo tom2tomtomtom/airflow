@@ -75,10 +75,10 @@ async function handleExport(req: NextApiRequest, res: NextApiResponse, user: any
 
 async function gatherCampaignData(campaignId: string, includeAssets: boolean, includeVideos: boolean): Promise<any> {
   const data: any = {
-    campaign: {}
-    strategy: { motivations: [], copy_assets: [] },
-    matrix: { combinations: [] },
-    assets: [],
+    campaign: {},
+  strategy: { motivations: [], copy_assets: []  },
+  matrix: { combinations: []  },
+  assets: [],
     videos: []};
 
   // Get campaign details
@@ -249,29 +249,29 @@ function generatePlatformSpecificExport(data: any, platform?: string): any {
 
   const platformExports: Record<string, any> = {
     youtube: {},
-      title: data?.campaign?.name,
+  title: data?.campaign?.name,
       description: data?.campaign?.description,
       tags: data?.strategy?.motivations.map((m: any) => m.category).filter(Boolean),
       thumbnails: data?.assets?.filter((a: any) => a.type === 'image').slice(0, 3),
-      videos: data?.videos?.filter((v: any) => v.config?.video_config?.platform === 'youtube')},
-    instagram: {},
-      posts: data?.strategy?.copy_assets.filter((c: any) => c.platform === 'instagram'),
+      videos: data?.videos?.filter((v: any) => v.config?.video_config?.platform === 'youtube') },
+  instagram: {},
+  posts: data?.strategy?.copy_assets.filter((c: any) => c.platform === 'instagram'),
       stories: data?.videos?.filter((v: any) => v.config?.video_config?.aspect_ratio === '9:16'),
-      hashtags: generateHashtags(data?.strategy?.motivations)},
-    tiktok: {},
-      videos: data?.videos?.filter((v: any) => v.config?.video_config?.platform === 'tiktok'),
+      hashtags: generateHashtags(data?.strategy?.motivations) },
+  tiktok: {},
+  videos: data?.videos?.filter((v: any) => v.config?.video_config?.platform === 'tiktok'),
       captions: data?.strategy?.copy_assets.filter((c: any) => c.platform === 'tiktok'),
-      effects: []},
-    facebook: {},
-      posts: data?.strategy?.copy_assets.filter((c: any) => c.platform === 'facebook'),
+      effects: [] },
+  facebook: {},
+  posts: data?.strategy?.copy_assets.filter((c: any) => c.platform === 'facebook'),
       ads: data?.matrix?.combinations,
-      targeting: extractTargetingData(data?.strategy?.motivations)},
-    linkedin: {},
-      posts: data?.strategy?.copy_assets.filter((c: any) => c.platform === 'linkedin'),
+      targeting: extractTargetingData(data?.strategy?.motivations) },
+  linkedin: {},
+  posts: data?.strategy?.copy_assets.filter((c: any) => c.platform === 'linkedin'),
       articles: [],
-      company_updates: data?.matrix?.combinations},
-    twitter: {},
-      tweets: data?.strategy?.copy_assets.filter((c: any) => c.platform === 'twitter'),
+      company_updates: data?.matrix?.combinations },
+  twitter: {},
+  tweets: data?.strategy?.copy_assets.filter((c: any) => c.platform === 'twitter'),
       threads: [],
       hashtags: generateHashtags(data?.strategy?.motivations)}};
 

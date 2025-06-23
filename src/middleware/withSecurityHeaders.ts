@@ -249,28 +249,26 @@ export function withSecurityHeaders(
  */
 export const SecurityConfigs = {
   development: {},
-    enableCSP: true,
+  enableCSP: true,
     enableHSTS: false, // Disable HSTS in development
     enablePermissionsPolicy: true,
-    cspReportUri: '/api/security/csp-report'},
-
+    cspReportUri: '/api/security/csp-report' },
   production: {},
-    enableCSP: true,
+  enableCSP: true,
     enableHSTS: true,
     enablePermissionsPolicy: true,
     hstsMaxAge: 31536000, // 1 year
     hstsIncludeSubDomains: true,
     hstsPreload: true,
-    cspReportUri: '/api/security/csp-report'},
-
+    cspReportUri: '/api/security/csp-report' },
   strict: {},
-    enableCSP: true,
+  enableCSP: true,
     enableHSTS: true,
     enablePermissionsPolicy: true,
     hstsMaxAge: 63072000, // 2 years
     hstsIncludeSubDomains: true,
     hstsPreload: true,
-    customHeaders: {},
+    customHeaders: { }
       'Expect-CT': 'max-age=86400, enforce',
       'Feature-Policy': "camera 'none'; microphone 'none'; geolocation 'none'" };
 

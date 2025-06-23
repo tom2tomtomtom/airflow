@@ -57,7 +57,7 @@ export interface DashboardSection {
 
 export interface PerformanceDashboard {
   overview: {},
-    health: 'healthy' | 'degraded' | 'critical';
+  health: 'healthy' | 'degraded' | 'critical';
     uptime: number;
     activeAlerts: number;
     lastUpdated: Date;
@@ -224,11 +224,11 @@ export class PerformanceDashboardGenerator {
 
     return {
       overview: {},
-        health,
+  health,
         uptime: this.calculateUptime(),
         activeAlerts: activeAlerts.length,
-        lastUpdated: new Date()},
-      sections: [
+        lastUpdated: new Date() },
+  sections: [
         this.generateAPISection(),
         this.generateDatabaseSection(),
         this.generateAISection(),
@@ -256,7 +256,7 @@ export class PerformanceDashboardGenerator {
           trend: requestTrend.trend,
           change: requestTrend.change,
           timestamp: new Date(),
-          status: requestRate < 10 ? 'warning' : 'good'},
+          status: requestRate < 10 ? 'warning' : 'good' }
         {
           name: 'Avg Response Time',
           value: avgResponseTime,
@@ -264,7 +264,7 @@ export class PerformanceDashboardGenerator {
           trend: responseTrend.trend,
           change: responseTrend.change,
           timestamp: new Date(),
-          status: avgResponseTime > 1000 ? 'critical' : avgResponseTime > 500 ? 'warning' : 'good'},
+          status: avgResponseTime > 1000 ? 'critical' : avgResponseTime > 500 ? 'warning' : 'good' }
         {
           name: 'Error Rate',
           value: errorRate * 100,
@@ -272,7 +272,7 @@ export class PerformanceDashboardGenerator {
           trend: 'stable',
           change: 0,
           timestamp: new Date(),
-          status: errorRate > 0.1 ? 'critical' : errorRate > 0.05 ? 'warning' : 'good'},
+          status: errorRate > 0.1 ? 'critical' : errorRate > 0.05 ? 'warning' : 'good' }
       ],
       charts: [
         {
@@ -281,21 +281,21 @@ export class PerformanceDashboardGenerator {
           type: 'line',
           data: this.calculator.getChartData('api.requests.total', '1h'),
           config: {},
-            yAxis: { label: 'Requests/min', min: 0 },
-            xAxis: { label: 'Time', format: 'time' },
-            colors: ['#2196f3']}},
+  yAxis: { label: 'Requests/min', min: 0  },
+  xAxis: { label: 'Time', format: 'time'  },
+  colors: ['#2196f3']}},
         {
           id: 'api-response-time',
           title: 'Response Time Distribution',
           type: 'line',
           data: this.calculator.getChartData('api.requests.duration', '1h'),
           config: {},
-            yAxis: { label: 'Response Time (ms)', min: 0 },
-            xAxis: { label: 'Time', format: 'time' },
-            colors: ['#ff9800'],
+  yAxis: { label: 'Response Time (ms)', min: 0  },
+  xAxis: { label: 'Time', format: 'time'  },
+  colors: ['#ff9800'],
             thresholds: [
-              { value: 500, color: '#ffeb3b', label: 'Warning' },
-              { value: 1000, color: '#f44336', label: 'Critical' },
+              { value: 500, color: '#ffeb3b', label: 'Warning'  }
+              { value: 1000, color: '#f44336', label: 'Critical'  }
             ]}},
       ],
       alerts: 0};
@@ -316,7 +316,7 @@ export class PerformanceDashboardGenerator {
           trend: 'stable',
           change: 0,
           timestamp: new Date(),
-          status: queryDuration > 300 ? 'warning' : 'good'},
+          status: queryDuration > 300 ? 'warning' : 'good' }
         {
           name: 'Connection Health',
           value: connectionHealth,
@@ -324,7 +324,7 @@ export class PerformanceDashboardGenerator {
           trend: 'stable',
           change: 0,
           timestamp: new Date(),
-          status: connectionHealth < 1 ? 'critical' : 'good'},
+          status: connectionHealth < 1 ? 'critical' : 'good' }
       ],
       charts: [
         {
@@ -333,12 +333,12 @@ export class PerformanceDashboardGenerator {
           type: 'line',
           data: this.calculator.getChartData('database.queries.duration', '1h'),
           config: {},
-            yAxis: { label: 'Query Time (ms)', min: 0 },
-            xAxis: { label: 'Time', format: 'time' },
-            colors: ['#4caf50'],
+  yAxis: { label: 'Query Time (ms)', min: 0  },
+  xAxis: { label: 'Time', format: 'time'  },
+  colors: ['#4caf50'],
             thresholds: [
-              { value: 200, color: '#ffeb3b', label: 'Slow' },
-              { value: 500, color: '#f44336', label: 'Very Slow' },
+              { value: 200, color: '#ffeb3b', label: 'Slow'  }
+              { value: 500, color: '#f44336', label: 'Very Slow'  }
             ]}},
       ],
       alerts: 0};
@@ -359,7 +359,7 @@ export class PerformanceDashboardGenerator {
           trend: 'stable',
           change: 0,
           timestamp: new Date(),
-          status: 'good'},
+          status: 'good' }
         {
           name: 'Estimated Cost',
           value: estimatedCost,
@@ -367,7 +367,7 @@ export class PerformanceDashboardGenerator {
           trend: 'stable',
           change: 0,
           timestamp: new Date(),
-          status: estimatedCost > 10 ? 'warning' : 'good'},
+          status: estimatedCost > 10 ? 'warning' : 'good' }
       ],
       charts: [
         {
@@ -376,9 +376,9 @@ export class PerformanceDashboardGenerator {
           type: 'line',
           data: this.calculator.getChartData('ai.requests.total', '1h'),
           config: {},
-            yAxis: { label: 'Requests', min: 0 },
-            xAxis: { label: 'Time', format: 'time' },
-            colors: ['#9c27b0']}},
+  yAxis: { label: 'Requests', min: 0  },
+  xAxis: { label: 'Time', format: 'time'  },
+  colors: ['#9c27b0']}},
       ],
       alerts: 0};
   }
@@ -398,7 +398,7 @@ export class PerformanceDashboardGenerator {
           trend: 'stable',
           change: 0,
           timestamp: new Date(),
-          status: memoryUsage > 0.8 ? 'critical' : memoryUsage > 0.7 ? 'warning' : 'good'},
+          status: memoryUsage > 0.8 ? 'critical' : memoryUsage > 0.7 ? 'warning' : 'good' }
         {
           name: 'CPU Usage',
           value: cpuUsage * 100,
@@ -406,7 +406,7 @@ export class PerformanceDashboardGenerator {
           trend: 'stable',
           change: 0,
           timestamp: new Date(),
-          status: cpuUsage > 0.8 ? 'critical' : cpuUsage > 0.6 ? 'warning' : 'good'},
+          status: cpuUsage > 0.8 ? 'critical' : cpuUsage > 0.6 ? 'warning' : 'good' }
       ],
       charts: [
         {
@@ -418,9 +418,9 @@ export class PerformanceDashboardGenerator {
             ...this.calculator.getChartData('system.cpu.usage', '1h').map(d => ({ ...d, category: 'CPU' })),
           ],
           config: {},
-            yAxis: { label: 'Usage (%)', min: 0, max: 100 },
-            xAxis: { label: 'Time', format: 'time' },
-            colors: ['#ff5722', '#795548']}},
+  yAxis: { label: 'Usage (%)', min: 0, max: 100  },
+  xAxis: { label: 'Time', format: 'time'  },
+  colors: ['#ff5722', '#795548']}},
       ],
       alerts: 0};
   }
@@ -439,7 +439,7 @@ export class PerformanceDashboardGenerator {
           trend: 'stable',
           change: 0,
           timestamp: new Date(),
-          status: 'good'},
+          status: 'good' }
       ],
       charts: [
         {
@@ -448,9 +448,9 @@ export class PerformanceDashboardGenerator {
           type: 'bar',
           data: this.calculator.getChartData('video.generation.total', '24h', 24),
           config: {},
-            yAxis: { label: 'Videos Generated', min: 0 },
-            xAxis: { label: 'Hour', format: 'time' },
-            colors: ['#00bcd4']}},
+  yAxis: { label: 'Videos Generated', min: 0  },
+  xAxis: { label: 'Hour', format: 'time'  },
+  colors: ['#00bcd4']}},
       ],
       alerts: 0};
   }

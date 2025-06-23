@@ -36,8 +36,8 @@ describe('Helper Utilities', () => {
       
       const original = { 
         name: 'test', 
-        nested: { value: 42 },
-        array: [1, 2, 3]
+        nested: { value: 42  },
+  array: [1, 2, 3]
       };
       const cloned = deepClone(original);
       

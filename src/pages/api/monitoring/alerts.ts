@@ -24,8 +24,7 @@ const CreateAlertRuleSchema = z.object({
   }),
   evaluation: z.object({
     intervalSeconds: z.number().min(30).max(3600),
-    forDuration: z.number().min(0).max(3600),
-  }),
+    forDuration: z.number().min(0).max(3600) }),
   notifications: z.array(
     z.object({
       channel: z.enum(['email', 'slack', 'pagerduty', 'webhook', 'sms']),
@@ -38,8 +37,7 @@ const CreateAlertRuleSchema = z.object({
           timeRange: z
             .object({
               start: z.string(),
-              end: z.string(),
-            })
+              end: z.string() })
             .optional(),
         })
         .optional(),
@@ -47,22 +45,19 @@ const CreateAlertRuleSchema = z.object({
   ),
   runbook: z.string().url().optional(),
   tags: z.record(z.string()).optional(),
-  enabled: z.boolean().default(true),
-});
+  enabled: z.boolean().default(true) });
 
 const UpdateAlertRuleSchema = CreateAlertRuleSchema.partial();
 
 const AcknowledgeAlertSchema = z.object({
   alertId: z.string(),
   acknowledgedBy: z.string(),
-  comment: z.string().optional(),
-});
+  comment: z.string().optional() });
 
 const SilenceAlertSchema = z.object({
   alertId: z.string(),
   duration: z.number().min(300).max(86400), // 5 minutes to 24 hours
-  reason: z.string().optional(),
-});
+  reason: z.string().optional() });
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -80,14 +75,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       default:
         return res.status(405).json({
           success: false,
-          error: { code: 'METHOD_NOT_ALLOWED', message: 'Method not allowed' },
+          error: { code: 'METHOD_NOT_ALLOWED', message: 'Method not allowed'  }
         });
     }
   } catch (error) {
     console.error('Alerts API error:', error);
     return res.status(500).json({
       success: false,
-      error: { code: 'INTERNAL_ERROR', message: 'Internal server error' },
+      error: { code: 'INTERNAL_ERROR', message: 'Internal server error'  }
     });
   }
 }
@@ -105,7 +100,7 @@ async function handleGetAlerts(req: NextApiRequest, res: NextApiResponse) {
         if (!rule) {
           return res.status(404).json({
             success: false,
-            error: { code: 'RULE_NOT_FOUND', message: 'Alert rule not found' },
+            error: { code: 'RULE_NOT_FOUND', message: 'Alert rule not found'  }
           });
         }
         rules = [rule];
@@ -113,11 +108,10 @@ async function handleGetAlerts(req: NextApiRequest, res: NextApiResponse) {
 
       return res.status(200).json({
         success: true,
-        data: { rules },
-        meta: {
+        data: { rules  },
+  meta: {
           count: rules.length,
-          timestamp: new Date().toISOString(),
-        },
+          timestamp: new Date().toISOString() },
       });
     }
 
@@ -143,25 +137,23 @@ async function handleGetAlerts(req: NextApiRequest, res: NextApiResponse) {
       info: alerts.filter(a => a.severity === 'info').length,
       firing: alerts.filter(a => a.state === 'firing').length,
       acknowledged: alerts.filter(a => a.state === 'acknowledged').length,
-      silenced: alerts.filter(a => a.state === 'silenced').length,
-    };
+      silenced: alerts.filter(a => a.state === 'silenced').length };
 
     return res.status(200).json({
       success: true,
       data: {
         alerts: alerts.map(alert => ({
           ...alert,
-          duration: alert.lastSeen.getTime() - alert.firstSeen.getTime(),
-        })),
+          duration: alert.lastSeen.getTime() - alert.firstSeen.getTime() })),
         stats,
       },
-      meta: { timestamp: new Date().toISOString() },
+      meta: { timestamp: new Date().toISOString()  }
     });
   } catch (error) {
     console.error('Failed to get alerts:', error);
     return res.status(500).json({
       success: false,
-      error: { code: 'FETCH_ERROR', message: 'Failed to fetch alerts' },
+      error: { code: 'FETCH_ERROR', message: 'Failed to fetch alerts'  }
     });
   }
 }
@@ -179,8 +171,8 @@ async function handleCreateRule(req: NextApiRequest, res: NextApiResponse) {
 
     return res.status(201).json({
       success: true,
-      data: { rule },
-      meta: { timestamp: new Date().toISOString() },
+      data: { rule  },
+  meta: { timestamp: new Date().toISOString()  }
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -189,15 +181,14 @@ async function handleCreateRule(req: NextApiRequest, res: NextApiResponse) {
         error: {
           code: 'VALIDATION_ERROR',
           message: 'Invalid rule data',
-          details: error.errors,
-        },
+          details: error.errors },
       });
     }
 
     console.error('Failed to create alert rule:', error);
     return res.status(500).json({
       success: false,
-      error: { code: 'CREATE_ERROR', message: 'Failed to create alert rule' },
+      error: { code: 'CREATE_ERROR', message: 'Failed to create alert rule'  }
     });
   }
 }
@@ -208,7 +199,7 @@ async function handleUpdateRule(req: NextApiRequest, res: NextApiResponse) {
   if (!ruleId || typeof ruleId !== 'string') {
     return res.status(400).json({
       success: false,
-      error: { code: 'INVALID_RULE_ID', message: 'Rule ID is required' },
+      error: { code: 'INVALID_RULE_ID', message: 'Rule ID is required'  }
     });
   }
 
@@ -219,7 +210,7 @@ async function handleUpdateRule(req: NextApiRequest, res: NextApiResponse) {
     if (!existingRule) {
       return res.status(404).json({
         success: false,
-        error: { code: 'RULE_NOT_FOUND', message: 'Alert rule not found' },
+        error: { code: 'RULE_NOT_FOUND', message: 'Alert rule not found'  }
       });
     }
 
@@ -228,8 +219,8 @@ async function handleUpdateRule(req: NextApiRequest, res: NextApiResponse) {
 
     return res.status(200).json({
       success: true,
-      data: { rule: updatedRule },
-      meta: { timestamp: new Date().toISOString() },
+      data: { rule: updatedRule  },
+  meta: { timestamp: new Date().toISOString()  }
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -238,15 +229,14 @@ async function handleUpdateRule(req: NextApiRequest, res: NextApiResponse) {
         error: {
           code: 'VALIDATION_ERROR',
           message: 'Invalid rule data',
-          details: error.errors,
-        },
+          details: error.errors },
       });
     }
 
     console.error('Failed to update alert rule:', error);
     return res.status(500).json({
       success: false,
-      error: { code: 'UPDATE_ERROR', message: 'Failed to update alert rule' },
+      error: { code: 'UPDATE_ERROR', message: 'Failed to update alert rule'  }
     });
   }
 }
@@ -257,7 +247,7 @@ async function handleDeleteRule(req: NextApiRequest, res: NextApiResponse) {
   if (!ruleId || typeof ruleId !== 'string') {
     return res.status(400).json({
       success: false,
-      error: { code: 'INVALID_RULE_ID', message: 'Rule ID is required' },
+      error: { code: 'INVALID_RULE_ID', message: 'Rule ID is required'  }
     });
   }
 
@@ -267,7 +257,7 @@ async function handleDeleteRule(req: NextApiRequest, res: NextApiResponse) {
     if (!existingRule) {
       return res.status(404).json({
         success: false,
-        error: { code: 'RULE_NOT_FOUND', message: 'Alert rule not found' },
+        error: { code: 'RULE_NOT_FOUND', message: 'Alert rule not found'  }
       });
     }
 
@@ -276,13 +266,13 @@ async function handleDeleteRule(req: NextApiRequest, res: NextApiResponse) {
     return res.status(200).json({
       success: true,
       data: { deleted: true, ruleId },
-      meta: { timestamp: new Date().toISOString() },
+      meta: { timestamp: new Date().toISOString()  }
     });
   } catch (error) {
     console.error('Failed to delete alert rule:', error);
     return res.status(500).json({
       success: false,
-      error: { code: 'DELETE_ERROR', message: 'Failed to delete alert rule' },
+      error: { code: 'DELETE_ERROR', message: 'Failed to delete alert rule'  }
     });
   }
 }
@@ -301,14 +291,14 @@ async function handleAlertAction(req: NextApiRequest, res: NextApiResponse) {
       default:
         return res.status(400).json({
           success: false,
-          error: { code: 'INVALID_ACTION', message: 'Invalid alert action' },
+          error: { code: 'INVALID_ACTION', message: 'Invalid alert action'  }
         });
     }
   } catch (error) {
     console.error('Failed to perform alert action:', error);
     return res.status(500).json({
       success: false,
-      error: { code: 'ACTION_ERROR', message: 'Failed to perform alert action' },
+      error: { code: 'ACTION_ERROR', message: 'Failed to perform alert action'  }
     });
   }
 }
@@ -324,7 +314,7 @@ async function handleAcknowledgeAlert(req: NextApiRequest, res: NextApiResponse)
     if (!alert) {
       return res.status(404).json({
         success: false,
-        error: { code: 'ALERT_NOT_FOUND', message: 'Alert not found' },
+        error: { code: 'ALERT_NOT_FOUND', message: 'Alert not found'  }
       });
     }
 
@@ -338,7 +328,7 @@ async function handleAcknowledgeAlert(req: NextApiRequest, res: NextApiResponse)
         acknowledgedBy,
         comment,
       },
-      meta: { timestamp: new Date().toISOString() },
+      meta: { timestamp: new Date().toISOString()  }
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -347,8 +337,7 @@ async function handleAcknowledgeAlert(req: NextApiRequest, res: NextApiResponse)
         error: {
           code: 'VALIDATION_ERROR',
           message: 'Invalid acknowledgment data',
-          details: error.errors,
-        },
+          details: error.errors },
       });
     }
     throw error;
@@ -366,7 +355,7 @@ async function handleSilenceAlert(req: NextApiRequest, res: NextApiResponse) {
     if (!alert) {
       return res.status(404).json({
         success: false,
-        error: { code: 'ALERT_NOT_FOUND', message: 'Alert not found' },
+        error: { code: 'ALERT_NOT_FOUND', message: 'Alert not found'  }
       });
     }
 
@@ -379,9 +368,8 @@ async function handleSilenceAlert(req: NextApiRequest, res: NextApiResponse) {
         alertId,
         duration,
         reason,
-        until: new Date(Date.now() + duration * 1000).toISOString(),
-      },
-      meta: { timestamp: new Date().toISOString() },
+        until: new Date(Date.now() + duration * 1000).toISOString() },
+      meta: { timestamp: new Date().toISOString()  }
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -390,8 +378,7 @@ async function handleSilenceAlert(req: NextApiRequest, res: NextApiResponse) {
         error: {
           code: 'VALIDATION_ERROR',
           message: 'Invalid silence data',
-          details: error.errors,
-        },
+          details: error.errors },
       });
     }
     throw error;
@@ -404,7 +391,7 @@ async function handleResolveAlert(req: NextApiRequest, res: NextApiResponse) {
   if (!alertId || typeof alertId !== 'string') {
     return res.status(400).json({
       success: false,
-      error: { code: 'INVALID_ALERT_ID', message: 'Alert ID is required' },
+      error: { code: 'INVALID_ALERT_ID', message: 'Alert ID is required'  }
     });
   }
 
@@ -414,7 +401,7 @@ async function handleResolveAlert(req: NextApiRequest, res: NextApiResponse) {
   if (!alert) {
     return res.status(404).json({
       success: false,
-      error: { code: 'ALERT_NOT_FOUND', message: 'Alert not found' },
+      error: { code: 'ALERT_NOT_FOUND', message: 'Alert not found'  }
     });
   }
 
@@ -427,9 +414,8 @@ async function handleResolveAlert(req: NextApiRequest, res: NextApiResponse) {
     data: {
       resolved: true,
       alertId,
-      resolvedAt: alert.resolvedAt.toISOString(),
-    },
-    meta: { timestamp: new Date().toISOString() },
+      resolvedAt: alert.resolvedAt.toISOString() },
+    meta: { timestamp: new Date().toISOString()  }
   });
 }
 

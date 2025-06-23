@@ -143,7 +143,7 @@ async function getWorkflowState(req: NextApiRequest, res: NextApiResponse, conte
       processing: data.processing || false,
       lastError: data.last_error,
       createdAt: data.created_at,
-      updatedAt: data.updated_at},
+      updatedAt: data.updated_at }
     200,
     {
       requestId: context.requestId,
@@ -216,7 +216,7 @@ async function updateWorkflowState(
       processing: data.processing || false,
       lastError: data.last_error,
       createdAt: data.created_at,
-      updatedAt: data.updated_at},
+      updatedAt: data.updated_at }
     200,
     {
       requestId: context.requestId,
@@ -274,8 +274,7 @@ async function getWorkflowAssets(req: NextApiRequest, res: NextApiResponse, cont
       thumbnailUrl: 'https://example.com/image1_thumb.jpg',
       clientId: clientId || null,
       createdBy: context.user.id,
-      createdAt: new Date().toISOString()
-    },
+      createdAt: new Date().toISOString() }
     {
       id: 'asset2',
       name: 'Sample Video 1',
@@ -389,7 +388,7 @@ async function handleBrief(req: NextApiRequest, res: NextApiResponse, context: R
       briefId,
       status: 'processed',
       extractedData: {},
-        title: 'Extracted Campaign Title',
+  title: 'Extracted Campaign Title',
         objective: 'Campaign objective extracted from brief',
         targetAudience: 'Target audience identified'}},
     200,
@@ -548,7 +547,7 @@ async function getTemplates(req: NextApiRequest, res: NextApiResponse, context: 
       platform: platform || 'facebook',
       format: format || 'video',
       thumbnail: 'https://example.com/template2.jpg',
-      description: 'Eye-catching template for social media engagement'},
+      description: 'Eye-catching template for social media engagement' }
     {
       id: 'template_3',
       name: 'Minimalist Template',
@@ -683,7 +682,7 @@ async function getRenderStatus(req: NextApiRequest, res: NextApiResponse, contex
             ? 100
             : 0,
       outputUrl: status === 'completed' ? `https://example.com/renders/${renderId}.mp4` : null,
-      error: status === 'failed' ? 'Rendering failed due to template error' : null},
+      error: status === 'failed' ? 'Rendering failed due to template error' : null }
     200,
     {
       requestId: context.requestId,

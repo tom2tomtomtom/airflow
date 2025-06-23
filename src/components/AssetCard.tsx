@@ -24,8 +24,8 @@ export interface Asset {
   dateAdded: string;
   dateModified: string;
   isFavorite: boolean;
-  metadata: {},
-    fileSize: string;
+  metadata: {
+        fileSize: string;
     dimensions?: string;
     duration?: string;
     format: string;
@@ -34,7 +34,8 @@ export interface Asset {
     license: string;
     usageRights: string;
     expirationDate?: string;
-  };
+  
+      };
   performance?: {
     views: number;
     engagement: number;

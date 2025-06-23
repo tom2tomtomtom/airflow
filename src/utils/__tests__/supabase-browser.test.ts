@@ -38,8 +38,8 @@ describe('supabase-browser utilities', () => {
     };
     
     mockWindow = {
-      navigator: { userAgent: 'test-browser' },
-      addEventListener: jest.fn(),
+      navigator: { userAgent: 'test-browser'  },
+  addEventListener: jest.fn(),
       removeEventListener: jest.fn()
     };
     
@@ -497,7 +497,7 @@ describe('supabase-browser utilities', () => {
       const mockClient = {
         from: jest.fn(),
         auth: {},
-          getSession: jest.fn(),
+  getSession: jest.fn(),
           signIn: jest.fn(),
           signOut: jest.fn()
         }

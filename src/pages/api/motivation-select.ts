@@ -7,8 +7,7 @@ const MotivationSelectSchema = z.object({
   strategy_id: z.string().uuid(),
   selected: z.array(z.number()), // indices of selected motivations
   custom: z.array(z.string()).optional(),
-  user_id: z.string().uuid(),
-});
+  user_id: z.string().uuid() });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   if (req.method !== 'POST') {
@@ -29,8 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       selected,
       custom,
       user_id,
-      created_at: new Date().toISOString(),
-    })
+      created_at: new Date().toISOString() })
     .select()
     .single();
   if (error) {

@@ -240,7 +240,6 @@ export const API_ENDPOINTS = {
   ANALYTICS_PERFORMANCE: '/api/analytics/performance',
 
   // Health
-  HEALTH: '/api/health',
-} as const;
+  HEALTH: '/api/health' } as const;
 
 export type ApiEndpoint = (typeof API_ENDPOINTS)[keyof typeof API_ENDPOINTS];

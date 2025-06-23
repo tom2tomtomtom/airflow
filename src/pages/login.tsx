@@ -101,7 +101,7 @@ const LoginPage: React.FC = () => {
 
   return (
     <>
-      <Head>
+       <Head>
         <title>Login | AIrFLOW</title>
       </Head>
       <Box
@@ -111,8 +111,7 @@ const LoginPage: React.FC = () => {
           alignItems: 'center',
           justifyContent: 'center',
           backgroundColor: '#030712', // Carbon Black primary background
-          padding: 3,
-        }}
+          padding: 3 }}
       >
         <Paper
           elevation={24}
@@ -120,8 +119,7 @@ const LoginPage: React.FC = () => {
             p: 4,
             maxWidth: 400,
             width: '100%',
-            borderRadius: 3,
-          }}
+            borderRadius: 3 }}
         >
           <Box sx={{ textAlign: 'center', mb: 4 }}>
             <Typography
@@ -134,8 +132,7 @@ const LoginPage: React.FC = () => {
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                mb: 1,
-              }}
+                mb: 1 }}
             >
               AIrFLOW
             </Typography>
@@ -240,8 +237,7 @@ const LoginPage: React.FC = () => {
                 },
                 '&:disabled': {
                   backgroundColor: '#6B7280',
-                  color: '#9CA3AF',
-                },
+                  color: '#9CA3AF' },
               }}
             >
               {loading ? (

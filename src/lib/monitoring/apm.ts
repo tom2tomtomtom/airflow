@@ -7,7 +7,7 @@ const logger = getLogger('apm');
 
 export interface APMConfig {
   sentry: {},
-    enabled: boolean;
+  enabled: boolean;
     dsn: string;
     environment: string;
     release?: string;
@@ -15,7 +15,7 @@ export interface APMConfig {
     profilesSampleRate: number;
   };
   datadog: {},
-    enabled: boolean;
+  enabled: boolean;
     host: string;
     port: number;
     prefix: string;
@@ -59,15 +59,14 @@ export class APMManager {
     
     return {
       sentry: {},
-        enabled: monitoring.sentry?.enabled || false,
+  enabled: monitoring.sentry?.enabled || false,
         dsn: monitoring.sentry?.dsn || '',
         environment: process.env.NODE_ENV || 'development',
         release: process.env.VERCEL_GIT_COMMIT_SHA || process.env.APP_VERSION,
         tracesSampleRate: monitoring.sentry?.tracesSampleRate || 0.1,
-        profilesSampleRate: monitoring.sentry?.profilesSampleRate || 0.1
-      },
-      datadog: {},
-        enabled: monitoring.datadog?.enabled || false,
+        profilesSampleRate: monitoring.sentry?.profilesSampleRate || 0.1 },
+  datadog: {},
+  enabled: monitoring.datadog?.enabled || false,
         host: monitoring.datadog?.host || 'localhost',
         port: monitoring.datadog?.port || 8125,
         prefix: monitoring.datadog?.prefix || 'airwave.',
@@ -331,8 +330,8 @@ export class APMManager {
     datadog: { enabled: boolean; healthy: boolean };
   }> {
     const result = {
-      sentry: { enabled: this.config.sentry.enabled, healthy: false },
-      datadog: { enabled: this.config.datadog.enabled, healthy: false }
+      sentry: { enabled: this.config.sentry.enabled, healthy: false  },
+  datadog: { enabled: this.config.datadog.enabled, healthy: false }
     };
     
     // Check Sentry
@@ -454,11 +453,10 @@ export const createAPMMiddleware = () => {
       trace.finish({
         success: res.statusCode < 400,
         tags: {},
-          method: req.method,
+  method: req.method,
           status_code: res.statusCode.toString(),
-          route: req.route?.path || req.path
-        },
-        user: req.user ? {
+          route: req.route?.path || req.path },
+  user: req.user ? {
           id: req.user.id,
           email: req.user.email,
           clientId: req.user.clientId

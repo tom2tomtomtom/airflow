@@ -11,7 +11,7 @@ import { PDFExtract } from 'pdf.js-extract';
 
 export const config = {
   api: {},
-    bodyParser: false}};
+  bodyParser: false}};
 
 // Request schema
 const BriefUploadSchema = z.object({
@@ -166,7 +166,7 @@ export default async function handler(
       success: true,
       message: 'Brief uploaded successfully. AI parsing in progress.',
       brief: {},
-        id: brief.id,
+  id: brief.id,
         name: brief.name,
         document_url: brief.document_url,
         parsing_status: brief.parsing_status}});
@@ -186,8 +186,10 @@ async function parseBriefAsync(briefId: string, content: string): Promise<void> 
     // Make API call to parse endpoint
     await fetch(`${env.NEXT_PUBLIC_API_URL}/api/briefs/parse`, {
       method: 'POST',
-      headers: {},
-        'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json'
+      
+      },
       body: JSON.stringify({
         brief_id: briefId,
         content})});

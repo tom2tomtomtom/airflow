@@ -150,7 +150,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     count: accessibleExecutions.length,
     statistics,
     pagination: {},
-      limit: filters.limit,
+  limit: filters.limit,
       offset: filters.offset,
       total: count || 0
     }
@@ -190,12 +190,12 @@ async function getExecutionAnalytics(executionId: string): Promise<any> {
 
     return {
       has_data: true,
-      summary: {},
+      summary: { }
         ...totals,
         ctr: Math.round(ctr * 100) / 100,
         cpc: Math.round(cpc * 100) / 100,
-        conversion_rate: Math.round(conversionRate * 100) / 100},
-      daily_data: analytics.map((record: any) => ({
+        conversion_rate: Math.round(conversionRate * 100) / 100 },
+  daily_data: analytics.map((record: any) => ({
         date: record.date,
         impressions: record.impressions || 0,
         clicks: record.clicks || 0,

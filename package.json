@@ -18,7 +18,7 @@
     "test:types": "node scripts/test-types.js",
     "fix:types": "node scripts/migrate-types.js && npm run type-check:phase1",
     "postinstall": "echo 'Install complete'",
-    "prepare": "echo 'Prepare complete'",
+    "prepare": "husky",
     "workers": "tsx workers/index.ts",
     "worker:render": "tsx workers/index.ts --only=render",
     "worker:email": "tsx workers/index.ts --only=email",
@@ -90,8 +90,7 @@
     "pre-push": "npm run ci:check",
     "fix:lint": "node scripts/fix-lint-issues.js",
     "analyze:bundle": "node scripts/analyze-bundle.js",
-    "audit:security": "node scripts/security-audit.js",
-    "prepare": "husky"
+    "audit:security": "node scripts/security-audit.js"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -192,6 +191,7 @@
     "react-hook-form": "^7.58.1",
     "react-swipeable": "^7.0.2",
     "recharts": "^2.15.3",
+    "redis": "^5.5.6",
     "resend": "^4.5.1",
     "sharp": "^0.34.2",
     "swagger-ui-react": "^5.25.2",

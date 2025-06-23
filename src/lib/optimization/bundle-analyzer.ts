@@ -52,7 +52,7 @@ export interface BundleAnalysis {
   }>;
   recommendations: BundleRecommendation[];
   treeshaking: {},
-    eliminatedModules: string[];
+  eliminatedModules: string[];
     unusedExports: Array<{
       module: string;
       exports: string[];
@@ -174,7 +174,7 @@ export class BundleAnalyzer {
     previousAnalysis: BundleAnalysis
   ): Promise<{
     sizeChange: {},
-      total: number;
+  total: number;
       chunks: Array<{ name: string; change: number }>;
       assets: Array<{ name: string; change: number }>;
     };
@@ -330,10 +330,10 @@ export class BundleAnalyzer {
     
     // Add common modules that are likely present
     const commonModules = [
-      { name: 'react', estimatedSize: 45 * 1024 },
-      { name: 'react-dom', estimatedSize: 120 * 1024 },
-      { name: 'next', estimatedSize: 200 * 1024 },
-      { name: '@babel/runtime', estimatedSize: 30 * 1024 },
+      { name: 'react', estimatedSize: 45 * 1024  }
+      { name: 'react-dom', estimatedSize: 120 * 1024  }
+      { name: 'next', estimatedSize: 200 * 1024  }
+      { name: '@babel/runtime', estimatedSize: 30 * 1024  }
       { name: 'regenerator-runtime', estimatedSize: 15 * 1024 }
     ];
     

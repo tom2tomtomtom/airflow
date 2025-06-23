@@ -57,7 +57,7 @@ export async function sendDataDeletionEmail(to: string): Promise<void> {
 export async function sendRenderCompleteEmail(
   to: string,
   renderDetails: {},
-    id: string;
+  id: string;
     name: string;
     downloadUrl?: string;
     status: string;

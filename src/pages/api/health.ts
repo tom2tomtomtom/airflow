@@ -22,12 +22,12 @@ interface HealthCheckResponse {
   uptime: number;
   environment: string;
   deployment: {},
-    platform: string;
+  platform: string;
     region: string;
     commit?: string;
   };
   checks: {},
-    database: ServiceCheck;
+  database: ServiceCheck;
     redis: ServiceCheck;
     storage: ServiceCheck;
     creatomate: ServiceCheck;
@@ -35,7 +35,7 @@ interface HealthCheckResponse {
     ai_services: ServiceCheck;
   };
   performance: {},
-    memory_usage: number;
+  memory_usage: number;
     cpu_load?: number;
     response_time: number;
   };
@@ -116,7 +116,7 @@ async function checkStorage(): Promise<ServiceCheck> {
       const s3Client = new S3Client({
         region: process.env.AWS_REGION || 'us-east-1',
         credentials: {},
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
           secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!}});
 
       const command = new HeadBucketCommand({
@@ -164,8 +164,9 @@ async function checkCreatomate(): Promise<ServiceCheck> {
   try {
     const response = await fetch('https://api.creatomate.com/v1/templates', {
       method: 'GET',
-      headers: {},
-        Authorization: `Bearer ${process.env.CREATOMATE_API_KEY}`},
+      headers: {
+        Authorization: `Bearer ${process.env.CREATOMATE_API_KEY
+      }`},
       signal: AbortSignal.timeout(5000), // 5 second timeout
     });
 
@@ -305,12 +306,12 @@ export default async function handler(
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'development',
     deployment: {},
-      platform: process.env.VERCEL ? 'Vercel' : process.env.NETLIFY ? 'Netlify' : 'Unknown',
+  platform: process.env.VERCEL ? 'Vercel' : process.env.NETLIFY ? 'Netlify' : 'Unknown',
       region: process.env.VERCEL_REGION || process.env.AWS_REGION || 'Unknown',
-      commit: process.env.VERCEL_GIT_COMMIT_SHA || process.env.COMMIT_REF || undefined},
+      commit: process.env.VERCEL_GIT_COMMIT_SHA || process.env.COMMIT_REF || undefined }
     checks,
     performance: {},
-      memory_usage: (process.memoryUsage().heapUsed / process.memoryUsage().heapTotal) * 100,
+  memory_usage: (process.memoryUsage().heapUsed / process.memoryUsage().heapTotal) * 100,
       response_time: Date.now() - startTime}};
 
   // Set appropriate status code - always return 200 for basic health check

@@ -9,13 +9,12 @@ export const demoAssets = [
     thumbnail_url: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=400',
     file_size: 524288,
     mime_type: 'image/jpeg',
-    dimensions: { width: 1920, height: 1080 },
-    tags: ['office', 'modern', 'workspace'],
+    dimensions: { width: 1920, height: 1080  },
+  tags: ['office', 'modern', 'workspace'],
     ai_generated: true,
     ai_prompt: 'Modern office space with natural lighting and minimalist design',
     created_at: new Date('2024-03-01').toISOString(),
-    updated_at: new Date('2024-03-01').toISOString(),
-  },
+    updated_at: new Date('2024-03-01').toISOString() },
   {
     id: '2',
     name: 'Team Collaboration',
@@ -24,13 +23,12 @@ export const demoAssets = [
     thumbnail_url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400',
     file_size: 612432,
     mime_type: 'image/jpeg',
-    dimensions: { width: 1920, height: 1080 },
-    tags: ['team', 'collaboration', 'meeting'],
+    dimensions: { width: 1920, height: 1080  },
+  tags: ['team', 'collaboration', 'meeting'],
     ai_generated: true,
     ai_prompt: 'Diverse team collaborating in a bright conference room',
     created_at: new Date('2024-03-02').toISOString(),
-    updated_at: new Date('2024-03-02').toISOString(),
-  },
+    updated_at: new Date('2024-03-02').toISOString() },
   {
     id: '3',
     name: 'Product Showcase',
@@ -39,13 +37,12 @@ export const demoAssets = [
     thumbnail_url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400',
     file_size: 445632,
     mime_type: 'image/jpeg',
-    dimensions: { width: 1920, height: 1080 },
-    tags: ['product', 'headphones', 'tech'],
+    dimensions: { width: 1920, height: 1080  },
+  tags: ['product', 'headphones', 'tech'],
     ai_generated: true,
     ai_prompt: 'Minimalist product photography of premium headphones',
     created_at: new Date('2024-03-03').toISOString(),
-    updated_at: new Date('2024-03-03').toISOString(),
-  },
+    updated_at: new Date('2024-03-03').toISOString() },
 
   // Uploaded Assets
   {
@@ -56,12 +53,11 @@ export const demoAssets = [
     thumbnail_url: 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?w=400',
     file_size: 156789,
     mime_type: 'image/png',
-    dimensions: { width: 512, height: 512 },
-    tags: ['logo', 'brand', 'company'],
+    dimensions: { width: 512, height: 512  },
+  tags: ['logo', 'brand', 'company'],
     ai_generated: false,
     created_at: new Date('2024-02-15').toISOString(),
-    updated_at: new Date('2024-02-15').toISOString(),
-  },
+    updated_at: new Date('2024-02-15').toISOString() },
   {
     id: '5',
     name: 'Marketing Banner',
@@ -70,12 +66,11 @@ export const demoAssets = [
     thumbnail_url: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400',
     file_size: 892345,
     mime_type: 'image/jpeg',
-    dimensions: { width: 1920, height: 600 },
-    tags: ['banner', 'marketing', 'hero'],
+    dimensions: { width: 1920, height: 600  },
+  tags: ['banner', 'marketing', 'hero'],
     ai_generated: false,
     created_at: new Date('2024-02-20').toISOString(),
-    updated_at: new Date('2024-02-20').toISOString(),
-  },
+    updated_at: new Date('2024-02-20').toISOString() },
   {
     id: '6',
     name: 'Social Media Post',
@@ -84,12 +79,11 @@ export const demoAssets = [
     thumbnail_url: 'https://images.unsplash.com/photo-1432821596592-e2c18b78144f?w=400',
     file_size: 334567,
     mime_type: 'image/jpeg',
-    dimensions: { width: 1080, height: 1080 },
-    tags: ['social', 'instagram', 'post'],
+    dimensions: { width: 1080, height: 1080  },
+  tags: ['social', 'instagram', 'post'],
     ai_generated: false,
     created_at: new Date('2024-02-25').toISOString(),
-    updated_at: new Date('2024-02-25').toISOString(),
-  },
+    updated_at: new Date('2024-02-25').toISOString() },
 ];
 
 export const demoTemplates = [
@@ -107,8 +101,7 @@ export const demoTemplates = [
     performance_score: 0.92,
     is_public: true,
     created_at: new Date('2024-01-10').toISOString(),
-    updated_at: new Date('2024-03-01').toISOString(),
-  },
+    updated_at: new Date('2024-03-01').toISOString() },
   {
     id: '2',
     name: 'Facebook Post',
@@ -123,8 +116,7 @@ export const demoTemplates = [
     performance_score: 0.88,
     is_public: true,
     created_at: new Date('2024-01-12').toISOString(),
-    updated_at: new Date('2024-03-01').toISOString(),
-  },
+    updated_at: new Date('2024-03-01').toISOString() },
   {
     id: '3',
     name: 'YouTube Thumbnail',
@@ -139,8 +131,7 @@ export const demoTemplates = [
     performance_score: 0.95,
     is_public: true,
     created_at: new Date('2024-01-15').toISOString(),
-    updated_at: new Date('2024-03-01').toISOString(),
-  },
+    updated_at: new Date('2024-03-01').toISOString() },
   {
     id: '4',
     name: 'LinkedIn Article Header',
@@ -155,8 +146,7 @@ export const demoTemplates = [
     performance_score: 0.82,
     is_public: true,
     created_at: new Date('2024-01-20').toISOString(),
-    updated_at: new Date('2024-03-01').toISOString(),
-  },
+    updated_at: new Date('2024-03-01').toISOString() },
   {
     id: '5',
     name: 'Twitter/X Post',
@@ -171,8 +161,7 @@ export const demoTemplates = [
     performance_score: 0.9,
     is_public: true,
     created_at: new Date('2024-01-25').toISOString(),
-    updated_at: new Date('2024-03-01').toISOString(),
-  },
+    updated_at: new Date('2024-03-01').toISOString() },
 ];
 
 export const demoClients = [
@@ -188,8 +177,7 @@ export const demoClients = [
     website: 'https://acme.example.com',
     is_active: true,
     created_at: new Date('2024-01-01').toISOString(),
-    updated_at: new Date('2024-03-01').toISOString(),
-  },
+    updated_at: new Date('2024-03-01').toISOString() },
   {
     id: '2',
     name: 'Green Earth Co.',
@@ -202,8 +190,7 @@ export const demoClients = [
     website: 'https://greenearth.example.com',
     is_active: true,
     created_at: new Date('2024-01-15').toISOString(),
-    updated_at: new Date('2024-03-01').toISOString(),
-  },
+    updated_at: new Date('2024-03-01').toISOString() },
 ];
 
 export const demoCampaigns = [
@@ -220,8 +207,7 @@ export const demoCampaigns = [
     objective: 'Increase brand awareness and drive pre-orders',
     tags: ['product-launch', 'q2-2024', 'digital'],
     created_at: new Date('2024-02-01').toISOString(),
-    updated_at: new Date('2024-03-01').toISOString(),
-  },
+    updated_at: new Date('2024-03-01').toISOString() },
   {
     id: '2',
     client_id: '2',
@@ -235,6 +221,5 @@ export const demoCampaigns = [
     objective: 'Raise awareness about sustainable practices',
     tags: ['earth-day', 'sustainability', 'awareness'],
     created_at: new Date('2024-02-15').toISOString(),
-    updated_at: new Date('2024-03-01').toISOString(),
-  },
+    updated_at: new Date('2024-03-01').toISOString() },
 ];

@@ -171,7 +171,7 @@ export const CopyGenerationStep: React.FC<CopyGenerationStepProps> = ({ onNext, 
                 sx={{
                   display: 'grid',
                   gap: 2,
-                  gridTemplateColumns: { xs: '1fr', md: '1fr 1fr', lg: '1fr 1fr 1fr' },
+                  gridTemplateColumns: { xs: '1fr', md: '1fr 1fr', lg: '1fr 1fr 1fr'  }
                 }}
               >
                 {copies.map((copy: any) => (
@@ -187,8 +187,7 @@ export const CopyGenerationStep: React.FC<CopyGenerationStepProps> = ({ onNext, 
                         '&:hover': {
                           borderColor: 'primary.main',
                           transform: 'translateY(-2px)',
-                          boxShadow: 2,
-                        },
+                          boxShadow: 2 },
                       }}
                       onClick={() => handleSelectCopy(copy.id)}
                     >
@@ -212,8 +211,7 @@ export const CopyGenerationStep: React.FC<CopyGenerationStepProps> = ({ onNext, 
                                 display: '-webkit-box',
                                 WebkitLineClamp: 4,
                                 WebkitBoxOrient: 'vertical',
-                                overflow: 'hidden',
-                              }}
+                                overflow: 'hidden' }}
                             >
                               {copy.text}
                             </Typography>
@@ -225,8 +223,7 @@ export const CopyGenerationStep: React.FC<CopyGenerationStepProps> = ({ onNext, 
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
-                            mt: 'auto',
-                          }}
+                            mt: 'auto' }}
                         >
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                             {copy.selected && (

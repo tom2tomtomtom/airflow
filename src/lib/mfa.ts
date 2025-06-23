@@ -69,8 +69,7 @@ export async function setupMFA(userId: string, userEmail: string): Promise<MFASe
     backup_codes_encrypted: await encryptBackupCodes(backupCodes),
     is_enabled: false, // User needs to verify first
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  });
+    updated_at: new Date().toISOString() });
 
   if (error) {
     throw new Error(`Failed to setup MFA: ${error.message}`);
@@ -120,8 +119,7 @@ export async function verifyAndEnableMFA(
       .update({
         is_enabled: true,
         verified_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString() })
       .eq('user_id', userId);
 
     if (updateError) {
@@ -172,8 +170,7 @@ export async function validateMFAToken(
         .update({
           used_backup_codes: updatedUsedCodes,
           last_used_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
+          updated_at: new Date().toISOString() })
         .eq('user_id', userId);
 
       if (updateError) {
@@ -195,8 +192,7 @@ export async function validateMFAToken(
         .from('user_mfa')
         .update({
           last_used_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
+          updated_at: new Date().toISOString() })
         .eq('user_id', userId);
 
       if (updateError) {
@@ -255,8 +251,7 @@ export async function disableMFA(
       .update({
         is_enabled: false,
         disabled_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString() })
       .eq('user_id', userId);
 
     if (error) {
@@ -293,8 +288,7 @@ export async function regenerateBackupCodes(
       .update({
         backup_codes_encrypted: await encryptBackupCodes(newBackupCodes),
         used_backup_codes: [], // Reset used codes
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString() })
       .eq('user_id', userId);
 
     if (error) {

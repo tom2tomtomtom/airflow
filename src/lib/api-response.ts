@@ -51,7 +51,7 @@ export function successResponse<T>(
     success: true,
     data,
     meta: {},
-      timestamp: new Date().toISOString(),
+  timestamp: new Date().toISOString(),
       ...meta}};
   
   res.status(statusCode).json(response);
@@ -68,11 +68,11 @@ export function errorResponse(
   const response: ApiResponse = {
     success: false,
     error: {},
-      code,
+  code,
       message,
       ...(details && { details })},
     meta: {},
-      timestamp: new Date().toISOString()}};
+  timestamp: new Date().toISOString()}};
   
   res.status(statusCode).json(response);
 }

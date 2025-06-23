@@ -127,9 +127,10 @@ export const useClients = () => {
 
       // Use credentials include to send cookies for authentication
       const response = await fetch('/api/clients', {
-        headers: {},
+        headers: {
           'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : Record<string, unknown>$1},
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
         credentials: 'include', // Include cookies for authentication
       });
 

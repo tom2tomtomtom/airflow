@@ -5,7 +5,7 @@ import Link from 'next/link';
 export default function PrivacyPolicy() {
   return (
     <>
-      <Head>
+       <Head>
         <title>Privacy Policy - AIrFLOW</title>
         <meta
           name="description"

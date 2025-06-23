@@ -23,7 +23,7 @@ export function withAuth(
 
       // Verify the token with Supabase
       const {
-        data: { user },
+        data: { user  }
         error,
       } = await supabase.auth.getUser(token);
 
@@ -47,8 +47,7 @@ export function withAuth(
       req.user = {
         id: user.id,
         email: user.email || '',
-        role: profile?.role || 'user',
-      };
+        role: profile?.role || 'user' };
 
       // Call the original handler
       return await handler(req, res);

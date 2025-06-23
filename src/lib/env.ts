@@ -147,8 +147,7 @@ const parseEnv = () => {
       ENABLE_AI_FEATURES: 'false',
       // Add client-safe defaults
       NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-    } as any;
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '' } as any;
   }
 
   try {
@@ -210,8 +209,7 @@ const parseEnv = () => {
           ALLOWED_ORIGINS: [],
           ENABLE_SOCIAL_PUBLISHING: 'false',
           ENABLE_VIDEO_GENERATION: 'false',
-          ENABLE_AI_FEATURES: 'false',
-        } as any;
+          ENABLE_AI_FEATURES: 'false' } as any;
       }
     }
     throw error;

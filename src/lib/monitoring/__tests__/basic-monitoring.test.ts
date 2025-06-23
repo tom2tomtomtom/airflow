@@ -154,10 +154,10 @@ describe('Basic Monitoring Tests', () => {
 
     test('should aggregate metrics over time', () => {
       const timeSeriesData = [
-        { timestamp: Date.now() - 3000, value: 100 },
-        { timestamp: Date.now() - 2000, value: 150 },
-        { timestamp: Date.now() - 1000, value: 120 },
-        { timestamp: Date.now(), value: 180 },
+        { timestamp: Date.now() - 3000, value: 100  }
+        { timestamp: Date.now() - 2000, value: 150  }
+        { timestamp: Date.now() - 1000, value: 120  }
+        { timestamp: Date.now(), value: 180  }
       ];
       
       const total = timeSeriesData.reduce((sum, point) => sum + point.value, 0);
@@ -228,11 +228,11 @@ describe('Basic Monitoring Tests', () => {
 
     test('should track error trends over time', () => {
       const errorTrend = [
-        { hour: 0, errors: 2 },
-        { hour: 1, errors: 1 },
-        { hour: 2, errors: 3 },
-        { hour: 3, errors: 0 },
-        { hour: 4, errors: 1 },
+        { hour: 0, errors: 2  }
+        { hour: 1, errors: 1  }
+        { hour: 2, errors: 3  }
+        { hour: 3, errors: 0  }
+        { hour: 4, errors: 1  }
       ];
       
       const totalErrors = errorTrend.reduce((sum, point) => sum + point.errors, 0);
@@ -333,9 +333,9 @@ describe('Basic Monitoring Tests', () => {
 
     test('should monitor service health', () => {
       const serviceHealth = {
-        'database': { status: 'healthy', responseTime: 45 },
-        'redis': { status: 'healthy', responseTime: 12 },
-        'openai': { status: 'degraded', responseTime: 2500 },
+        'database': { status: 'healthy', responseTime: 45  }
+        'redis': { status: 'healthy', responseTime: 12  }
+        'openai': { status: 'degraded', responseTime: 2500  }
         'creatomate': { status: 'healthy', responseTime: 150 }};
       
       const healthyServices = Object.entries(serviceHealth)

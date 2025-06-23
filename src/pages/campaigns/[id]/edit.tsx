@@ -31,8 +31,7 @@ const CampaignBasicInfo = dynamic(() => import('@/components/campaigns/CampaignB
       <CircularProgress />
     </Box>
   ),
-  ssr: false,
-});
+  ssr: false });
 
 const PlatformSelection = dynamic(() => import('@/components/campaigns/PlatformSelection'), {
   loading: () => (
@@ -40,8 +39,7 @@ const PlatformSelection = dynamic(() => import('@/components/campaigns/PlatformS
       <CircularProgress />
     </Box>
   ),
-  ssr: false,
-});
+  ssr: false });
 
 const CampaignSchedule = dynamic(() => import('@/components/campaigns/CampaignSchedule'), {
   loading: () => (
@@ -49,8 +47,7 @@ const CampaignSchedule = dynamic(() => import('@/components/campaigns/CampaignSc
       <CircularProgress />
     </Box>
   ),
-  ssr: false,
-});
+  ssr: false });
 
 const EditCampaign: React.FC = () => {
   const router = useRouter();
@@ -89,8 +86,7 @@ const EditCampaign: React.FC = () => {
           endDate: foundCampaign.end_date ? new Date(foundCampaign.end_date) : new Date(),
           frequency: foundCampaign.frequency || 'daily',
           estimatedPosts: foundCampaign.estimated_posts || '',
-          notes: foundCampaign.notes || '',
-        });
+          notes: foundCampaign.notes || '' });
       }
     }
   }, [campaigns, id]);
@@ -110,8 +106,7 @@ const EditCampaign: React.FC = () => {
         end_date: campaign.endDate,
         frequency: campaign.frequency,
         estimated_posts: campaign.estimatedPosts,
-        notes: campaign.notes,
-      });
+        notes: campaign.notes });
 
       showNotification('Campaign updated successfully!', 'success');
     } catch (error: any) {

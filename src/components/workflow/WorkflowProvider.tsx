@@ -22,8 +22,7 @@ export const WorkflowProvider: React.FC<WorkflowProviderProps> = ({ children }) 
   const { activeClient } = useClient();
   const [state, dispatch] = useReducer(workflowReducer, {
     ...initialWorkflowState,
-    clientId: activeClient?.id || null,
-  });
+    clientId: activeClient?.id || null });
 
   // Generate session ID for metrics tracking
   const sessionId = useMemo(() => {

@@ -52,15 +52,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   sendSSEMessage(res, 'connected', {
     connectionId,
     timestamp: Date.now(),
-    message: 'Real-time connection established',
-  });
+    message: 'Real-time connection established' });
 
   // Store connection
   connections.set(connectionId, {
     res,
     userId,
-    lastHeartbeat: Date.now(),
-  });
+    lastHeartbeat: Date.now() });
 
   // Send heartbeat every 30 seconds
   const heartbeatInterval = setInterval(() => {
@@ -117,8 +115,7 @@ export function broadcastRenderProgress(renderId: string, progress: number, user
     renderId,
     progress,
     status: progress === 100 ? 'completed' : 'rendering',
-    timestamp: Date.now(),
-  };
+    timestamp: Date.now() };
 
   if (userId) {
     broadcastToUser(userId, 'render_progress', data);
@@ -138,8 +135,7 @@ export function broadcastRenderComplete(
     assetId,
     url,
     status: 'completed',
-    timestamp: Date.now(),
-  };
+    timestamp: Date.now() };
 
   if (userId) {
     broadcastToUser(userId, 'render_complete', data);
@@ -159,8 +155,7 @@ export function broadcastNotification(
     title,
     message,
     type,
-    timestamp: Date.now(),
-  };
+    timestamp: Date.now() };
 
   if (userId) {
     broadcastToUser(userId, 'notification', data);
@@ -179,6 +174,5 @@ export function getConnectionStats() {
 
   return {
     totalConnections: connections.size,
-    userStats: Object.fromEntries(userStats),
-  };
+    userStats: Object.fromEntries(userStats) };
 }

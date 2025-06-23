@@ -16,7 +16,7 @@ const TestAuthPage: React.FC = () => {
     const checkAuthDirectly = async () => {
       const supabase = createSupabaseBrowserClient();
       const {
-        data: { session },
+        data: { session  }
         error,
       } = await supabase.auth.getSession();
       setBrowserCheck({ session, error });

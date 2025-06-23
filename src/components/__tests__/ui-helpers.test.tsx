@@ -191,10 +191,10 @@ describe('UI Helper Components', () => {
     it('should format status badges', () => {
       const getStatusConfig = (status: string) => {
         const configs: Record<string, { color: string; label: string }> = {
-          active: { color: 'green', label: 'Active' },
-          inactive: { color: 'gray', label: 'Inactive' },
-          pending: { color: 'yellow', label: 'Pending' },
-          error: { color: 'red', label: 'Error' }
+          active: { color: 'green', label: 'Active'  },
+  inactive: { color: 'gray', label: 'Inactive'  },
+  pending: { color: 'yellow', label: 'Pending'  },
+  error: { color: 'red', label: 'Error' }
         };
         
         return configs[status] || { color: 'gray', label: 'Unknown' };

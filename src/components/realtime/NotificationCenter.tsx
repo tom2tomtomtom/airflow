@@ -60,8 +60,7 @@ const NotificationCenter: React.FC = () => {
   const [settings, setSettings] = useState({
     soundEnabled: true,
     pushEnabled: true,
-    emailEnabled: false,
-  });
+    emailEnabled: false });
 
   const {
     notifications,
@@ -73,8 +72,7 @@ const NotificationCenter: React.FC = () => {
     refresh,
   } = useRealtime({
     enableNotifications: true,
-    pollInterval: 5000,
-  });
+    pollInterval: 5000 });
 
   const { showNotification } = useNotification();
 
@@ -198,7 +196,7 @@ const NotificationCenter: React.FC = () => {
                       : 'primary.main'
               }`,
               backgroundColor: notification.read ? 'transparent' : 'action.hover',
-              '&:hover': { backgroundColor: 'action.selected' },
+              '&:hover': { backgroundColor: 'action.selected'  }
             }}
           >
             <ListItemIcon>{getNotificationIcon(notification.type)}</ListItemIcon>
@@ -271,7 +269,7 @@ const NotificationCenter: React.FC = () => {
 
   return (
     <>
-      <IconButton color="inherit" onClick={handleClick} disabled={loading} aria-label="Icon button">
+       <IconButton color="inherit" onClick={handleClick} disabled={loading} aria-label="Icon button">
         {' '}
         <Badge badgeContent={unreadNotifications.length} color="error">
           <NotificationsIcon />
@@ -284,14 +282,12 @@ const NotificationCenter: React.FC = () => {
         onClose={handleClose}
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'right',
-        }}
+          horizontal: 'right' }}
         transformOrigin={{
           vertical: 'top',
-          horizontal: 'right',
-        }}
+          horizontal: 'right' }}
         PaperProps={{
-          sx: { width: 400, maxHeight: 600 },
+          sx: { width: 400, maxHeight: 600  }
         }}
       >
         <Box sx={{ p: 2 }}>

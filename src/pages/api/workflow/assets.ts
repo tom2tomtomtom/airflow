@@ -168,7 +168,7 @@ async function getWorkflowAssets(
       type: asset.type === 'voice' ? 'copy' : asset.type, // Map voice to copy for workflow
       url: asset.file_url,
       content: asset.type === 'text' ? asset.description : undefined,
-      metadata: {},
+      metadata: {
         ...asset.metadata,
         name: asset.name,
         description: asset.description,
@@ -179,8 +179,8 @@ async function getWorkflowAssets(
         duration: asset.duration,
         width: asset.dimensions?.width,
         height: asset.dimensions?.height,
-        dateCreated: asset.created_at},
-      selected: true}));
+        dateCreated: asset.created_at },
+  selected: true}));
 
     return successResponse(res, workflowAssets, 200, {
       timestamp: new Date().toISOString()

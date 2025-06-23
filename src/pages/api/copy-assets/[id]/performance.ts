@@ -164,26 +164,26 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
 
   return res.json({
     data: {},
-      asset_info: {},
-        id: asset.id,
+  asset_info: {},
+  id: asset.id,
         title: asset.title,
         type: asset.type,
         platform: asset.platform,
-        created_at: asset.created_at},
-      current_scores: {},
-        performance_score: asset.performance_score,
-        brand_compliance_score: asset.brand_compliance_score},
-      metrics: performanceMetrics,
+        created_at: asset.created_at },
+  current_scores: {},
+  performance_score: asset.performance_score,
+        brand_compliance_score: asset.brand_compliance_score },
+  metrics: performanceMetrics,
       usage_stats: {},
-        total_campaigns: usageStats?.length || 0,
+  total_campaigns: usageStats?.length || 0,
         active_campaigns: usageStats?.filter((u: any) => u.status === 'active').length || 0,
-        campaigns: usageStats || []},
-      comparative_performance: comparativePerformance,
+        campaigns: usageStats || [] },
+  comparative_performance: comparativePerformance,
       trend_analysis: trendAnalysis,
       insights,
       predictions,
       period: {},
-        start_date: startDate.toISOString(),
+  start_date: startDate.toISOString(),
         end_date: endDate.toISOString(),
         period_label: period}
     }
@@ -244,7 +244,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
     updateData.metadata = {
       ...currentAsset?.metadata,
       performance_update: {},
-        timestamp: new Date().toISOString(),
+  timestamp: new Date().toISOString(),
         updated_by: user.id,
         engagement_metrics,
         conversion_metrics,
@@ -410,12 +410,12 @@ function generatePerformancePredictions(metrics: any, trend: any): any {
 
   return {
     next_7_days: {},
-      expected_ctr: Math.round(currentCTR * Math.pow(trendMultiplier, 0.25) * 100) / 100,
-      confidence: trend.confidence * 0.8},
-    next_30_days: {},
-      expected_ctr: Math.round(currentCTR * trendMultiplier * 100) / 100,
-      confidence: trend.confidence * 0.6},
-    methodology: 'Predictions based on historical trend analysis and performance indicators'};
+  expected_ctr: Math.round(currentCTR * Math.pow(trendMultiplier, 0.25) * 100) / 100,
+      confidence: trend.confidence * 0.8 },
+  next_30_days: {},
+  expected_ctr: Math.round(currentCTR * trendMultiplier * 100) / 100,
+      confidence: trend.confidence * 0.6 },
+  methodology: 'Predictions based on historical trend analysis and performance indicators'};
 }
 
 export default withAuth(withSecurityHeaders(handler));

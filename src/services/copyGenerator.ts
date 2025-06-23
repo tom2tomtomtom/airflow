@@ -32,15 +32,16 @@ export interface CopySet {
   variants: CopyVariant[];
   generatedAt: Date;
   version: number;
-  metadata: {},
-    totalVariants: number;
+  metadata: {
+        totalVariants: number;
     typeDistribution: Record<string, number>;
     toneDistribution: Record<string, number>;
     platformDistribution: Record<string, number>;
     averageConfidence: number;
     averageEmotionalImpact: number;
     diversityScore: number;
-  };
+  
+      };
 }
 
 export interface CopyGenerationOptions {
@@ -81,12 +82,12 @@ export class CopyGenerator {
   ];
 
   private readonly CHARACTER_LIMITS = {
-    headline: { short: 30, medium: 60, long: 90 },
-    subheadline: { short: 50, medium: 100, long: 150 },
-    body: { short: 100, medium: 250, long: 500 },
-    cta: { short: 15, medium: 25, long: 40 },
-    tagline: { short: 20, medium: 40, long: 60 },
-    social: { short: 140, medium: 280, long: 500 }
+    headline: { short: 30, medium: 60, long: 90  },
+  subheadline: { short: 50, medium: 100, long: 150  },
+  body: { short: 100, medium: 250, long: 500  },
+  cta: { short: 15, medium: 25, long: 40  },
+  tagline: { short: 20, medium: 40, long: 60  },
+  social: { short: 140, medium: 280, long: 500 }
   };
 
   async generateCopySet(
@@ -246,11 +247,10 @@ export class CopyGenerator {
     brief: ParsedBrief,
     motivation: PsychologicalMotivation,
     config: {},
-      type: CopyVariant['type'];
+  type: CopyVariant['type'];
       tone: CopyVariant['tone'];
       platform: CopyVariant['platform'];
-      format: CopyVariant['format'];
-    },
+      format: CopyVariant['format']; }
     brandVoice?: CopyGenerationOptions['brandVoice']
   ): string {
     const characterLimit = this.CHARACTER_LIMITS[config.type][config.format];
@@ -353,7 +353,7 @@ Do not include explanations or alternatives - just the final copy.
     response: string,
     motivationId: string,
     config: {},
-      type: CopyVariant['type'];
+  type: CopyVariant['type'];
       tone: CopyVariant['tone'];
       platform: CopyVariant['platform'];
       format: CopyVariant['format'];
@@ -400,12 +400,11 @@ Do not include explanations or alternatives - just the final copy.
   private calculateQualityScores(
     content: string,
     config: {},
-      type: CopyVariant['type'];
+  type: CopyVariant['type'];
       tone: CopyVariant['tone'];
       platform: CopyVariant['platform'];
-      format: CopyVariant['format'];
-    },
-    characterLimit: number
+      format: CopyVariant['format']; },
+  characterLimit: number
   ): {
     confidence: number;
     abTestSuitability: number;
@@ -593,7 +592,7 @@ Do not include explanations or alternatives - just the final copy.
   async refineCopySet(
     copySet: CopySet,
     refinements: {},
-      improveQuality?: boolean;
+  improveQuality?: boolean;
       adjustTone?: CopyVariant['tone'];
       focusPlatform?: CopyVariant['platform'];
       enhanceEmotionalImpact?: boolean;

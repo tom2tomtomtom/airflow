@@ -119,8 +119,8 @@ interface FileValidation {
   allowedTypes: typeof fileAllowedTypes;
   maxSizes: typeof fileMaxSizes;
   validate(
-    file: { type: string; size: number; name: string },
-    category: keyof typeof fileAllowedTypes
+    file: { type: string; size: number; name: string  },
+  category: keyof typeof fileAllowedTypes
   ): boolean;
 }
 
@@ -133,8 +133,8 @@ export const fileValidation: FileValidation = {
 
   // Validate file
   validate(
-    file: { type: string; size: number; name: string },
-    category: keyof typeof fileAllowedTypes
+    file: { type: string; size: number; name: string  },
+  category: keyof typeof fileAllowedTypes
   ) {
     const allowedTypes = fileAllowedTypes[category];
     const maxSize = fileMaxSizes[category];
@@ -311,7 +311,7 @@ export const sanitization = {
 
   // Complete input sanitization for API inputs
   sanitizeInput(input: string, options: {},
-    allowHTML?: boolean;
+  allowHTML?: boolean;
     maxLength?: number;
     removeControlChars?: boolean;
     normalizeUnicode?: boolean;
@@ -492,7 +492,7 @@ export const securityValidation = {
 
   // Validate and sanitize input comprehensively
   validateAndSanitize(input: string, options: {},
-    allowHTML?: boolean;
+  allowHTML?: boolean;
     maxLength?: number;
     checkMalicious?: boolean;
     throwOnMalicious?: boolean;
@@ -509,13 +509,13 @@ export const securityValidation = {
     // Check for malicious patterns
     if (checkMalicious) {
       const checks = [
-        { check: this.containsXSS(input), message: 'XSS patterns detected' },
-        { check: this.containsSQLInjection(input), message: 'SQL injection patterns detected' },
-        { check: this.containsPathTraversal(input), message: 'Path traversal patterns detected' },
-        { check: this.containsPrototypePollution(input), message: 'Prototype pollution patterns detected' },
-        { check: this.containsCommandInjection(input), message: 'Command injection patterns detected' },
-        { check: this.containsLDAPInjection(input), message: 'LDAP injection patterns detected' },
-        { check: this.containsNoSQLInjection(input), message: 'NoSQL injection patterns detected' },
+        { check: this.containsXSS(input), message: 'XSS patterns detected'  }
+        { check: this.containsSQLInjection(input), message: 'SQL injection patterns detected'  }
+        { check: this.containsPathTraversal(input), message: 'Path traversal patterns detected'  }
+        { check: this.containsPrototypePollution(input), message: 'Prototype pollution patterns detected'  }
+        { check: this.containsCommandInjection(input), message: 'Command injection patterns detected'  }
+        { check: this.containsLDAPInjection(input), message: 'LDAP injection patterns detected'  }
+        { check: this.containsNoSQLInjection(input), message: 'NoSQL injection patterns detected'  }
       ];
 
       for (const { check, message } of checks) {

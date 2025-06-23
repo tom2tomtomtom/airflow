@@ -88,9 +88,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       try {
         const parseResponse = await fetch(`${req.headers.origin}/api/brief-upload`, {
           method: 'POST',
-          headers: {},
-            'Content-Type': 'application/json',
-            'Authorization': req.headers.authorization || ''},
+          headers: {
+        'Content-Type': 'application/json',
+            'Authorization': req.headers.authorization || ''
+      },
           body: JSON.stringify({
             document_url: brief.document_url,
             reparse: true,
@@ -124,9 +125,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     try {
       const parseResponse = await fetch(`${req.headers.origin}/api/brief-parse`, {
         method: 'POST',
-        headers: {},
-          'Content-Type': 'application/json',
-          'Authorization': req.headers.authorization || ''},
+        headers: {
+        'Content-Type': 'application/json',
+          'Authorization': req.headers.authorization || ''
+      },
         body: JSON.stringify({
           brief_id: id,
           content: contentToparse,
@@ -139,7 +141,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       return res.json({
         message: 'Brief reparsing initiated successfully',
         data: {},
-          brief_id: id,
+  brief_id: id,
           name: brief.name,
           status: 'processing',
           estimated_completion: new Date(Date.now() + 2 * 60 * 1000).toISOString(), // 2 minutes estimate

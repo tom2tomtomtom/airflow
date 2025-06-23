@@ -105,11 +105,11 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, m
 
   return res.json({
     data: {},
-      motivation_id: motivationId,
+  motivation_id: motivationId,
       current_scores: {},
-        relevance_score: motivation.relevance_score,
-        effectiveness_rating: motivation.effectiveness_rating},
-      detailed_scoring: detailedScoring,
+  relevance_score: motivation.relevance_score,
+        effectiveness_rating: motivation.effectiveness_rating },
+  detailed_scoring: detailedScoring,
       comparative_scoring: comparativeScoring,
       scoring_history: scoringHistory,
       recommendations}
@@ -163,10 +163,10 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
     .update({
       relevance_score: autoScoring.overall_score,
       effectiveness_rating: autoScoring.effectiveness_rating,
-      generation_context: {},
+      generation_context: { }
         ...(motivation as any).generation_context,
         auto_scoring: {},
-          timestamp: new Date().toISOString(),
+  timestamp: new Date().toISOString(),
           scores: autoScoring.detailed_scores,
           calculated_by: user.id}
       },
@@ -183,7 +183,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
   return res.json({
     message: 'Motivation scoring calculated successfully',
     data: {},
-      motivation: updatedMotivation,
+  motivation: updatedMotivation,
       scoring_details: autoScoring}
   });
 }
@@ -239,7 +239,7 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, m
   updateData.generation_context = {
     ...motivation.generation_context,
     manual_scoring: {},
-      timestamp: new Date().toISOString(),
+  timestamp: new Date().toISOString(),
       scored_by: user.id,
       manual_override: scoreData.manual_override,
       scoring_context: scoreData.scoring_context,

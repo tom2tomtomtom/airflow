@@ -120,10 +120,10 @@ const LazyVideoGenerationSection: React.FC<LazyVideoGenerationSectionProps> = ({
                   max={120}
                   step={15}
                   marks={[
-                    { value: 15, label: '15s' },
-                    { value: 30, label: '30s' },
-                    { value: 60, label: '60s' },
-                    { value: 120, label: '2m' },
+                    { value: 15, label: '15s'  }
+                    { value: 30, label: '30s'  }
+                    { value: 60, label: '60s'  }
+                    { value: 120, label: '2m'  }
                   ]}
                   valueLabelDisplay="auto"
                 />
@@ -210,8 +210,7 @@ const LazyVideoGenerationSection: React.FC<LazyVideoGenerationSectionProps> = ({
                             backgroundColor: 'rgba(0, 0, 0, 0.6)',
                             borderRadius: 1,
                             px: 1,
-                            py: 0.5,
-                          }}
+                            py: 0.5 }}
                         >
                           <Typography variant="caption" color="white">
                             {video.duration}
@@ -236,8 +235,7 @@ const LazyVideoGenerationSection: React.FC<LazyVideoGenerationSectionProps> = ({
                               top: '50%',
                               left: '50%',
                               transform: 'translate(-50%, -50%)',
-                              opacity: 0.8,
-                            }}
+                              opacity: 0.8 }}
                           >
                             <IconButton
                               size="large"
@@ -261,8 +259,7 @@ const LazyVideoGenerationSection: React.FC<LazyVideoGenerationSectionProps> = ({
                               display: 'flex',
                               justifyContent: 'space-between',
                               alignItems: 'flex-start',
-                              mb: 1,
-                            }}
+                              mb: 1 }}
                           >
                             <Stack direction="row" spacing={0.5} alignItems="center">
                               <Chip
@@ -296,7 +293,7 @@ const LazyVideoGenerationSection: React.FC<LazyVideoGenerationSectionProps> = ({
                           <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                             {video.status === 'completed' && (
                               <>
-                                <Tooltip title="Download">
+       <Tooltip title="Download">
                                   <IconButton size="small">
                                     <DownloadIcon fontSize="small" />
                                   </IconButton>

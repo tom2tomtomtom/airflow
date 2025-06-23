@@ -26,7 +26,7 @@ export function render(ui: React.ReactElement, options = {}) {
 export const createMockRouter = (router: Record<string, unknown> = {}) => ({
   pathname: '/',
   route: '/',
-  query: {}
+  query: {},
   asPath: '/',
   push: vi.fn(),
   replace: vi.fn(),
@@ -37,7 +37,7 @@ export const createMockRouter = (router: Record<string, unknown> = {}) => ({
   events: {,
     on: vi.fn(),
     off: vi.fn(),
-    emit: vi.fn()},
+    emit: vi.fn() }
   ...router});
 
 export * from '@testing-library/react';

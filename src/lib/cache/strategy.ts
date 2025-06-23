@@ -173,9 +173,10 @@ class CacheManager {
     if (config.ttl > 30 * 60 * 1000 && this.browserCache) {
       try {
         const response = new Response(JSON.stringify(data), {
-          headers: {},
-            'Content-Type': 'application/json',
-            'Cache-Control': `max-age=${Math.floor(config.ttl / 1000)}`}});
+          headers: {
+        'Content-Type': 'application/json',
+            'Cache-Control': `max-age=${Math.floor(config.ttl / 1000)
+      }`}});
         await this.browserCache.put(`${namespace}:${key}`, response);
       } catch (error) {
         console.warn('Failed to set browser cache:', error);

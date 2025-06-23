@@ -64,9 +64,9 @@ describe('Sentry Integration Tests', () => {
       
       const error = new Error('Context error');
       const context = {
-        user: { id: 'user123', email: 'test@example.com' },
-        request: { url: '/api/campaigns', method: 'POST' },
-        extra: { campaignId: 'campaign456' }};
+        user: { id: 'user123', email: 'test@example.com'  },
+  request: { url: '/api/campaigns', method: 'POST'  },
+  extra: { campaignId: 'campaign456' }};
       
       Sentry.withScope((scope) => {
         scope.setTag('error_type', 'api_error');
@@ -262,7 +262,7 @@ describe('Sentry Integration Tests', () => {
         category: 'navigation',
         level: 'info',
         data: {},
-          from: '/dashboard',
+  from: '/dashboard',
           to: '/campaigns',
           method: 'click'}});
       
@@ -271,7 +271,7 @@ describe('Sentry Integration Tests', () => {
         category: 'navigation',
         level: 'info',
         data: {},
-          from: '/dashboard',
+  from: '/dashboard',
           to: '/campaigns',
           method: 'click'}});
     });
@@ -285,7 +285,7 @@ describe('Sentry Integration Tests', () => {
         category: 'http',
         level: 'info',
         data: {},
-          url: '/api/campaigns',
+  url: '/api/campaigns',
           method: 'POST',
           status_code: 201,
           response_time: 450}});
@@ -295,7 +295,7 @@ describe('Sentry Integration Tests', () => {
         category: 'http',
         level: 'info',
         data: {},
-          url: '/api/campaigns',
+  url: '/api/campaigns',
           method: 'POST',
           status_code: 201,
           response_time: 450}});
@@ -310,7 +310,7 @@ describe('Sentry Integration Tests', () => {
         category: 'user',
         level: 'info',
         data: {},
-          action: 'upload',
+  action: 'upload',
           asset_type: 'image',
           file_size: 1024000,
           file_name: 'logo.png'}});
@@ -320,7 +320,7 @@ describe('Sentry Integration Tests', () => {
         category: 'user',
         level: 'info',
         data: {},
-          action: 'upload',
+  action: 'upload',
           asset_type: 'image',
           file_size: 1024000,
           file_name: 'logo.png'}});
@@ -331,8 +331,8 @@ describe('Sentry Integration Tests', () => {
     test('should handle client-side configuration', () => {
       // Mock client environment
       Object.defineProperty(window, 'location', {
-        value: { origin: 'https://app.airwave.com' },
-        writable: true});
+        value: { origin: 'https://app.airwave.com'  },
+  writable: true});
       
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const Sentry = require('@sentry/nextjs');

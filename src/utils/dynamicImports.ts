@@ -31,7 +31,7 @@ const ErrorFallback = ({ error }: { error?: Error }) => (
 export function createLazyComponent<T = {}>(
   importFn: () => Promise<{ default: ComponentType<T> }>,
   options: {},
-    fallback?: ComponentType;
+  fallback?: ComponentType;
     errorFallback?: ComponentType<{ error?: Error }>;
     ssr?: boolean;
   } = {}

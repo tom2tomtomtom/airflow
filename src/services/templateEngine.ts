@@ -108,7 +108,7 @@ export interface ComponentVariation {
   name: string;
   description: string;,
   changes: {},
-    position?: Partial<TemplateComponent['position']>;
+  position?: Partial<TemplateComponent['position']>;
     styling?: Partial<TemplateComponent['styling']>;
     content?: Partial<ComponentContent>;
   };
@@ -125,7 +125,7 @@ export interface PopulatedTemplate {
   selectedMotivation: PsychologicalMotivation;
   customizations: TemplateCustomization[];,
   renderData: {},
-    html?: string;
+  html?: string;
     css?: string;
     js?: string;
     svg?: string;
@@ -145,7 +145,7 @@ export interface PopulatedTemplate {
 export interface PopulatedComponent {
   componentId: string;,
   content: {},
-    text?: string;
+  text?: string;
     assetUrl?: string;
     assetId?: string;
     generatedData?: any;
@@ -197,7 +197,7 @@ export class TemplateEngine {
       template: CampaignTemplate;
       matchScore: number;,
       compatibility: {},
-        assets: number;,
+  assets: number;,
         copy: number;
         platform: number;,
         overall: number;
@@ -389,7 +389,7 @@ export class TemplateEngine {
     baseTemplate: CampaignTemplate,
     name: string,
     modifications: {},
-      components?: Partial<TemplateComponent>[];
+  components?: Partial<TemplateComponent>[];
       designSystem?: Partial<CampaignTemplate['designSystem']>;
       requirements?: Partial<CampaignTemplate['requirements']>;
     }
@@ -653,9 +653,9 @@ export class TemplateEngine {
     for (const component of components) {
       const populatedComponent: PopulatedComponent = {;
         componentId: component.id,
-        content: {}
-        finalStyling: { ...component.styling },
-        finalPosition: { ...component.position }
+        content: {},
+  finalStyling: { ...component.styling  },
+  finalPosition: { ...component.position }
       };
       
       // Populate based on component content type
@@ -959,54 +959,52 @@ document.addEventListener('DOMContentLoaded', function() {
         category: 'social',
         platform: 'instagram',
         format: 'story',
-        dimensions: { width: 1080, height: 1920, aspectRatio: '9:16' },
-        components: [
+        dimensions: { width: 1080, height: 1920, aspectRatio: '9:16'  },
+  components: [
           {
             id: 'bg-1',
             type: 'background',
             name: 'Background',
             description: 'Main background',
-            position: { x: 0, y: 0, width: 100, height: 100, unit: '%' },
-            styling: { backgroundColor: '#ffffff' },
-            content: { type: 'asset', assetType: 'image', assetCategory: 'background' },
-            constraints: { required: true, editable: true, resizable: false, moveable: false }
+            position: { x: 0, y: 0, width: 100, height: 100, unit: '%'  },
+  styling: { backgroundColor: '#ffffff'  },
+  content: { type: 'asset', assetType: 'image', assetCategory: 'background'  },
+  constraints: { required: true, editable: true, resizable: false, moveable: false }
           },
           {
             id: 'headline-1',
             type: 'text',
             name: 'Headline',
             description: 'Main headline text',
-            position: { x: 10, y: 20, width: 80, height: 15, unit: '%' },
-            styling: { fontSize: 32, fontWeight: 'bold', color: '#000000', textAlign: 'center' },
-            content: { type: 'copy', copyType: 'headline', placeholder: 'Your headline here' },
-            constraints: { required: true, editable: true, resizable: true, moveable: true, maxLength: 60 }
+            position: { x: 10, y: 20, width: 80, height: 15, unit: '%'  },
+  styling: { fontSize: 32, fontWeight: 'bold', color: '#000000', textAlign: 'center'  },
+  content: { type: 'copy', copyType: 'headline', placeholder: 'Your headline here'  },
+  constraints: { required: true, editable: true, resizable: true, moveable: true, maxLength: 60 }
           },
           {
             id: 'cta-1',
             type: 'button',
             name: 'Call to Action',
             description: 'Action button',
-            position: { x: 25, y: 75, width: 50, height: 8, unit: '%' },
-            styling: { backgroundColor: '#007AFF', color: '#ffffff', borderRadius: 25, fontSize: 18 },
-            content: { type: 'copy', copyType: 'cta', placeholder: 'Get Started' },
-            constraints: { required: true, editable: true, resizable: true, moveable: true, maxLength: 25 }
+            position: { x: 25, y: 75, width: 50, height: 8, unit: '%'  },
+  styling: { backgroundColor: '#007AFF', color: '#ffffff', borderRadius: 25, fontSize: 18  },
+  content: { type: 'copy', copyType: 'cta', placeholder: 'Get Started'  },
+  constraints: { required: true, editable: true, resizable: true, moveable: true, maxLength: 25 }
           }
         ],
         designSystem: {
           colorScheme: 'primary',
           typography: { primary: 'Arial', secondary: 'Arial', hierarchy: ['h1', 'h2', 'p'] },
           spacing: { unit: 8, scale: [1, 2, 3, 4, 6, 8, 12] },
-          layout: 'absolute'
-        },
-        requirements: {
+          layout: 'absolute' },
+  requirements: {
           minAssets: 1,
           maxAssets: 3,
           requiredAssetTypes: ['image'],
           copyTypes: ['headline', 'cta'],
           minCopyLength: 10,
-          maxCopyLength: 100
-        },
-        metadata: {
+          maxCopyLength: 100 },
+  metadata: {
           usage: 'promotional',
           difficulty: 'beginner',
           estimatedTime: 15,

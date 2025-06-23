@@ -41,8 +41,7 @@ export const initialWorkflowState: WorkflowState = {
   showBriefReview: false,
   briefConfirmed: false,
   lastError: null,
-  clientId: null,
-};
+  clientId: null };
 
 // Reducer
 export function workflowReducer(state: WorkflowState, action: WorkflowAction): WorkflowState {
@@ -57,8 +56,7 @@ export function workflowReducer(state: WorkflowState, action: WorkflowAction): W
       return {
         ...state,
         briefData: action.briefData,
-        originalBriefData: action.originalBriefData,
-      };
+        originalBriefData: action.originalBriefData };
 
     case 'SET_UPLOADED_FILE':
       return { ...state, uploadedFile: action.file };
@@ -103,8 +101,7 @@ export function workflowReducer(state: WorkflowState, action: WorkflowAction): W
     case 'REMOVE_ASSET':
       return {
         ...state,
-        selectedAssets: state?.selectedAssets?.filter((a: any) => a.id !== action.id),
-      };
+        selectedAssets: state?.selectedAssets?.filter((a: any) => a.id !== action.id) };
 
     case 'SET_SELECTED_TEMPLATE':
       return { ...state, selectedTemplate: action.template };

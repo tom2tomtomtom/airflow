@@ -50,8 +50,7 @@ export const ErrorCodes = {
 
   // Internal errors
   INTERNAL_ERROR: 'INTERNAL_ERROR',
-  DATABASE_ERROR: 'DATABASE_ERROR',
-} as const;
+  DATABASE_ERROR: 'DATABASE_ERROR' } as const;
 
 /**
  * Global error handler for the application
@@ -69,8 +68,7 @@ export function handleError(error: unknown, context?: ErrorContext): AppError {
   console.error('Error occurred:', {
     message,
     context,
-    stack: error instanceof Error ? error.stack : undefined,
-  });
+    stack: error instanceof Error ? error.stack : undefined });
 
   // Return a standardized error
   return new AppError(message, 500, ErrorCodes.INTERNAL_ERROR, context);

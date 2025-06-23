@@ -66,8 +66,9 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
         ...(lastFetch && { since: lastFetch })});
 
       const response = await fetch(`/api/realtime/websocket?${params}`, {
-        headers: {},
-          'Authorization': `Bearer ${localStorage.getItem('token')}`}});
+        headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')
+      }`}});
 
       if (response.ok) {
         const data = await response.json();
@@ -127,8 +128,9 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
       }
 
       const response = await fetch(`/api/notifications?${params}`, {
-        headers: {},
-          'Authorization': `Bearer ${token}`,
+        headers: {
+        'Authorization': `Bearer ${token
+      }`,
           'Content-Type': 'application/json'}});
 
       if (response.ok) {
@@ -157,9 +159,10 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
     try {
       await fetch('/api/realtime/websocket', {
         method: 'PUT',
-        headers: {},
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`},
+        headers: {
+        'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')
+      }`},
         body: JSON.stringify({ event_ids: eventIds })});
 
       setEvents(prev => 
@@ -179,9 +182,10 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
     try {
       await fetch(`/api/notifications/${notificationId}`, {
         method: 'PUT',
-        headers: {},
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`},
+        headers: {
+        'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')
+      }`},
         body: JSON.stringify({ read: true })});
 
       setNotifications(prev => 
@@ -203,8 +207,9 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
     try {
       await fetch(`/api/notifications/${notificationId}`, {
         method: 'DELETE',
-        headers: {},
-          'Authorization': `Bearer ${localStorage.getItem('token')}`}});
+        headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')
+      }`}});
 
       setNotifications(prev => 
         prev.filter((notification: any) => notification.id !== notificationId)
@@ -225,9 +230,10 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
     try {
       await fetch('/api/realtime/websocket', {
         method: 'POST',
-        headers: {},
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`},
+        headers: {
+        'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')
+      }`},
         body: JSON.stringify({
           type,
           data,
@@ -312,8 +318,9 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
     refresh: () => {
       fetchEvents();
       fetchNotifications();
-    },
-    
+    ,
+
+    }
     // Control
     startPolling,
     stopPolling};

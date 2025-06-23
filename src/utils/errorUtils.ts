@@ -105,14 +105,12 @@ export function formatApiError(error: unknown): { error: string; code?: string }
   if (isAppError(error)) {
     return {
       error: error.message,
-      code: error.code,
-    };
+      code: error.code };
   }
 
   const message = getErrorMessage(error);
   return {
-    error: message,
-  };
+    error: message };
 }
 
 /**

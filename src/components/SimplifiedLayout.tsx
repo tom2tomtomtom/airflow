@@ -97,7 +97,7 @@ export const SimplifiedLayout: React.FC<SimplifiedLayoutProps> = ({
     const segments = path.split('/').filter(Boolean);
 
     const crumbs: Array<{ label: string; href?: string }> = [
-      { label: 'Dashboard', href: '/dashboard' },
+      { label: 'Dashboard', href: '/dashboard'  }
     ];
 
     let currentPath = '';
@@ -142,8 +142,7 @@ export const SimplifiedLayout: React.FC<SimplifiedLayoutProps> = ({
             backgroundColor: 'background.paper',
             borderBottom: 1,
             borderColor: 'divider',
-            color: 'text.primary',
-          }}
+            color: 'text.primary' }}
         >
           <Toolbar sx={{ justifyContent: 'space-between' }}>
             {/* Left Side */}
@@ -177,7 +176,7 @@ export const SimplifiedLayout: React.FC<SimplifiedLayoutProps> = ({
                         }}
                         sx={{
                           textDecoration: 'none',
-                          '&:hover': { textDecoration: 'underline' },
+                          '&:hover': { textDecoration: 'underline'  }
                         }}
                       >
                         {crumb.label}
@@ -216,7 +215,7 @@ export const SimplifiedLayout: React.FC<SimplifiedLayoutProps> = ({
                 sx={{
                   textTransform: 'none',
                   color: 'text.primary',
-                  '&:hover': { backgroundColor: 'action.hover' },
+                  '&:hover': { backgroundColor: 'action.hover'  }
                 }}
               >
                 {user?.name || 'User'}
@@ -271,8 +270,7 @@ export const SimplifiedLayout: React.FC<SimplifiedLayoutProps> = ({
           sx={{
             flex: 1,
             backgroundColor: 'background.default',
-            overflow: 'auto',
-          }}
+            overflow: 'auto' }}
         >
           {children}
         </Box>

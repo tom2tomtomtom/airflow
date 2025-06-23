@@ -146,12 +146,10 @@ async function getWorkflowState(
       processing: workflow.processing || false,
       lastError: workflow.last_error,
       createdAt: workflow.created_at,
-      updatedAt: workflow.updated_at,
-    };
+      updatedAt: workflow.updated_at };
 
     return successResponse(res, workflowState, 200, {
-      timestamp: new Date().toISOString(),
-    });
+      timestamp: new Date().toISOString() });
   } catch (error: any) {
     return handleApiError(res, error, 'getWorkflowState');
   }
@@ -177,8 +175,7 @@ async function updateWorkflowState(
 
     // Prepare update data
     const updateData: any = {
-      updated_at: new Date().toISOString(),
-    };
+      updated_at: new Date().toISOString() };
 
     // Map frontend fields to database fields
     if (updates.currentStep !== undefined) updateData.current_step = updates.currentStep;
@@ -202,8 +199,7 @@ async function updateWorkflowState(
           ...updateData,
         },
         {
-          onConflict: 'id',
-        }
+          onConflict: 'id' }
       )
       .select('*')
       .single();
@@ -225,12 +221,10 @@ async function updateWorkflowState(
       processing: workflow.processing || false,
       lastError: workflow.last_error,
       createdAt: workflow.created_at,
-      updatedAt: workflow.updated_at,
-    };
+      updatedAt: workflow.updated_at };
 
     return successResponse(res, workflowState, 200, {
-      timestamp: new Date().toISOString(),
-    });
+      timestamp: new Date().toISOString() });
   } catch (error: any) {
     return handleApiError(res, error, 'updateWorkflowState');
   }
@@ -266,8 +260,7 @@ async function deleteWorkflowState(
     }
 
     return successResponse(res, { deleted: true }, 200, {
-      timestamp: new Date().toISOString(),
-    });
+      timestamp: new Date().toISOString() });
   } catch (error: any) {
     return handleApiError(res, error, 'deleteWorkflowState');
   }

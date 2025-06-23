@@ -49,7 +49,7 @@ export const FormSelect: React.FC<FormSelectProps> = ({
 }) => {
   const {
     control,
-    formState: { errors },
+    formState: { errors  }
     watch,
   } = useFormContext();
 
@@ -83,8 +83,7 @@ export const FormSelect: React.FC<FormSelectProps> = ({
                   bgcolor: 'primary.main',
                   color: 'primary.contrastText',
                   '& .MuiChip-deleteIcon': {
-                    color: 'primary.contrastText',
-                  },
+                    color: 'primary.contrastText' },
                 }}
               />
             );
@@ -108,8 +107,7 @@ export const FormSelect: React.FC<FormSelectProps> = ({
             color: 'text.primary',
             display: 'flex',
             alignItems: 'center',
-            gap: 0.5,
-          }}
+            gap: 0.5 }}
           {...labelProps}
         >
           {label}
@@ -146,8 +144,7 @@ export const FormSelect: React.FC<FormSelectProps> = ({
                 backgroundColor: 'background.paper',
                 '&.Mui-error .MuiOutlinedInput-notchedOutline': {
                   borderColor: 'error.main',
-                  borderWidth: 2,
-                },
+                  borderWidth: 2 },
                 '&.Mui-focused.Mui-error .MuiOutlinedInput-notchedOutline': {
                   boxShadow: '0 0 0 4px rgba(239, 68, 68, 0.1)',
                 },
@@ -174,8 +171,7 @@ export const FormSelect: React.FC<FormSelectProps> = ({
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
-                      gap: 1,
-                    }}
+                      gap: 1 }}
                   >
                     {option.icon && (
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>{option.icon}</Box>

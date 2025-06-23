@@ -101,20 +101,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         execution_id: null, // Queue-level action
         action: `queue_${action}`,
         details: {},
-          queue_id: queueId,
+  queue_id: queueId,
           matrix_id: matrixId,
           campaign_id: campaignId,
           affected_executions: executionIds.length,
-          execution_ids: executionIds
-        },
-        created_at: new Date().toISOString()
+          execution_ids: executionIds },
+  created_at: new Date().toISOString()
       });
 
     res.status(200).json({
       success: true,
       message: `Queue ${action} completed successfully`,
       data: {},
-        queue_id: queueId,
+  queue_id: queueId,
         action,
         affected_executions: executionIds.length
       }

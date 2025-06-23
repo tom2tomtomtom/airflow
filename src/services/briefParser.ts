@@ -18,12 +18,13 @@ export interface ParsedBrief {
   rawContent: string;
   extractedSections: Record<string, string>;
   confidence: number;
-  metadata: {},
-    fileType: string;
+  metadata: {
+        fileType: string;
     wordCount: number;
     extractedAt: Date;
     source: 'upload' | 'manual' | 'api';
-  };
+  
+      };
 }
 
 export interface BriefExtractionOptions {
@@ -82,14 +83,15 @@ export class BriefParser {
         budget: parsed.budget,
         timeline: parsed.timeline,
         rawContent: extractedText,
-        extractedSections: parsed.extractedSections || {},
-        confidence: parsed.confidence || 0,
-        metadata: {},
-          fileType: file.type,
+        extractedSections: parsed.extractedSections || { },
+  confidence: parsed.confidence || 0,
+        metadata: {
+        fileType: file.type,
           wordCount: extractedText.split(/\s+/).length,
           extractedAt: new Date(),
           source: 'upload'
-        }
+        
+      }
       };
 
       // 4. Validate if required
@@ -253,11 +255,10 @@ If information is not clearly stated, use null for that field. Be accurate and d
       budget: null,
       timeline: null,
       extractedSections: {},
-        background: "Company background information",
+  background: "Company background information",
         target: "Target audience details",
-        strategy: "Strategic approach"
-      },
-      confidence: 0.8
+        strategy: "Strategic approach" },
+  confidence: 0.8
     });
   }
 
@@ -280,8 +281,8 @@ If information is not clearly stated, use null for that field. Be accurate and d
         platforms: Array.isArray(parsed.platforms) ? parsed.platforms.map((p: any) => this.sanitizeString(p)).filter(Boolean) : [],
         budget: this.sanitizeString(parsed.budget),
         timeline: this.sanitizeString(parsed.timeline),
-        extractedSections: parsed.extractedSections || {},
-        confidence: typeof parsed.confidence === 'number' ? parsed.confidence : 0
+        extractedSections: parsed.extractedSections || { },
+  confidence: typeof parsed.confidence === 'number' ? parsed.confidence : 0
       };
     } catch (error: any) {
       logger.error('Failed to parse AI response', error);
@@ -443,10 +444,11 @@ If information is not clearly stated, use null for that field. Be accurate and d
     return {
       ...brief,
       ...enhancements,
-      metadata: {},
+      metadata: {
         ...brief.metadata,
         enhanced: true,
         enhancedAt: new Date()
+      
       }
     };
   }

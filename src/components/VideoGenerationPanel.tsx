@@ -54,26 +54,26 @@ interface VideoGenerationPanelProps {
 }
 
 const platforms = [
-  { value: 'youtube', label: 'YouTube' },
-  { value: 'instagram', label: 'Instagram' },
-  { value: 'tiktok', label: 'TikTok' },
-  { value: 'facebook', label: 'Facebook' },
-  { value: 'linkedin', label: 'LinkedIn' },
-  { value: 'twitter', label: 'Twitter' },
+  { value: 'youtube', label: 'YouTube'  }
+  { value: 'instagram', label: 'Instagram'  }
+  { value: 'tiktok', label: 'TikTok'  }
+  { value: 'facebook', label: 'Facebook'  }
+  { value: 'linkedin', label: 'LinkedIn'  }
+  { value: 'twitter', label: 'Twitter'  }
 ];
 
 const styles = [
-  { value: 'commercial', label: 'Commercial' },
-  { value: 'cinematic', label: 'Cinematic' },
-  { value: 'documentary', label: 'Documentary' },
-  { value: 'social_media', label: 'Social Media' },
-  { value: 'animation', label: 'Animation' },
+  { value: 'commercial', label: 'Commercial'  }
+  { value: 'cinematic', label: 'Cinematic'  }
+  { value: 'documentary', label: 'Documentary'  }
+  { value: 'social_media', label: 'Social Media'  }
+  { value: 'animation', label: 'Animation'  }
 ];
 
 const qualities = [
-  { value: 'draft', label: 'Draft (Fast)' },
-  { value: 'standard', label: 'Standard' },
-  { value: 'high', label: 'High Quality' },
+  { value: 'draft', label: 'Draft (Fast)'  }
+  { value: 'standard', label: 'Standard'  }
+  { value: 'high', label: 'High Quality'  }
 ];
 
 const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
@@ -148,28 +148,30 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
         type: campaignId ? 'campaign_based' : 'standalone',
         campaign_id: campaignId,
         video_config: {},
-          prompt,
+  prompt,
           style,
           duration,
           platform,
           quality,
-          aspect_ratio: getAspectRatioForPlatform(platform)},
-        content_elements: {},
-          voice_over: includeVoiceOver ? {
+          aspect_ratio: getAspectRatioForPlatform(platform) },
+  content_elements: {},
+  voice_over: includeVoiceOver ? {
             text: voiceOverText || prompt,
             voice: 'neural',
             language: 'en'} : undefined,
-          background_music: true},
-        generation_settings: {},
-          variations_count: variationsCount,
+          background_music: true },
+  generation_settings: {},
+  variations_count: variationsCount,
           include_captions: includeCaptions,
           auto_optimize_for_platform: true,
           save_to_assets: true}};
 
       const response = await fetch('/api/video/generate', {
         method: 'POST',
-        headers: {},
-          'Content-Type': 'application/json'},
+        headers: {
+        'Content-Type': 'application/json'
+      
+      },
         body: JSON.stringify(videoConfig)});
 
       const data = await response.json();
@@ -369,7 +371,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
                   <Stack direction="row" spacing={1}>
                     {job.status === 'completed' && (
                       <>
-                        <Button
+       <Button
                           size="small"
                           startIcon={<PreviewIcon />}
                           onClick={() => previewVideo(job)}

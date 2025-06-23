@@ -11,7 +11,7 @@ export interface SeederOptions {
 export interface SeedResult {
   success: boolean;
   created: {},
-    profiles: number;
+  profiles: number;
     clients: number;
     projects: number;
     campaigns: number;
@@ -29,13 +29,12 @@ export class DatabaseSeeder {
     const result: SeedResult = {
       success: true,
       created: {},
-        profiles: 0,
+  profiles: 0,
         clients: 0,
         projects: 0,
         campaigns: 0,
-        featureFlags: 0
-      },
-      errors: [],
+        featureFlags: 0 },
+  errors: [],
       duration: 0
     };
     
@@ -267,7 +266,7 @@ export class DatabaseSeeder {
         industry: 'Technology',
         website: 'https://democlient.com',
         settings: {},
-          timezone: 'UTC',
+  timezone: 'UTC',
           currency: 'USD',
           branding: { primaryColor: '#0066cc' }
         },
@@ -286,8 +285,8 @@ export class DatabaseSeeder {
           description: 'Classic demo client corporation',
           industry: 'Manufacturing',
           website: 'https://acme.com',
-          settings: { timezone: 'America/New_York', currency: 'USD' },
-          subscription_tier: 'enterprise' as const,
+          settings: { timezone: 'America/New_York', currency: 'USD'  },
+  subscription_tier: 'enterprise' as const,
           is_active: true
         }
       ];
@@ -307,9 +306,8 @@ export class DatabaseSeeder {
         start_date: '2024-01-01',
         end_date: '2024-03-31',
         budget: 50000,
-        settings: { approval_workflow: true },
-        created_by: '22222222-2222-2222-2222-222222222222'
-      },
+        settings: { approval_workflow: true  },
+  created_by: '22222222-2222-2222-2222-222222222222' }
       {
         id: '22222222-3333-4444-5555-666666666666',
         client_id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
@@ -318,8 +316,8 @@ export class DatabaseSeeder {
         status: 'draft' as const,
         start_date: '2024-04-01',
         budget: 75000,
-        settings: { approval_workflow: false },
-        created_by: '22222222-2222-2222-2222-222222222222'
+        settings: { approval_workflow: false  },
+  created_by: '22222222-2222-2222-2222-222222222222'
       }
     ];
   }
@@ -335,17 +333,16 @@ export class DatabaseSeeder {
         status: 'active' as const,
         campaign_type: 'social' as const,
         target_audience: {},
-          age_range: '25-45',
+  age_range: '25-45',
           interests: ['technology', 'business'],
-          location: 'North America'
-        },
-        platforms: ['facebook', 'instagram', 'linkedin'],
+          location: 'North America' },
+  platforms: ['facebook', 'instagram', 'linkedin'],
         objectives: ['awareness', 'engagement'],
         budget: 25000,
         start_date: '2024-01-15',
         end_date: '2024-02-15',
-        metrics: {}
-        created_by: '22222222-2222-2222-2222-222222222222'
+        metrics: {},
+  created_by: '22222222-2222-2222-2222-222222222222'
       }
     ];
   }

@@ -301,12 +301,13 @@ async function triggerWebhookNotifications(
     // Send webhook (fire and forget)
     fetch(webhookSettings.url, {
       method: 'POST',
-      headers: {},
+      headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'AIrFLOW-Webhook/1.0',
         ...(webhookSettings.secret && {
           'X-AIrFLOW-Signature': generateWebhookSignature(webhookPayload, webhookSettings.secret)
-        })
+        
+      })
       },
       body: JSON.stringify(webhookPayload)
     }).catch(error => {

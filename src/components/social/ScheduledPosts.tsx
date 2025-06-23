@@ -50,7 +50,7 @@ import { useNotification } from '@/contexts/NotificationContext';
 interface ScheduledPost {
   id: string;
   content: {},
-    text: string;
+  text: string;
     images?: string[];
     video?: string;
     link?: string;
@@ -99,47 +99,47 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
         {
           id: '1',
           content: {},
-            text: 'Exciting news! Our new product launch is just around the corner. Stay tuned for more updates! 🚀 #ProductLaunch #Innovation',
+  text: 'Exciting news! Our new product launch is just around the corner. Stay tuned for more updates! 🚀 #ProductLaunch #Innovation',
             images: ['/placeholder-image1.jpg'],
-            link: 'https://example.com/product-launch'},
-          platforms: ['facebook', 'twitter', 'linkedin'],
+            link: 'https://example.com/product-launch' },
+  platforms: ['facebook', 'twitter', 'linkedin'],
           scheduledAt: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
           status: 'scheduled',
           createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-          updatedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString()},
+          updatedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString() }
         {
           id: '2',
           content: {},
-            text: 'Behind the scenes of our creative process. Here\'s how we bring ideas to life! 💡✨',
-            video: '/placeholder-video.mp4'},
-          platforms: ['instagram', 'youtube'],
+  text: 'Behind the scenes of our creative process. Here\'s how we bring ideas to life! 💡✨',
+            video: '/placeholder-video.mp4' },
+  platforms: ['instagram', 'youtube'],
           scheduledAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Tomorrow
           status: 'scheduled',
           createdAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
-          updatedAt: new Date(Date.now() - 60 * 60 * 1000).toISOString()},
+          updatedAt: new Date(Date.now() - 60 * 60 * 1000).toISOString() }
         {
           id: '3',
           content: {},
-            text: 'Weekly industry insights and trends. What are your thoughts on the latest developments?',
-            images: ['/placeholder-chart.jpg']},
-          platforms: ['linkedin', 'twitter'],
+  text: 'Weekly industry insights and trends. What are your thoughts on the latest developments?',
+            images: ['/placeholder-chart.jpg'] },
+  platforms: ['linkedin', 'twitter'],
           scheduledAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // Next week
           status: 'scheduled',
           createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()},
+          updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() }
         {
           id: '4',
           content: {},
-            text: 'Thank you to everyone who joined our webinar yesterday! The recording is now available.',
-            link: 'https://example.com/webinar-recording'},
-          platforms: ['facebook', 'linkedin'],
+  text: 'Thank you to everyone who joined our webinar yesterday! The recording is now available.',
+            link: 'https://example.com/webinar-recording' },
+  platforms: ['facebook', 'linkedin'],
           scheduledAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 minutes ago
           status: 'published',
           createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
           updatedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
           publishResults: [
-            { platform: 'facebook', success: true, postId: 'fb_123456' },
-            { platform: 'linkedin', success: true, postId: 'li_789012' },
+            { platform: 'facebook', success: true, postId: 'fb_123456'  }
+            { platform: 'linkedin', success: true, postId: 'li_789012'  }
           ]},
       ];
 
@@ -306,7 +306,7 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
 
   return (
     <>
-      <Box sx={{ p: 3 }}>
+       <Box sx={{ p: 3 }}>
         {/* Header */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h6">

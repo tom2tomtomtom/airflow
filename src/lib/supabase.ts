@@ -57,7 +57,7 @@ export async function getUserFromToken(
   } catch (error: any) {
     await handleSupabaseError(error, {
       operation: 'getUserFromToken',
-      metadata: { hasToken: !!token },
+      metadata: { hasToken: !!token  }
     });
   }
 }

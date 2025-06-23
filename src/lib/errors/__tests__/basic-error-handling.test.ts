@@ -168,10 +168,10 @@ describe('Basic Error Handling Tests', () => {
 
     test('should handle complex context objects', () => {
       const complexContext = {
-        user: { id: '123', email: 'test@example.com' },
-        request: { method: 'POST', url: '/api/users' },
-        metadata: { version: '1.0', feature: 'user_management' },
-        performance: { startTime: Date.now(), duration: 150 }
+        user: { id: '123', email: 'test@example.com'  },
+  request: { method: 'POST', url: '/api/users'  },
+  metadata: { version: '1.0', feature: 'user_management'  },
+  performance: { startTime: Date.now(), duration: 150 }
       };
       
       const error = new AppError('Complex operation failed', 500, 'COMPLEX_ERROR', complexContext);

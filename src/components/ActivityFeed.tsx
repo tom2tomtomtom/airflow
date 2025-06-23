@@ -46,14 +46,14 @@ interface Activity {
   type: 'campaign_created' | 'asset_uploaded' | 'matrix_updated' | 'approval_requested' | 
         'comment_added' | 'team_joined' | 'analytics_milestone' | 'content_published';
   user: {},
-    id: string;
+  id: string;
     name: string;
     avatar?: string;
     isOnline?: boolean;
   };
   timestamp: Date;
   data: {},
-    entityId?: string;
+  entityId?: string;
     entityName?: string;
     message?: string;
     metadata?: any;
@@ -105,47 +105,47 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
       {
         id: 'act-1',
         type: 'campaign_created',
-        user: { id: 'u1', name: 'Sarah Johnson', isOnline: true },
-        timestamp: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
+        user: { id: 'u1', name: 'Sarah Johnson', isOnline: true  },
+  timestamp: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
         data: {},
-          entityId: 'camp-1',
+  entityId: 'camp-1',
           entityName: 'Summer Fitness Campaign',
-          message: 'created a new campaign'},
-        reactions: { likes: 3, comments: 1, hasLiked: false },
-        isRead: false},
+          message: 'created a new campaign' },
+  reactions: { likes: 3, comments: 1, hasLiked: false  },
+  isRead: false }
       {
         id: 'act-2',
         type: 'asset_uploaded',
-        user: { id: 'u2', name: 'Mike Chen', isOnline: true },
-        timestamp: new Date(Date.now() - 1000 * 60 * 15), // 15 minutes ago
+        user: { id: 'u2', name: 'Mike Chen', isOnline: true  },
+  timestamp: new Date(Date.now() - 1000 * 60 * 15), // 15 minutes ago
         data: {},
-          entityId: 'asset-1',
+  entityId: 'asset-1',
           entityName: 'Hero Banner Image',
           message: 'uploaded 5 new assets',
           metadata: { count: 5, type: 'image' }},
-        reactions: { likes: 1, comments: 0 },
-        isRead: true},
+        reactions: { likes: 1, comments: 0  },
+  isRead: true }
       {
         id: 'act-3',
         type: 'approval_requested',
-        user: { id: 'u3', name: 'Emily Davis', isOnline: false },
-        timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
+        user: { id: 'u3', name: 'Emily Davis', isOnline: false  },
+  timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
         data: {},
-          entityId: 'matrix-1',
+  entityId: 'matrix-1',
           entityName: 'Instagram Story Matrix',
-          message: 'requested approval for'},
-        reactions: { likes: 0, comments: 2 },
-        isRead: false},
+          message: 'requested approval for' },
+  reactions: { likes: 0, comments: 2  },
+  isRead: false }
       {
         id: 'act-4',
         type: 'analytics_milestone',
-        user: { id: 'system', name: 'AIrFLOW System' },
-        timestamp: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
+        user: { id: 'system', name: 'AIrFLOW System'  },
+  timestamp: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
         data: {},
-          message: 'Campaign "Spring Collection" reached 100K views! 🎉',
+  message: 'Campaign "Spring Collection" reached 100K views! 🎉',
           metadata: { milestone: '100K views', campaignId: 'camp-2' }},
-        reactions: { likes: 8, comments: 3, hasLiked: true },
-        isRead: true},
+        reactions: { likes: 8, comments: 3, hasLiked: true  },
+  isRead: true }
     ];
 
     setActivities(initialActivities);
@@ -158,16 +158,16 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
         id: data.id || `act-${Date.now()}`,
         type: data.type || 'comment_added',
         user: {},
-          id: data.userId || _user?.id || 'unknown',
+  id: data.userId || _user?.id || 'unknown',
           name: data.userName || _user?.name || 'Unknown User',
-          isOnline: true},
-        timestamp: new Date(data.timestamp || Date.now()),
+          isOnline: true },
+  timestamp: new Date(data.timestamp || Date.now()),
         data: {},
-          entityId: data.entityId || '',
+  entityId: data.entityId || '',
           entityName: data.entityName || '',
-          message: data.message || data.description || ''},
-        reactions: { likes: 0, comments: 0, hasLiked: false },
-        isRead: false};
+          message: data.message || data.description || '' },
+  reactions: { likes: 0, comments: 0, hasLiked: false  },
+  isRead: false};
       
       setActivities(prev => [newActivity, ...prev].slice(0, 50));
       setUnreadCount(prev => prev + 1);
@@ -180,16 +180,16 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
         id: `render-${data.renderId}`,
         type: 'content_published',
         user: {},
-          id: _user?.id || 'system',
+  id: _user?.id || 'system',
           name: 'Video Generator',
-          isOnline: true},
-        timestamp: new Date(data.timestamp),
+          isOnline: true },
+  timestamp: new Date(data.timestamp),
         data: {},
-          entityId: data.renderId,
+  entityId: data.renderId,
           entityName: 'Video Render',
           message: `render progress: ${data.progress}%`},
-        reactions: { likes: 0, comments: 0, hasLiked: false },
-        isRead: false};
+        reactions: { likes: 0, comments: 0, hasLiked: false  },
+  isRead: false};
       
       // Update existing render activity or add new one
       setActivities(prev => {
@@ -209,16 +209,16 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
         id: `complete-${data.renderId}`,
         type: 'content_published',
         user: {},
-          id: _user?.id || 'system',
+  id: _user?.id || 'system',
           name: 'Video Generator',
-          isOnline: true},
-        timestamp: new Date(data.timestamp),
+          isOnline: true },
+  timestamp: new Date(data.timestamp),
         data: {},
-          entityId: data.assetId,
+  entityId: data.assetId,
           entityName: 'Video Render Complete',
-          message: 'video render completed successfully'},
-        reactions: { likes: 0, comments: 0, hasLiked: false },
-        isRead: false};
+          message: 'video render completed successfully' },
+  reactions: { likes: 0, comments: 0, hasLiked: false  },
+  isRead: false};
       
       setActivities(prev => [completeActivity, ...prev].slice(0, 50));
       setUnreadCount(prev => prev + 1);
@@ -262,7 +262,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
       activity.id === activityId
         ? {
             ...activity,
-            reactions: {},
+            reactions: { }
               ...activity.reactions!,
               likes: activity.reactions!.hasLiked 
                 ? activity.reactions!.likes - 1 
@@ -281,7 +281,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
       activity.id === activityId
         ? {
             ...activity,
-            reactions: {},
+            reactions: { }
               ...activity.reactions!,
               comments: activity.reactions!.comments + 1}
           }
@@ -327,7 +327,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
     <Paper sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       {showHeader && (
         <>
-          <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+       <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Badge badgeContent={unreadCount} color="error">
                 <NotificationsIcon />
@@ -489,7 +489,7 @@ export const NotificationBadge: React.FC = () => {
 
   return (
     <>
-      <IconButton
+       <IconButton
         color="inherit"
         onClick={(e: React.MouseEvent<HTMLElement>) => setAnchorEl(e.currentTarget)}
       >

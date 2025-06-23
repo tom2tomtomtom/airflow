@@ -74,8 +74,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
   const { events, loading, error, connectionStatus, refresh, startPolling, stopPolling } =
     useRealtime({
       pollInterval: isPaused ? 0 : 3000,
-      enableNotifications: false,
-    });
+      enableNotifications: false });
 
   const handlePauseToggle = () => {
     setIsPaused(!isPaused);
@@ -187,7 +186,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
             <ListItem
               sx={{
                 py: compact ? 0.5 : 1,
-                '&:hover': { backgroundColor: 'action.hover' },
+                '&:hover': { backgroundColor: 'action.hover'  }
               }}
             >
               <ListItemIcon sx={{ minWidth: compact ? 32 : 56 }}>
@@ -239,8 +238,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
               variant="dot"
               sx={{
                 '& .MuiBadge-badge': {
-                  animation: connectionStatus === 'connected' ? 'pulse 2s infinite' : 'none',
-                },
+                  animation: connectionStatus === 'connected' ? 'pulse 2s infinite' : 'none' },
               }}
             >
               <TimelineIcon />
@@ -299,7 +297,7 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
 
         {activeClient && (
           <>
-            <Tabs
+       <Tabs
               value={activeTab}
               onChange={(_, newValue) => setActiveTab(newValue)}
               variant="scrollable"

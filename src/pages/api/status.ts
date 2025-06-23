@@ -10,6 +10,5 @@ export default function handler(_req: NextApiRequest, res: NextApiResponse<Statu
   // Simple status check - always returns OK if the server is running
   res.status(200).json({
     status: 'ok',
-    timestamp: new Date().toISOString(),
-  });
+    timestamp: new Date().toISOString() });
 }

@@ -70,7 +70,7 @@ export function withCSRFProtection(
       return res.status(403).json({
         success: false,
         error: {},
-          code: 'FORBIDDEN',
+  code: 'FORBIDDEN',
           message: 'CSRF token missing'}});
     }
 

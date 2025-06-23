@@ -105,8 +105,7 @@ export class FileUploadSecurity {
     if (fileSize > this.maxFileSize) {
       return {
         valid: false,
-        error: `File size exceeds maximum allowed size of ${this.maxFileSize / 1048576}MB`,
-      };
+        error: `File size exceeds maximum allowed size of ${this.maxFileSize / 1048576}MB` };
     }
 
     // Sanitize file name
@@ -118,24 +117,21 @@ export class FileUploadSecurity {
     if (!fileType) {
       return {
         valid: false,
-        error: `File type .${extension} is not allowed`,
-      };
+        error: `File type .${extension} is not allowed` };
     }
 
     // Validate MIME type
     if (!this.isValidMimeType(mimeType, extension)) {
       return {
         valid: false,
-        error: `MIME type ${mimeType} does not match file extension .${extension}`,
-      };
+        error: `MIME type ${mimeType} does not match file extension .${extension}` };
     }
 
     // Check for malicious patterns in file name
     if (this.containsMaliciousPatterns(fileName)) {
       return {
         valid: false,
-        error: 'File name contains potentially malicious content',
-      };
+        error: 'File name contains potentially malicious content' };
     }
 
     // If file buffer provided, check content
@@ -164,8 +160,7 @@ export class FileUploadSecurity {
       return {
         clean: true,
         infected: false,
-        scanTime: 0,
-      };
+        scanTime: 0 };
     }
 
     try {
@@ -225,8 +220,7 @@ export class FileUploadSecurity {
         clean: false,
         infected: false,
         error: 'Virus scan failed',
-        scanTime: Date.now() - startTime,
-      };
+        scanTime: Date.now() - startTime };
     }
   }
 
@@ -241,8 +235,7 @@ export class FileUploadSecurity {
     if (this.containsMaliciousPatterns(content)) {
       return {
         valid: false,
-        error: 'File content contains potentially malicious patterns',
-      };
+        error: 'File content contains potentially malicious patterns' };
     }
 
     // Additional checks based on file type
@@ -281,8 +274,7 @@ export class FileUploadSecurity {
       if (!content.includes('<svg') && !content.includes('<?xml')) {
         return {
           valid: false,
-          error: 'Invalid image file signature',
-        };
+          error: 'Invalid image file signature' };
       }
     }
 

@@ -139,7 +139,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
   return res.status(201).json({ 
     data: createdApprovals,
     summary: {},
-      total_created: createdApprovals.length,
+  total_created: createdApprovals.length,
       assignees: Object.keys(assigneeNotifications).length}
   });
 }
@@ -270,7 +270,7 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any): 
   return res.json({ 
     data: updatedApprovals,
     summary: {},
-      total_processed: updatedApprovals.length,
+  total_processed: updatedApprovals.length,
       action: action,
       decided_by: user.id,
       decided_at: decisionData.decided_at}

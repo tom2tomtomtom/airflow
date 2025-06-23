@@ -91,8 +91,7 @@ export class SessionManager {
       sessionId,
       tokenFamily,
       issuedAt: now,
-      expiresAt: now + this.parseTimeString(this.config.refreshTokenExpiry),
-    };
+      expiresAt: now + this.parseTimeString(this.config.refreshTokenExpiry) };
 
     // Store session data
     activeSessions.set(sessionId, sessionData);
@@ -117,8 +116,7 @@ export class SessionManager {
         sub: userId,
         sessionId,
         tokenFamily,
-        type: 'refresh',
-      },
+        type: 'refresh' },
       this.config.refreshTokenExpiry
     );
 
@@ -220,8 +218,7 @@ export class SessionManager {
         sessionId,
         tokenFamily: newTokenFamily,
         issuedAt: now,
-        expiresAt: now + this.parseTimeString(this.config.refreshTokenExpiry),
-      };
+        expiresAt: now + this.parseTimeString(this.config.refreshTokenExpiry) };
 
       const newRefreshTokenId = `${sessionId}:${newTokenFamily}`;
       refreshTokens.set(newRefreshTokenId, newRefreshTokenData);
@@ -239,8 +236,7 @@ export class SessionManager {
           role: session.role,
           permissions: session.permissions,
           sessionId,
-          deviceId: session.deviceId,
-        },
+          deviceId: session.deviceId },
         this.config.jwtExpiry
       );
 
@@ -249,8 +245,7 @@ export class SessionManager {
           sub: session.userId,
           sessionId,
           tokenFamily: newTokenFamily,
-          type: 'refresh',
-        },
+          type: 'refresh' },
         this.config.refreshTokenExpiry
       );
 
@@ -263,8 +258,7 @@ export class SessionManager {
 
       return {
         accessToken: newAccessToken,
-        refreshToken: newRefreshToken,
-      };
+        refreshToken: newRefreshToken };
     } catch (error: any) {
       loggers.general.warn('Refresh token verification failed', error);
       return null;
@@ -354,8 +348,7 @@ export class SessionManager {
     if (cleanedSessions > 0 || cleanedRefreshTokens > 0) {
       loggers.general.info('Cleaned up expired sessions', {
         expiredSessions: cleanedSessions,
-        expiredRefreshTokens: cleanedRefreshTokens,
-      });
+        expiredRefreshTokens: cleanedRefreshTokens });
     }
   }
 
@@ -401,18 +394,15 @@ export class SessionManager {
       httpOnly: true,
       secure: config.cookieOptions.secure,
       sameSite: config.cookieOptions.sameSite as 'strict' | 'lax' | 'none',
-      path: '/',
-    };
+      path: '/' };
 
     cookieStore.set('access_token', accessToken, {
       ...commonOptions,
-      maxAge: this.parseTimeString(this.config.jwtExpiry) / 1000,
-    });
+      maxAge: this.parseTimeString(this.config.jwtExpiry) / 1000 });
 
     cookieStore.set('refresh_token', refreshToken, {
       ...commonOptions,
-      maxAge: this.parseTimeString(this.config.refreshTokenExpiry) / 1000,
-    });
+      maxAge: this.parseTimeString(this.config.refreshTokenExpiry) / 1000 });
   }
 
   // Clear cookies
@@ -424,16 +414,14 @@ export class SessionManager {
       secure: this.config.cookieOptions.secure,
       sameSite: this.config.cookieOptions.sameSite as 'strict' | 'lax' | 'none',
       path: '/',
-      maxAge: 0,
-    });
+      maxAge: 0 });
 
     cookieStore.set('refresh_token', '', {
       httpOnly: true,
       secure: this.config.cookieOptions.secure,
       sameSite: this.config.cookieOptions.sameSite as 'strict' | 'lax' | 'none',
       path: '/',
-      maxAge: 0,
-    });
+      maxAge: 0 });
   }
 }
 

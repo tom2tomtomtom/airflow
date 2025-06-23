@@ -56,8 +56,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           width: 80,
           height: 80,
           bgcolor: 'primary.light',
-          mb: 3,
-        }}
+          mb: 3 }}
       >
         {icon}
       </Avatar>
@@ -117,12 +116,10 @@ export const EmptyBriefs: React.FC<{ onCreateBrief: () => void; onStartWorkflow:
     description="Start by uploading a brief document or creating one from scratch. Our AI will help you transform it into amazing video content."
     primaryAction={{
       label: 'Start Workflow',
-      onClick: onStartWorkflow,
-    }}
+      onClick: onStartWorkflow }}
     secondaryAction={{
       label: 'Create Brief',
-      onClick: onCreateBrief,
-    }}
+      onClick: onCreateBrief }}
     suggestions={[
       'Upload PDF or Word docs',
       'AI extracts key information',
@@ -141,12 +138,10 @@ export const EmptyAssets: React.FC<{
     description="Upload images, videos, and other media files, or let AI generate custom assets for your campaigns."
     primaryAction={{
       label: 'Upload Assets',
-      onClick: onUploadAssets,
-    }}
+      onClick: onUploadAssets }}
     secondaryAction={{
       label: 'Generate with AI',
-      onClick: onGenerateAssets,
-    }}
+      onClick: onGenerateAssets }}
     suggestions={['Drag & drop files', 'AI-generated images', 'Organize with tags']}
   />
 );
@@ -161,12 +156,10 @@ export const EmptyTemplates: React.FC<{
     description="Browse our template gallery or create custom templates for your video content needs."
     primaryAction={{
       label: 'Browse Gallery',
-      onClick: onBrowseTemplates,
-    }}
+      onClick: onBrowseTemplates }}
     secondaryAction={{
       label: 'Create Template',
-      onClick: onCreateTemplate,
-    }}
+      onClick: onCreateTemplate }}
     suggestions={['Pre-built designs', 'Customizable layouts', 'Platform optimized']}
   />
 );
@@ -180,8 +173,7 @@ export const EmptyCampaigns: React.FC<{ onCreateCampaign: () => void }> = ({
     description="Create your first campaign to organize and manage your video content projects effectively."
     primaryAction={{
       label: 'Create Campaign',
-      onClick: onCreateCampaign,
-    }}
+      onClick: onCreateCampaign }}
     suggestions={['Organize projects', 'Track progress', 'Team collaboration']}
   />
 );
@@ -193,8 +185,7 @@ export const EmptyAnalytics: React.FC<{ onViewDocs: () => void }> = ({ onViewDoc
     description="Once you start creating and publishing content, you'll see detailed performance analytics here."
     secondaryAction={{
       label: 'View Documentation',
-      onClick: onViewDocs,
-    }}
+      onClick: onViewDocs }}
     suggestions={['Performance metrics', 'Engagement tracking', 'ROI analysis']}
   />
 );
@@ -206,8 +197,7 @@ export const EmptyClients: React.FC<{ onAddClient: () => void }> = ({ onAddClien
     description="Add your first client to start organizing projects and managing content for different accounts."
     primaryAction={{
       label: 'Add Client',
-      onClick: onAddClient,
-    }}
+      onClick: onAddClient }}
     suggestions={['Organize by client', 'Separate workspaces', 'Client-specific assets']}
   />
 );
@@ -222,8 +212,7 @@ export const EmptySearch: React.FC<{ query: string; onClearSearch: () => void }>
     description="Try adjusting your search terms or browse our categories to find what you're looking for."
     secondaryAction={{
       label: 'Clear Search',
-      onClick: onClearSearch,
-    }}
+      onClick: onClearSearch }}
     suggestions={['Check spelling', 'Use different keywords', 'Browse categories']}
   />
 );
@@ -243,9 +232,9 @@ export const LoadingState: React.FC<{ message?: string }> = ({ message = 'Loadin
         mb: 3,
         animation: 'pulse 2s infinite',
         '@keyframes pulse': {
-          '0%': { transform: 'scale(1)', opacity: 1 },
-          '50%': { transform: 'scale(1.1)', opacity: 0.7 },
-          '100%': { transform: 'scale(1)', opacity: 1 },
+          '0%': { transform: 'scale(1)', opacity: 1  }
+          '50%': { transform: 'scale(1.1)', opacity: 0.7  }
+          '100%': { transform: 'scale(1)', opacity: 1  }
         },
       }}
     >
@@ -287,9 +276,9 @@ export const SuccessState: React.FC<{
         mb: 3,
         animation: 'bounce 1s ease-in-out',
         '@keyframes bounce': {
-          '0%, 20%, 60%, 100%': { transform: 'translateY(0)' },
-          '40%': { transform: 'translateY(-10px)' },
-          '80%': { transform: 'translateY(-5px)' },
+          '0%, 20%, 60%, 100%': { transform: 'translateY(0)'  }
+          '40%': { transform: 'translateY(-10px)'  }
+          '80%': { transform: 'translateY(-5px)'  }
         },
       }}
     >

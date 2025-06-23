@@ -15,8 +15,7 @@ async function handler(
   if (req.method !== 'GET') {
     return res.status(405).json({
       success: false,
-      error: 'Method not allowed',
-    });
+      error: 'Method not allowed' });
   }
 
   try {
@@ -25,22 +24,19 @@ async function handler(
     if (!renderId || typeof renderId !== 'string') {
       return res.status(400).json({
         success: false,
-        error: 'Render ID is required',
-      });
+        error: 'Render ID is required' });
     }
 
     const renderStatus = await creatomateService.getRenderStatus(renderId);
 
     return res.status(200).json({
       success: true,
-      data: renderStatus,
-    });
+      data: renderStatus });
   } catch (error: any) {
     console.error('Error getting render status:', error);
     return res.status(500).json({
       success: false,
-      error: 'Failed to get render status',
-    });
+      error: 'Failed to get render status' });
   }
 }
 

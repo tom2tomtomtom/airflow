@@ -23,15 +23,13 @@ async function handler(
       default:
         return res.status(405).json({
           success: false,
-          error: 'Method not allowed',
-        });
+          error: 'Method not allowed' });
     }
   } catch (error: any) {
     console.error('Creatomate API error:', error);
     return res.status(500).json({
       success: false,
-      error: 'Internal server error',
-    });
+      error: 'Internal server error' });
   }
 }
 
@@ -45,14 +43,12 @@ async function handleGetTemplate(
 
     return res.status(200).json({
       success: true,
-      data: template,
-    });
+      data: template });
   } catch (error: any) {
     console.error('Error fetching template:', error);
     return res.status(500).json({
       success: false,
-      error: 'Failed to fetch template',
-    });
+      error: 'Failed to fetch template' });
   }
 }
 
@@ -66,8 +62,7 @@ async function handleRenderVideo(
     if (!templateId || !modifications) {
       return res.status(400).json({
         success: false,
-        error: 'Template ID and modifications are required',
-      });
+        error: 'Template ID and modifications are required' });
     }
 
     if (action === 'render') {
@@ -75,20 +70,17 @@ async function handleRenderVideo(
       return res.status(200).json({
         success: true,
         data: renderResult,
-        message: 'Video render initiated successfully',
-      });
+        message: 'Video render initiated successfully' });
     } else {
       return res.status(400).json({
         success: false,
-        error: 'Invalid action. Use "render"',
-      });
+        error: 'Invalid action. Use "render"' });
     }
   } catch (error: any) {
     console.error('Error rendering video:', error);
     return res.status(500).json({
       success: false,
-      error: 'Failed to render video',
-    });
+      error: 'Failed to render video' });
   }
 }
 

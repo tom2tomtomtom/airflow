@@ -215,20 +215,22 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       if (process.env.NODE_ENV === 'production') {
         // Example: Sentry reporting
         // Sentry.captureException(error, {
-        //   tags: { eventId },
-        //   contexts: { react: errorInfo },
+        //   tags: { eventId  }
+        //   contexts: { react: errorInfo  }
         // });
 
         // Example: Custom API reporting
         fetch('/api/errors', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+        'Content-Type': 'application/json' 
+      },
           body: JSON.stringify({
             eventId,
             error: {},
-              name: error.name,
+  name: error.name,
               message: error.message,
-              stack: error.stack},
+              stack: error.stack }
             errorInfo,
             timestamp: new Date().toISOString(),
             userAgent: navigator.userAgent,
@@ -305,13 +307,15 @@ export function FeatureErrorBoundary({ children, feature }: { children: ReactNod
     // Report feature-specific error
     fetch('/api/errors', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json' 
+      },
       body: JSON.stringify({
         feature,
         error: {},
-          name: error.name,
+  name: error.name,
           message: error.message,
-          stack: error.stack},
+          stack: error.stack }
         errorInfo,
         timestamp: new Date().toISOString()})}).catch(console.error);
   };

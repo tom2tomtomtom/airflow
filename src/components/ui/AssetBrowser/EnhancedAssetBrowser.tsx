@@ -250,8 +250,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
             position: 'relative',
             '&:hover': {
               transform: 'translateY(-4px)',
-              boxShadow: 4,
-            },
+              boxShadow: 4 },
           }}
           onClick={() => handleAssetClick(asset)}
         >
@@ -265,8 +264,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
                 left: 0,
                 right: 0,
                 height: 3,
-                zIndex: 1,
-              }}
+                zIndex: 1 }}
             />
           )}
 
@@ -279,8 +277,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
                 alt={asset.name}
                 sx={{
                   objectFit: 'cover',
-                  backgroundColor: 'action.hover',
-                }}
+                  backgroundColor: 'action.hover' }}
               />
             ) : (
               <Box
@@ -290,8 +287,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
                   alignItems: 'center',
                   justifyContent: 'center',
                   backgroundColor: 'action.hover',
-                  color: 'text.secondary',
-                }}
+                  color: 'text.secondary' }}
               >
                 {getAssetIcon(asset.type)}
               </Box>
@@ -310,8 +306,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: 'white',
-                }}
+                  color: 'white' }}
               >
                 <CircularProgress size={24} color="inherit" />
               </Box>
@@ -325,8 +320,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
                   top: 8,
                   right: 8,
                   display: 'flex',
-                  gap: 0.5,
-                }}
+                  gap: 0.5 }}
               >
                 <IconButton
                   size="small"
@@ -371,8 +365,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontSize: '0.75rem',
-                  fontWeight: 'bold',
-                }}
+                  fontWeight: 'bold' }}
               >
                 ✓
               </Box>
@@ -390,7 +383,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
 
             {viewMode !== 'compact' && (
               <>
-                <Box sx={{ display: 'flex', gap: 0.5, mb: 1, flexWrap: 'wrap' }}>
+       <Box sx={{ display: 'flex', gap: 0.5, mb: 1, flexWrap: 'wrap' }}>
                   <Chip size="small" label={asset.type} variant="outlined" />
                   {asset.size && (
                     <Chip size="small" label={formatFileSize(asset.size)} variant="outlined" />
@@ -405,8 +398,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
                       display: '-webkit-box',
                       WebkitLineClamp: 2,
                       WebkitBoxOrient: 'vertical',
-                      overflow: 'hidden',
-                    }}
+                      overflow: 'hidden' }}
                   >
                     {asset.description}
                   </Typography>
@@ -452,8 +444,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
           borderColor: isSelected ? 'primary.main' : 'transparent',
           transition: 'all 0.2s',
           '&:hover': {
-            backgroundColor: 'action.hover',
-          },
+            backgroundColor: 'action.hover' },
         }}
         onClick={() => handleAssetClick(asset)}
       >
@@ -468,8 +459,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
               backgroundColor: 'action.hover',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-            }}
+              justifyContent: 'center' }}
           >
             {asset.thumbnailUrl || asset.type === 'image' ? (
               <img
@@ -656,8 +646,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
           sx={{
             textAlign: 'center',
             py: 8,
-            color: 'text.secondary',
-          }}
+            color: 'text.secondary' }}
         >
           <ImageIcon sx={{ fontSize: 64, mb: 2, opacity: 0.5 }} />
           <Typography variant="h6" sx={{ mb: 1 }}>
@@ -680,8 +669,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
                 xs: viewMode === 'compact' ? 6 : 12,
                 sm: viewMode === 'compact' ? 4 : 6,
                 md: viewMode === 'compact' ? 3 : 4,
-                lg: viewMode === 'compact' ? 2 : 3,
-              }}
+                lg: viewMode === 'compact' ? 2 : 3 }}
             >
               {renderAssetCard(asset)}
             </Grid>
@@ -738,7 +726,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
       >
         {previewAsset && (
           <>
-            <DialogTitle
+       <DialogTitle
               sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
             >
               {previewAsset.name}
@@ -762,8 +750,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
                       alignItems: 'center',
                       justifyContent: 'center',
                       backgroundColor: 'action.hover',
-                      borderRadius: 2,
-                    }}
+                      borderRadius: 2 }}
                   >
                     {getAssetIcon(previewAsset.type)}
                   </Box>

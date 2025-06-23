@@ -64,7 +64,7 @@ async function handleGetDashboard(req: NextApiRequest, res: NextApiResponse) {
       const systemHealth = {
         overall: 'healthy',
         components: {},
-          alerting: alertingHealth,
+  alerting: alertingHealth,
           dashboard: true,
           api: true}};
 
@@ -124,8 +124,8 @@ async function handleUpdateMetric(req: NextApiRequest, res: NextApiResponse) {
 
     return res.status(200).json({
       success: true,
-      data: { metric, value, updated: true },
-      meta: { timestamp: new Date().toISOString() }});
+      data: { metric, value, updated: true  },
+  meta: { timestamp: new Date().toISOString() }});
   } catch (error) {
     console.error('Failed to update metric:', error);
     return res.status(500).json({

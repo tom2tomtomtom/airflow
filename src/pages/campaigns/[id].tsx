@@ -43,8 +43,7 @@ const platformIcons: Record<string, React.ReactElement> = {
   instagram: <Instagram />,
   twitter: <Twitter />,
   youtube: <YouTube />,
-  linkedin: <LinkedIn />,
-};
+  linkedin: <LinkedIn /> };
 const statusColors: Record<
   string,
   'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning'
@@ -53,15 +52,13 @@ const statusColors: Record<
   active: 'primary',
   paused: 'warning',
   completed: 'success',
-  cancelled: 'error',
-};
+  cancelled: 'error' };
 const statusIcons: Record<string, React.ReactElement> = {
   draft: <Edit fontSize="small" />,
   active: <TrendingUp fontSize="small" />,
   paused: <Warning fontSize="small" />,
   completed: <CheckCircle fontSize="small" />,
-  cancelled: <Error fontSize="small" />,
-};
+  cancelled: <Error fontSize="small" /> };
 export default function CampaignDetail() {
   const router = useRouter();
   const { id } = router.query;
@@ -114,6 +111,6 @@ export default function CampaignDetail() {
   // In a real app, you might fetch the campaign data here
   // For now, we'll rely on client-side data fetching
   return {
-    props: {},
+    props: {}
   };
 }

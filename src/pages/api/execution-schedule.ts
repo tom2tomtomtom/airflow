@@ -34,8 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       user_id,
       config,
       status: 'scheduled',
-      created_at: new Date().toISOString(),
-    })
+      created_at: new Date().toISOString() })
     .select()
     .single();
   if (error) {

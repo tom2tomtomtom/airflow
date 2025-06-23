@@ -38,19 +38,19 @@ export default async function handler(
       case 'test':
         // Simple connectivity test
         const testResponse = await axios.get(`${baseUrl}/templates`, {
-          headers: {},
-            'Authorization': `Bearer ${apiKey}`},
+          headers: {
+        'Authorization': `Bearer ${apiKey
+      }`},
           params: { limit: 1 }
         });
 
         return res.status(200).json({ 
           success: true, 
           data: {},
-            message: 'Creatomate integration is working perfectly! Ready for AIrFLOW video generation.',
+  message: 'Creatomate integration is working perfectly! Ready for AIrFLOW video generation.',
             templateCount: testResponse.data.length,
-            rateLimitRemaining: testResponse.headers['x-ratelimit-remaining'] || 'Unknown'
-          },
-          action: actionPath,
+            rateLimitRemaining: testResponse.headers['x-ratelimit-remaining'] || 'Unknown' },
+  action: actionPath,
           timestamp: new Date().toISOString()
         });
 
@@ -58,10 +58,11 @@ export default async function handler(
         // Get templates
         if (req.method === 'GET') {
           const templatesResponse = await axios.get(`${baseUrl}/templates`, {
-            headers: {},
-              'Authorization': `Bearer ${apiKey}`},
+            headers: {
+        'Authorization': `Bearer ${apiKey
+      }`},
             params: {},
-              limit: req.query.limit || 10,
+  limit: req.query.limit || 10,
               offset: req.query.offset || 0,
               tags: req.query.tags
             }
@@ -81,8 +82,9 @@ export default async function handler(
         if (req.method === 'POST') {
           // Create new render
           const renderResponse = await axios.post(`${baseUrl}/renders`, req.body, {
-            headers: {},
-              'Authorization': `Bearer ${apiKey}`,
+            headers: {
+        'Authorization': `Bearer ${apiKey
+      }`,
               'Content-Type': 'application/json'}});
 
           return res.status(200).json({ 
@@ -103,8 +105,9 @@ export default async function handler(
           }
 
           const statusResponse = await axios.get(`${baseUrl}/renders/${renderId}`, {
-            headers: {},
-              'Authorization': `Bearer ${apiKey}`}});
+            headers: {
+        'Authorization': `Bearer ${apiKey
+      }`}});
 
           return res.status(200).json({ 
             success: true, 
@@ -119,18 +122,18 @@ export default async function handler(
         // Get account information
         if (req.method === 'GET') {
           const accountResponse = await axios.get(`${baseUrl}/account`, {
-            headers: {},
-              'Authorization': `Bearer ${apiKey}`}});
+            headers: {
+        'Authorization': `Bearer ${apiKey
+      }`}});
 
           return res.status(200).json({ 
             success: true, 
             data: {},
-              plan: accountResponse.data.plan,
+  plan: accountResponse.data.plan,
               creditsRemaining: accountResponse.data.credits_remaining,
               creditsUsed: accountResponse.data.credits_used,
-              rateLimitRemaining: accountResponse.headers['x-ratelimit-remaining'] || 'Unknown'
-            },
-            action: actionPath,
+              rateLimitRemaining: accountResponse.headers['x-ratelimit-remaining'] || 'Unknown' },
+  action: actionPath,
             timestamp: new Date().toISOString()
           });
         }
@@ -188,6 +191,6 @@ export default async function handler(
 
 export const config = {
   api: {},
-    externalResolver: true},
+  externalResolver: true },
   maxDuration: 60, // Longer timeout for video rendering operations
 };

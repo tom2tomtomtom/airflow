@@ -76,8 +76,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
               mb: 3,
               animation: 'pulse 2s infinite',
               '@keyframes pulse': {
-                '0%': { transform: 'scale(1)' },
-                '50%': { transform: 'scale(1.05)' },
+                '0%': { transform: 'scale(1)'  }
+                '50%': { transform: 'scale(1.05)'  }
                 '100%': { transform: 'scale(1)' }}
             }}
           >
@@ -92,8 +92,8 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
           </Typography>
           <Grid container spacing={2} sx={{ mt: 3 }}>
             {[
-              { icon: <Speed />, label: '10x Faster', desc: 'Create videos in minutes' },
-              { icon: <AutoAwesome />, label: 'AI-Powered', desc: 'Smart automation' },
+              { icon: <Speed />, label: '10x Faster', desc: 'Create videos in minutes'  }
+              { icon: <AutoAwesome />, label: 'AI-Powered', desc: 'Smart automation'  }
               { icon: <Group />, label: 'Team Ready', desc: 'Collaborate seamlessly' }
             ].map((feature, index) => (
               <Grid size={{ xs: 12, md: 4 }} key={index}>
@@ -133,22 +133,19 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
                 title: 'Upload Brief',
                 desc: 'Drag & drop your brief document',
                 icon: <CloudUpload />,
-                color: '#2196F3'
-              },
+                color: '#2196F3' }
               {
                 step: '2',
                 title: 'AI Processing',
                 desc: 'AI extracts motivations and generates copy',
                 icon: <AutoAwesome />,
-                color: '#9C27B0'
-              },
+                color: '#9C27B0' }
               {
                 step: '3',
                 title: 'Select & Customize',
                 desc: 'Choose templates and assets',
                 icon: <VideoLibrary />,
-                color: '#FF9800'
-              },
+                color: '#FF9800' }
               {
                 step: '4',
                 title: 'Render & Share',
@@ -319,7 +316,7 @@ export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({
         </Box>
       ),
       action: {},
-        label: 'Get Started',
+  label: 'Get Started',
         onClick: onComplete
       }
     }

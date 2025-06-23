@@ -10,13 +10,13 @@ import { jest } from '@jest/globals';
 const mockSupabaseClient = {
   from: jest.fn(),
   auth: {},
-    getUser: jest.fn(),
+  getUser: jest.fn(),
     signInWithPassword: jest.fn(),
     signOut: jest.fn(),
-    onAuthStateChange: jest.fn()},
+    onAuthStateChange: jest.fn() },
   rpc: jest.fn(),
   storage: {},
-    from: jest.fn()},
+  from: jest.fn() },
   channel: jest.fn(),
   removeChannel: jest.fn()};
 
@@ -160,12 +160,12 @@ describe('Database Layer Testing', () => {
         platforms: ['facebook', 'instagram'],
         target_audience: 'Young adults',
         budget: 10000,
-        timeline: { start: '2024-01-01', end: '2024-02-01' },
-        objectives: { primary: 'Brand awareness' },
-        key_messaging: { tone: 'Professional' },
-        brand_guidelines: { colors: ['#1976d2'] },
-        confidence_scores: { overall: 0.95 },
-        created_at: '2024-01-01T00:00:00Z',
+        timeline: { start: '2024-01-01', end: '2024-02-01'  },
+  objectives: { primary: 'Brand awareness'  },
+  key_messaging: { tone: 'Professional'  },
+  brand_guidelines: { colors: ['#1976d2']  },
+  confidence_scores: { overall: 0.95  },
+  created_at: '2024-01-01T00:00:00Z',
         updated_at: '2024-01-01T00:00:00Z'};
 
       mockQueryBuilder.single.mockResolvedValue({ data: mockBrief, error: null });
@@ -189,15 +189,15 @@ describe('Database Layer Testing', () => {
         role: 'admin',
         permissions: ['read', 'write', 'admin'],
         preferences: {},
-          theme: 'dark',
+  theme: 'dark',
           notifications: {},
-            email: true,
+  email: true,
             inApp: true,
             exports: true,
             comments: true,
             approvals: true}},
-        metadata: { department: 'Marketing' },
-        tenant_id: 'default',
+        metadata: { department: 'Marketing'  },
+  tenant_id: 'default',
         created_at: '2024-01-01T00:00:00Z',
         updated_at: '2024-01-01T00:00:00Z'};
 
@@ -223,9 +223,9 @@ describe('Database Layer Testing', () => {
         height: 1920,
         width: 1080,
         structure: {},
-          layers: [
-            { type: 'background', color: '#ffffff' },
-            { type: 'text', content: 'Hello World' },
+  layers: [
+            { type: 'background', color: '#ffffff'  }
+            { type: 'text', content: 'Hello World'  }
           ]},
         thumbnail_url: 'https://example.com/thumbnail.jpg',
         created_by: 'user-123',
@@ -272,8 +272,8 @@ describe('Database Layer Testing', () => {
 
     it('should handle READ operations with filters', async () => {
       const mockClients = [
-        { id: 'client-1', name: 'Client 1', industry: 'Tech' },
-        { id: 'client-2', name: 'Client 2', industry: 'Tech' },
+        { id: 'client-1', name: 'Client 1', industry: 'Tech'  }
+        { id: 'client-2', name: 'Client 2', industry: 'Tech'  }
       ];
 
       // Mock the final result of the query chain
@@ -321,8 +321,8 @@ describe('Database Layer Testing', () => {
 
     it('should handle DELETE operations', async () => {
       const mockResponse = {
-        data: { id: 'client-123' },
-        error: null};
+        data: { id: 'client-123'  },
+  error: null};
 
       mockQueryBuilder.single.mockResolvedValue(mockResponse);
 
@@ -456,8 +456,8 @@ describe('Database Layer Testing', () => {
   describe('Transaction Management', () => {
     it('should handle RPC calls for transactions', async () => {
       const mockTransactionResult = {
-        data: { success: true, client_id: 'client-123', brief_id: 'brief-123' },
-        error: null};
+        data: { success: true, client_id: 'client-123', brief_id: 'brief-123'  },
+  error: null};
 
       mockSupabaseClient.rpc.mockResolvedValue(mockTransactionResult);
 
@@ -515,12 +515,12 @@ describe('Database Layer Testing', () => {
           id: 'brief-123',
           name: 'Test Brief',
           client: {},
-            id: 'client-123',
+  id: 'client-123',
             name: 'Test Client',
-            industry: 'Technology'},
-          motivations: [
-            { id: 'motivation-1', text: 'Increase brand awareness' },
-            { id: 'motivation-2', text: 'Drive conversions' },
+            industry: 'Technology' },
+  motivations: [
+            { id: 'motivation-1', text: 'Increase brand awareness'  }
+            { id: 'motivation-2', text: 'Drive conversions'  }
           ]},
       ];
 
@@ -546,8 +546,8 @@ describe('Database Layer Testing', () => {
 
     it('should handle full-text search', async () => {
       const mockSearchResults = [
-        { id: 'brief-1', name: 'Marketing Brief', raw_content: 'Brand awareness campaign' },
-        { id: 'brief-2', name: 'Product Brief', raw_content: 'Product launch strategy' },
+        { id: 'brief-1', name: 'Marketing Brief', raw_content: 'Brand awareness campaign'  }
+        { id: 'brief-2', name: 'Product Brief', raw_content: 'Product launch strategy'  }
       ];
 
       // Mock the final result of the query chain
@@ -613,8 +613,8 @@ describe('Database Layer Testing', () => {
 
     it('should handle range queries', async () => {
       const mockRangeResults = [
-        { id: 'brief-1', budget: 5000, created_at: '2024-01-15T00:00:00Z' },
-        { id: 'brief-2', budget: 7500, created_at: '2024-01-20T00:00:00Z' },
+        { id: 'brief-1', budget: 5000, created_at: '2024-01-15T00:00:00Z'  }
+        { id: 'brief-2', budget: 7500, created_at: '2024-01-20T00:00:00Z'  }
       ];
 
       // Mock the final result of the query chain
@@ -665,14 +665,14 @@ describe('Database Layer Testing', () => {
       const channel = supabase
         .channel('table-changes')
         .on('postgres_changes',
-          { event: '*', schema: 'public', table: 'clients' },
+          { event: '*', schema: 'public', table: 'clients'  }
           (payload) => console.log('Change received!', payload)
         )
         .subscribe();
 
       expect(mockChannel.on).toHaveBeenCalledWith(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'clients' },
+        { event: '*', schema: 'public', table: 'clients'  }
         expect.any(Function)
       );
       expect(mockChannel.subscribe).toHaveBeenCalled();
@@ -699,12 +699,12 @@ describe('Database Layer Testing', () => {
     it('should handle user authentication', async () => {
       const mockAuthResponse = {
         data: {},
-          user: {},
-            id: 'user-123',
+  user: {},
+  id: 'user-123',
             email: 'test@example.com',
             user_metadata: { first_name: 'John', last_name: 'Doe' }},
           session: {},
-            access_token: 'access-token',
+  access_token: 'access-token',
             refresh_token: 'refresh-token',
             expires_at: Date.now() + 3600000}},
         error: null};
@@ -721,9 +721,9 @@ describe('Database Layer Testing', () => {
 
     it('should handle authentication errors', async () => {
       const mockAuthError = {
-        data: { user: null, session: null },
-        error: {},
-          message: 'Invalid login credentials',
+        data: { user: null, session: null  },
+  error: {},
+  message: 'Invalid login credentials',
           status: 400}};
 
       mockSupabaseClient.auth.signInWithPassword.mockResolvedValue(mockAuthError);
@@ -739,8 +739,8 @@ describe('Database Layer Testing', () => {
     it('should handle user session retrieval', async () => {
       const mockUserResponse = {
         data: {},
-          user: {},
-            id: 'user-123',
+  user: {},
+  id: 'user-123',
             email: 'test@example.com',
             role: 'authenticated'}},
         error: null};
@@ -791,8 +791,8 @@ describe('Database Layer Testing', () => {
     it('should handle file upload operations', async () => {
       const mockStorageBucket = {
         upload: jest.fn().mockResolvedValue({
-          data: { path: 'assets/test-file.jpg' },
-          error: null})};
+          data: { path: 'assets/test-file.jpg'  },
+  error: null})};
 
       mockSupabaseClient.storage.from.mockReturnValue(mockStorageBucket);
 

@@ -125,19 +125,19 @@ async function generateCopyWithAI(motivations: Motivation[], briefData: BriefDat
   const prompt = `You are an expert copywriter specializing in conversion-focused ad copy. Create compelling copy that bridges the specific motivations with the exact product/service and target audience from the brief.
 
 CREATIVE BRIEF CONTEXT:
-Title: ${briefData.title}
-Objective: ${briefData.objective}
+Title: ${briefData.title},
+  Objective: ${briefData.objective}
 Target Audience: ${briefData.targetAudience}
-Key Messages: ${briefData.keyMessages.join(', ')}
-Platforms: ${briefData.platforms.join(', ')}
+Key Messages: ${briefData.keyMessages.join(', ')},
+  Platforms: ${briefData.platforms.join(', ')}
 Product/Service: ${briefData.product || briefData.service || 'Not specified'}
-Value Proposition: ${briefData.valueProposition || 'Not specified'}
-Industry: ${briefData.industry || 'Not specified'}
+Value Proposition: ${briefData.valueProposition || 'Not specified'},
+  Industry: ${briefData.industry || 'Not specified'}
 
 SELECTED MOTIVATIONS TO ADDRESS:
 ${motivations.map((m, i) => `${i + 1}. "${m.title}": ${m.description}\n   Target Emotions: ${m.targetEmotions.join(', ')}\n   Reasoning: ${m.reasoning}`).join('\n\n')}
-
-TASK: Generate 3 copy variations for EACH motivation that:
+,
+  TASK: Generate 3 copy variations for EACH motivation that:
 1. Directly address the specific motivation described
 2. Relate to the exact product/service in the brief
 3. Speak to the target audience using their language/concerns
@@ -307,31 +307,27 @@ function generateCopyWithTemplates(motivations: Motivation[], briefData: BriefDa
   // Platform-specific adaptations
   const platformAdaptations: Record<string, { maxWords: number; style: string; emojis: boolean; hashtags: boolean }> = {
     Instagram: {},
-      maxWords: 8,
+  maxWords: 8,
       style: 'visual',
       emojis: true,
-      hashtags: true
-    },
-    Facebook: {},
-      maxWords: 10,
+      hashtags: true },
+  Facebook: {},
+  maxWords: 10,
       style: 'conversational',
       emojis: false,
-      hashtags: false
-    },
-    LinkedIn: {},
-      maxWords: 10,
+      hashtags: false },
+  LinkedIn: {},
+  maxWords: 10,
       style: 'professional',
       emojis: false,
-      hashtags: false
-    },
-    Twitter: {},
-      maxWords: 6,
+      hashtags: false },
+  Twitter: {},
+  maxWords: 6,
       style: 'concise',
       emojis: true,
-      hashtags: true
-    },
-    TikTok: {},
-      maxWords: 7,
+      hashtags: true },
+  TikTok: {},
+  maxWords: 7,
       style: 'trendy',
       emojis: true,
       hashtags: true

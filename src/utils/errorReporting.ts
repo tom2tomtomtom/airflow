@@ -41,20 +41,22 @@ export class ErrorReporter {
     window.addEventListener('unhandledrejection', (_event) => {
       this.reportError(new Error(`Unhandled Promise Rejection: ${event.reason}`), {
         action: 'unhandled_promise_rejection',
-        metadata: {},
+        metadata: {
           reason: event.reason,
-          promise: event.promise}});
+          promise: event.promise },
+      });
     });
 
     // Handle global JavaScript errors
     window.addEventListener('error', (_event) => {
       this.reportError(new Error(event.message), {
         action: 'global_error',
-        metadata: {},
-          filename: event.filename,
+        metadata: {
+        filename: event.filename,
           lineno: event.lineno,
           colno: event.colno,
-          source: (event as any).source}});
+          source: (event as any).source
+      }});
     });
   }
 
@@ -74,8 +76,9 @@ export class ErrorReporter {
       // Send to error reporting API
       const response = await fetch('/api/errors', {
         method: 'POST',
-        headers: {},
-          'Content-Type': 'application/json'},
+        headers: {
+        'Content-Type': 'application/json'
+      },
         body: JSON.stringify(errorReport)});
       
       if (!response.ok) {
@@ -97,28 +100,31 @@ export class ErrorReporter {
   async reportAPIError(error: Error, endpoint: string, method: string = 'GET') {
     return this.reportError(error, {
       action: 'api_error',
-      metadata: {},
+      metadata: {
         endpoint,
         method,
-        timestamp: new Date().toISOString()}});
+        timestamp: new Date().toISOString()
+      }});
   }
 
   async reportUIError(error: Error, component: string, action: string) {
     return this.reportError(error, {
       action: 'ui_error',
       component,
-      metadata: {},
+      metadata: {
         userAction: action,
-        timestamp: new Date().toISOString()}});
+        timestamp: new Date().toISOString()
+      }});
   }
 
   async reportValidationError(error: Error, form: string, field?: string) {
     return this.reportError(error, {
       action: 'validation_error',
       component: form,
-      metadata: {},
+      metadata: {
         field,
-        timestamp: new Date().toISOString()}});
+        timestamp: new Date().toISOString()
+      }});
   }
 }
 

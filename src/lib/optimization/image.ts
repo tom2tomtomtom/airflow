@@ -68,10 +68,10 @@ export class ImageOptimizer {
   
   // Quality settings for different formats
   private readonly QUALITY_SETTINGS = {
-    webp: { quality: 85, effort: 4 },
-    avif: { quality: 75, effort: 4 },
-    jpeg: { quality: 85, progressive: true },
-    png: { compressionLevel: 8, progressive: true }
+    webp: { quality: 85, effort: 4  },
+  avif: { quality: 75, effort: 4  },
+  jpeg: { quality: 85, progressive: true  },
+  png: { compressionLevel: 8, progressive: true }
   };
   
   async optimizeImage(
@@ -222,7 +222,7 @@ export class ImageOptimizer {
   async generatePlaceholder(
     input: Buffer | string,
     options: {},
-      width?: number;
+  width?: number;
       height?: number;
       blur?: number;
       quality?: number;
@@ -333,8 +333,8 @@ export class ImageOptimizer {
       if (opacity < 1) {
         await overlaySharp.composite([{
           input: Buffer.from([255, 255, 255, Math.round(255 * opacity)]),
-          raw: { width: 1, height: 1, channels: 4 },
-          tile: true,
+          raw: { width: 1, height: 1, channels: 4  },
+  tile: true,
           blend: 'dest-in'
         }]);
       }

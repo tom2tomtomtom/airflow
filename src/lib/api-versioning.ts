@@ -167,7 +167,7 @@ export function formatErrorResponse(
       return {
         success: false,
         error: {},
-          message: errorMessage,
+  message: errorMessage,
           code: errorCode,
           timestamp: new Date().toISOString(),
           statusCode}};
@@ -219,10 +219,11 @@ export function addResponseMetadata<T>(
       return {
         success: true,
         data,
-        metadata: {},
-          timestamp: new Date().toISOString(),
+        metadata: {
+        timestamp: new Date().toISOString(),
           version: API_VERSIONS[version],
-          ...metadata}};
+          ...metadata
+      }};
     
     default:
       return data;

@@ -149,7 +149,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       statistics,
       events: Object.values(WEBHOOK_EVENTS),
       pagination: {},
-        limit: filters.limit,
+  limit: filters.limit,
         offset: filters.offset,
         total: count || 0
       }
@@ -246,7 +246,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
     await triggerTestWebhook(webhook);
 
     return res.status(201).json({ 
-      data: {},
+      data: { }
         ...webhook,
         secret: `${secret.substring(0, 8)}...` // Don't expose full secret
       }
@@ -271,10 +271,11 @@ async function testWebhookUrl(url: string, timeoutMs: number = 10000): Promise<{
 
     const response = await fetch(url, {
       method: 'POST',
-      headers: {},
+      headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'AIrFLOW-Webhook-Test/1.0',
-        'X-AIrFLOW-Test': 'true'},
+        'X-AIrFLOW-Test': 'true'
+      },
       body: JSON.stringify({
         event: 'webhook.test',
         timestamp: new Date().toISOString(),
@@ -384,7 +385,7 @@ async function triggerTestWebhook(webhook: any): Promise<void> {
       timestamp: new Date().toISOString(),
       webhook_id: webhook.id,
       data: {},
-        message: 'Webhook successfully configured!',
+  message: 'Webhook successfully configured!',
         client_id: webhook.client_id,
         events: webhook.events}
     };

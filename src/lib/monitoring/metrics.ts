@@ -9,7 +9,7 @@ const logger = getLogger('metrics');
 export interface SystemMetrics {
   timestamp: number;,
   cpu: {},
-    usage: number;,
+  usage: number;,
     load: [number, number, number]; // 1min, 5min, 15min
   };
   memory: {
@@ -33,7 +33,7 @@ export interface SystemMetrics {
 export interface ApplicationMetrics {
   timestamp: number;,
   requests: {},
-    total: number;,
+  total: number;,
     successful: number;
     failed: number;,
     avgResponseTime: number;
@@ -68,7 +68,7 @@ export interface ApplicationMetrics {
 export interface BusinessMetrics {
   timestamp: number;,
   clients: {},
-    total: number;,
+  total: number;,
     active: number;
     newSignups: number;
   };
@@ -84,7 +84,7 @@ export interface BusinessMetrics {
     completed: number;
   };
   revenue: {},
-    mrr?: number;
+  mrr?: number;
     arr?: number;
     churn?: number;
   };
@@ -143,9 +143,8 @@ export class MetricsCollector {
         free: os.freemem(),
         total: os.totalmem(),
         heapUsed: process.memoryUsage().heapUsed,
-        heapTotal: process.memoryUsage().heapTotal
-      },
-      disk: {
+        heapTotal: process.memoryUsage().heapTotal },
+  disk: {
         used: 0, // Would need additional library for disk metrics
         free: 0,
         total: 0
@@ -260,9 +259,8 @@ export class MetricsCollector {
         clients: {
           total: totalClients,
           active: activeClients,
-          newSignups: newClients
-        },
-        workflows: {
+          newSignups: newClients },
+  workflows: {
           created: workflowsCreated,
           completed: workflowsCompleted,
           failed: workflowsFailed,
@@ -271,9 +269,8 @@ export class MetricsCollector {
         campaigns: {
           active: activeCampaigns,
           created: campaignsCreated,
-          completed: completedCampaigns
-        },
-        revenue: {},
+          completed: completedCampaigns },
+  revenue: { }
           // Would be populated from billing system
         }
       };
@@ -363,8 +360,8 @@ export class MetricsCollector {
     // This would come from error logging
     return {
       total: 0,
-      byType: {}
-      byRoute: {}
+      byType: {},
+  byRoute: {}
     };
   }
   
@@ -402,8 +399,8 @@ export class MetricsCollector {
             metric_name: `${type}_metrics`,
             metric_type: 'gauge',
             value: JSON.stringify(metric).length, // Store size as value
-            tags: { type, timestamp: metric.timestamp },
-            timestamp: new Date(metric.timestamp).toISOString()
+            tags: { type, timestamp: metric.timestamp  },
+  timestamp: new Date(metric.timestamp).toISOString()
           }))
         );
       

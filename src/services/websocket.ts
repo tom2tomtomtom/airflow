@@ -359,8 +359,7 @@ export const useWebSocket = () => {
   return {
     connected,
     error,
-    service: webSocketService,
-  };
+    service: webSocketService };
 };
 
 // Types are already exported above as interfaces

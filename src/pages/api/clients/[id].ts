@@ -38,12 +38,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {},
-        get(name: string) {
+  get(name: string) {
           return req.cookies[name];
         },
         set(name: string, value: string, options: any) {
           // We don't need to set cookies in API routes
-        },
+        ,
+ }
         remove(name: string, options: any) {
           // We don't need to remove cookies in API routes
         }}}
@@ -120,9 +121,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
       logo: client.logo_url,
       primaryColor: client.primary_color || '#1976d2',
       secondaryColor: client.secondary_color || '#dc004e',
-      socialMedia: client.social_media || {},
-      brand_guidelines: client.brand_guidelines || {},
-      isActive: client.is_active !== false,
+      socialMedia: client.social_media || { },
+  brand_guidelines: client.brand_guidelines || { },
+  isActive: client.is_active !== false,
       dateCreated: client.created_at,
       lastModified: client.updated_at,
       contacts: contacts || []} as unknown as Client;

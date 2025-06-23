@@ -34,8 +34,7 @@ const platformIcons: Record<string, React.ReactNode> = {
   YouTube: <YouTubeIcon sx={{ color: '#FF0000' }} />,
   LinkedIn: <LinkedInIcon sx={{ color: '#0A66C2' }} />,
   Pinterest: <PinterestIcon sx={{ color: '#E60023' }} />,
-  TikTok: <AspectRatioIcon sx={{ color: '#000000' }} />,
-};
+  TikTok: <AspectRatioIcon sx={{ color: '#000000' }} /> };
 interface TemplateCardProps {
   template: Template;
   onEdit: (template: Template) => void;
@@ -68,8 +67,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          position: 'relative',
-        }}
+          position: 'relative' }}
       >
         {' '}
         {platformIcons[template.platform] || (

@@ -6,7 +6,7 @@ import DashboardLayout from '@/components/DashboardLayout';
 const GenerateEnhancedPage: React.FC = () => {
   return (
     <>
-      <Head>
+       <Head>
         <title>Generate Enhanced | AIRFLOW</title>
       </Head>
       <DashboardLayout title="Generate Enhanced">

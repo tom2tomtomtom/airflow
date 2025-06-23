@@ -2,9 +2,10 @@ import { GetServerSideProps } from 'next';
 
 export const getServerSideProps: GetServerSideProps = async () => {
   return {
-    redirect: {},
+    redirect: {
       destination: '/assets',
-      permanent: false}};
+      permanent: false },
+  };
 };
 
 const ContentPage = (): JSX.Element | null => {

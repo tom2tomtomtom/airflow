@@ -131,16 +131,16 @@ export function estimateCost(
   tokens: number
 ): number {
   const costPerK: Record<string, Record<string, number>> = {
-    openai: {},
+    openai: { }
       'gpt-4': 0.06,
       'gpt-4o-mini': 0.002,
       'gpt-3.5-turbo': 0.002,
       'dall-e-3': 0.04},
-    anthropic: {},
+    anthropic: { }
       'claude-3-opus': 0.06,
       'claude-3-sonnet': 0.012,
       'claude-3-haiku': 0.0008},
-    elevenlabs: {},
+    elevenlabs: { }
       'eleven_monolingual_v1': 0.30}
   };
 
@@ -163,13 +163,13 @@ export function getRecommendedModel(
 } {
   const models = {
     openai: [
-      { name: 'gpt-4', cost: 0.06, quality: 'highest' },
-      { name: 'gpt-4o-mini', cost: 0.002, quality: 'high' },
+      { name: 'gpt-4', cost: 0.06, quality: 'highest'  }
+      { name: 'gpt-4o-mini', cost: 0.002, quality: 'high'  }
       { name: 'gpt-3.5-turbo', cost: 0.002, quality: 'good' }
     ],
     anthropic: [
-      { name: 'claude-3-opus', cost: 0.06, quality: 'highest' },
-      { name: 'claude-3-sonnet', cost: 0.012, quality: 'high' },
+      { name: 'claude-3-opus', cost: 0.06, quality: 'highest'  }
+      { name: 'claude-3-sonnet', cost: 0.012, quality: 'high'  }
       { name: 'claude-3-haiku', cost: 0.0008, quality: 'good' }
     ]
   };

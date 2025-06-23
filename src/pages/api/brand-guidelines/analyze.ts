@@ -10,22 +10,22 @@ import pdf from 'pdf-parse';
 
 export const config = {
   api: {},
-    bodyParser: false}};
+  bodyParser: false}};
 
 interface BrandGuidelines {
   colors: {},
-    primary: string[];
+  primary: string[];
     secondary: string[];
     accent: string[];
   };
   toneOfVoice: {},
-    personality: string[];
+  personality: string[];
     communication_style: string;
     dos: string[];
     donts: string[];
   };
   typography: {},
-    primary_font: string;
+  primary_font: string;
     secondary_font: string;
     font_weights: string[];
   };

@@ -135,7 +135,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
     .limit(10);
 
   return res.json({
-    data: {},
+    data: { }
       ...asset,
       related_motivations: relatedMotivations,
       usage_in_variations: contentVariations || [],

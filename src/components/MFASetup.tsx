@@ -108,8 +108,10 @@ export const MFASetup: React.FC = () => {
     try {
       const response = await fetch('/api/auth/mfa/verify', {
         method: 'POST',
-        headers: {},
-          'Content-Type': 'application/json'},
+        headers: {
+        'Content-Type': 'application/json'
+      
+      },
         body: JSON.stringify({ token: verificationCode })});
       const data = await response.json();
 
@@ -188,7 +190,7 @@ export const MFASetup: React.FC = () => {
                     primary="MFA Status"
                     secondary={
                       <>
-                        <Chip
+       <Chip
                           label={status?.isEnabled ? 'Enabled' : 'Disabled'}
                           color={status?.isEnabled ? 'success' : 'warning'}
                           size="small"
@@ -204,7 +206,7 @@ export const MFASetup: React.FC = () => {
 
                 {status?.isEnabled && (
                   <>
-                    <Divider variant="inset" component="li" />
+       <Divider variant="inset" component="li" />
                     <ListItem>
                       <ListItemIcon>
                         <KeyIcon />
@@ -224,7 +226,7 @@ export const MFASetup: React.FC = () => {
 
                     {status.lastUsedAt && (
                       <>
-                        <Divider variant="inset" component="li" />
+       <Divider variant="inset" component="li" />
                         <ListItem>
                           <ListItemText
                             primary="Last Used"

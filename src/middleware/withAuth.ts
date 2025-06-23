@@ -35,19 +35,20 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
         cookies: {},
-          get(name: string) {
+  get(name: string) {
             return req.cookies[name];
           },
           set(name: string, value: string, options: unknown) {
             // We don't need to set cookies in API routes
-          },
+          ,
+ }
           remove(name: string, options: unknown) {
             // We don't need to remove cookies in API routes }
     );
 
     const {
-      data: { user: cookieUser },
-      error: cookieError} = await supabase.auth.getUser();
+      data: { user: cookieUser  },
+  error: cookieError} = await supabase.auth.getUser();
 
     if (cookieUser && !cookieError) {
       return { user: cookieUser, supabase };
@@ -67,14 +68,14 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
           cookies: {},
-            get: () => undefined,
-            set: () => {},
-            remove: () => { }
+  get: () => undefined,
+            set: () => { },
+  remove: () => { }
       );
 
       const {
-        data: { user: headerUser },
-        error: headerError} = await supabase.auth.getUser(token);
+        data: { user: headerUser  },
+  error: headerError} = await supabase.auth.getUser(token);
 
       if (headerUser && !headerError) {
         return { user: headerUser, supabase };
@@ -93,14 +94,14 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
           cookies: {},
-            get: () => undefined,
-            set: () => {},
-            remove: () => { }
+  get: () => undefined,
+            set: () => { },
+  remove: () => { }
       );
 
       const {
-        data: { user: customUser },
-        error: customError} = await supabase.auth.getUser(customToken);
+        data: { user: customUser  },
+  error: customError} = await supabase.auth.getUser(customToken);
 
       if (customUser && !customError) {
         return { user: customUser, supabase };

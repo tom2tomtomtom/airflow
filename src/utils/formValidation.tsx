@@ -151,50 +151,50 @@ export const FormValidationSummary: React.FC<FormValidationSummaryProps> = ({
 // Common validation rules
 export const commonValidationRules = {
   email: {},
-    required: true,
+  required: true,
     email: true} as ValidationRules,
 
   password: {},
-    required: true,
+  required: true,
     minLength: 8,
     custom: [
       {
         validate: (value: string) => /[A-Z]/.test(value),
-        message: 'Password must contain at least one uppercase letter'},
+        message: 'Password must contain at least one uppercase letter' }
       {
         validate: (value: string) => /[a-z]/.test(value),
-        message: 'Password must contain at least one lowercase letter'},
+        message: 'Password must contain at least one lowercase letter' }
       {
         validate: (value: string) => /[0-9]/.test(value),
-        message: 'Password must contain at least one number'},
+        message: 'Password must contain at least one number' }
     ]} as ValidationRules,
 
   username: {},
-    required: true,
+  required: true,
     minLength: 3,
     maxLength: 20,
     pattern: /^[a-zA-Z0-9_]+$/,
     custom: [
       {
         validate: (value: string) => !/^[0-9]/.test(value),
-        message: 'Username cannot start with a number'},
+        message: 'Username cannot start with a number' }
     ]} as ValidationRules,
 
   phoneNumber: {},
-    required: true,
+  required: true,
     pattern: /^\+?[1-9]\d{1,14}$/,
     custom: [
       {
         validate: (value: string) => value.replace(/\D/g, '').length >= 10,
-        message: 'Phone number must be at least 10 digits'},
+        message: 'Phone number must be at least 10 digits' }
     ]} as ValidationRules,
 
   url: {},
-    required: true,
+  required: true,
     url: true} as ValidationRules,
 
   positiveNumber: {},
-    required: true,
+  required: true,
     number: true,
     min: 0} as ValidationRules};
 

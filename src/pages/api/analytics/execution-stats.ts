@@ -86,13 +86,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       failed_executions: failedExecutions,
       success_rate: successRate,
       average_completion_time: averageCompletionTime,
-      total_processing_time: totalProcessingTime,
-    };
+      total_processing_time: totalProcessingTime };
 
     res.status(200).json({
       success: true,
-      data: stats,
-    });
+      data: stats });
   } catch (error: any) {
     console.error('Error in execution stats API:', error);
     return errorResponse(res, ApiErrorCode.INTERNAL_ERROR, 'Internal server error', 500);

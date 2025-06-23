@@ -8,8 +8,7 @@
 export function formatCurrency(amount: number, currency: string = 'USD'): string {
   const options: Intl.NumberFormatOptions = {
     style: 'currency',
-    currency: currency,
-  };
+    currency: currency };
 
   // JPY doesn't use decimals
   if (currency === 'JPY') {

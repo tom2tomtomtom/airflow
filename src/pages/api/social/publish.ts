@@ -8,7 +8,7 @@ import axios from 'axios';
 interface PublishRequest {
   platforms: string[];
   content: {},
-    text?: string;
+  text?: string;
     images?: string[];
     video?: string;
     link?: string;
@@ -54,8 +54,9 @@ async function publishToTwitter(accessToken: string, content: any): Promise<{ su
   try {
     const response = await fetch('https://api.twitter.com/2/tweets', {
       method: 'POST',
-      headers: {},
-        'Authorization': `Bearer ${accessToken}`,
+      headers: {
+        'Authorization': `Bearer ${accessToken
+      }`,
         'Content-Type': 'application/json'},
       body: JSON.stringify({
         text: content.text || ''})});
@@ -123,12 +124,12 @@ async function publishToLinkedIn(accessToken: string, profileId: string, content
     const postData = {
       author: `urn:li:person:${profileId}`,
       lifecycleState: 'PUBLISHED',
-      specificContent: {},
+      specificContent: { }
         'com.linkedin.ugc.ShareContent': {
           shareCommentary: {},
-            text: content.text || ''},
-          shareMediaCategory: 'NONE'}},
-      visibility: {},
+  text: content.text || '' },
+  shareMediaCategory: 'NONE'}},
+      visibility: { }
         'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC'}};
 
     // If there's a link, add it as media
@@ -143,8 +144,9 @@ async function publishToLinkedIn(accessToken: string, profileId: string, content
       'https://api.linkedin.com/v2/ugcPosts',
       postData,
       {
-        headers: {},
-          'Authorization': `Bearer ${accessToken}`,
+        headers: {
+        'Authorization': `Bearer ${accessToken
+      }`,
           'Content-Type': 'application/json',
           'X-Restli-Protocol-Version': '2.0.0'}}
     );
@@ -276,7 +278,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
           date: new Date().toISOString().split('T')[0],
           client_id: clientId,
           raw_data: {},
-            publish_attempt: {},
+  publish_attempt: { }
               platforms,
               content,
               results,
@@ -286,7 +288,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
         success: true,
         results,
         summary: {},
-          total: results.length,
+  total: results.length,
           successful: results.filter((r: any) => r.success).length,
           failed: results.filter((r: any) => !r.success).length}});
     }

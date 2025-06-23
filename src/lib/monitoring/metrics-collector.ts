@@ -44,7 +44,7 @@ class StatsDBackend implements MetricsBackend {
           port: parseInt(process.env.STATSD_PORT || '8125'),
           prefix: 'airwave.',
           globalTags: {},
-            env: process.env.NODE_ENV || 'development',
+  env: process.env.NODE_ENV || 'development',
             service: 'airwave-web'}});
       } catch (error) {
         console.warn('StatsD client not available:', error.message);
@@ -127,7 +127,9 @@ class WebhookBackend implements MetricsBackend {
     try {
       await fetch(this.webhookUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+        'Content-Type': 'application/json' 
+      },
         body: JSON.stringify({
           metrics: [metric],
           timestamp: new Date().toISOString(),
@@ -141,7 +143,9 @@ class WebhookBackend implements MetricsBackend {
     try {
       await fetch(this.webhookUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+        'Content-Type': 'application/json' 
+      },
         body: JSON.stringify({
           metrics,
           timestamp: new Date().toISOString(),

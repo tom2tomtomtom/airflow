@@ -81,8 +81,8 @@ const CampaignBasicInfo: React.FC<CampaignBasicInfoProps> = ({
           disabled={!isValid}
           endIcon={<ArrowForwardIcon />}
         >
-          {' '}
-          Next: Platforms{' '}
+          {' '},
+  Next: Platforms{' '}
         </Button>{' '}
       </Box>{' '}
     </Box>

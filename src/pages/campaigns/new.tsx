@@ -115,7 +115,7 @@ const NewCampaign: React.FC = () => {
         budget: campaignData.budget ? parseFloat(campaignData.budget) : 0,
         start_date: campaignData.startDate?.toISOString(),
         end_date: campaignData.endDate?.toISOString(),
-        targeting: {},
+        targeting: {
           audience: campaignData.targetAudience || '',
           frequency: campaignData.frequency || 'daily',
           estimatedPosts: campaignData.estimatedPosts || ''
@@ -129,8 +129,9 @@ const NewCampaign: React.FC = () => {
 
             const response = await fetch('/api/campaigns', {
         method: 'POST',
-        headers: {},
-          'Content-Type': 'application/json'},
+        headers: {
+        'Content-Type': 'application/json'
+        },
         body: JSON.stringify(apiData)});
 
       if (!response.ok) {

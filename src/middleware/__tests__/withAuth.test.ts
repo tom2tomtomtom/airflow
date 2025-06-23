@@ -24,8 +24,8 @@ const mockInsert = jest.fn();
 jest.mock('@supabase/ssr', () => ({
   createServerClient: jest.fn(() => ({,
     auth: {},
-      getUser: mockGetUser},
-    from: mockFrom}))}));
+  getUser: mockGetUser },
+  from: mockFrom}))}));
 
 // Mock error utils
 jest.mock('@/utils/errorUtils', () => ({
@@ -37,7 +37,7 @@ jest.mock('@/utils/api', () => ({
     res.status(status).json({ success: false, error: { code, message } });
   }),
   ErrorCode: {},
-    UNAUTHORIZED: 'UNAUTHORIZED',
+  UNAUTHORIZED: 'UNAUTHORIZED',
     FORBIDDEN: 'FORBIDDEN',
     VALIDATION_ERROR: 'VALIDATION_ERROR',
     INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR' }));
@@ -470,8 +470,8 @@ describe('withAuth middleware', () => {
     it('should allow admin access to any client', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        query: { clientId: 'client-456' },
-        cookies: { 'sb-access-token': 'admin-token' });
+        query: { clientId: 'client-456'  },
+  cookies: { 'sb-access-token': 'admin-token' });
 
       const mockUser = {
         id: 'admin-123',
@@ -501,8 +501,8 @@ describe('withAuth middleware', () => {
     it('should allow user access to their assigned clients', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        query: { clientId: 'client-456' },
-        cookies: { 'sb-access-token': 'user-token' });
+        query: { clientId: 'client-456'  },
+  cookies: { 'sb-access-token': 'user-token' });
 
       const mockUser = {
         id: 'user-123',
@@ -514,8 +514,8 @@ describe('withAuth middleware', () => {
         permissions: ['read']};
 
       const mockUserClients = [
-        { client_id: 'client-456' },
-        { client_id: 'client-789' },
+        { client_id: 'client-456'  }
+        { client_id: 'client-789'  }
       ];
 
       mockGetUser.mockResolvedValue({ data: { user: mockUser }, error: null });
@@ -537,8 +537,8 @@ describe('withAuth middleware', () => {
     it('should deny user access to unassigned clients', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        query: { clientId: 'client-999' },
-        cookies: { 'sb-access-token': 'user-token' });
+        query: { clientId: 'client-999'  },
+  cookies: { 'sb-access-token': 'user-token' });
 
       const mockUser = {
         id: 'user-123',
@@ -550,8 +550,8 @@ describe('withAuth middleware', () => {
         permissions: ['read']};
 
       const mockUserClients = [
-        { client_id: 'client-456' },
-        { client_id: 'client-789' },
+        { client_id: 'client-456'  }
+        { client_id: 'client-789'  }
       ];
 
       mockGetUser.mockResolvedValue({ data: { user: mockUser }, error: null });
@@ -599,8 +599,8 @@ describe('withAuth middleware', () => {
     it('should check client ID from request body', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        body: { clientId: 'client-456' },
-        cookies: { 'sb-access-token': 'user-token' });
+        body: { clientId: 'client-456'  },
+  cookies: { 'sb-access-token': 'user-token' });
 
       const mockUser = {
         id: 'user-123',
@@ -612,7 +612,7 @@ describe('withAuth middleware', () => {
         permissions: ['read']};
 
       const mockUserClients = [
-        { client_id: 'client-456' },
+        { client_id: 'client-456'  }
       ];
 
       mockGetUser.mockResolvedValue({ data: { user: mockUser }, error: null });
@@ -634,7 +634,9 @@ describe('withAuth middleware', () => {
     it('should check client ID from custom header', async () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        headers: { 'x-client-id': 'client-456' },
+        headers: {
+        'x-client-id': 'client-456' 
+      },
         cookies: { 'sb-access-token': 'user-token' });
 
       const mockUser = {
@@ -647,7 +649,7 @@ describe('withAuth middleware', () => {
         permissions: ['read']};
 
       const mockUserClients = [
-        { client_id: 'client-456' },
+        { client_id: 'client-456'  }
       ];
 
       mockGetUser.mockResolvedValue({ data: { user: mockUser }, error: null });

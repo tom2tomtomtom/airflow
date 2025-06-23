@@ -35,8 +35,7 @@ export function ProtectedRoute({ children, redirectTo = '/login' }: ProtectedRou
         alignItems="center"
         minHeight="100vh"
         sx={{
-          backgroundColor: 'background.default',
-        }}
+          backgroundColor: 'background.default' }}
       >
         <CircularProgress />
       </Box>

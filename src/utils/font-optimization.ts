@@ -6,16 +6,14 @@ export const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
   preload: true,
-  variable: '--font-inter',
-});
+  variable: '--font-inter' });
 
 export const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
   subsets: ['latin'],
   display: 'swap',
   preload: true,
-  variable: '--font-roboto',
-});
+  variable: '--font-roboto' });
 
 // Font loading optimization
 export const optimizeFontLoading = () => {

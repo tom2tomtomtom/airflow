@@ -72,8 +72,7 @@ export function createRateLimit(config: RateLimitConfig) {
     if (!entry || entry.resetTime < now) {
       entry = {
         count: 0,
-        resetTime: now + config.windowMs,
-      };
+        resetTime: now + config.windowMs };
       rateLimitStore[key] = entry;
     }
 
@@ -84,8 +83,7 @@ export function createRateLimit(config: RateLimitConfig) {
       res.status(429).json({
         error: config.message || 'Too many requests',
         code: 'RATE_LIMIT_EXCEEDED',
-        retryAfter: resetIn,
-      });
+        retryAfter: resetIn });
       return;
     }
 
@@ -187,15 +185,13 @@ export function checkRateLimit(
     return {
       limited: false,
       remaining: config.maxRequests,
-      resetTime: now + config.windowMs,
-    };
+      resetTime: now + config.windowMs };
   }
 
   return {
     limited: entry.count >= config.maxRequests,
     remaining: Math.max(0, config.maxRequests - entry.count),
-    resetTime: entry.resetTime,
-  };
+    resetTime: entry.resetTime };
 }
 
 /**

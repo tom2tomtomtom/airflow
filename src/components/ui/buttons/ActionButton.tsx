@@ -48,7 +48,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
         return {
           variant: 'contained' as const,
           sx: {},
-            background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+  background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
             color: '#FFFFFF',
             fontWeight: 600,
             textTransform: 'none',
@@ -60,7 +60,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
               boxShadow: `0 8px 24px ${alpha(theme.palette.primary.main, 0.35)}`,
               background: `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.secondary.dark} 100%)`},
             '&:active': {
-              transform: 'translateY(0)'},
+              transform: 'translateY(0)' }
             '&:disabled': {
               background: theme.palette.action.disabledBackground,
               color: theme.palette.action.disabled,
@@ -71,7 +71,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
         return {
           variant: 'contained' as const,
           sx: {},
-            backgroundColor: theme.palette.secondary.main,
+  backgroundColor: theme.palette.secondary.main,
             color: theme.palette.secondary.contrastText,
             fontWeight: 500,
             '&:hover': {
@@ -82,7 +82,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
         return {
           variant: 'outlined' as const,
           sx: {},
-            borderColor: theme.palette.primary.main,
+  borderColor: theme.palette.primary.main,
             color: theme.palette.primary.main,
             borderWidth: 2,
             fontWeight: 500,
@@ -96,7 +96,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
         return {
           variant: 'text' as const,
           sx: {},
-            color: theme.palette.primary.main,
+  color: theme.palette.primary.main,
             fontWeight: 500,
             '&:hover': {
               backgroundColor: alpha(theme.palette.primary.main, 0.08),
@@ -106,7 +106,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
         return {
           variant: 'contained' as const,
           sx: {},
-            backgroundColor: theme.palette.error.main,
+  backgroundColor: theme.palette.error.main,
             color: theme.palette.error.contrastText,
             fontWeight: 500,
             '&:hover': {

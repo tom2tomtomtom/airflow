@@ -24,7 +24,7 @@ const SupabaseAuthContext = createContext<SupabaseAuthContextType>({
   isAuthenticated: false,
   login: async () => ({ success: false }),
   signup: async () => ({ success: false }),
-  logout: async () => {},
+  logout: async () => { },
   refreshSession: async () => ({ success: false })});
 
 export const useSupabaseAuth = () => {
@@ -184,7 +184,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         email,
         password,
         options: {},
-          data: {},
+  data: { }
             name,
             role: 'authenticated' });
 

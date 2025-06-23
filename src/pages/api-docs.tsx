@@ -12,13 +12,12 @@ const SwaggerUI = dynamic(() => import('swagger-ui-react'), {
       <CircularProgress />
     </Box>
   ),
-  ssr: false,
-}) as any;
+  ssr: false }) as any;
 
 export default function ApiDocsPage() {
   return (
     <>
-      <Head>
+       <Head>
         <title>API Documentation - AIRWAVE</title>
         <meta name="description" content="Comprehensive API documentation for AIRWAVE platform" />
       </Head>
@@ -65,6 +64,6 @@ export default function ApiDocsPage() {
 
 export async function getStaticProps() {
   return {
-    props: {},
+    props: {}
   };
 }

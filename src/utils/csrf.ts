@@ -94,7 +94,7 @@ export function withCSRFProtection(
         return res.status(403).json({
           success: false,
           error: {},
-            code: 'FORBIDDEN',
+  code: 'FORBIDDEN',
             message: 'Invalid origin'}
         });
       }
@@ -107,7 +107,7 @@ export function withCSRFProtection(
       return res.status(403).json({
         success: false,
         error: {},
-          code: 'FORBIDDEN',
+  code: 'FORBIDDEN',
           message: 'CSRF token missing'}
       });
     }
@@ -116,7 +116,7 @@ export function withCSRFProtection(
       return res.status(403).json({
         success: false,
         error: {},
-          code: 'FORBIDDEN',
+  code: 'FORBIDDEN',
           message: 'Invalid CSRF token'}
       });
     }
@@ -178,10 +178,12 @@ export const csrfClient = {
     
     return fetch(url, {
       ...options,
-      headers: {},
+      headers: {
         ...options.headers,
         'X-CSRF-Token': token,
-        'Content-Type': 'application/json'}});
+        'Content-Type': 'application/json'
+      },
+    });
   }
 };
 

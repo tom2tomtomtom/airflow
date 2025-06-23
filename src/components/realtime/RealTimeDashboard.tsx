@@ -35,8 +35,7 @@ const RealTimeDashboard: React.FC = () => {
   const { activeClient } = useClient();
   const { events, notifications, unreadNotifications, connectionStatus } = useRealtime({
     enableNotifications: true,
-    pollInterval: 5000,
-  });
+    pollInterval: 5000 });
 
   // Calculate real-time metrics
   const recentEvents = events.filter(
@@ -53,29 +52,25 @@ const RealTimeDashboard: React.FC = () => {
       value: recentEvents.length,
       change: 5.2,
       icon: <TimelineIcon />,
-      color: '#2196f3',
-    },
+      color: '#2196f3' },
     {
       label: 'Active Executions',
       value: executionEvents.length,
       change: completedExecutions.length > failedExecutions.length ? 12.5 : -3.1,
       icon: <SpeedIcon />,
-      color: '#4caf50',
-    },
+      color: '#4caf50' },
     {
       label: 'Team Online',
       value: 4, // This would come from actual presence data
       change: 0,
       icon: <PeopleIcon />,
-      color: '#ff9800',
-    },
+      color: '#ff9800' },
     {
       label: 'Unread Alerts',
       value: unreadNotifications.length,
       change: -15.3,
       icon: <NotificationsIcon />,
-      color: '#f44336',
-    },
+      color: '#f44336' },
   ];
 
   const connectionHealthScore = connectionStatus === 'connected' ? 100 : 0;
@@ -125,8 +120,7 @@ const RealTimeDashboard: React.FC = () => {
                   sx={{
                     display: 'flex',
                     justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                  }}
+                    alignItems: 'flex-start' }}
                 >
                   <Box>
                     <Typography color="text.secondary" variant="body2" gutterBottom>

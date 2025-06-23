@@ -66,17 +66,17 @@ describe('Database Migration Testing', () => {
 
     it('should validate clients table schema', async () => {
       const clientsSchema = {
-        id: { type: 'uuid', nullable: false, primary: true },
-        name: { type: 'text', nullable: false },
-        description: { type: 'text', nullable: true },
-        logo_url: { type: 'text', nullable: true },
-        industry: { type: 'text', nullable: true },
-        primary_color: { type: 'text', nullable: true, default: '#1976d2' },
-        secondary_color: { type: 'text', nullable: true, default: '#dc004e' },
-        website: { type: 'text', nullable: true },
-        created_by: { type: 'uuid', nullable: true, references: 'profiles(id)' },
-        created_at: { type: 'timestamptz', nullable: true, default: 'now()' },
-        updated_at: { type: 'timestamptz', nullable: true, default: 'now()' }};
+        id: { type: 'uuid', nullable: false, primary: true  },
+  name: { type: 'text', nullable: false  },
+  description: { type: 'text', nullable: true  },
+  logo_url: { type: 'text', nullable: true  },
+  industry: { type: 'text', nullable: true  },
+  primary_color: { type: 'text', nullable: true, default: '#1976d2'  },
+  secondary_color: { type: 'text', nullable: true, default: '#dc004e'  },
+  website: { type: 'text', nullable: true  },
+  created_by: { type: 'uuid', nullable: true, references: 'profiles(id)'  },
+  created_at: { type: 'timestamptz', nullable: true, default: 'now()'  },
+  updated_at: { type: 'timestamptz', nullable: true, default: 'now()' }};
 
       mockSchemaValidator.validateColumnExists.mockResolvedValue(true);
 
@@ -88,26 +88,26 @@ describe('Database Migration Testing', () => {
 
     it('should validate briefs table schema', async () => {
       const briefsSchema = {
-        id: { type: 'uuid', nullable: false, primary: true },
-        client_id: { type: 'uuid', nullable: true, references: 'clients(id)' },
-        created_by: { type: 'uuid', nullable: true, references: 'profiles(id)' },
-        name: { type: 'text', nullable: false },
-        description: { type: 'text', nullable: true },
-        document_url: { type: 'text', nullable: true },
-        document_type: { type: 'text', nullable: true },
-        parsing_status: { type: 'text', nullable: true, default: 'pending' },
-        parsed_at: { type: 'timestamptz', nullable: true },
-        raw_content: { type: 'text', nullable: true },
-        platforms: { type: 'text[]', nullable: true },
-        target_audience: { type: 'text', nullable: true },
-        budget: { type: 'numeric', nullable: true },
-        timeline: { type: 'jsonb', nullable: true },
-        objectives: { type: 'jsonb', nullable: true },
-        key_messaging: { type: 'jsonb', nullable: true },
-        brand_guidelines: { type: 'jsonb', nullable: true },
-        confidence_scores: { type: 'jsonb', nullable: true },
-        created_at: { type: 'timestamptz', nullable: true, default: 'now()' },
-        updated_at: { type: 'timestamptz', nullable: true, default: 'now()' }};
+        id: { type: 'uuid', nullable: false, primary: true  },
+  client_id: { type: 'uuid', nullable: true, references: 'clients(id)'  },
+  created_by: { type: 'uuid', nullable: true, references: 'profiles(id)'  },
+  name: { type: 'text', nullable: false  },
+  description: { type: 'text', nullable: true  },
+  document_url: { type: 'text', nullable: true  },
+  document_type: { type: 'text', nullable: true  },
+  parsing_status: { type: 'text', nullable: true, default: 'pending'  },
+  parsed_at: { type: 'timestamptz', nullable: true  },
+  raw_content: { type: 'text', nullable: true  },
+  platforms: { type: 'text[]', nullable: true  },
+  target_audience: { type: 'text', nullable: true  },
+  budget: { type: 'numeric', nullable: true  },
+  timeline: { type: 'jsonb', nullable: true  },
+  objectives: { type: 'jsonb', nullable: true  },
+  key_messaging: { type: 'jsonb', nullable: true  },
+  brand_guidelines: { type: 'jsonb', nullable: true  },
+  confidence_scores: { type: 'jsonb', nullable: true  },
+  created_at: { type: 'timestamptz', nullable: true, default: 'now()'  },
+  updated_at: { type: 'timestamptz', nullable: true, default: 'now()' }};
 
       mockSchemaValidator.validateColumnExists.mockResolvedValue(true);
 
@@ -119,16 +119,16 @@ describe('Database Migration Testing', () => {
 
     it('should validate foreign key constraints', async () => {
       const foreignKeys = [
-        { table: 'briefs', column: 'client_id', references: 'clients(id)' },
-        { table: 'briefs', column: 'created_by', references: 'profiles(id)' },
-        { table: 'campaigns', column: 'client_id', references: 'clients(id)' },
-        { table: 'campaigns', column: 'brief_id', references: 'briefs(id)' },
-        { table: 'assets', column: 'client_id', references: 'clients(id)' },
-        { table: 'templates', column: 'client_id', references: 'clients(id)' },
-        { table: 'matrices', column: 'campaign_id', references: 'campaigns(id)' },
-        { table: 'executions', column: 'matrix_id', references: 'matrices(id)' },
-        { table: 'user_clients', column: 'user_id', references: 'profiles(id)' },
-        { table: 'user_clients', column: 'client_id', references: 'clients(id)' },
+        { table: 'briefs', column: 'client_id', references: 'clients(id)'  }
+        { table: 'briefs', column: 'created_by', references: 'profiles(id)'  }
+        { table: 'campaigns', column: 'client_id', references: 'clients(id)'  }
+        { table: 'campaigns', column: 'brief_id', references: 'briefs(id)'  }
+        { table: 'assets', column: 'client_id', references: 'clients(id)'  }
+        { table: 'templates', column: 'client_id', references: 'clients(id)'  }
+        { table: 'matrices', column: 'campaign_id', references: 'campaigns(id)'  }
+        { table: 'executions', column: 'matrix_id', references: 'matrices(id)'  }
+        { table: 'user_clients', column: 'user_id', references: 'profiles(id)'  }
+        { table: 'user_clients', column: 'client_id', references: 'clients(id)'  }
       ];
 
       mockSchemaValidator.validateForeignKeys.mockResolvedValue(true);
@@ -143,18 +143,18 @@ describe('Database Migration Testing', () => {
 
     it('should validate database indexes', async () => {
       const expectedIndexes = [
-        { table: 'clients', columns: ['name'], type: 'btree' },
-        { table: 'clients', columns: ['industry'], type: 'btree' },
-        { table: 'briefs', columns: ['client_id'], type: 'btree' },
-        { table: 'briefs', columns: ['parsing_status'], type: 'btree' },
-        { table: 'briefs', columns: ['created_at'], type: 'btree' },
-        { table: 'campaigns', columns: ['client_id'], type: 'btree' },
-        { table: 'campaigns', columns: ['brief_id'], type: 'btree' },
-        { table: 'campaigns', columns: ['status'], type: 'btree' },
-        { table: 'assets', columns: ['client_id'], type: 'btree' },
-        { table: 'assets', columns: ['asset_type'], type: 'btree' },
-        { table: 'templates', columns: ['platform'], type: 'btree' },
-        { table: 'templates', columns: ['aspect_ratio'], type: 'btree' },
+        { table: 'clients', columns: ['name'], type: 'btree'  }
+        { table: 'clients', columns: ['industry'], type: 'btree'  }
+        { table: 'briefs', columns: ['client_id'], type: 'btree'  }
+        { table: 'briefs', columns: ['parsing_status'], type: 'btree'  }
+        { table: 'briefs', columns: ['created_at'], type: 'btree'  }
+        { table: 'campaigns', columns: ['client_id'], type: 'btree'  }
+        { table: 'campaigns', columns: ['brief_id'], type: 'btree'  }
+        { table: 'campaigns', columns: ['status'], type: 'btree'  }
+        { table: 'assets', columns: ['client_id'], type: 'btree'  }
+        { table: 'assets', columns: ['asset_type'], type: 'btree'  }
+        { table: 'templates', columns: ['platform'], type: 'btree'  }
+        { table: 'templates', columns: ['aspect_ratio'], type: 'btree'  }
       ];
 
       mockSchemaValidator.validateIndexes.mockResolvedValue(true);
@@ -169,13 +169,13 @@ describe('Database Migration Testing', () => {
 
     it('should validate row level security policies', async () => {
       const rlsPolicies = [
-        { table: 'clients', policy: 'Users can only access their assigned clients' },
-        { table: 'briefs', policy: 'Users can only access briefs for their clients' },
-        { table: 'campaigns', policy: 'Users can only access campaigns for their clients' },
-        { table: 'assets', policy: 'Users can only access assets for their clients' },
-        { table: 'templates', policy: 'Users can access public templates and their client templates' },
-        { table: 'profiles', policy: 'Users can only access their own profile' },
-        { table: 'user_clients', policy: 'Users can only see their own client assignments' },
+        { table: 'clients', policy: 'Users can only access their assigned clients'  }
+        { table: 'briefs', policy: 'Users can only access briefs for their clients'  }
+        { table: 'campaigns', policy: 'Users can only access campaigns for their clients'  }
+        { table: 'assets', policy: 'Users can only access assets for their clients'  }
+        { table: 'templates', policy: 'Users can access public templates and their client templates'  }
+        { table: 'profiles', policy: 'Users can only access their own profile'  }
+        { table: 'user_clients', policy: 'Users can only see their own client assignments'  }
       ];
 
       mockSchemaValidator.validateRowLevelSecurity.mockResolvedValue(true);
@@ -286,25 +286,25 @@ describe('Database Migration Testing', () => {
           query: 'SELECT COUNT(*) FROM briefs WHERE client_id NOT IN (SELECT id FROM clients)',
           expected: 0,
           actual: 0,
-          passed: true},
+          passed: true }
         {
           check: 'orphaned_campaigns',
           query: 'SELECT COUNT(*) FROM campaigns WHERE brief_id NOT IN (SELECT id FROM briefs)',
           expected: 0,
           actual: 0,
-          passed: true},
+          passed: true }
         {
           check: 'orphaned_assets',
           query: 'SELECT COUNT(*) FROM assets WHERE client_id NOT IN (SELECT id FROM clients)',
           expected: 0,
           actual: 0,
-          passed: true},
+          passed: true }
         {
           check: 'invalid_user_clients',
           query: 'SELECT COUNT(*) FROM user_clients WHERE user_id NOT IN (SELECT id FROM profiles)',
           expected: 0,
           actual: 0,
-          passed: true},
+          passed: true }
       ];
 
       for (const check of integrityChecks) {
@@ -320,19 +320,19 @@ describe('Database Migration Testing', () => {
           description: 'All briefs should have valid parsing status',
           validValues: ['pending', 'processing', 'completed', 'failed'],
           invalidCount: 0,
-          passed: true},
+          passed: true }
         {
           check: 'campaign_status_values',
           description: 'All campaigns should have valid status',
           validValues: ['draft', 'active', 'paused', 'completed', 'archived'],
           invalidCount: 0,
-          passed: true},
+          passed: true }
         {
           check: 'asset_type_values',
           description: 'All assets should have valid type',
           validValues: ['image', 'video', 'audio', 'document', 'template'],
           invalidCount: 0,
-          passed: true},
+          passed: true }
       ];
 
       for (const check of consistencyChecks) {
@@ -347,22 +347,22 @@ describe('Database Migration Testing', () => {
           table: 'briefs',
           column: 'objectives',
           validSchema: true,
-          invalidRecords: 0},
+          invalidRecords: 0 }
         {
           table: 'briefs',
           column: 'timeline',
           validSchema: true,
-          invalidRecords: 0},
+          invalidRecords: 0 }
         {
           table: 'templates',
           column: 'structure',
           validSchema: true,
-          invalidRecords: 0},
+          invalidRecords: 0 }
         {
           table: 'profiles',
           column: 'preferences',
           validSchema: true,
-          invalidRecords: 0},
+          invalidRecords: 0 }
       ];
 
       for (const check of jsonSchemaChecks) {
@@ -380,19 +380,19 @@ describe('Database Migration Testing', () => {
           avgExecutionTime: 2.5,
           maxExecutionTime: 15.0,
           threshold: 50.0,
-          passed: true},
+          passed: true }
         {
           query: 'SELECT b.*, c.name as client_name FROM briefs b JOIN clients c ON b.client_id = c.id',
           avgExecutionTime: 8.2,
           maxExecutionTime: 25.0,
           threshold: 100.0,
-          passed: true},
+          passed: true }
         {
           query: 'SELECT COUNT(*) FROM campaigns WHERE status = $1 AND created_at > $2',
           avgExecutionTime: 1.8,
           maxExecutionTime: 8.0,
           threshold: 25.0,
-          passed: true},
+          passed: true }
       ];
 
       for (const metric of performanceMetrics) {
@@ -409,19 +409,19 @@ describe('Database Migration Testing', () => {
           index: 'clients_name_idx',
           usageCount: 1250,
           hitRatio: 0.95,
-          effective: true},
+          effective: true }
         {
           table: 'briefs',
           index: 'briefs_client_id_idx',
           usageCount: 2100,
           hitRatio: 0.98,
-          effective: true},
+          effective: true }
         {
           table: 'campaigns',
           index: 'campaigns_status_idx',
           usageCount: 850,
           hitRatio: 0.92,
-          effective: true},
+          effective: true }
       ];
 
       for (const stat of indexUsageStats) {

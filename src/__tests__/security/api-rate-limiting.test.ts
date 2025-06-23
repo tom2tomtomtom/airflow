@@ -12,18 +12,18 @@ import { sanitizeInput } from '@/utils/sanitization';
 // Mock rate limiter
 jest.mock('@/lib/rate-limiter', () => ({
   rateLimiters: {},
-    auth: {},
-      limit: jest.fn()},
-    api: {},
-      limit: jest.fn()},
-    ai: {},
-      limit: jest.fn()},
-    upload: {},
-      limit: jest.fn()},
-    flow: {},
-      limit: jest.fn()},
-    email: {},
-      limit: jest.fn()}},
+  auth: {},
+  limit: jest.fn() },
+  api: {},
+  limit: jest.fn() },
+  ai: {},
+  limit: jest.fn() },
+  upload: {},
+  limit: jest.fn() },
+  flow: {},
+  limit: jest.fn() },
+  email: {},
+  limit: jest.fn()}},
   withRateLimit: jest.fn()}));
 
 // Mock sanitization utility
@@ -56,8 +56,9 @@ describe('API Security & Rate Limiting Tests', () => {
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        headers: {},
-          'x-forwarded-for': '127.0.0.1'}});
+        headers: {
+        'x-forwarded-for': '127.0.0.1'
+      }});
 
       // Mock withRateLimit to call the handler
       (withRateLimit as jest.Mock).mockImplementation((limiterName) => {
@@ -90,8 +91,9 @@ describe('API Security & Rate Limiting Tests', () => {
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        headers: {},
-          'x-forwarded-for': '127.0.0.1'}});
+        headers: {
+        'x-forwarded-for': '127.0.0.1'
+      }});
 
       (withRateLimit as jest.Mock).mockImplementation((limiterName) => {
         return (handler: NextApiHandler) => async (req: NextApiRequest, res: NextApiResponse) => {
@@ -119,12 +121,12 @@ describe('API Security & Rate Limiting Tests', () => {
 
     it('should enforce different limits for different endpoint types', async () => {
       const endpoints = [
-        { limiter: 'auth', expectedLimit: 5 },
-        { limiter: 'api', expectedLimit: 100 },
-        { limiter: 'ai', expectedLimit: 20 },
-        { limiter: 'upload', expectedLimit: 10 },
-        { limiter: 'flow', expectedLimit: 30 },
-        { limiter: 'email', expectedLimit: 5 },
+        { limiter: 'auth', expectedLimit: 5  }
+        { limiter: 'api', expectedLimit: 100  }
+        { limiter: 'ai', expectedLimit: 20  }
+        { limiter: 'upload', expectedLimit: 10  }
+        { limiter: 'flow', expectedLimit: 30  }
+        { limiter: 'email', expectedLimit: 5  }
       ];
 
       for (const endpoint of endpoints) {
@@ -147,8 +149,9 @@ describe('API Security & Rate Limiting Tests', () => {
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        headers: {},
-          'x-forwarded-for': '192.168.1.100'}});
+        headers: {
+        'x-forwarded-for': '192.168.1.100'
+      }});
 
       (rateLimiters.api.limit as jest.Mock).mockResolvedValue({
         success: true,
@@ -182,8 +185,9 @@ describe('API Security & Rate Limiting Tests', () => {
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        headers: {},
-          'x-forwarded-for': '192.168.1.100'}});
+        headers: {
+        'x-forwarded-for': '192.168.1.100'
+      }});
 
       // Mock authenticated request
       (req as NextApiRequest & { user?: { id: string } }).user = { id: 'user123' };
@@ -327,8 +331,9 @@ describe('API Security & Rate Limiting Tests', () => {
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        headers: {},
-          'content-type': 'text/plain'}});
+        headers: {
+        'content-type': 'text/plain'
+      }});
 
       await mockHandler(req, res);
 
@@ -352,9 +357,10 @@ describe('API Security & Rate Limiting Tests', () => {
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        headers: {},
-          'content-length': '20971520', // 20MB
-          'content-type': 'application/json'}});
+        headers: {
+        'content-length': '20971520', // 20MB
+          'content-type': 'application/json'
+      }});
 
       await mockHandler(req, res);
 
@@ -375,8 +381,9 @@ describe('API Security & Rate Limiting Tests', () => {
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        headers: {},
-          'content-type': 'application/json'}});
+        headers: {
+        'content-type': 'application/json'
+      }});
 
       await mockHandler(req, res);
 

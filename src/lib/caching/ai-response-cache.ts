@@ -19,8 +19,7 @@ if (typeof window === 'undefined') {
   // Client-side fallback for crypto
   crypto = {
     createHash: () => ({
-      update: () => ({ digest: () => Math.random().toString(36) }),
-    }),
+      update: () => ({ digest: () => Math.random().toString(36) }) }),
   };
 }
 
@@ -48,13 +47,11 @@ export class AIResponseCache {
     'generate-motivations': {
       ttl: 24 * 60 * 60, // 24 hours
       keyPrefix: 'ai_cache:motivations',
-      enableCompression: true,
-    },
+      enableCompression: true },
     'generate-copy': {
       ttl: 12 * 60 * 60, // 12 hours
       keyPrefix: 'ai_cache:copy',
-      enableCompression: true,
-    },
+      enableCompression: true },
     'generate-image': {
       ttl: 7 * 24 * 60 * 60, // 7 days
       keyPrefix: 'ai_cache:image',
@@ -63,8 +60,7 @@ export class AIResponseCache {
     'parse-brief': {
       ttl: 30 * 24 * 60 * 60, // 30 days
       keyPrefix: 'ai_cache:brief',
-      enableCompression: true,
-    },
+      enableCompression: true },
   };
 
   static getInstance(): AIResponseCache {
@@ -280,8 +276,7 @@ export class AIResponseCache {
     const stats = {
       totalKeys: 0,
       memoryUsage: 0,
-      operations: {} as Record<string, { keys: number; totalSize: number }>,
-    };
+      operations: {} as Record<string, { keys: number; totalSize: number }> };
 
     if (this.useRedis) {
       try {
@@ -316,8 +311,7 @@ export class AIResponseCache {
 
         stats.operations[operation] = {
           keys: operationKeys,
-          totalSize: 0,
-        };
+          totalSize: 0 };
       }
     }
 

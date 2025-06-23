@@ -83,8 +83,7 @@ export const MobileOptimizedWorkflow: React.FC<MobileOptimizedWorkflowProps> = (
       description: 'Select or generate visual assets',
       icon: <Image />,
       component: <MobileAssetsStep onSelect={(data) => setWorkflowData({...workflowData, assets: data})} />,
-      canSkip: true
-    },
+      canSkip: true },
     {
       id: 'template',
       title: 'Choose Template',
@@ -162,8 +161,9 @@ export const MobileOptimizedWorkflow: React.FC<MobileOptimizedWorkflowProps> = (
             top: 0,
             zIndex: 1}}
         >
-          <Box display="flex" alignItems="center" justifyContent="between" mb={2}>
-            <IconButton onClick={onClose} edge="start" aria-label="Icon button">              <Close />
+          <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+            <IconButton onClick={onClose} edge="start" aria-label="close">
+              <Close />
             </IconButton>
             <Typography variant="h6" flex={1} textAlign="center">
               {steps[activeStep].title}
@@ -308,8 +308,8 @@ const MobileUploadStep: React.FC<{ onUpload: (data: any) => void }> = ({ onUploa
         bgcolor: 'primary.light',
         cursor: 'pointer',
         '&:active': {
-          transform: 'scale(0.98)'},
-        transition: 'transform 0.1s ease'}}
+          transform: 'scale(0.98)' },
+        transition: 'transform 0.1s ease' }}
       onClick={() => onUpload({ fileName: 'sample-brief.pdf' })}
     >
       <CloudUpload sx={{ fontSize: 60, color: 'primary.main', mb: 2 }} />
@@ -355,12 +355,13 @@ const MobileMotivationsStep: React.FC<{ onSelect: (data: any) => void }> = ({ on
             borderColor: selected.includes(motivation.id) ? 'primary.main' : 'transparent',
             cursor: 'pointer',
             '&:active': {
-              transform: 'scale(0.98)'},
-            transition: 'all 0.2s ease'}}
+              transform: 'scale(0.98)' },
+            transition: 'all 0.2s ease'
+          }}
           onClick={() => handleToggle(motivation.id)}
         >
           <CardContent>
-            <Box display="flex" alignItems="center" justifyContent="between">
+            <Box display="flex" alignItems="center" justifyContent="space-between">
               <Typography variant="h6" flex={1}>
                 {motivation.title}
               </Typography>

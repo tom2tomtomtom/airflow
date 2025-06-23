@@ -59,8 +59,7 @@ const platformIcons: Record<string, React.ReactNode> = {
   YouTube: <YouTubeIcon sx={{ color: '#FF0000' }} />,
   LinkedIn: <LinkedInIcon sx={{ color: '#0A66C2' }} />,
   Pinterest: <PinterestIcon sx={{ color: '#E60023' }} />,
-  TikTok: <TikTokIcon sx={{ color: '#000000' }} />,
-};
+  TikTok: <TikTokIcon sx={{ color: '#000000' }} /> };
 
 // Template card component
 const TemplateCard: React.FC<{
@@ -93,8 +92,7 @@ const TemplateCard: React.FC<{
           position: 'relative',
           backgroundImage: template.thumbnail ? `url(${template.thumbnail})` : 'none',
           backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
+          backgroundPosition: 'center' }}
       >
         {!template.thumbnail &&
           (platformIcons[template.platform] || (
@@ -104,8 +102,7 @@ const TemplateCard: React.FC<{
           sx={{
             position: 'absolute',
             top: 8,
-            right: 8,
-          }}
+            right: 8 }}
         >
           <IconButton
             aria-label="more"
@@ -117,7 +114,7 @@ const TemplateCard: React.FC<{
             size="small"
             sx={{
               bgcolor: 'background.paper',
-              '&:hover': { bgcolor: 'background.paper' },
+              '&:hover': { bgcolor: 'background.paper'  }
             }}
           >
             <MoreVertIcon />
@@ -225,8 +222,7 @@ const Templates: React.FC = () => {
     aspect_ratio: '1:1',
     description: '',
     width: 1080,
-    height: 1080,
-  });
+    height: 1080 });
 
   // Filtering logic
   const filteredTemplates = (templates ?? []).filter((template: any) => {
@@ -248,8 +244,7 @@ const Templates: React.FC = () => {
       aspect_ratio: '1:1',
       description: '',
       width: 1080,
-      height: 1080,
-    });
+      height: 1080 });
     setOpenDialog(true);
   };
 
@@ -262,8 +257,7 @@ const Templates: React.FC = () => {
       aspect_ratio: '1:1',
       description: '',
       width: 1080,
-      height: 1080,
-    });
+      height: 1080 });
   };
 
   const handleDuplicateTemplate = async (template: Template) => {
@@ -273,15 +267,15 @@ const Templates: React.FC = () => {
         name: `${template.name} (Copy)`,
         created_by: null,
         created_at: undefined,
-        updated_at: undefined,
-      };
+        updated_at: undefined };
       delete (duplicatedTemplate as any).id;
 
       const response = await fetch('/api/templates', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(duplicatedTemplate),
-      });
+        headers: {
+        'Content-Type': 'application/json' 
+      },
+        body: JSON.stringify(duplicatedTemplate) });
 
       if (!response.ok) {
         throw new Error('Failed to duplicate template');
@@ -303,8 +297,7 @@ const Templates: React.FC = () => {
       aspect_ratio: template.aspectRatio || '1:1',
       description: template.description || '',
       width: template.width || 1080,
-      height: template.height || 1080,
-    });
+      height: template.height || 1080 });
     setOpenDialog(true);
   };
 
@@ -313,9 +306,10 @@ const Templates: React.FC = () => {
       try {
         const response = await fetch('/api/templates', {
           method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: templateId }),
-        });
+          headers: {
+        'Content-Type': 'application/json' 
+      },
+          body: JSON.stringify({ id: templateId }) });
 
         if (!response.ok) {
           throw new Error('Failed to delete template');
@@ -349,16 +343,17 @@ const Templates: React.FC = () => {
         description: formData.description || '',
         width: formData.width,
         height: formData.height,
-        structure: currentTemplate?.structure || {},
+        structure: currentTemplate?.structure || { }
       };
 
       const body = currentTemplate ? { ...templateData, id: currentTemplate.id } : templateData;
 
       const response = await fetch('/api/templates', {
         method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
+        headers: {
+        'Content-Type': 'application/json' 
+      },
+        body: JSON.stringify(body) });
 
       if (!response.ok) {
         throw new Error(`Failed to ${currentTemplate ? 'update' : 'create'} template`);
@@ -410,7 +405,7 @@ const Templates: React.FC = () => {
 
   return (
     <>
-      <Head>
+       <Head>
         <title>Templates | AIRFLOW</title>
       </Head>
       <ErrorBoundary>
@@ -553,9 +548,7 @@ const Templates: React.FC = () => {
                         ...formData,
                         aspect_ratio: aspectRatio,
                         width: aspectRatio === '16:9' ? 1920 : aspectRatio === '9:16' ? 1080 : 1080,
-                        height:
-                          aspectRatio === '16:9' ? 1080 : aspectRatio === '9:16' ? 1920 : 1080,
-                      });
+                        height: aspectRatio === '16:9' ? 1080 : aspectRatio === '9:16' ? 1920 : 1080 });
                     }}
                     label="Aspect Ratio"
                   >

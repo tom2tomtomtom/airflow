@@ -26,8 +26,7 @@ const HomePage = () => {
         minHeight="100vh"
         sx={{
           backgroundColor: 'var(--carbon-bg-primary)',
-          color: 'var(--carbon-text-primary)',
-        }}
+          color: 'var(--carbon-text-primary)' }}
       >
         <Typography sx={{ color: 'var(--carbon-text-primary)' }}>Loading...</Typography>
       </Box>
@@ -49,8 +48,7 @@ const HomePage = () => {
             py: 2,
             borderBottom: 1,
             borderColor: 'divider',
-            backgroundColor: 'background.paper',
-          }}
+            backgroundColor: 'background.paper' }}
         >
           <Typography
             variant="h5"
@@ -77,8 +75,7 @@ const HomePage = () => {
             alignItems: 'center',
             justifyContent: 'center',
             minHeight: 'calc(100vh - 80px)',
-            px: 4,
-          }}
+            px: 4 }}
         >
           <Container maxWidth="md">
             <Box sx={{ textAlign: 'center' }}>
@@ -90,7 +87,7 @@ const HomePage = () => {
                   fontWeight: 'bold',
                   color: 'var(--carbon-amber-main)',
                   mb: 3,
-                  fontSize: { xs: '2.5rem', md: '3.5rem' },
+                  fontSize: { xs: '2.5rem', md: '3.5rem'  }
                 }}
               >
                 Scale Creative, Unleash Impact
@@ -181,8 +178,7 @@ const HomePage = () => {
       minHeight="100vh"
       sx={{
         backgroundColor: 'var(--carbon-bg-primary)',
-        color: 'var(--carbon-text-primary)',
-      }}
+        color: 'var(--carbon-text-primary)' }}
     >
       <Typography sx={{ color: 'var(--carbon-text-primary)' }}>
         Redirecting to dashboard...

@@ -2,7 +2,7 @@ import { AppConfig } from './index';
 
 // Environment-specific configuration overrides
 export const environmentConfigs = {
-  development: {},
+  development: { }
     // Development-specific settings
     COOKIE_SECURE: false, // Allow HTTP in development
     ENABLE_DEBUG_LOGS: true,
@@ -11,9 +11,8 @@ export const environmentConfigs = {
     DEV_BYPASS_AUTH: false, // Can be overridden per developer
     DEV_MOCK_APIS: false,
     ENABLE_SECURITY_HEADERS: false, // Relaxed for development
-    SENTRY_ENVIRONMENT: 'development'},
-  
-  test: {},
+    SENTRY_ENVIRONMENT: 'development' },
+  test: { }
     // Test environment settings
     NODE_ENV: 'test' as const,
     LOG_LEVEL: 'error' as const, // Minimal logging in tests
@@ -29,7 +28,7 @@ export const environmentConfigs = {
     CACHE_TTL: 60, // Short TTL for tests
   },
   
-  staging: {},
+  staging: { }
     // Staging environment (production-like but with relaxed monitoring)
     NODE_ENV: 'production' as const,
     LOG_LEVEL: 'debug' as const, // More verbose logging for debugging
@@ -40,9 +39,8 @@ export const environmentConfigs = {
     SENTRY_ENVIRONMENT: 'staging',
     // Relaxed rate limits for testing
     RATE_LIMIT_MAX: 500,
-    API_RATE_LIMIT_MAX: 5000},
-  
-  production: {},
+    API_RATE_LIMIT_MAX: 5000 },
+  production: { }
     // Production environment settings
     NODE_ENV: 'production' as const,
     LOG_LEVEL: 'info' as const,
@@ -72,25 +70,27 @@ export const getEnvironmentConfig = (env: Environment): Partial<AppConfig> => {
 
 // Environment validation rules
 export const environmentValidationRules = {
-  development: {},
+  development: { }
     // Development can be more lenient
     requiredSecrets: ['JWT_SECRET', 'NEXTAUTH_SECRET'],
     optionalSecrets: ['OPENAI_API_KEY', 'SUPABASE_SERVICE_ROLE_KEY'],
     warnings: [
       'Development environment detected - some security features are disabled'
     ]
-  },
-  
-  test: {},
+  ,
+
+    },
+  test: { }
     // Test environment minimal requirements
     requiredSecrets: ['JWT_SECRET'],
     optionalSecrets: ['TEST_DATABASE_URL'],
     warnings: [
       'Test environment - analytics and monitoring disabled'
     ]
-  },
-  
-  staging: {},
+  ,
+
+    },
+  staging: { }
     // Staging should be close to production
     requiredSecrets: [
       'JWT_SECRET',
@@ -105,9 +105,10 @@ export const environmentValidationRules = {
     warnings: [
       'Staging environment - ensure all production secrets are tested'
     ]
-  },
-  
-  production: {},
+  ,
+
+    },
+  production: { }
     // Production requires all security measures
     requiredSecrets: [
       'JWT_SECRET',

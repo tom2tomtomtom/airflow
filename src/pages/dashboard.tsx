@@ -50,29 +50,25 @@ const DashboardPage = () => {
       description: 'Create images, copy, and videos with AI',
       icon: <AIIcon />,
       color: '#9c27b0',
-      href: '/generate-enhanced',
-    },
+      href: '/generate-enhanced' },
     {
       title: 'Browse Templates',
       description: 'Start from pre-built templates',
       icon: <DescriptionIcon />,
       color: '#2196f3',
-      href: '/templates',
-    },
+      href: '/templates' },
     {
       title: 'Content Matrix',
       description: 'Plan your content strategy',
       icon: <CampaignIcon />,
       color: '#4caf50',
-      href: '/matrix',
-    },
+      href: '/matrix' },
     {
       title: 'Asset Library',
       description: 'Manage your digital assets',
       icon: <ImageIcon />,
       color: '#ff9800',
-      href: '/assets',
-    },
+      href: '/assets' },
   ];
 
   return (
@@ -90,7 +86,7 @@ const DashboardPage = () => {
             <Typography variant="body1" color="text.secondary">
               {activeClient ? (
                 <>
-                  Working on: <Chip label={activeClient.name} size="small" />
+      Working on: <Chip label={activeClient.name} size="small" />
                 </>
               ) : (
                 'Select a client to get started'
@@ -127,8 +123,7 @@ const DashboardPage = () => {
                     transition: 'transform 0.2s',
                     '&:hover': {
                       transform: 'translateY(-4px)',
-                      boxShadow: 3,
-                    },
+                      boxShadow: 3 },
                   }}
                   onClick={() => router.push(action.href)}
                 >
@@ -142,11 +137,10 @@ const DashboardPage = () => {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        mb: 2,
-                      }}
+                        mb: 2 }}
                     >
                       {React.cloneElement(action.icon as React.ReactElement, {
-                        sx: { color: 'white' },
+                        sx: { color: 'white'  }
                       })}
                     </Box>
                     <Typography variant="h6" gutterBottom>

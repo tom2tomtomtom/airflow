@@ -396,13 +396,13 @@ async function getMatrixAnalytics(matrixId: string): Promise<any> {
 
     return {
       has_data: true,
-      summary: {},
+      summary: { }
         ...totalMetrics,
         ctr: Math.round(ctr * 100) / 100,
         cpc: Math.round(cpc * 100) / 100,
         conversion_rate: Math.round(conversionRate * 100) / 100,
-        total_executions: executions.length},
-      platform_breakdown: platformBreakdown};
+        total_executions: executions.length },
+  platform_breakdown: platformBreakdown};
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting matrix analytics:', error);
@@ -474,10 +474,10 @@ function calculateMatrixQuality(matrix: any): any {
     score: Math.max(0, qualityScore),
     grade: qualityScore >= 90 ? 'A' : qualityScore >= 80 ? 'B' : qualityScore >= 70 ? 'C' : qualityScore >= 60 ? 'D' : 'F',
     completeness: {},
-      variations: variationsCount > 0,
+  variations: variationsCount > 0,
       combinations: combinationsCount > 0,
       field_assignments: assignedFields > 0,
-      assets: relatedAssets > 0},
+      assets: relatedAssets > 0 }
     issues,
     recommendations};
 }

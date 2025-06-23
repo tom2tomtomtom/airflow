@@ -72,14 +72,13 @@ export function performanceHeaders(
 export const dbOptimizations = {
   // Connection pooling configuration
   poolConfig: {},
-    min: 2,
+  min: 2,
     max: env.DB_POOL_SIZE || 20,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000,
-    statement_timeout: env.DB_TIMEOUT || 30000},
-  
+    statement_timeout: env.DB_TIMEOUT || 30000 }
   // Query optimization hints
-  queryHints: {},
+  queryHints: { }
     // Use prepared statements
     usePreparedStatements: true,
     
@@ -91,26 +90,23 @@ export const dbOptimizations = {
     
     // Default limit for list queries
     defaultLimit: 50,
-    maxLimit: 200},
-  
+    maxLimit: 200 }
   // Index hints for common queries
-  indexHints: {},
+  indexHints: { }
     // Assets queries
     assets: {},
-      byClientId: 'idx_assets_client_id',
+  byClientId: 'idx_assets_client_id',
       byType: 'idx_assets_type',
       byTags: 'idx_assets_tags',
-      byCreatedAt: 'idx_assets_created_at'},
-    
+      byCreatedAt: 'idx_assets_created_at' }
     // Campaigns queries
     campaigns: {},
-      byClientId: 'idx_campaigns_client_id',
+  byClientId: 'idx_campaigns_client_id',
       byStatus: 'idx_campaigns_status',
-      byDateRange: 'idx_campaigns_start_date_end_date'},
-    
+      byDateRange: 'idx_campaigns_start_date_end_date' }
     // Templates queries
     templates: {},
-      byPlatform: 'idx_templates_platform',
+  byPlatform: 'idx_templates_platform',
       byContentType: 'idx_templates_content_type',
       byPerformance: 'idx_templates_performance_score'}}};
 
@@ -126,7 +122,7 @@ export interface PaginationOptions {
 export interface PaginatedResponse<T> {
   data: T[];
   pagination: {},
-    page: number;
+  page: number;
     limit: number;
     total: number;
     totalPages: number;

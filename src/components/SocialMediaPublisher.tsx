@@ -108,12 +108,14 @@ export default function SocialMediaPublisher() {
 
       const response = await fetch('/api/social/publish', {
         method: 'POST',
-        headers: {},
-          'Content-Type': 'application/json'},
+        headers: {
+        'Content-Type': 'application/json'
+      
+      },
         body: JSON.stringify({
           platforms: selectedPlatforms,
           content: {},
-            text: content,
+  text: content,
             link: link || undefined}})});
 
       const data = await response.json();

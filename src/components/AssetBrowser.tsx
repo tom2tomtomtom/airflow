@@ -100,8 +100,8 @@ export default function AssetBrowser({
       const params = new URLSearchParams({
         limit: '20',
         sortBy,
-        sortOrder});
-
+        sortOrder,
+      });
       if (searchTerm) params.append('search', searchTerm);
       if (selectedType) params.append('type', selectedType);
       if (clientId) params.append('clientId', clientId);
@@ -150,12 +150,15 @@ export default function AssetBrowser({
       const newFavoriteStatus = !asset.favorite;
       const response = await fetch(`/api/assets/${asset.id}`, {
         method: 'PUT',
-        headers: {},
-          'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
-          metadata: {},
+          metadata: {
             ...asset.metadata,
-            favorite: newFavoriteStatus}})});
+            favorite: newFavoriteStatus },
+        }),
+      });
 
       if (response.ok) {
         setAssets(assets.map((a: any) => 
@@ -259,7 +262,8 @@ export default function AssetBrowser({
                 sx={{
                   cursor: 'pointer',
                   '&:hover': { transform: 'translateY(-2px)' },
-                  transition: 'transform 0.2s'}}
+                  transition: 'transform 0.2s'
+                }}
                 onClick={() => handleAssetClick(asset)}
               >
                 <Box position="relative">
@@ -335,7 +339,7 @@ export default function AssetBrowser({
       >
         {selectedAsset && (
           <>
-            <DialogTitle>
+       <DialogTitle>
               {selectedAsset.name}
               <IconButton
                 sx={{ position: 'absolute', right: 8, top: 8 }}

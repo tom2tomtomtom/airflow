@@ -290,11 +290,11 @@ async function handleHealthCheck(
     uptime: process.uptime(),
     memory: process.memoryUsage(),
     performance: {},
-      averageResponseTime: performanceTracker.getAverageResponseTime(),
+  averageResponseTime: performanceTracker.getAverageResponseTime(),
       totalRequests: performanceTracker.getTotalRequests(),
-      errorRate: performanceTracker.getErrorRate()},
-    ai: {},
-      budgetStatus: await costController.getBudgetStatus(),
+      errorRate: performanceTracker.getErrorRate() },
+  ai: {},
+  budgetStatus: await costController.getBudgetStatus(),
       totalSpent: await costController.getTotalSpent()}};
 
   return successResponse(res, health, 200, {

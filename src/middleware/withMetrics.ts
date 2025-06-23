@@ -37,8 +37,7 @@ const DEFAULT_CONFIG: Required<MetricsConfig> = {,
   trackErrorRate: true,
   trackUserActions: true,
   customTags: {},
-  samplingRate: 1.0,
-};
+  samplingRate: 1.0 };
 
 /**
  * Middleware to track API metrics automatically
@@ -63,8 +62,7 @@ export function withMetrics(config: MetricsConfig = {}) {
         userAgent: req.headers['user-agent'],
         clientIp: getClientIp(req),
         userId: (req as any).user?.id,
-        clientId: (req as any).user?.selectedClient?.id,
-      };
+        clientId: (req as any).user?.selectedClient?.id };
 
       // Track request start
       if (finalConfig.trackRequestCount) {

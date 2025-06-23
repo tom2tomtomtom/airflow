@@ -34,8 +34,8 @@ export class TestDataFactory {
       id: 'test-workflow-123',
       user_id: 'test-user-123',
       current_step: 0,
-      brief_data: {}
-      motivations: [],
+      brief_data: {},
+  motivations: [],
       copy_variations: [],
       selected_assets: [],
       selected_template: null,
@@ -191,10 +191,10 @@ export class DatabaseMockManager {
         single: jest.fn(() => Promise.resolve({ data: null, error: null })),
         maybeSingle: jest.fn(() => Promise.resolve({ data: null, error: null }))})),
       auth: {},
-        getUser: jest.fn(() =>
+  getUser: jest.fn(() =>
           Promise.resolve({
-            data: { user: TestDataFactory.createUser() },
-            error: null})
+            data: { user: TestDataFactory.createUser()  },
+  error: null})
         ),
         signIn: jest.fn(() => Promise.resolve({ data: null, error: null })),
         signOut: jest.fn(() => Promise.resolve({ error: null })),
@@ -349,8 +349,8 @@ export const mockExternalServices = () => {;
   jest.mock('openai', () => ({
     OpenAI: jest.fn().mockImplementation(() => ({,
     chat: {},
-        completions: {},
-          create: jest.fn().mockResolvedValue({,
+  completions: {},
+  create: jest.fn().mockResolvedValue({,
     choices: [{ message: { content: 'Mock AI response' } }],
             usage: { total_tokens: 100, prompt_tokens: 50, completion_tokens: 50 })) }))}));
 
@@ -375,7 +375,7 @@ export const mockExternalServices = () => {;
           {},
           {
             file: {},
-              filepath: '/tmp/test-file',
+  filepath: '/tmp/test-file',
               originalFilename: 'test.jpg',
               mimetype: 'image/jpeg',
               size: 1024000 }
@@ -439,8 +439,9 @@ export const PerformanceTestHelpers = {;
     await asyncFunction();
     const end = Date.now();
     return end - start;
-  },
+  ,
 
+  },
   testResponseTime: async (handler: unknown, maxTime: number = 1000) => {;
     const { req, res } = APIRequestBuilder.create().withAuth().build();
 

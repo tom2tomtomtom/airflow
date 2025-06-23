@@ -84,11 +84,11 @@ async function handleRenderCompleted(payload: CreatomateWebhookPayload): Promise
     .update({
       status: 'completed',
       output_url: url,
-      metadata: {},
+      metadata: {
         ...metadata,
         render_id,
-        completed_at: new Date().toISOString()},
-      updated_at: new Date().toISOString()})
+        completed_at: new Date().toISOString() },
+  updated_at: new Date().toISOString()})
     .eq('id', metadata.execution_id)
     .select()
     .single();
@@ -104,7 +104,7 @@ async function handleRenderCompleted(payload: CreatomateWebhookPayload): Promise
     {
       type: WebhookManager.EVENTS.RENDER_COMPLETED,
       data: {},
-        execution_id: metadata.execution_id,
+  execution_id: metadata.execution_id,
         render_id,
         url,
         status: 'completed'}},
@@ -145,12 +145,12 @@ async function handleRenderFailed(payload: CreatomateWebhookPayload): Promise<vo
     .from('executions')
     .update({
       status: 'failed',
-      metadata: {},
+      metadata: {
         ...metadata,
         render_id,
         error,
-        failed_at: new Date().toISOString()},
-      updated_at: new Date().toISOString()})
+        failed_at: new Date().toISOString() },
+  updated_at: new Date().toISOString()})
     .eq('id', metadata.execution_id);
   
   // Trigger our own webhook event
@@ -159,7 +159,7 @@ async function handleRenderFailed(payload: CreatomateWebhookPayload): Promise<vo
     {
       type: WebhookManager.EVENTS.RENDER_FAILED,
       data: {},
-        execution_id: metadata.execution_id,
+  execution_id: metadata.execution_id,
         render_id,
         error,
         status: 'failed'}},

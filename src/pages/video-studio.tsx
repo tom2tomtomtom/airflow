@@ -201,7 +201,7 @@ const VideoStudioPage: React.FC = () => {
       setContentElements(prev => ({
         ...prev,
         brand_elements: {},
-          logo_url: activeClient.logo,
+  logo_url: activeClient.logo,
           color_scheme: [activeClient.primaryColor, activeClient.secondaryColor]}}));
     }
   }, [activeClient]);
@@ -229,8 +229,10 @@ const VideoStudioPage: React.FC = () => {
 
       const response = await fetch('/api/video/generate', {
         method: 'POST',
-        headers: {},
-          'Content-Type': 'application/json'},
+        headers: {
+        'Content-Type': 'application/json'
+      
+      },
         body: JSON.stringify(requestData)});
 
       const result = await response.json();
@@ -328,7 +330,7 @@ const VideoStudioPage: React.FC = () => {
 
   return (
     <>
-      <Head>
+       <Head>
         <title>Video Studio | AIRFLOW</title>
       </Head>
       <DashboardLayout title="Video Studio">
@@ -553,10 +555,10 @@ const VideoStudioPage: React.FC = () => {
                             max={60}
                             step={5}
                             marks={[
-                              { value: 5, label: '5s' },
-                              { value: 15, label: '15s' },
-                              { value: 30, label: '30s' },
-                              { value: 60, label: '60s' },
+                              { value: 5, label: '5s'  }
+                              { value: 15, label: '15s'  }
+                              { value: 30, label: '30s'  }
+                              { value: 60, label: '60s'  }
                             ]}
                           />
                         </Box>
@@ -735,7 +737,7 @@ const VideoStudioPage: React.FC = () => {
                                       setContentElements({
                                         ...contentElements,
                                         voice_over: {},
-                                          text: videoConfig.prompt,
+  text: videoConfig.prompt,
                                           voice: 'neural',
                                           language: 'en'}});
                                     } else {
@@ -752,7 +754,7 @@ const VideoStudioPage: React.FC = () => {
 
                           {contentElements.voice_over && (
                             <>
-                              <Grid size={{ xs: 12 }}>
+       <Grid size={{ xs: 12 }}>
                                 <TextField
                                   fullWidth
                                   multiline
@@ -761,7 +763,7 @@ const VideoStudioPage: React.FC = () => {
                                   value={contentElements.voice_over.text}
                                   onChange={(e) => setContentElements({
                                     ...contentElements,
-                                    voice_over: {},
+                                    voice_over: { }
                                       ...contentElements.voice_over!,
                                       text: e.target.value}})}
                                 />
@@ -774,7 +776,7 @@ const VideoStudioPage: React.FC = () => {
                                     label="Voice"
                                     onChange={(e) => setContentElements({
                                       ...contentElements,
-                                      voice_over: {},
+                                      voice_over: { }
                                         ...contentElements.voice_over!,
                                         voice: e.target.value}})}
                                   >
@@ -792,7 +794,7 @@ const VideoStudioPage: React.FC = () => {
                                     label="Language"
                                     onChange={(e) => setContentElements({
                                       ...contentElements,
-                                      voice_over: {},
+                                      voice_over: { }
                                         ...contentElements.voice_over!,
                                         language: e.target.value}})}
                                   >
@@ -827,7 +829,7 @@ const VideoStudioPage: React.FC = () => {
                               value={contentElements.brand_elements?.logo_url || ''}
                               onChange={(e) => setContentElements({
                                 ...contentElements,
-                                brand_elements: {},
+                                brand_elements: { }
                                   ...contentElements.brand_elements,
                                   logo_url: e.target.value}})}
                               placeholder="https://example.com/logo.png"
@@ -841,7 +843,7 @@ const VideoStudioPage: React.FC = () => {
                               value={contentElements.brand_elements?.font_family || ''}
                               onChange={(e) => setContentElements({
                                 ...contentElements,
-                                brand_elements: {},
+                                brand_elements: { }
                                   ...contentElements.brand_elements,
                                   font_family: e.target.value}})}
                               placeholder="Arial, Helvetica, sans-serif"
@@ -902,9 +904,9 @@ const VideoStudioPage: React.FC = () => {
                                 max={5}
                                 step={1}
                                 marks={[
-                                  { value: 1, label: '1' },
-                                  { value: 3, label: '3' },
-                                  { value: 5, label: '5' },
+                                  { value: 1, label: '1'  }
+                                  { value: 3, label: '3'  }
+                                  { value: 5, label: '5'  }
                                 ]}
                               />
                             </Box>
@@ -1039,7 +1041,7 @@ const VideoStudioPage: React.FC = () => {
                               />
                               {job.output_url && (
                                 <>
-                                  <Tooltip title="Download">
+       <Tooltip title="Download">
                                     <IconButton size="small" href={job.output_url} target="_blank">
                                       <Download />
                                     </IconButton>

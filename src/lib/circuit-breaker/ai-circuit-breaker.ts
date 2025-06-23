@@ -45,20 +45,17 @@ export class AICircuitBreaker {
       failureThreshold: 5,
       recoveryTimeout: 60000,
       monitoringPeriod: 300000,
-      halfOpenMaxCalls: 3,
-    },
+      halfOpenMaxCalls: 3 },
     elevenlabs: {
       failureThreshold: 3, // More sensitive for voice services
       recoveryTimeout: 30000, // Shorter recovery timeout
       monitoringPeriod: 180000, // 3 minute monitoring window
-      halfOpenMaxCalls: 2,
-    },
+      halfOpenMaxCalls: 2 },
     default: {
       failureThreshold: 5,
       recoveryTimeout: 60000,
       monitoringPeriod: 300000,
-      halfOpenMaxCalls: 3,
-    },
+      halfOpenMaxCalls: 3 },
   };
 
   static getInstance(): AICircuitBreaker {
@@ -180,8 +177,7 @@ export class AICircuitBreaker {
         lastFailureTime: 0,
         lastSuccessTime: 0,
         totalCalls: 0,
-        rejectedCalls: 0,
-      }
+        rejectedCalls: 0 }
     );
   }
 
@@ -359,8 +355,7 @@ export class AICircuitBreaker {
             const stats = JSON.parse(statsJson);
             status[key] = {
               ...stats,
-              config: this.getConfigForKey(key),
-            };
+              config: this.getConfigForKey(key) };
           } catch (error: any) {
             console.error(`Error parsing stats for ${key}:`, error);
           }
@@ -375,8 +370,7 @@ export class AICircuitBreaker {
       if (!status[key]) {
         status[key] = {
           ...stats,
-          config: this.getConfigForKey(key),
-        };
+          config: this.getConfigForKey(key) };
       }
     }
 
@@ -394,8 +388,7 @@ export class AICircuitBreaker {
       lastFailureTime: 0,
       lastSuccessTime: 0,
       totalCalls: 0,
-      rejectedCalls: 0,
-    };
+      rejectedCalls: 0 };
 
     await this.updateStats(circuitKey, resetStats);
 

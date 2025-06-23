@@ -124,8 +124,9 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
         ...(matrixId && { matrix_id: matrixId })});
 
       const response = await fetch(`/api/executions?${params}`, {
-        headers: {},
-          'Authorization': `Bearer ${localStorage.getItem('token')}`}});
+        headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')
+      }`}});
 
       if (response.ok) {
         const data = await response.json();
@@ -146,9 +147,10 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
     try {
       const response = await fetch(`/api/executions/${selectedExecution.id}/retry`, {
         method: 'POST',
-        headers: {},
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`},
+        headers: {
+        'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')
+      }`},
         body: JSON.stringify(retryOptions)});
 
       if (response.ok) {
@@ -173,9 +175,10 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
     try {
       const response = await fetch(`/api/executions/${selectedExecution.id}/cancel`, {
         method: 'POST',
-        headers: {},
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`},
+        headers: {
+        'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')
+      }`},
         body: JSON.stringify({
           reason: 'User requested cancellation',
           cleanup_resources: true})});
@@ -215,12 +218,12 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
   // Get platform icon/color
   const getPlatformDisplay = (platform: string) => {
     const displays = {
-      facebook: { color: '#1877F2', name: 'Facebook' },
-      instagram: { color: '#E1306C', name: 'Instagram' },
-      twitter: { color: '#1DA1F2', name: 'Twitter' },
-      linkedin: { color: '#0A66C2', name: 'LinkedIn' },
-      youtube: { color: '#FF0000', name: 'YouTube' },
-      tiktok: { color: '#000000', name: 'TikTok' }};
+      facebook: { color: '#1877F2', name: 'Facebook'  },
+  instagram: { color: '#E1306C', name: 'Instagram'  },
+  twitter: { color: '#1DA1F2', name: 'Twitter'  },
+  linkedin: { color: '#0A66C2', name: 'LinkedIn'  },
+  youtube: { color: '#FF0000', name: 'YouTube'  },
+  tiktok: { color: '#000000', name: 'TikTok' }};
     return displays[platform as keyof typeof displays] || { color: '#666', name: platform };
   };
 
@@ -311,10 +314,10 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
       {/* Quick Stats */}
       <Grid container spacing={2} sx={{ mb: 2 }}>
         {[
-          { label: 'Total', count: executions.length, color: 'default' },
-          { label: 'Processing', count: executions.filter((e: any) => e.status === 'processing').length, color: 'info' },
-          { label: 'Completed', count: executions.filter((e: any) => e.status === 'completed').length, color: 'success' },
-          { label: 'Failed', count: executions.filter((e: any) => e.status === 'failed').length, color: 'error' },
+          { label: 'Total', count: executions.length, color: 'default'  }
+          { label: 'Processing', count: executions.filter((e: any) => e.status === 'processing').length, color: 'info'  }
+          { label: 'Completed', count: executions.filter((e: any) => e.status === 'completed').length, color: 'success'  }
+          { label: 'Failed', count: executions.filter((e: any) => e.status === 'failed').length, color: 'error'  }
         ].map((stat: any) => (
           <Grid size={{ xs: 3 }} key={stat.label}>
             <Card variant="outlined" sx={{ textAlign: 'center', py: 1 }}>

@@ -136,8 +136,8 @@ describe('Workflow State Machine', () => {
 
       // Add some motivations to context manually for testing
       service.state.context.motivations = [
-        { id: '1', title: 'Motivation 1', description: 'First motivation', selected: false },
-        { id: '2', title: 'Motivation 2', description: 'Second motivation', selected: false },
+        { id: '1', title: 'Motivation 1', description: 'First motivation', selected: false  }
+        { id: '2', title: 'Motivation 2', description: 'Second motivation', selected: false  }
       ] as Motivation[];
     });
 
@@ -214,15 +214,15 @@ describe('Workflow State Machine', () => {
       });
 
       service.state.context.motivations = [
-        { id: '1', title: 'Motivation 1', description: 'First motivation', selected: true },
+        { id: '1', title: 'Motivation 1', description: 'First motivation', selected: true  }
       ] as Motivation[];
 
       service.send({ type: 'NEXT_STEP' });
 
       // Add copy variations for testing
       service.state.context.copyVariations = [
-        { id: '1', headline: 'Copy 1', body: 'Body 1', cta: 'CTA 1', selected: false },
-        { id: '2', headline: 'Copy 2', body: 'Body 2', cta: 'CTA 2', selected: false },
+        { id: '1', headline: 'Copy 1', body: 'Body 1', cta: 'CTA 1', selected: false  }
+        { id: '2', headline: 'Copy 2', body: 'Body 2', cta: 'CTA 2', selected: false  }
       ] as CopyVariation[];
     });
 
@@ -298,11 +298,11 @@ describe('Workflow State Machine', () => {
       });
 
       service.state.context.motivations = [
-        { id: '1', title: 'Motivation 1', description: 'First motivation', selected: true },
+        { id: '1', title: 'Motivation 1', description: 'First motivation', selected: true  }
       ] as Motivation[];
 
       service.state.context.copyVariations = [
-        { id: '1', headline: 'Copy 1', body: 'Body 1', cta: 'CTA 1', selected: true },
+        { id: '1', headline: 'Copy 1', body: 'Body 1', cta: 'CTA 1', selected: true  }
       ] as CopyVariation[];
 
       service.send({ type: 'NEXT_STEP' });
@@ -393,11 +393,11 @@ describe('Workflow State Machine', () => {
       });
 
       service.state.context.motivations = [
-        { id: '1', title: 'Motivation 1', description: 'First motivation', selected: true },
+        { id: '1', title: 'Motivation 1', description: 'First motivation', selected: true  }
       ] as Motivation[];
 
       service.state.context.copyVariations = [
-        { id: '1', headline: 'Copy 1', body: 'Body 1', cta: 'CTA 1', selected: true },
+        { id: '1', headline: 'Copy 1', body: 'Body 1', cta: 'CTA 1', selected: true  }
       ] as CopyVariation[];
 
       const mockAsset: Asset = {
@@ -500,11 +500,11 @@ describe('Workflow State Machine', () => {
       });
 
       service.state.context.motivations = [
-        { id: '1', title: 'Motivation 1', description: 'First motivation', selected: true },
+        { id: '1', title: 'Motivation 1', description: 'First motivation', selected: true  }
       ] as Motivation[];
 
       service.state.context.copyVariations = [
-        { id: '1', headline: 'Copy 1', body: 'Body 1', cta: 'CTA 1', selected: true },
+        { id: '1', headline: 'Copy 1', body: 'Body 1', cta: 'CTA 1', selected: true  }
       ] as CopyVariation[];
 
       service.state.context.selectedAssets = [mockAsset];
@@ -555,11 +555,11 @@ describe('Workflow State Machine', () => {
       });
 
       service.state.context.motivations = [
-        { id: '1', title: 'Motivation 1', description: 'First motivation', selected: true },
+        { id: '1', title: 'Motivation 1', description: 'First motivation', selected: true  }
       ] as Motivation[];
 
       service.state.context.copyVariations = [
-        { id: '1', headline: 'Copy 1', body: 'Body 1', cta: 'CTA 1', selected: true },
+        { id: '1', headline: 'Copy 1', body: 'Body 1', cta: 'CTA 1', selected: true  }
       ] as CopyVariation[];
 
       service.state.context.selectedAssets = [{
@@ -702,7 +702,7 @@ describe('Workflow State Machine', () => {
       expect(service.state.value).toBe('motivationSelection');
 
       service.state.context.motivations = [
-        { id: '1', title: 'Motivation 1', description: 'First motivation', selected: false },
+        { id: '1', title: 'Motivation 1', description: 'First motivation', selected: false  }
       ] as Motivation[];
 
       service.send({ type: 'SELECT_MOTIVATION', id: '1' });
@@ -710,7 +710,7 @@ describe('Workflow State Machine', () => {
       expect(service.state.value).toBe('copyGeneration');
 
       service.state.context.copyVariations = [
-        { id: '1', headline: 'Copy 1', body: 'Body 1', cta: 'CTA 1', selected: false },
+        { id: '1', headline: 'Copy 1', body: 'Body 1', cta: 'CTA 1', selected: false  }
       ] as CopyVariation[];
 
       service.send({ type: 'SELECT_COPY', id: '1' });
@@ -753,7 +753,7 @@ describe('Workflow State Machine', () => {
       service.send({ type: 'CONFIRM_BRIEF', briefData: mockBriefData });
       
       service.state.context.motivations = [
-        { id: '1', title: 'Motivation 1', description: 'First motivation', selected: false },
+        { id: '1', title: 'Motivation 1', description: 'First motivation', selected: false  }
       ] as Motivation[];
       
       service.send({ type: 'SELECT_MOTIVATION', id: '1' });

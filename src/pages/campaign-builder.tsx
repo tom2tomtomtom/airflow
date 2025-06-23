@@ -85,8 +85,7 @@ const CampaignBuilderPage: React.FC = () => {
       estimatedDuration: '4-6 weeks',
       complexity: 'beginner',
       objectives: ['Increase brand visibility', 'Reach new audiences', 'Build brand recognition'],
-      preview: '/templates/brand-awareness.jpg',
-    },
+      preview: '/templates/brand-awareness.jpg' },
     {
       id: 'product-launch',
       name: 'Product Launch Campaign',
@@ -96,8 +95,7 @@ const CampaignBuilderPage: React.FC = () => {
       estimatedDuration: '6-8 weeks',
       complexity: 'intermediate',
       objectives: ['Generate product awareness', 'Drive pre-orders', 'Create buzz'],
-      preview: '/templates/product-launch.jpg',
-    },
+      preview: '/templates/product-launch.jpg' },
     {
       id: 'lead-generation',
       name: 'Lead Generation Campaign',
@@ -107,8 +105,7 @@ const CampaignBuilderPage: React.FC = () => {
       estimatedDuration: '8-12 weeks',
       complexity: 'advanced',
       objectives: ['Generate qualified leads', 'Build email list', 'Increase conversions'],
-      preview: '/templates/lead-generation.jpg',
-    },
+      preview: '/templates/lead-generation.jpg' },
     {
       id: 'seasonal-promotion',
       name: 'Seasonal Promotion',
@@ -118,8 +115,7 @@ const CampaignBuilderPage: React.FC = () => {
       estimatedDuration: '2-4 weeks',
       complexity: 'beginner',
       objectives: ['Boost seasonal sales', 'Clear inventory', 'Increase engagement'],
-      preview: '/templates/seasonal-promotion.jpg',
-    },
+      preview: '/templates/seasonal-promotion.jpg' },
     {
       id: 'thought-leadership',
       name: 'Thought Leadership Campaign',
@@ -129,8 +125,7 @@ const CampaignBuilderPage: React.FC = () => {
       estimatedDuration: '12-16 weeks',
       complexity: 'advanced',
       objectives: ['Build industry authority', 'Share expertise', 'Network building'],
-      preview: '/templates/thought-leadership.jpg',
-    },
+      preview: '/templates/thought-leadership.jpg' },
     {
       id: 'customer-retention',
       name: 'Customer Retention Campaign',
@@ -140,8 +135,7 @@ const CampaignBuilderPage: React.FC = () => {
       estimatedDuration: '6-10 weeks',
       complexity: 'intermediate',
       objectives: ['Increase customer loyalty', 'Boost repeat purchases', 'Reduce churn'],
-      preview: '/templates/customer-retention.jpg',
-    },
+      preview: '/templates/customer-retention.jpg' },
   ];
 
   // Campaign building steps
@@ -152,56 +146,49 @@ const CampaignBuilderPage: React.FC = () => {
       description: 'Select a campaign template or start from scratch',
       status: selectedTemplate ? 'completed' : 'pending',
       required: true,
-      estimatedTime: '5 min',
-    },
+      estimatedTime: '5 min' },
     {
       id: 'objectives',
       title: 'Set Objectives',
       description: 'Define your campaign goals and key performance indicators',
       status: 'pending',
       required: true,
-      estimatedTime: '10 min',
-    },
+      estimatedTime: '10 min' },
     {
       id: 'audience',
       title: 'Target Audience',
       description: 'Define your target audience and demographics',
       status: 'pending',
       required: true,
-      estimatedTime: '15 min',
-    },
+      estimatedTime: '15 min' },
     {
       id: 'platforms',
       title: 'Select Platforms',
       description: 'Choose which platforms to run your campaign on',
       status: 'pending',
       required: true,
-      estimatedTime: '10 min',
-    },
+      estimatedTime: '10 min' },
     {
       id: 'content',
       title: 'Content Strategy',
       description: 'Plan your content types and messaging',
       status: 'pending',
       required: true,
-      estimatedTime: '20 min',
-    },
+      estimatedTime: '20 min' },
     {
       id: 'budget',
       title: 'Budget & Schedule',
       description: 'Set your budget and campaign timeline',
       status: 'pending',
       required: true,
-      estimatedTime: '10 min',
-    },
+      estimatedTime: '10 min' },
     {
       id: 'review',
       title: 'Review & Launch',
       description: 'Review your campaign and launch or save as draft',
       status: 'pending',
       required: true,
-      estimatedTime: '5 min',
-    },
+      estimatedTime: '5 min' },
   ];
 
   // Load existing campaigns
@@ -279,7 +266,7 @@ const CampaignBuilderPage: React.FC = () => {
 
   return (
     <>
-      <Head>
+       <Head>
         <title>Campaign Builder | AIRFLOW</title>
       </Head>
       <DashboardLayout title="Campaign Builder">
@@ -342,8 +329,7 @@ const CampaignBuilderPage: React.FC = () => {
                                   transition: 'all 0.2s',
                                   '&:hover': {
                                     boxShadow: 2,
-                                    transform: 'translateY(-2px)',
-                                  },
+                                    transform: 'translateY(-2px)' },
                                 }}
                                 onClick={() => handleTemplateSelect(template)}
                               >
@@ -519,7 +505,7 @@ const CampaignBuilderPage: React.FC = () => {
                             <Step key={step.id}>
                               <StepLabel
                                 StepIconProps={{
-                                  style: { color: getStepStatusColor(step.status) },
+                                  style: { color: getStepStatusColor(step.status)  }
                                 }}
                               >
                                 <Box>

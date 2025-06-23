@@ -105,7 +105,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     data: data || [],
     count,
     pagination: {},
-      limit: parseInt(limit as string),
+  limit: parseInt(limit as string),
       offset: parseInt(offset as string),
       total: count || 0
     }
@@ -160,9 +160,10 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
     try {
       await fetch(`${req.headers.origin}/api/brief-parse`, {
         method: 'POST',
-        headers: {},
-          'Content-Type': 'application/json',
-          'Authorization': req.headers.authorization || ''},
+        headers: {
+        'Content-Type': 'application/json',
+          'Authorization': req.headers.authorization || ''
+      },
         body: JSON.stringify({
           brief_id: brief.id,
           content: briefData.raw_content})});

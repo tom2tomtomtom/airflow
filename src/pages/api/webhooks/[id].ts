@@ -110,7 +110,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, w
     const stats = calculateDeliveryStatistics(deliveries || []);
 
     return res.json({ 
-      data: {},
+      data: { }
         ...webhook,
         secret: webhook.secret ? `${webhook.secret.substring(0, 8)}...` : null // Mask secret
       },
@@ -217,7 +217,7 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse, user: any
       previous_events: existingWebhook.events});
 
     return res.json({ 
-      data: {},
+      data: { }
         ...webhook,
         secret: webhook.secret ? `${webhook.secret.substring(0, 8)}...` : null
       }
@@ -516,10 +516,11 @@ async function testWebhookUrl(url: string, timeoutMs: number = 10000): Promise<{
 
     const response = await fetch(url, {
       method: 'POST',
-      headers: {},
+      headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'AIrFLOW-Webhook-Test/1.0',
-        'X-AIrFLOW-Test': 'true'},
+        'X-AIrFLOW-Test': 'true'
+      },
       body: JSON.stringify({
         event: 'webhook.test',
         timestamp: new Date().toISOString(),

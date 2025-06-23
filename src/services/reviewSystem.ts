@@ -19,13 +19,14 @@ export interface ReviewWorkflow {
   createdAt: Date;
   updatedAt: Date;
   createdBy: string;
-  metadata: {},
-    totalStages: number;
+  metadata: {
+        totalStages: number;
     completedStages: number;
     averageReviewTime: number;
     escalations: number;
     revisionRounds: number;
-  };
+  
+      };
 }
 
 export interface ReviewStage {
@@ -117,7 +118,7 @@ export interface ReviewComment {
 export interface ReviewAnalytics {
   workflowId: string;
   performance: {},
-    totalTime: number;
+  totalTime: number;
     averageStageTime: number;
     bottlenecks: Array<{
       stageId: string;
@@ -128,7 +129,7 @@ export interface ReviewAnalytics {
     efficiency: number; // 0-100 score
   };
   participation: {},
-    totalReviewers: number;
+  totalReviewers: number;
     activeReviewers: number;
     averageResponseTime: number;
     topPerformers: Array<{
@@ -139,7 +140,7 @@ export interface ReviewAnalytics {
     }>;
   };
   quality: {},
-    totalComments: number;
+  totalComments: number;
     issuesFound: number;
     issuesResolved: number;
     revisionRounds: number;
@@ -170,7 +171,7 @@ export class ReviewSystem {
     campaign: RenderedCampaign | PopulatedTemplate,
     workflowTemplate: 'standard' | 'expedited' | 'comprehensive' | 'custom',
     options: {},
-      name?: string;
+  name?: string;
       description?: string;
       reviewers?: Reviewer[];
       customStages?: Partial<ReviewStage>[];
@@ -206,13 +207,14 @@ export class ReviewSystem {
         createdAt: new Date(),
         updatedAt: new Date(),
         createdBy: options.createdBy,
-        metadata: {},
-          totalStages: stages.length,
+        metadata: {
+        totalStages: stages.length,
           completedStages: 0,
           averageReviewTime: 0,
           escalations: 0,
           revisionRounds: 0
-        }
+        
+      }
       };
 
       // Save to database
@@ -445,20 +447,20 @@ export class ReviewSystem {
   ): ReviewStage[] {
     const baseStages: Record<string, Partial<ReviewStage>[]> = {
       standard: [
-        { name: 'Content Review', type: 'content', approvalThreshold: 'majority', order: 1 },
-        { name: 'Creative Review', type: 'creative', approvalThreshold: 'majority', order: 2 },
+        { name: 'Content Review', type: 'content', approvalThreshold: 'majority', order: 1  }
+        { name: 'Creative Review', type: 'creative', approvalThreshold: 'majority', order: 2  }
         { name: 'Final Approval', type: 'final', approvalThreshold: 'all', order: 3 }
       ],
       expedited: [
-        { name: 'Quick Review', type: 'content', approvalThreshold: 'any', order: 1 },
+        { name: 'Quick Review', type: 'content', approvalThreshold: 'any', order: 1  }
         { name: 'Final Approval', type: 'final', approvalThreshold: 'majority', order: 2 }
       ],
       comprehensive: [
-        { name: 'Content Review', type: 'content', approvalThreshold: 'majority', order: 1 },
-        { name: 'Creative Review', type: 'creative', approvalThreshold: 'majority', order: 2 },
-        { name: 'Brand Review', type: 'brand', approvalThreshold: 'all', order: 3 },
-        { name: 'Legal Review', type: 'legal', approvalThreshold: 'all', order: 4 },
-        { name: 'Technical Review', type: 'technical', approvalThreshold: 'majority', order: 5 },
+        { name: 'Content Review', type: 'content', approvalThreshold: 'majority', order: 1  }
+        { name: 'Creative Review', type: 'creative', approvalThreshold: 'majority', order: 2  }
+        { name: 'Brand Review', type: 'brand', approvalThreshold: 'all', order: 3  }
+        { name: 'Legal Review', type: 'legal', approvalThreshold: 'all', order: 4  }
+        { name: 'Technical Review', type: 'technical', approvalThreshold: 'majority', order: 5  }
         { name: 'Final Approval', type: 'final', approvalThreshold: 'all', order: 6 }
       ],
       custom: customStages || []
@@ -486,25 +488,25 @@ export class ReviewSystem {
   private generateStageRequirements(stageType: string): StageRequirement[] {
     const requirementTemplates: Record<string, Partial<StageRequirement>[]> = {
       content: [
-        { name: 'Copy Accuracy', type: 'checklist', isRequired: true },
-        { name: 'Tone Consistency', type: 'checklist', isRequired: true },
+        { name: 'Copy Accuracy', type: 'checklist', isRequired: true  }
+        { name: 'Tone Consistency', type: 'checklist', isRequired: true  }
         { name: 'Message Clarity', type: 'checklist', isRequired: true }
       ],
       creative: [
-        { name: 'Visual Impact', type: 'checklist', isRequired: true },
-        { name: 'Brand Alignment', type: 'checklist', isRequired: true },
+        { name: 'Visual Impact', type: 'checklist', isRequired: true  }
+        { name: 'Brand Alignment', type: 'checklist', isRequired: true  }
         { name: 'Technical Quality', type: 'checklist', isRequired: true }
       ],
       legal: [
-        { name: 'Compliance Check', type: 'approval', isRequired: true },
+        { name: 'Compliance Check', type: 'approval', isRequired: true  }
         { name: 'Claims Verification', type: 'document', isRequired: true }
       ],
       brand: [
-        { name: 'Brand Guidelines', type: 'checklist', isRequired: true },
+        { name: 'Brand Guidelines', type: 'checklist', isRequired: true  }
         { name: 'Voice & Tone', type: 'checklist', isRequired: true }
       ],
       technical: [
-        { name: 'File Quality', type: 'checklist', isRequired: true },
+        { name: 'File Quality', type: 'checklist', isRequired: true  }
         { name: 'Format Compliance', type: 'checklist', isRequired: true }
       ],
       final: [
@@ -529,8 +531,7 @@ export class ReviewSystem {
         id: this.generateEscalationId(),
         condition: 'time_exceeded',
         threshold: 24, // 24 hours
-        action: 'notify'
-      },
+        action: 'notify' }
       {
         id: this.generateEscalationId(),
         condition: 'time_exceeded',
@@ -634,21 +635,20 @@ export class ReviewSystem {
     return {
       workflowId: workflow.id,
       performance: {},
-        totalTime,
+  totalTime,
         averageStageTime,
         bottlenecks: [], // Would calculate based on stage times
         efficiency
       },
       participation: {},
-        totalReviewers: workflow.stages.reduce((sum, stage) => sum + stage.reviewers.length, 0),
+  totalReviewers: workflow.stages.reduce((sum, stage) => sum + stage.reviewers.length, 0),
         activeReviewers: workflow.stages.reduce((sum, stage) => 
           sum + stage.reviewers.filter((r: any) => r.status === 'reviewing').length, 0
         ),
         averageResponseTime: 0, // Would calculate from submission data
-        topPerformers: [] // Would rank reviewers by performance
-      },
-      quality: {},
-        totalComments: 0, // Would count from comments table
+        topPerformers: [] // Would rank reviewers by performance },
+  quality: {},
+  totalComments: 0, // Would count from comments table
         issuesFound: 0,
         issuesResolved: 0,
         revisionRounds: workflow.metadata.revisionRounds,

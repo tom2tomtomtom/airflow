@@ -27,8 +27,7 @@ export default async function handler(
   if (!email || !password) {
     return res.status(400).json({
       success: false,
-      error: 'Email and password are required',
-    });
+      error: 'Email and password are required' });
   }
 
   // Check if Supabase is configured properly
@@ -39,9 +38,7 @@ export default async function handler(
   ) {
     return res.status(401).json({
       success: false,
-      error:
-        'Authentication service not configured. Please use demo credentials or configure real Supabase credentials.',
-    });
+      error: 'Authentication service not configured. Please use demo credentials or configure real Supabase credentials.' });
   }
 
   try {
@@ -60,8 +57,7 @@ export default async function handler(
     if (authError || !authData.user) {
       return res.status(401).json({
         success: false,
-        error: authError?.message || 'Invalid email or password',
-      });
+        error: authError?.message || 'Invalid email or password' });
     }
 
     // Try to get user profile from database
@@ -111,14 +107,12 @@ export default async function handler(
         email: authData.user.email || email,
         name: userName || 'User',
         role: userProfile?.role || 'user',
-        token: authData.session?.access_token || '',
-      },
+        token: authData.session?.access_token || '' },
     });
   } catch (error) {
     console.error('Login error:', error);
     return res.status(500).json({
       success: false,
-      error: 'An unexpected error occurred. Please try again later.',
-    });
+      error: 'An unexpected error occurred. Please try again later.' });
   }
 }

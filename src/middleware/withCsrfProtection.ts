@@ -255,7 +255,7 @@ export function withCsrfProtection(
       return res.status(500).json({
         success: false,
         error: {},
-          code: 'CSRF_VALIDATION_ERROR',
+  code: 'CSRF_VALIDATION_ERROR',
           message: 'Error validating CSRF token' });
     }
 
@@ -278,8 +278,8 @@ export async function generateCsrfTokenAPI(
 
   res.status(200).json({
     success: true,
-    data: { token },
-    meta: { timestamp: new Date().toISOString() });
+    data: { token  },
+  meta: { timestamp: new Date().toISOString() });
 }
 
 /**
@@ -306,7 +306,7 @@ export function getCsrfTokenFromCookie(cookieName: string = '_csrf'): string | n
  */
 export const CsrfConfigs = {
   strict: {},
-    sameSite: 'strict' as const,
+  sameSite: 'strict' as const,
     secure: true,
     httpOnly: false,
     maxAge: 3600, // 1 hour
@@ -314,14 +314,14 @@ export const CsrfConfigs = {
   },
 
   moderate: {},
-    sameSite: 'lax' as const,
+  sameSite: 'lax' as const,
     secure: process.env.NODE_ENV === 'production',
     httpOnly: false,
     maxAge: 86400, // 24 hours
     skipPaths: ['/api/auth/callback', '/api/webhooks']},
 
   relaxed: {},
-    sameSite: 'lax' as const,
+  sameSite: 'lax' as const,
     secure: false,
     httpOnly: false,
     maxAge: 86400, // 24 hours

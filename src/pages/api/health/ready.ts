@@ -23,8 +23,7 @@ export default async function handler(
     return res.status(405).json({
       ready: false,
       timestamp: new Date().toISOString(),
-      checks: [{ service: 'http', ready: false, error: 'Method not allowed' }],
-    });
+      checks: [{ service: 'http', ready: false, error: 'Method not allowed' }] });
   }
 
   const checks: ReadinessCheck[] = [];
@@ -35,8 +34,7 @@ export default async function handler(
     // Check environment configuration
     checks.push({
       service: 'configuration',
-      ready: true,
-    });
+      ready: true });
 
     // Check database connectivity
     try {
@@ -48,14 +46,12 @@ export default async function handler(
       checks.push({
         service: 'database',
         ready: !error,
-        error: error?.message,
-      });
+        error: error?.message });
     } catch (error) {
       checks.push({
         service: 'database',
         ready: false,
-        error: error instanceof Error ? error.message : 'Database connection failed',
-      });
+        error: error instanceof Error ? error.message : 'Database connection failed' });
     }
 
     // Check if required secrets are available
@@ -65,15 +61,13 @@ export default async function handler(
     checks.push({
       service: 'secrets',
       ready: secretsReady,
-      error: secretsReady ? undefined : 'Required secrets missing',
-    });
+      error: secretsReady ? undefined : 'Required secrets missing' });
 
     // Check if in maintenance mode
     checks.push({
       service: 'maintenance',
       ready: !config.MAINTENANCE_MODE,
-      error: config.MAINTENANCE_MODE ? 'Application in maintenance mode' : undefined,
-    });
+      error: config.MAINTENANCE_MODE ? 'Application in maintenance mode' : undefined });
 
     const allReady = checks.every(check => check.ready);
 
@@ -96,8 +90,7 @@ export default async function handler(
         {
           service: 'readiness-check',
           ready: false,
-          error: error instanceof Error ? error.message : 'Readiness check execution failed',
-        },
+          error: error instanceof Error ? error.message : 'Readiness check execution failed' },
       ],
     });
   }

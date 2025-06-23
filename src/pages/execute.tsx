@@ -58,11 +58,11 @@ interface ExecutionQueue {
   failed_items: number;
   estimated_completion: string;
   created_at: string;
-  campaign: {},
+  campaign: {
     id: string;
     name: string;
   };
-  matrix: {},
+  matrix: {
     id: string;
     name: string;
   };
@@ -140,12 +140,13 @@ const ExecutePage: React.FC = () => {
           id: key,
           name: `${execution.matrices?.name || 'Unknown Matrix'} - ${execution.matrices?.campaigns?.name || 'Unknown Campaign'}`,
           executions: [],
-          campaign: {},
+          campaign: {
             id: execution.campaign_id,
-            name: execution.matrices?.campaigns?.name || 'Unknown Campaign'},
-          matrix: {},
+            name: execution.matrices?.campaigns?.name || 'Unknown Campaign' },
+          matrix: {
             id: execution.matrix_id,
-            name: execution.matrices?.name || 'Unknown Matrix'}};
+            name: execution.matrices?.name || 'Unknown Matrix' },
+        };
       }
 
       acc[key].executions.push(execution);
@@ -211,8 +212,9 @@ const ExecutePage: React.FC = () => {
     try {
       const response = await fetch(`/api/executions/queue/${queueId}/${action}`, {
         method: 'POST',
-        headers: {},
-          'Content-Type': 'application/json'}});
+        headers: {
+        'Content-Type': 'application/json'
+      }});
 
       if (response.ok) {
         showNotification(`Queue ${action} successful`, 'success');
@@ -291,7 +293,7 @@ const ExecutePage: React.FC = () => {
 
   return (
     <>
-      <Head>
+       <Head>
         <title>Campaign Execution | AIRFLOW</title>
       </Head>
       <DashboardLayout title="Campaign Execution">

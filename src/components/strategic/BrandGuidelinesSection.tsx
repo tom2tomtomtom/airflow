@@ -47,7 +47,7 @@ const BrandGuidelinesSection: React.FC<BrandGuidelinesProps> = ({
           textAlign: 'center',
           cursor: 'pointer',
           transition: 'all 0.2s',
-          '&:hover': { borderColor: 'primary.main', bgcolor: 'primary.50' },
+          '&:hover': { borderColor: 'primary.main', bgcolor: 'primary.50'  }
         }}
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
@@ -112,7 +112,7 @@ const BrandGuidelinesSection: React.FC<BrandGuidelinesProps> = ({
               </Box>{' '}
               {brandGuidelines.colors && (
                 <>
-                  {' '}
+      {' '}
                   <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                     {' '}
                     Primary{' '}
@@ -128,8 +128,7 @@ const BrandGuidelinesSection: React.FC<BrandGuidelinesProps> = ({
                             height: 24,
                             bgcolor: color,
                             borderRadius: 1,
-                            border: '1px solid #ccc',
-                          }}
+                            border: '1px solid #ccc' }}
                           title={color}
                         />
                       ))}{' '}
@@ -149,8 +148,7 @@ const BrandGuidelinesSection: React.FC<BrandGuidelinesProps> = ({
                             height: 24,
                             bgcolor: color,
                             borderRadius: 1,
-                            border: '1px solid #ccc',
-                          }}
+                            border: '1px solid #ccc' }}
                           title={color}
                         />
                       ))}{' '}
@@ -227,8 +225,7 @@ const BrandGuidelinesSection: React.FC<BrandGuidelinesProps> = ({
                               py: 0.5,
                               bgcolor: 'primary.50',
                               borderRadius: 1,
-                              fontSize: '0.75rem',
-                            }}
+                              fontSize: '0.75rem' }}
                           >
                             {' '}
                             {trait}{' '}

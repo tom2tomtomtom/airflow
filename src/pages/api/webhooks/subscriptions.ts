@@ -84,10 +84,11 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, userId: stri
     url,
     events,
     active,
-    metadata: {},
-      ...metadata,
+    metadata: {
+        ...metadata,
       updated_by: userId,
-      updated_at: new Date().toISOString()}});
+      updated_at: new Date().toISOString()
+      }});
   
   res.status(200).json({ subscription });
 }

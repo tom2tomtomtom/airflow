@@ -88,7 +88,7 @@ export const createValidationRules = {
 
   password: (required = true, strong = false): RegisterOptions => ({
     ...(required && { required: { value: true, message: validationMessages.required } }),
-    minLength: { value: strong ? 8 : 6, message: validationMessages.minLength(strong ? 8 : 6) },
+    minLength: { value: strong ? 8 : 6, message: validationMessages.minLength(strong ? 8 : 6)  }
     ...(strong && {
       pattern: { value: validationPatterns.strongPassword, message: validationMessages.strongPassword }})}),
 
@@ -113,7 +113,7 @@ export const createValidationRules = {
 
   file: (required = true, maxSizeMB?: number, allowedTypes?: string[]): RegisterOptions => ({
     ...(required && { required: { value: true, message: validationMessages.required } }),
-    validate: {},
+    validate: { }
       ...(maxSizeMB && {
         fileSize: (files: FileList) => {
           if (!files || files.length === 0) return true;

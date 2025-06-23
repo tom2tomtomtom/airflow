@@ -57,20 +57,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
       dateCreated: gen.created_at,
       clientId: gen.client_id,
       userId: gen.user_id,
-      favorite: gen.favorite || false,
-    }));
+      favorite: gen.favorite || false }));
 
     return res.status(200).json({
       success: true,
-      generations: formattedGenerations,
-    });
+      generations: formattedGenerations });
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error fetching generations:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to fetch generations',
-    });
+      message: 'Failed to fetch generations' });
   }
 }
 

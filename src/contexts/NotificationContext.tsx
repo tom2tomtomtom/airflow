@@ -47,15 +47,15 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
           open={true}
           autoHideDuration={notification.duration ?? null}
           onClose={() => handleClose(notification.id)}
-          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
           TransitionComponent={Slide as any}
-          sx={{ bottom: { xs: 16, sm: 16 + index * 70 } }
+          sx={{ bottom: { xs: 16, sm: 16 + index * 70 } }}
         >
           <Alert
             onClose={() => handleClose(notification.id)}
             severity={notification.severity}
             variant="filled"
-            sx={{ width: '100%' }
+            sx={{ width: '100%' }}
           >
             {notification.message}
           </Alert>

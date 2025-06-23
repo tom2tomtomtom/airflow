@@ -5,7 +5,7 @@ import Link from 'next/link';
 export default function TermsOfService() {
   return (
     <>
-      <Head>
+       <Head>
         <title>Terms of Service - AIrFLOW</title>
         <meta
           name="description"

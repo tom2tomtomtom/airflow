@@ -39,8 +39,7 @@ export const BriefDataSchema = z.object({
   brandGuidelines: z.string().max(2000).transform(sanitizeText).optional(),
   requirements: z.array(z.string().min(1).max(500).transform(sanitizeText)).max(20).optional(),
   industry: z.string().max(100).transform(sanitizeText).optional(),
-  competitors: z.array(z.string().min(1).max(200).transform(sanitizeText)).max(20).optional(),
-});
+  competitors: z.array(z.string().min(1).max(200).transform(sanitizeText)).max(20).optional() });
 
 // Motivation validation schema
 export const MotivationSchema = z.object({
@@ -48,16 +47,14 @@ export const MotivationSchema = z.object({
   title: z.string().min(1).max(200).transform(sanitizeText),
   description: z.string().min(10).max(1000).transform(sanitizeText),
   score: z.number().min(0).max(1),
-  selected: z.boolean(),
-});
+  selected: z.boolean() });
 
 // Copy variation validation schema
 export const CopyVariationSchema = z.object({
   id: z.string().uuid(),
   text: z.string().min(1).max(2000).transform(sanitizeText),
   platform: z.string().min(1).max(50).transform(sanitizeText),
-  selected: z.boolean(),
-});
+  selected: z.boolean() });
 
 // Asset validation schema
 export const AssetSchema = z.object({
@@ -66,8 +63,7 @@ export const AssetSchema = z.object({
   url: z.string().url().optional(),
   content: z.string().max(5000).transform(sanitizeText).optional(),
   metadata: z.record(z.any()).optional(),
-  selected: z.boolean(),
-});
+  selected: z.boolean() });
 
 // Template validation schema
 export const TemplateSchema = z.object({
@@ -76,8 +72,7 @@ export const TemplateSchema = z.object({
   description: z.string().min(1).max(1000).transform(sanitizeText),
   thumbnail: z.string().url().optional(),
   category: z.string().min(1).max(100).transform(sanitizeText),
-  selected: z.boolean(),
-});
+  selected: z.boolean() });
 
 /**
  * Sanitize text input to prevent XSS and other injection attacks
@@ -91,8 +86,7 @@ function sanitizeText(input: string): string {
   const sanitized = DOMPurify.sanitize(input, {
     ALLOWED_TAGS: [], // No HTML tags allowed
     ALLOWED_ATTR: [],
-    KEEP_CONTENT: true,
-  });
+    KEEP_CONTENT: true });
 
   // Additional sanitization for common injection patterns
   let result = sanitized
@@ -144,8 +138,7 @@ export function validateFile(file: File): { valid: boolean; errors: string[] } {
     FileValidationSchema.parse({
       name: file.name,
       size: file.size,
-      type: file.type,
-    });
+      type: file.type });
   } catch (error: any) {
     if (error instanceof z.ZodError) {
       errors.push(...error.errors.map((e: any) => e.message));
@@ -191,19 +184,16 @@ export function validateBriefData(data: any): { valid: boolean; data?: any; erro
     return {
       valid: true,
       data: validatedData,
-      errors: [],
-    };
+      errors: [] };
   } catch (error: any) {
     if (error instanceof z.ZodError) {
       return {
         valid: false,
-        errors: error.errors.map((e: any) => `${e.path.join('.')}: ${e.message}`),
-      };
+        errors: error.errors.map((e: any) => `${e.path.join('.')}: ${e.message}`) };
     }
     return {
       valid: false,
-      errors: ['Invalid brief data format'],
-    };
+      errors: ['Invalid brief data format'] };
   }
 }
 
@@ -305,19 +295,16 @@ export function validateTemplate(template: any): { valid: boolean; data?: any; e
     return {
       valid: true,
       data: validatedTemplate,
-      errors: [],
-    };
+      errors: [] };
   } catch (error: any) {
     if (error instanceof z.ZodError) {
       return {
         valid: false,
-        errors: error.errors.map((e: any) => `${e.path.join('.')}: ${e.message}`),
-      };
+        errors: error.errors.map((e: any) => `${e.path.join('.')}: ${e.message}`) };
     }
     return {
       valid: false,
-      errors: ['Invalid template format'],
-    };
+      errors: ['Invalid template format'] };
   }
 }
 
@@ -339,8 +326,7 @@ export function validateAIOperationRate(
   // For demonstration purposes, using a simple approach
   return {
     allowed: true, // Would implement actual rate limiting logic here
-    resetTime: now + windowMs,
-  };
+    resetTime: now + windowMs };
 }
 
 /**

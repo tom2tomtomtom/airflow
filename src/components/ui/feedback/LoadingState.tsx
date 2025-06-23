@@ -51,8 +51,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
         justifyContent: 'center',
         gap: 2,
         minHeight: fullHeight ? '200px' : 'auto',
-        p: 3,
-      }}
+        p: 3 }}
       {...loadingProps}
     >
       <CircularProgress
@@ -61,8 +60,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
         sx={{
           color: 'primary.main',
           '& .MuiCircularProgress-circle': {
-            strokeLinecap: 'round',
-          },
+            strokeLinecap: 'round' },
         }}
       />
       {message && (
@@ -94,8 +92,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
               height={120}
               sx={{
                 borderRadius: 2,
-                mb: 1,
-              }}
+                mb: 1 }}
             />
           )}
         </Box>
@@ -111,8 +108,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
         alignItems: 'center',
         gap: 2,
         p: 3,
-        minHeight: fullHeight ? '200px' : 'auto',
-      }}
+        minHeight: fullHeight ? '200px' : 'auto' }}
       {...loadingProps}
     >
       <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
@@ -149,8 +145,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
         backgroundColor: 'background.paper',
         borderRadius: 3,
         border: '1px solid',
-        borderColor: 'divider',
-      }}
+        borderColor: 'divider' }}
     >
       <CardContent sx={{ p: 3 }}>
         <Box
@@ -158,8 +153,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: 2,
-          }}
+            gap: 2 }}
           {...loadingProps}
         >
           <CircularProgress
@@ -168,8 +162,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
             sx={{
               color: 'primary.main',
               '& .MuiCircularProgress-circle': {
-                strokeLinecap: 'round',
-              },
+                strokeLinecap: 'round' },
             }}
           />
           <Box sx={{ textAlign: 'center' }}>

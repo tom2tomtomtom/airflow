@@ -40,9 +40,7 @@ export default async function handler(
   ) {
     return res.status(200).json({
       success: false,
-      error:
-        'Demo mode: Please configure real Supabase credentials in Netlify environment variables to enable account creation.',
-    });
+      error: 'Demo mode: Please configure real Supabase credentials in Netlify environment variables to enable account creation.' });
   }
 
   try {
@@ -58,8 +56,7 @@ export default async function handler(
       password,
       options: {
         data: {
-          name: name,
-        },
+          name: name },
       },
     });
 
@@ -77,23 +74,20 @@ export default async function handler(
 
       return res.status(400).json({
         success: false,
-        error: errorMessage,
-      });
+        error: errorMessage });
     }
 
     if (!authData.user) {
       return res.status(400).json({
         success: false,
-        error: 'Failed to create user account. Please try again.',
-      });
+        error: 'Failed to create user account. Please try again.' });
     }
 
     // Check if email confirmation is required
     if (!authData.session) {
       return res.status(200).json({
         success: true,
-        message: 'Please check your email for a confirmation link before logging in.',
-      });
+        message: 'Please check your email for a confirmation link before logging in.' });
     }
 
     return res.status(200).json({
@@ -103,14 +97,12 @@ export default async function handler(
         email: authData.user.email || email,
         name: name,
         role: 'user',
-        token: authData.session?.access_token || '',
-      },
+        token: authData.session?.access_token || '' },
     });
   } catch (error) {
     console.error('Signup error:', error);
     return res.status(500).json({
       success: false,
-      error: 'An unexpected error occurred. Please try again later.',
-    });
+      error: 'An unexpected error occurred. Please try again later.' });
   }
 }

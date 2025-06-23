@@ -16,8 +16,7 @@ export function withNavigationProtection(handler: unknown) {
     currentPath: req.url || '',
         isAuthenticated: !!(req as any).user,
         userRole: (req as any).user?.role,
-        redirectAttempts: 0,
-      };
+        redirectAttempts: 0 };
 
       const referer = req.headers.referer;
       if (referer && req.url) {
@@ -31,8 +30,7 @@ export function withNavigationProtection(handler: unknown) {
             console.warn('🔄 Potential redirect loop detected:', {
               path: currentPath,
               referer: refererPath,
-              attempts: navigationState.redirectAttempts,
-            });
+              attempts: navigationState.redirectAttempts });
 
             return res.redirect(302, '/dashboard');
           }
@@ -45,8 +43,7 @@ export function withNavigationProtection(handler: unknown) {
       console.error('Navigation middleware error:', error);
       return res.status(500).json({
         success: false,
-        error: 'Navigation error',
-      });
+        error: 'Navigation error' });
     }
   };
 }
@@ -68,8 +65,7 @@ export function withAuthRedirect(redirectTo: string = '/login') {
             return res.status(401).json({
               success: false,
               error: 'Authentication required',
-              redirectTo: '/login',
-            });
+              redirectTo: '/login' });
           }
 
           return res.redirect(302, redirectTo);
@@ -80,8 +76,7 @@ export function withAuthRedirect(redirectTo: string = '/login') {
         console.error('Auth redirect error:', error);
         return res.status(500).json({
           success: false,
-          error: 'Authentication redirect error',
-        });
+          error: 'Authentication redirect error' });
       }
     };
   };

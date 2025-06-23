@@ -25,18 +25,19 @@ export const getSupabaseClient = () => {
       supabaseAnonKey,
       {
         auth: {},
-          autoRefreshToken: true,
+  autoRefreshToken: true,
           persistSession: true,
           detectSessionInUrl: true,
           storageKey: 'airwave-auth-token', // Use specific storage key to avoid conflicts
         },
         global: {},
-          headers: {},
-            'x-application-name': 'airwave'
-          }
+  headers: {
+        'x-application-name': 'airwave'
+          
+      }
         },
         cookies: {},
-          get(name: string) {
+  get(name: string) {
             return getCookie(name);
           },
           set(name: string, value: string, options: any) {

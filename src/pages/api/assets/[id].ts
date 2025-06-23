@@ -56,8 +56,7 @@ async function getAsset(
 
     return res.status(200).json({
       success: true,
-      asset: asset,
-    });
+      asset: asset });
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error fetching asset:', error);
@@ -75,8 +74,7 @@ async function updateAsset(
     const { name, url, thumbnail_url, description, tags, favorite } = req.body;
 
     const updateData: any = {
-      updated_at: new Date().toISOString(),
-    };
+      updated_at: new Date().toISOString() };
 
     if (name !== undefined) updateData.name = name;
     if (url !== undefined) updateData.url = url;
@@ -102,8 +100,7 @@ async function updateAsset(
 
     return res.status(200).json({
       success: true,
-      asset: asset,
-    });
+      asset: asset });
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error updating asset:', error);
@@ -136,8 +133,7 @@ async function deleteAsset(
     return res.status(200).json({
       success: true,
       message: 'Asset deleted successfully',
-      asset: asset,
-    });
+      asset: asset });
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error deleting asset:', error);

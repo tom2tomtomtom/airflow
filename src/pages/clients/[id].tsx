@@ -6,7 +6,7 @@ import DashboardLayout from '@/components/DashboardLayout';
 const ClientDetailsPage: React.FC = () => {
   return (
     <>
-      <Head>
+       <Head>
         <title>Client Details | AIRFLOW</title>
       </Head>
       <DashboardLayout title="Client Details">

@@ -62,12 +62,12 @@ interface PublishingAnalyticsProps {
 
 interface AnalyticsData {
   overview: {},
-    totalPosts: number;
+  totalPosts: number;
     totalReach: number;
     totalEngagement: number;
     avgEngagementRate: number;
     trends: {},
-      posts: number;
+  posts: number;
       reach: number;
       engagement: number;
       engagementRate: number;
@@ -98,7 +98,7 @@ interface AnalyticsData {
     platform: string;
     publishedAt: string;
     metrics: {},
-      reach: number;
+  reach: number;
       likes: number;
       comments: number;
       shares: number;
@@ -179,12 +179,12 @@ const PublishingAnalytics: React.FC<PublishingAnalyticsProps> = ({
 
       const analyticsData: AnalyticsData = {
         overview: {},
-          totalPosts,
+  totalPosts,
           totalReach,
           totalEngagement,
           avgEngagementRate: totalReach > 0 ? (totalEngagement / totalReach) * 100 : 0,
           trends: {},
-            posts: Math.floor(Math.random() * 40) - 20, // -20% to +20%
+  posts: Math.floor(Math.random() * 40) - 20, // -20% to +20%
             reach: Math.floor(Math.random() * 60) - 30, // -30% to +30%
             engagement: Math.floor(Math.random() * 50) - 25, // -25% to +25%
             engagementRate: Math.floor(Math.random() * 30) - 15, // -15% to +15%
@@ -196,35 +196,35 @@ const PublishingAnalytics: React.FC<PublishingAnalyticsProps> = ({
             reach: Math.floor(totalReach * 0.4),
             engagement: Math.floor(totalEngagement * 0.35),
             engagementRate: 4.2,
-            color: platformColors.facebook},
+            color: platformColors.facebook }
           {
             platform: 'Twitter',
             posts: Math.floor(totalPosts * 0.25),
             reach: Math.floor(totalReach * 0.25),
             engagement: Math.floor(totalEngagement * 0.3),
             engagementRate: 2.8,
-            color: platformColors.twitter},
+            color: platformColors.twitter }
           {
             platform: 'LinkedIn',
             posts: Math.floor(totalPosts * 0.2),
             reach: Math.floor(totalReach * 0.15),
             engagement: Math.floor(totalEngagement * 0.2),
             engagementRate: 5.1,
-            color: platformColors.linkedin},
+            color: platformColors.linkedin }
           {
             platform: 'Instagram',
             posts: Math.floor(totalPosts * 0.2),
             reach: Math.floor(totalReach * 0.15),
             engagement: Math.floor(totalEngagement * 0.12),
             engagementRate: 3.6,
-            color: platformColors.instagram},
+            color: platformColors.instagram }
           {
             platform: 'YouTube',
             posts: Math.floor(totalPosts * 0.05),
             reach: Math.floor(totalReach * 0.05),
             engagement: Math.floor(totalEngagement * 0.03),
             engagementRate: 6.2,
-            color: platformColors.youtube},
+            color: platformColors.youtube }
         ],
         timeSeriesData,
         topPosts: [
@@ -234,7 +234,7 @@ const PublishingAnalytics: React.FC<PublishingAnalyticsProps> = ({
             platform: 'Facebook',
             publishedAt: '2024-01-15T10:00:00Z',
             metrics: {},
-              reach: 12500,
+  reach: 12500,
               likes: 340,
               comments: 67,
               shares: 89,
@@ -245,7 +245,7 @@ const PublishingAnalytics: React.FC<PublishingAnalyticsProps> = ({
             platform: 'Instagram',
             publishedAt: '2024-01-14T14:30:00Z',
             metrics: {},
-              reach: 8900,
+  reach: 8900,
               likes: 520,
               comments: 43,
               shares: 76,
@@ -256,18 +256,18 @@ const PublishingAnalytics: React.FC<PublishingAnalyticsProps> = ({
             platform: 'LinkedIn',
             publishedAt: '2024-01-13T09:15:00Z',
             metrics: {},
-              reach: 5600,
+  reach: 5600,
               likes: 180,
               comments: 34,
               shares: 45,
               engagementRate: 4.6}},
         ],
         engagementBreakdown: [
-          { platform: 'Facebook', likes: 1240, comments: 340, shares: 180, color: platformColors.facebook },
-          { platform: 'Twitter', likes: 890, comments: 120, shares: 450, color: platformColors.twitter },
-          { platform: 'LinkedIn', likes: 670, comments: 230, shares: 120, color: platformColors.linkedin },
-          { platform: 'Instagram', likes: 1560, comments: 180, shares: 90, color: platformColors.instagram },
-          { platform: 'YouTube', likes: 340, comments: 45, shares: 23, color: platformColors.youtube },
+          { platform: 'Facebook', likes: 1240, comments: 340, shares: 180, color: platformColors.facebook  }
+          { platform: 'Twitter', likes: 890, comments: 120, shares: 450, color: platformColors.twitter  }
+          { platform: 'LinkedIn', likes: 670, comments: 230, shares: 120, color: platformColors.linkedin  }
+          { platform: 'Instagram', likes: 1560, comments: 180, shares: 90, color: platformColors.instagram  }
+          { platform: 'YouTube', likes: 340, comments: 45, shares: 23, color: platformColors.youtube  }
         ]};
 
       setAnalyticsData(analyticsData);

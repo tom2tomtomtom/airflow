@@ -11,7 +11,7 @@ const AIToolsPage: React.FC = () => {
 
   return (
     <>
-      <Head>
+       <Head>
         <title>AI Tools | AIrFLOW</title>
       </Head>
       <DashboardLayout>

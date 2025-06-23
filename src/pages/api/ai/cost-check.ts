@@ -137,7 +137,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<CostCheckRespon
       estimatedCost: recommendation?.cost || 0,
       recommendation,
       usageStats: {},
-        dailyRate,
+  dailyRate,
         projectedMonthly,
         percentOfBudget
       }

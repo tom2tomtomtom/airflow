@@ -108,8 +108,7 @@ export class ProductionPerformanceTracker {
       duration,
       timestamp,
       userId: userId || context.userId,
-      metadata: context.metadata,
-    };
+      metadata: context.metadata };
 
     // Log the result
     // eslint-disable-next-line no-console
@@ -152,8 +151,7 @@ export class ProductionPerformanceTracker {
           (await redisManager.hget(dailyKey, `${metric.operationName}:total`)) ||
           0 + metric.duration,
         avgDuration: metric.duration, // Will be calculated properly in aggregation
-        lastUpdate: metric.timestamp,
-      });
+        lastUpdate: metric.timestamp });
 
       // Set TTL for metrics (30 days)
       await redisManager.expire(key, 30 * 24 * 60 * 60);

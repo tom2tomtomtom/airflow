@@ -20,8 +20,7 @@ export function EnvironmentDebug() {
     'Supabase URL': env.NEXT_PUBLIC_SUPABASE_URL ? '✅ Set' : '❌ Not set',
     'Supabase Anon Key': env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? '✅ Set' : '❌ Not set',
     'API URL': env.NEXT_PUBLIC_API_URL || '❌ Not set',
-    Environment: env.NODE_ENV,
-  };
+    Environment: env.NODE_ENV };
 
   return (
     <div className="fixed bottom-4 right-4 bg-gray-900 text-white p-4 rounded-lg shadow-xl max-w-sm z-50">

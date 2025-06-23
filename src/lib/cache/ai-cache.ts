@@ -9,8 +9,7 @@ const AI_NAMESPACES = {
   IMAGE_GENERATION: 'ai:image',
   VIDEO_GENERATION: 'ai:video',
   MOTIVATIONS: 'ai:motivations',
-  CONTENT_OPTIMIZATION: 'ai:optimization',
-} as const;
+  CONTENT_OPTIMIZATION: 'ai:optimization' } as const;
 
 // Generate cache key from content hash
 function generateContentHash(content: string | object): string {

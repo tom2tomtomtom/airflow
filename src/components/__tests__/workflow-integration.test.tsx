@@ -11,7 +11,7 @@ const mockFetch = jest.fn();
 const mockBriefParseResponse = {
   success: true,
   data: {},
-    title: 'Test Campaign',
+  title: 'Test Campaign',
     industry: 'Technology',
     product: 'AI Platform',
     objective: 'Increase brand awareness',
@@ -30,14 +30,12 @@ const mockMotivationsResponse = {
       id: 'motivation-1',
       text: 'Innovation Leadership',
       description: 'Position as industry innovator',
-      selected: false
-    },
+      selected: false }
     {
       id: 'motivation-2',
       text: 'Problem Solving',
       description: 'Address key industry challenges',
-      selected: false
-    },
+      selected: false }
     {
       id: 'motivation-3',
       text: 'Efficiency Gains',
@@ -55,15 +53,13 @@ const mockCopyResponse = {
       text: 'Revolutionary AI platform transforming business operations',
       motivation: 'Innovation Leadership',
       platform: 'LinkedIn',
-      selected: false
-    },
+      selected: false }
     {
       id: 'copy-2',
       text: 'Solve complex challenges with intelligent automation',
       motivation: 'Problem Solving',
       platform: 'LinkedIn',
-      selected: false
-    },
+      selected: false }
     {
       id: 'copy-3',
       text: 'Boost productivity by 300% with our AI solution',
@@ -79,7 +75,7 @@ const mockCostCheckResponse = {
   budgetRemaining: 850.50,
   fallbackModel: null,
   usageStats: {},
-    percentOfBudget: 15.5
+  percentOfBudget: 15.5
   }
 };
 

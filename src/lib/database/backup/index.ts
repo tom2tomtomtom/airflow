@@ -183,13 +183,12 @@ export class DatabaseBackupManager {
       
       // Write backup to file
       const backupContent = JSON.stringify({
-        metadata: {},
-          timestamp: new Date().toISOString(),
+        metadata: {
+        timestamp: new Date().toISOString(),
           since: since?.toISOString(),
           tables,
-          version: '1.0'
-        },
-        data: backupData
+          version: '1.0' },
+  data: backupData
       }, null, 2);
       
       await fs.writeFile(destination, backupContent, 'utf-8');

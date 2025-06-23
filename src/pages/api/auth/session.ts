@@ -37,13 +37,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).json({
       authenticated: true,
       session: {},
-        access_token: session.access_token ? '[REDACTED]' : null,
+  access_token: session.access_token ? '[REDACTED]' : null,
         expires_at: session.expires_at,
         expires_in: session.expires_in,
-        token_type: session.token_type
-      },
-      user: {},
-        id: session.user.id,
+        token_type: session.token_type },
+  user: {},
+  id: session.user.id,
         email: session.user.email,
         role: session.user.role,
         created_at: session.user.created_at,

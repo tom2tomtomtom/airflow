@@ -41,8 +41,7 @@ export class WorkflowErrorBoundary extends Component<Props, State> {
       hasError: false,
       error: null,
       errorInfo: null,
-      errorId: '',
-    };
+      errorId: '' };
   }
 
   static getDerivedStateFromError(error: Error): Partial<State> {
@@ -86,8 +85,7 @@ export class WorkflowErrorBoundary extends Component<Props, State> {
         timestamp: new Date().toISOString(),
         userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
         url: typeof window !== 'undefined' ? window.location.href : 'unknown',
-        environment: process.env.NODE_ENV,
-      };
+        environment: process.env.NODE_ENV };
 
       // In development, log full details
       if (process.env.NODE_ENV === 'development') {
@@ -98,8 +96,7 @@ export class WorkflowErrorBoundary extends Component<Props, State> {
           errorId: errorReport.errorId,
           message: errorReport.message,
           context: errorReport.context,
-          timestamp: errorReport.timestamp,
-        });
+          timestamp: errorReport.timestamp });
       }
 
       // TODO: Send to actual error tracking service (Sentry, etc.)
@@ -139,8 +136,7 @@ export class WorkflowErrorBoundary extends Component<Props, State> {
         'Network Error': 'Connection error. Please check your internet connection and try again.',
         ChunkLoadError: 'Loading error. Please refresh the page and try again.',
         TypeError: 'An unexpected error occurred. Please refresh the page and try again.',
-        ReferenceError: 'An unexpected error occurred. Please refresh the page and try again.',
-      };
+        ReferenceError: 'An unexpected error occurred. Please refresh the page and try again.' };
 
       for (const [pattern, message] of Object.entries(userFriendlyMessages)) {
         if (error.message.includes(pattern)) {
@@ -161,8 +157,7 @@ export class WorkflowErrorBoundary extends Component<Props, State> {
       hasError: false,
       error: null,
       errorInfo: null,
-      errorId: '',
-    });
+      errorId: '' });
   };
 
   private handleGoHome = () => {
@@ -174,10 +169,10 @@ export class WorkflowErrorBoundary extends Component<Props, State> {
       `Bug Report: ${this.state.error?.message || 'Workflow Error'}`
     );
     const body = encodeURIComponent(`
-Error ID: ${this.state.errorId}
-Context: ${this.props.context || 'Unknown'}
-Message: ${this.state.error?.message || 'Unknown error'}
-Timestamp: ${new Date().toISOString()}
+Error ID: ${this.state.errorId},
+  Context: ${this.props.context || 'Unknown'},
+  Message: ${this.state.error?.message || 'Unknown error'},
+  Timestamp: ${new Date().toISOString()}
 
 Please describe what you were doing when this error occurred:
 [Your description here]
@@ -321,8 +316,7 @@ export function useErrorHandler() {
       context,
       timestamp: new Date().toISOString(),
       userAgent: navigator.userAgent,
-      url: window.location.href,
-    };
+      url: window.location.href };
 
     console.error('Error Report:', errorReport);
 

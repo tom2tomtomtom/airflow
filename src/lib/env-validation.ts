@@ -21,34 +21,29 @@ const ENV_DEFINITIONS: EnvVarDefinition[] = [
     type: 'string',
     defaultValue: 'development',
     validation: value => ['development', 'production', 'test'].includes(value),
-    description: 'Application environment',
-  },
+    description: 'Application environment' },
   {
     key: 'NEXT_PUBLIC_APP_URL',
     required: true,
     type: 'url',
-    description: 'Public application URL',
-  },
+    description: 'Public application URL' },
 
   // Database (Supabase)
   {
     key: 'NEXT_PUBLIC_SUPABASE_URL',
     required: true,
     type: 'url',
-    description: 'Supabase project URL',
-  },
+    description: 'Supabase project URL' },
   {
     key: 'NEXT_PUBLIC_SUPABASE_ANON_KEY',
     required: true,
     type: 'jwt',
-    description: 'Supabase anonymous key (public)',
-  },
+    description: 'Supabase anonymous key (public)' },
   {
     key: 'SUPABASE_SERVICE_ROLE_KEY',
     required: false, // Only required for server-side operations
     type: 'jwt',
-    description: 'Supabase service role key (server-side only)',
-  },
+    description: 'Supabase service role key (server-side only)' },
 
   // OpenAI
   {
@@ -56,35 +51,30 @@ const ENV_DEFINITIONS: EnvVarDefinition[] = [
     required: true,
     type: 'string',
     validation: value => value.startsWith('sk-'),
-    description: 'OpenAI API key',
-  },
+    description: 'OpenAI API key' },
 
   // Email service
   {
     key: 'SMTP_HOST',
     required: false,
     type: 'string',
-    description: 'SMTP server host',
-  },
+    description: 'SMTP server host' },
   {
     key: 'SMTP_PORT',
     required: false,
     type: 'number',
     defaultValue: 587,
-    description: 'SMTP server port',
-  },
+    description: 'SMTP server port' },
   {
     key: 'SMTP_USER',
     required: false,
     type: 'string',
-    description: 'SMTP username',
-  },
+    description: 'SMTP username' },
   {
     key: 'SMTP_PASSWORD',
     required: false,
     type: 'string',
-    description: 'SMTP password',
-  },
+    description: 'SMTP password' },
 
   // Security
   {
@@ -92,42 +82,36 @@ const ENV_DEFINITIONS: EnvVarDefinition[] = [
     required: true,
     type: 'string',
     validation: value => value.length >= 32,
-    description: 'JWT signing secret (minimum 32 characters)',
-  },
+    description: 'JWT signing secret (minimum 32 characters)' },
   {
     key: 'ENCRYPTION_KEY',
     required: true,
     type: 'string',
     validation: value => value.length === 64, // 32 bytes in hex
-    description: 'Encryption key for sensitive data (64 character hex string)',
-  },
+    description: 'Encryption key for sensitive data (64 character hex string)' },
 
   // External services
   {
     key: 'AWS_ACCESS_KEY_ID',
     required: false,
     type: 'string',
-    description: 'AWS access key for S3 storage',
-  },
+    description: 'AWS access key for S3 storage' },
   {
     key: 'AWS_SECRET_ACCESS_KEY',
     required: false,
     type: 'string',
-    description: 'AWS secret key for S3 storage',
-  },
+    description: 'AWS secret key for S3 storage' },
   {
     key: 'AWS_REGION',
     required: false,
     type: 'string',
     defaultValue: 'us-east-1',
-    description: 'AWS region',
-  },
+    description: 'AWS region' },
   {
     key: 'S3_BUCKET_NAME',
     required: false,
     type: 'string',
-    description: 'S3 bucket name for file storage',
-  },
+    description: 'S3 bucket name for file storage' },
 
   // Logging and monitoring
   {
@@ -136,22 +120,19 @@ const ENV_DEFINITIONS: EnvVarDefinition[] = [
     type: 'string',
     defaultValue: 'info',
     validation: value => ['debug', 'info', 'warn', 'error'].includes(value),
-    description: 'Application log level',
-  },
+    description: 'Application log level' },
   {
     key: 'SENTRY_DSN',
     required: false,
     type: 'url',
-    description: 'Sentry DSN for error tracking',
-  },
+    description: 'Sentry DSN for error tracking' },
 
   // Rate limiting
   {
     key: 'REDIS_URL',
     required: false,
     type: 'url',
-    description: 'Redis URL for rate limiting and caching',
-  },
+    description: 'Redis URL for rate limiting and caching' },
 
   // Feature flags
   {
@@ -159,15 +140,13 @@ const ENV_DEFINITIONS: EnvVarDefinition[] = [
     required: false,
     type: 'boolean',
     defaultValue: true,
-    description: 'Enable AI content generation features',
-  },
+    description: 'Enable AI content generation features' },
   {
     key: 'ENABLE_FILE_UPLOADS',
     required: false,
     type: 'boolean',
     defaultValue: true,
-    description: 'Enable file upload functionality',
-  },
+    description: 'Enable file upload functionality' },
 ];
 
 // Validation functions for different types
@@ -186,7 +165,9 @@ const validators = {
   jwt: (value: string): boolean => {
     const jwtPattern = /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/;
     return jwtPattern.test(value) && value.length > 50;
-  },
+  ,
+
+  }
 };
 
 // Convert string values to appropriate types
@@ -238,8 +219,7 @@ export class EnvironmentConfig {
         this.config.set(envDef.key, envDef.defaultValue);
         loggers.general.info(`Using default value for ${envDef.key}`, {
           key: envDef.key,
-          defaultValue: envDef.defaultValue,
-        });
+          defaultValue: envDef.defaultValue });
         continue;
       }
 
@@ -289,8 +269,7 @@ export class EnvironmentConfig {
     this.validated = true;
     loggers.general.info('Environment validation completed successfully', {
       validatedVars: this.config.size,
-      warnings: warnings.length,
-    });
+      warnings: warnings.length });
   }
 
   private checkRecommendedVariables(warnings: string[]): void {

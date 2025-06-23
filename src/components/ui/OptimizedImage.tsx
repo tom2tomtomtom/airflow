@@ -56,8 +56,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
           bgcolor: 'grey.100',
           border: '1px dashed',
           borderColor: 'grey.300',
-          borderRadius: 1,
-        }}
+          borderRadius: 1 }}
       >
         <IconButton disabled>
           <BrokenImageIcon color="disabled" />
@@ -79,8 +78,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
             position: fill ? 'absolute' : 'static',
             top: 0,
             left: 0,
-            zIndex: 1,
-          }}
+            zIndex: 1 }}
         />
       )}
 
@@ -96,8 +94,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
         style={{
           ...style,
           opacity: isLoading ? 0 : 1,
-          transition: 'opacity 0.3s ease-in-out',
-        }}
+          transition: 'opacity 0.3s ease-in-out' }}
         onLoad={handleLoad}
         onError={handleError}
       />

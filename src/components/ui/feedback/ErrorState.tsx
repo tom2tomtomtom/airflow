@@ -89,8 +89,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
         alignItems: 'center',
         textAlign: 'center',
         gap: 2,
-        p: variant === 'inline' ? 2 : 3,
-      }}
+        p: variant === 'inline' ? 2 : 3 }}
     >
       <Box sx={{ color: getColor() }}>{getIcon()}</Box>
 
@@ -101,8 +100,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
             sx={{
               fontWeight: 600,
               mb: 1,
-              color: 'text.primary',
-            }}
+              color: 'text.primary' }}
           >
             {title}
           </Typography>
@@ -120,15 +118,14 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
           <Box>
             {collapsible ? (
               <>
-                <Box
+       <Box
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: 1,
                     cursor: 'pointer',
-                    mb: 1,
-                  }}
+                    mb: 1 }}
                   onClick={() => setExpanded(!expanded)}
                 >
                   <Typography variant="body2" color="text.secondary">
@@ -147,8 +144,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
                       backgroundColor: 'action.hover',
                       borderRadius: 2,
                       border: '1px solid',
-                      borderColor: 'divider',
-                    }}
+                      borderColor: 'divider' }}
                   >
                     <Typography
                       variant="body2"
@@ -158,8 +154,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
                         fontSize: '0.75rem',
                         color: 'text.secondary',
                         whiteSpace: 'pre-wrap',
-                        wordBreak: 'break-word',
-                      }}
+                        wordBreak: 'break-word' }}
                     >
                       {details}
                     </Typography>
@@ -174,8 +169,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
                   backgroundColor: 'action.hover',
                   borderRadius: 2,
                   border: '1px solid',
-                  borderColor: 'divider',
-                }}
+                  borderColor: 'divider' }}
               >
                 <Typography
                   variant="body2"
@@ -185,8 +179,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
                     fontSize: '0.75rem',
                     color: 'text.secondary',
                     whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-word',
-                  }}
+                    wordBreak: 'break-word' }}
                 >
                   {details}
                 </Typography>
@@ -217,8 +210,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
       sx={{
         borderRadius: 2,
         '& .MuiAlert-message': {
-          width: '100%',
-        },
+          width: '100%' },
       }}
     >
       {title && <AlertTitle>{title}</AlertTitle>}
@@ -230,14 +222,13 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
         <Box>
           {collapsible ? (
             <>
-              <Box
+       <Box
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: 1,
                   cursor: 'pointer',
-                  mt: 1,
-                }}
+                  mt: 1 }}
                 onClick={() => setExpanded(!expanded)}
               >
                 <Typography variant="body2">{expanded ? 'Hide' : 'Show'} Details</Typography>
@@ -253,8 +244,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
                       fontFamily: 'monospace',
                       fontSize: '0.75rem',
                       whiteSpace: 'pre-wrap',
-                      wordBreak: 'break-word',
-                    }}
+                      wordBreak: 'break-word' }}
                   >
                     {details}
                   </Typography>
@@ -270,8 +260,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
                 fontSize: '0.75rem',
                 mt: 1,
                 whiteSpace: 'pre-wrap',
-                wordBreak: 'break-word',
-              }}
+                wordBreak: 'break-word' }}
             >
               {details}
             </Typography>
@@ -292,8 +281,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
             backgroundColor: 'background.paper',
             borderRadius: 3,
             border: '1px solid',
-            borderColor: 'divider',
-          }}
+            borderColor: 'divider' }}
         >
           <CardContent sx={{ p: 0 }}>{renderContent()}</CardContent>
         </Card>

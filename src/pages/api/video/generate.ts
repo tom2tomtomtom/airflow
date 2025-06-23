@@ -101,7 +101,7 @@ async function handleGenerate(req: NextApiRequest, res: NextApiResponse, user: a
   return res.json({
     message: 'Video generation initiated successfully',
     data: {},
-      generation_id: jobs.generation_id,
+  generation_id: jobs.generation_id,
       job_count: jobs.jobs.length,
       estimated_completion: jobs.estimated_completion,
       jobs: results}
@@ -375,10 +375,11 @@ async function processVideoGeneration(jobsData: any): Promise<any> {
         .update({
           status: renderResult.success ? 'processing' : 'failed',
           render_job_id: renderResult.job_id,
-          metadata: {},
-            ...job.config,
+          metadata: {
+        ...job.config,
             render_started_at: new Date().toISOString(),
-            estimated_completion: renderResult.estimated_completion}
+            estimated_completion: renderResult.estimated_completion
+      }
         })
         .eq('id', job.id);
 
@@ -560,11 +561,12 @@ function convertToCreatomateFormat(job: any): any {
     templateId,
     modifications,
     webhookUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/webhooks/creatomate`,
-    metadata: {},
-      job_id: job.id,
+    metadata: {
+        job_id: job.id,
       generation_id: job.generation_id,
       client_id: job.client_id,
-      variation_index: job.variation_index}};
+      variation_index: job.variation_index
+      }};
 }
 
 function selectCreatomateTemplate(config: any): string {

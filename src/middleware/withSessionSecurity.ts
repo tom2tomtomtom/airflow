@@ -341,7 +341,7 @@ export function withSessionSecurity(
         return res.status(401).json({
           success: false,
           error: {},
-            code: 'SESSION_INVALID',
+  code: 'SESSION_INVALID',
             message: 'Session not found or expired' });
       }
       
@@ -364,7 +364,7 @@ export function withSessionSecurity(
         return res.status(401).json({
           success: false,
           error: {},
-            code: 'SESSION_EXPIRED',
+  code: 'SESSION_EXPIRED',
             message: 'Session has expired' });
       }
       
@@ -387,7 +387,7 @@ export function withSessionSecurity(
               userAgent: currentFingerprint.userAgent,
               timestamp: now,
               details: {},
-                score: validation.score,
+  score: validation.score,
                 differences: validation.differences,
                 original_ip: session.fingerprint.ip,
                 current_ip: currentFingerprint.ip });
@@ -398,7 +398,7 @@ export function withSessionSecurity(
           return res.status(401).json({
             success: false,
             error: {},
-              code: 'SESSION_SECURITY_VIOLATION',
+  code: 'SESSION_SECURITY_VIOLATION',
               message: 'Session security validation failed' });
         }
       }
@@ -491,7 +491,7 @@ export function withSessionSecurity(
       return res.status(500).json({
         success: false,
         error: {},
-          code: 'SESSION_SECURITY_ERROR',
+  code: 'SESSION_SECURITY_ERROR',
           message: 'Session security validation failed' });
     }
     

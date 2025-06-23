@@ -33,8 +33,7 @@ async function handler(
     if (!user) {
       return res.status(401).json({
         success: false,
-        error: 'Authentication required',
-      });
+        error: 'Authentication required' });
     }
 
     // Validate input
@@ -46,8 +45,7 @@ async function handler(
         validationError.errors?.map((err: any) => err.message).join(', ') || 'Invalid input data';
       return res.status(400).json({
         success: false,
-        error: errors,
-      });
+        error: errors });
     }
 
     const { token } = validatedData;
@@ -58,21 +56,18 @@ async function handler(
     if (!result.success) {
       return res.status(400).json({
         success: false,
-        error: result.error || 'Verification failed',
-      });
+        error: result.error || 'Verification failed' });
     }
 
     return res.status(200).json({
       success: true,
-      message: 'MFA has been successfully enabled for your account',
-    });
+      message: 'MFA has been successfully enabled for your account' });
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('MFA verification error:', error);
     return res.status(500).json({
       success: false,
-      error: 'Failed to verify MFA. Please try again.',
-    });
+      error: 'Failed to verify MFA. Please try again.' });
   }
 }
 

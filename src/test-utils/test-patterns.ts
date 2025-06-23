@@ -13,14 +13,14 @@ export class APITestPatterns {
    */
   static createCRUDTestSuite(
     handlers: {},
-      create?: NextApiHandler;
+  create?: NextApiHandler;
       read?: NextApiHandler;
       update?: NextApiHandler;
       delete?: NextApiHandler;
       list?: NextApiHandler;
     },
     testData: {},
-      validCreateData: unknown;,
+  validCreateData: unknown;,
     validUpdateData: unknown;,
     invalidData: unknown;,
     resourceName: string;
@@ -567,7 +567,7 @@ export class APITestPatterns {
     handler: NextApiHandler,
     endpoint: string,
     testCases: {},
-      valid: unknown;,
+  valid: unknown;,
     invalid: Array<{ data: unknown; expectedError: string }>;
     }
   ) {

@@ -135,7 +135,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       count: notifications?.length || 0,
       statistics,
       pagination: {},
-        limit: filters.limit,
+  limit: filters.limit,
         offset: filters.offset,
         total: count || 0
       }
@@ -378,9 +378,9 @@ function getEmptyStatistics() {
     unread: 0,
     read: 0,
     recent_24h: 0,
-    by_type: {}
-    by_category: {}
-    by_priority: {}
+    by_type: {},
+  by_category: {},
+  by_priority: {}
   };
 }
 
@@ -400,7 +400,7 @@ async function triggerNotificationEvent(notification: any): Promise<void> {
         category: notification.category,
         priority: notification.priority,
         action_url: notification.action_url,
-        action_label: notification.action_label},
+        action_label: notification.action_label }
       notification.client_id,
       notification.created_by // Don't send to the creator unless they're the target
     );
@@ -431,9 +431,9 @@ export async function createExecutionNotification(
 
     const campaignName = (execution as any).matrices?.campaigns?.name || 'Unknown Campaign';
     const statusMessages = {
-      completed: { title: 'Execution Completed', type: 'success' },
-      failed: { title: 'Execution Failed', type: 'error' },
-      cancelled: { title: 'Execution Cancelled', type: 'warning' }};
+      completed: { title: 'Execution Completed', type: 'success'  },
+  failed: { title: 'Execution Failed', type: 'error'  },
+  cancelled: { title: 'Execution Cancelled', type: 'warning' }};
 
     const statusInfo = statusMessages[status as keyof typeof statusMessages];
     if (!statusInfo) return;
@@ -441,7 +441,9 @@ export async function createExecutionNotification(
     // Create notification
     const response = await fetch('/api/notifications', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json' 
+      },
       body: JSON.stringify({
         title: statusInfo.title,
         message: `${campaignName} execution for ${execution.platform} has ${status}`,
@@ -477,17 +479,19 @@ export async function createApprovalNotification(
     if (!approval) return;
 
     const actionMessages = {
-      created: { title: 'New Approval Request', type: 'info' },
-      approved: { title: 'Approval Granted', type: 'success' },
-      rejected: { title: 'Approval Rejected', type: 'error' },
-      changes_requested: { title: 'Changes Requested', type: 'warning' }};
+      created: { title: 'New Approval Request', type: 'info'  },
+  approved: { title: 'Approval Granted', type: 'success'  },
+  rejected: { title: 'Approval Rejected', type: 'error'  },
+  changes_requested: { title: 'Changes Requested', type: 'warning' }};
 
     const actionInfo = actionMessages[action as keyof typeof actionMessages];
     if (!actionInfo) return;
 
     const response = await fetch('/api/notifications', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json' 
+      },
       body: JSON.stringify({
         title: actionInfo.title,
         message: `${approval.approval_type} approval for ${approval.item_type} has been ${action}`,

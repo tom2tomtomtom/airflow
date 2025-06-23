@@ -72,13 +72,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
     // Platform-specific requirements
     const platformSpecs: Record<string, { maxLength: number; format: string }> = {
-      'Instagram': { maxLength: 2200, format: 'Social media post with hashtags' },
-      'Facebook': { maxLength: 63206, format: 'Engaging social media post' },
-      'LinkedIn': { maxLength: 3000, format: 'Professional social media post' },
+      'Instagram': { maxLength: 2200, format: 'Social media post with hashtags'  }
+      'Facebook': { maxLength: 63206, format: 'Engaging social media post'  }
+      'LinkedIn': { maxLength: 3000, format: 'Professional social media post'  }
       'TikTok': { maxLength: 2200, format: 'Short, catchy video description' },
-      'YouTube': { maxLength: 5000, format: 'Video description with call-to-action' },
-      'Twitter': { maxLength: 280, format: 'Concise tweet' },
-      'Email': { maxLength: 1000, format: 'Email subject and body' },
+      'YouTube': { maxLength: 5000, format: 'Video description with call-to-action'  }
+      'Twitter': { maxLength: 280, format: 'Concise tweet'  }
+      'Email': { maxLength: 1000, format: 'Email subject and body'  }
       'Website': { maxLength: 500, format: 'Website copy with headline' }};
 
     const createdCopyAssets = [];
@@ -126,7 +126,7 @@ Make each variation unique while staying within the ${platformSpec.maxLength} ch
       const completion = await openai.chat.completions.create({
         model: 'gpt-4o',
         messages: [
-          { role: 'system', content: systemPrompt },
+          { role: 'system', content: systemPrompt  }
           { role: 'user', content: userPrompt }
         ],
         temperature: 0.8,
@@ -161,14 +161,14 @@ Make each variation unique while staying within the ${platformSpec.maxLength} ch
             body_text: variation.body,
             call_to_action: variation.call_to_action,
             hashtags: variation.hashtags || [],
-            metadata: {},
-              tone,
+            metadata: {
+        tone,
               style,
               emotional_hook: variation.emotional_hook,
               key_motivation: variation.key_motivation,
               character_count: (variation.headline + variation.body + variation.call_to_action).length,
               generation_context: {},
-                model: 'gpt-4o',
+  model: 'gpt-4o',
                 temperature: 0.8,
                 variation_number: i + 1,
                 total_variations: copyVariations.length

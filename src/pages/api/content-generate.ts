@@ -10,8 +10,7 @@ const ContentGenerateSchema = z.object({
   content_types: z.array(z.enum(['copy', 'headline', 'cta', 'description'])),
   tone: z.string().optional(),
   style: z.string().optional(),
-  user_id: z.string().uuid(),
-});
+  user_id: z.string().uuid() });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   if (req.method !== 'POST') {
@@ -38,18 +37,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const prompt = `Generate the following campaign content types for a creative campaign, using these motivations and context.\n\nMotivations:\n${selection.selected.map((i: number, idx: number) => `${idx + 1}. ${selection.motivations[i] || ''}`).join('\n')}\n\nCustom motivations:\n${(selection.custom || []).join('\n')}\n\nContent types: ${content_types.join(', ')}\nTone: ${tone || 'default'}\nStyle: ${style || 'default'}\n\nFor each type, provide 3 variations. Return results as a JSON object: { type: string, variations: string[] }[]`;
     // Initialize OpenAI client
     const openai = new OpenAI({
-      apiKey: env.OPENAI_API_KEY,
-    });
+      apiKey: env.OPENAI_API_KEY });
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
-        { role: 'system', content: 'You are a senior creative copywriter.' },
-        { role: 'user', content: prompt },
+        { role: 'system', content: 'You are a senior creative copywriter.'  }
+        { role: 'user', content: prompt  }
       ],
       temperature: 0.7,
-      max_tokens: 1200,
-    });
+      max_tokens: 1200 });
 
     const content = completion.choices[0]?.message?.content;
     // Save generated content
@@ -62,8 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         style,
         content,
         user_id,
-        created_at: new Date().toISOString(),
-      })
+        created_at: new Date().toISOString() })
       .select()
       .single();
     if (saveError) {

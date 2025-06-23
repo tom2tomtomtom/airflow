@@ -92,8 +92,7 @@ class RedisManager {
         lazyConnect: true,
         keepAlive: 30000,
         family: 4,
-        keyPrefix: 'airwave:',
-      };
+        keyPrefix: 'airwave:' };
     }
 
     // Check for standard Redis URL
@@ -112,8 +111,7 @@ class RedisManager {
         lazyConnect: true,
         keepAlive: 30000,
         family: 4,
-        keyPrefix: 'airwave:',
-      };
+        keyPrefix: 'airwave:' };
     }
 
     // Fallback to individual environment variables
@@ -127,8 +125,7 @@ class RedisManager {
       lazyConnect: true,
       keepAlive: 30000,
       family: 4,
-      keyPrefix: 'airwave:',
-    };
+      keyPrefix: 'airwave:' };
   }
 
   /**

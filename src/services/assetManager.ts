@@ -172,10 +172,10 @@ export class AssetManager {
         mimeType: file.type,
         fileSize: file.size,
         url: '',
-        metadata: {},
-          description,
+        metadata: {
+        description,
           altText,
-          keywords: tags},
+          keywords: tags }
         tags,
         category,
         usage,
@@ -393,7 +393,7 @@ export class AssetManager {
     description: string,
     createdBy: string,
     options: {},
-      category?: AssetCollection['category'];
+  category?: AssetCollection['category'];
       usage?: AssetCollection['usage'];
       tags?: string[];
       assets?: string[];
@@ -590,9 +590,9 @@ export class AssetManager {
       main: optimized.buffer,
       thumbnail,
       dimensions: {},
-        width: analysis.metadata.width,
-        height: analysis.metadata.height},
-      colorPalette: [analysis.dominantColor],
+  width: analysis.metadata.width,
+        height: analysis.metadata.height },
+  colorPalette: [analysis.dominantColor],
       dominantColor: analysis.dominantColor,
       format: analysis.metadata.format,
       hasTransparency: analysis.hasTransparency,
@@ -770,8 +770,8 @@ export class AssetManager {
       fileSize: row.file_size,
       url: row.url,
       thumbnailUrl: row.thumbnail_url,
-      metadata: row.metadata || {},
-      tags: row.tags || [],
+      metadata: row.metadata || { },
+  tags: row.tags || [],
       category: row.category,
       usage: row.usage,
       dimensions: row.dimensions,

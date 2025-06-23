@@ -10,20 +10,20 @@ interface SystemStatus {
   timestamp: string;
   environment: Record<string, string>;
   supabase: {},
-    status: string;
+  status: string;
     url: string;
   };
   configuration: {},
-    isDemoMode: boolean;
+  isDemoMode: boolean;
     isConfigured: boolean;
     missingRequired: string[] | null;
   };
   deployment: {},
-    platform: string;
+  platform: string;
     region: string;
   };
   recommendations: {},
-    message: string;
+  message: string;
     steps: string[];
   } | null;
 }

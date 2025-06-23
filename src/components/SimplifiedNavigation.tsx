@@ -54,8 +54,7 @@ const navigationItems: NavItem[] = [
     label: 'Dashboard',
     icon: <Dashboard />,
     href: '/dashboard',
-    description: 'Overview and quick actions',
-  },
+    description: 'Overview and quick actions' },
   {
     id: 'create',
     label: 'Create',
@@ -66,22 +65,19 @@ const navigationItems: NavItem[] = [
         label: 'Brief to Video',
         icon: <PlayArrow />,
         href: '/flow',
-        description: 'Complete workflow from brief to render',
-      },
+        description: 'Complete workflow from brief to render' },
       {
         id: 'strategy',
         label: 'Strategy Generator',
         icon: <PlayArrow />,
         href: '/strategy',
-        description: 'AI-powered strategy generation',
-      },
+        description: 'AI-powered strategy generation' },
       {
         id: 'templates',
         label: 'Templates',
         icon: <VideoLibrary />,
         href: '/templates',
-        description: 'Pre-built video templates',
-      },
+        description: 'Pre-built video templates' },
       {
         id: 'assets',
         label: 'Assets',
@@ -101,22 +97,19 @@ const navigationItems: NavItem[] = [
         label: 'Clients',
         icon: <Group />,
         href: '/clients',
-        description: 'Client management',
-      },
+        description: 'Client management' },
       {
         id: 'campaigns',
         label: 'Campaigns',
         icon: <Campaign />,
         href: '/campaigns',
-        description: 'Campaign overview',
-      },
+        description: 'Campaign overview' },
       {
         id: 'matrix',
         label: 'Content Matrix',
         icon: <GridView />,
         href: '/matrix',
-        description: 'Content planning and organization',
-      },
+        description: 'Content planning and organization' },
     ],
   },
   {
@@ -130,15 +123,13 @@ const navigationItems: NavItem[] = [
         icon: <Approval />,
         href: '/approvals',
         badge: '3',
-        description: 'Review and approve content',
-      },
+        description: 'Review and approve content' },
       {
         id: 'execute-page',
         label: 'Execute',
         icon: <PlayArrow />,
         href: '/execute',
-        description: 'Launch and monitor campaigns',
-      },
+        description: 'Launch and monitor campaigns' },
     ],
   },
   {
@@ -146,8 +137,7 @@ const navigationItems: NavItem[] = [
     label: 'Analytics',
     icon: <Analytics />,
     href: '/analytics',
-    description: 'Performance metrics and insights',
-  },
+    description: 'Performance metrics and insights' },
   {
     id: 'settings',
     label: 'Settings',
@@ -158,15 +148,13 @@ const navigationItems: NavItem[] = [
         label: 'Webhooks',
         icon: <Settings />,
         href: '/webhooks',
-        description: 'API integrations',
-      },
+        description: 'API integrations' },
       {
         id: 'social',
         label: 'Social Publishing',
         icon: <Campaign />,
         href: '/social-publishing',
-        description: 'Social media management',
-      },
+        description: 'Social media management' },
     ],
   },
 ];
@@ -218,15 +206,13 @@ export const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
                 backgroundColor: active ? 'primary.main' : 'transparent',
                 color: active ? 'primary.contrastText' : 'inherit',
                 '&:hover': {
-                  backgroundColor: active ? 'primary.dark' : 'action.hover',
-                },
+                  backgroundColor: active ? 'primary.dark' : 'action.hover' },
               }}
             >
               <ListItemIcon
                 sx={{
                   color: active ? 'primary.contrastText' : 'inherit',
-                  minWidth: 40,
-                }}
+                  minWidth: 40 }}
               >
                 {item.icon}
               </ListItemIcon>
@@ -317,8 +303,7 @@ export const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
           boxSizing: 'border-box',
           width: 280,
           border: 'none',
-          boxShadow: variant === 'permanent' ? 'none' : 3,
-        },
+          boxShadow: variant === 'permanent' ? 'none' : 3 },
       }}
     >
       {drawerContent}

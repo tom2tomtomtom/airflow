@@ -98,7 +98,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
   const permissions = calculateUserPermissions(approval, user.id, clientAccess.role);
 
   return res.json({
-    data: {},
+    data: { }
       ...approval,
       item_details: itemDetails,
       history: approvalHistory,
@@ -413,7 +413,7 @@ async function getApprovalHistory(approvalId: string): Promise<any[]> {
         action: approval.decision_data.action,
         description: `Approval ${approval.decision_data.action}`,
         details: {},
-          comments: approval.decision_data.comments,
+  comments: approval.decision_data.comments,
           decided_by: approval.decision_data.decided_by}
       });
     }
@@ -582,13 +582,13 @@ async function triggerApprovalWebhooks(approval: any, action: string, user: any)
       status: approval.status,
       action,
       decided_by: {},
-        id: user.id,
-        name: user.full_name || user.email},
-      decision_data: approval.decision_data,
+  id: user.id,
+        name: user.full_name || user.email },
+  decision_data: approval.decision_data,
       client: {},
-        id: approval.client_id,
-        name: approval.clients?.name},
-      timestamp: new Date().toISOString()};
+  id: approval.client_id,
+        name: approval.clients?.name },
+  timestamp: new Date().toISOString()};
 
     // Trigger the webhook
     await triggerWebhookEvent(eventType, webhookData, approval.client_id);

@@ -79,8 +79,7 @@ export const MatrixBuildStep: React.FC<MatrixBuildStepProps> = ({ onNext, onPrev
             copy: copy.text.substring(0, 100) + (copy.text.length > 100 ? '...' : ''),
             asset: asset.metadata?.title || asset.id,
             platform: copy.platform,
-            status: 'ready',
-          });
+            status: 'ready' });
         });
       });
     });
@@ -134,8 +133,7 @@ export const MatrixBuildStep: React.FC<MatrixBuildStepProps> = ({ onNext, onPrev
       total: matrixItems.length,
       ready: readyItems,
       platforms: platforms.length,
-      combinations: totalCombinations,
-    };
+      combinations: totalCombinations };
   };
 
   const stats = getMatrixStats();
@@ -172,7 +170,7 @@ export const MatrixBuildStep: React.FC<MatrixBuildStepProps> = ({ onNext, onPrev
           sx={{
             display: 'grid',
             gap: 3,
-            gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr 1fr' },
+            gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr 1fr'  }
           }}
         >
           <Box sx={{ textAlign: 'center' }}>

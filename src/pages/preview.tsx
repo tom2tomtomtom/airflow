@@ -51,12 +51,12 @@ interface PreviewItem {
   status: 'draft' | 'pending_approval' | 'approved' | 'rejected' | 'published';
   created_at: string;
   updated_at: string;
-  created_by: {},
+  created_by: {
     id: string;
     name: string;
     avatar_url?: string;
   };
-  client: {},
+  client: {
     id: string;
     name: string;
     logo?: string;
@@ -139,15 +139,15 @@ const PreviewPage: React.FC = () => {
           status: data.status || 'draft',
           created_at: data.created_at,
           updated_at: data.updated_at,
-          created_by: {},
+          created_by: {
             id: data.created_by || data.user_id || 'unknown',
             name: data.profiles?.full_name || data.creator?.name || 'Unknown User',
-            avatar_url: data.profiles?.avatar_url || data.creator?.avatar_url},
-          client: {},
+            avatar_url: data.profiles?.avatar_url || data.creator?.avatar_url },
+          client: {
             id: data.client_id || activeClient?.id || 'unknown',
             name: data.clients?.name || activeClient?.name || 'Unknown Client',
-            logo: data.clients?.logo || activeClient?.logo},
-          metadata: data.metadata || {}};
+            logo: data.clients?.logo || activeClient?.logo },
+          metadata: data.metadata || {} };
 
         setPreviewItem(transformedItem);
       } else {
@@ -168,17 +168,20 @@ const PreviewPage: React.FC = () => {
     try {
       const response = await fetch('/api/approvals', {
         method: 'POST',
-        headers: {},
-          'Content-Type': 'application/json'},
+        headers: {
+        'Content-Type': 'application/json'
+      
+      },
         body: JSON.stringify({
           item_type: previewItem.type,
           item_id: previewItem.id,
           approval_type: 'content',
           priority: 'normal',
           notes: approvalDecision.comments,
-          metadata: {},
-            decision: approvalDecision.action,
-            changes_requested: approvalDecision.changes_requested}})});
+          metadata: {
+        decision: approvalDecision.action,
+            changes_requested: approvalDecision.changes_requested
+      }})});
 
       const result = await response.json();
 
@@ -323,7 +326,7 @@ const PreviewPage: React.FC = () => {
 
   return (
     <>
-      <Head>
+       <Head>
         <title>Content Preview | AIRFLOW</title>
       </Head>
       <DashboardLayout title="Content Preview">

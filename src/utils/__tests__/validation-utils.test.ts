@@ -145,9 +145,9 @@ describe('Validation Utils', () => {
     it('should recursively sanitize nested objects', () => {
       const nestedObject = {
         user: {},
-          name: 'test',
+  name: 'test',
           profile: {},
-            age: 25}}};
+  age: 25}}};
       
       // Add dangerous properties to nested objects
       (nestedObject.user as Record<string, unknown>)['__proto__'] = { isAdmin: true };
@@ -464,9 +464,9 @@ describe('Validation Utils', () => {
     it('should handle complex nested sanitization', () => {
       const complexObject = {
         level1: {},
-          level2: {},
-            level3: {},
-              safe: 'value'}}},
+  level2: {},
+  level3: {},
+  safe: 'value'}}},
         normalField: 'normal'};
       
       // Add dangerous properties to test sanitization
@@ -489,7 +489,7 @@ describe('Validation Utils', () => {
       const objectWithArrays = {
         tags: ['tag1', 'tag2'],
         nested: {},
-          items: [{ name: 'item1' }, { name: 'item2' }]}};
+  items: [{ name: 'item1' }, { name: 'item2' }]}};
       
       // Add dangerous property to test sanitization
       (objectWithArrays.nested as Record<string, unknown>)['__proto__'] = { evil: true };
@@ -508,11 +508,11 @@ describe('Validation Utils', () => {
     it('should validate complex file scenarios', () => {
       const edgeCaseFiles = [
         // File with no extension
-        { type: 'image/jpeg', size: 1024, name: 'noextension' },
+        { type: 'image/jpeg', size: 1024, name: 'noextension'  }
         // File with multiple dots
-        { type: 'image/png', size: 1024, name: 'file.backup.png' },
+        { type: 'image/png', size: 1024, name: 'file.backup.png'  }
         // File with uppercase extension
-        { type: 'image/jpeg', size: 1024, name: 'IMAGE.JPG' },
+        { type: 'image/jpeg', size: 1024, name: 'IMAGE.JPG'  }
       ];
 
       // No extension should throw

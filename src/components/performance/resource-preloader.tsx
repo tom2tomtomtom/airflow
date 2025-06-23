@@ -3,7 +3,7 @@ import Head from 'next/head';
 
 export const ResourcePreloader = ({ children }) => (
   <>
-    <Head>
+       <Head>
       {/* Preload critical resources */}
       <link rel="preload" href="/_next/static/css/main.css" as="style" />
       <link rel="preload" href="/_next/static/js/main.js" as="script" />

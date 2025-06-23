@@ -107,12 +107,11 @@ const WebhookManager: React.FC = () => {
       backoff_strategy: 'exponential' as 'linear' | 'exponential',
       initial_delay_ms: 1000
     },
-    headers: {} as Record<string, string>
+    headers: {} as Record<string, string>,
   });
   const [testData, setTestData] = useState({
     event_type: '',
-    test_data: '{}'});
-
+    test_data: '{}' });
   // Fetch webhooks
   const fetchWebhooks = async () => {
     if (!activeClient) return;

@@ -10,7 +10,7 @@ import { withUploadRateLimit } from '@/lib/rate-limiter';
 
 export const config = {
   api: {},
-    bodyParser: false}};
+  bodyParser: false}};
 
 interface UploadResponse {
   success: boolean;
@@ -137,12 +137,12 @@ async function handler(
           file_size: file.size,
           client_id: clientId || null,
           created_by: userId,
-          metadata: {},
-            original_filename: file.originalFilename,
+          metadata: {
+        original_filename: file.originalFilename,
             uploaded_at: new Date().toISOString(),
             storage_path: storagePath,
-            upload_method: 'web_interface'},
-          created_at: new Date().toISOString(),
+            upload_method: 'web_interface' },
+  created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         };
 

@@ -49,26 +49,22 @@ export const csrfProtection = (
       loggers.general.warn('CSRF token missing', {
         method: req.method,
         url: req.url,
-        ip: req.socket.remoteAddress,
-      });
+        ip: req.socket.remoteAddress });
 
       return res.status(403).json({
         error: 'CSRF token missing',
-        code: 'CSRF_TOKEN_MISSING',
-      });
+        code: 'CSRF_TOKEN_MISSING' });
     }
 
     if (!cookieToken) {
       loggers.general.warn('CSRF cookie missing', {
         method: req.method,
         url: req.url,
-        ip: req.socket.remoteAddress,
-      });
+        ip: req.socket.remoteAddress });
 
       return res.status(403).json({
         error: 'CSRF cookie missing',
-        code: 'CSRF_COOKIE_MISSING',
-      });
+        code: 'CSRF_COOKIE_MISSING' });
     }
 
     if (token !== cookieToken) {
@@ -77,26 +73,22 @@ export const csrfProtection = (
         url: req.url,
         ip: req.socket.remoteAddress,
         tokenLength: token.length,
-        cookieTokenLength: cookieToken.length,
-      });
+        cookieTokenLength: cookieToken.length });
 
       return res.status(403).json({
         error: 'CSRF token invalid',
-        code: 'CSRF_TOKEN_INVALID',
-      });
+        code: 'CSRF_TOKEN_INVALID' });
     }
 
     if (!verifyCSRFToken(token, config.CSRF_SECRET)) {
       loggers.general.warn('CSRF token verification failed', {
         method: req.method,
         url: req.url,
-        ip: req.socket.remoteAddress,
-      });
+        ip: req.socket.remoteAddress });
 
       return res.status(403).json({
         error: 'CSRF token verification failed',
-        code: 'CSRF_TOKEN_VERIFICATION_FAILED',
-      });
+        code: 'CSRF_TOKEN_VERIFICATION_FAILED' });
     }
 
     return handler(req, res);
@@ -119,8 +111,7 @@ export const createCSRFTokenHandler = (req: NextApiRequest, res: NextApiResponse
 
   res.status(200).json({
     csrfToken: token,
-    expiresAt: new Date(Date.now() + config.SESSION_MAX_AGE).toISOString(),
-  });
+    expiresAt: new Date(Date.now() + config.SESSION_MAX_AGE).toISOString() });
 };
 
 // Double Submit Cookie pattern implementation
@@ -178,8 +169,7 @@ export class CSRFProtection {
       if (!token || !cookieToken || token !== cookieToken || !this.verifyToken(token)) {
         return res.status(403).json({
           error: 'Invalid CSRF token',
-          code: 'CSRF_TOKEN_INVALID',
-        });
+          code: 'CSRF_TOKEN_INVALID' });
       }
 
       next();

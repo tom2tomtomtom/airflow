@@ -140,11 +140,11 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     data: enrichedData,
     count,
     statistics: {},
-      category_distribution: categoryStats,
+  category_distribution: categoryStats,
       avg_relevance_score: data?.length ? data.reduce((sum, m) => sum + (m.relevance_score || 0), 0) / data.length : 0,
-      ai_generated_percentage: data?.length ? (data.filter((m: any) => m.is_ai_generated).length / data.length) * 100 : 0},
-    pagination: {},
-      limit: parseInt(limit as string),
+      ai_generated_percentage: data?.length ? (data.filter((m: any) => m.is_ai_generated).length / data.length) * 100 : 0 },
+  pagination: {},
+  limit: parseInt(limit as string),
       offset: parseInt(offset as string),
       total: count || 0
     }

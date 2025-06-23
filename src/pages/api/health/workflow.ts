@@ -23,13 +23,13 @@ interface WorkflowHealthStatus {
   timestamp: number;
   checks: HealthCheckResult[];
   summary: {},
-    totalChecks: number;
+  totalChecks: number;
     healthyChecks: number;
     degradedChecks: number;
     unhealthyChecks: number;
   };
   metrics: {},
-    activeSessions: number;
+  activeSessions: number;
     averageResponseTime: number;
     errorRate: number;
     cacheHitRate: number;

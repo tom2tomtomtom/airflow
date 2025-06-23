@@ -150,13 +150,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       query: searchTerm,
       suggestions,
       filters_applied: {},
-        type, platform, tone, ai_generated, sentiment,
+  type, platform, tone, ai_generated, sentiment,
         performance_range: performance_min || performance_max ? [performance_min, performance_max] : null,
         character_range: character_min || character_max ? [character_min, character_max] : null,
         word_range: word_min || word_max ? [word_min, word_max] : null,
         tags: tags ? (typeof tags === 'string' ? tags.split(',').map((t: any) => t.trim()) : tags) : null},
       pagination: {},
-        limit: parseInt(limit as string),
+  limit: parseInt(limit as string),
         offset: parseInt(offset as string),
         total: count || 0
       }

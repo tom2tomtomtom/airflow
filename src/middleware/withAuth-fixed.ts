@@ -32,12 +32,13 @@ export function withAuth(handler: AuthenticatedHandler) {
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
           cookies: {},
-            get(name: string) {
+  get(name: string) {
               return req.cookies[name];
             },
             set(name: string, value: string, options: unknown) {
               // We don't need to set cookies in API routes
-            },
+            ,
+ }
             remove(name: string, options: unknown) {
               // We don't need to remove cookies in API routes }
       );

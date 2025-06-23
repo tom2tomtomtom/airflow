@@ -115,7 +115,7 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
           >
             {activeClient ? (
               <>
-                {activeClient.logo ? (
+      {activeClient.logo ? (
                   <Avatar src={activeClient.logo} sx={{ width: 24, height: 24 }} />
                 ) : (
                   <Avatar sx={{ width: 24, height: 24, bgcolor: activeClient.primaryColor }}>
@@ -126,7 +126,7 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
               </>
             ) : (
               <>
-                <BusinessIcon sx={{ fontSize: 20 }} />
+       <BusinessIcon sx={{ fontSize: 20 }} />
                 <Typography variant="body2">Select Client</Typography>
               </>
             )}
@@ -229,7 +229,7 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
         )}
         {showAddOption && (
           <>
-            <Divider />
+       <Divider />
             <MenuItem onClick={handleAddClient}>
               <ListItemIcon>
                 <AddIcon />

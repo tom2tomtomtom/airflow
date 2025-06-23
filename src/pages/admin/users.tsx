@@ -6,7 +6,7 @@ import DashboardLayout from '@/components/DashboardLayout';
 const UsersPage: React.FC = () => {
   return (
     <>
-      <Head>
+       <Head>
         <title>Users | AIRFLOW</title>
       </Head>
       <DashboardLayout title="Users">

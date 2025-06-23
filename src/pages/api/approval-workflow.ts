@@ -8,8 +8,7 @@ const ApprovalWorkflowSchema = z.object({
   user_id: z.string().uuid(),
   action: z.enum(['approve', 'reject', 'comment']),
   comment: z.string().optional(),
-  version: z.number().optional(),
-});
+  version: z.number().optional() });
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   if (req.method !== 'POST') {
@@ -31,8 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       action,
       comment,
       version,
-      created_at: new Date().toISOString(),
-    })
+      created_at: new Date().toISOString() })
     .select()
     .single();
   if (error) {

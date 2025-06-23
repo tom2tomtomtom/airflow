@@ -83,7 +83,7 @@ export async function signUp(
     }
 
     const result: {},
-      user: User;
+  user: User;
       token?: string;
       emailConfirmationRequired?: boolean;
     } = { user };

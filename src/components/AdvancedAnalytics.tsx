@@ -87,8 +87,7 @@ export const AdvancedAnalytics: React.FC = () => {
       change: 12.5,
       trend: 'up',
       icon: <Visibility />,
-      color: '#2196F3',
-    },
+      color: '#2196F3' },
     {
       id: 'engagement-rate',
       label: 'Engagement Rate',
@@ -96,8 +95,7 @@ export const AdvancedAnalytics: React.FC = () => {
       change: -2.1,
       trend: 'down',
       icon: <ThumbUp />,
-      color: '#4CAF50',
-    },
+      color: '#4CAF50' },
     {
       id: 'shares',
       label: 'Shares',
@@ -105,8 +103,7 @@ export const AdvancedAnalytics: React.FC = () => {
       change: 25.3,
       trend: 'up',
       icon: <Share />,
-      color: '#FF9800',
-    },
+      color: '#FF9800' },
     {
       id: 'conversion-rate',
       label: 'Conversion Rate',
@@ -114,8 +111,7 @@ export const AdvancedAnalytics: React.FC = () => {
       change: 5.7,
       trend: 'up',
       icon: <TrendingUp />,
-      color: '#9C27B0',
-    },
+      color: '#9C27B0' },
     {
       id: 'avg-watch-time',
       label: 'Avg. Watch Time',
@@ -123,8 +119,7 @@ export const AdvancedAnalytics: React.FC = () => {
       change: 8.9,
       trend: 'up',
       icon: <PlayArrow />,
-      color: '#F44336',
-    },
+      color: '#F44336' },
     {
       id: 'roi',
       label: 'ROI',
@@ -132,22 +127,21 @@ export const AdvancedAnalytics: React.FC = () => {
       change: 15.2,
       trend: 'up',
       icon: <Timeline />,
-      color: '#00BCD4',
-    },
+      color: '#00BCD4' },
   ];
 
   const performanceData: PerformanceData[] = [
-    { period: 'Week 1', views: 5200, engagement: 420, shares: 89, conversions: 23 },
-    { period: 'Week 2', views: 6800, engagement: 580, shares: 124, conversions: 31 },
-    { period: 'Week 3', views: 8100, engagement: 720, shares: 156, conversions: 42 },
-    { period: 'Week 4', views: 9400, engagement: 890, shares: 203, conversions: 58 },
+    { period: 'Week 1', views: 5200, engagement: 420, shares: 89, conversions: 23  }
+    { period: 'Week 2', views: 6800, engagement: 580, shares: 124, conversions: 31  }
+    { period: 'Week 3', views: 8100, engagement: 720, shares: 156, conversions: 42  }
+    { period: 'Week 4', views: 9400, engagement: 890, shares: 203, conversions: 58  }
   ];
 
   const topPerformingContent = [
-    { title: 'Summer Campaign Video', views: '12.3K', engagement: '9.2%', platform: 'Instagram' },
-    { title: 'Product Launch Teaser', views: '8.7K', engagement: '7.8%', platform: 'LinkedIn' },
-    { title: 'Behind the Scenes', views: '6.1K', engagement: '12.1%', platform: 'TikTok' },
-    { title: 'Customer Testimonial', views: '4.9K', engagement: '8.9%', platform: 'Facebook' },
+    { title: 'Summer Campaign Video', views: '12.3K', engagement: '9.2%', platform: 'Instagram'  }
+    { title: 'Product Launch Teaser', views: '8.7K', engagement: '7.8%', platform: 'LinkedIn'  }
+    { title: 'Behind the Scenes', views: '6.1K', engagement: '12.1%', platform: 'TikTok'  }
+    { title: 'Customer Testimonial', views: '4.9K', engagement: '8.9%', platform: 'Facebook'  }
   ];
 
   const handleTimeRangeChange = (newRange: string) => {
@@ -222,8 +216,7 @@ export const AdvancedAnalytics: React.FC = () => {
                     sx={{
                       bgcolor: metric.color,
                       width: 40,
-                      height: 40,
-                    }}
+                      height: 40 }}
                   >
                     {metric.icon}
                   </Avatar>
@@ -292,8 +285,7 @@ export const AdvancedAnalytics: React.FC = () => {
               mb: 3,
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-            }}
+              justifyContent: 'center' }}
           >
             <Typography color="text.secondary">
               📊 Interactive Chart Component Would Go Here
@@ -377,8 +369,7 @@ export const AdvancedAnalytics: React.FC = () => {
                   borderRadius: 1,
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                }}
+                  justifyContent: 'center' }}
               >
                 <Typography color="text.secondary">🥧 Age Distribution Chart</Typography>
               </Box>
@@ -391,8 +382,7 @@ export const AdvancedAnalytics: React.FC = () => {
                   borderRadius: 1,
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                }}
+                  justifyContent: 'center' }}
               >
                 <Typography color="text.secondary">🌍 Geographic Distribution</Typography>
               </Box>

@@ -170,7 +170,7 @@ async function handler(
     return res.status(200).json({
       success: true,
       user: {},
-        id: userProfile.id,
+  id: userProfile.id,
         email: authData.user.email || email,
         name: userName || 'User',
         role: userProfile.role || 'user',

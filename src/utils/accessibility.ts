@@ -35,7 +35,7 @@ export interface AccessibleFieldProps {
 export const createAccessibleField = (
   label: string,
   options: {},
-    required?: boolean;
+  required?: boolean;
     invalid?: boolean;
     description?: string;
     errorMessage?: string;
@@ -55,15 +55,15 @@ export const createAccessibleField = (
 
   return {
     fieldProps: {},
-      id: fieldId,
+  id: fieldId,
       'aria-label': label,
       'aria-describedby': describedByIds || undefined,
       'aria-required': options.required,
       'aria-invalid': options.invalid},
     labelProps: {},
-      htmlFor: fieldId,
-      id: labelId},
-    descriptionProps: descriptionId ? { id: descriptionId } : undefined,
+  htmlFor: fieldId,
+      id: labelId },
+  descriptionProps: descriptionId ? { id: descriptionId } : undefined,
     errorProps: errorId
       ? {
           id: errorId,
@@ -257,7 +257,7 @@ export interface ButtonA11yProps {
 
 export const createButtonProps = (
   options: {},
-    pressed?: boolean;
+  pressed?: boolean;
     expanded?: boolean;
     controls?: string;
     describedBy?: string;
@@ -337,11 +337,11 @@ export const usePrefersReducedMotion = (): boolean => {
 
 // Export commonly used ARIA attributes for reuse
 export const commonAriaAttributes = {
-  hidden: { 'aria-hidden': true },
+  hidden: { 'aria-hidden': true  },
   expanded: (isExpanded: boolean) => ({ 'aria-expanded': isExpanded }),
   pressed: (isPressed: boolean) => ({ 'aria-pressed': isPressed }),
   disabled: (isDisabled: boolean) => ({ 'aria-disabled': isDisabled }),
-  required: { 'aria-required': true },
+  required: { 'aria-required': true  },
   invalid: (isInvalid: boolean) => ({ 'aria-invalid': isInvalid }),
   current: (current: string) => ({ 'aria-current': current }),
   live: (level: 'polite' | 'assertive') => ({ 'aria-live': level })} as const;

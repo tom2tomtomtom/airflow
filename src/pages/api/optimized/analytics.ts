@@ -28,11 +28,11 @@ interface AnalyticsMetric {
 
 interface AnalyticsResponse {
   success: true;
-  data: {},
+  data: { }
     [metric: string]: AnalyticsMetric[];
   };
   summary: {},
-    total_campaigns: number;
+  total_campaigns: number;
     total_videos: number;
     total_views: number;
     avg_engagement: number;
@@ -85,7 +85,7 @@ class AnalyticsAggregator {
     if (cached) {
       return {
         ...cached,
-        summary: {},
+        summary: { }
           ...cached.summary,
           cache_hit: true,
           query_time: Date.now() - startTime}};
@@ -98,7 +98,7 @@ class AnalyticsAggregator {
     const response: AnalyticsResponse = {
       success: true,
       data,
-      summary: {},
+      summary: { }
         ...summary,
         period_start: start_date,
         period_end: end_date,

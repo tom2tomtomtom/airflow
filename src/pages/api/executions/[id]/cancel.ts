@@ -108,14 +108,14 @@ async function handleCancel(req: NextApiRequest, res: NextApiResponse, user: any
     .from('executions')
     .update({
       status: 'cancelled',
-      metadata: {},
+      metadata: {
         ...execution.metadata,
         cancelled_at: new Date().toISOString(),
         cancelled_by: user.id,
         cancel_reason: cancelData.reason,
         force_cancelled: cancelData.force,
-        cleanup_results: cleanupResults},
-      updated_at: new Date().toISOString()})
+        cleanup_results: cleanupResults },
+  updated_at: new Date().toISOString()})
     .eq('id', executionId)
     .select(`
       *,
@@ -141,7 +141,7 @@ async function handleCancel(req: NextApiRequest, res: NextApiResponse, user: any
   return res.json({
     message: 'Execution cancelled successfully',
     data: {},
-      execution: cancelledExecution,
+  execution: cancelledExecution,
       cleanup_results: cleanupResults,
       related_executions: relatedResults,
       cancelled_at: new Date().toISOString()}
@@ -336,10 +336,11 @@ async function handleRelatedExecutions(execution: any, force: boolean): Promise<
             .from('executions')
             .update({
               status: 'cancelled',
-              metadata: {},
-                ...related.metadata,
+              metadata: {
+        ...related.metadata,
                 cancelled_due_to_dependency: execution.id,
-                cancelled_at: new Date().toISOString()}
+                cancelled_at: new Date().toISOString()
+      }
             })
             .eq('id', related.id);
           

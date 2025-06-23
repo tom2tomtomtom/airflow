@@ -66,8 +66,9 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           
           // Fetch clients from API
           const response = await fetch("/api/clients", {
-            headers: {},
-              Authorization: `Bearer ${user.token}` });
+            headers: {
+              Authorization: `Bearer ${user.token}` },
+          });
           
           const data = await response.json();
           
@@ -197,8 +198,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         brand_guidelines: clientData.brand_guidelines || {
           voiceTone: '',
           targetAudience: '',
-          keyMessages: []
-        },
+          keyMessages: [] },
         tenantId: 'tenant-1',
         isActive: true,
         dateCreated: new Date().toISOString(),
@@ -233,11 +233,11 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       // Call API to update client
       const response = await fetch(`/api/clients/${id}`, {
         method: "PUT",
-        headers: {},
+        headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token || "mock_token"}`},
-        body: JSON.stringify(clientData)});
-      
+          Authorization: `Bearer ${user.token || "mock_token"}`
+        },
+        body: JSON.stringify(clientData) });      
       const data = await response.json();
       
       if (!response.ok) {
@@ -278,8 +278,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         ...clientData,
         name: clientData.name || existingClient.name, // Ensure name is always defined
         lastModified: new Date().toISOString(),
-        version: existingClient.version + 1};
-      
+        version: existingClient.version + 1 };      
       const updatedClients = [...clients];
       updatedClients[clientIndex] = updatedClient;
 
@@ -307,8 +306,9 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       // Call API to delete client
       const response = await fetch(`/api/clients/${id}`, {
         method: "DELETE",
-        headers: {},
-          Authorization: `Bearer ${user.token || "mock_token"}` });
+        headers: {
+          Authorization: `Bearer ${user.token || "mock_token"}` },
+      });
       
       const data = await response.json();
       
@@ -359,7 +359,8 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setActiveClient: handleSetActiveClient,
         createClient,
         updateClient,
-        deleteClient }
+        deleteClient,
+      }}
     >
       {children}
     </ClientContext.Provider>

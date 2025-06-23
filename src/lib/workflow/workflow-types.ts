@@ -313,8 +313,7 @@ export function createInitialContext(clientId?: string): WorkflowMachineContext 
     showBriefReview: false,
     briefConfirmed: false,
     lastError: null,
-    clientId: clientId || null,
-  };
+    clientId: clientId || null };
 }
 
 /**

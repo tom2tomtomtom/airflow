@@ -29,7 +29,7 @@ export interface AlertRule {
   severity: AlertSeverity;
   condition: AlertCondition;
   evaluation: {},
-    intervalSeconds: number;
+  intervalSeconds: number;
     forDuration: number; // How long condition must be true
   };
   notifications: NotificationConfig[];
@@ -113,14 +113,14 @@ class EmailNotificationChannel extends NotificationChannel {
   private formatEmailContent(alert: Alert): string {
     return `
       Subject: [AIRWAVE ${alert.severity.toUpperCase()}] ${alert.name}
-      
-      Alert: ${alert.name}
-      Severity: ${alert.severity}
-      Description: ${alert.description}
-      Current Value: ${alert.value}
-      Threshold: ${alert.threshold}
-      
-      Time: ${alert.lastSeen.toISOString()}
+      ,
+  Alert: ${alert.name},
+  Severity: ${alert.severity},
+  Description: ${alert.description}
+      Current Value: ${alert.value},
+  Threshold: ${alert.threshold}
+      ,
+  Time: ${alert.lastSeen.toISOString()}
       
       ${alert.annotations.runbook ? `Runbook: ${alert.annotations.runbook}` : ''}
     `;
@@ -137,7 +137,9 @@ class SlackNotificationChannel extends NotificationChannel {
       
       const response = await fetch(config.target, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+        'Content-Type': 'application/json' 
+      },
         body: JSON.stringify(slackPayload)});
 
       return response.ok;
@@ -164,18 +166,18 @@ class SlackNotificationChannel extends NotificationChannel {
             {
               title: 'Current Value',
               value: alert.value.toString(),
-              short: true},
+              short: true }
             {
               title: 'Threshold',
               value: alert.threshold.toString(),
-              short: true},
+              short: true }
             {
               title: 'Time',
               value: alert.lastSeen.toISOString(),
-              short: false},
+              short: false }
           ],
           footer: 'AIRWAVE Monitoring',
-          ts: Math.floor(alert.lastSeen.getTime() / 1000)},
+          ts: Math.floor(alert.lastSeen.getTime() / 1000) }
       ]};
   }
 
@@ -210,7 +212,9 @@ class WebhookNotificationChannel extends NotificationChannel {
 
       const response = await fetch(config.target, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+        'Content-Type': 'application/json' 
+      },
         body: JSON.stringify(payload)});
 
       return response.ok;
@@ -261,19 +265,19 @@ export class AlertingSystem {
       description: 'API error rate exceeds 5% over 5 minutes',
       severity: AlertSeverity.HIGH,
       condition: {},
-        type: 'threshold',
+  type: 'threshold',
         metric: 'api.requests.error_rate',
         operator: '>',
         value: 0.05,
         timeWindow: 300,
-        aggregation: 'avg'},
-      evaluation: {},
-        intervalSeconds: 60,
-        forDuration: 300},
-      notifications: [
+        aggregation: 'avg' },
+  evaluation: {},
+  intervalSeconds: 60,
+        forDuration: 300 },
+  notifications: [
         {
           channel: 'email',
-          target: process.env.ALERT_EMAIL || 'admin@airwave.com'},
+          target: process.env.ALERT_EMAIL || 'admin@airwave.com' }
         {
           channel: 'slack',
           target: process.env.SLACK_WEBHOOK_URL || '',
@@ -288,22 +292,22 @@ export class AlertingSystem {
       description: 'Database connection health check failing',
       severity: AlertSeverity.CRITICAL,
       condition: {},
-        type: 'threshold',
+  type: 'threshold',
         metric: 'system.health.database',
         operator: '<',
         value: 1,
         timeWindow: 60,
-        aggregation: 'avg'},
-      evaluation: {},
-        intervalSeconds: 30,
-        forDuration: 60},
-      notifications: [
+        aggregation: 'avg' },
+  evaluation: {},
+  intervalSeconds: 30,
+        forDuration: 60 },
+  notifications: [
         {
           channel: 'email',
-          target: process.env.ALERT_EMAIL || 'admin@airwave.com'},
+          target: process.env.ALERT_EMAIL || 'admin@airwave.com' }
         {
           channel: 'slack',
-          target: process.env.SLACK_WEBHOOK_URL || ''},
+          target: process.env.SLACK_WEBHOOK_URL || '' }
       ],
       runbook: 'https://docs.airwave.com/runbooks/database-failure',
       enabled: true});
@@ -314,19 +318,19 @@ export class AlertingSystem {
       description: 'Monthly AI budget usage exceeds 80%',
       severity: AlertSeverity.MEDIUM,
       condition: {},
-        type: 'threshold',
+  type: 'threshold',
         metric: 'ai.budget.usage_percent',
         operator: '>',
         value: 0.8,
         timeWindow: 3600,
-        aggregation: 'max'},
-      evaluation: {},
-        intervalSeconds: 300,
-        forDuration: 0},
-      notifications: [
+        aggregation: 'max' },
+  evaluation: {},
+  intervalSeconds: 300,
+        forDuration: 0 },
+  notifications: [
         {
           channel: 'email',
-          target: process.env.ALERT_EMAIL || 'admin@airwave.com'},
+          target: process.env.ALERT_EMAIL || 'admin@airwave.com' }
       ],
       runbook: 'https://docs.airwave.com/runbooks/ai-budget',
       enabled: true});
@@ -337,19 +341,19 @@ export class AlertingSystem {
       description: 'API response time exceeds 2 seconds',
       severity: AlertSeverity.MEDIUM,
       condition: {},
-        type: 'threshold',
+  type: 'threshold',
         metric: 'api.requests.duration',
         operator: '>',
         value: 2000,
         timeWindow: 600,
-        aggregation: 'avg'},
-      evaluation: {},
-        intervalSeconds: 120,
-        forDuration: 600},
-      notifications: [
+        aggregation: 'avg' },
+  evaluation: {},
+  intervalSeconds: 120,
+        forDuration: 600 },
+  notifications: [
         {
           channel: 'email',
-          target: process.env.ALERT_EMAIL || 'admin@airwave.com'},
+          target: process.env.ALERT_EMAIL || 'admin@airwave.com' }
       ],
       runbook: 'https://docs.airwave.com/runbooks/slow-response',
       enabled: true});
@@ -360,22 +364,22 @@ export class AlertingSystem {
       description: 'Video generation failure rate exceeds 10%',
       severity: AlertSeverity.HIGH,
       condition: {},
-        type: 'threshold',
+  type: 'threshold',
         metric: 'video.generation.failure_rate',
         operator: '>',
         value: 0.1,
         timeWindow: 900,
-        aggregation: 'avg'},
-      evaluation: {},
-        intervalSeconds: 180,
-        forDuration: 300},
-      notifications: [
+        aggregation: 'avg' },
+  evaluation: {},
+  intervalSeconds: 180,
+        forDuration: 300 },
+  notifications: [
         {
           channel: 'email',
-          target: process.env.ALERT_EMAIL || 'admin@airwave.com'},
+          target: process.env.ALERT_EMAIL || 'admin@airwave.com' }
         {
           channel: 'slack',
-          target: process.env.SLACK_WEBHOOK_URL || ''},
+          target: process.env.SLACK_WEBHOOK_URL || '' }
       ],
       runbook: 'https://docs.airwave.com/runbooks/video-generation',
       enabled: true});
@@ -421,9 +425,9 @@ export class AlertingSystem {
         threshold: rule.condition.value,
         firstSeen: new Date(),
         lastSeen: new Date(),
-        labels: rule.tags || {},
-        annotations: {},
-          runbook: rule.runbook || ''}};
+        labels: rule.tags || { },
+  annotations: {},
+  runbook: rule.runbook || ''}};
 
       this.activeAlerts.set(alertId, alert);
       await this.sendNotifications(alert, rule);

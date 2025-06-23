@@ -125,7 +125,7 @@ async function handleGenerationStatus(req: NextApiRequest, res: NextApiResponse,
 
   return res.json({
     data: {},
-      generation_id: generationId,
+  generation_id: generationId,
       total_jobs: updatedJobs.length,
       progress: overallProgress,
       jobs: updatedJobs.map((job: any) => ({
@@ -218,7 +218,7 @@ async function handleJobStatus(req: NextApiRequest, res: NextApiResponse, user: 
 
   return res.json({
     data: {},
-      id: updatedGeneration.id,
+  id: updatedGeneration.id,
       generation_id: updatedGeneration.generation_id,
       variation_index: updatedGeneration.variation_index,
       status: updatedGeneration.status,
@@ -273,8 +273,8 @@ async function saveVideoToAssets(generation: any, videoUrl: string): Promise<str
         file_path: uploadData.path,
         file_url: urlData.publicUrl,
         file_size: videoBuffer.length,
-        metadata: {},
-          generation_id: generation.generation_id,
+        metadata: {
+        generation_id: generation.generation_id,
           job_id: generation.id,
           render_job_id: generation.render_job_id,
           config: generation.config,
@@ -282,8 +282,8 @@ async function saveVideoToAssets(generation: any, videoUrl: string): Promise<str
           duration: generation.config?.video_config?.duration,
           resolution: generation.config?.video_config?.resolution,
           style: generation.config?.video_config?.style,
-          platform: generation.config?.video_config?.platform},
-        created_by: generation.created_by})
+          platform: generation.config?.video_config?.platform },
+  created_by: generation.created_by})
       .select()
       .single();
 

@@ -33,8 +33,7 @@ interface Motivation {
 
 // Initialize OpenAI client
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+  apiKey: process.env.OPENAI_API_KEY });
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -46,8 +45,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!user) {
     return res.status(401).json({
       success: false,
-      message: 'Authentication required',
-    });
+      message: 'Authentication required' });
   }
   const { briefData }: { briefData: BriefData } = req.body;
 
@@ -65,8 +63,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     product: briefData.product,
     service: briefData.service,
     valueProposition: briefData.valueProposition?.substring(0, 100) + '...',
-    industry: briefData.industry,
-  });
+    industry: briefData.industry });
 
   try {
     // Generate motivations based on brief analysis
@@ -75,14 +72,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(200).json({
       success: true,
       data: motivations,
-      message: 'Motivations generated successfully',
-    });
+      message: 'Motivations generated successfully' });
   } catch (error: any) {
     console.error('Error generating motivations:', error);
     return res.status(500).json({
       success: false,
-      message: error instanceof Error ? error.message : 'Failed to generate motivations',
-    });
+      message: error instanceof Error ? error.message : 'Failed to generate motivations' });
   }
 }
 
@@ -107,18 +102,18 @@ async function generateMotivationsWithAI(briefData: BriefData): Promise<Motivati
   const prompt = `You are an expert marketing strategist and consumer psychologist. Analyze this creative brief and generate 8-10 consumer motivations that are SPECIFICALLY tailored to the exact product/service, target audience, and objectives described. These motivations must be contextual and unique to this brief - NOT generic templates.
 
 CREATIVE BRIEF ANALYSIS:
-Title: ${briefData.title}
-Objective: ${briefData.objective}
+Title: ${briefData.title},
+  Objective: ${briefData.objective}
 Target Audience: ${briefData.targetAudience}
-Key Messages: ${briefData.keyMessages.join(', ')}
-Platforms: ${briefData.platforms.join(', ')}
+Key Messages: ${briefData.keyMessages.join(', ')},
+  Platforms: ${briefData.platforms.join(', ')}
 Product/Service: ${briefData.product || briefData.service || 'Not specified'}
-Value Proposition: ${briefData.valueProposition || 'Not specified'}
-Industry: ${briefData.industry || 'Not specified'}
-Budget: ${briefData.budget || 'Not specified'}
-Timeline: ${briefData.timeline || 'Not specified'}
-
-TASK: Generate motivations that answer "What would make THIS specific target audience want to buy/engage with THIS specific product/service to achieve THIS specific objective?"
+Value Proposition: ${briefData.valueProposition || 'Not specified'},
+  Industry: ${briefData.industry || 'Not specified'},
+  Budget: ${briefData.budget || 'Not specified'},
+  Timeline: ${briefData.timeline || 'Not specified'}
+,
+  TASK: Generate motivations that answer "What would make THIS specific target audience want to buy/engage with THIS specific product/service to achieve THIS specific objective?"
 
 Each motivation must be:
 1. SPECIFIC to the product/service mentioned in the brief
@@ -156,8 +151,7 @@ Respond ONLY with the JSON array.`;
       messages: [
         {
           role: 'user',
-          content: prompt,
-        },
+          content: prompt },
       ],
       temperature: 0.7,
       max_tokens: 1500, // Reduce tokens for faster response
@@ -199,8 +193,7 @@ Respond ONLY with the JSON array.`;
         targetEmotions: Array.isArray(motivation.targetEmotions)
           ? motivation.targetEmotions
           : ['engagement'],
-        platforms: Array.isArray(motivation.platforms) ? motivation.platforms : briefData.platforms,
-      }))
+        platforms: Array.isArray(motivation.platforms) ? motivation.platforms : briefData.platforms }))
       .slice(0, 12); // Ensure max 12 motivations
   } catch (parseError: any) {
     console.error('Failed to parse OpenAI motivations response:', parseError);
@@ -220,85 +213,73 @@ async function generateMotivationsWithTemplates(briefData: BriefData): Promise<M
         'Build deep emotional bonds through authentic storytelling and relatable experiences',
       reasoning: 'Emotional connections drive 70% more engagement than rational appeals',
       targetEmotions: ['trust', 'belonging', 'excitement'],
-      baseScore: 85,
-    },
+      baseScore: 85 },
     {
       title: 'Social Proof Validation',
       description: 'Leverage testimonials, reviews, and community endorsements for credibility',
       reasoning: 'Social proof increases conversion rates by up to 15%',
       targetEmotions: ['confidence', 'trust', 'security'],
-      baseScore: 82,
-    },
+      baseScore: 82 },
     {
       title: 'Innovation Leadership',
       description: 'Position as industry pioneer with cutting-edge solutions and forward-thinking',
       reasoning: 'Innovation messaging appeals to early adopters and tech-savvy audiences',
       targetEmotions: ['excitement', 'curiosity', 'pride'],
-      baseScore: 78,
-    },
+      baseScore: 78 },
     {
       title: 'Community Building',
       description: 'Foster sense of belonging and shared values within target community',
       reasoning: 'Community-driven content generates 6x more engagement',
       targetEmotions: ['belonging', 'pride', 'connection'],
-      baseScore: 80,
-    },
+      baseScore: 80 },
     {
       title: 'Problem Solution Focus',
       description: 'Address specific pain points with clear, actionable solutions',
       reasoning: 'Problem-solution messaging has 40% higher click-through rates',
       targetEmotions: ['relief', 'hope', 'confidence'],
-      baseScore: 88,
-    },
+      baseScore: 88 },
     {
       title: 'Aspirational Lifestyle',
       description: 'Present idealized future state that audience aspires to achieve',
       reasoning: 'Aspirational content drives 25% more shares and saves',
       targetEmotions: ['desire', 'motivation', 'optimism'],
-      baseScore: 75,
-    },
+      baseScore: 75 },
     {
       title: 'Urgency and Scarcity',
       description: 'Create time-sensitive opportunities and limited availability messaging',
       reasoning: 'Urgency tactics increase immediate action by 30%',
       targetEmotions: ['urgency', 'excitement', 'fear of missing out'],
-      baseScore: 72,
-    },
+      baseScore: 72 },
     {
       title: 'Authority and Expertise',
       description: 'Establish thought leadership through expert insights and industry knowledge',
       reasoning: 'Authority positioning increases trust and premium pricing acceptance',
       targetEmotions: ['respect', 'confidence', 'trust'],
-      baseScore: 79,
-    },
+      baseScore: 79 },
     {
       title: 'Personal Transformation',
       description: 'Focus on individual growth and positive life changes',
       reasoning: 'Transformation stories resonate with 85% of personal development audiences',
       targetEmotions: ['hope', 'determination', 'pride'],
-      baseScore: 81,
-    },
+      baseScore: 81 },
     {
       title: 'Value and ROI Emphasis',
       description: 'Highlight concrete benefits, savings, and return on investment',
       reasoning: 'ROI-focused messaging appeals to decision-makers and budget holders',
       targetEmotions: ['satisfaction', 'security', 'confidence'],
-      baseScore: 86,
-    },
+      baseScore: 86 },
     {
       title: 'Behind-the-Scenes Authenticity',
       description: 'Show genuine process, people, and company culture for transparency',
       reasoning: 'Authentic content builds 3x stronger brand loyalty',
       targetEmotions: ['trust', 'connection', 'appreciation'],
-      baseScore: 77,
-    },
+      baseScore: 77 },
     {
       title: 'Trend and Zeitgeist Alignment',
       description: 'Align messaging with current cultural movements and trending topics',
       reasoning: 'Trend-aligned content receives 50% more organic reach',
       targetEmotions: ['relevance', 'excitement', 'inclusion'],
-      baseScore: 73,
-    },
+      baseScore: 73 },
   ];
 
   // Score and select top 10 motivations based on brief analysis
@@ -384,8 +365,7 @@ async function generateMotivationsWithTemplates(briefData: BriefData): Promise<M
       score: Math.round(Math.max(0, Math.min(100, score))),
       reasoning: template.reasoning,
       targetEmotions: template.targetEmotions,
-      platforms: platforms,
-    };
+      platforms: platforms };
   });
 
   // Sort by score and return top 10

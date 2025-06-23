@@ -34,16 +34,16 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
     const dashboard = {
       overview: {},
-        timeRange: `${timeRangeHours} hours`,
+  timeRange: `${timeRangeHours} hours`,
         totalEvents: metrics.totalEvents,
         activeAlerts: metrics.activeAlerts,
         threatLevel: calculateThreatLevel(metrics),
-        lastUpdate: new Date().toISOString()},
-      metrics: {},
-        eventsByType: metrics.eventsByType,
+        lastUpdate: new Date().toISOString() },
+  metrics: {},
+  eventsByType: metrics.eventsByType,
         eventsBySeverity: metrics.eventsBySeverity,
-        topIPs: metrics.topIPs},
-      alerts: alerts.slice(0, 10), // Most recent 10 alerts
+        topIPs: metrics.topIPs },
+  alerts: alerts.slice(0, 10), // Most recent 10 alerts
       recentThreats: recentEvents.slice(0, 20), // Most recent 20 high-severity events
       healthScore: calculateSecurityHealthScore(metrics)};
 

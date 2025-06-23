@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method !== 'GET') {
     return res.status(405).json({
       success: false,
-      error: { code: 'METHOD_NOT_ALLOWED', message: 'Method not allowed' },
+      error: { code: 'METHOD_NOT_ALLOWED', message: 'Method not allowed'  }
     });
   }
 

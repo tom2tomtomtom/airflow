@@ -139,12 +139,12 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
 
   return res.json({
     data: {},
-      asset_title: asset.title,
+  asset_title: asset.title,
       versions: enrichedVersions,
-      statistics: versionStats},
-    count: versionStats.total_versions,
+      statistics: versionStats },
+  count: versionStats.total_versions,
     pagination: {},
-      limit: parseInt(limit as string),
+  limit: parseInt(limit as string),
       offset: parseInt(offset as string),
       total: versionStats.total_versions}
   });
@@ -226,10 +226,11 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
     character_count: versionData.content.length,
     word_count: versionData.content.split(/\s+/).length,
     updated_at: new Date().toISOString(),
-    metadata: {},
-      version_notes: versionData.notes,
+    metadata: {
+        version_notes: versionData.notes,
       is_major_update: versionData.is_major,
-      previous_version: nextVersionNumber}
+      previous_version: nextVersionNumber
+      }
   };
 
   const { data: updatedAsset, error: updateError } = await supabase
@@ -266,7 +267,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
   return res.status(201).json({
     message: 'Copy asset version created successfully',
     data: {},
-      asset: updatedAsset,
+  asset: updatedAsset,
       version_number: versionData.is_major ? nextVersionNumber + 1 : nextVersionNumber,
       change_analysis: changeAnalysis}
   });

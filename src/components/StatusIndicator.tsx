@@ -79,7 +79,7 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({
       color: config.color,
       size: size,
       sx: {},
-        fontWeight: 500,
+  fontWeight: 500,
         '& .MuiChip-icon': {
           fontSize: size === 'small' ? '16px' : '20px'}},
       ...(showIcon && { icon: config.icon }), // Only include icon prop if showIcon is true

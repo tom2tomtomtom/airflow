@@ -24,7 +24,7 @@ export const errorResponse = (
   return res.status(statusCode).json({
     success: false,
     error: {},
-      code,
+  code,
       message });
 };
 
@@ -92,7 +92,7 @@ export const authApi = {
     return apiRequest<{
       success: boolean;,
     user: {},
-        id: string;,
+  id: string;,
     email: string;,
     name: string;,
     token: string;
@@ -106,7 +106,7 @@ export const authApi = {
     return apiRequest<{
       success: boolean;,
     user: {},
-        id: string;,
+  id: string;,
     email: string;,
     name: string;,
     token: string;

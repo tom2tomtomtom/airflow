@@ -61,8 +61,9 @@ async function exchangeTwitterToken(code: string, redirectUri: string): Promise<
       code_verifier: 'challenge', // This should match the code_challenge from auth
     }),
     {
-      headers: {},
-        'Authorization': `Basic ${basicAuth}`,
+      headers: {
+        'Authorization': `Basic ${basicAuth
+      }`,
         'Content-Type': 'application/x-www-form-urlencoded'}}
   );
 
@@ -79,8 +80,9 @@ async function exchangeLinkedInToken(code: string, redirectUri: string): Promise
       client_secret: process.env.LINKEDIN_CLIENT_SECRET!,
       redirect_uri: redirectUri}),
     {
-      headers: {},
-        'Content-Type': 'application/x-www-form-urlencoded'}}
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }}
   );
 
   return response.data;
@@ -146,8 +148,9 @@ async function getInstagramProfile(accessToken: string): Promise<any> {
 
 async function getTwitterProfile(accessToken: string): Promise<any> {
   const response = await axios.get('https://api.twitter.com/2/users/me', {
-    headers: {},
-      'Authorization': `Bearer ${accessToken}`}});
+    headers: {
+        'Authorization': `Bearer ${accessToken
+      }`}});
   return response?.data?.data;
 }
 
@@ -155,8 +158,9 @@ async function getLinkedInProfile(accessToken: string): Promise<any> {
   const response = await axios.get(
     'https://api.linkedin.com/v2/people/~:(id,firstName,lastName,profilePicture(displayImage~:playableStreams))',
     {
-      headers: {},
-        'Authorization': `Bearer ${accessToken}`}}
+      headers: {
+        'Authorization': `Bearer ${accessToken
+      }`}}
   );
   return response.data;
 }

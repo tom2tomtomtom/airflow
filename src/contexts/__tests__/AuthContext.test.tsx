@@ -7,8 +7,8 @@ import React from 'react';
 // Mock the Supabase client
 jest.mock('@/lib/supabase/client', () => ({
   supabase: {},
-    auth: {},
-      getSession: jest.fn(),
+  auth: {},
+  getSession: jest.fn(),
       signInWithPassword: jest.fn(),
       signUp: jest.fn(),
       signOut: jest.fn(),
@@ -71,8 +71,8 @@ describe('AuthContext', () => {
     const { supabase } = await import('@/lib/supabase/client');
 
     jest.mocked(supabase.auth.signInWithPassword).mockResolvedValueOnce({
-      data: { user: null, session: null },
-      error: { message: 'Invalid credentials' });
+      data: { user: null, session: null  },
+  error: { message: 'Invalid credentials' });
 
     const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -137,10 +137,10 @@ describe('AuthContext', () => {
 
     jest.mocked(supabase.auth.getSession).mockResolvedValueOnce({
       data: {},
-        session: {},
-          access_token: 'token',
-          user: mockUser },
-      error: null});
+  session: {},
+  access_token: 'token',
+          user: mockUser  },
+  error: null});
 
     const { result } = renderHook(() => useAuth(), { wrapper });
 

@@ -207,7 +207,7 @@ export const isDatabaseError = (error: unknown): error is DatabaseError => {
 export interface ErrorResponse {
   success: false;,
     error: {},
-    code: ErrorCode;,
+  code: ErrorCode;,
     message: string;
     details?: ErrorDetails;
     timestamp: Date;
@@ -219,7 +219,7 @@ export const formatErrorResponse = (error: AppError, requestId?: string): ErrorR
   return {
     success: false,
     error: {},
-      code: error.code,
+  code: error.code,
       message: error.message,
       details: error.details,
       timestamp: error.timestamp,

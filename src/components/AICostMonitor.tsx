@@ -32,7 +32,7 @@ import {
 interface UsageStats {
   service: string;
   usage: {},
-    totalCost: number;
+  totalCost: number;
     totalTokens: number;
     callCount: number;
     byModel: Record<string, { cost: number; tokens: number; calls: number }>;
@@ -71,7 +71,9 @@ export const AICostMonitor: React.FC<CostMonitorProps> = ({
     try {
       const response = await fetch('/api/ai/usage-report', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+        'Content-Type': 'application/json' 
+      },
         body: JSON.stringify({ userId })
       });
 

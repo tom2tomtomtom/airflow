@@ -48,7 +48,7 @@ interface MatrixRow {
   id: string;
   name: string;
   locked: boolean;
-  cells: {},
+  cells: { }
     [fieldId: string]: {
       type: 'asset' | 'text' | 'color';
       value?: string;
@@ -80,13 +80,13 @@ interface CampaignMatrixProps {
 }
 
 const defaultFields: MatrixField[] = [
-  { id: 'background', name: 'Background', type: 'image', required: true, description: 'Background image or video' },
-  { id: 'headline', name: 'Headline', type: 'text', required: true, description: 'Main headline text' },
-  { id: 'copy', name: 'Copy', type: 'text', required: true, description: 'Body copy text' },
-  { id: 'logo', name: 'Logo', type: 'image', required: false, description: 'Brand logo' },
-  { id: 'music', name: 'Music', type: 'audio', required: false, description: 'Background music' },
-  { id: 'voice', name: 'Voice Over', type: 'audio', required: false, description: 'Voice over audio' },
-  { id: 'color', name: 'Brand Color', type: 'color', required: false, description: 'Primary brand color' },
+  { id: 'background', name: 'Background', type: 'image', required: true, description: 'Background image or video'  }
+  { id: 'headline', name: 'Headline', type: 'text', required: true, description: 'Main headline text'  }
+  { id: 'copy', name: 'Copy', type: 'text', required: true, description: 'Body copy text'  }
+  { id: 'logo', name: 'Logo', type: 'image', required: false, description: 'Brand logo'  }
+  { id: 'music', name: 'Music', type: 'audio', required: false, description: 'Background music'  }
+  { id: 'voice', name: 'Voice Over', type: 'audio', required: false, description: 'Voice over audio'  }
+  { id: 'color', name: 'Brand Color', type: 'color', required: false, description: 'Primary brand color'  }
 ];
 
 export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
@@ -196,7 +196,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
       if (row.id === rowId) {
         return {
           ...row,
-          cells: {},
+          cells: { }
             ...row.cells,
             [fieldId]: {
               ...row.cells[fieldId],
@@ -213,7 +213,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
       if (row.id === rowId) {
         return {
           ...row,
-          cells: {},
+          cells: { }
             ...row.cells,
             [fieldId]: {
               ...row.cells[fieldId],
@@ -379,7 +379,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
       <Box display="flex" alignItems="center" gap={1}>
         {asset ? (
           <>
-            <Avatar 
+       <Avatar 
               src={asset.thumbnail || asset.url} 
               sx={{ width: 32, height: 32 }}
             >

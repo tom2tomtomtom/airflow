@@ -37,21 +37,18 @@ const psychologyTypeIcons = {
   cognitive: Brain,
   emotional: Heart,
   social: Users,
-  behavioral: Zap,
-};
+  behavioral: Zap };
 
 const psychologyTypeColors = {
   cognitive: 'bg-blue-100 text-blue-800 border-blue-200',
   emotional: 'bg-red-100 text-red-800 border-red-200',
   social: 'bg-green-100 text-green-800 border-green-200',
-  behavioral: 'bg-purple-100 text-purple-800 border-purple-200',
-};
+  behavioral: 'bg-purple-100 text-purple-800 border-purple-200' };
 
 const intensityColors = {
   low: 'bg-gray-100 text-gray-700',
   medium: 'bg-yellow-100 text-yellow-800',
-  high: 'bg-orange-100 text-orange-800',
-};
+  high: 'bg-orange-100 text-orange-800' };
 
 export function MotivationSelector({
   motivationSet,
@@ -366,8 +363,7 @@ export function MotivationSelector({
                     onRefine({
                       enhanceConfidence: true,
                       increaseDiversity: true,
-                      balancePsychology: true,
-                    })
+                      balancePsychology: true })
                   }
                   disabled={isLoading}
                 >

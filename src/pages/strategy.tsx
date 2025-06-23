@@ -46,8 +46,10 @@ const StrategyPage: React.FC = () => {
     try {
       const response = await fetch('/api/strategy-generate', {
         method: 'POST',
-        headers: {},
-          'Content-Type': 'application/json'},
+        headers: {
+        'Content-Type': 'application/json'
+      
+      },
         body: JSON.stringify({ brief }),
         credentials: 'include'});
 
@@ -94,7 +96,7 @@ const StrategyPage: React.FC = () => {
 
   return (
     <>
-      <Head>
+       <Head>
         <title>Strategy | AIRFLOW</title>
       </Head>
       <DashboardLayout title="Strategy">

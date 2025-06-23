@@ -124,13 +124,13 @@ async function getAssets(req: NextApiRequest, res: NextApiResponse, context: Rou
       tags: ['test', 'image'],
       client_id: clientId || 'client123',
       created_by: context.user.id,
-      metadata: {},
-      file_size: 1024000,
+      metadata: {
+        file_size: 1024000,
       mime_type: 'image/jpeg',
       duration: null,
-      dimensions: { width: 1920, height: 1080 },
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()},
+      dimensions: { width: 1920, height: 1080  },
+  created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString() }
   ];
 
   // Filter by search if provided
@@ -295,12 +295,12 @@ async function getAssetById(
     tags: ['test'],
     client_id: 'client123',
     created_by: context.user.id,
-    metadata: {}
-    file_size: 1024000,
+    metadata: {},
+  file_size: 1024000,
     mime_type: 'image/jpeg',
     duration: null,
-    dimensions: { width: 1920, height: 1080 },
-    created_at: new Date().toISOString(),
+    dimensions: { width: 1920, height: 1080  },
+  created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()};
 
   const data = mockAsset;
@@ -426,9 +426,9 @@ async function handleSearch(req: NextApiRequest, res: NextApiResponse, context: 
       clientId: 'client1',
       userId: context.user.id,
       favorite: false,
-      metadata: {}
-      size: 1024000,
-      mimeType: 'image/jpeg'},
+      metadata: {},
+  size: 1024000,
+      mimeType: 'image/jpeg' }
   ];
 
   const paginationMeta = createPaginationMeta(pageNum, limitNum, mockAssets.length);
@@ -515,8 +515,8 @@ function mapDatabaseRowToAsset(row: any) {
     clientId: row.client_id,
     userId: row.created_by,
     favorite: row.is_favorite || false,
-    metadata: row.metadata || {},
-    size: row.file_size,
+    metadata: row.metadata || { },
+  size: row.file_size,
     mimeType: row.mime_type,
     duration: row.duration,
     width: row.dimensions?.width,

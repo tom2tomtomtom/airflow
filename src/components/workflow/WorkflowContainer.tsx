@@ -111,44 +111,44 @@ const workflowSteps = [
     id: 'upload',
     label: 'Upload Brief',
     description: 'Upload and review your campaign brief',
-    icon: <CloudUploadIcon />},
+    icon: <CloudUploadIcon /> },
   {
     id: 'motivations',
     label: 'Motivations',
     description: 'Generate and select strategic motivations',
-    icon: <AutoAwesomeIcon />},
+    icon: <AutoAwesomeIcon /> },
   {
     id: 'copy',
     label: 'Copy Generation',
     description: 'Create copy variations for your campaign',
-    icon: <ContentCopyIcon />},
+    icon: <ContentCopyIcon /> },
   {
     id: 'assets',
     label: 'Asset Selection',
     description: 'Choose images, videos, and other assets',
-    icon: <ImageIcon />},
+    icon: <ImageIcon /> },
   {
     id: 'template',
     label: 'Template',
     description: 'Select a video template for your campaign',
-    icon: <VideoLibraryIcon />},
+    icon: <VideoLibraryIcon /> },
   {
     id: 'matrix',
     label: 'Campaign Matrix',
     description: 'Review and build your campaign matrix',
-    icon: <GridViewIcon />},
+    icon: <GridViewIcon /> },
   {
     id: 'render',
     label: 'Render Videos',
     description: 'Generate your final campaign videos',
-    icon: <PlayArrowIcon />},
+    icon: <PlayArrowIcon /> }
 ];
 
 export const WorkflowContainer: React.FC<WorkflowContainerProps> = ({
   open,
   onClose,
-  onComplete}) => {
-  const { state, actions } = useWorkflow();
+  onComplete,
+}) => {  const { state, actions } = useWorkflow();
   const { currentStep } = state;
   
   const theme = useTheme();
@@ -286,7 +286,7 @@ export const WorkflowContainer: React.FC<WorkflowContainerProps> = ({
         justifyContent: 'space-between', 
         alignItems: 'center',
         borderBottom: 1,
-        borderColor: 'divider'}}>
+        borderColor: 'divider' }}>
         <Box>
           <Typography variant="h5" component="div">
             AIRWAVE Campaign Builder
@@ -314,15 +314,18 @@ export const WorkflowContainer: React.FC<WorkflowContainerProps> = ({
               sx={{
                 cursor: index <= currentStep + 1 ? 'pointer' : 'default',
                 '& .MuiStepLabel-root': {
-                  cursor: index <= currentStep + 1 ? 'pointer' : 'default'}}}
+                  cursor: index <= currentStep + 1 ? 'pointer' : 'default' },
+              }}
               onClick={() => handleStepClick(index)}
             >
               <StepLabel
                 icon={step.icon}
                 StepIconProps={{
-                  sx: {},
+                  sx: {
                     color: isStepCompleted(index) ? 'success.main' : 
-                           isStepActive(index) ? 'primary.main' : 'grey.400'}}}
+                           isStepActive(index) ? 'primary.main' : 'grey.400',
+                  },
+                }}
               >
                 <Box sx={{ textAlign: isMobile ? 'left' : 'center' }}>
                   <Typography variant="body2" fontWeight="medium">

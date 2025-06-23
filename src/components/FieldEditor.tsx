@@ -90,8 +90,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
           sx={{
             '& .MuiInputBase-input[type="color"]': {
               minHeight: '2rem',
-              padding: '4px',
-            },
+              padding: '4px' },
           }}
         />
       );
@@ -113,8 +112,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
                   height: compact ? 40 : 60,
                   objectFit: 'cover',
                   borderRadius: 1,
-                  flexShrink: 0,
-                }}
+                  flexShrink: 0 }}
                 onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
                   e.currentTarget.style.display = 'none';
                 }}
@@ -131,8 +129,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
                   justifyContent: 'center',
                   bgcolor: 'grey.100',
                   borderRadius: 1,
-                  flexShrink: 0,
-                }}
+                  flexShrink: 0 }}
               >
                 {getFieldTypeIcon(field.type)}
               </Box>
@@ -171,8 +168,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({
             size={compact ? 'small' : 'medium'}
             sx={{
               justifyContent: 'flex-start',
-              textTransform: 'none',
-            }}
+              textTransform: 'none' }}
           >
             Select {field.type}
           </Button>

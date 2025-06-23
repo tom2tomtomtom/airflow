@@ -261,8 +261,7 @@ export class QueryCache {
       result, 
       { 
         ttl, 
-        tags: tags || ['db-query'] 
-      },
+        tags: tags || ['db-query']  }
       namespace || 'db:query'
     );
     
@@ -308,7 +307,7 @@ export class DBCacheUtils {
     queryFn: () => Promise<T>,
     params?: any[],
     options: {},
-      ttl?: number;
+  ttl?: number;
       tags?: string[];
       namespace?: string;
     } = {}
@@ -321,7 +320,7 @@ export class DBCacheUtils {
       queryFn,
       {
         ttl: options.ttl || CACHE_TTL.DB_QUERY,
-        tags: options.tags || ['db-query']},
+        tags: options.tags || ['db-query'] }
       namespace
     );
   }

@@ -84,8 +84,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
         ...notification,
         id,
         timestamp: new Date(),
-        duration: notification.duration ?? (notification.type === 'error' ? 8000 : 5000),
-      };
+        duration: notification.duration ?? (notification.type === 'error' ? 8000 : 5000) };
 
       setNotifications(prev => {
         const updated = [newNotification, ...prev];
@@ -199,8 +198,7 @@ const NotificationContainer: React.FC<NotificationContainerProps> = ({
           right: 24,
           zIndex: 9999,
           maxWidth: '400px',
-          width: '100%',
-        }}
+          width: '100%' }}
       >
         <Stack spacing={1}>
           {notifications.map((notification: any) => (
@@ -256,8 +254,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onRem
         left: 'auto !important',
         right: 'auto !important',
         top: 'auto !important',
-        bottom: 'auto !important',
-      }}
+        bottom: 'auto !important' }}
     >
       <Alert
         severity={notification.type}
@@ -300,8 +297,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onRem
           borderRadius: 2,
           boxShadow: 3,
           '& .MuiAlert-message': {
-            width: '100%',
-          },
+            width: '100%' },
         }}
       >
         {notification.title && (
@@ -318,8 +314,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onRem
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                mb: 0.5,
-              }}
+                mb: 0.5 }}
             >
               <Typography variant="caption">Progress</Typography>
               <Typography variant="caption">{Math.round(notification.progress)}%</Typography>
@@ -353,8 +348,7 @@ export const useNotificationHelpers = () => {
       return showInfo(message, {
         ...options,
         persistent: true,
-        progress: 0,
-      });
+        progress: 0 });
     },
     [showInfo]
   );
@@ -376,8 +370,7 @@ export const useNotificationHelpers = () => {
         message: successMessage,
         progress: 100,
         persistent: false,
-        duration: 3000,
-      });
+        duration: 3000 });
     },
     [updateNotification]
   );
@@ -389,8 +382,7 @@ export const useNotificationHelpers = () => {
         message: errorMessage,
         progress: undefined,
         persistent: false,
-        duration: 8000,
-      });
+        duration: 8000 });
     },
     [updateNotification]
   );

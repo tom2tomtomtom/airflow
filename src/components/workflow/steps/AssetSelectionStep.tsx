@@ -78,7 +78,7 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
       type: workflowType,
       url: browserAsset.url,
       content: browserAsset.type === 'text' ? browserAsset.description : undefined,
-      metadata: {},
+      metadata: {
         ...browserAsset.metadata,
         name: browserAsset.name,
         description: browserAsset.description,
@@ -90,8 +90,8 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
         width: browserAsset.width,
         height: browserAsset.height,
         dateCreated: browserAsset.dateCreated,
-        favorite: browserAsset.favorite},
-      selected: false};
+        favorite: browserAsset.favorite },
+      selected: false };
   };
 
   // Handle asset selection from AssetBrowser
@@ -113,14 +113,14 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
       id: generatedAsset.id || `ai-${Date.now()}`,
       type: 'image',
       url: generatedAsset.url,
-      metadata: {},
+      metadata: {
         ...generatedAsset.metadata,
         name: generatedAsset.name,
         description: generatedAsset.description || 'AI Generated Image',
         aiGenerated: true,
         ai_prompt: generatedAsset.ai_prompt,
-        tags: generatedAsset.tags || ['ai-generated']},
-      selected: false};
+        tags: generatedAsset.tags || ['ai-generated'] },
+      selected: false };
 
     // Add to selected assets
     actions.selectAsset({ ...workflowAsset, selected: true });

@@ -201,9 +201,10 @@ export async function upsertWithConflict<T extends Record<string, any>>(
     await handleSupabaseError(error, {
       operation: 'upsert',
       table: tableName,
-      metadata: {},
+      metadata: {
         recordCount: Array.isArray(data) ? data.length : 1,
-        onConflict: options?.onConflict}});
+        onConflict: options?.onConflict },
+    });
   }
 }
 

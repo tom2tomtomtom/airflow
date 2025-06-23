@@ -42,7 +42,7 @@ class APIPerformanceMonitor {
     const metrics: PerformanceMetrics = {,
     startTime: Date.now(),
       memoryUsage: {},
-        before: process.memoryUsage() };
+  before: process.memoryUsage() };
 
     // Store metrics for analysis
     if (!this.metrics.has(endpoint)) {
@@ -393,7 +393,7 @@ export function getAPIPerformanceStats() {
   return {
     monitor: APIPerformanceMonitor.getMetrics(),
     queryOptimizer: {},
-      cacheSize: QueryOptimizer['queryCache'].size,
+  cacheSize: QueryOptimizer['queryCache'].size,
       totalQueries: Array.from(QueryOptimizer['queryCount'].values()).reduce((a, b) => a + b, 0)},
     cache: cacheManager.getStats()};
 }

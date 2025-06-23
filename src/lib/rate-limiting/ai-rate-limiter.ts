@@ -145,8 +145,7 @@ export class AIRateLimiter {
         allowed,
         remaining: Math.max(0, config.maxRequests - currentCount - (allowed ? 1 : 0)),
         resetTime: now + config.windowMs,
-        totalRequests: currentCount + (allowed ? 1 : 0),
-      };
+        totalRequests: currentCount + (allowed ? 1 : 0) };
     } catch (error: any) {
       console.error('Redis rate limiting error:', error);
       // Fallback to memory-based limiting
@@ -171,15 +170,13 @@ export class AIRateLimiter {
       // New window
       this.fallbackStore.set(key, {
         count: 1,
-        resetTime: now + config.windowMs,
-      });
+        resetTime: now + config.windowMs });
 
       return {
         allowed: true,
         remaining: config.maxRequests - 1,
         resetTime: now + config.windowMs,
-        totalRequests: 1,
-      };
+        totalRequests: 1 };
     }
 
     // Existing window
@@ -193,8 +190,7 @@ export class AIRateLimiter {
       allowed,
       remaining: Math.max(0, config.maxRequests - existing.count),
       resetTime: existing.resetTime,
-      totalRequests: existing.count,
-    };
+      totalRequests: existing.count };
   }
 
   /**
@@ -243,8 +239,7 @@ export class AIRateLimiter {
         return {
           remaining: Math.max(0, config.maxRequests - currentCount),
           resetTime: now + config.windowMs,
-          totalRequests: currentCount,
-        };
+          totalRequests: currentCount };
       } catch (error: any) {
         console.error('Error getting rate limit status from Redis:', error);
       }
@@ -258,15 +253,13 @@ export class AIRateLimiter {
       return {
         remaining: config.maxRequests,
         resetTime: now + config.windowMs,
-        totalRequests: 0,
-      };
+        totalRequests: 0 };
     }
 
     return {
       remaining: Math.max(0, config.maxRequests - existing.count),
       resetTime: existing.resetTime,
-      totalRequests: existing.count,
-    };
+      totalRequests: existing.count };
   }
 
   /**

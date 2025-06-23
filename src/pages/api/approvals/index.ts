@@ -153,7 +153,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     count: data?.length || 0,
     statistics,
     pagination: {},
-      limit: filters.limit,
+  limit: filters.limit,
       offset: filters.offset,
       total: count || 0
     }
@@ -242,7 +242,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
   await updateItemApprovalStatus(approvalData.item_type, approvalData.item_id, 'pending_approval');
 
   return res.status(201).json({ 
-    data: {},
+    data: { }
       ...approval,
       item_details: itemDetails}
   });

@@ -28,8 +28,7 @@ const mockSessionStorage = (() => {
 })();
 
 Object.defineProperty(window, 'sessionStorage', {
-  value: mockSessionStorage,
-});
+  value: mockSessionStorage });
 
 // Mock fetch for API calls
 global.fetch = jest.fn();
@@ -53,8 +52,7 @@ describe('UnifiedBriefWorkflow State Management', () => {
     const defaultProps = {
       open: true,
       onClose: jest.fn(),
-      onComplete: jest.fn(),
-    };
+      onComplete: jest.fn() };
 
     return render(
       <MockNotificationProvider>
@@ -117,9 +115,8 @@ describe('UnifiedBriefWorkflow State Management', () => {
   test('should clear state when resetWorkflow is called', async () => {
     const savedState = {
       activeStep: 2,
-      briefData: { title: 'Test Brief' },
-      motivations: [{ id: '1', text: 'Test', selected: true }],
-    };
+      briefData: { title: 'Test Brief'  },
+  motivations: [{ id: '1', text: 'Test', selected: true }] };
 
     mockSessionStorage.setItem('airwave_unified_workflow_state', JSON.stringify(savedState));
 

@@ -37,7 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       serverTimestamp: new Date().toISOString(),
       ip: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
       buildInfo: {},
-        version: process.env.npm_package_version || '1.0.0',
+  version: process.env.npm_package_version || '1.0.0',
         commit: process.env.VERCEL_GITHUB_COMMIT_SHA || process.env.GIT_COMMIT,
         environment: process.env.NODE_ENV}};
 
@@ -105,9 +105,10 @@ async function sendToMonitoringService(report: any) {
   // if (process.env.ERROR_REPORTING_URL) {
   //   await fetch(process.env.ERROR_REPORTING_URL, {
   //     method: 'POST',
-  //     headers: {},
-  //       'Content-Type': 'application/json',
-  //       'Authorization': `Bearer ${process.env.ERROR_REPORTING_TOKEN}`,
+  //     headers: {
+        //       'Content-Type': 'application/json',
+  //       'Authorization': `Bearer ${process.env.ERROR_REPORTING_TOKEN
+      }`,
   //     },
   //     body: JSON.stringify(report),
   //   });

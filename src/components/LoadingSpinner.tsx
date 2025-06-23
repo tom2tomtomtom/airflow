@@ -17,8 +17,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   const sizes = {
     small: 30,
     medium: 40,
-    large: 60,
-  };
+    large: 60 };
 
   if (variant === 'skeleton') {
     return (
@@ -50,8 +49,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
         justifyContent: 'center',
         gap: 2,
         p: 3,
-        minHeight: fullScreen ? '100vh' : '200px',
-      }}
+        minHeight: fullScreen ? '100vh' : '200px' }}
     >
       <CircularProgress size={sizes[size]} />
       <Typography variant="body2" color="text.secondary">
@@ -70,8 +68,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
           right: 0,
           bottom: 0,
           backgroundColor: 'rgba(255, 255, 255, 0.9)',
-          zIndex: 9999,
-        }}
+          zIndex: 9999 }}
       >
         {content}
       </Box>
@@ -88,8 +85,7 @@ export const AssetGridSkeleton: React.FC<{ count?: number }> = ({ count = 6 }) =
       sx={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-        gap: 3,
-      }}
+        gap: 3 }}
     >
       {Array.from({ length: count }).map((_, index) => (
         <Box key={index}>

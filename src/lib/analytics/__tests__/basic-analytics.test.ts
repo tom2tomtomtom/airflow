@@ -11,8 +11,8 @@ jest.mock('mixpanel-browser', () => ({
   track: jest.fn(),
   identify: jest.fn(),
   people: {},
-    set: jest.fn(),
-    increment: jest.fn()},
+  set: jest.fn(),
+    increment: jest.fn() },
   time_event: jest.fn(),
   reset: jest.fn()}));
 

@@ -33,7 +33,7 @@ interface AnalyticsOverview {
     matrixId?: string;
   }>;
   kpiSummary: {},
-    totalImpressions: number;
+  totalImpressions: number;
     totalClicks: number;
     totalConversions: number;
     totalSpend: number;
@@ -43,13 +43,13 @@ interface AnalyticsOverview {
     roas: number;
   };
   trends: {},
-    impressions: { value: number; change: number };
+  impressions: { value: number; change: number };
     clicks: { value: number; change: number };
     conversions: { value: number; change: number };
     spend: { value: number; change: number };
   };
   dateRange: {},
-    start: string;
+  start: string;
     end: string;
   };
 }
@@ -93,7 +93,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 async function getAnalyticsOverview(
   userId: string, 
   filters: {},
-    clientId?: string;
+  clientId?: string;
     startDate?: string;
     endDate?: string;
     platform?: string;
@@ -166,7 +166,7 @@ async function getAnalyticsOverview(
     kpiSummary,
     trends,
     dateRange: {},
-      start: startDate.toISOString(),
+  start: startDate.toISOString(),
       end: endDate.toISOString()}};
 }
 
@@ -359,25 +359,25 @@ async function calculateTrends(
 
     return {
       impressions: {},
-        value: currentMetrics.impressions,
+  value: currentMetrics.impressions,
         change: calculatePercentageChange(currentMetrics.impressions, previousMetrics.impressions)},
       clicks: {},
-        value: currentMetrics.clicks,
+  value: currentMetrics.clicks,
         change: calculatePercentageChange(currentMetrics.clicks, previousMetrics.clicks)},
       conversions: {},
-        value: currentMetrics.conversions,
+  value: currentMetrics.conversions,
         change: calculatePercentageChange(currentMetrics.conversions, previousMetrics.conversions)},
       spend: {},
-        value: currentMetrics.spend,
+  value: currentMetrics.spend,
         change: calculatePercentageChange(currentMetrics.spend, previousMetrics.spend)}};
 
   } catch (error: any) {
     console.error('Error calculating trends:', error);
     return {
-      impressions: { value: 0, change: 0 },
-      clicks: { value: 0, change: 0 },
-      conversions: { value: 0, change: 0 },
-      spend: { value: 0, change: 0 }};
+      impressions: { value: 0, change: 0  },
+  clicks: { value: 0, change: 0  },
+  conversions: { value: 0, change: 0  },
+  spend: { value: 0, change: 0 }};
   }
 }
 
@@ -410,21 +410,21 @@ function getEmptyAnalytics(startDate: Date, endDate: Date): AnalyticsOverview {
     platformData: [],
     topPerformingContent: [],
     kpiSummary: {},
-      totalImpressions: 0,
+  totalImpressions: 0,
       totalClicks: 0,
       totalConversions: 0,
       totalSpend: 0,
       averageCTR: 0,
       averageConversionRate: 0,
       averageCPC: 0,
-      roas: 0},
-    trends: {},
-      impressions: { value: 0, change: 0 },
-      clicks: { value: 0, change: 0 },
-      conversions: { value: 0, change: 0 },
-      spend: { value: 0, change: 0 }},
+      roas: 0 },
+  trends: {},
+  impressions: { value: 0, change: 0  },
+  clicks: { value: 0, change: 0  },
+  conversions: { value: 0, change: 0  },
+  spend: { value: 0, change: 0 }},
     dateRange: {},
-      start: startDate.toISOString(),
+  start: startDate.toISOString(),
       end: endDate.toISOString()}};
 }
 

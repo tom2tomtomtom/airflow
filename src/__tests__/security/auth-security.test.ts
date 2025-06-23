@@ -13,18 +13,18 @@ import { supabase } from '@/lib/supabase';
 // Mock external dependencies
 jest.mock('@/lib/supabase', () => ({
   supabase: {},
-    auth: {},
-      getUser: jest.fn(),
+  auth: {},
+  getUser: jest.fn(),
       signInWithPassword: jest.fn(),
-      signOut: jest.fn()},
-    from: jest.fn(() => ({
+      signOut: jest.fn() },
+  from: jest.fn(() => ({
       select: jest.fn(() => ({
         eq: jest.fn(() => ({
           single: jest.fn()}))}))}))}}));
 
 jest.mock('@/lib/session-manager', () => ({
   SessionManager: {},
-    getInstance: jest.fn(() => ({
+  getInstance: jest.fn(() => ({
       createSession: jest.fn(),
       getSession: jest.fn(),
       destroySession: jest.fn(),
@@ -46,12 +46,12 @@ describe('Authentication & Authorization Security Tests', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         cookies: {},
-          airwave_token: 'invalid.jwt.token'}});
+  airwave_token: 'invalid.jwt.token'}});
 
       // Mock Supabase to return error for invalid token
       (supabase.auth.getUser as jest.Mock).mockResolvedValue({
-        data: { user: null },
-        error: { message: 'Invalid JWT' }});
+        data: { user: null  },
+  error: { message: 'Invalid JWT' }});
 
       const protectedHandler = withAuth(mockHandler);
       await protectedHandler(req as NextApiRequest, res);
@@ -69,13 +69,13 @@ describe('Authentication & Authorization Security Tests', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         cookies: {},
-          airwave_token: 'valid.jwt.token'}});
+  airwave_token: 'valid.jwt.token'}});
 
       // Mock Supabase to return valid user
       (supabase.auth.getUser as jest.Mock).mockResolvedValue({
         data: {},
-          user: {},
-            id: 'user123',
+  user: {},
+  id: 'user123',
             email: 'test@example.com'}},
         error: null});
 
@@ -85,10 +85,10 @@ describe('Authentication & Authorization Security Tests', () => {
           eq: jest.fn().mockReturnValue({
             single: jest.fn().mockResolvedValue({
               data: {},
-                id: 'user123',
+  id: 'user123',
                 email: 'test@example.com',
-                role: 'user'},
-              error: null})})})});
+                role: 'user' },
+  error: null})})})});
 
       const protectedHandler = withAuth(mockHandler);
       await protectedHandler(req as NextApiRequest, res);
@@ -102,12 +102,12 @@ describe('Authentication & Authorization Security Tests', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         cookies: {},
-          airwave_token: 'expired.jwt.token'}});
+  airwave_token: 'expired.jwt.token'}});
 
       // Mock Supabase to return error for expired token
       (supabase.auth.getUser as jest.Mock).mockResolvedValue({
-        data: { user: null },
-        error: { message: 'JWT expired' }});
+        data: { user: null  },
+  error: { message: 'JWT expired' }});
 
       const protectedHandler = withAuth(mockHandler);
       await protectedHandler(req as NextApiRequest, res);
@@ -136,12 +136,12 @@ describe('Authentication & Authorization Security Tests', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         cookies: {},
-          airwave_token: 'malformed-token-without-dots'}});
+  airwave_token: 'malformed-token-without-dots'}});
 
       // Mock Supabase to return error for malformed token
       (supabase.auth.getUser as jest.Mock).mockResolvedValue({
-        data: { user: null },
-        error: { message: 'Invalid JWT format' }});
+        data: { user: null  },
+  error: { message: 'Invalid JWT format' }});
 
       const protectedHandler = withAuth(mockHandler);
       await protectedHandler(req as NextApiRequest, res);
@@ -243,13 +243,13 @@ describe('Authentication & Authorization Security Tests', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         cookies: {},
-          airwave_token: 'admin.jwt.token'}});
+  airwave_token: 'admin.jwt.token'}});
 
       // Mock admin user
       (supabase.auth.getUser as jest.Mock).mockResolvedValue({
         data: {},
-          user: {},
-            id: 'admin123',
+  user: {},
+  id: 'admin123',
             email: 'admin@example.com'}},
         error: null});
 
@@ -258,10 +258,10 @@ describe('Authentication & Authorization Security Tests', () => {
           eq: jest.fn().mockReturnValue({
             single: jest.fn().mockResolvedValue({
               data: {},
-                id: 'admin123',
+  id: 'admin123',
                 email: 'admin@example.com',
-                role: 'admin'},
-              error: null})})})});
+                role: 'admin' },
+  error: null})})})});
 
       const protectedHandler = withAuth(mockHandler);
       await protectedHandler(req as NextApiRequest, res);
@@ -282,13 +282,13 @@ describe('Authentication & Authorization Security Tests', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         cookies: {},
-          airwave_token: 'user.jwt.token'}});
+  airwave_token: 'user.jwt.token'}});
 
       // Mock regular user
       (supabase.auth.getUser as jest.Mock).mockResolvedValue({
         data: {},
-          user: {},
-            id: 'user123',
+  user: {},
+  id: 'user123',
             email: 'user@example.com'}},
         error: null});
 
@@ -297,10 +297,10 @@ describe('Authentication & Authorization Security Tests', () => {
           eq: jest.fn().mockReturnValue({
             single: jest.fn().mockResolvedValue({
               data: {},
-                id: 'user123',
+  id: 'user123',
                 email: 'user@example.com',
-                role: 'user'},
-              error: null})})})});
+                role: 'user' },
+  error: null})})})});
 
       const protectedHandler = withAuth(mockHandler);
       await protectedHandler(req as NextApiRequest, res);
@@ -321,12 +321,12 @@ describe('Authentication & Authorization Security Tests', () => {
         const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
           method: 'GET',
           cookies: {},
-            airwave_token: 'valid.jwt.token'}});
+  airwave_token: 'valid.jwt.token'}});
 
         (supabase.auth.getUser as jest.Mock).mockResolvedValue({
           data: {},
-            user: {},
-              id: 'user123',
+  user: {},
+  id: 'user123',
               email: 'test@example.com'}},
           error: null});
 
@@ -335,10 +335,10 @@ describe('Authentication & Authorization Security Tests', () => {
             eq: jest.fn().mockReturnValue({
               single: jest.fn().mockResolvedValue({
                 data: {},
-                  id: 'user123',
+  id: 'user123',
                   email: 'test@example.com',
-                  role: role},
-                error: null})})})});
+                  role: role },
+  error: null})})})});
 
         const protectedHandler = withAuth(mockHandler);
         await protectedHandler(req as NextApiRequest, res);
@@ -393,7 +393,7 @@ describe('Authentication & Authorization Security Tests', () => {
       mockValidateSession.mockResolvedValue({
         valid: true,
         session: {},
-          id: 'session123',
+  id: 'session123',
           userId: 'user123',
           email: 'test@example.com',
           role: 'user'}});

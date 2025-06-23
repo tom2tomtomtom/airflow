@@ -9,7 +9,7 @@ export default function Custom404() {
 
   return (
     <>
-      <Head>
+       <Head>
         <title>404 - Page Not Found | AIrFLOW</title>
       </Head>
 
@@ -19,15 +19,13 @@ export default function Custom404() {
             minHeight: '100vh',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-          }}
+            justifyContent: 'center' }}
         >
           <Paper
             sx={{
               p: 6,
               textAlign: 'center',
-              maxWidth: 500,
-            }}
+              maxWidth: 500 }}
           >
             <Typography
               variant="h1"
@@ -35,8 +33,7 @@ export default function Custom404() {
                 fontSize: '120px',
                 fontWeight: 700,
                 color: 'primary.main',
-                mb: 2,
-              }}
+                mb: 2 }}
             >
               404
             </Typography>

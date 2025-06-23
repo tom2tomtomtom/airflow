@@ -37,8 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.error('❌ Migration failed:', columnError);
       return res.status(500).json({
         error: 'Migration failed',
-        details: columnError.message,
-      });
+        details: columnError.message });
     }
 
     // Verify the column was added
@@ -52,21 +51,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.error('❌ Verification failed:', verifyError);
       return res.status(500).json({
         error: 'Verification failed',
-        details: verifyError.message,
-      });
+        details: verifyError.message });
     }
 
     process.env.NODE_ENV === 'development' && console.log('Migration completed successfully');
     return res.json({
       success: true,
       message: 'brand_guidelines column added successfully',
-      verification: verification,
-    });
+      verification: verification });
   } catch (error: any) {
     console.error('❌ Unexpected error:', error);
     return res.status(500).json({
       error: 'Unexpected error',
-      details: error instanceof Error ? error.message : 'Unknown error',
-    });
+      details: error instanceof Error ? error.message : 'Unknown error' });
   }
 }

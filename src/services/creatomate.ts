@@ -49,8 +49,9 @@ export class CreatomateService {
 
     try {
       const response = await fetch(`${this.baseUrl}/templates/${id}`, {
-        headers: {},
-          'Authorization': `Bearer ${this.apiKey}`,
+        headers: {
+        'Authorization': `Bearer ${this.apiKey
+      }`,
           'Content-Type': 'application/json'}});
 
       if (!response.ok) {
@@ -68,8 +69,9 @@ export class CreatomateService {
   async getTemplates(limit: number = 20): Promise<CreatomateTemplate[]> {
     try {
       const response = await fetch(`${this.baseUrl}/templates?limit=${limit}`, {
-        headers: {},
-          'Authorization': `Bearer ${this.apiKey}`,
+        headers: {
+        'Authorization': `Bearer ${this.apiKey
+      }`,
           'Content-Type': 'application/json'}});
 
       if (!response.ok) {
@@ -95,8 +97,9 @@ export class CreatomateService {
     try {
       const response = await fetch(`${this.baseUrl}/renders`, {
         method: 'POST',
-        headers: {},
-          'Authorization': `Bearer ${this.apiKey}`,
+        headers: {
+        'Authorization': `Bearer ${this.apiKey
+      }`,
           'Content-Type': 'application/json'},
         body: JSON.stringify({
           template_id: id,
@@ -125,8 +128,9 @@ export class CreatomateService {
   async getRenderStatus(renderId: string): Promise<CreatomateRenderResponse> {
     try {
       const response = await fetch(`${this.baseUrl}/renders/${renderId}`, {
-        headers: {},
-          'Authorization': `Bearer ${this.apiKey}`,
+        headers: {
+        'Authorization': `Bearer ${this.apiKey
+      }`,
           'Content-Type': 'application/json'}});
 
       if (!response.ok) {
@@ -166,13 +170,13 @@ export class CreatomateService {
           name: 'Background Music',
           type: 'audio',
           source: 'https://creatomate.com/files/assets/b5dc815e-dcc9-4c62-9405-f94913936bf5',
-          modifiable: true},
+          modifiable: true }
         {
           id: 'Text-1',
           name: 'Main Text',
           type: 'text',
           text: 'Welcome to AIrWAVE! 🚀',
-          modifiable: true},
+          modifiable: true }
       ]};
   }
 

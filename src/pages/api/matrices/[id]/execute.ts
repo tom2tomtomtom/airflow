@@ -169,7 +169,7 @@ async function handleExecute(req: NextApiRequest, res: NextApiResponse, user: an
   return res.json({
     message: 'Matrix execution initiated successfully',
     data: {},
-      execution_plan: executionPlan,
+  execution_plan: executionPlan,
       execution_result: executionResult,
       estimated_completion: calculateEstimatedCompletion(executionPlan)}
   });
@@ -245,17 +245,17 @@ async function createExecutionPlan(
         platform,
         content_type: determineContentType(matrix.templates, platform),
         priority: executeData.priority,
-        settings: executeData.execution_settings || {},
-        variations: combination.variationIds.map((varId: string) => 
+        settings: executeData.execution_settings || { },
+  variations: combination.variationIds.map((varId: string) => 
           matrix.variations.find((v: any) => v.id === varId)
         ).filter(Boolean),
         field_data: extractFieldDataForCombination(matrix, combination),
         template_data: {},
-          id: matrix.templates.id,
+  id: matrix.templates.id,
           name: matrix.templates.name,
           is_creatomate: matrix.templates.is_creatomate,
-          creatomate_id: matrix.templates.creatomate_id},
-        estimated_duration: calculateExecutionDuration(matrix.templates, platform),
+          creatomate_id: matrix.templates.creatomate_id },
+  estimated_duration: calculateExecutionDuration(matrix.templates, platform),
         created_by: userId};
 
       executions.push(execution);
@@ -289,13 +289,13 @@ async function executeImmediate(executionPlan: any): Promise<any> {
           content_type: execution.content_type,
           platform: execution.platform,
           status: 'pending',
-          metadata: {},
-            combination_name: execution.combination_name,
+          metadata: {
+        combination_name: execution.combination_name,
             template_data: execution.template_data,
             field_data: execution.field_data,
             settings: execution.settings,
-            priority: execution.priority},
-          created_by: execution.created_by})
+            priority: execution.priority },
+  created_by: execution.created_by})
         .select()
         .single();
 
@@ -317,10 +317,11 @@ async function executeImmediate(executionPlan: any): Promise<any> {
         .update({
           status: renderResult.success ? 'processing' : 'failed',
           render_url: renderResult.render_url,
-          metadata: {},
-            ...executionRecord.metadata,
+          metadata: {
+        ...executionRecord.metadata,
             render_job_id: renderResult.job_id,
-            render_started_at: new Date().toISOString()}
+            render_started_at: new Date().toISOString()
+      }
         })
         .eq('id', execution.id);
 
@@ -368,13 +369,13 @@ async function scheduleExecution(executionPlan: any, scheduledFor?: string): Pro
       content_type: exec.content_type,
       platform: exec.platform,
       status: 'scheduled',
-      metadata: {},
+      metadata: {
         combination_name: exec.combination_name,
         template_data: exec.template_data,
         field_data: exec.field_data,
         settings: exec.settings,
-        scheduled_for: scheduledTime.toISOString()},
-      created_by: exec.created_by})))
+        scheduled_for: scheduledTime.toISOString() },
+  created_by: exec.created_by})))
     .select();
 
   if (error) {

@@ -72,24 +72,21 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, c
     end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
     budget: {
       total: 5000,
-      spent: 1250
-    },
-    spent: 1250,
+      spent: 1250 },
+  spent: 1250,
     platforms: ['facebook', 'instagram', 'twitter'],
     targeting: {
       platforms: ['facebook', 'instagram', 'twitter'],
       audience: 'Marketing professionals',
       frequency: 'daily',
-      estimatedPosts: '10'
-    },
-    schedule: {
+      estimatedPosts: '10' },
+  schedule: {
       startDate: new Date().toISOString(),
-      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-    },
-    kpis: ['impressions', 'clicks', 'conversions'],
+      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() },
+  kpis: ['impressions', 'clicks', 'conversions'],
     tags: ['ai', 'marketing', 'automation'],
     creative_requirements: {},
-    approval_status: 'pending',
+  approval_status: 'pending',
     created_by: user.id,
     dateCreated: new Date().toISOString(),
     lastModified: new Date().toISOString(),
@@ -126,9 +123,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, c
       score: 75,
       grade: 'B',
       issues: ['Missing campaign description'],
-      recommendations: ['Add detailed campaign description']
-    },
-    timeline: [],
+      recommendations: ['Add detailed campaign description'] },
+  timeline: [],
     insights: ['Campaign ready for launch']
   };
 
@@ -354,12 +350,12 @@ async function getCampaignAnalytics(campaignId: string, period: string): Promise
     return {
       has_data: true,
       period,
-      summary: {},
+      summary: { }
         ...totals,
         ctr: Math.round(ctr * 100) / 100,
         cpc: Math.round(cpc * 100) / 100,
-        roas: Math.round(roas * 100) / 100},
-      platform_breakdown: platformBreakdown,
+        roas: Math.round(roas * 100) / 100 },
+  platform_breakdown: platformBreakdown,
       daily_performance: dailyPerformance,
       date_range: {
         start: startDate.toISOString().split('T')[0],

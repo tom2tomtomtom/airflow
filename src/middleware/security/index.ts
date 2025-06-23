@@ -165,11 +165,12 @@ export const securityMiddleware = (request: NextRequest) => {
     
     return new NextResponse('Too Many Requests', {
       status: 429,
-      headers: {},
+      headers: {
         'Retry-After': Math.ceil((rateLimit.resetTime - Date.now()) / 1000).toString(),
         'X-RateLimit-Limit': rateLimit.total.toString(),
         'X-RateLimit-Remaining': rateLimit.remaining.toString(),
         'X-RateLimit-Reset': new Date(rateLimit.resetTime).toISOString()
+      
       }
     });
   }
@@ -234,9 +235,10 @@ export const checkMaintenanceMode = (request: NextRequest): NextResponse | null 
     
     return new NextResponse('Service Temporarily Unavailable', {
       status: 503,
-      headers: {},
+      headers: {
         'Retry-After': '3600', // 1 hour
         'Content-Type': 'text/plain'
+      
       }
     });
   }

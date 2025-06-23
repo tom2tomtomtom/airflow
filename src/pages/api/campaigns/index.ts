@@ -58,10 +58,10 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   
   const portfolioStats = {;
     total_campaigns: 0,
-    status_distribution: {}
-    priority_distribution: {}
-    type_distribution: {}
-    budget_summary: {
+    status_distribution: {},
+  priority_distribution: {},
+  type_distribution: {},
+  budget_summary: {
       total_budget: 0,
       total_spent: 0,
       remaining_budget: 0,
@@ -75,9 +75,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     pagination: {
       limit: parseInt(limit as string),
       offset: parseInt(offset as string),
-      total: 0
-    },
-    message: 'Campaigns functionality not yet fully implemented'
+      total: 0 },
+  message: 'Campaigns functionality not yet fully implemented'
   });
 }
 
@@ -159,7 +158,7 @@ async function getCampaignStats(campaignId: string): Promise<any> {
       matrices_count: matricesCount || 0,
       executions_count: executions?.length || 0,
       execution_status: executionStats,
-      performance: {},
+      performance: { }
         ...analyticsTotal,
         ctr: analyticsTotal.impressions > 0 ? (analyticsTotal.clicks / analyticsTotal.impressions) * 100 : 0,
         conversion_rate: analyticsTotal.clicks > 0 ? (analyticsTotal.conversions / analyticsTotal.clicks) * 100 : 0}
@@ -170,8 +169,8 @@ async function getCampaignStats(campaignId: string): Promise<any> {
     return {
       matrices_count: 0,
       executions_count: 0,
-      execution_status: {}
-      performance: { impressions: 0, clicks: 0, conversions: 0, spend: 0, ctr: 0, conversion_rate: 0 }
+      execution_status: {},
+  performance: { impressions: 0, clicks: 0, conversions: 0, spend: 0, ctr: 0, conversion_rate: 0 }
     };
   }
 }

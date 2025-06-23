@@ -100,22 +100,19 @@ const templatesWithFields: Template[] = demoTemplates.map((template: any) => ({
       name: 'Headline',
       type: 'text' as const,
       required: true,
-      description: `Main headline text for ${template.name}`,
-    },
+      description: `Main headline text for ${template.name}` },
     {
       id: 'df2',
       name: 'Background Image',
       type: 'image' as const,
       required: true,
-      description: 'Background or main image',
-    },
+      description: 'Background or main image' },
     {
       id: 'df3',
       name: 'Call to Action',
       type: 'text' as const,
       required: false,
-      description: 'Optional call to action text',
-    },
+      description: 'Optional call to action text' },
     ...(template.platform === 'instagram'
       ? [
           {
@@ -123,8 +120,7 @@ const templatesWithFields: Template[] = demoTemplates.map((template: any) => ({
             name: 'Story Link',
             type: 'link' as const,
             required: false,
-            description: 'Swipe up link (if applicable)',
-          },
+            description: 'Swipe up link (if applicable)' },
         ]
       : []),
     ...(template.platform === 'youtube'
@@ -134,14 +130,12 @@ const templatesWithFields: Template[] = demoTemplates.map((template: any) => ({
             name: 'Video Duration',
             type: 'text' as const,
             required: false,
-            description: 'Video duration overlay',
-          },
+            description: 'Video duration overlay' },
         ]
       : []),
   ],
   is_creatomate: true,
-  creatomate_id: `crt-${template.id}`,
-}));
+  creatomate_id: `crt-${template.id}` }));
 
 // Matrix Page Component
 const MatrixPage: React.FC = () => {
@@ -165,8 +159,7 @@ const MatrixPage: React.FC = () => {
       selectedTemplate.dynamic_fields.forEach((field: any) => {
         initialAssignments[field.id] = {
           fieldId: field.id,
-          status: 'empty',
-        };
+          status: 'empty' };
       });
       setFieldAssignments(initialAssignments);
     }
@@ -184,8 +177,7 @@ const MatrixPage: React.FC = () => {
         ...prev[fieldId],
         value,
         assetId,
-        status: value || assetId ? 'completed' : 'empty',
-      },
+        status: value || assetId ? 'completed' : 'empty' },
     }));
   };
 
@@ -206,8 +198,7 @@ const MatrixPage: React.FC = () => {
         templateName: selectedTemplate.name,
         fieldAssignments,
         created_at: new Date().toISOString(),
-        status: 'draft',
-      };
+        status: 'draft' };
 
       setSavedMatrices([...savedMatrices, newMatrix]);
       setSaveSuccess(true);
@@ -330,8 +321,7 @@ const MatrixPage: React.FC = () => {
                       transition: 'all 0.3s',
                       '&:hover': {
                         transform: 'translateY(-2px)',
-                        boxShadow: 3,
-                      },
+                        boxShadow: 3 },
                     }}
                     onClick={() => handleTemplateSelect(template)}
                   >
@@ -403,7 +393,7 @@ const MatrixPage: React.FC = () => {
                       placeholder="Matrix Name"
                       sx={{
                         fontSize: '1.5rem',
-                        '& input': { fontSize: '1.5rem' },
+                        '& input': { fontSize: '1.5rem'  }
                       }}
                     />
                     <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>

@@ -70,8 +70,7 @@ export async function createUserProfile(profileData: CreateProfileData): Promise
       last_name: lastName,
       role: profileData.role || 'user',
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    })
+      updated_at: new Date().toISOString() })
     .select()
     .single();
 
@@ -91,8 +90,7 @@ export async function updateUserProfile(
   updates: Partial<{ name: string; role: string; [key: string]: any }>
 ): Promise<Profile | null> {
   const profileUpdates: any = {
-    updated_at: new Date().toISOString(),
-  };
+    updated_at: new Date().toISOString() };
 
   // Handle name updates
   if (updates.name) {
@@ -133,8 +131,7 @@ export function formatProfileResponse(profile: Profile, email: string): ProfileR
     name: formatFullName(profile.first_name, profile.last_name),
     role: profile.role,
     first_name: profile.first_name,
-    last_name: profile.last_name,
-  };
+    last_name: profile.last_name };
 }
 
 /**
@@ -153,8 +150,7 @@ export async function getOrCreateUserProfile(
     profile = await createUserProfile({
       id: userId,
       name: name,
-      email: userData.email || undefined,
-    });
+      email: userData.email || undefined });
   }
 
   if (!profile) {
@@ -217,8 +213,7 @@ export async function migrateLegacyProfile(userId: string): Promise<boolean> {
         .update({
           first_name: firstName,
           last_name: lastName,
-          updated_at: new Date().toISOString(),
-        })
+          updated_at: new Date().toISOString() })
         .eq('id', userId);
 
       if (updateError) {

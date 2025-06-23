@@ -80,8 +80,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
           userId,
           clientId,
           platform,
-          timestamp: Date.now(),
-        })
+          timestamp: Date.now() })
       );
 
       // Build OAuth URL
@@ -112,8 +111,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('OAuth auth API error:', error);
     return res.status(500).json({
       success: false,
-      error: 'Internal server error',
-    });
+      error: 'Internal server error' });
   }
 }
 

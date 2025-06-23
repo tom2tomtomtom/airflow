@@ -189,7 +189,7 @@ export const initializeLogging = () => {
     environment: process.env.NODE_ENV || 'development',
     logLevel: getLoggingConfig().level,
     transports: {},
-      console: getLoggingConfig().console.enabled,
+  console: getLoggingConfig().console.enabled,
       file: getLoggingConfig().file.enabled
     }
   });

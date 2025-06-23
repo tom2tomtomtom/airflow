@@ -42,8 +42,8 @@ class AICostController {
     // Mock cost calculation
     const rates: Record<string, Record<string, number>> = {
       openai: { 'gpt-4': 0.03, 'gpt-3.5-turbo': 0.001 },
-      anthropic: { 'claude-3-opus': 0.015 },
-      elevenlabs: { eleven_multilingual_v2: 0.18 }};
+      anthropic: { 'claude-3-opus': 0.015  },
+  elevenlabs: { eleven_multilingual_v2: 0.18 }};
 
     const rate = rates[service]?.[model] || 0.001;
     return (tokens / 1000) * rate;
@@ -65,14 +65,14 @@ class AICostController {
     if (type === 'operation') {
       return {
         operationBreakdown: {},
-          copy_generation: { count: 5, cost: 0.15, tokens: 1500 },
-          image_generation: { count: 2, cost: 0.08, tokens: 0 },
-          motivation_analysis: { count: 3, cost: 0.09, tokens: 900 }}};
+  copy_generation: { count: 5, cost: 0.15, tokens: 1500  },
+  image_generation: { count: 2, cost: 0.08, tokens: 0  },
+  motivation_analysis: { count: 3, cost: 0.09, tokens: 900 }}};
     } else {
       return {
-        modelBreakdown: {},
-          'gpt-4': { count: 3, cost: 0.18, tokens: 1200 },
-          'gpt-3.5-turbo': { count: 5, cost: 0.05, tokens: 1000 },
+        modelBreakdown: { }
+          'gpt-4': { count: 3, cost: 0.18, tokens: 1200  }
+          'gpt-3.5-turbo': { count: 5, cost: 0.05, tokens: 1000  }
           'dall-e-3': { count: 2, cost: 0.08, tokens: 0 }}};
     }
   }
@@ -80,9 +80,9 @@ class AICostController {
   async getDailyUsage(userId: string) : Promise<void> {
     return {
       dailyUsage: [
-        { date: '2025-01-01', cost: 0.15, tokens: 500, operations: 3 },
-        { date: '2025-01-02', cost: 0.22, tokens: 750, operations: 5 },
-        { date: '2025-01-03', cost: 0.18, tokens: 600, operations: 4 },
+        { date: '2025-01-01', cost: 0.15, tokens: 500, operations: 3  }
+        { date: '2025-01-02', cost: 0.22, tokens: 750, operations: 5  }
+        { date: '2025-01-03', cost: 0.18, tokens: 600, operations: 4  }
       ]};
   }
 
@@ -217,9 +217,9 @@ async function handleGenerate(
         generationId,
         content: `Generated copy for: ${actualPrompt}`,
         copyVariations: [
-          { id: 'copy_1', text: `Generated copy variation 1 for: ${actualPrompt}`, score: 0.9 },
-          { id: 'copy_2', text: `Generated copy variation 2 for: ${actualPrompt}`, score: 0.8 },
-          { id: 'copy_3', text: `Generated copy variation 3 for: ${actualPrompt}`, score: 0.85 },
+          { id: 'copy_1', text: `Generated copy variation 1 for: ${actualPrompt}`, score: 0.9  }
+          { id: 'copy_2', text: `Generated copy variation 2 for: ${actualPrompt}`, score: 0.8  }
+          { id: 'copy_3', text: `Generated copy variation 3 for: ${actualPrompt}`, score: 0.85  }
         ],
         metadata: { tokens: 150, cost: 0.003, duration: 1200 }};
       break;
@@ -232,17 +232,17 @@ async function handleGenerate(
             id: 'mot_1',
             title: 'Innovation Drive',
             description: 'Motivation based on innovation',
-            score: 0.9},
+            score: 0.9 }
           {
             id: 'mot_2',
             title: 'Efficiency Focus',
             description: 'Motivation based on efficiency',
-            score: 0.8},
+            score: 0.8 }
           {
             id: 'mot_3',
             title: 'Quality Excellence',
             description: 'Motivation based on quality',
-            score: 0.85},
+            score: 0.85 }
         ],
         metadata: { tokens: 120, cost: 0.002, duration: 1000 }};
       break;
@@ -370,7 +370,7 @@ async function handleModels(
   const { service, capability } = context.query;
 
   const allModels = {
-    openai: {},
+    openai: { }
       'gpt-4': {
         name: 'GPT-4',
         description: 'Most capable model, best for complex tasks',
@@ -394,7 +394,7 @@ async function handleModels(
         sizes: ['1024x1024', '1792x1024', '1024x1792'],
         capabilities: ['image_generation'],
         pricing: { perImage: 0.04 }}},
-    anthropic: {},
+    anthropic: { }
       'claude-3-opus': {
         name: 'Claude 3 Opus',
         description: 'Most powerful model for complex reasoning',
@@ -404,8 +404,8 @@ async function handleModels(
         capabilities: ['text', 'reasoning', 'analysis'],
         pricing: { input: 0.015, output: 0.075 }}},
     elevenlabs: {},
-      eleven_multilingual_v2: {},
-        name: 'Multilingual v2',
+  eleven_multilingual_v2: {},
+  name: 'Multilingual v2',
         description: 'High-quality voice synthesis',
         cost: 0.18,
         languages: ['en', 'es', 'fr', 'de', 'it'],

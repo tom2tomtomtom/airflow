@@ -214,12 +214,13 @@ export class WorkflowMetricsCollector {
       duration,
       success,
       errorMessage,
-      metadata: {},
+      metadata: {
         service,
         model,
         tokensUsed,
         cost,
-        costPerToken: cost / tokensUsed}};
+        costPerToken: cost / tokensUsed },
+    };
 
     await this.recordMetric(metric);
     
@@ -333,9 +334,9 @@ export class WorkflowMetricsCollector {
    */
   private calculateAnalytics(metrics: WorkflowMetric[]): WorkflowAnalytics {
     const sessions = new Set(metrics.map((m: any) => m.sessionId));
-    const completedSessions = new Set(;
+    const completedSessions = new Set(
       metrics
-        .filter((m: any) => m.action === 'workflow_completion');
+        .filter((m: any) => m.action === 'workflow_completion')
         .map((m: any) => m.sessionId)
     );
 
@@ -411,7 +412,7 @@ export class WorkflowMetricsCollector {
       }
     }
 
-    const averageSessionDuration = sessionDurations.length > 0 ;
+    const averageSessionDuration = sessionDurations.length > 0
       ? sessionDurations.reduce((a, b) => a + b, 0) / sessionDurations.length 
       : 0;
 
@@ -428,7 +429,7 @@ export class WorkflowMetricsCollector {
    * Get real-time workflow status
    */
   async getRealTimeStatus(): Promise<{
-    activeSessions: number;,
+    activeSessions: number;
     currentStepDistribution: Record<string, number>;
     recentErrors: Array<{ step: string; error: string; timestamp: number }>;
     performanceAlerts: Array<{ step: string; issue: string; severity: 'low' | 'medium' | 'high' }>;
@@ -457,13 +458,14 @@ export class WorkflowMetricsCollector {
     }
     
     // Recent errors
-    const recentErrors = recentMetrics;
+    const recentErrors = recentMetrics
       .filter((m: any) => !m.success && m.errorMessage)
       .slice(-10)
       .map((m: any) => ({
         step: m.workflowStep,
         error: m.errorMessage!,
-        timestamp: m.timestamp}));
+        timestamp: m.timestamp
+      }));
     
     // Performance alerts
     const performanceAlerts: Array<{ step: string; issue: string; severity: 'low' | 'medium' | 'high' }> = [];

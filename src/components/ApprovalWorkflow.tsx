@@ -123,8 +123,9 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
         ...(itemId && { item_id: itemId })});
 
       const response = await fetch(`/api/approvals?${params}`, {
-        headers: {},
-          'Authorization': `Bearer ${localStorage.getItem('token')}`}});
+        headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')
+      }`}});
 
       if (response.ok) {
         const data = await response.json();
@@ -145,9 +146,10 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
     try {
       const response = await fetch(`/api/approvals/${selectedApproval.id}`, {
         method: 'PUT',
-        headers: {},
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`},
+        headers: {
+        'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')
+      }`},
         body: JSON.stringify(decisionData)});
 
       if (response.ok) {
@@ -173,9 +175,10 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
     try {
       const response = await fetch('/api/approvals/bulk', {
         method: 'PUT',
-        headers: {},
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`},
+        headers: {
+        'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')
+      }`},
         body: JSON.stringify({
           approval_ids: selectedIds,
           ...decisionData})});
@@ -221,10 +224,10 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
   // Get approval type display
   const getTypeDisplay = (type: string) => {
     const displays = {
-      content: { color: '#2196f3', label: 'Content Review' },
-      legal: { color: '#ff9800', label: 'Legal Review' },
-      brand: { color: '#9c27b0', label: 'Brand Review' },
-      final: { color: '#4caf50', label: 'Final Approval' }};
+      content: { color: '#2196f3', label: 'Content Review'  },
+  legal: { color: '#ff9800', label: 'Legal Review'  },
+  brand: { color: '#9c27b0', label: 'Brand Review'  },
+  final: { color: '#4caf50', label: 'Final Approval' }};
     return displays[type as keyof typeof displays] || { color: '#666', label: type };
   };
 
@@ -427,7 +430,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
                         <Stack direction="row" spacing={1}>
                           {showActions && approval.status === 'pending' && (
                             <>
-                              <Tooltip title="Approve">
+       <Tooltip title="Approve">
                                 <IconButton
                                   size="small"
                                   color="success"

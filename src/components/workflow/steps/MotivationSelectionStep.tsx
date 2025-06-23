@@ -156,8 +156,7 @@ export const MotivationSelectionStep: React.FC<MotivationSelectionStepProps> = (
                   '&:hover': {
                     borderColor: 'primary.main',
                     transform: 'translateY(-2px)',
-                    boxShadow: 2,
-                  },
+                    boxShadow: 2 },
                 }}
                 onClick={() => handleSelectMotivation(motivation.id)}
               >

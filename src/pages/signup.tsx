@@ -73,7 +73,7 @@ const SignupPage: React.FC = () => {
 
   return (
     <>
-      <Head>
+       <Head>
         <title>Sign Up | AIrFLOW</title>
       </Head>
       <Box
@@ -83,8 +83,7 @@ const SignupPage: React.FC = () => {
           alignItems: 'center',
           justifyContent: 'center',
           backgroundColor: '#030712', // Carbon Black primary background
-          padding: 3,
-        }}
+          padding: 3 }}
       >
         <Paper
           elevation={24}
@@ -92,8 +91,7 @@ const SignupPage: React.FC = () => {
             p: 4,
             maxWidth: 400,
             width: '100%',
-            borderRadius: 3,
-          }}
+            borderRadius: 3 }}
         >
           <Box sx={{ textAlign: 'center', mb: 4 }}>
             <Typography
@@ -106,8 +104,7 @@ const SignupPage: React.FC = () => {
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                mb: 1,
-              }}
+                mb: 1 }}
             >
               AIrFLOW
             </Typography>

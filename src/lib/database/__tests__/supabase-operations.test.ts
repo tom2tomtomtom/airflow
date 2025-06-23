@@ -15,13 +15,13 @@ import type { Client, Asset, Brief, Matrix } from '@/types/database';
 // Mock Supabase client
 jest.mock('@/lib/supabase', () => ({
   supabase: {},
-    from: jest.fn(),
+  from: jest.fn(),
     auth: {},
-      getUser: jest.fn(),
+  getUser: jest.fn(),
       signInWithPassword: jest.fn(),
       signUp: jest.fn(),
-      signOut: jest.fn()},
-    rpc: jest.fn()}}));
+      signOut: jest.fn() },
+  rpc: jest.fn()}}));
 
 // Mock console methods
 const _mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -255,8 +255,8 @@ describe('Supabase Database Operations', () => {
       description: 'A comprehensive campaign brief',
       client_id: 'client123',
       created_by: 'user123',
-      objectives: { primary: 'Increase brand awareness' },
-      target_audience: 'Millennials aged 25-35',
+      objectives: { primary: 'Increase brand awareness'  },
+  target_audience: 'Millennials aged 25-35',
       platforms: ['facebook', 'instagram'],
       budget: 50000};
 
@@ -390,8 +390,8 @@ describe('Supabase Database Operations', () => {
       copy_ids: ['copy1', 'copy2'],
       template_id: 'template123',
       combinations: [
-        { asset_id: 'asset1', copy_id: 'copy1' },
-        { asset_id: 'asset2', copy_id: 'copy2' },
+        { asset_id: 'asset1', copy_id: 'copy1'  }
+        { asset_id: 'asset2', copy_id: 'copy2'  }
       ]};
 
     test('should create a new matrix', async () => {
@@ -410,8 +410,8 @@ describe('Supabase Database Operations', () => {
     test('should retrieve matrix with related data', async () => {
       const matrixWithRelations = {
         ...mockMatrix,
-        campaign: { name: 'Test Campaign' },
-        assets: [{ id: 'asset1', name: 'Asset 1' }]};
+        campaign: { name: 'Test Campaign'  },
+  assets: [{ id: 'asset1', name: 'Asset 1' }]};
       const mockResponse = { data: matrixWithRelations, error: null };
       mockSupabase.from().select().eq().single.mockResolvedValue(mockResponse);
 
@@ -435,8 +435,8 @@ describe('Supabase Database Operations', () => {
       mockSupabase.rpc.mockResolvedValue({ data: true, error: null });
 
       const result = await supabase.rpc('create_campaign_with_assets', {
-        campaign_data: { name: 'Test Campaign' },
-        asset_ids: ['asset1', 'asset2']});
+        campaign_data: { name: 'Test Campaign'  },
+  asset_ids: ['asset1', 'asset2']});
 
       expect(result.error).toBeNull();
       expect(result.data).toBe(true);

@@ -21,8 +21,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       category: 'marketing',
       duration: 30,
       thumbnail: 'https://example.com/thumb1.jpg',
-      created_at: new Date().toISOString()
-    },
+      created_at: new Date().toISOString() }
     {
       id: 'template-2',
       name: 'Product Demo Template', 
@@ -44,7 +43,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     success: true,
     data: filteredTemplates,
     meta: {},
-      total: filteredTemplates.length,
+  total: filteredTemplates.length,
       categories: ['marketing', 'product', 'social'],
       timestamp: new Date().toISOString()
     }

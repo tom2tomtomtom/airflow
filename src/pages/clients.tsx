@@ -116,7 +116,7 @@ const ClientsPage: React.FC = () => {
 
   // Filter clients
   const filteredClients = clients.filter((client: any) => {
-    const matchesSearch = client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||;
+    const matchesSearch = client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          client.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesIndustry = !industryFilter || client.industry === industryFilter;
     return matchesSearch && matchesIndustry;
@@ -178,7 +178,7 @@ const ClientsPage: React.FC = () => {
         primaryColor: client.primaryColor,
         secondaryColor: client.secondaryColor,
         socialMedia: client.socialMedia || {},
-        contacts: client.contacts || [],
+          contacts: client.contacts || [],
         brand_guidelines: client.brand_guidelines || {
           voiceTone: '',
           targetAudience: '',
@@ -196,7 +196,7 @@ const ClientsPage: React.FC = () => {
         primaryColor: '#2196F3',
         secondaryColor: '#FF9800',
         socialMedia: {},
-        contacts: [],
+  contacts: [],
         brand_guidelines: {
           voiceTone: '',
           targetAudience: '',
@@ -240,7 +240,7 @@ const ClientsPage: React.FC = () => {
 
   return (
     <>
-      <Head>
+       <Head>
         <title>Clients | AIRFLOW</title>
       </Head>
       <DashboardLayout title="Clients">
@@ -589,7 +589,7 @@ const ClientsPage: React.FC = () => {
                       value={formData.brand_guidelines.voiceTone}
                       onChange={(e) => setFormData({;
                         ...formData,
-                        brand_guidelines: {},
+                        brand_guidelines: { }
                           ...formData.brand_guidelines,
                           voiceTone: e.target.value}})}
                       placeholder="e.g., Professional and friendly";
@@ -602,7 +602,7 @@ const ClientsPage: React.FC = () => {
                       value={formData.brand_guidelines.targetAudience}
                       onChange={(e) => setFormData({;
                         ...formData,
-                        brand_guidelines: {},
+                        brand_guidelines: { }
                           ...formData.brand_guidelines,
                           targetAudience: e.target.value}})}
                       placeholder="e.g., Young professionals aged 25-35";

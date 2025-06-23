@@ -195,18 +195,18 @@ export default async function handler(
         height,
         client_id,
         tags: [...tags, 'ai-generated', 'dalle-3', purpose].filter(Boolean),
-        metadata: {},
-          ai_model: model,
+        metadata: {
+        ai_model: model,
           original_prompt: prompt,
           enhanced_prompt: finalPrompt,
           generation_settings: {},
-            size,
+  size,
             quality,
             style},
           revised_prompt: generatedImage.revised_prompt, // DALL-E 3 may revise prompts
           purpose,
-          generated_at: new Date().toISOString()},
-        created_by: userId})
+          generated_at: new Date().toISOString() },
+  created_by: userId})
       .select()
       .single();
 
@@ -220,7 +220,7 @@ export default async function handler(
       message: 'Image generated successfully',
       asset,
       generation_details: {},
-        original_prompt: prompt,
+  original_prompt: prompt,
         enhanced_prompt: enhance_prompt ? finalPrompt : undefined,
         revised_prompt: generatedImage.revised_prompt,
         model,

@@ -33,7 +33,7 @@ interface AnalyticsInsights {
     actions: string[];
   }>;
   trend_analysis: {},
-    emerging_trends: Array<{
+  emerging_trends: Array<{
       trend: string;
       growth_rate: number;
       platforms: string[];
@@ -55,8 +55,8 @@ interface AnalyticsInsights {
     possible_causes: string[];
   }>;
   predictions: {},
-    next_30_days: {},
-      expected_impressions: number;
+  next_30_days: {},
+  expected_impressions: number;
       expected_conversions: number;
       expected_spend: number;
       confidence_level: number;
@@ -70,7 +70,7 @@ interface AnalyticsInsights {
     }>;
   };
   content_performance: {},
-    top_performing_content_types: Array<{
+  top_performing_content_types: Array<{
       type: string;
       avg_engagement: number;
       avg_conversion_rate: number;
@@ -84,7 +84,7 @@ interface AnalyticsInsights {
     }>;
   };
   competitive_insights: {},
-    market_share_estimate: number;
+  market_share_estimate: number;
     competitive_position: 'leading' | 'competitive' | 'lagging';
     opportunities: string[];
     threats: string[];
@@ -396,8 +396,7 @@ function generateTrendAnalysis(data: any): any {
         trend: 'Short-form video content',
         growth_rate: 45,
         platforms: ['Instagram', 'TikTok', 'YouTube Shorts'],
-        recommended_action: 'Increase investment in vertical video formats and AI video generation'
-      },
+        recommended_action: 'Increase investment in vertical video formats and AI video generation' }
       {
         trend: 'Interactive content',
         growth_rate: 35,
@@ -488,12 +487,11 @@ function generatePredictions(data: any): any {
 
   return {
     next_30_days: {},
-      expected_impressions: Math.round(avgDailyImpressions * 30 * 1.05), // 5% growth assumption
+  expected_impressions: Math.round(avgDailyImpressions * 30 * 1.05), // 5% growth assumption
       expected_conversions: Math.round(avgDailyConversions * 30 * 1.03), // 3% growth assumption
       expected_spend: Math.round(avgDailySpend * 30 * 1.02 * 100) / 100, // 2% growth assumption
-      confidence_level: 78
-    },
-    recommended_budget_adjustments: data?.campaigns?.slice(0, 3).map((campaign: any) => ({
+      confidence_level: 78 },
+  recommended_budget_adjustments: data?.campaigns?.slice(0, 3).map((campaign: any) => ({
       campaign_id: campaign.id,
       campaign_name: campaign.name,
       current_budget: Math.round(Math.random() * 5000 + 1000),
@@ -513,14 +511,12 @@ function generateContentPerformanceInsights(data: any): any {
         type: 'AI-generated videos',
         avg_engagement: 4.8,
         avg_conversion_rate: 3.2,
-        sample_count: completedVideos.length
-      },
+        sample_count: completedVideos.length }
       {
         type: 'User-generated content',
         avg_engagement: 4.1,
         avg_conversion_rate: 2.8,
-        sample_count: 15
-      },
+        sample_count: 15 }
       {
         type: 'Product demos',
         avg_engagement: 3.7,

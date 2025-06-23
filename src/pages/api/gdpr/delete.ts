@@ -51,8 +51,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
     res.status(200).json({
       success: true,
-      message: 'Your account and all associated data have been permanently deleted.',
-    });
+      message: 'Your account and all associated data have been permanently deleted.' });
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Account deletion failed:', error);

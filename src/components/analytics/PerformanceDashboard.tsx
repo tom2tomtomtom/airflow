@@ -65,8 +65,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ clientId, d
     granularity: 'day',
     metrics: ['impressions', 'clicks', 'conversions', 'spend'],
     platform: '',
-    campaignId: '',
-  });
+    campaignId: '' });
 
   const targetClientId = clientId || activeClient?.id;
 
@@ -104,8 +103,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ clientId, d
       if (filters.campaignId) params.append('campaign_id', filters.campaignId);
 
       const response = await fetch(`/api/analytics/performance?${params}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
 
       if (response.ok) {
         const data = await response.json();
@@ -133,8 +131,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ clientId, d
       if (dateRange?.end) params.append('date_to', dateRange.end);
 
       const response = await fetch(`/api/analytics/insights?${params}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
 
       if (response.ok) {
         const data = await response.json();

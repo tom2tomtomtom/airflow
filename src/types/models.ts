@@ -23,7 +23,7 @@ export interface Client extends BaseModel {
     description: string;,
     website: string;,
     socialMedia: {},
-    instagram?: string;
+  instagram?: string;
     facebook?: string;
     twitter?: string;
     linkedin?: string;
@@ -223,7 +223,7 @@ export interface Asset extends BaseModel {
     tags: string[];,
     status: 'active' | 'archived' | 'deleted';,
     permissions: {},
-    public: boolean;,
+  public: boolean;,
     userIds: string[];,
     roleIds: string[];
   };
@@ -302,13 +302,13 @@ export interface Strategy extends BaseModel {
     clientId: string;,
     objectives: string[];,
     targetAudience: {},
-    demographics: string[];,
+  demographics: string[];,
     interests: string[];,
     behaviors: string[];
   };
   keyMessages: string[];,
     contentPlan: {},
-    platforms: string[];,
+  platforms: string[];,
     contentTypes: string[];,
     frequency: string;,
     timeline: string;

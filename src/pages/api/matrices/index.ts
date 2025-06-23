@@ -137,7 +137,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     count,
     portfolio_stats: portfolioStats,
     pagination: {},
-      limit: parseInt(limit as string),
+  limit: parseInt(limit as string),
       offset: parseInt(offset as string),
       total: count || 0
     }

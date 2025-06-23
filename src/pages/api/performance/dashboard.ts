@@ -10,15 +10,15 @@ import { cacheManager } from '@/lib/cache/strategy';
 interface PerformanceDashboard {
   success: true;
   data: {},
-    overview: {},
-      total_requests: number;
+  overview: {},
+  total_requests: number;
       average_response_time: number;
       cache_hit_rate: number;
       total_endpoints: number;
       slow_endpoints: string[];
       error_rate: number;
     };
-    endpoints: {},
+    endpoints: { }
       [endpoint: string]: {
         request_count: number;
         average_response_time: number;
@@ -32,7 +32,7 @@ interface PerformanceDashboard {
       };
     };
     cache: {},
-      memory_usage: any;
+  memory_usage: any;
       total_cached_items: number;
       cache_efficiency: number;
       top_cached_items: Array<{
@@ -43,7 +43,7 @@ interface PerformanceDashboard {
       }>;
     };
     system: {},
-      memory_usage: NodeJS.MemoryUsage;
+  memory_usage: NodeJS.MemoryUsage;
       uptime: number;
       cpu_usage?: number;
       active_connections?: number;
@@ -57,7 +57,7 @@ interface PerformanceDashboard {
     }>;
   };
   meta: {},
-    generated_at: string;
+  generated_at: string;
     data_window: string;
     auto_refresh_interval: number;
   };
@@ -187,12 +187,12 @@ class PerformanceAnalyzer {
         key: 'api-responses:clients',
         namespace: 'api-responses',
         access_count: 45,
-        last_accessed: new Date().toISOString()},
+        last_accessed: new Date().toISOString() }
       {
         key: 'api-responses:analytics',
         namespace: 'api-responses', 
         access_count: 32,
-        last_accessed: new Date().toISOString()},
+        last_accessed: new Date().toISOString() }
     ];
 
     return {
@@ -322,7 +322,7 @@ export default async function handler(
         success: true,
         data: {} as any,
         meta: {},
-          generated_at: new Date().toISOString(),
+  generated_at: new Date().toISOString(),
           data_window: 'cleared',
           auto_refresh_interval: 30}});
       return;
@@ -342,7 +342,7 @@ export default async function handler(
       success: true,
       data,
       meta: {},
-        generated_at: new Date().toISOString(),
+  generated_at: new Date().toISOString(),
         data_window: 'last_hour', // Could be configurable
         auto_refresh_interval: 30, // seconds
       }};
