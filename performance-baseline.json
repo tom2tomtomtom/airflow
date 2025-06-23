@@ -1,0 +1,41 @@
+{
+  "timestamp": "2025-06-23T06:43:23.625Z",
+  "bundle": {
+    "totalBuildSize": 433540112,
+    "chunksSize": 4624710,
+    "jsFileCount": 155,
+    "staticSize": 4649810
+  },
+  "build": {
+    "timeMs": 466,
+    "timeSeconds": "0.47"
+  },
+  "test": {
+    "timeMs": 1246,
+    "timeSeconds": "1.25"
+  },
+  "codebase": {
+    "sourceFiles": 462,
+    "testFiles": 76,
+    "totalFiles": 538,
+    "testCoverage": "16.5",
+    "size": 4368838
+  },
+  "dependencies": {
+    "production": 98,
+    "development": 26,
+    "total": 124,
+    "nodeModulesSize": 1031554021
+  },
+  "assessment": {
+    "grade": "B",
+    "issues": [
+      "Too many JavaScript files",
+      "Low test coverage"
+    ],
+    "recommendations": [
+      "Optimize chunk splitting strategy",
+      "Increase test coverage to 40%+"
+    ]
+  }
+}

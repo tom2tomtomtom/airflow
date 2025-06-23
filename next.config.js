@@ -211,22 +211,59 @@ const nextConfig = {
       };
     }
 
-    // Production bundle optimizations - Disable problematic optimizations
+    // Advanced Production Bundle Optimizations
     if (!dev && !isServer) {
-      // Disable minification in webpack config to prevent plugin conflicts
-      config.optimization.minimize = false;
+      // Re-enable minification with better configuration for Next.js 15.1.0
+      config.optimization.minimize = true;
       
-      // Basic chunk splitting without complex optimizations
+      // Advanced chunk splitting for optimal bundle sizes
       config.optimization.splitChunks = {
         chunks: 'all',
+        minSize: 20000,
+        maxSize: 200000,
         cacheGroups: {
-          vendor: {
+          // Framework chunks (React, Next.js)
+          framework: {
+            test: /[\\/]node_modules[\\/](react|react-dom|scheduler|next)[\\/]/,
+            name: 'framework',
+            chunks: 'all',
+            priority: 40,
+            enforce: true,
+          },
+          // UI Library chunks (Material-UI)
+          ui: {
+            test: /[\\/]node_modules[\\/]@mui[\\/]/,
+            name: 'ui-library',
+            chunks: 'all',
+            priority: 30,
+            enforce: true,
+          },
+          // Common vendors
+          vendors: {
             test: /[\\/]node_modules[\\/]/,
             name: 'vendors',
             chunks: 'all',
+            priority: 20,
+            minChunks: 2,
+          },
+          // Common application code
+          common: {
+            name: 'common',
+            chunks: 'all',
+            priority: 10,
+            minChunks: 2,
+            reuseExistingChunk: true,
           },
         },
       };
+      
+      // Module concatenation for better performance
+      config.optimization.concatenateModules = true;
+      
+      // Remove duplicate modules
+      config.optimization.providedExports = true;
+      config.optimization.usedExports = true;
+      config.optimization.sideEffects = false;
     }
     
     // Add rule for font handling
@@ -256,11 +293,26 @@ const nextConfig = {
   skipMiddlewareUrlNormalize: true,
   skipTrailingSlashRedirect: true,
   
-  // Experimental features - Conservative approach for stability
+  // Experimental features - Enhanced for performance
   experimental: {
     // optimizeCss: true, // Disabled - causing webpack conflicts with Next.js 15.3.2
-    optimizePackageImports: ['@mui/material', '@mui/icons-material', 'lodash', 'date-fns'],
-    // instrumentationHook: true, // Removed - instrumentation.js is available by default
+    optimizePackageImports: [
+      '@mui/material', 
+      '@mui/icons-material', 
+      '@mui/system',
+      '@mui/lab',
+      'lodash', 
+      'date-fns',
+      'react-hook-form',
+      '@hookform/resolvers',
+      'zod',
+      'swr'
+    ],
+    // Parallel compilation for faster builds
+    cpus: Math.max(1, require('os').cpus().length - 1),
+    // Tree shaking improvements
+    esmExternals: true,
+    // Improved bundling (Note: turbotrace may not be available in this Next.js version)
   },
 
 
