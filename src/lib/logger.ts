@@ -146,6 +146,7 @@ export const loggers = {
   ai: createLogger('ai'),
   storage: createLogger('storage'),
   general: createLogger('app'),
+  supabase: createLogger('supabase'),
 };
 
 // Performance logging utility

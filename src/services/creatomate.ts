@@ -32,9 +32,17 @@ export interface CreatomateRenderResponse {
 }
 
 export class CreatomateService {
-  private apiKey: string = '5ab32660fef044e5b135a646a78cff8ec7e2503b79e201bad7e566f4b24ec111f2fa7e01a824eaa77904c1783e083efa';
+  private apiKey: string;
   private baseUrl: string = 'https://api.creatomate.com/v1';
   private defaultTemplateId: string = '374ee9e3-de75-4feb-bfae-5c5e11d88d80';
+
+  constructor() {
+    const apiKey = process.env.CREATOMATE_API_KEY;
+    if (!apiKey) {
+      throw new Error('CREATOMATE_API_KEY environment variable is required');
+    }
+    this.apiKey = apiKey;
+  }
 
   async getTemplate(templateId?: string): Promise<CreatomateTemplate> {
     const id = templateId || this.defaultTemplateId;

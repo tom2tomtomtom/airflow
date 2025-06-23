@@ -1,1 +1,12 @@
+#!/bin/sh
+
+# Check for secrets
+echo "🔍 Checking for secrets..."
+node scripts/check-secrets.js
+if [ $? -ne 0 ]; then
+  echo "❌ Secret check failed. Please remove any exposed secrets before committing."
+  exit 1
+fi
+
+# Run lint-staged
 npx lint-staged

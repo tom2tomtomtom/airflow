@@ -18,8 +18,11 @@ async function globalSetup(config: FullConfig) {
     await page.goto('http://localhost:3000/auth/login');
     
     // Fill login form
-    await page.fill('[data-testid="email-input"]', 'tomh@redbaez.com');
-    await page.fill('[data-testid="password-input"]', 'Wijlre2010');
+    const testEmail = process.env.TEST_USER_EMAIL || 'test@example.com';
+    const testPassword = process.env.TEST_USER_PASSWORD || 'test-password-123';
+    
+    await page.fill('[data-testid="email-input"]', testEmail);
+    await page.fill('[data-testid="password-input"]', testPassword);
     await page.click('[data-testid="login-button"]');
     
     // Wait for successful login

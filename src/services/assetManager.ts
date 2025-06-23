@@ -1,8 +1,9 @@
 import { getLogger } from '@/lib/logger';
 import { classifyError } from '@/lib/error-handling/error-classifier';
 import { cached, CacheProfiles } from '@/lib/cache/redis-cache';
-import { createClient } from '@/lib/supabase/server';
+import { createServerSupabaseClient } from '@/lib/supabase';
 import { optimizeImage, analyzeImage } from '@/lib/optimization/image';
+import { handleSupabaseError } from '@/lib/supabase/errors';
 
 const logger = getLogger('asset-manager');
 
@@ -113,13 +114,17 @@ export interface AssetSearchOptions {
 }
 
 export class AssetManager {
-  private supabase = createClient();
+  private supabasePromise = createServerSupabaseClient();
   private readonly STORAGE_BUCKET = 'campaign-assets';
   private readonly THUMBNAIL_BUCKET = 'asset-thumbnails';
   private readonly MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
   private readonly SUPPORTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
   private readonly SUPPORTED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/mov'];
   private readonly SUPPORTED_DOCUMENT_TYPES = ['application/pdf', 'application/msword', 'text/plain'];
+  
+  private async getSupabase() {
+    return await this.supabasePromise;
+  }
 
   async uploadAsset(
     file: File,
@@ -296,7 +301,8 @@ export class AssetManager {
     } = options;
 
     try {
-      let query = this.supabase
+      const supabase = await this.getSupabase();
+      let query = supabase
         .from('assets')
         .select('*', { count: 'exact' });
 
@@ -342,7 +348,8 @@ export class AssetManager {
 
   async getAssetById(assetId: string): Promise<Asset | null> {
     try {
-      const { data, error } = await this.supabase
+      const supabase = await this.getSupabase();
+      const { data, error } = await supabase
         .from('assets')
         .select('*')
         .eq('id', assetId)
@@ -376,7 +383,8 @@ export class AssetManager {
       }
 
       // Delete from database
-      const { error } = await this.supabase
+      const supabase = await this.getSupabase();
+      const { error } = await supabase
         .from('assets')
         .delete()
         .eq('id', assetId);
@@ -451,7 +459,8 @@ export class AssetManager {
 
   async getCollections(briefId: string): Promise<AssetCollection[]> {
     try {
-      const { data, error } = await this.supabase
+      const supabase = await this.getSupabase();
+      const { data, error } = await supabase
         .from('asset_collections')
         .select('*')
         .eq('brief_id', briefId)
@@ -588,7 +597,8 @@ export class AssetManager {
     path: string
   ): Promise<{ success: boolean; url?: string; error?: string }> {
     try {
-      const { data, error } = await this.supabase.storage
+      const supabase = await this.getSupabase();
+      const { data, error } = await supabase.storage
         .from(bucket)
         .upload(path, file, {
           upsert: true
@@ -598,7 +608,7 @@ export class AssetManager {
         return { success: false, error: error.message };
       }
 
-      const { data: urlData } = this.supabase.storage
+      const { data: urlData } = supabase.storage
         .from(bucket)
         .getPublicUrl(path);
 
@@ -616,7 +626,8 @@ export class AssetManager {
   }
 
   private async deleteFileFromStorage(bucket: string, path: string): Promise<void> {
-    const { error } = await this.supabase.storage
+    const supabase = await this.getSupabase();
+    const { error } = await supabase.storage
       .from(bucket)
       .remove([path]);
 
@@ -638,7 +649,8 @@ export class AssetManager {
   }
 
   private async saveAssetToDatabase(asset: Asset): Promise<void> {
-    const { error } = await this.supabase
+    const supabase = await this.getSupabase();
+    const { error } = await supabase
       .from('assets')
       .upsert({
         id: asset.id,
@@ -669,7 +681,8 @@ export class AssetManager {
   }
 
   private async saveCollectionToDatabase(collection: AssetCollection): Promise<void> {
-    const { error } = await this.supabase
+    const supabase = await this.getSupabase();
+    const { error } = await supabase
       .from('asset_collections')
       .upsert({
         id: collection.id,
@@ -691,7 +704,8 @@ export class AssetManager {
   }
 
   private async addAssetToCollection(collectionId: string, assetId: string): Promise<void> {
-    const { error } = await this.supabase
+    const supabase = await this.getSupabase();
+    const { error } = await supabase
       .from('collection_assets')
       .upsert({
         collection_id: collectionId,
@@ -711,7 +725,8 @@ export class AssetManager {
   }
 
   private async getCollectionAssets(collectionId: string): Promise<Asset[]> {
-    const { data, error } = await this.supabase
+    const supabase = await this.getSupabase();
+    const { data, error } = await supabase
       .from('collection_assets')
       .select(`
         assets (*)

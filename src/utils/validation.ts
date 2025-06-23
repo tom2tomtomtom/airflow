@@ -62,6 +62,7 @@ export function isValidEmail(email: string): boolean {
     /INSERT INTO/i,
     /DELETE FROM/i,
     /\r\n/,
+    // eslint-disable-next-line no-control-regex
     /\x00/,
     /<>/,
   ];

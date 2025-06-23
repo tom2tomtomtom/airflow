@@ -209,11 +209,10 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { withAuth } from '@/middleware/withAuth';
 import { withAPIRateLimit } from '@/lib/rate-limiter';
 import { successResponse, errorResponse, handleApiError, methodNotAllowed, validateRequiredFields, createPaginationMeta, ApiErrorCode } from '@/lib/api-response';
-import { createClient } from '@supabase/supabase-js';
-import { env } from '@/lib/env';
+import { getAdminSupabaseClient } from '@/lib/supabase';
 
-// Initialize Supabase client
-const supabase = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+// Get admin Supabase client for server-side operations
+const supabase = getAdminSupabaseClient();
 // GET handler - List clients with filtering and pagination
 async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   try {

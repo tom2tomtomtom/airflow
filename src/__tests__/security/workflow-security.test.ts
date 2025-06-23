@@ -373,9 +373,6 @@ describe('Workflow Security Validation', () => {
       };
 
       const validation = validateBriefData(codeInjectionData);
-      if (!validation.valid) {
-        console.log('Validation errors:', validation.errors);
-      }
       expect(validation.valid).toBe(true);
       
       if (validation.data) {

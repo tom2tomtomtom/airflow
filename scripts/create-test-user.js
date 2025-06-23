@@ -26,9 +26,9 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
 });
 
 async function createTestUser() {
-  const email = 'tomh@rebaez.com';
-  const password = 'Wijlre2010';
-  const name = 'Tom H';
+  const email = process.env.TEST_USER_EMAIL || 'test@example.com';
+  const password = process.env.TEST_USER_PASSWORD || 'test-password-123';
+  const name = 'Test User';
 
   console.log('🔍 Checking if user exists...');
   
