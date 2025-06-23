@@ -160,7 +160,7 @@ const PreviewPage: React.FC = () => {
       } else {
         throw new Error(result.error || 'Failed to fetch preview item');
       }
-    } catch (err) {
+    } catch (err: any) {
       setError(err instanceof Error ? err.message : 'Failed to load preview item');
     } finally {
       setLoading(false);
@@ -200,7 +200,7 @@ const PreviewPage: React.FC = () => {
       } else {
         throw new Error(result.error || 'Failed to submit approval');
       }
-    } catch (err) {
+    } catch (err: any) {
       showNotification('Failed to submit approval decision', 'error');
     } finally {
       setSubmittingApproval(false);

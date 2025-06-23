@@ -1,3 +1,4 @@
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
 import { env } from '@/lib/env';
@@ -33,7 +34,7 @@ async function extractTextFromFile(fileUrl: string): Promise<string> {
         const pdf = require('pdf-parse');
         const data = await pdf(uint8Array);
         return data.text;
-      } catch (pdfError) {
+      } catch (pdfError: any) {
         console.error('PDF parsing error:', pdfError);
         throw new Error('Failed to parse PDF file. Please ensure it contains readable text.');
       }
@@ -43,7 +44,7 @@ async function extractTextFromFile(fileUrl: string): Promise<string> {
         const mammoth = require('mammoth');
         const result = await mammoth.extractRawText({ buffer: uint8Array });
         return result.value;
-      } catch (docxError) {
+      } catch (docxError: any) {
         console.error('DOCX parsing error:', docxError);
         throw new Error('Failed to parse DOCX file. Please ensure it contains readable text.');
       }
@@ -103,7 +104,7 @@ Return ONLY the JSON object, no additional text or formatting.`;
   try {
     JSON.parse(result);
     return result;
-  } catch (parseError) {
+  } catch (parseError: any) {
     console.error('AI returned invalid JSON:', result);
     // Return a minimal valid JSON structure
     return JSON.stringify({

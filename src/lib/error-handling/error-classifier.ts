@@ -395,7 +395,7 @@ export class ErrorClassifier {
     }
     
     // Extract additional properties
-    Object.keys(error).forEach(key => {
+    Object.keys(error).forEach((key: any) => {
       if (!metadata[key] && typeof (error as any)[key] !== 'function') {
         metadata[key] = (error as any)[key];
       }
@@ -546,7 +546,7 @@ export class ErrorClassifier {
     // Get first few lines of stack trace and normalize
     const lines = stack.split('\n').slice(0, 3);
     const signature = lines
-      .map(line => line.replace(/:\d+:\d+/g, ':LINE:COL'))
+      .map((line: any) => line.replace(/:\d+:\d+/g, ':LINE:COL'))
       .join('|');
     
     return this.hashString(signature).substring(0, 8);

@@ -75,10 +75,10 @@ export type Env = z.infer<typeof envSchema>
 export function validateEnv(env: Record<string, string | undefined> = process.env): Env {
   try {
     return envSchema.parse(env)
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     if (error instanceof z.ZodError) {
-      const errors = error.errors.map(err => `${err.path.join('.')}: ${err.message}`).join('\n')
+      const errors = error.errors.map((err: any) => `${err.path.join('.')}: ${err.message}`).join('\n')
       throw new Error(`Environment validation failed:\n${errors}`)
     }
     throw error
@@ -187,19 +187,19 @@ export function logEnvironmentStatus(): void {
         if (process.env.NODE_ENV === 'development') {
           console.warn('Production environment not ready');
         }
-        readiness.missingVars.forEach(v => {
+        readiness.missingVars.forEach((v: any) => {
           if (process.env.NODE_ENV === 'development') {
             console.error(`Missing required variable: ${v}`);
           }
         });
-        readiness.warnings.forEach(w => {
+        readiness.warnings.forEach((w: any) => {
           if (process.env.NODE_ENV === 'development') {
             console.warn(w);
           }
         });
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     if (process.env.NODE_ENV === 'development') {
 

@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { test, expect } from '@playwright/test';
 
 test.describe('AIrWAVE Application Workflows', () => {
@@ -41,6 +42,7 @@ test.describe('AIrWAVE Application Workflows', () => {
       expect(true).toBe(true); // Discovery test
       
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log(`❌ Auth workflow test error: ${error.message}`);
     }
   });
@@ -77,6 +79,7 @@ test.describe('AIrWAVE Application Workflows', () => {
       expect(true).toBe(true);
       
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log(`❌ Client workflow test error: ${error.message}`);
     }
   });
@@ -112,6 +115,7 @@ test.describe('AIrWAVE Application Workflows', () => {
       expect(true).toBe(true);
       
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log(`❌ Asset workflow test error: ${error.message}`);
     }
   });
@@ -147,6 +151,7 @@ test.describe('AIrWAVE Application Workflows', () => {
       expect(true).toBe(true);
       
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log(`❌ Strategy workflow test error: ${error.message}`);
     }
   });
@@ -182,6 +187,7 @@ test.describe('AIrWAVE Application Workflows', () => {
       expect(true).toBe(true);
       
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log(`❌ Matrix workflow test error: ${error.message}`);
     }
   });
@@ -256,6 +262,7 @@ test.describe('AIrWAVE Application Workflows', () => {
       expect(journey.steps).toBeGreaterThan(0);
       
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log(`❌ Journey error at step ${journey.steps + 1}: ${error.message}`);
       journey.errors.push(error.message);
     }

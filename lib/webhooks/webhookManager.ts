@@ -9,6 +9,7 @@ if (typeof window === 'undefined') {
   try {
     addWebhookJob = require('@/lib/queue/bullQueue').addWebhookJob;
   } catch (error) {
+    const message = getErrorMessage(error);
     console.warn('BullQueue not available:', error);
   }
 }

@@ -105,7 +105,7 @@ function MyApp(props: MyAppProps) {
         'https://fonts.gstatic.com'
       ];
       
-      warmupUrls.forEach(url => {
+      warmupUrls.forEach((url: any) => {
         const link = document.createElement('link');
         link.rel = 'prefetch';
         link.href = url;

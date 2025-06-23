@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 /**
  * Assets Page Object Model
  * Handles interactions with the asset library interface
@@ -128,6 +129,7 @@ export class AssetsPage {
         this.emptyState.waitFor({ state: 'visible', timeout: 5000 })
       ]);
     } catch (error) {
+    const message = getErrorMessage(error);
       // Assets might be loading, wait for skeleton to disappear
       await this.loadingSkeleton.waitFor({ state: 'hidden', timeout: 10000 });
     }
@@ -182,6 +184,7 @@ export class AssetsPage {
     try {
       await this.uploadCompleteMessage.waitFor({ state: 'visible', timeout: timeoutMs });
     } catch (error) {
+    const message = getErrorMessage(error);
       // Check if there was an upload error
       const errorVisible = await this.uploadErrorMessage.isVisible();
       if (errorVisible) {
@@ -306,6 +309,7 @@ export class AssetsPage {
       const confirmButton = this.page.locator('[data-testid="confirm-delete-button"]');
       await confirmButton.click({ timeout: 2000 });
     } catch (error) {
+    const message = getErrorMessage(error);
       // No confirmation dialog, deletion was immediate
     }
     

@@ -81,10 +81,10 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
   const emit = useCallback((eventType: string, data: any) => {
     const listeners = eventListeners.current.get(eventType);
     if (listeners) {
-      listeners.forEach(callback => {
+      listeners.forEach((callback: any) => {
         try {
           callback(data);
-        } catch (error) {
+        } catch (error: any) {
     const message = getErrorMessage(error);
           console.error(`Error in event listener for ${eventType}:`, error);
         }
@@ -113,7 +113,7 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
         }
       };
 
-      eventSource.onerror = (event) => {
+      eventSource.onerror = (event: any) => {
         setConnected(false);
         
         if (eventSource.readyState === EventSource.CLOSED) {
@@ -138,7 +138,7 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
       };
 
       // Generic message handler
-      eventSource.onmessage = (event) => {
+      eventSource.onmessage = (event: any) => {
         try {
           const data = JSON.parse(event.data);
           const realTimeEvent: RealTimeEvent = {
@@ -149,42 +149,42 @@ export function useRealTimeUpdates(options: UseRealTimeUpdatesOptions = {}) {
           
           setLastEvent(realTimeEvent);
           emit('message', realTimeEvent);
-        } catch (error) {
+        } catch (error: any) {
     const message = getErrorMessage(error);
           console.error('Failed to parse SSE message:', error);
         }
       };
 
       // Specific event handlers
-      eventSource.addEventListener('connected', (event) => {
+      eventSource.addEventListener('connected', (_event) => {
         const data = JSON.parse(event.data);
         emit('connected', data);
       });
 
-      eventSource.addEventListener('heartbeat', (event) => {
+      eventSource.addEventListener('heartbeat', (_event) => {
         const data = JSON.parse(event.data);
         emit('heartbeat', data);
       });
 
-      eventSource.addEventListener('render_progress', (event) => {
+      eventSource.addEventListener('render_progress', (_event) => {
         const data: RenderProgressEvent = JSON.parse(event.data);
         emit('render_progress', data);
         setLastEvent({ type: 'render_progress', data, timestamp: Date.now() });
       });
 
-      eventSource.addEventListener('render_complete', (event) => {
+      eventSource.addEventListener('render_complete', (_event) => {
         const data: RenderCompleteEvent = JSON.parse(event.data);
         emit('render_complete', data);
         setLastEvent({ type: 'render_complete', data, timestamp: Date.now() });
       });
 
-      eventSource.addEventListener('notification', (event) => {
+      eventSource.addEventListener('notification', (_event) => {
         const data: NotificationEvent = JSON.parse(event.data);
         emit('notification', data);
         setLastEvent({ type: 'notification', data, timestamp: Date.now() });
       });
 
-    } catch (error) {
+    } catch (error: any) {
     const message = getErrorMessage(error);
       console.error('Failed to create SSE connection:', error);
       setError(error instanceof Error ? error.message : 'Connection failed');
@@ -302,7 +302,7 @@ export function useNotifications() {
   }, []);
 
   const removeNotification = useCallback((id: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
+    setNotifications(prev => prev.filter((n: any) => n.id !== id));
   }, []);
 
   return {

@@ -11,7 +11,7 @@ if (typeof window === 'undefined') {
   try {
     crypto = require('crypto');
     redisManager = require('@/lib/redis/redis-config').redisManager;
-  } catch (error) {
+  } catch (error: any) {
     // Server dependencies not available, will fallback to in-memory
     console.warn('Server dependencies not available, using fallbacks');
   }
@@ -86,7 +86,7 @@ export class AIResponseCache {
       } else {
         console.log('⚠️ AI Response Cache using in-memory storage (Redis unavailable)');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('AI Response Cache Redis initialization failed:', error);
       this.useRedis = false;
     }
@@ -140,7 +140,7 @@ export class AIResponseCache {
 
       console.log(`🎯 Cache hit for ${operation} (age: ${Math.round(ageInSeconds)}s)`);
       return cachedResponse.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting cached response:', error);
       return null;
     }
@@ -186,7 +186,7 @@ export class AIResponseCache {
         console.log(`💾 Cached ${operation} response in memory`);
         return true;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error setting cached response:', error);
       return false;
     }
@@ -204,7 +204,7 @@ export class AIResponseCache {
       } else {
         return this.memoryCache.delete(key);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting cached response:', error);
       return false;
     }
@@ -222,7 +222,7 @@ export class AIResponseCache {
       } else {
         return this.memoryCache.has(key);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error checking cache existence:', error);
       return false;
     }
@@ -248,7 +248,7 @@ export class AIResponseCache {
         if (keys.length > 0) {
           cleared = await client.del(...keys);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error clearing Redis cache:', error);
       }
     } else {
@@ -260,7 +260,7 @@ export class AIResponseCache {
         }
       }
       
-      keysToDelete.forEach(key => this.memoryCache.delete(key));
+      keysToDelete.forEach((key: any) => this.memoryCache.delete(key));
       cleared = keysToDelete.length;
     }
 
@@ -298,7 +298,7 @@ export class AIResponseCache {
           
           stats.totalKeys += keys.length;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error getting Redis cache stats:', error);
       }
     } else {
@@ -353,7 +353,7 @@ export class AIResponseCache {
         if (success) {
           warmedUp++;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error warming up cache:', error);
       }
     }

@@ -104,7 +104,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
     res.setHeader('Allow', ['GET']);
     return res.status(405).json({ success: false, error: 'Method not allowed' });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('OAuth auth API error:', error);
     return res.status(500).json({

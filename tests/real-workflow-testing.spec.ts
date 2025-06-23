@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { test, expect } from '@playwright/test';
 
 test.describe('Real AIrWAVE Workflow Testing', () => {
@@ -112,6 +113,7 @@ test.describe('Real AIrWAVE Workflow Testing', () => {
               }
               
             } catch (error) {
+    const message = getErrorMessage(error);
               console.log(`   ${path}: ❌ Error accessing page - ${error.message}`);
             }
           }
@@ -133,6 +135,7 @@ test.describe('Real AIrWAVE Workflow Testing', () => {
         }
         
       } catch (error) {
+    const message = getErrorMessage(error);
         console.log(`❌ Login process failed: ${error.message}`);
       }
       
@@ -243,6 +246,7 @@ test.describe('Real AIrWAVE Workflow Testing', () => {
             }
             
           } catch (error) {
+    const message = getErrorMessage(error);
             console.log(`   ❌ Navigation failed: ${error.message}`);
           }
         }
@@ -345,6 +349,7 @@ test.describe('Real AIrWAVE Workflow Testing', () => {
           await page.keyboard.press('Delete');
           
         } catch (error) {
+    const message = getErrorMessage(error);
           console.log(`     ❌ Failed to interact: ${error.message}`);
         }
       }
@@ -405,6 +410,7 @@ test.describe('Real AIrWAVE Workflow Testing', () => {
         }
         
       } catch (error) {
+    const message = getErrorMessage(error);
         console.log(`❌ Form submission failed: ${error.message}`);
       }
     }
@@ -468,6 +474,7 @@ test.describe('Real AIrWAVE Workflow Testing', () => {
             interactionTimes.push(interactionTime);
             await page.waitForTimeout(300);
           } catch (error) {
+    const message = getErrorMessage(error);
             // Skip failed interactions
           }
         }
@@ -495,6 +502,7 @@ test.describe('Real AIrWAVE Workflow Testing', () => {
         console.log(`      Status: ${result.success ? '✅ GOOD' : '⚠️  SLOW'}`);
         
       } catch (error) {
+    const message = getErrorMessage(error);
         console.log(`   ❌ ${pageTest.name} failed: ${error.message}`);
         performanceResults.push({
           page: pageTest.name,

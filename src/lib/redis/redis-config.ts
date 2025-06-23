@@ -67,7 +67,7 @@ class RedisManager {
       await this.redis.ping();
 
       return this.redis;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to connect to Redis:', error);
       throw new Error(
         `Redis connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`
@@ -149,7 +149,7 @@ class RedisManager {
       const client = await this.getClient();
       await client.ping();
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Redis not available:', error);
       return false;
     }
@@ -181,7 +181,7 @@ class RedisManager {
       }
 
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis SET error:', error);
       return false;
     }
@@ -197,7 +197,7 @@ class RedisManager {
       }
 
       return JSON.parse(value) as T;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis GET error:', error);
       return null;
     }
@@ -208,7 +208,7 @@ class RedisManager {
       const client = await this.getClient();
       const result = await client.del(...keys);
       return result > 0;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis DEL error:', error);
       return false;
     }
@@ -219,7 +219,7 @@ class RedisManager {
       const client = await this.getClient();
       const result = await client.exists(key);
       return result === 1;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis EXISTS error:', error);
       return false;
     }
@@ -231,9 +231,9 @@ class RedisManager {
   async lpush(key: string, ...values: any[]): Promise<number> {
     try {
       const client = await this.getClient();
-      const serializedValues = values.map(v => JSON.stringify(v));
+      const serializedValues = values.map((v: any) => JSON.stringify(v));
       return await client.lpush(key, ...serializedValues);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis LPUSH error:', error);
       return 0;
     }
@@ -249,7 +249,7 @@ class RedisManager {
       }
 
       return JSON.parse(value) as T;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis RPOP error:', error);
       return null;
     }
@@ -265,7 +265,7 @@ class RedisManager {
       const stringValue = typeof value === 'string' ? value : JSON.stringify(value);
       const result = await client.hset(key, field, stringValue);
       return result >= 0;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis HSET error:', error);
       return false;
     }
@@ -286,7 +286,7 @@ class RedisManager {
       } catch {
         return value as T;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis HGET error:', error);
       return null;
     }
@@ -299,7 +299,7 @@ class RedisManager {
     try {
       const client = await this.getClient();
       return await client.incr(key);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis INCR error:', error);
       return 0;
     }
@@ -309,7 +309,7 @@ class RedisManager {
     try {
       const client = await this.getClient();
       return await client.incrby(key, increment);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis INCRBY error:', error);
       return 0;
     }
@@ -323,7 +323,7 @@ class RedisManager {
       const client = await this.getClient();
       const result = await client.expire(key, seconds);
       return result === 1;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis EXPIRE error:', error);
       return false;
     }
@@ -336,7 +336,7 @@ class RedisManager {
     try {
       const client = await this.getClient();
       return await client.sadd(key, ...members);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis SADD error:', error);
       return 0;
     }
@@ -346,7 +346,7 @@ class RedisManager {
     try {
       const client = await this.getClient();
       return await client.srem(key, ...members);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis SREM error:', error);
       return 0;
     }
@@ -356,7 +356,7 @@ class RedisManager {
     try {
       const client = await this.getClient();
       return await client.smembers(key);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis SMEMBERS error:', error);
       return [];
     }
@@ -367,7 +367,7 @@ class RedisManager {
       const client = await this.getClient();
       const result = await client.sismember(key, member);
       return result === 1;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis SISMEMBER error:', error);
       return false;
     }
@@ -380,7 +380,7 @@ class RedisManager {
     try {
       const client = await this.getClient();
       return await client.zadd(key, score, member);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis ZADD error:', error);
       return 0;
     }
@@ -390,7 +390,7 @@ class RedisManager {
     try {
       const client = await this.getClient();
       return await client.zrem(key, ...members);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis ZREM error:', error);
       return 0;
     }
@@ -400,7 +400,7 @@ class RedisManager {
     try {
       const client = await this.getClient();
       return await client.zrange(key, start, stop);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis ZRANGE error:', error);
       return [];
     }
@@ -410,7 +410,7 @@ class RedisManager {
     try {
       const client = await this.getClient();
       return await client.zrangebyscore(key, min, max);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis ZRANGEBYSCORE error:', error);
       return [];
     }
@@ -420,7 +420,7 @@ class RedisManager {
     try {
       const client = await this.getClient();
       return await client.zcard(key);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis ZCARD error:', error);
       return 0;
     }
@@ -433,7 +433,7 @@ class RedisManager {
     try {
       const client = await this.getClient();
       return await client.keys(pattern);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis KEYS error:', error);
       return [];
     }
@@ -443,7 +443,7 @@ class RedisManager {
     try {
       const client = await this.getClient();
       return await client.ping();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis PING error:', error);
       throw error;
     }
@@ -453,7 +453,7 @@ class RedisManager {
     try {
       const client = await this.getClient();
       return await client.ttl(key);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis TTL error:', error);
       return -1;
     }
@@ -463,7 +463,7 @@ class RedisManager {
     try {
       const client = await this.getClient();
       return await client.hdel(key, ...fields);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis HDEL error:', error);
       return 0;
     }
@@ -473,7 +473,7 @@ class RedisManager {
     try {
       const client = await this.getClient();
       return await client.hgetall(key);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis HGETALL error:', error);
       return {};
     }
@@ -483,7 +483,7 @@ class RedisManager {
     try {
       const client = await this.getClient();
       return await client.decr(key);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis DECR error:', error);
       return 0;
     }
@@ -493,7 +493,7 @@ class RedisManager {
     try {
       const client = await this.getClient();
       return await client.flushall();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis FLUSHALL error:', error);
       throw error;
     }

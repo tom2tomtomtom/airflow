@@ -68,7 +68,7 @@ export const MFASetup: React.FC = () => {
       } else {
         setError(data.error || 'Failed to load MFA status');
       }
-    } catch (err) {
+    } catch (err: any) {
       setError('Network error while loading MFA status');
     } finally {
       setLoading(false);
@@ -92,7 +92,7 @@ export const MFASetup: React.FC = () => {
       } else {
         setError(data.error || 'Failed to setup MFA');
       }
-    } catch (err) {
+    } catch (err: any) {
       setError('Network error while setting up MFA');
     } finally {
       setLoading(false);
@@ -127,7 +127,7 @@ export const MFASetup: React.FC = () => {
       } else {
         setError(data.error || 'Failed to verify MFA');
       }
-    } catch (err) {
+    } catch (err: any) {
       setError('Network error while verifying MFA');
     } finally {
       setLoading(false);

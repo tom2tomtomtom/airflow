@@ -61,7 +61,7 @@ async function getAsset(
       success: true,
       asset: asset,
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error fetching asset:', error);
     return res.status(500).json({ success: false, message: 'Internal server error' });
@@ -107,7 +107,7 @@ async function updateAsset(
       success: true,
       asset: asset,
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error updating asset:', error);
     return res.status(500).json({ success: false, message: 'Internal server error' });
@@ -141,7 +141,7 @@ async function deleteAsset(
       message: 'Asset deleted successfully',
       asset: asset,
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error deleting asset:', error);
     return res.status(500).json({ success: false, message: 'Internal server error' });

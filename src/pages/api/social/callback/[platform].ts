@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import axios from 'axios';
 
 interface TokenResponse {
@@ -140,7 +141,7 @@ async function getInstagramProfile(accessToken: string): Promise<any> {
           page_access_token: page.access_token,
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to get Instagram account for page:', page.id);
     }
   }
@@ -194,7 +195,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let stateData;
     try {
       stateData = JSON.parse(atob(state as string));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Invalid state parameter:', error);
       res.redirect('/social-publishing?error=invalid_state');
       return;
@@ -266,7 +267,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.redirect(`/social-publishing?success=${platform}&connected=true`);
     return;
 
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('OAuth callback error:', error);
     res.redirect(`/social-publishing?error=connection_failed&platform=${platform}`);

@@ -170,7 +170,7 @@ export const setupGracefulShutdown = () => {
     logger.info(`Received ${signal}, starting graceful shutdown`);
     
     // Close all winston transports
-    Object.values(loggers).forEach(logger => {
+    Object.values(loggers).forEach((logger: any) => {
       logger.close();
     });
     

@@ -1,3 +1,4 @@
+import { NextApiRequest, NextApiResponse } from 'next';
 import { getErrorMessage } from '@/utils/errorUtils';
 // Server-Sent Events (SSE) API for Real-Time Updates
 // Alternative to WebSocket that works with Next.js deployment on Netlify
@@ -20,7 +21,7 @@ setInterval(() => {
     if (now - conn.lastHeartbeat > 60000) { // 1 minute timeout
       try {
         conn.res.end();
-      } catch (e) {
+      } catch (e: any) {
         // Connection already closed
       }
       connections.delete(id);
@@ -92,7 +93,7 @@ function sendSSEMessage(res: NextApiResponse, event: string, data: any) {
   try {
     res.write(`event: ${event}\n`);
     res.write(`data: ${JSON.stringify(data)}\n\n`);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     // Connection already closed
   }

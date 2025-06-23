@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { getLogger } from '@/lib/logger';
 import { classifyError } from '@/lib/error-handling/error-classifier';
 import { cached, CacheProfiles } from '@/lib/cache/redis-cache';
@@ -179,7 +180,7 @@ export class CampaignRenderer {
           renderLayers: this.calculateRenderLayers(populatedTemplate),
           assetCount: populatedTemplate.selectedAssets.length,
           textElements: this.countTextElements(populatedTemplate),
-          effects: Object.keys(effects).filter(key => effects[key as keyof typeof effects]),
+          effects: Object.keys(effects).filter((key: any) => effects[key as keyof typeof effects]),
           colorProfile: 'sRGB',
           fonts: this.extractFonts(populatedTemplate),
           estimatedFileSize: 0,
@@ -250,7 +251,7 @@ export class CampaignRenderer {
 
       return renderedCampaign;
 
-    } catch (error) {
+    } catch (error: any) {
       const classified = classifyError(error as Error, {
         route: 'campaign-renderer',
         metadata: { 
@@ -298,7 +299,7 @@ export class CampaignRenderer {
           const rendered = await this.renderCampaign(templates[i], options);
           job.results.push(rendered);
           job.progress = Math.round(((i + 1) / templates.length) * 100);
-        } catch (error) {
+        } catch (error: any) {
           const errorMessage = error instanceof Error ? error.message : 'Unknown error';
           job.errors.push(`Template ${templates[i].id}: ${errorMessage}`);
           logger.warn('Batch render item failed', { templateId: templates[i].id, error: errorMessage });
@@ -318,7 +319,7 @@ export class CampaignRenderer {
 
       return job;
 
-    } catch (error) {
+    } catch (error: any) {
       job.status = 'failed';
       job.completedAt = new Date();
       logger.error('Batch render failed', error);
@@ -341,7 +342,7 @@ export class CampaignRenderer {
 
       return this.mapRowToRenderedCampaign(data);
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to get rendered campaign', error);
       throw error;
     }
@@ -355,7 +356,7 @@ export class CampaignRenderer {
     const campaign = await this.getRenderedCampaign(renderId);
     if (!campaign) return null;
 
-    let estimatedTimeRemaining: number | undefined;
+    let estimatedTimeRemaining?: number;
     if (campaign.status === 'rendering' && campaign.progress > 0) {
       const elapsed = Date.now() - campaign.renderedAt.getTime();
       const progressRate = campaign.progress / elapsed;
@@ -380,7 +381,7 @@ export class CampaignRenderer {
 
       logger.info('Render cancelled', { renderId });
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to cancel render', error);
       throw error;
     }
@@ -430,8 +431,8 @@ export class CampaignRenderer {
     // Count z-index layers
     const zIndices = new Set(
       populatedTemplate.populatedComponents
-        .map(c => c.finalStyling.zIndex)
-        .filter(z => z !== undefined)
+        .map((c: any) => c.finalStyling.zIndex)
+        .filter((z: any) => z !== undefined)
     );
     return Math.max(zIndices.size, 1);
   }
@@ -444,7 +445,7 @@ export class CampaignRenderer {
 
   private extractFonts(populatedTemplate: PopulatedTemplate): string[] {
     const fonts = new Set<string>();
-    populatedTemplate.populatedComponents.forEach(component => {
+    populatedTemplate.populatedComponents.forEach((component: any) => {
       // Extract font families from CSS or styling
       if (component.finalStyling) {
         // Would parse font-family from styling
@@ -506,7 +507,7 @@ export class CampaignRenderer {
     let css = populatedTemplate.renderData.css || '';
 
     // Replace asset URLs with local paths
-    assets.forEach(asset => {
+    assets.forEach((asset: any) => {
       html = html.replace(asset.url, asset.local);
       css = css.replace(asset.url, asset.local);
     });

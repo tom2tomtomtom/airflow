@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 
@@ -105,7 +106,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
         const parseData = await parseResponse.json();
         contentToparse = parseData.raw_content;
-      } catch (extractError) {
+      } catch (extractError: any) {
         console.error('Error re-extracting document:', extractError);
         
         // Revert status on error
@@ -153,7 +154,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
         }
       });
 
-    } catch (parseError) {
+    } catch (parseError: any) {
       console.error('Error triggering brief parsing:', parseError);
       
       // Revert status on error
@@ -171,7 +172,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       });
     }
 
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Brief reparse API error:', error);
     return res.status(500).json({ 

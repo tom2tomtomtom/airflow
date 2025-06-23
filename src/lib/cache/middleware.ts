@@ -264,7 +264,7 @@ export class CacheMiddleware {
         ...CacheProfiles.API_RESPONSE,
         ttl
       });
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to cache response', error);
     }
   }

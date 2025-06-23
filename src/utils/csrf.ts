@@ -59,7 +59,7 @@ export function verifyCSRFToken(token: string, sessionId?: string): boolean {
       Buffer.from(signature, 'hex'),
       Buffer.from(expectedSignature, 'hex')
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error('CSRF token verification error:', error);
     return false;
   }
@@ -170,7 +170,7 @@ export const csrfClient = {
       const response = await fetch('/api/auth/csrf-token');
       const data = await response.json();
       this.token = data.csrfToken;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get CSRF token:', error);
       throw new Error('CSRF token unavailable');
     }

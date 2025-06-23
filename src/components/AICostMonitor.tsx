@@ -83,7 +83,7 @@ export const AICostMonitor: React.FC<CostMonitorProps> = ({
       setStats(data.services || {});
       setLastUpdate(new Date());
       setError(null);
-    } catch (err) {
+    } catch (err: any) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);

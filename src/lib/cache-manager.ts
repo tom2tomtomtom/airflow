@@ -137,7 +137,7 @@ class CacheManager {
       
       this.stats.misses++;
       return null;
-    } catch (error) {
+    } catch (error: any) {
       this.stats.errors++;
       loggers.general.error('Cache get error', error, { key: cacheKey });
       return null;
@@ -179,7 +179,7 @@ class CacheManager {
       
       this.stats.sets++;
       return true;
-    } catch (error) {
+    } catch (error: any) {
       this.stats.errors++;
       loggers.general.error('Cache set error', error, { key: cacheKey });
       return false;
@@ -199,7 +199,7 @@ class CacheManager {
       const result = await redis!.del(cacheKey);
       if (result > 0) this.stats.deletes++;
       return result > 0;
-    } catch (error) {
+    } catch (error: any) {
       this.stats.errors++;
       loggers.general.error('Cache delete error', error, { key: cacheKey });
       return false;
@@ -224,7 +224,7 @@ class CacheManager {
       if (keys.length === 0) return 0;
 
       const pipeline = redis!.pipeline();
-      keys.forEach(key => pipeline.del(key));
+      keys.forEach((key: any) => pipeline.del(key));
       pipeline.del(`tag:${tag}`);
       
       const results = await pipeline.exec();
@@ -232,7 +232,7 @@ class CacheManager {
       
       this.stats.deletes += deleted;
       return deleted;
-    } catch (error) {
+    } catch (error: any) {
       this.stats.errors++;
       loggers.general.error('Cache invalidate by tag error', error, { tag });
       return 0;
@@ -245,8 +245,8 @@ class CacheManager {
         if (namespace) {
           const prefix = `${namespace}:`;
           const keysToDelete = Array.from(this.memoryCache.keys())
-            .filter(key => key.startsWith(prefix));
-          keysToDelete.forEach(key => this.memoryCache.delete(key));
+            .filter((key: any) => key.startsWith(prefix));
+          keysToDelete.forEach((key: any) => this.memoryCache.delete(key));
           this.stats.deletes += keysToDelete.length;
         } else {
           const size = this.memoryCache.size;
@@ -264,7 +264,7 @@ class CacheManager {
       const deleted = await redis!.del(...keys);
       this.stats.deletes += deleted;
       return true;
-    } catch (error) {
+    } catch (error: any) {
       this.stats.errors++;
       loggers.general.error('Cache clear error', error, { namespace });
       return false;
@@ -282,7 +282,7 @@ class CacheManager {
 
       const result = await redis!.exists(cacheKey);
       return result === 1;
-    } catch (error) {
+    } catch (error: any) {
       this.stats.errors++;
       loggers.general.error('Cache exists error', error, { key: cacheKey });
       return false;

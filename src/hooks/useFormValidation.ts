@@ -180,7 +180,7 @@ export function useFormValidation<T extends FieldValues>({
     async (data: T) => {
       try {
         await onSubmitSuccess?.(data);
-      } catch (error) {
+      } catch (error: any) {
         onSubmitError?.(error as Error);
       }
     },

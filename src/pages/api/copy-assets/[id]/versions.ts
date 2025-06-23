@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -29,7 +30,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Copy Asset Versions API error:', error);
     return res.status(500).json({ 
@@ -102,8 +103,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
   // Calculate version statistics
   const versionStats = {
     total_versions: (count || 0) + 1, // +1 for current version
-    major_versions: versions?.filter(v => v.is_major).length || 0,
-    minor_versions: versions?.filter(v => !v.is_major).length || 0,
+    major_versions: versions?.filter((v: any) => v.is_major).length || 0,
+    minor_versions: versions?.filter((v: any) => !v.is_major).length || 0,
     first_created: versions && versions.length > 0 
       ? versions[versions.length - 1].created_at 
       : currentVersion?.updated_at,
@@ -303,7 +304,7 @@ function calculateSimilarity(text1: string, text2: string): number {
   const words1 = new Set(text1.toLowerCase().split(/\s+/));
   const words2 = new Set(text2.toLowerCase().split(/\s+/));
   
-  const intersection = new Set([...words1].filter(x => words2.has(x)));
+  const intersection = new Set([...words1].filter((x: any) => words2.has(x)));
   const union = new Set([...words1, ...words2]);
   
   return union.size > 0 ? Math.round((intersection.size / union.size) * 100) : 0;
@@ -360,10 +361,10 @@ function analyzeTone(text: string): string {
   const casualWords = ['hey', 'cool', 'nice', 'fun', 'easy'];
   const urgentWords = ['now', 'today', 'immediate', 'urgent', 'limited'];
   
-  const excitementScore = excitementWords.filter(word => lowerText.includes(word)).length;
-  const professionalScore = professionalWords.filter(word => lowerText.includes(word)).length;
-  const casualScore = casualWords.filter(word => lowerText.includes(word)).length;
-  const urgentScore = urgentWords.filter(word => lowerText.includes(word)).length;
+  const excitementScore = excitementWords.filter((word: any) => lowerText.includes(word)).length;
+  const professionalScore = professionalWords.filter((word: any) => lowerText.includes(word)).length;
+  const casualScore = casualWords.filter((word: any) => lowerText.includes(word)).length;
+  const urgentScore = urgentWords.filter((word: any) => lowerText.includes(word)).length;
   
   const scores: Record<string, number> = { excitement: excitementScore, professional: professionalScore, casual: casualScore, urgent: urgentScore };
   const maxTone = Object.entries(scores).reduce((a, b) => (scores[a[0]] || 0) > (scores[b[0]] || 0) ? a : b);

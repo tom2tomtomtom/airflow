@@ -2,7 +2,8 @@ import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 
 // Since Next.js doesn't natively support WebSockets in API routes,
 // we'll create a polling-based real-time system that can be upgraded to WebSockets later
@@ -32,7 +33,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('WebSocket API error:', error);
     return res.status(500).json({
@@ -61,7 +62,7 @@ async function handleGetEvents(req: NextApiRequest, res: NextApiResponse, user: 
       return res.json({ events: [], count: 0 });
     }
 
-    const clientIds = userClients.map(uc => uc.client_id);
+    const clientIds = userClients.map((uc: any) => uc.client_id);
 
     let query = supabase
       .from('realtime_events')
@@ -94,7 +95,7 @@ async function handleGetEvents(req: NextApiRequest, res: NextApiResponse, user: 
 
     // Get additional context for events
     const enrichedEvents = await Promise.all(
-      (events || []).map(async (event) => {
+      (events || []).map(async (_event) => {
         const enrichedEvent = { ...event };
         
         // Add context based on event type
@@ -139,7 +140,7 @@ async function handleGetEvents(req: NextApiRequest, res: NextApiResponse, user: 
       count: enrichedEvents.length,
       timestamp: new Date().toISOString()
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error in handleGetEvents:', error);
     return res.status(500).json({ error: 'Failed to fetch events' });
@@ -176,7 +177,7 @@ async function handleCreateEvent(req: NextApiRequest, res: NextApiResponse, user
         .select('user_id')
         .eq('client_id', client_id);
       
-      userIds = clientUsers?.map(u => u.user_id) || [];
+      userIds = clientUsers?.map((u: any) => u.user_id) || [];
     }
 
     // Create events for each target user
@@ -200,7 +201,7 @@ async function handleCreateEvent(req: NextApiRequest, res: NextApiResponse, user
     });
 
     const results = await Promise.all(eventPromises);
-    const successfulEvents = results.filter(r => !r.error).map(r => r.data);
+    const successfulEvents = results.filter((r: any) => !r.error).map((r: any) => r.data);
 
     // Also trigger any webhook notifications here
     await triggerWebhookNotifications(type, data, client_id, successfulEvents);
@@ -210,7 +211,7 @@ async function handleCreateEvent(req: NextApiRequest, res: NextApiResponse, user
       events: successfulEvents,
       count: successfulEvents.length
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error creating realtime event:', error);
     return res.status(500).json({ error: 'Failed to create event' });
@@ -250,7 +251,7 @@ async function handleMarkRead(req: NextApiRequest, res: NextApiResponse, user: a
       message: 'Events marked as read',
       updated_count: data?.length || 0
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error in handleMarkRead:', error);
     return res.status(500).json({ error: 'Failed to mark events as read' });
@@ -290,7 +291,7 @@ async function triggerWebhookNotifications(
       timestamp: new Date().toISOString(),
       client_id: clientId,
       data: eventData,
-      events: events.map(e => ({
+      events: events.map((e: any) => ({
         id: e.id,
         type: e.type,
         user_id: e.user_id,
@@ -314,7 +315,7 @@ async function triggerWebhookNotifications(
       // In production, you might want to queue this for retry
     });
 
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error triggering webhook notifications:', error);
   }
@@ -344,10 +345,10 @@ export async function broadcastEvent(
     if (!clientUsers) return;
 
     const targetUsers = clientUsers
-      .map(u => u.user_id)
-      .filter(userId => userId !== excludeUserId);
+      .map((u: any) => u.user_id)
+      .filter((userId: any) => userId !== excludeUserId);
 
-    const eventPromises = targetUsers.map(userId => {
+    const eventPromises = targetUsers.map((userId: any) => {
       const eventData = {
         id: `${type}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         type,
@@ -364,7 +365,7 @@ export async function broadcastEvent(
     });
 
     await Promise.all(eventPromises);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error broadcasting event:', error);
   }

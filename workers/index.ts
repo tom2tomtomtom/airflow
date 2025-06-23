@@ -1,7 +1,5 @@
-import { getErrorMessage } from '@/utils/errorUtils';
 // workers/index.ts
 import { Worker } from 'bullmq';
-import { connection } from '@/lib/queue/connection';
 import { renderWorker } from './render';
 import { emailWorker } from './email';
 

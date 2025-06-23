@@ -106,7 +106,7 @@ export class BriefParser {
 
       return briefData;
 
-    } catch (error) {
+    } catch (error: any) {
       const classified = classifyError(error as Error, {
         route: 'brief-parser',
         metadata: { fileName: file.name, fileSize: file.size }
@@ -134,7 +134,7 @@ export class BriefParser {
       } else {
         throw new Error(`Unsupported file type: ${fileType}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Text extraction failed', error);
       throw new Error(`Failed to extract text from ${fileType}: ${error}`);
     }
@@ -156,7 +156,7 @@ export class BriefParser {
       
       // Placeholder implementation
       throw new Error('PDF parsing not yet implemented. Please convert to text or DOCX format.');
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(`PDF extraction failed: ${error}`);
     }
   }
@@ -172,7 +172,7 @@ export class BriefParser {
       
       // Placeholder implementation
       throw new Error('DOCX parsing not yet implemented. Please convert to text format.');
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(`DOCX extraction failed: ${error}`);
     }
   }
@@ -277,13 +277,13 @@ If information is not clearly stated, use null for that field. Be accurate and d
         keyProposition: this.sanitizeString(parsed.keyProposition),
         coreReasonToBuy: this.sanitizeString(parsed.coreReasonToBuy),
         targetAudience: this.sanitizeString(parsed.targetAudience),
-        platforms: Array.isArray(parsed.platforms) ? parsed.platforms.map(p => this.sanitizeString(p)).filter(Boolean) : [],
+        platforms: Array.isArray(parsed.platforms) ? parsed.platforms.map((p: any) => this.sanitizeString(p)).filter(Boolean) : [],
         budget: this.sanitizeString(parsed.budget),
         timeline: this.sanitizeString(parsed.timeline),
         extractedSections: parsed.extractedSections || {},
         confidence: typeof parsed.confidence === 'number' ? parsed.confidence : 0
       };
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to parse AI response', error);
       throw new Error('Invalid AI response format');
     }
@@ -320,7 +320,7 @@ If information is not clearly stated, use null for that field. Be accurate and d
       const trimmed = line.trim().toLowerCase();
       
       // Check if line is a section header
-      const matchedHeader = sectionHeaders.find(header => 
+      const matchedHeader = sectionHeaders.find((header: any) => 
         trimmed.includes(header) && trimmed.length < 50
       );
       
@@ -474,7 +474,7 @@ Respond in JSON format with only the enhanced fields that need improvement.
     try {
       const response = await this.callAIService(prompt);
       return this.parseAIResponse(response);
-    } catch (error) {
+    } catch (error: any) {
       logger.warn('Brief enhancement failed, returning original', error);
       return {};
     }

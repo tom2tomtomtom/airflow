@@ -66,7 +66,7 @@ export class StructuredLogger {
       };
       
       // Remove undefined values
-      Object.keys(entry).forEach(key => {
+      Object.keys(entry).forEach((key: any) => {
         if (entry[key as keyof StructuredLogEntry] === undefined) {
           delete entry[key as keyof StructuredLogEntry];
         }
@@ -261,7 +261,7 @@ export class StructuredLogger {
     const childLogger = Object.create(this);
     const originalMethods = ['debug', 'info', 'warn', 'error'];
     
-    originalMethods.forEach(method => {
+    originalMethods.forEach((method: any) => {
       childLogger[method] = (message: string, context?: LogContext) => {
         const mergedContext = { ...persistentContext, ...context };
         this[method as keyof this](message, mergedContext);

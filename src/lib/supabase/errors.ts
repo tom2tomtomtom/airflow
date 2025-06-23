@@ -1,4 +1,3 @@
-import { PostgrestError } from '@supabase/supabase-js';
 import { loggers } from '@/lib/logger';
 
 // Supabase error types

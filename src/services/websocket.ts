@@ -85,11 +85,11 @@ class WebSocketService extends EventEmitter {
         this.startHeartbeat(ws);
       };
 
-      ws.onmessage = (event) => {
+      ws.onmessage = (event: any) => {
         try {
           const message: WebSocketMessage = JSON.parse(event.data);
           this.handleMessage(message);
-        } catch (error) {
+        } catch (error: any) {
     const message = getErrorMessage(error);
           if (process.env.NODE_ENV === 'development') {
 
@@ -99,7 +99,7 @@ class WebSocketService extends EventEmitter {
         }
       };
 
-      ws.onclose = (event) => {
+      ws.onclose = (event: any) => {
         if (process.env.NODE_ENV === 'development') {
           console.log('WebSocket disconnected:', event.code);
         }
@@ -111,7 +111,7 @@ class WebSocketService extends EventEmitter {
         }
       };
 
-      ws.onerror = (error) => {
+      ws.onerror = (error: any) => {
         if (process.env.NODE_ENV === 'development') {
 
           console.error('WebSocket error:', error);
@@ -120,7 +120,7 @@ class WebSocketService extends EventEmitter {
         this.emit('error', error);
       };
 
-    } catch (error) {
+    } catch (error: any) {
     const message = getErrorMessage(error);
       if (process.env.NODE_ENV === 'development') {
 
@@ -210,7 +210,7 @@ class WebSocketService extends EventEmitter {
       if (ws.readyState === WebSocket.OPEN) {
         try {
           ws.send(messageStr);
-        } catch (error) {
+        } catch (error: any) {
     const message = getErrorMessage(error);
           if (process.env.NODE_ENV === 'development') {
 
@@ -231,12 +231,12 @@ class WebSocketService extends EventEmitter {
 
     const messageStr = JSON.stringify(message);
     
-    userConnections.forEach(connectionId => {
+    userConnections.forEach((connectionId: any) => {
       const ws = this.connections.get(connectionId);
       if (ws && ws.readyState === WebSocket.OPEN) {
         try {
           ws.send(messageStr);
-        } catch (error) {
+        } catch (error: any) {
     const message = getErrorMessage(error);
           if (process.env.NODE_ENV === 'development') {
 
@@ -326,7 +326,7 @@ class WebSocketService extends EventEmitter {
       this.heartbeatInterval = null;
     }
 
-    this.connections.forEach(ws => {
+    this.connections.forEach((ws: any) => {
       if (ws.readyState === WebSocket.OPEN) {
         ws.close(1000, 'Server shutdown');
       }

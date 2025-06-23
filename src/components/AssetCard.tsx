@@ -211,7 +211,7 @@ const AssetCard: React.FC<AssetCardProps> = ({
         {/* Tags */}
         {asset.tags && asset.tags.length > 0 && (
           <Box sx={{ mt: 1, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-            {asset.tags.slice(0, maxTags).map(tag => (
+            {asset.tags.slice(0, maxTags).map((tag: any) => (
               <Chip
                 key={tag}
                 label={tag}

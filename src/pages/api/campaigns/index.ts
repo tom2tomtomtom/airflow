@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -38,7 +39,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Campaigns API error:', error);
     return res.status(500).json({ 
@@ -166,7 +167,7 @@ async function getCampaignStats(campaignId: string): Promise<any> {
         conversion_rate: analyticsTotal.clicks > 0 ? (analyticsTotal.conversions / analyticsTotal.clicks) * 100 : 0,
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting campaign stats:', error);
     return {
@@ -239,7 +240,7 @@ async function initializeCampaignAnalytics(campaignId: string): Promise<void> {
           created_at: new Date().toISOString(),
         }
       });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error initializing campaign analytics:', error);
     // Don't throw error, as this is not critical for campaign creation

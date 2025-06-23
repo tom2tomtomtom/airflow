@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 // Secure environment variable validation
 import { loggers } from './logger';
 import { AppError, ErrorCode } from '@/types/errors';
@@ -273,7 +274,7 @@ export class EnvironmentConfig {
 
     // Log warnings
     if (warnings.length > 0) {
-      warnings.forEach(warning => loggers.general.warn(warning));
+      warnings.forEach((warning: any) => loggers.general.warn(warning));
     }
 
     // Throw error if any required validation failed
@@ -329,7 +330,7 @@ export class EnvironmentConfig {
     const value = this.config.get(key);
     if (value === undefined) {
       // Check if it's an optional variable that wasn't set
-      const definition = ENV_DEFINITIONS.find(def => def.key === key);
+      const definition = ENV_DEFINITIONS.find((def: any) => def.key === key);
       if (definition && !definition.required) {
         return undefined as T;
       }
@@ -379,7 +380,7 @@ export const requireEnvVar = (key: string, description?: string): string => {
   return value;
 };
 
-export const getEnvVar = (key: string, defaultValue?: string): string | undefined => {
+export const getEnvVar = (key: string, defaultValue?: string)?: string => {
   return process.env[key] || defaultValue;
 };
 
@@ -389,7 +390,7 @@ export const getEnvBool = (key: string, defaultValue = false): boolean => {
   return ['true', '1', 'yes'].includes(value.toLowerCase());
 };
 
-export const getEnvNumber = (key: string, defaultValue?: number): number | undefined => {
+export const getEnvNumber = (key: string, defaultValue?: number)?: number => {
   const value = process.env[key];
   if (!value) return defaultValue;
   const parsed = Number(value);
@@ -427,7 +428,7 @@ export const generateEnvDocumentation = (): string => {
     doc += `## ${category}\n\n`;
 
     for (const key of keys) {
-      const def = ENV_DEFINITIONS.find(d => d.key === key);
+      const def = ENV_DEFINITIONS.find((d: any) => d.key === key);
       if (def) {
         doc += `### ${def.key}\n`;
         doc += `- **Required**: ${def.required ? 'Yes' : 'No'}\n`;

@@ -80,7 +80,7 @@ export class AICircuitBreaker {
       } else {
         console.log('⚠️ AI Circuit Breaker using local state (Redis unavailable)');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('AI Circuit Breaker Redis initialization failed:', error);
       this.useRedis = false;
     }
@@ -145,7 +145,7 @@ export class AICircuitBreaker {
       const result = await fn();
       await this.recordSuccess(circuitKey);
       return result;
-    } catch (error) {
+    } catch (error: any) {
       await this.recordFailure(circuitKey);
       throw error;
     }
@@ -161,7 +161,7 @@ export class AICircuitBreaker {
         if (stats) {
           return stats;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error getting circuit breaker stats from Redis:', error);
       }
     }
@@ -186,7 +186,7 @@ export class AICircuitBreaker {
       try {
         await redisManager.hset('circuit_breaker_stats', circuitKey, stats);
         await redisManager.expire('circuit_breaker_stats', 24 * 60 * 60); // 24 hours TTL
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error updating circuit breaker stats in Redis:', error);
       }
     }
@@ -310,7 +310,7 @@ export class AICircuitBreaker {
       try {
         const count = await redisManager.get<number>(`half_open_calls:${circuitKey}`);
         return count || 0;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error getting half-open calls from Redis:', error);
       }
     }
@@ -325,7 +325,7 @@ export class AICircuitBreaker {
       try {
         await redisManager.incr(`half_open_calls:${circuitKey}`);
         await redisManager.expire(`half_open_calls:${circuitKey}`, 300); // 5 minutes TTL
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error incrementing half-open calls in Redis:', error);
       }
     }
@@ -349,11 +349,11 @@ export class AICircuitBreaker {
               ...stats,
               config: this.getConfigForKey(key),
             };
-          } catch (error) {
+          } catch (error: any) {
             console.error(`Error parsing stats for ${key}:`, error);
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error getting circuit breaker status from Redis:', error);
       }
     }
@@ -390,7 +390,7 @@ export class AICircuitBreaker {
     if (this.useRedis) {
       try {
         await redisManager.del(`half_open_calls:${circuitKey}`);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error resetting half-open calls in Redis:', error);
       }
     }

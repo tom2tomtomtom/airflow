@@ -160,7 +160,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
     ];
 
     setActivities(initialActivities);
-    setUnreadCount(initialActivities.filter(a => !a.isRead).length);
+    setUnreadCount(initialActivities.filter((a: any) => !a.isRead).length);
     setIsConnected(true);
 
     // Subscribe to real-time activity updates
@@ -278,7 +278,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
   };
 
   const handleLike = (activityId: string) => {
-    setActivities(prev => prev.map(activity => 
+    setActivities(prev => prev.map((activity: any) => 
       activity.id === activityId
         ? {
             ...activity,
@@ -298,7 +298,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
     const comment = commentInputs[activityId];
     if (!comment?.trim()) return;
 
-    setActivities(prev => prev.map(activity => 
+    setActivities(prev => prev.map((activity: any) => 
       activity.id === activityId
         ? {
             ...activity,
@@ -315,7 +315,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
   };
 
   const handleMarkAllRead = () => {
-    setActivities(prev => prev.map(a => ({ ...a, isRead: true })));
+    setActivities(prev => prev.map((a: any) => ({ ...a, isRead: true })));
     setUnreadCount(0);
   };
 
@@ -332,7 +332,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
   };
 
   const filteredActivities = filterTypes
-    ? activities.filter(a => filterTypes.includes(a.type))
+    ? activities.filter((a: any) => filterTypes.includes(a.type))
     : activities;
 
   if (!activeClient) {

@@ -141,7 +141,7 @@ export const validateEnvironmentRequirements = (env: Environment, config: Partia
   const warnings: string[] = [];
   
   // Check required secrets
-  rules.requiredSecrets.forEach(secret => {
+  rules.requiredSecrets.forEach((secret: any) => {
     if (!config[secret as keyof AppConfig]) {
       errors.push(`Missing required secret for ${env}: ${secret}`);
     }
@@ -149,7 +149,7 @@ export const validateEnvironmentRequirements = (env: Environment, config: Partia
   
   // Check recommended secrets for production
   if (env === 'production' && rules.recommendedSecrets) {
-    rules.recommendedSecrets.forEach(secret => {
+    rules.recommendedSecrets.forEach((secret: any) => {
       if (!config[secret as keyof AppConfig]) {
         warnings.push(`Missing recommended secret for production: ${secret}`);
       }

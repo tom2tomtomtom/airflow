@@ -65,7 +65,8 @@
  */
 
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withAPIRateLimit } from '@/lib/rate-limiter';
 import { successResponse, errorResponse, handleApiError, methodNotAllowed, validateRequiredFields, ApiErrorCode } from '@/lib/api-response';
@@ -93,7 +94,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return methodNotAllowed(res, ['GET', 'POST', 'DELETE']);
     }
-  } catch (error) {
+  } catch (error: any) {
     return handleApiError(res, error, 'workflow assets handler');
   }
 }
@@ -162,7 +163,7 @@ async function getWorkflowAssets(
     }
 
     // Convert to workflow asset format
-    const workflowAssets: WorkflowAsset[] = (assets || []).map(asset => ({
+    const workflowAssets: WorkflowAsset[] = (assets || []).map((asset: any) => ({
       id: asset.id,
       type: asset.type === 'voice' ? 'copy' : asset.type, // Map voice to copy for workflow
       url: asset.file_url,
@@ -187,7 +188,7 @@ async function getWorkflowAssets(
       timestamp: new Date().toISOString()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return handleApiError(res, error, 'getWorkflowAssets');
   }
 }
@@ -258,7 +259,7 @@ async function selectWorkflowAssets(
       timestamp: new Date().toISOString()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return handleApiError(res, error, 'selectWorkflowAssets');
   }
 }
@@ -314,7 +315,7 @@ async function removeWorkflowAsset(
       timestamp: new Date().toISOString()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return handleApiError(res, error, 'removeWorkflowAsset');
   }
 }

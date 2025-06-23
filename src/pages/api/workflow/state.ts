@@ -56,7 +56,8 @@
  */
 
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withAPIRateLimit } from '@/lib/rate-limiter';
 import { successResponse, errorResponse, handleApiError, methodNotAllowed, ApiErrorCode } from '@/lib/api-response';
@@ -91,7 +92,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return methodNotAllowed(res, ['GET', 'POST', 'DELETE']);
     }
-  } catch (error) {
+  } catch (error: any) {
     return handleApiError(res, error, 'workflow state handler');
   }
 }
@@ -146,7 +147,7 @@ async function getWorkflowState(
       timestamp: new Date().toISOString()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return handleApiError(res, error, 'getWorkflowState');
   }
 }
@@ -222,7 +223,7 @@ async function updateWorkflowState(
       timestamp: new Date().toISOString()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return handleApiError(res, error, 'updateWorkflowState');
   }
 }
@@ -260,7 +261,7 @@ async function deleteWorkflowState(
       timestamp: new Date().toISOString()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return handleApiError(res, error, 'deleteWorkflowState');
   }
 }

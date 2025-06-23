@@ -59,7 +59,7 @@ export const SmartProgressIndicator: React.FC<SmartProgressIndicatorProps> = ({
 
   useEffect(() => {
     // Calculate overall progress
-    const completedSteps = steps.filter(step => step.status === 'completed').length;
+    const completedSteps = steps.filter((step: any) => step.status === 'completed').length;
     const totalSteps = steps.length;
     const baseProgress = (completedSteps / totalSteps) * 100;
     

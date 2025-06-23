@@ -13,7 +13,7 @@ const MockNotificationProvider = ({ children }: { children: React.ReactNode }) =
 );
 
 // Mock sessionStorage
-const mockSessionStorage = (() => {
+const mockSessionStorage = ((: any) => {
   let store: Record<string, string> = {};
   return {
     getItem: jest.fn((key: string) => store[key] || null),

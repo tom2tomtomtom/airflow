@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { test, expect } from '@playwright/test';
 
 test.describe('Complete AIrWAVE Workflow Testing', () => {
@@ -76,6 +77,7 @@ test.describe('Complete AIrWAVE Workflow Testing', () => {
         }
         
       } catch (error) {
+    const message = getErrorMessage(error);
         console.log(`   ❌ Login form submission failed: ${error.message}`);
       }
     } else {
@@ -181,6 +183,7 @@ test.describe('Complete AIrWAVE Workflow Testing', () => {
         }
         
       } catch (error) {
+    const message = getErrorMessage(error);
         console.log(`❌ Client creation workflow failed: ${error.message}`);
       }
     } else {
@@ -267,6 +270,7 @@ test.describe('Complete AIrWAVE Workflow Testing', () => {
         }
         
       } catch (error) {
+    const message = getErrorMessage(error);
         console.log(`❌ File upload test failed: ${error.message}`);
       }
     } else if (assetElements.dragDropZones > 0) {
@@ -377,6 +381,7 @@ test.describe('Complete AIrWAVE Workflow Testing', () => {
         }
         
       } catch (error) {
+    const message = getErrorMessage(error);
         console.log(`❌ Strategy creation workflow failed: ${error.message}`);
       }
     } else {
@@ -484,6 +489,7 @@ test.describe('Complete AIrWAVE Workflow Testing', () => {
         }
         
       } catch (error) {
+    const message = getErrorMessage(error);
         console.log(`❌ Matrix creation workflow failed: ${error.message}`);
       }
     } else {

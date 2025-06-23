@@ -186,7 +186,7 @@ export async function trackQueryPerformance<T>(
     }
     
     return result;
-  } catch (error) {
+  } catch (error: any) {
     const duration = Number(process.hrtime.bigint() - startTime) / 1000000;
     
     loggers.db.error('Query failed', error, {
@@ -209,7 +209,7 @@ export function optimizeResponse<T extends Record<string, any>>(
   
   // If data is an array, map over each item
   if (Array.isArray(data)) {
-    return data.map(item => pickFields(item, fields)) as any;
+    return data.map((item: any) => pickFields(item, fields)) as any;
   }
   
   // Otherwise, pick fields from single object

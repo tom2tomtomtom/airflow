@@ -146,7 +146,7 @@ export class DatabaseConnectionPool {
       });
       
       this.isInitialized = true;
-    } catch (error) {
+    } catch (error: any) {
       loggers.general.error('Failed to initialize database pool', error);
       throw error;
     }
@@ -185,7 +185,7 @@ export class DatabaseConnectionPool {
         duration
       };
       
-    } catch (error) {
+    } catch (error: any) {
       const duration = Date.now() - startTime;
       this.stats.errors++;
       
@@ -210,7 +210,7 @@ export class DatabaseConnectionPool {
       loggers.general.debug('Transaction completed successfully');
       return result;
       
-    } catch (error) {
+    } catch (error: any) {
       await client.query('ROLLBACK');
       loggers.general.error('Transaction failed, rolled back', error);
       throw error;
@@ -250,7 +250,7 @@ export class DatabaseConnectionPool {
         latency,
         connections: this.getStats()
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         healthy: false,
         latency: Date.now() - startTime,
@@ -294,7 +294,7 @@ export class DatabaseConnectionPool {
     try {
       const result = await this.query(query, [limit]);
       return result.rows;
-    } catch (error) {
+    } catch (error: any) {
       loggers.general.warn('pg_stat_statements not available', error);
       return [];
     }

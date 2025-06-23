@@ -276,7 +276,7 @@ const Templates: React.FC = () => {
 
       showNotification('Template duplicated successfully!', 'success');
       window.location.reload();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error duplicating template:', error);
       showNotification('Failed to duplicate template. Please try again.', 'error');
     }
@@ -310,7 +310,7 @@ const Templates: React.FC = () => {
 
         showNotification('Template deleted successfully!', 'success');
         window.location.reload();
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error deleting template:', error);
         showNotification('Failed to delete template. Please try again.', 'error');
       }
@@ -359,7 +359,7 @@ const Templates: React.FC = () => {
       );
       handleCloseDialog();
       window.location.reload();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving template:', error);
       showNotification(
         `Failed to ${currentTemplate ? 'update' : 'create'} template. Please try again.`,
@@ -372,7 +372,7 @@ const Templates: React.FC = () => {
     return (
       <DashboardLayout title="Templates">
         <Grid container spacing={3}>
-          {[1, 2, 3, 4, 5, 6].map((i) => (
+          {[1, 2, 3, 4, 5, 6].map((i: any) => (
             <Grid size={{ xs: 12, sm: 6, md: 4 }} key={i}>
               <CardSkeleton height={300} />
             </Grid>

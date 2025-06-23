@@ -192,7 +192,7 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     
     // IMPORTANT: Return the modified response to ensure cookies are set
     return response;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Middleware error:', error);
     
     // For API routes, return 401

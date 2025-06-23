@@ -5,7 +5,6 @@ import {
   Paper,
   Button,
   Collapse,
-  IconButton,
   Alert,
   AlertTitle,
 } from '@mui/material';
@@ -14,7 +13,6 @@ import {
   Refresh as RefreshIcon,
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
-  BugReport as BugReportIcon,
 } from '@mui/icons-material';
 import { loggers } from '@/lib/logger';
 
@@ -89,14 +87,14 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     onError?.(error, errorInfo, errorId);
 
     // Report to error tracking service
-    if (typeof window !== 'undefined' && window.Sentry) {
-      window.Sentry.withScope((scope) => {
+    if (typeof window !== 'undefined' && (window as any).Sentry) {
+      (window as any).Sentry.withScope((scope: any) => {
         scope.setTag('errorBoundary', true);
         scope.setContext('errorInfo', {
           componentStack: errorInfo.componentStack,
           errorId,
         });
-        window.Sentry.captureException(error);
+        (window as any).Sentry.captureException(error);
       });
     }
   }

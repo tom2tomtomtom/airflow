@@ -44,7 +44,7 @@ export default async function handler(
         },
       });
       supabaseStatus = response.ok ? '✅ Connected' : `❌ Error: ${response.status}`;
-    } catch (error) {
+    } catch (error: any) {
     const message = getErrorMessage(error);
       supabaseStatus = '❌ Connection failed';
     }
@@ -58,7 +58,7 @@ export default async function handler(
     'JWT_SECRET',
   ];
 
-  const missingRequired = requiredEnvVars.filter(key => !process.env[key]);
+  const missingRequired = requiredEnvVars.filter((key: any) => !process.env[key]);
   const isConfigured = missingRequired.length === 0;
 
   res.status(200).json({

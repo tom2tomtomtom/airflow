@@ -1,3 +1,4 @@
+import { NextApiRequest, NextApiResponse } from 'next';
 import { getErrorMessage } from '@/utils/errorUtils';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
@@ -184,7 +185,7 @@ export default async function handler(
       },
     });
 
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Brief upload error:', error);
     return res.status(500).json({
@@ -208,7 +209,7 @@ async function parseBriefAsync(briefId: string, content: string): Promise<void> 
         content,
       }),
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Failed to trigger parsing:', error);
   }

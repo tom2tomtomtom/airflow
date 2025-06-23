@@ -29,7 +29,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     
     // Send the JSON file
     res.status(200).send(exportJson);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Data export failed:', error);
     throw error;

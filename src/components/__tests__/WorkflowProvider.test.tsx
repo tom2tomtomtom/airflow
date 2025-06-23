@@ -81,7 +81,7 @@ const WorkflowContextTestComponent: React.FC = () => {
     // Try to access workflow context
     try {
       setContextValue({ available: true });
-    } catch (error) {
+    } catch (error: any) {
       setContextValue({
         available: false,
         error: error instanceof Error ? error.message : 'Unknown error',

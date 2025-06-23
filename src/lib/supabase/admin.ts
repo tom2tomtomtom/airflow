@@ -52,7 +52,7 @@ export function createAdminSupabaseClient(): SupabaseClient<Database> {
 
     loggers.supabase.info('Admin Supabase client initialized');
     return adminClientInstance;
-  } catch (error) {
+  } catch (error: any) {
     loggers.supabase.error('Failed to create admin Supabase client', error);
     throw new Error('Failed to initialize admin Supabase client');
   }

@@ -81,7 +81,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     );
     
     return res.json({ success: true, data: analytics });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Analytics overview API error:', error);
     return res.status(500).json({ 
@@ -111,7 +111,7 @@ async function getAnalyticsOverview(
     .select('client_id')
     .eq('user_id', userId);
 
-  const clientIds = userClients?.map(uc => uc.client_id) || [];
+  const clientIds = userClients?.map((uc: any) => uc.client_id) || [];
   
   if (clientIds.length === 0) {
     return getEmptyAnalytics(startDate, endDate);
@@ -195,7 +195,7 @@ function calculateDailyPerformance(
   }
 
   // Aggregate analytics data by date
-  campaigns.forEach(campaign => {
+  campaigns.forEach((campaign: any) => {
     campaign.campaign_analytics?.forEach((analytics: any) => {
       const dateStr = analytics.date || analytics.created_at?.split('T')[0];
       if (dateStr && dailyData[dateStr]) {
@@ -229,7 +229,7 @@ function calculatePlatformDistribution(campaigns: any[]): Array<any> {
   const platformStats: Record<string, any> = {};
   let totalImpressions = 0;
 
-  campaigns.forEach(campaign => {
+  campaigns.forEach((campaign: any) => {
     const platform = campaign.platform || 'Unknown';
     if (!platformStats[platform]) {
       platformStats[platform] = {
@@ -277,7 +277,7 @@ async function getTopPerformingContent(
       .order('created_at', { ascending: false })
       .limit(10);
 
-    return (campaigns || []).map(campaign => {
+    return (campaigns || []).map((campaign: any) => {
       const totalImpressions = campaign.campaign_analytics?.reduce((sum: number, a: any) => sum + (a.impressions || 0), 0) || 0;
       const totalClicks = campaign.campaign_analytics?.reduce((sum: number, a: any) => sum + (a.clicks || 0), 0) || 0;
       const totalConversions = campaign.campaign_analytics?.reduce((sum: number, a: any) => sum + (a.conversions || 0), 0) || 0;
@@ -298,7 +298,7 @@ async function getTopPerformingContent(
       };
     }).sort((a, b) => b.views - a.views);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching top performing content:', error);
     return [];
   }
@@ -310,7 +310,7 @@ function calculateKPISummary(campaigns: any[]): any {
   let totalConversions = 0;
   let totalSpend = 0;
 
-  campaigns.forEach(campaign => {
+  campaigns.forEach((campaign: any) => {
     campaign.campaign_analytics?.forEach((analytics: any) => {
       totalImpressions += analytics.impressions || 0;
       totalClicks += analytics.clicks || 0;
@@ -385,7 +385,7 @@ async function calculateTrends(
       },
     };
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error calculating trends:', error);
     return {
       impressions: { value: 0, change: 0 },
@@ -402,7 +402,7 @@ function calculatePeriodMetrics(campaigns: any[]): any {
   let conversions = 0;
   let spend = 0;
 
-  campaigns.forEach(campaign => {
+  campaigns.forEach((campaign: any) => {
     campaign.campaign_analytics?.forEach((analytics: any) => {
       impressions += analytics.impressions || 0;
       clicks += analytics.clicks || 0;

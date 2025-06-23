@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 /**
  * Rate Limiting Utilities
  * Provides rate limiting for API endpoints to prevent abuse
@@ -28,7 +29,7 @@ const rateLimitStore: RateLimitStore = {};
  */
 function cleanupExpiredEntries(): void {
   const now = Date.now();
-  Object.keys(rateLimitStore).forEach(key => {
+  Object.keys(rateLimitStore).forEach((key: any) => {
     const entry = rateLimitStore[key];
     if (entry && entry.resetTime < now) {
       delete rateLimitStore[key];
@@ -155,7 +156,7 @@ export function withRateLimit(
       let nextCalled = false;
       rateLimit(req, res, () => {
         nextCalled = true;
-        handler(req, res).then(resolve).catch(reject);
+        handler(req, res).then(resolve).catch (reject: any);
       });
       
       // If next wasn't called, the rate limit was hit
@@ -240,5 +241,5 @@ export function getRateLimitStats(): {
  * Clear all rate limit entries (for testing)
  */
 export function clearRateLimitStore(): void {
-  Object.keys(rateLimitStore).forEach(key => delete rateLimitStore[key]);
+  Object.keys(rateLimitStore).forEach((key: any) => delete rateLimitStore[key]);
 }

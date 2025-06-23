@@ -166,7 +166,7 @@ async function getUserProfile(supabase: any, user: any): Promise<any> {
     }
 
     return profile;
-  } catch (err) {
+  } catch (err: any) {
     console.error('Profile handling exception:', err);
     return createFallbackProfile(user);
   }
@@ -201,7 +201,7 @@ async function getUserClients(supabase: any, userId: string): Promise<string[]> 
     }
 
     return userClients?.map((uc: { client_id: string }) => uc.client_id) || [];
-  } catch (err) {
+  } catch (err: any) {
     console.error('Client access exception:', err);
     return [];
   }
@@ -240,7 +240,7 @@ export function withAuth(handler: AuthenticatedHandler) {
 
       // Call the handler
       return await handler(req as AuthenticatedRequest, res);
-    } catch (error) {
+    } catch (error: any) {
       const message = getErrorMessage(error);
       console.error('❌ Authentication error:', error);
       return errorResponse(

@@ -16,7 +16,7 @@ if (typeof window === 'undefined') {
     aiRateLimiter = require('@/lib/rate-limiting/ai-rate-limiter').aiRateLimiter;
     aiResponseCache = require('@/lib/caching/ai-response-cache').aiResponseCache;
     aiCircuitBreaker = require('@/lib/circuit-breaker/ai-circuit-breaker').aiCircuitBreaker;
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Server-side dependencies not available, using fallbacks');
   }
 }
@@ -45,7 +45,7 @@ export const useCopyActions = ({
       return;
     }
 
-    const selectedMotivations = state?.motivations?.filter(m => m.selected);
+    const selectedMotivations = state?.motivations?.filter((m: any) => m.selected);
     if (selectedMotivations.length < 1) {
       showNotification('Minimum 1 motivation required to generate copy', 'error');
       return;
@@ -186,7 +186,7 @@ export const useCopyActions = ({
       } else {
         throw new Error(result.message || 'Failed to generate copy');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating copy:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to generate copy. Please try again.';
       dispatch({ type: 'SET_ERROR', error: errorMessage });
@@ -224,7 +224,7 @@ export const useCopyActions = ({
       } else {
         throw new Error(result.message || 'Failed to store copy assets');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error storing copy assets:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to store copy assets';
       dispatch({ type: 'SET_ERROR', error: errorMessage });

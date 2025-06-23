@@ -55,7 +55,7 @@ export const AssetUploadModal: React.FC<AssetUploadModalProps> = ({
   const { showNotification } = useNotification();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    const newFiles = acceptedFiles.map((file) => ({
+    const newFiles = acceptedFiles.map((file: any) => ({
       file,
       preview: URL.createObjectURL(file),
       type: file.type,

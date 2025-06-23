@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -34,7 +35,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Video Generations API error:', error);
     return res.status(500).json({
@@ -70,7 +71,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     });
   }
 
-  const clientIds = userClients.map(uc => uc.client_id);
+  const clientIds = userClients.map((uc: any) => uc.client_id);
 
   let query = supabase
     .from('video_generations')
@@ -139,7 +140,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   } else {
     // Return unique generations (one per generation_id)
     const uniqueGenerations = getUniqueGenerations(generations || []);
-    processedData = uniqueGenerations.map(gen => enhanceGenerationData(gen));
+    processedData = uniqueGenerations.map((gen: any) => enhanceGenerationData(gen));
   }
 
   // Calculate summary statistics
@@ -199,7 +200,7 @@ async function deleteGeneration(req: NextApiRequest, res: NextApiResponse, user:
   }
 
   // Check if any jobs are still processing
-  const processingJobs = generations.filter(gen => ['pending', 'processing'].includes(gen.status));
+  const processingJobs = generations.filter((gen: any) => ['pending', 'processing'].includes(gen.status));
   if (processingJobs.length > 0) {
     return res.status(409).json({
       error: 'Cannot delete generation with active jobs',
@@ -284,7 +285,7 @@ async function deleteJob(req: NextApiRequest, res: NextApiResponse, user: any, j
 function groupByGeneration(generations: any[]): any[] {
   const grouped: Record<string, any> = {};
 
-  generations.forEach(gen => {
+  generations.forEach((gen: any) => {
     const genId = gen.generation_id;
     if (!grouped[genId]) {
       grouped[genId] = {
@@ -344,7 +345,7 @@ function groupByGeneration(generations: any[]): any[] {
 function getUniqueGenerations(generations: any[]): any[] {
   const unique: Record<string, any> = {};
 
-  generations.forEach(gen => {
+  generations.forEach((gen: any) => {
     const genId = gen.generation_id;
     if (!unique[genId] || new Date(gen.created_at) > new Date(unique[genId].created_at)) {
       unique[genId] = gen;
@@ -413,13 +414,13 @@ function calculateSummary(generations: any[]): any {
 
   // Calculate time-based stats
   const today = new Date().toISOString().split('T')[0];
-  const todayGenerations = generations.filter(gen => 
+  const todayGenerations = generations.filter((gen: any) => 
     gen.created_at.startsWith(today)
   ).length;
 
   const thisWeek = new Date();
   thisWeek.setDate(thisWeek.getDate() - 7);
-  const weeklyGenerations = generations.filter(gen => 
+  const weeklyGenerations = generations.filter((gen: any) => 
     new Date(gen.created_at) >= thisWeek
   ).length;
 

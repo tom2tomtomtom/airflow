@@ -1,13 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Slider } from '@/components/ui/slider';
-import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { 
   CheckCircle2, 
@@ -74,7 +70,7 @@ export function MotivationSelector({
 
   const toggleSelection = (motivationId: string) => {
     const newSelection = selectedMotivations.includes(motivationId)
-      ? selectedMotivations.filter(id => id !== motivationId)
+      ? selectedMotivations.filter((id: any) => id !== motivationId)
       : selectedMotivations.length < maxSelections
         ? [...selectedMotivations, motivationId]
         : selectedMotivations;
@@ -85,7 +81,7 @@ export function MotivationSelector({
   const selectAll = () => {
     const topMotivations = getSortedMotivations()
       .slice(0, maxSelections)
-      .map(m => m.id);
+      .map((m: any) => m.id);
     onSelectionChange(topMotivations);
   };
 
@@ -97,7 +93,7 @@ export function MotivationSelector({
     let filtered = motivationSet.motivations;
     
     if (filterType !== 'all') {
-      filtered = filtered.filter(m => m.psychologyType === filterType);
+      filtered = filtered.filter((m: any) => m.psychologyType === filterType);
     }
     
     return filtered.sort((a, b) => {
@@ -405,7 +401,7 @@ export function MotivationSelector({
           ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'
           : 'space-y-4'
       }>
-        {getSortedMotivations().map((motivation) => (
+        {getSortedMotivations().map((motivation: any) => (
           <MotivationCard
             key={motivation.id}
             motivation={motivation}
@@ -458,8 +454,8 @@ export function MotivationSelector({
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {selectedMotivations.map(id => {
-                const motivation = motivationSet.motivations.find(m => m.id === id);
+              {selectedMotivations.map((id: any) => {
+                const motivation = motivationSet.motivations.find((m: any) => m.id === id);
                 if (!motivation) return null;
                 
                 return (

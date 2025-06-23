@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { test, expect } from '@playwright/test';
 
 test.describe('AIrWAVE Application Connectivity', () => {
@@ -46,6 +47,7 @@ test.describe('AIrWAVE Application Connectivity', () => {
       expect(response?.status()).toBeTruthy();
       
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log(`❌ Connection failed: ${error.message}`);
       throw error;
     }

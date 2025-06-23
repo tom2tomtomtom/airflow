@@ -14,7 +14,6 @@
  */
 
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase';
 import {
   successResponse,
   errorResponse,
@@ -83,7 +82,7 @@ export async function handleWorkflowRoutes(
           404
         );
     }
-  } catch (error) {
+  } catch (error: any) {
     return handleApiError(res, error, 'workflow routes');
   }
 }

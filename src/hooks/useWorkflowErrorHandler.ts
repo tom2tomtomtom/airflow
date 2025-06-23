@@ -137,7 +137,7 @@ export function useWorkflowErrorHandler() {
             await handleUnknownError(workflowError, recoveryOptions);
             break;
         }
-      } catch (recoveryError) {
+      } catch (recoveryError: any) {
         console.error('Error recovery failed:', recoveryError);
         actions.setError('Recovery failed. Please try manually or contact support.');
       } finally {
@@ -159,7 +159,7 @@ export function useWorkflowErrorHandler() {
       try {
         await options.retry();
         actions.clearError();
-      } catch (retryError) {
+      } catch (retryError: any) {
         actions.setError('Retry failed. Please check your connection and try again.');
       }
     }
@@ -205,7 +205,7 @@ export function useWorkflowErrorHandler() {
           await options.retry();
           actions.clearError();
           return;
-        } catch (retryError) {
+        } catch (retryError: any) {
           console.log(`Retry failed, waiting ${delay}ms before next attempt`);
         }
       }
@@ -225,7 +225,7 @@ export function useWorkflowErrorHandler() {
       try {
         await options.retry();
         actions.clearError();
-      } catch (retryError) {
+      } catch (retryError: any) {
         actions.setError('Operation failed. Please try again or contact support if the problem persists.');
       }
     }
@@ -242,7 +242,7 @@ export function useWorkflowErrorHandler() {
         const result = await operation();
         actions.clearError(); // Clear any previous errors on success
         return result;
-      } catch (error) {
+      } catch (error: any) {
         await handleError(error, context, recoveryOptions);
         return null;
       }
@@ -259,7 +259,7 @@ export function useWorkflowErrorHandler() {
         const result = operation();
         actions.clearError();
         return result;
-      } catch (error) {
+      } catch (error: any) {
         handleError(error, context);
         return null;
       }

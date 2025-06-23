@@ -129,7 +129,7 @@ const EditCampaign: React.FC = () => {
       });
 
       showNotification('Campaign updated successfully!', 'success');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating campaign:', error);
       showNotification('Failed to update campaign. Please try again.', 'error');
     } finally {
@@ -145,7 +145,7 @@ const EditCampaign: React.FC = () => {
       await deleteCampaign(id as string);
       showNotification('Campaign deleted successfully!', 'success');
       router.push('/campaigns');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting campaign:', error);
       showNotification('Failed to delete campaign. Please try again.', 'error');
     } finally {

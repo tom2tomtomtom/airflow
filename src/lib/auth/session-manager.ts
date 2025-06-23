@@ -156,7 +156,7 @@ export class SessionManager {
       activeSessions.set(sessionId, session);
       
       return session;
-    } catch (error) {
+    } catch (error: any) {
       loggers.general.warn('Access token verification failed', error);
       return null;
     }
@@ -251,7 +251,7 @@ export class SessionManager {
         refreshToken: newRefreshToken
       };
       
-    } catch (error) {
+    } catch (error: any) {
       loggers.general.warn('Refresh token verification failed', error);
       return null;
     }

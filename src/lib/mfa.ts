@@ -134,7 +134,7 @@ export async function verifyAndEnableMFA(
     }
 
     return { success: true };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('MFA verification error:', error);
     return { success: false, error: 'Internal server error' };
@@ -210,7 +210,7 @@ export async function validateMFAToken(
 
       return { success: true };
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('MFA validation error:', error);
     return { success: false, error: 'Internal server error' };
@@ -233,7 +233,7 @@ export async function isMFAEnabled(userId: string): Promise<boolean> {
     }
 
     return data.is_enabled || false;
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error checking MFA status:', error);
     return false;
@@ -269,7 +269,7 @@ export async function disableMFA(
     }
 
     return { success: true };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('MFA disable error:', error);
     return { success: false, error: 'Internal server error' };
@@ -307,7 +307,7 @@ export async function regenerateBackupCodes(
     }
 
     return { success: true, backupCodes: newBackupCodes };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Backup code regeneration error:', error);
     return { success: false, error: 'Internal server error' };

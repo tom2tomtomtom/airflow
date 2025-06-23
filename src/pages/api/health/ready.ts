@@ -50,7 +50,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         ready: !error,
         error: error?.message
       });
-    } catch (error) {
+    } catch (error: any) {
       checks.push({
         service: 'database',
         ready: false,
@@ -87,7 +87,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     
     res.status(allReady ? 200 : 503).json(response);
     
-  } catch (error) {
+  } catch (error: any) {
     loggers.general.error('Readiness check failed', error);
     
     res.status(503).json({

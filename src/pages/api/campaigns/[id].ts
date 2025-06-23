@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -43,7 +44,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Campaign API error:', error);
     return res.status(500).json({ 
@@ -345,7 +346,7 @@ async function getCampaignAnalytics(campaignId: string, period: string): Promise
     }, {} as Record<string, any>);
 
     // Daily performance
-    const dailyPerformance = analytics.map(record => ({
+    const dailyPerformance = analytics.map((record: any) => ({
       date: record.date,
       impressions: record.impressions || 0,
       clicks: record.clicks || 0,
@@ -370,7 +371,7 @@ async function getCampaignAnalytics(campaignId: string, period: string): Promise
         end: endDate.toISOString().split('T')[0],
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting campaign analytics:', error);
     return {
@@ -486,7 +487,7 @@ async function getCampaignTimeline(campaignId: string): Promise<any[]> {
       .eq('campaign_id', campaignId)
       .order('created_at', { ascending: true });
 
-    matrices?.forEach(matrix => {
+    matrices?.forEach((matrix: any) => {
       timeline.push({
         date: matrix.created_at,
         event: 'Matrix Created',
@@ -503,7 +504,7 @@ async function getCampaignTimeline(campaignId: string): Promise<any[]> {
       .eq('campaign_id', campaignId)
       .order('created_at', { ascending: true });
 
-    executions?.forEach(execution => {
+    executions?.forEach((execution: any) => {
       timeline.push({
         date: execution.created_at,
         event: 'Execution Started',
@@ -517,7 +518,7 @@ async function getCampaignTimeline(campaignId: string): Promise<any[]> {
     timeline.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     return timeline;
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting campaign timeline:', error);
     return [];
@@ -633,7 +634,7 @@ async function checkCampaignDependencies(campaignId: string): Promise<{ hasActiv
       hasActiveExecutions: (activeExecutions?.length || 0) > 0,
       details,
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error checking campaign dependencies:', error);
     return {

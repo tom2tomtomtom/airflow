@@ -149,7 +149,7 @@ export class BundleAnalyzer {
       
       return analysis;
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Bundle analysis failed', error);
       throw error;
     }
@@ -188,11 +188,11 @@ export class BundleAnalyzer {
       assets: this.compareAssets(currentAnalysis.assets, previousAnalysis.assets)
     };
     
-    const currentChunkNames = new Set(currentAnalysis.chunks.map(c => c.name));
-    const previousChunkNames = new Set(previousAnalysis.chunks.map(c => c.name));
+    const currentChunkNames = new Set(currentAnalysis.chunks.map((c: any) => c.name));
+    const previousChunkNames = new Set(previousAnalysis.chunks.map((c: any) => c.name));
     
-    const newChunks = [...currentChunkNames].filter(name => !previousChunkNames.has(name));
-    const removedChunks = [...previousChunkNames].filter(name => !currentChunkNames.has(name));
+    const newChunks = [...currentChunkNames].filter((name: any) => !previousChunkNames.has(name));
+    const removedChunks = [...previousChunkNames].filter((name: any) => !currentChunkNames.has(name));
     
     const recommendations = this.generateComparisonRecommendations(
       sizeChange,
@@ -213,7 +213,7 @@ export class BundleAnalyzer {
       const manifestPath = path.join(buildDir, 'build-manifest.json');
       const manifestContent = await fs.readFile(manifestPath, 'utf-8');
       return JSON.parse(manifestContent);
-    } catch (error) {
+    } catch (error: any) {
       logger.warn('Build manifest not found, using fallback analysis');
       return {};
     }
@@ -253,7 +253,7 @@ export class BundleAnalyzer {
         });
       }
       
-    } catch (error) {
+    } catch (error: any) {
       logger.warn('Failed to analyze chunks', error);
     }
     
@@ -316,7 +316,7 @@ export class BundleAnalyzer {
         }
       }
       
-    } catch (error) {
+    } catch (error: any) {
       logger.warn('Failed to analyze assets', error);
     }
     
@@ -354,7 +354,7 @@ export class BundleAnalyzer {
   private findDuplicateModules(modules: ModuleInfo[]): ModuleInfo[] {
     const moduleMap = new Map<string, ModuleInfo[]>();
     
-    modules.forEach(module => {
+    modules.forEach((module: any) => {
       const baseName = module.name.split('/')[0];
       if (!moduleMap.has(baseName)) {
         moduleMap.set(baseName, []);
@@ -379,8 +379,8 @@ export class BundleAnalyzer {
     version?: string;
   }>> {
     const large = modules
-      .filter(module => module.size > 50 * 1024) // > 50KB
-      .map(module => ({
+      .filter((module: any) => module.size > 50 * 1024) // > 50KB
+      .map((module: any) => ({
         name: module.name,
         size: module.size,
         version: undefined // Would need package.json parsing
@@ -442,7 +442,7 @@ export class BundleAnalyzer {
     }
     
     // Large chunk recommendations
-    const largeChunks = chunks.filter(chunk => chunk.size > thresholds.maxChunkSize);
+    const largeChunks = chunks.filter((chunk: any) => chunk.size > thresholds.maxChunkSize);
     if (largeChunks.length > 0) {
       recommendations.push({
         type: 'warning',
@@ -451,7 +451,7 @@ export class BundleAnalyzer {
         description: `${largeChunks.length} chunks exceed the recommended size limit`,
         impact: 'medium',
         fix: 'Split large chunks using dynamic imports or route-based code splitting',
-        affected: largeChunks.map(c => c.name)
+        affected: largeChunks.map((c: any) => c.name)
       });
     }
     
@@ -464,7 +464,7 @@ export class BundleAnalyzer {
         description: `${duplicates.length} modules appear to be duplicated across chunks`,
         impact: 'medium',
         fix: 'Use webpack optimization.splitChunks to deduplicate common modules',
-        affected: duplicates.map(d => d.name)
+        affected: duplicates.map((d: any) => d.name)
       });
     }
     
@@ -478,7 +478,7 @@ export class BundleAnalyzer {
         description: `Consider alternatives or lazy loading for large dependencies`,
         impact: 'medium',
         fix: 'Evaluate if these dependencies can be replaced with smaller alternatives or loaded on demand',
-        affected: topLargeDeps.map(d => `${d.name} (${this.formatBytes(d.size)})`)
+        affected: topLargeDeps.map((d: any) => `${d.name} (${this.formatBytes(d.size)})`)
       });
     }
     
@@ -552,7 +552,7 @@ export class BundleAnalyzer {
   </div>
   
   <h2>Recommendations</h2>
-  ${analysis.recommendations.map(rec => `
+  ${analysis.recommendations.map((rec: any) => `
     <div class="recommendation ${rec.type}">
       <strong>${rec.title}</strong><br>
       ${rec.description}<br>
@@ -566,7 +566,7 @@ export class BundleAnalyzer {
     ${analysis.assets
       .sort((a, b) => b.size - a.size)
       .slice(0, 10)
-      .map(asset => `
+      .map((asset: any) => `
         <tr>
           <td>${asset.name}</td>
           <td>${this.formatBytes(asset.size)}</td>
@@ -585,7 +585,7 @@ export class BundleAnalyzer {
     try {
       const files = await fs.readdir(dir);
       return extension 
-        ? files.filter(file => file.endsWith(extension))
+        ? files.filter((file: any) => file.endsWith(extension))
         : files;
     } catch {
       return [];
@@ -639,9 +639,9 @@ export class BundleAnalyzer {
   
   private compareChunks(current: ChunkAnalysis[], previous: ChunkAnalysis[]): Array<{ name: string; change: number }> {
     const changes: Array<{ name: string; change: number }> = [];
-    const prevMap = new Map(previous.map(c => [c.name, c.size]));
+    const prevMap = new Map(previous.map((c: any) => [c.name, c.size]));
     
-    current.forEach(chunk => {
+    current.forEach((chunk: any) => {
       const prevSize = prevMap.get(chunk.name) || 0;
       const change = chunk.size - prevSize;
       if (Math.abs(change) > 1024) { // Only report changes > 1KB
@@ -654,9 +654,9 @@ export class BundleAnalyzer {
   
   private compareAssets(current: AssetInfo[], previous: AssetInfo[]): Array<{ name: string; change: number }> {
     const changes: Array<{ name: string; change: number }> = [];
-    const prevMap = new Map(previous.map(a => [a.name, a.size]));
+    const prevMap = new Map(previous.map((a: any) => [a.name, a.size]));
     
-    current.forEach(asset => {
+    current.forEach((asset: any) => {
       const prevSize = prevMap.get(asset.name) || 0;
       const change = asset.size - prevSize;
       if (Math.abs(change) > 1024) { // Only report changes > 1KB

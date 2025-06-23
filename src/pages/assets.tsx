@@ -122,7 +122,7 @@ const AssetsPage = () => {
 
         <TabPanel value={tabValue} index={0}>
           <Grid container spacing={3}>
-            {mockAssets.map((asset) => (
+            {mockAssets.map((asset: any) => (
               <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={asset.id}>
                 <Card sx={{ height: '100%' }} data-testid="asset-card">
                   <Box
@@ -192,7 +192,7 @@ const AssetsPage = () => {
           sx={{ position: 'fixed', bottom: 16, right: 16 }}
           icon={<SpeedDialIcon openIcon={<AddIcon />} />}
         >
-          {speedDialActions.map((action) => (
+          {speedDialActions.map((action: any) => (
             <SpeedDialAction
               key={action.name}
               icon={action.icon}

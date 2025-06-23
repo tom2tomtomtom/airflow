@@ -12,8 +12,7 @@ import {
   Paper,
   Select,
   CircularProgress,
-  Grid
-} from '@mui/material';
+  Grid } from '@mui/material';
 import {
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
@@ -117,7 +116,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
       } else {
         throw new Error('Failed to load performance data');
       }
-    } catch (error) {
+    } catch (error: any) {
       const message = getErrorMessage(error);
       console.error('Error loading performance data:', error);
       showNotification('Failed to load performance data', 'error');
@@ -144,7 +143,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
         const data = await response.json();
         setInsights(data.data);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading insights:', error);
     }
   };
@@ -252,13 +251,13 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Stack direction="row" spacing={1} flexWrap="wrap">
-              {['impressions', 'clicks', 'conversions', 'spend'].map((metric) => (
+              {['impressions', 'clicks', 'conversions', 'spend'].map((metric: any) => (
                 <Chip
                   key={metric}
                   label={metric}
                   onClick={() => {
                     const newMetrics = filters.metrics.includes(metric)
-                      ? filters.metrics.filter(m => m !== metric)
+                      ? filters.metrics.filter((m: any) => m !== metric)
                       : [...filters.metrics, metric];
                     setFilters({ ...filters, metrics: newMetrics });
                   }}

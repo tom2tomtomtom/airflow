@@ -86,11 +86,11 @@ class AICostController {
     return new AICostController();
   }
 
-  async getBudgetStatus() {
+  async getBudgetStatus() : Promise<void> {
     return { status: 'healthy', remaining: 1000 };
   }
 
-  async getTotalSpent() {
+  async getTotalSpent() : Promise<void> {
     return 0;
   }
 
@@ -140,7 +140,7 @@ export async function handleMonitoringRoutes(
       default:
         return errorResponse(res, ApiErrorCode.NOT_FOUND, `Monitoring endpoint '${endpoint}' not found`, 404);
     }
-  } catch (error) {
+  } catch (error: any) {
     return handleApiError(res, error, 'monitoring routes');
   }
 }
@@ -333,12 +333,12 @@ async function handleLogs(
     let filteredLogs = allLogs;
 
     if (level && level !== 'info') {
-      filteredLogs = filteredLogs.filter(log => log.level === level);
+      filteredLogs = filteredLogs.filter((log: any) => log.level === level);
     }
 
     if (search) {
       const searchTerm = (search as string).toLowerCase();
-      filteredLogs = filteredLogs.filter(log =>
+      filteredLogs = filteredLogs.filter((log: any) =>
         log.message.toLowerCase().includes(searchTerm) ||
         log.level.toLowerCase().includes(searchTerm)
       );
@@ -348,10 +348,10 @@ async function handleLogs(
     if (since) {
       try {
         const sinceDate = new Date(since as string);
-        filteredLogs = filteredLogs.filter(log =>
+        filteredLogs = filteredLogs.filter((log: any) =>
           new Date(log.timestamp) >= sinceDate
         );
-      } catch (error) {
+      } catch (error: any) {
         // Ignore invalid date
       }
     }
@@ -360,11 +360,11 @@ async function handleLogs(
       try {
         const start = new Date(startTime as string);
         const end = new Date(endTime as string);
-        filteredLogs = filteredLogs.filter(log => {
+        filteredLogs = filteredLogs.filter((log: any) => {
           const logTime = new Date(log.timestamp);
           return logTime >= start && logTime <= end;
         });
-      } catch (error) {
+      } catch (error: any) {
         // Ignore invalid dates
       }
     }
@@ -380,7 +380,7 @@ async function handleLogs(
       requestId: context.requestId,
       timestamp: new Date().toISOString()
     });
-  } catch (error) {
+  } catch (error: any) {
     return errorResponse(res, ApiErrorCode.INTERNAL_ERROR, 'Failed to retrieve logs', 500);
   }
 }
@@ -430,7 +430,7 @@ async function getAlerts(req: NextApiRequest, res: NextApiResponse, context: Rou
   ];
 
   return successResponse(res, {
-    alerts: alerts.filter(alert => 
+    alerts: alerts.filter((alert: any) => 
       (!status || alert.status === status) &&
       (!severity || alert.severity === severity)
     ),

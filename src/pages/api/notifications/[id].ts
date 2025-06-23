@@ -2,7 +2,8 @@ import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { z } from 'zod';
 
 const NotificationUpdateSchema = z.object({
@@ -32,7 +33,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Notification API error:', error);
     return res.status(500).json({
@@ -140,7 +141,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, n
     }
 
     return res.json({ data: enrichedNotification });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error in handleGet:', error);
     return res.status(500).json({ error: 'Failed to fetch notification' });
@@ -215,7 +216,7 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, n
     }
 
     return res.json({ data: notification });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error in handlePut:', error);
     return res.status(500).json({ error: 'Failed to update notification' });
@@ -260,7 +261,7 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
     }
 
     return res.status(200).json({ message: 'Notification deleted successfully' });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error in handleDelete:', error);
     return res.status(500).json({ error: 'Failed to delete notification' });

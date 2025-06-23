@@ -164,9 +164,9 @@ const ActivityFeed: React.FC<ActivityFeedProps> = ({
 
   // Filter events by type
   const allEvents = events;
-  const executionEvents = events.filter(e => e.type === 'execution_status_change');
-  const approvalEvents = events.filter(e => e.type === 'approval_decision');
-  const campaignEvents = events.filter(e => e.type === 'campaign_update');
+  const executionEvents = events.filter((e: any) => e.type === 'execution_status_change');
+  const approvalEvents = events.filter((e: any) => e.type === 'approval_decision');
+  const campaignEvents = events.filter((e: any) => e.type === 'campaign_update');
 
   const renderEventList = (eventList: any[]) => (
     <List sx={{ maxHeight: maxHeight - 100, overflow: 'auto', py: 0 }}>

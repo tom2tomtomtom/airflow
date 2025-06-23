@@ -79,7 +79,7 @@ const actions = {
   selectMotivation: assign<WorkflowMachineContext, WorkflowEvent>({
     motivations: (context, event) => {
       if (event.type === 'SELECT_MOTIVATION') {
-        return context.motivations.map(m =>
+        return context.motivations.map((m: any) =>
           m.id === event.id ? { ...m, selected: !m.selected } : m
         );
       }
@@ -90,7 +90,7 @@ const actions = {
   selectCopy: assign<WorkflowMachineContext, WorkflowEvent>({
     copyVariations: (context, event) => {
       if (event.type === 'SELECT_COPY') {
-        return context.copyVariations.map(c =>
+        return context.copyVariations.map((c: any) =>
           c.id === event.id ? { ...c, selected: !c.selected } : c
         );
       }
@@ -103,7 +103,7 @@ const actions = {
       if (event.type === 'SELECT_ASSET') {
         const exists = context.selectedAssets.some(a => a.id === event.asset.id);
         if (exists) {
-          return context.selectedAssets.filter(a => a.id !== event.asset.id);
+          return context.selectedAssets.filter((a: any) => a.id !== event.asset.id);
         } else {
           return [...context.selectedAssets, event.asset];
         }

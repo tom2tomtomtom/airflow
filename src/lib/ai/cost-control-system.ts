@@ -73,7 +73,7 @@ export class AICostController {
 
       const result = await response.json();
       return result;
-    } catch (error) {
+    } catch (error: any) {
       return {
         allowed: false,
         reason: `Cost check failed: ${error instanceof Error ? error.message : 'Unknown error'}`
@@ -110,7 +110,7 @@ export class AICostController {
 
       const result = await response.json();
       return result;
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         error: `Usage tracking failed: ${error instanceof Error ? error.message : 'Unknown error'}`
@@ -131,7 +131,7 @@ export class AICostController {
 
       const stats = await response.json();
       return stats;
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(`Failed to get usage stats: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
@@ -157,7 +157,7 @@ export class AICostController {
 
       const result = await response.json();
       return result;
-    } catch (error) {
+    } catch (error: any) {
       return {
         success: false,
         shutdownTriggered: false,
@@ -242,7 +242,7 @@ export class AICostController {
       });
 
       return { status, alerts, recommendations };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: 'critical',
         alerts: ['Unable to check budget health'],

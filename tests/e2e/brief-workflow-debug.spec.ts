@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { test, expect } from '@playwright/test';
 import path from 'path';
 
@@ -116,6 +117,7 @@ test.describe('Brief Workflow Debug', () => {
         await hiddenInput.setInputFiles(briefFilePath);
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log(`Upload error: ${error}`);
       
       // Fallback: Create a simple text file for testing
@@ -305,11 +307,13 @@ Industry: Insurance
           console.log('Motivations API Response:', JSON.stringify(motivationsResult, null, 2));
           
         } catch (error) {
+    const message = getErrorMessage(error);
           console.log('Motivations API Error:', error);
         }
       }
       
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log('Parse Brief API Error:', error);
     }
     

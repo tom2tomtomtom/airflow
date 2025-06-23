@@ -7,7 +7,21 @@ import {
   DEFAULT_RETRY_CONFIG, 
   RetryConfig 
 } from './errors';
-import { cached, CacheProfiles } from '@/lib/cache/redis-cache';
+// Conditional import of Redis cache (server-side only)
+let cached: any = null;
+let CacheProfiles: any = {};
+
+// Only import Redis cache on server-side
+if (typeof window === 'undefined') {
+  try {
+    const cacheModule = require('@/lib/cache/redis-cache');
+    cached = cacheModule.cached;
+    CacheProfiles = cacheModule.CacheProfiles;
+  } catch (error) {
+    // Fallback if Redis is not available
+    console.warn('Redis cache not available, queries will not be cached');
+  }
+}
 
 // Helper type for table names
 type TableName = keyof Database['public']['Tables'];
@@ -23,7 +37,7 @@ export async function withRetry<T>(
   for (let attempt = 1; attempt <= (config.maxAttempts || 3); attempt++) {
     try {
       return await fn();
-    } catch (error) {
+    } catch (error: any) {
       lastError = error;
       
       if (!isRetryableError(error, config) || attempt === config.maxAttempts) {
@@ -84,7 +98,7 @@ export async function withRLS<T>(
     });
     
     return result;
-  } catch (error) {
+  } catch (error: any) {
     await handleSupabaseError(error, {
       operation: `${operation} with RLS`,
       table: tableName,
@@ -103,22 +117,27 @@ export async function queryWithCache<T>(
 ): Promise<T> {
   const cacheKey = `supabase:${key}`;
   
-  // Try to get from cache first
-  const cachedResult = await cached.get<T>(cacheKey);
-  if (cachedResult !== null) {
-    loggers.supabase.debug('Cache hit', { key: cacheKey });
-    return cachedResult;
+  // Only use cache if available (server-side)
+  if (cached) {
+    // Try to get from cache first
+    const cachedResult = await cached.get<T>(cacheKey);
+    if (cachedResult !== null) {
+      loggers.supabase.debug('Cache hit', { key: cacheKey });
+      return cachedResult;
+    }
   }
   
   // Execute query
   const result = await queryFn();
   
-  // Cache the result
-  const profile = options?.profile ? CacheProfiles[options.profile] : undefined;
-  const ttl = options?.ttl || profile?.ttl || 300; // Default 5 minutes
-  
-  await cached.set(cacheKey, result, ttl);
-  loggers.supabase.debug('Cache set', { key: cacheKey, ttl });
+  // Cache the result if cache is available
+  if (cached) {
+    const profile = options?.profile ? CacheProfiles[options.profile] : undefined;
+    const ttl = options?.ttl || profile?.ttl || 300; // Default 5 minutes
+    
+    await cached.set(cacheKey, result, ttl);
+    loggers.supabase.debug('Cache set', { key: cacheKey, ttl });
+  }
   
   return result;
 }
@@ -183,7 +202,7 @@ export async function upsertWithConflict<T extends Record<string, any>>(
     }
     
     return result as T[];
-  } catch (error) {
+  } catch (error: any) {
     await handleSupabaseError(error, {
       operation: 'upsert',
       table: tableName,
@@ -230,7 +249,7 @@ export async function paginatedQuery<T>(
       .select('*', { count: 'exact', head: true });
     
     // Get paginated data
-    let query = supabase
+    const query = supabase
       .from(tableName)
       .select('*')
       .order(orderBy, { ascending })
@@ -253,7 +272,7 @@ export async function paginatedQuery<T>(
       totalPages,
       hasMore: page < totalPages,
     };
-  } catch (error) {
+  } catch (error: any) {
     await handleSupabaseError(error, {
       operation: 'paginatedQuery',
       table: tableName,
@@ -289,7 +308,7 @@ export async function softDelete(
       table: tableName,
       id,
     });
-  } catch (error) {
+  } catch (error: any) {
     await handleSupabaseError(error, {
       operation: 'softDelete',
       table: tableName,

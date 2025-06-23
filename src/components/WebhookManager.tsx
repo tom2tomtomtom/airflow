@@ -132,7 +132,7 @@ const WebhookManager: React.FC = () => {
         setStatistics(data.statistics);
         setAvailableEvents(data.events || []);
       }
-    } catch (error) {
+    } catch (error: any) {
       const message = getErrorMessage(error);
       if (process.env.NODE_ENV === 'development') {
         console.error('Error fetching webhooks:', error);
@@ -219,7 +219,7 @@ const WebhookManager: React.FC = () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  webhooks.map((webhook) => (
+                  webhooks.map((webhook: any) => (
                     <TableRow key={webhook.id} hover>
                       <TableCell>
                         <Box>
@@ -249,7 +249,7 @@ const WebhookManager: React.FC = () => {
                       </TableCell>
                       <TableCell>
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                          {webhook.events.slice(0, 3).map((event) => (
+                          {webhook.events.slice(0, 3).map((event: any) => (
                             <Chip
                               key={event}
                               label={event}

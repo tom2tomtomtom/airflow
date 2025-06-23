@@ -38,7 +38,7 @@ export class ErrorReporter {
   private setupGlobalErrorHandlers() {
 
     // Handle unhandled promise rejections
-    window.addEventListener('unhandledrejection', (event) => {
+    window.addEventListener('unhandledrejection', (_event) => {
       this.reportError(new Error(`Unhandled Promise Rejection: ${event.reason}`), {
         action: 'unhandled_promise_rejection',
         metadata: {
@@ -49,7 +49,7 @@ export class ErrorReporter {
     });
 
     // Handle global JavaScript errors
-    window.addEventListener('error', (event) => {
+    window.addEventListener('error', (_event) => {
       this.reportError(new Error(event.message), {
         action: 'global_error',
         metadata: {
@@ -89,7 +89,7 @@ export class ErrorReporter {
         throw new Error(`Error reporting failed: ${response.status}`);
       }
 
-    } catch (reportingError) {
+    } catch (reportingError: any) {
       // Fallback: log to console if reporting fails
       console.error('Failed to report error:', reportingError);
       console.error('Original error:', error);
@@ -169,7 +169,7 @@ export function withErrorReporting<T extends (...args: any[]) => Promise<any>>(
   return (async (...args: any[]) => {
     try {
       return await fn(...args);
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof Error) {
         await errorReporter.reportError(error, context);
       }

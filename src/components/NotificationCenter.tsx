@@ -84,7 +84,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
   };
 
   const handleMarkAllAsRead = async () => {
-    const unreadIds = unreadNotifications.map(n => n.id);
+    const unreadIds = unreadNotifications.map((n: any) => n.id);
     for (const id of unreadIds) {
       await markAsRead(id);
     }

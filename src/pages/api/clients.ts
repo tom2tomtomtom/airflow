@@ -1,3 +1,4 @@
+import { NextApiRequest, NextApiResponse } from 'next';
 /**
  * @swagger
  * /api/clients:
@@ -277,7 +278,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       pagination: paginationMeta,
       timestamp: new Date().toISOString()
     });
-  } catch (error) {
+  } catch (error: any) {
     return handleApiError(res, error, 'handleGet');
   }
 }
@@ -379,7 +380,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
     }
 
     return successResponse(res, client, 201);
-  } catch (error) {
+  } catch (error: any) {
     return handleApiError(res, error, 'handlePost');
   }
 }
@@ -397,7 +398,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return methodNotAllowed(res, ['GET', 'POST']);
     }
-  } catch (error) {
+  } catch (error: any) {
     return handleApiError(res, error, 'clients handler');
   }
 }

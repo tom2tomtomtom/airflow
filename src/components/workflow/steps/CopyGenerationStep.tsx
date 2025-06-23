@@ -39,7 +39,7 @@ export const CopyGenerationStep: React.FC<CopyGenerationStepProps> = ({
   } = state;
 
   // Get selected motivations
-  const selectedMotivations = motivations.filter(m => m.selected);
+  const selectedMotivations = motivations.filter((m: any) => m.selected);
 
   // Auto-generate copy when step loads if none exist
   useEffect(() => {
@@ -55,7 +55,7 @@ export const CopyGenerationStep: React.FC<CopyGenerationStepProps> = ({
 
   // Handle next step
   const handleNext = useCallback(async () => {
-    const selectedCopy = copyVariations.filter(c => c.selected);
+    const selectedCopy = copyVariations.filter((c: any) => c.selected);
     if (selectedCopy.length === 0) {
       actions.setError('Please select at least one copy variation');
       return;
@@ -66,7 +66,7 @@ export const CopyGenerationStep: React.FC<CopyGenerationStepProps> = ({
       await actions.storeCopyVariations(selectedCopy);
       actions.clearError();
       onNext?.();
-    } catch (error) {
+    } catch (error: any) {
       // Error is already handled in storeCopyVariations
     }
   }, [copyVariations, actions, onNext]);
@@ -88,7 +88,7 @@ export const CopyGenerationStep: React.FC<CopyGenerationStepProps> = ({
   }, []);
 
   // Get selected count
-  const selectedCount = copyVariations.filter(c => c.selected).length;
+  const selectedCount = copyVariations.filter((c: any) => c.selected).length;
 
   // Group copy variations by platform
   const copyByPlatform = copyVariations.reduce((acc, copy) => {
@@ -115,7 +115,7 @@ export const CopyGenerationStep: React.FC<CopyGenerationStepProps> = ({
             Selected Motivations ({selectedMotivations.length})
           </Typography>
           <Stack direction="row" spacing={1} flexWrap="wrap">
-            {selectedMotivations.map((motivation) => (
+            {selectedMotivations.map((motivation: any) => (
               <Chip
                 key={motivation.id}
                 label={motivation.title}
@@ -176,7 +176,7 @@ export const CopyGenerationStep: React.FC<CopyGenerationStepProps> = ({
               </Typography>
               
               <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr', lg: '1fr 1fr 1fr' } }}>
-                {copies.map((copy) => (
+                {copies.map((copy: any) => (
                   <Box key={copy.id}>
                     <Card
                       sx={{

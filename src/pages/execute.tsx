@@ -125,7 +125,7 @@ const ExecutePage: React.FC = () => {
       if (statsResult.data) {
         setExecutionStats(statsResult.data);
       }
-    } catch (err) {
+    } catch (err: any) {
       setError(err instanceof Error ? err.message : 'Failed to load execution data');
     } finally {
       setLoading(false);
@@ -198,11 +198,11 @@ const ExecutePage: React.FC = () => {
 
   // Calculate estimated completion time
   const calculateEstimatedCompletion = (executions: any[]): string => {
-    const processingExecutions = executions.filter(e => e.status === 'processing');
+    const processingExecutions = executions.filter((e: any) => e.status === 'processing');
     if (processingExecutions.length === 0) return 'N/A';
 
     // Simple estimation: assume 2 minutes per execution
-    const remainingExecutions = executions.filter(e =>
+    const remainingExecutions = executions.filter((e: any) =>
       e.status === 'pending' || e.status === 'processing'
     ).length;
 
@@ -228,7 +228,7 @@ const ExecutePage: React.FC = () => {
       } else {
         throw new Error(`Failed to ${action} queue`);
       }
-    } catch (err) {
+    } catch (err: any) {
       showNotification(`Failed to ${action} queue`, 'error');
     }
   };
@@ -246,7 +246,7 @@ const ExecutePage: React.FC = () => {
       } else {
         throw new Error(`Failed to ${action} execution`);
       }
-    } catch (err) {
+    } catch (err: any) {
       showNotification(`Failed to ${action} execution`, 'error');
     }
   };
@@ -497,9 +497,9 @@ const ExecutePage: React.FC = () => {
                   {executionQueues.length > 0 ? (
                     <Grid container spacing={3}>
                       {executionQueues
-                        .filter(queue => statusFilter === 'all' || queue.status === statusFilter)
-                        .filter(queue => priorityFilter === 'all' || queue.priority === priorityFilter)
-                        .map((queue) => (
+                        .filter((queue: any) => statusFilter === 'all' || queue.status === statusFilter)
+                        .filter((queue: any) => priorityFilter === 'all' || queue.priority === priorityFilter)
+                        .map((queue: any) => (
                           <Grid size={{ xs: 12, md: 6, lg: 4 }} key={queue.id}>
                             <Card>
                               <CardContent>

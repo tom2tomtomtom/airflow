@@ -65,7 +65,7 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({
     <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
       Assign assets and content to each template field
     </Typography>
-    {project.templates.map((template) => (
+    {project.templates.map((template: any) => (
       <Box key={template.id} sx={{ mb: 4 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
           <Typography variant="subtitle1" fontWeight="medium">
@@ -90,7 +90,7 @@ const MatrixEditor: React.FC<MatrixEditorProps> = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {template.dynamicFields?.map((field) => {
+              {template.dynamicFields?.map((field: any) => {
                 const key = `${template.id}-${field.id}`;
                 const assignment = project.fieldAssignments[key];
                 const asset = assignment?.assetId

@@ -92,7 +92,7 @@ export class RedisCache {
       
       await this.client.connect();
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to initialize Redis cache', error);
       this.isConnected = false;
     }
@@ -135,7 +135,7 @@ export class RedisCache {
     try {
       const parsed = JSON.parse(data);
       return parsed.value;
-    } catch (error) {
+    } catch (error: any) {
       logger.warn('Failed to deserialize cache value', error);
       return data;
     }
@@ -179,7 +179,7 @@ export class RedisCache {
       logger.debug(`Cache MISS: ${key}`);
       return null;
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error(`Cache get error for key ${key}`, error);
       this.stats.errors++;
       return null;
@@ -219,7 +219,7 @@ export class RedisCache {
       logger.debug(`Fallback cache SET: ${key} (TTL: ${ttl}s)`);
       return true;
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error(`Cache set error for key ${key}`, error);
       this.stats.errors++;
       return false;
@@ -252,7 +252,7 @@ export class RedisCache {
       
       return deleted;
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error(`Cache delete error for key ${key}`, error);
       this.stats.errors++;
       return false;
@@ -279,7 +279,7 @@ export class RedisCache {
       
       return false;
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error(`Cache exists error for key ${key}`, error);
       this.stats.errors++;
       return false;
@@ -307,7 +307,7 @@ export class RedisCache {
       
       return false;
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error(`Cache expire error for key ${key}`, error);
       this.stats.errors++;
       return false;
@@ -317,7 +317,7 @@ export class RedisCache {
   // Advanced operations
   async mget<T = any>(keys: string[], options: Partial<CacheOptions> = {}): Promise<(T | null)[]> {
     const opts = { ...this.defaultOptions, ...options };
-    const cacheKeys = keys.map(key => this.generateKey(key, opts.prefix));
+    const cacheKeys = keys.map((key: any) => this.generateKey(key, opts.prefix));
     
     try {
       if (this.isConnected && this.client) {
@@ -336,9 +336,9 @@ export class RedisCache {
       }
       
       // Fallback to individual gets
-      return Promise.all(keys.map(key => this.get<T>(key, options)));
+      return Promise.all(keys.map((key: any) => this.get<T>(key, options)));
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Cache mget error', error);
       this.stats.errors++;
       return keys.map(() => null);
@@ -377,7 +377,7 @@ export class RedisCache {
       
       return results.every(result => result);
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Cache mset error', error);
       this.stats.errors++;
       return false;
@@ -417,7 +417,7 @@ export class RedisCache {
       logger.info(`Cache cleared${pattern ? ` (pattern: ${pattern})` : ''}: ${cleared} keys`);
       return cleared;
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Cache clear error', error);
       this.stats.errors++;
       return 0;
@@ -441,7 +441,7 @@ export class RedisCache {
       
       return { ...this.stats };
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to get cache stats', error);
       return { ...this.stats };
     }
@@ -473,7 +473,7 @@ export class RedisCache {
         latency
       };
       
-    } catch (error) {
+    } catch (error: any) {
       return {
         healthy: this.fallbackCache.size >= 0,
         redis: false,
@@ -548,7 +548,7 @@ export const cached = <T extends (...args: any[]) => Promise<any>>(
 };
 
 export const cacheKey = (parts: (string | number)[]): string => {
-  return parts.map(part => String(part)).join(':');
+  return parts.map((part: any) => String(part)).join(':');
 };
 
 // Predefined cache configurations

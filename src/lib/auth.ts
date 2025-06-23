@@ -52,7 +52,7 @@ export async function signIn(
     }
 
     return { user, token };
-  } catch (error) {
+  } catch (error: any) {
     const axiosError = error as AxiosError<ApiError>;
     loggers.auth.error('Sign in failed', error, { email });
     throw new Error(axiosError.response?.data?.message || axiosError.message || 'Login failed');
@@ -100,7 +100,7 @@ export async function signUp(
     }
 
     return result;
-  } catch (error) {
+  } catch (error: any) {
     const axiosError = error as AxiosError<ApiError>;
     loggers.auth.error('Sign up failed', error, { email });
     throw new Error(axiosError.response?.data?.message || axiosError.message || 'Sign up failed');
@@ -112,7 +112,7 @@ export async function signOut(): Promise<void> {
   try {
     // Call the logout API
     await authAxios.post('/api/auth/logout');
-  } catch (error) {
+  } catch (error: any) {
     loggers.auth.error('Sign out API error', error);
     // Continue with cleanup even if API call fails
   } finally {
@@ -124,7 +124,7 @@ export async function signOut(): Promise<void> {
     // Sign out from Supabase client
     try {
       await supabase.auth.signOut();
-    } catch (error) {
+    } catch (error: any) {
       loggers.auth.error('Supabase signout error', error);
     }
   }
@@ -139,7 +139,7 @@ export function getCurrentUser(): User | null {
     if (!userJson) return null;
 
     return JSON.parse(userJson) as User;
-  } catch (error) {
+  } catch (error: any) {
     loggers.auth.error('Get current user error', error);
     return null;
   }
@@ -164,7 +164,7 @@ export async function refreshToken(): Promise<boolean> {
     // We can make a request to a protected endpoint to verify if the token is still valid
     const response = await authAxios.get<{ success: boolean }>('/api/auth/me');
     return response?.data?.success;
-  } catch (error) {
+  } catch (error: any) {
     loggers.auth.error('Token refresh check failed', error);
     return false;
   }
@@ -180,7 +180,7 @@ export async function requestPasswordReset(email: string): Promise<void> {
     if (error) {
       throw error;
     }
-  } catch (error) {
+  } catch (error: any) {
     const authError = error as { message?: string };
     loggers.auth.error('Password reset request failed', error, { email });
     throw new Error(authError.message || 'Failed to send password reset email');
@@ -197,7 +197,7 @@ export async function resetPassword(_token: string, newPassword: string): Promis
     if (error) {
       throw error;
     }
-  } catch (error) {
+  } catch (error: any) {
     const authError = error as { message?: string };
     loggers.auth.error('Password reset failed', error);
     throw new Error(authError.message || 'Failed to reset password');

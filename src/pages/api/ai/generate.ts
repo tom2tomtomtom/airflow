@@ -1,3 +1,4 @@
+import { NextApiRequest, NextApiResponse } from 'next';
 import { getErrorMessage } from '@/utils/errorUtils';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from 'openai';
@@ -58,9 +59,9 @@ const generateText = async (prompt: string, parameters?: Record<string, any>): P
 
     const content = completion.choices[0]?.message?.content || '';
     // Parse the content into variations (split by numbered lists or line breaks)
-    const variations = content.split(/\n\d+\.|\n-/).filter(v => v.trim()).slice(0, 3);
-    return variations.length > 0 ? variations.map(v => v.trim()) : [content];
-  } catch (error) {
+    const variations = content.split(/\n\d+\.|\n-/).filter((v: any) => v.trim()).slice(0, 3);
+    return variations.length > 0 ? variations.map((v: any) => v.trim()) : [content];
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('OpenAI text generation error:', error);
     return mockGenerateText(prompt);
@@ -100,7 +101,7 @@ const generateImage = async (prompt: string, parameters?: Record<string, any>): 
     if (!imageUrl) throw new Error('No image URL returned');
 
     return imageUrl;
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('DALL-E image generation error:', error);
     return mockGenerateImage(prompt);
@@ -128,7 +129,7 @@ const enhanceImagePrompt = async (prompt: string, parameters?: Record<string, an
     });
 
     return completion.choices[0]?.message?.content?.trim() || prompt;
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Prompt enhancement error:', error);
     return prompt;
@@ -145,7 +146,7 @@ const generateVideo = async (prompt: string, parameters?: Record<string, any>): 
     // Implement Runway ML video generation
     process.env.NODE_ENV === 'development' && console.log('Runway ML video generation requested');
     throw new Error('Runway ML integration not yet implemented');
-  } catch (error) {
+  } catch (error: any) {
     console.error('Runway video generation error:', error);
     throw error;
   }
@@ -163,7 +164,7 @@ const generateVoice = async (prompt: string, parameters?: Record<string, any>): 
 
     process.env.NODE_ENV === 'development' && console.log('ElevenLabs voice generation requested');
     throw new Error('ElevenLabs integration not yet implemented');
-  } catch (error) {
+  } catch (error: any) {
     console.error('ElevenLabs voice generation error:', error);
     throw error;
   }
@@ -237,7 +238,7 @@ async function handler(
       success: true,
       result,
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error generating content:', error);
     return res.status(500).json({ success: false, message: 'Internal server error' });

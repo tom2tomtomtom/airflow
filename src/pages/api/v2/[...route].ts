@@ -33,15 +33,15 @@ class AICostController {
     return new AICostController();
   }
 
-  async getBudgetStatus() {
+  async getBudgetStatus() : Promise<void> {
     return { status: 'healthy', remaining: 1000 };
   }
 
-  async getTotalSpent() {
+  async getTotalSpent() : Promise<void> {
     return 0;
   }
 
-  async checkBudget(service: string, model: string, tokens: number, userId: string) {
+  async checkBudget(service: string, model: string, tokens: number, userId: string) : Promise<void> {
     return { allowed: true, budgetRemaining: 1000, reason: 'Budget check passed' };
   }
 
@@ -52,7 +52,7 @@ class AICostController {
     cost: number,
     userId: string,
     metadata: any
-  ) {
+  ) : Promise<void> {
     // Stub implementation
     console.log(`Tracked usage: ${service}/${model} - ${tokens} tokens, $${cost}`, metadata);
   }
@@ -157,7 +157,7 @@ async function universalHandler(req: NextApiRequest, res: NextApiResponse): Prom
           404
         );
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error(`[API v2] Error in ${context.method} /${route.join('/')}:`, error);
     return handleApiError(res, error, `api_v2_${route.join('_')}`);
   } finally {
@@ -274,7 +274,7 @@ export async function withCostTracking(
     };
 
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Cost tracking error:', error);
     return true; // Don't block request on cost tracking errors
   }
@@ -288,7 +288,7 @@ export function validateInput(schema: any) {
       // const validated = schema.parse(req.body);
       // req.body = validated;
       next();
-    } catch (error) {
+    } catch (error: any) {
       return errorResponse(res, ApiErrorCode.VALIDATION_ERROR, 'Invalid input data', 400);
     }
   };

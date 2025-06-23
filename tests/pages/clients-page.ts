@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 /**
  * Clients Page Object Model
  * Handles interactions with client management interface
@@ -98,6 +99,7 @@ export class ClientsPage {
         this.emptyState.waitFor({ state: 'visible', timeout: 5000 })
       ]);
     } catch (error) {
+    const message = getErrorMessage(error);
       // Clients might be loading, wait for skeleton to disappear
       await this.loadingSkeleton.waitFor({ state: 'hidden', timeout: 10000 });
     }

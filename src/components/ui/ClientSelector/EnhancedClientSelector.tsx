@@ -15,8 +15,6 @@ import {
   IconButton,
   Card,
   CardContent,
-  Stack,
-  Tooltip,
   Badge,
 } from '@mui/material';
 import {
@@ -25,15 +23,10 @@ import {
   Check as CheckIcon,
   Add as AddIcon,
   Search as SearchIcon,
-  Person as PersonIcon,
-  Email as EmailIcon,
-  Phone as PhoneIcon,
-  LocationOn as LocationIcon,
   Clear as ClearIcon,
 } from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import { useClient } from '@/contexts/ClientContext';
-import { ActionButton } from '../buttons/ActionButton';
 import { LoadingState } from '../feedback/LoadingState';
 import { ErrorState } from '../feedback/ErrorState';
 import { createAccessibleField } from '@/utils/accessibility';
@@ -91,7 +84,7 @@ export const EnhancedClientSelector: React.FC<EnhancedClientSelectorProps> = ({
     // Apply search filter
     if (searchTerm.trim()) {
       const search = searchTerm.toLowerCase();
-      filtered = filtered.filter(client =>
+      filtered = filtered.filter((client: any) =>
         client.name.toLowerCase().includes(search) ||
         client.email?.toLowerCase().includes(search) ||
         client.industry?.toLowerCase().includes(search)
@@ -111,7 +104,7 @@ export const EnhancedClientSelector: React.FC<EnhancedClientSelectorProps> = ({
     if (!clients || !showRecentClients) return [];
     
     return clients
-      .filter(client => client.id !== activeClient?.id)
+      .filter((client: any) => client.id !== activeClient?.id)
       .slice(0, 5);
   }, [clients, activeClient, showRecentClients]);
 
@@ -411,7 +404,7 @@ export const EnhancedClientSelector: React.FC<EnhancedClientSelectorProps> = ({
                 Recent Clients
               </Typography>
             </Box>
-            {recentClients.map((client) => (
+            {recentClients.map((client: any) => (
               <MenuItem
                 key={`recent-${client.id}`}
                 onClick={() => handleClientSelect(client)}
@@ -443,7 +436,7 @@ export const EnhancedClientSelector: React.FC<EnhancedClientSelectorProps> = ({
             </Typography>
           </MenuItem>
         ) : (
-          filteredClients.map((client) => (
+          filteredClients.map((client: any) => (
             <MenuItem
               key={client.id}
               onClick={() => handleClientSelect(client)}

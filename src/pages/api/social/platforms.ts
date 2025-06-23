@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 
 interface Platform {
@@ -40,8 +41,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
         { id: 'tiktok', name: 'tiktok', displayName: 'TikTok' },
       ];
 
-      const platforms: Platform[] = supportedPlatforms.map(platform => {
-        const connection = connections?.find(c => c.platform === platform.name);
+      const platforms: Platform[] = supportedPlatforms.map((platform: any) => {
+        const connection = connections?.find((c: any) => c.platform === platform.name);
         
         // Check if token is expired
         const isExpired = connection?.token_expires_at && new Date(connection.token_expires_at) < new Date();
@@ -64,7 +65,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
     res.setHeader('Allow', ['GET']);
     return res.status(405).json({ success: false, error: 'Method not allowed' });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Platforms API error:', error);
     return res.status(500).json({

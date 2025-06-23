@@ -149,7 +149,7 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
   const generateSmartPrompts = useCallback(() => {
     if (!briefData) return [];
 
-    const selectedMotivations = state?.motivations?.filter(m => m.selected);
+    const selectedMotivations = state?.motivations?.filter((m: any) => m.selected);
 
     const prompts = [];
 
@@ -157,7 +157,7 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
     const baseContext = `${briefData.product || briefData.service || briefData.title} for ${briefData.targetAudience}`;
 
     // Add prompts based on selected motivations
-    selectedMotivations.forEach(motivation => {
+    selectedMotivations.forEach((motivation: any) => {
       prompts.push({
         title: `${motivation.title} - Hero Image`,
         prompt: `Professional marketing image for ${baseContext}, focusing on ${motivation.description.toLowerCase()}, modern and clean design, high quality photography style`,
@@ -221,7 +221,7 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
   // Get asset counts by type
   const getAssetCounts = () => {
     const counts = { image: 0, video: 0, copy: 0, template: 0 };
-    selectedAssets.forEach(asset => {
+    selectedAssets.forEach((asset: any) => {
       counts[asset.type] = (counts[asset.type] || 0) + 1;
     });
     return counts;
@@ -232,7 +232,7 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
   // Render selected assets summary
   const renderSelectedAssets = () => (
     <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
-      {selectedAssets.map((asset) => (
+      {selectedAssets.map((asset: any) => (
         <Box key={asset.id}>
           <Card
             sx={{

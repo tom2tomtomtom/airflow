@@ -8,7 +8,7 @@ let redisManager: any = null;
 if (typeof window === 'undefined') {
   try {
     redisManager = require('@/lib/redis/redis-config').redisManager;
-  } catch (error) {
+  } catch (error: any) {
     // Redis not available, will fallback to in-memory
     console.warn('Redis not available, using in-memory rate limiting');
   }
@@ -75,7 +75,7 @@ export class AIRateLimiter {
       } else {
         console.log('⚠️ AI Rate Limiter using in-memory fallback (Redis unavailable)');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('AI Rate Limiter Redis initialization failed:', error);
       this.useRedis = false;
     }
@@ -150,7 +150,7 @@ export class AIRateLimiter {
         resetTime: now + config.windowMs,
         totalRequests: currentCount + (allowed ? 1 : 0),
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis rate limiting error:', error);
       // Fallback to memory-based limiting
       return this.checkMemoryLimit(key, config);
@@ -247,7 +247,7 @@ export class AIRateLimiter {
           resetTime: now + config.windowMs,
           totalRequests: currentCount,
         };
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error getting rate limit status from Redis:', error);
       }
     }
@@ -282,7 +282,7 @@ export class AIRateLimiter {
         const client = await redisManager.getClient();
         await client.del(key);
         return true;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error resetting rate limit in Redis:', error);
       }
     }

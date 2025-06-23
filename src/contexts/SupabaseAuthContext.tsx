@@ -97,7 +97,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
             localStorage.removeItem('airwave_user');
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Session check error:', error);
         setAuthState({
           user: null,
@@ -112,7 +112,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
     // Listen for auth state changes
     const { data: { subscription } } = supabaseClient.auth.onAuthStateChange(
-      async (event, session) => {
+      async (_event, session) => {
         process.env.NODE_ENV === 'development' && console.log('Auth state changed:', event);
         if (session) {
           setAuthState({
@@ -227,7 +227,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
       if (error) throw error;
       
       // The onAuthStateChange listener will handle the state update and redirect
-    } catch (error) {
+    } catch (error: any) {
       console.error('Logout error:', error);
     }
   };

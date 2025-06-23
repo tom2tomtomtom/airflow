@@ -336,7 +336,7 @@ describe('Redis Infrastructure Testing', () => {
       const results = await Promise.all(operations);
       
       // All operations should complete successfully
-      expect(results.filter(r => r === true || r === 'test-value')).toHaveLength(200);
+      expect(results.filter((r: any) => r === true || r === 'test-value')).toHaveLength(200);
     });
 
     it('should measure operation latency', async () => {

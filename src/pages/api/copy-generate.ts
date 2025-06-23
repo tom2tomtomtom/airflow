@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { z } from 'zod';
 import OpenAI from 'openai';
@@ -100,7 +101,7 @@ Guidelines:
 
 Focus on psychological triggers and emotional resonance. Each variation should feel distinct while maintaining brand consistency.`;
 
-      const motivationContext = motivations.map(m => 
+      const motivationContext = motivations.map((m: any) => 
         `Title: ${m.title}\nDescription: ${m.description}\nCategory: ${m.category}\nTarget Emotions: ${m.target_emotions?.join(', ')}`
       ).join('\n\n');
 
@@ -145,7 +146,7 @@ Make each variation unique while staying within the ${platformSpec.maxLength} ch
       let copyVariations;
       try {
         copyVariations = JSON.parse(aiResponse);
-      } catch (parseError) {
+      } catch (parseError: any) {
         console.error('Failed to parse AI response:', aiResponse);
         continue;
       }

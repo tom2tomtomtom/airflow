@@ -61,7 +61,7 @@ export class CreatomateService {
 
       const data = await response.json();
       return this.mapCreatomateTemplate(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error fetching template ${id}:`, error);
       return this.getDefaultTemplate();
     }
@@ -86,7 +86,7 @@ export class CreatomateService {
       const templates = Array.isArray(data) ? data : (data.data || []);
 
       return templates.map((template: any) => this.mapCreatomateTemplate(template));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching templates:', error);
       // Return default template as fallback
       return [this.getDefaultTemplate()];
@@ -124,7 +124,7 @@ export class CreatomateService {
         completed_at: data.completed_at,
         error: data.error,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error rendering video:', error);
       throw new Error(`Failed to render video: ${error}`);
     }
@@ -153,7 +153,7 @@ export class CreatomateService {
         completed_at: data.completed_at,
         error: data.error,
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error getting render status ${renderId}:`, error);
       throw new Error('Failed to get render status');
     }

@@ -138,7 +138,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
         const data = await response.json();
         setExecutions(data.data || []);
       }
-    } catch (error) {
+    } catch (error: any) {
     const message = getErrorMessage(error);
       console.error('Error fetching executions:', error);
     } finally {
@@ -169,7 +169,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
         const error = await response.json();
         showNotification(error.error || 'Failed to retry execution', 'error');
       }
-    } catch (error) {
+    } catch (error: any) {
     const message = getErrorMessage(error);
       showNotification('Error retrying execution', 'error');
     }
@@ -200,7 +200,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
         const error = await response.json();
         showNotification(error.error || 'Failed to cancel execution', 'error');
       }
-    } catch (error) {
+    } catch (error: any) {
     const message = getErrorMessage(error);
       showNotification('Error cancelling execution', 'error');
     }
@@ -325,10 +325,10 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
       <Grid container spacing={2} sx={{ mb: 2 }}>
         {[
           { label: 'Total', count: executions.length, color: 'default' },
-          { label: 'Processing', count: executions.filter(e => e.status === 'processing').length, color: 'info' },
-          { label: 'Completed', count: executions.filter(e => e.status === 'completed').length, color: 'success' },
-          { label: 'Failed', count: executions.filter(e => e.status === 'failed').length, color: 'error' },
-        ].map((stat) => (
+          { label: 'Processing', count: executions.filter((e: any) => e.status === 'processing').length, color: 'info' },
+          { label: 'Completed', count: executions.filter((e: any) => e.status === 'completed').length, color: 'success' },
+          { label: 'Failed', count: executions.filter((e: any) => e.status === 'failed').length, color: 'error' },
+        ].map((stat: any) => (
           <Grid size={{ xs: 3 }} key={stat.label}>
             <Card variant="outlined" sx={{ textAlign: 'center', py: 1 }}>
               <Typography variant="h6" color={`${stat.color}.main`}>

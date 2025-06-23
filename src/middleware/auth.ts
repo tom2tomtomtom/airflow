@@ -47,7 +47,7 @@ export function withAuth(handler: (req: AuthenticatedRequest, res: NextApiRespon
 
       // Call the original handler
       return await handler(req, res);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Authentication middleware error:', error);
       return res.status(401).json({ error: 'Authentication failed' });
     }

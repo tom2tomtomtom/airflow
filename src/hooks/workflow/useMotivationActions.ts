@@ -19,7 +19,7 @@ if (typeof window === 'undefined') {
     aiCircuitBreaker = require('@/lib/circuit-breaker/ai-circuit-breaker').aiCircuitBreaker;
     workflowMetrics = require('@/lib/monitoring/workflow-metrics').workflowMetrics;
     performanceTracker = require('@/lib/performance/performance-tracker').performanceTracker;
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Server-side dependencies not available, using fallbacks');
   }
 }

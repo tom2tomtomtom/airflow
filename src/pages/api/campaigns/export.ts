@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { getErrorMessage } from '@/utils/errorUtils';
@@ -23,7 +24,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
   try {
     return handleExport(req, res, user);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Campaign Export API error:', error);
     return res.status(500).json({ 
@@ -243,7 +244,7 @@ function convertToCSV(data: any): string {
     ]);
   });
 
-  return rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+  return rows.map((row: any) => row.map((cell: any) => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
 }
 
 function generatePlatformSpecificExport(data: any, platform?: string): any {
@@ -301,7 +302,7 @@ function generatePlatformSpecificExport(data: any, platform?: string): any {
 function generateHashtags(motivations: any[]): string[] {
   const hashtags = new Set<string>();
   
-  motivations.forEach(motivation => {
+  motivations.forEach((motivation: any) => {
     if (motivation.category) {
       hashtags.add(`#${motivation.category.toLowerCase().replace(/\s+/g, '')}`);
     }
@@ -318,8 +319,8 @@ function generateHashtags(motivations: any[]): string[] {
 
 function extractTargetingData(motivations: any[]): any {
   return {
-    demographics: motivations.map(m => m.category).filter(Boolean),
-    interests: motivations.map(m => m.title).filter(Boolean),
+    demographics: motivations.map((m: any) => m.category).filter(Boolean),
+    interests: motivations.map((m: any) => m.title).filter(Boolean),
     behaviors: [],
   };
 }

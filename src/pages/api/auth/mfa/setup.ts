@@ -1,3 +1,4 @@
+import { NextApiResponse } from 'next';
 import { getErrorMessage } from '@/utils/errorUtils';
 import type { NextApiResponse } from 'next';
 import { setupMFA } from '@/lib/mfa';
@@ -45,7 +46,7 @@ async function handler(
       },
     });
 
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('MFA setup error:', error);
     return res.status(500).json({

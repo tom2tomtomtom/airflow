@@ -32,7 +32,7 @@ export function validateClientInput(input: unknown) {
   const result = createClientSchema.safeParse(input);
   
   if (!result.success) {
-    const errors = result.error.issues.map(issue => ({
+    const errors = result.error.issues.map((issue: any) => ({
       field: issue.path.join('.'),
       message: issue.message
     }));

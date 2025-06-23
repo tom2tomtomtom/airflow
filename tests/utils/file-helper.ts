@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 /**
  * File upload and management helper for AIrWAVE testing
  * Handles file creation, upload testing, and asset management
@@ -232,6 +233,7 @@ export class FileHelper {
       });
       return true;
     } catch (error) {
+    const message = getErrorMessage(error);
       return false;
     }
   }

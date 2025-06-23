@@ -39,7 +39,7 @@ const getAuthToken = (): string | null => {
     
     const userData = JSON.parse(user);
     return userData.token || null;
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     if (process.env.NODE_ENV === 'development') {
       console.error('Error getting auth token:', error);
@@ -79,7 +79,7 @@ export const apiRequest = async <T>(
     }
     
     return data as T;
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     if (process.env.NODE_ENV === 'development') {
 

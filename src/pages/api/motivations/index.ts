@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -35,7 +36,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Motivations API error:', error);
     return res.status(500).json({
@@ -82,7 +83,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       .eq('user_id', user.id);
     
     if (userClients && userClients.length > 0) {
-      const clientIds = userClients.map(uc => uc.client_id);
+      const clientIds = userClients.map((uc: any) => uc.client_id);
       query = query.in('client_id', clientIds);
     } else {
       // User has no client access
@@ -144,7 +145,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     statistics: {
       category_distribution: categoryStats,
       avg_relevance_score: data?.length ? data.reduce((sum, m) => sum + (m.relevance_score || 0), 0) / data.length : 0,
-      ai_generated_percentage: data?.length ? (data.filter(m => m.is_ai_generated).length / data.length) * 100 : 0,
+      ai_generated_percentage: data?.length ? (data.filter((m: any) => m.is_ai_generated).length / data.length) * 100 : 0,
     },
     pagination: {
       limit: parseInt(limit as string),
@@ -250,7 +251,7 @@ async function getMotivationUsageStats(motivationId: string): Promise<any> {
       copy_usage: copyUsage || 0,
       total_usage: (strategyUsage || 0) + (contentUsage || 0) + (copyUsage || 0),
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error calculating usage stats:', error);
     return {
@@ -265,7 +266,7 @@ async function getMotivationUsageStats(motivationId: string): Promise<any> {
 function calculateCategoryDistribution(motivations: any[]): Record<string, number> {
   const distribution: Record<string, number> = {};
   
-  motivations.forEach(motivation => {
+  motivations.forEach((motivation: any) => {
     const category = motivation.category || 'other';
     distribution[category] = (distribution[category] || 0) + 1;
   });
@@ -293,13 +294,13 @@ async function calculateRelevanceScore(title: string, description: string, brief
     const briefKeywords = extractKeywords(briefText);
 
     // Calculate overlap
-    const intersection = motivationKeywords.filter(keyword => briefKeywords.includes(keyword));
+    const intersection = motivationKeywords.filter((keyword: any) => briefKeywords.includes(keyword));
     const relevanceScore = briefKeywords.length > 0 
       ? Math.min(100, (intersection.length / briefKeywords.length) * 100 + Math.random() * 20)
       : 50;
 
     return Math.round(relevanceScore);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error calculating relevance score:', error);
     return 50; // Default score on error
@@ -312,8 +313,8 @@ function extractKeywords(text: string): string[] {
   
   return text
     .split(/\s+/)
-    .map(word => word.replace(/[^\w]/g, '').toLowerCase())
-    .filter(word => word.length > 3 && !stopWords.includes(word))
+    .map((word: any) => word.replace(/[^\w]/g, '').toLowerCase())
+    .filter((word: any) => word.length > 3 && !stopWords.includes(word))
     .slice(0, 20); // Limit to 20 keywords
 }
 

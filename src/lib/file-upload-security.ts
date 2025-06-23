@@ -83,12 +83,12 @@ export class FileUploadSecurity {
     this.checkClamAV();
   }
 
-  private async checkClamAV() {
+  private async checkClamAV() : Promise<void> {
     try {
       await execAsync('clamscan --version');
       this.clamAvAvailable = true;
       loggers.storage.info('ClamAV is available for virus scanning');
-    } catch (error) {
+    } catch (error: any) {
       this.clamAvAvailable = false;
       loggers.storage.warn('ClamAV not available - virus scanning disabled');
     }
@@ -181,7 +181,7 @@ export class FileUploadSecurity {
         // Extract threat names
         const threatMatches = stdout.match(/(.+): (.+) FOUND/g);
         if (threatMatches) {
-          threatMatches.forEach(match => {
+          threatMatches.forEach((match: any) => {
             const threat = match.split(': ')[1]?.replace(' FOUND', '');
             if (threat) threats.push(threat);
           });
@@ -196,7 +196,7 @@ export class FileUploadSecurity {
         // Delete infected file
         try {
           await fsUnlink(filePath);
-        } catch (error) {
+        } catch (error: any) {
           loggers.storage.error('Failed to delete infected file', error, { filePath });
         }
 
@@ -218,7 +218,7 @@ export class FileUploadSecurity {
         infected: false,
         scanTime,
       };
-    } catch (error) {
+    } catch (error: any) {
       loggers.storage.error('Virus scan failed', error, { filePath });
       
       return {

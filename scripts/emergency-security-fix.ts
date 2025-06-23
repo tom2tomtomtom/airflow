@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 #!/usr/bin/env node
 // scripts/emergency-security-fix.ts
 // Enhanced security audit for AIRWAVE codebase
@@ -60,6 +61,7 @@ function scanFile(filePath: string) {
       });
     });
   } catch (error) {
+    const message = getErrorMessage(error);
     // Skip binary files or permission errors
   }
 }
@@ -286,6 +288,7 @@ echo "✅ No secrets detected"
       execSync('chmod +x ./.husky/pre-commit');
       console.log('✅ Created pre-commit hook');
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log('⚠️  Could not create pre-commit hook (husky not installed)');
     }
   }

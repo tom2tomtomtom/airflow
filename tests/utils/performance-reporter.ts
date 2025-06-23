@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 /**
  * Performance Reporter for Playwright Tests
  * Tracks and reports performance metrics across test runs
@@ -35,6 +36,7 @@ class PerformanceReporter implements Reporter {
     try {
       mkdirSync(this.outputDir, { recursive: true });
     } catch (error) {
+    const message = getErrorMessage(error);
       // Directory might already exist
     }
   }
@@ -117,6 +119,7 @@ class PerformanceReporter implements Reporter {
             }
           }
         } catch (error) {
+    const message = getErrorMessage(error);
           // Skip invalid JSON or parsing errors
         }
       }

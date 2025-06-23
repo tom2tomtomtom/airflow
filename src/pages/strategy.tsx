@@ -67,7 +67,7 @@ const StrategyPage: React.FC = () => {
       } else {
         throw new Error(result.message || 'Failed to generate strategy');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating strategy:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to generate strategy';
       setError(errorMessage);

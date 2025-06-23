@@ -1,3 +1,4 @@
+import { NextApiResponse } from 'next';
 import { getErrorMessage } from '@/utils/errorUtils';
 import type { NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
@@ -59,7 +60,7 @@ async function handler(
       },
     });
 
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('MFA status error:', error);
     return res.status(500).json({

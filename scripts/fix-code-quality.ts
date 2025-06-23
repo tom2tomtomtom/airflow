@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 #!/usr/bin/env tsx
 
 /**
@@ -173,6 +174,7 @@ function processFile(filePath: string): boolean {
     
     return false;
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error(`Error processing ${filePath}:`, error);
     return false;
   }

@@ -1,18 +1,97 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 # AIRWAVE Project Guide for Claude
 
 ## 🎯 **PROJECT OVERVIEW**
 
 AIRWAVE is a comprehensive AI-powered video marketing platform that enables users to create, manage, and deploy video campaigns. The platform integrates multiple AI services (OpenAI, Anthropic, ElevenLabs) with video generation (Creatomate), asset management, and campaign workflows.
 
+## 🛠️ **ESSENTIAL DEVELOPMENT COMMANDS**
+
+### **Basic Development**
+```bash
+npm run dev                    # Start development server
+npm run build                  # Production build
+npm run start                  # Start production server
+npm run lint                   # Code linting
+npm run type-check             # TypeScript validation
+```
+
+### **Testing Commands**
+```bash
+npm test                       # Unit tests with Jest
+npm run test:watch             # Unit tests in watch mode
+npm run test:e2e               # End-to-end tests with Playwright
+npm run test:e2e:headed        # E2E tests with browser UI
+npm run test:e2e:ui            # Interactive Playwright UI
+npm run test:comprehensive     # Full comprehensive test suite
+npm run test:airwave           # Main AIRWAVE workflow tests
+npm run test:auth              # Authentication flow tests
+npm run test:campaigns         # Campaign management tests
+```
+
+### **Type Safety & Migration**
+```bash
+npm run type-check:phase1      # Phase 1 TypeScript migration check
+npm run type-check:phase2      # Phase 2 TypeScript migration check  
+npm run type-check:final       # Final strict mode check
+npm run fix:typescript         # Auto-fix TypeScript errors
+npm run migrate:types          # Run type migration scripts
+```
+
+### **Production & Quality**
+```bash
+npm run ci:check               # Full CI pipeline (lint + type + test + build)
+npm run ci:quick               # Quick CI check (lint + type only)
+npm run validate:production    # Production readiness validation
+npm run production:checklist   # Complete production checklist
+npm run audit:security         # Security audit
+npm run perf:test              # Performance testing
+```
+
+### **Development Tools**
+```bash
+npm run workers                # Start background workers
+npm run worker:render          # Start render worker only
+npm run build:analyze          # Bundle analysis with ANALYZE=true
+npm run fix:lint               # Auto-fix linting issues
+npm run cleanup:repo           # Clean temporary files
+```
+
+### **Environment & Setup**
+```bash
+# Environment validation
+npm run validate:env            # Validate current environment
+npm run validate:env:production # Validate production env file
+
+# Health checks
+npm run health:check           # Application health check
+npm run smoke:test             # Smoke tests
+npm run smoke:test:prod        # Production smoke tests
+```
+
+⚠️ **Critical**: Always run `npm run validate:env` before starting development to ensure all required environment variables are configured.
+
 ### **Core Architecture**
 
-- **Frontend**: Next.js 13+ with TypeScript, Material-UI, React Hook Form
-- **Backend**: Next.js API routes with API v2 architecture
+- **Frontend**: Next.js 15.3.2 with TypeScript (strict mode), Material-UI v7, React Hook Form
+- **Backend**: Next.js API routes with API v2 architecture (Pages Router)
 - **Database**: Supabase (PostgreSQL) with real-time subscriptions
-- **Caching**: Redis with BullMQ for job processing
+- **Caching**: Redis with BullMQ for job processing (conditional server-side imports)
 - **AI Services**: OpenAI GPT-4, Anthropic Claude, ElevenLabs TTS
 - **Video Generation**: Creatomate API integration
 - **Monitoring**: Sentry, StatsD, custom APM system
+- **Testing**: Jest (unit), Playwright (E2E), comprehensive test suites
+
+### **Key Architectural Decisions**
+
+- **Pages Router**: Uses Next.js Pages Router (not App Router) - important for SSR patterns
+- **Conditional Redis**: Redis imports are conditional to prevent client-side bundling issues
+- **Supabase SSR**: Custom server client implementation compatible with Pages Router
+- **Material-UI v7**: Uses latest Grid component patterns (`size` prop instead of `item xs`)
+- **TypeScript Strict**: Full strict mode enabled with 0 compilation errors
 
 ## 🏗️ **CRITICAL ARCHITECTURAL PATTERNS**
 
@@ -674,7 +753,10 @@ export const withCsrfProtection = (handler: NextApiHandler) => {
 - **Test Coverage**: 14.2% (Target: 60%+)
 - **Security Tests**: 69/94 passing (73.4%)
 - **TypeScript Errors**: 0 (Target: 0) ✅
+- **Build Status**: ✅ Compiles successfully with strict mode
 - **Infrastructure Tests**: 78/78 passing ✅
+- **Redis Client Issues**: ✅ Fixed (conditional server-side imports)
+- **Supabase SSR Issues**: ✅ Fixed (Pages Router compatibility)
 - **Performance**: Load tests failing (needs optimization)
 
 ### **Critical Path to Production**

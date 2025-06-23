@@ -69,7 +69,7 @@ async function checkDatabase(): Promise<ServiceCheck> {
       status: 'ok',
       latency,
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     return {
       status: 'error',
@@ -104,7 +104,7 @@ async function checkRedis(): Promise<ServiceCheck> {
       status: 'ok',
       latency,
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     return {
       status: 'error',
@@ -162,7 +162,7 @@ async function checkStorage(): Promise<ServiceCheck> {
       latency: Date.now() - start,
       details: { provider: 'supabase' },
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     return {
       status: 'error',
@@ -198,7 +198,7 @@ async function checkCreatomate(): Promise<ServiceCheck> {
       status: 'ok',
       latency,
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     return {
       status: (error as any).name === 'AbortError' ? 'timeout' : 'error',
@@ -229,7 +229,7 @@ async function checkEmail(): Promise<ServiceCheck> {
       latency: Date.now() - start,
       details: { provider: 'resend' },
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     return {
       status: 'error',
@@ -258,7 +258,7 @@ async function checkAIServices(): Promise<ServiceCheck> {
       message: 'AI services configured',
       latency: Date.now() - start,
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       status: 'error',
       message: error instanceof Error ? error.message : 'Unknown error',

@@ -1,3 +1,4 @@
+import { NextApiRequest, NextApiResponse } from 'next';
 import { getErrorMessage } from '@/utils/errorUtils';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { withAuth } from '@/middleware/withAuth';
@@ -134,7 +135,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
       client: transformedClient,
     });
 
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Individual client API error:', error);
     return res.status(500).json({ 

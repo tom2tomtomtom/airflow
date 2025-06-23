@@ -1,3 +1,4 @@
+import { NextApiResponse } from 'next';
 import { getErrorMessage } from '@/utils/errorUtils';
 import type { NextApiResponse } from 'next';
 import { verifyAndEnableMFA } from '@/lib/mfa';
@@ -62,7 +63,7 @@ async function handler(
       message: 'MFA has been successfully enabled for your account',
     });
 
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('MFA verification error:', error);
     return res.status(500).json({

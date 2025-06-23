@@ -49,7 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                       healthStatus.overall === 'degraded' ? 206 : 503;
     
     res.status(httpStatus).json(healthStatus);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Health check failed:', error);
     res.status(500).json({
       overall: 'unhealthy',
@@ -93,9 +93,9 @@ async function performHealthChecks(): Promise<WorkflowHealthStatus> {
   // Calculate summary
   const summary = {
     totalChecks: checks.length,
-    healthyChecks: checks.filter(c => c.status === 'healthy').length,
-    degradedChecks: checks.filter(c => c.status === 'degraded').length,
-    unhealthyChecks: checks.filter(c => c.status === 'unhealthy').length,
+    healthyChecks: checks.filter((c: any) => c.status === 'healthy').length,
+    degradedChecks: checks.filter((c: any) => c.status === 'degraded').length,
+    unhealthyChecks: checks.filter((c: any) => c.status === 'unhealthy').length,
   };
 
   // Determine overall status
@@ -153,7 +153,7 @@ async function checkRedisHealth(): Promise<HealthCheckResult> {
       details: 'Redis operations failing',
       lastChecked: Date.now(),
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       service: 'Redis',
       status: 'unhealthy',
@@ -207,7 +207,7 @@ async function checkAIServicesHealth(): Promise<HealthCheckResult> {
       details,
       lastChecked: Date.now(),
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       service: 'AI Services',
       status: 'unhealthy',
@@ -239,7 +239,7 @@ async function checkCacheHealth(): Promise<HealthCheckResult> {
       details,
       lastChecked: Date.now(),
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       service: 'AI Cache',
       status: 'unhealthy',
@@ -261,7 +261,7 @@ async function checkMetricsHealth(): Promise<HealthCheckResult> {
     const responseTime = Date.now() - startTime;
     
     const hasRecentActivity = realtimeStatus.activeSessions > 0;
-    const hasPerformanceIssues = realtimeStatus.performanceAlerts.filter(a => a.severity === 'high').length > 0;
+    const hasPerformanceIssues = realtimeStatus.performanceAlerts.filter((a: any) => a.severity === 'high').length > 0;
     
     let status: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
     let details = `${realtimeStatus.activeSessions} active sessions`;
@@ -278,7 +278,7 @@ async function checkMetricsHealth(): Promise<HealthCheckResult> {
       details,
       lastChecked: Date.now(),
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       service: 'Workflow Metrics',
       status: 'unhealthy',
@@ -301,7 +301,7 @@ async function checkCostMonitorHealth(): Promise<HealthCheckResult> {
     const responseTime = Date.now() - startTime;
     
     const hasHighUsage = dashboardData.overallPercentUsed > 90;
-    const hasCriticalAlerts = dashboardData.recentAlerts.filter(a => a.severity === 'critical').length > 0;
+    const hasCriticalAlerts = dashboardData.recentAlerts.filter((a: any) => a.severity === 'critical').length > 0;
     
     let status: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
     let details = `${dashboardData.overallPercentUsed.toFixed(1)}% budget used`;
@@ -318,7 +318,7 @@ async function checkCostMonitorHealth(): Promise<HealthCheckResult> {
       details,
       lastChecked: Date.now(),
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       service: 'Cost Monitor',
       status: 'unhealthy',
@@ -362,7 +362,7 @@ async function checkDatabaseHealth(): Promise<HealthCheckResult> {
         lastChecked: Date.now(),
       };
     }
-  } catch (error) {
+  } catch (error: any) {
     return {
       service: 'Database',
       status: 'unhealthy',
@@ -409,7 +409,7 @@ async function getWorkflowMetrics(): Promise<{
       errorRate,
       cacheHitRate,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error getting workflow metrics:', error);
     return {
       activeSessions: 0,

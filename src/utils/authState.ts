@@ -45,10 +45,10 @@ export class AuthStateManager {
   }
 
   private notifyListeners(): void {
-    this.listeners.forEach(listener => {
+    this.listeners.forEach((listener: any) => {
       try {
         listener(this.getState());
-      } catch (error) {
+      } catch (error: any) {
         console.error('Auth state listener error:', error);
       }
     });
@@ -100,7 +100,7 @@ export class AuthStateManager {
           error: response.status === 401 ? 'Not authenticated' : 'Auth check failed',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       this.updateState({
         isAuthenticated: false,
         user: undefined,
@@ -122,7 +122,7 @@ export class AuthStateManager {
         method: 'POST',
         credentials: 'include',
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Logout error:', error);
     }
 

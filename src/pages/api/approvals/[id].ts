@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { triggerWebhookEvent, WEBHOOK_EVENTS } from '../webhooks/index';
@@ -47,7 +48,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Approval API error:', error);
     return res.status(500).json({ 
@@ -388,7 +389,7 @@ async function getApprovalItemDetails(itemType: string, itemId: string): Promise
 
     const { data } = await query;
     return data;
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting approval item details:', error);
     return null;
@@ -428,7 +429,7 @@ async function getApprovalHistory(approvalId: string): Promise<any[]> {
     }
 
     return history;
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting approval history:', error);
     return [];
@@ -450,7 +451,7 @@ async function getRelatedApprovals(itemType: string, itemId: string, excludeId: 
       .limit(5);
 
     return related || [];
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting related approvals:', error);
     return [];
@@ -487,7 +488,7 @@ async function verifyApprovalPermission(approval: any, userId: string, action: s
     };
 
     return permissions[action] || false;
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error verifying approval permission:', error);
     return false;
@@ -512,7 +513,7 @@ async function updateItemStatusAfterDecision(itemType: string, itemId: string, d
         updated_at: new Date().toISOString(),
       })
       .eq('id', itemId);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error updating item status after decision:', error);
   }
@@ -539,7 +540,7 @@ async function triggerPostDecisionWorkflow(approval: any, decision: any): Promis
           .eq('id', approval.item_id);
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error triggering post-decision workflow:', error);
   }
@@ -549,7 +550,7 @@ async function logApprovalDecision(approvalId: string, action: string, userId: s
   try {
     // In a full implementation, this would log to an approval_events table
     process.env.NODE_ENV === 'development' && console.log('Logging approval decision:', action, 'for approval:', approvalId);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error logging approval decision:', error);
   }
@@ -559,7 +560,7 @@ async function logApprovalUpdate(approvalId: string, updateData: any, userId: st
   try {
     // In a full implementation, this would log to an approval_events table
     process.env.NODE_ENV === 'development' && console.log('Logging approval update for:', approvalId);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error logging approval update:', error);
   }
@@ -569,7 +570,7 @@ async function triggerApprovalNotification(approval: any, action: string): Promi
   try {
     // In a full implementation, this would trigger real-time notifications
     process.env.NODE_ENV === 'development' && console.log('Triggering approval notification for:', approval.id);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error triggering approval notification:', error);
   }
@@ -609,7 +610,7 @@ async function triggerApprovalWebhooks(approval: any, action: string, user: any)
 
     // Trigger the webhook
     await triggerWebhookEvent(eventType, webhookData, approval.client_id);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error triggering approval webhooks:', error);
   }

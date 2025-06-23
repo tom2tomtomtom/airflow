@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { test, expect } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
@@ -170,7 +171,7 @@ Compliance Requirements:
       // Wait for processing with enhanced monitoring
       console.log('⏱️ Monitoring file processing...');
       let processingComplete = false;
-      let maxWaitTime = 60; // 60 seconds max wait
+      const maxWaitTime = 60; // 60 seconds max wait
       
       for (let i = 0; i < maxWaitTime; i++) {
         await page.waitForTimeout(1000);
@@ -183,6 +184,7 @@ Compliance Requirements:
             break;
           }
         } catch (error) {
+    const message = getErrorMessage(error);
           console.log('🚨 Page context lost:', error.message);
           break;
         }
@@ -204,6 +206,7 @@ Compliance Requirements:
             }
             return null;
           } catch (error) {
+    const message = getErrorMessage(error);
             return { error: error.message };
           }
         });
@@ -247,6 +250,7 @@ Compliance Requirements:
           const workflowState = sessionStorage.getItem('airwave_unified_workflow_state');
           return workflowState ? JSON.parse(workflowState) : null;
         } catch (error) {
+    const message = getErrorMessage(error);
           return { error: error.message };
         }
       });

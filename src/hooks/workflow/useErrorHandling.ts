@@ -20,7 +20,7 @@ export const useErrorHandling = ({ dispatch }: UseErrorHandlingProps) => {
           dispatch({ type: 'SET_ERROR', error: null }); // Clear previous errors
           const result = await operation();
           return result;
-        } catch (error) {
+        } catch (error: any) {
           console.error(`[Workflow Error] ${context}:`, error);
 
           // Categorize and handle error

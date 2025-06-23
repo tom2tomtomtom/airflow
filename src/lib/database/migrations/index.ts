@@ -56,7 +56,7 @@ export class MigrationManager {
       }
       
       loggers.general.info('Migration tracking table initialized');
-    } catch (error) {
+    } catch (error: any) {
       loggers.general.error('Failed to initialize migration system', error);
       throw error;
     }
@@ -67,7 +67,7 @@ export class MigrationManager {
     try {
       const files = await fs.readdir(this.migrationsPath);
       const migrationFiles = files
-        .filter(file => file.endsWith('.sql'))
+        .filter((file: any) => file.endsWith('.sql'))
         .sort(); // Ensure chronological order
       
       const migrations: Migration[] = [];
@@ -82,7 +82,7 @@ export class MigrationManager {
       }
       
       return migrations.sort((a, b) => a.version - b.version);
-    } catch (error) {
+    } catch (error: any) {
       loggers.general.error('Failed to load migrations', error);
       throw error;
     }
@@ -159,7 +159,7 @@ export class MigrationManager {
         throw new Error(`Failed to fetch applied migrations: ${error.message}`);
       }
       
-      return (data || []).map(row => ({
+      return (data || []).map((row: any) => ({
         id: row.migration_id,
         name: row.name,
         version: row.version,
@@ -169,7 +169,7 @@ export class MigrationManager {
         appliedAt: row.applied_at,
         executionTime: row.execution_time_ms
       }));
-    } catch (error) {
+    } catch (error: any) {
       loggers.general.error('Failed to get applied migrations', error);
       throw error;
     }
@@ -179,9 +179,9 @@ export class MigrationManager {
   async getPendingMigrations(): Promise<Migration[]> {
     const allMigrations = await this.loadMigrations();
     const appliedMigrations = await this.getAppliedMigrations();
-    const appliedVersions = new Set(appliedMigrations.map(m => m.version));
+    const appliedVersions = new Set(appliedMigrations.map((m: any) => m.version));
     
-    return allMigrations.filter(migration => !appliedVersions.has(migration.version));
+    return allMigrations.filter((migration: any) => !appliedVersions.has(migration.version));
   }
   
   // Apply a single migration
@@ -228,7 +228,7 @@ export class MigrationManager {
         executionTime
       };
       
-    } catch (error) {
+    } catch (error: any) {
       const executionTime = Date.now() - startTime;
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
@@ -290,7 +290,7 @@ export class MigrationManager {
         executionTime
       };
       
-    } catch (error) {
+    } catch (error: any) {
       const executionTime = Date.now() - startTime;
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
@@ -336,8 +336,8 @@ export class MigrationManager {
       }
     }
     
-    const successful = results.filter(r => r.success).length;
-    const failed = results.filter(r => !r.success).length;
+    const successful = results.filter((r: any) => r.success).length;
+    const failed = results.filter((r: any) => !r.success).length;
     
     loggers.general.info('Migration batch completed', {
       total: results.length,
@@ -352,7 +352,7 @@ export class MigrationManager {
   async rollbackTo(targetVersion: number): Promise<MigrationResult[]> {
     const appliedMigrations = await this.getAppliedMigrations();
     const migrationsToRollback = appliedMigrations
-      .filter(m => m.version > targetVersion)
+      .filter((m: any) => m.version > targetVersion)
       .sort((a, b) => b.version - a.version); // Reverse order for rollback
     
     const results: MigrationResult[] = [];
@@ -366,7 +366,7 @@ export class MigrationManager {
     
     // Load full migration definitions for rollback
     const allMigrations = await this.loadMigrations();
-    const migrationMap = new Map(allMigrations.map(m => [m.version, m]));
+    const migrationMap = new Map(allMigrations.map((m: any) => [m.version, m]));
     
     for (const appliedMigration of migrationsToRollback) {
       const fullMigration = migrationMap.get(appliedMigration.version);
@@ -387,8 +387,8 @@ export class MigrationManager {
       }
     }
     
-    const successful = results.filter(r => r.success).length;
-    const failed = results.filter(r => !r.success).length;
+    const successful = results.filter((r: any) => r.success).length;
+    const failed = results.filter((r: any) => !r.success).length;
     
     loggers.general.info('Rollback batch completed', {
       total: results.length,
@@ -411,7 +411,7 @@ export class MigrationManager {
     const pending = await this.getPendingMigrations();
     const total = applied.length + pending.length;
     const currentVersion = applied.length > 0 ? 
-      Math.max(...applied.map(m => m.version)) : 0;
+      Math.max(...applied.map((m: any) => m.version)) : 0;
     
     return {
       applied,
@@ -433,7 +433,7 @@ export class MigrationManager {
       const currentMigrations = await this.loadMigrations();
       
       for (const applied of appliedMigrations) {
-        const current = currentMigrations.find(m => m.version === applied.version);
+        const current = currentMigrations.find((m: any) => m.version === applied.version);
         
         if (!current) {
           errors.push(`Applied migration v${applied.version} not found in migration files`);
@@ -449,7 +449,7 @@ export class MigrationManager {
         valid: errors.length === 0,
         errors
       };
-    } catch (error) {
+    } catch (error: any) {
       errors.push(`Validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
       return {
         valid: false,

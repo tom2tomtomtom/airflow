@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import * as Sentry from '@sentry/nextjs';
 import { StatsD } from 'node-statsd';
 import { getMonitoringConfig } from '@/lib/config';
@@ -96,7 +97,7 @@ export class APMManager {
           ],
           
           // Filter sensitive data
-          beforeSend: (event) => {
+          beforeSend: (_event) => {
             // Remove sensitive headers
             if (event.request?.headers) {
               delete event.request.headers.authorization;
@@ -112,7 +113,7 @@ export class APMManager {
           },
           
           // Custom error filtering
-          beforeSendTransaction: (event) => {
+          beforeSendTransaction: (_event) => {
             // Don't send health check transactions
             if (event.transaction?.includes('/health')) {
               return null;
@@ -148,7 +149,7 @@ export class APMManager {
       
       this.initialized = true;
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to initialize APM', error);
       throw error;
     }
@@ -160,7 +161,7 @@ export class APMManager {
     tags?: Record<string, string>;
     extra?: Record<string, any>;
     level?: 'fatal' | 'error' | 'warning' | 'info';
-  }): string | undefined {
+  })?: string {
     if (!this.config.sentry.enabled) return;
     
     return Sentry.withScope((scope) => {
@@ -272,7 +273,7 @@ export class APMManager {
           this.statsd.timing(metric.name, metric.value, tags);
           break;
       }
-    } catch (error) {
+    } catch (error: any) {
       logger.warn('Failed to record metric', error, { metric: metric.name });
     }
   }
@@ -292,7 +293,7 @@ export class APMManager {
   captureMessage(message: string, level: 'fatal' | 'error' | 'warning' | 'info' = 'info', context?: {
     tags?: Record<string, string>;
     extra?: Record<string, any>;
-  }): string | undefined {
+  })?: string {
     if (!this.config.sentry.enabled) return;
     
     return Sentry.withScope((scope) => {
@@ -341,7 +342,7 @@ export class APMManager {
         // Send a test event (will be filtered out in beforeSend)
         Sentry.captureMessage('Health check', 'info');
         result.sentry.healthy = true;
-      } catch (error) {
+      } catch (error: any) {
         logger.warn('Sentry health check failed', error);
       }
     }
@@ -351,7 +352,7 @@ export class APMManager {
       try {
         this.statsd.gauge('health.check', 1, ['source:apm']);
         result.datadog.healthy = true;
-      } catch (error) {
+      } catch (error: any) {
         logger.warn('DataDog health check failed', error);
       }
     }
@@ -378,7 +379,7 @@ export class APMManager {
     const sensitiveParams = ['token', 'key', 'secret', 'password', 'auth'];
     let sanitized = queryString;
     
-    sensitiveParams.forEach(param => {
+    sensitiveParams.forEach((param: any) => {
       const regex = new RegExp(`${param}=[^&]*`, 'gi');
       sanitized = sanitized.replace(regex, `${param}=[REDACTED]`);
     });
@@ -405,7 +406,7 @@ export const initializeAPM = async (): Promise<APMManager> => {
 };
 
 // Convenience functions
-export const captureError = (error: Error, context?: Parameters<APMManager['captureError']>[1]): string | undefined => {
+export const captureError = (error: Error, context?: Parameters<APMManager['captureError']>[1])?: string => {
   return getAPM().captureError(error, context);
 };
 

@@ -41,7 +41,7 @@ export function withNavigationProtection(handler: any) {
 
       (req as any).navigationState = navigationState;
       return await handler(req, res);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Navigation middleware error:', error);
       return res.status(500).json({
         success: false,
@@ -76,7 +76,7 @@ export function withAuthRedirect(redirectTo: string = '/login') {
         }
 
         return await handler(req, res);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Auth redirect error:', error);
         return res.status(500).json({
           success: false,

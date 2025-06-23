@@ -53,7 +53,7 @@ export const ThemeModeProvider: React.FC<ThemeModeProviderProps> = ({ children }
     // Update localStorage
     try {
       localStorage.setItem('themeMode', newMode);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to save theme to localStorage:', error);
     }
 

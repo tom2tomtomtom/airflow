@@ -1,9 +1,7 @@
 import { getLogger } from '@/lib/logger';
 import { classifyError } from '@/lib/error-handling/error-classifier';
-import { cached, CacheProfiles } from '@/lib/cache/redis-cache';
 import { createServerSupabaseClient } from '@/lib/supabase';
 import { optimizeImage, analyzeImage } from '@/lib/optimization/image';
-import { handleSupabaseError } from '@/lib/supabase/errors';
 
 const logger = getLogger('asset-manager');
 
@@ -122,7 +120,7 @@ export class AssetManager {
   private readonly SUPPORTED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/mov'];
   private readonly SUPPORTED_DOCUMENT_TYPES = ['application/pdf', 'application/msword', 'text/plain'];
   
-  private async getSupabase() {
+  private async getSupabase() : Promise<void> {
     return await this.supabasePromise;
   }
 
@@ -163,7 +161,7 @@ export class AssetManager {
       // Create initial asset record
       const assetId = this.generateAssetId();
       
-      let asset: Asset = {
+      const asset: Asset = {
         id: assetId,
         briefId,
         fileName,
@@ -248,7 +246,7 @@ export class AssetManager {
         try {
           const aiAnalysis = await this.analyzeAssetWithAI(asset);
           asset.metadata.aiAnalysis = aiAnalysis;
-        } catch (error) {
+        } catch (error: any) {
           logger.warn('AI analysis failed', error);
         }
       }
@@ -271,7 +269,7 @@ export class AssetManager {
 
       return asset;
 
-    } catch (error) {
+    } catch (error: any) {
       const classified = classifyError(error as Error, {
         route: 'asset-manager',
         metadata: { fileName: file.name, briefId, fileSize: file.size }
@@ -330,7 +328,7 @@ export class AssetManager {
         throw error;
       }
 
-      const assets = (data || []).map(row => this.mapRowToAsset(row));
+      const assets = (data || []).map((row: any) => this.mapRowToAsset(row));
       const total = count || 0;
       const hasMore = offset + limit < total;
 
@@ -340,7 +338,7 @@ export class AssetManager {
         hasMore
       };
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Asset search failed', error);
       throw error;
     }
@@ -362,7 +360,7 @@ export class AssetManager {
 
       return this.mapRowToAsset(data);
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to get asset by ID', error);
       throw error;
     }
@@ -395,7 +393,7 @@ export class AssetManager {
 
       logger.info('Asset deleted', { assetId, deletedBy });
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Asset deletion failed', error);
       throw error;
     }
@@ -444,14 +442,14 @@ export class AssetManager {
         
         // Fetch assets to populate collection
         const assetObjects = await Promise.all(
-          assets.map(id => this.getAssetById(id))
+          assets.map((id: any) => this.getAssetById(id))
         );
         collection.assets = assetObjects.filter(Boolean) as Asset[];
       }
 
       return collection;
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Collection creation failed', error);
       throw error;
     }
@@ -484,7 +482,7 @@ export class AssetManager {
 
       return collections;
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to get collections', error);
       throw error;
     }
@@ -617,7 +615,7 @@ export class AssetManager {
         url: urlData.publicUrl
       };
 
-    } catch (error) {
+    } catch (error: any) {
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error' 
@@ -720,7 +718,7 @@ export class AssetManager {
 
   private async addAssetsToCollection(collectionId: string, assetIds: string[]): Promise<void> {
     await Promise.all(
-      assetIds.map(assetId => this.addAssetToCollection(collectionId, assetId))
+      assetIds.map((assetId: any) => this.addAssetToCollection(collectionId, assetId))
     );
   }
 
@@ -738,9 +736,9 @@ export class AssetManager {
     }
 
     return (data || [])
-      .map(row => row.assets)
+      .map((row: any) => row.assets)
       .filter(Boolean)
-      .map(assetData => this.mapRowToAsset(assetData));
+      .map((assetData: any) => this.mapRowToAsset(assetData));
   }
 
   private mapRowToAsset(row: any): Asset {

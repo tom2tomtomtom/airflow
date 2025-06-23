@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { creatomateService } from '@/services/creatomate';
@@ -58,7 +59,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
   try {
     return handleGenerate(req, res, user);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Video Generate API error:', error);
     return res.status(500).json({
@@ -212,7 +213,7 @@ async function validateGenerationContext(generateData: any, userId: string): Pro
     }
 
     return { valid: true, client_id: clientId, context };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     return { valid: false, error: 'Error validating generation context' };
   }
@@ -254,7 +255,7 @@ async function checkGenerationLimits(clientId: string, userId: string): Promise<
     }
 
     return { allowed: true };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error checking generation limits:', error);
     return { 
@@ -402,7 +403,7 @@ async function processVideoGeneration(jobsData: any): Promise<any> {
         estimated_completion: renderResult.estimated_completion,
       });
 
-    } catch (error) {
+    } catch (error: any) {
       const message = getErrorMessage(error);
       console.error('Error processing video generation job:', error);
       results.push({
@@ -415,8 +416,8 @@ async function processVideoGeneration(jobsData: any): Promise<any> {
 
   return {
     total_jobs: jobsData.jobs.length,
-    successful: results.filter(r => r.status === 'processing').length,
-    failed: results.filter(r => r.status === 'failed').length,
+    successful: results.filter((r: any) => r.status === 'processing').length,
+    failed: results.filter((r: any) => r.status === 'failed').length,
     results,
   };
 }
@@ -522,7 +523,7 @@ async function startVideoRender(job: any): Promise<any> {
       job_id: render.id,
       estimated_completion: new Date(Date.now() + job.estimated_duration * 1000).toISOString(),
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error starting video render:', error);
     return {

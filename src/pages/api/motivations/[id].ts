@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -37,7 +38,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Motivation API error:', error);
     return res.status(500).json({
@@ -246,7 +247,7 @@ async function getDetailedUsageStats(motivationId: string): Promise<any> {
       .contains('metadata', { motivation_id: motivationId });
 
     return {
-      strategies: strategyUsage?.map(s => s.strategies) || [],
+      strategies: strategyUsage?.map((s: any) => s.strategies) || [],
       content_variations: contentUsage || [],
       copy_assets: copyUsage || [],
       executions: executionUsage || [],
@@ -257,7 +258,7 @@ async function getDetailedUsageStats(motivationId: string): Promise<any> {
         execution_count: executionUsage?.length || 0,
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting detailed usage stats:', error);
     return {
@@ -308,7 +309,7 @@ async function getRelatedContent(motivationId: string, clientId: string): Promis
       similar_motivations: similarMotivations || [],
       suggested_content: suggestedContent || [],
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting related content:', error);
     return {
@@ -432,7 +433,7 @@ async function getMotivationPerformanceHistory(motivationId: string): Promise<an
         }
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting performance history:', error);
     return {
@@ -491,7 +492,7 @@ async function checkMotivationUsage(motivationId: string): Promise<{ isInUse: bo
       isInUse: usageDetails.length > 0,
       usageDetails,
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error checking motivation usage:', error);
     return {

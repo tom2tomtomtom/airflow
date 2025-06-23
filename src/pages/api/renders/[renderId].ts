@@ -36,7 +36,7 @@ async function handler(
       data: renderStatus
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error getting render status:', error);
     return res.status(500).json({
       success: false,

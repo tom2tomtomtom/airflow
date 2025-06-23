@@ -60,8 +60,8 @@ export const RenderStep: React.FC<RenderStepProps> = ({
   const [overallProgress, setOverallProgress] = useState(0);
 
   // Get selected data for rendering
-  const selectedMotivations = motivations.filter(m => m.selected);
-  const selectedCopy = copyVariations.filter(c => c.selected);
+  const selectedMotivations = motivations.filter((m: any) => m.selected);
+  const selectedCopy = copyVariations.filter((c: any) => c.selected);
 
   // Initialize render jobs
   useEffect(() => {
@@ -93,7 +93,7 @@ export const RenderStep: React.FC<RenderStepProps> = ({
       const job = renderJobs[i];
       
       // Update job status to rendering
-      setRenderJobs(prev => prev.map(j => 
+      setRenderJobs(prev => prev.map((j: any) => 
         j.id === job.id ? { ...j, status: 'rendering' as const } : j
       ));
 
@@ -101,7 +101,7 @@ export const RenderStep: React.FC<RenderStepProps> = ({
       for (let progress = 0; progress <= 100; progress += 10) {
         await new Promise(resolve => setTimeout(resolve, 200));
         
-        setRenderJobs(prev => prev.map(j => 
+        setRenderJobs(prev => prev.map((j: any) => 
           j.id === job.id ? { ...j, progress } : j
         ));
         
@@ -114,7 +114,7 @@ export const RenderStep: React.FC<RenderStepProps> = ({
 
       // Complete the job
       const success = Math.random() > 0.1; // 90% success rate
-      setRenderJobs(prev => prev.map(j => 
+      setRenderJobs(prev => prev.map((j: any) => 
         j.id === job.id ? {
           ...j,
           status: success ? 'completed' as const : 'failed' as const,
@@ -130,21 +130,21 @@ export const RenderStep: React.FC<RenderStepProps> = ({
 
   // Retry failed job
   const handleRetryJob = useCallback(async (jobId: string) => {
-    setRenderJobs(prev => prev.map(j => 
+    setRenderJobs(prev => prev.map((j: any) => 
       j.id === jobId ? { ...j, status: 'rendering' as const, progress: 0, error: undefined } : j
     ));
 
     // Simulate retry
     for (let progress = 0; progress <= 100; progress += 10) {
       await new Promise(resolve => setTimeout(resolve, 150));
-      setRenderJobs(prev => prev.map(j => 
+      setRenderJobs(prev => prev.map((j: any) => 
         j.id === jobId ? { ...j, progress } : j
       ));
     }
 
     // Complete retry
     const success = Math.random() > 0.3; // 70% success rate on retry
-    setRenderJobs(prev => prev.map(j => 
+    setRenderJobs(prev => prev.map((j: any) => 
       j.id === jobId ? {
         ...j,
         status: success ? 'completed' as const : 'failed' as const,
@@ -173,7 +173,7 @@ export const RenderStep: React.FC<RenderStepProps> = ({
 
   // Handle workflow completion
   const handleComplete = useCallback(() => {
-    const completedJobs = renderJobs.filter(job => job.status === 'completed');
+    const completedJobs = renderJobs.filter((job: any) => job.status === 'completed');
     onComplete?.({
       briefData,
       selectedMotivations,
@@ -191,10 +191,10 @@ export const RenderStep: React.FC<RenderStepProps> = ({
 
   // Get render statistics
   const getRenderStats = () => {
-    const completed = renderJobs.filter(job => job.status === 'completed').length;
-    const failed = renderJobs.filter(job => job.status === 'failed').length;
-    const pending = renderJobs.filter(job => job.status === 'pending').length;
-    const rendering = renderJobs.filter(job => job.status === 'rendering').length;
+    const completed = renderJobs.filter((job: any) => job.status === 'completed').length;
+    const failed = renderJobs.filter((job: any) => job.status === 'failed').length;
+    const pending = renderJobs.filter((job: any) => job.status === 'pending').length;
+    const rendering = renderJobs.filter((job: any) => job.status === 'rendering').length;
     
     return { completed, failed, pending, rendering, total: renderJobs.length };
   };

@@ -96,7 +96,7 @@ export function useData<T extends keyof EntityTypes>(
         }
 
         setData(result);
-      } catch (err) {
+      } catch (err: any) {
         setError(err as Error);
       } finally {
         setLoading(false);
@@ -122,7 +122,7 @@ export const useClients = () => {
           const userData = JSON.parse(storedUser);
           token = userData.token;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error parsing stored user:', error);
       }
 
@@ -205,7 +205,7 @@ export const useTemplates = () => {
         }
         
         // Ensure data is always an array and each template has required fields
-        const templates = (data || []).map(template => ({
+        const templates = (data || []).map((template: any) => ({
           ...template,
           // Ensure required fields exist to prevent crashes
           dynamicFields: template.dynamicFields || [],
@@ -218,7 +218,7 @@ export const useTemplates = () => {
         }));
         
         return templates;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Templates API error:', error);
         // In production, gracefully return empty array instead of crashing
         return [];
@@ -253,7 +253,7 @@ export const useCampaigns = (clientId?: string) => {
         
         const result = await response.json();
         return result.data || [];
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching campaigns:', error);
         return [];
       }
@@ -284,7 +284,7 @@ export const useCampaign = (campaignId?: string) => {
         
         const result = await response.json();
         return result.data || null;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching campaign:', error);
         throw error;
       }
@@ -333,7 +333,7 @@ export const useCreateAsset = () => {
 
       if (error) throw error;
       return { data, error: null };
-    } catch (err) {
+    } catch (err: any) {
       const error = err as Error;
       setError(error);
       return { data: null, error };
@@ -363,7 +363,7 @@ export const useCreateMatrix = () => {
 
       if (error) throw error;
       return { data, error: null };
-    } catch (err) {
+    } catch (err: any) {
       const error = err as Error;
       setError(error);
       return { data: null, error };
@@ -386,7 +386,7 @@ export const useCreateMatrix = () => {
 
       if (error) throw error;
       return { data, error: null };
-    } catch (err) {
+    } catch (err: any) {
       const error = err as Error;
       setError(error);
       return { data: null, error };
@@ -430,7 +430,7 @@ export const useFileUpload = () => {
         .getPublicUrl(filePath);
 
       return { url: urlData.publicUrl, path: filePath, error: null };
-    } catch (err) {
+    } catch (err: any) {
       const error = err as Error;
       setError(error);
       return { url: null, path: null, error };

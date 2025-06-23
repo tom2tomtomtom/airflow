@@ -81,7 +81,7 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
   };
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    const newFiles = acceptedFiles.map((file) => ({
+    const newFiles = acceptedFiles.map((file: any) => ({
       file,
       type: file.type,
       size: formatFileSize(file.size),

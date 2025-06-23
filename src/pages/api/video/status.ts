@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { creatomateService } from '@/services/creatomate';
@@ -27,7 +28,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     } else {
       return await handleJobStatus(req, res, user, job_id as string);
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Video Status API error:', error);
     return res.status(500).json({
@@ -112,7 +113,7 @@ async function handleGenerationStatus(req: NextApiRequest, res: NextApiResponse,
               return { ...generation, ...updateData };
             }
           }
-        } catch (error) {
+        } catch (error: any) {
           const message = getErrorMessage(error);
           console.error('Error updating generation status:', error);
         }
@@ -130,7 +131,7 @@ async function handleGenerationStatus(req: NextApiRequest, res: NextApiResponse,
       generation_id: generationId,
       total_jobs: updatedJobs.length,
       progress: overallProgress,
-      jobs: updatedJobs.map(job => ({
+      jobs: updatedJobs.map((job: any) => ({
         id: job.id,
         variation_index: job.variation_index,
         status: job.status,
@@ -216,7 +217,7 @@ async function handleJobStatus(req: NextApiRequest, res: NextApiResponse, user: 
           updatedGeneration = updated;
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       const message = getErrorMessage(error);
       console.error('Error updating job status:', error);
     }
@@ -303,7 +304,7 @@ async function saveVideoToAssets(generation: any, videoUrl: string): Promise<str
     }
 
     return asset.id;
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error saving video to assets:', error);
     return null;
@@ -312,10 +313,10 @@ async function saveVideoToAssets(generation: any, videoUrl: string): Promise<str
 
 function calculateOverallProgress(jobs: any[]): any {
   const totalJobs = jobs.length;
-  const completedJobs = jobs.filter(job => job.status === 'completed').length;
-  const failedJobs = jobs.filter(job => job.status === 'failed').length;
-  const processingJobs = jobs.filter(job => job.status === 'processing').length;
-  const pendingJobs = jobs.filter(job => job.status === 'pending').length;
+  const completedJobs = jobs.filter((job: any) => job.status === 'completed').length;
+  const failedJobs = jobs.filter((job: any) => job.status === 'failed').length;
+  const processingJobs = jobs.filter((job: any) => job.status === 'processing').length;
+  const pendingJobs = jobs.filter((job: any) => job.status === 'pending').length;
 
   const overallPercentage = totalJobs > 0 ? Math.round((completedJobs / totalJobs) * 100) : 0;
 
@@ -402,8 +403,8 @@ function getGenerationContext(generation: any): any {
 }
 
 function getEstimatedCompletion(jobs: any[]): string | null {
-  const processingJobs = jobs.filter(job => job.status === 'processing');
-  const pendingJobs = jobs.filter(job => job.status === 'pending');
+  const processingJobs = jobs.filter((job: any) => job.status === 'processing');
+  const pendingJobs = jobs.filter((job: any) => job.status === 'pending');
 
   if (processingJobs.length === 0 && pendingJobs.length === 0) {
     return null; // All jobs are completed or failed

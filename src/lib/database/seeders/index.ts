@@ -62,7 +62,7 @@ export class DatabaseSeeder {
         errors: result.errors.length
       });
       
-    } catch (error) {
+    } catch (error: any) {
       result.success = false;
       result.errors.push(error instanceof Error ? error.message : 'Unknown error');
       result.duration = Date.now() - startTime;
@@ -92,7 +92,7 @@ export class DatabaseSeeder {
         if (error) {
           loggers.general.warn(`Failed to clear table ${table}`, error);
         }
-      } catch (error) {
+      } catch (error: any) {
         loggers.general.warn(`Error clearing table ${table}`, error);
       }
     }
@@ -115,7 +115,7 @@ export class DatabaseSeeder {
             loggers.general.info(`Created profile: ${profile.email}`);
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         result.errors.push(`Error creating profile ${profile.email}: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     }
@@ -138,7 +138,7 @@ export class DatabaseSeeder {
             loggers.general.info(`Created client: ${client.name}`);
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         result.errors.push(`Error creating client ${client.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     }
@@ -161,7 +161,7 @@ export class DatabaseSeeder {
             loggers.general.info(`Created project: ${project.name}`);
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         result.errors.push(`Error creating project ${project.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     }
@@ -184,7 +184,7 @@ export class DatabaseSeeder {
             loggers.general.info(`Created campaign: ${campaign.name}`);
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         result.errors.push(`Error creating campaign ${campaign.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     }
@@ -207,7 +207,7 @@ export class DatabaseSeeder {
             loggers.general.info(`Created feature flag: ${flag.key}`);
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         result.errors.push(`Error creating feature flag ${flag.key}: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     }

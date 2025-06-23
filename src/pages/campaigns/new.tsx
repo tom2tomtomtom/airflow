@@ -159,7 +159,7 @@ const NewCampaign: React.FC = () => {
       showNotification('Campaign created successfully!', 'success');
       // API returns { data: campaign } not { campaign }
       router.push(`/campaigns/${result.data.id}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating campaign:', error);
       showNotification('Failed to create campaign. Please try again.', 'error');
     } finally {

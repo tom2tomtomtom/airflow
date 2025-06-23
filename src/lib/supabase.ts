@@ -5,7 +5,7 @@ import { getSupabaseBrowserClient } from './supabase/client';
 import { createServerSupabaseClient } from './supabase/server';
 import { getAdminSupabaseClient } from './supabase/admin';
 import { Database } from '@/types/database';
-import { handleSupabaseError, getErrorMessage } from './supabase/errors';
+import { handleSupabaseError } from './supabase/errors';
 import { withRetry, queryWithCache } from './supabase/helpers';
 import { loggers } from './logger';
 
@@ -55,7 +55,7 @@ export async function getUserFromToken(
     }
 
     return data.user as any; // Type assertion for compatibility
-  } catch (error) {
+  } catch (error: any) {
     await handleSupabaseError(error, {
       operation: 'getUserFromToken',
       metadata: { hasToken: !!token }
@@ -127,7 +127,7 @@ export async function userHasClientAccess(userId: string, clientId: string): Pro
   try {
     const userClients = await getUserClients(userId);
     return userClients.includes(clientId);
-  } catch (error) {
+  } catch (error: any) {
     loggers.db.error('Error checking client access', error, { userId, clientId });
     return false;
   }

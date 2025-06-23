@@ -1,3 +1,4 @@
+import { NextApiRequest, NextApiResponse } from 'next';
 import { getErrorMessage } from '@/utils/errorUtils';
 import { withAuthRateLimit } from '@/lib/rate-limiter';
 import type { NextApiRequest, NextApiResponse } from 'next';
@@ -180,7 +181,7 @@ async function handler(
       },
     });
 
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Login error:', error);
     return res.status(500).json({

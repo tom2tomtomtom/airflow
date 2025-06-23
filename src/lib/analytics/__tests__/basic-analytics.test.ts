@@ -412,7 +412,7 @@ describe('Basic Analytics Tests', () => {
         user_id: 'user456',
       };
       
-      requiredProperties.forEach(prop => {
+      requiredProperties.forEach((prop: any) => {
         expect(eventData).toHaveProperty(prop);
         expect(eventData[prop]).toBeDefined();
       });

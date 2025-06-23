@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { Box, Paper, Typography, Stepper, Step, StepLabel, StepContent } from '@mui/material';
+import { Box, Paper, Typography, Stepper, Step, StepLabel } from '@mui/material';
 import { useWorkflow } from '../WorkflowProvider';
 
 interface WorkflowStepWrapperProps {

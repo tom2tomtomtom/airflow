@@ -148,7 +148,7 @@ const CampaignsPage: React.FC = () => {
 
         {activeClient && isLoading && (
           <Grid container spacing={3}>
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3].map((i: any) => (
               <Grid size={{ xs: 12, sm: 6, md: 4 }} key={i}>
                 <CardSkeleton height={300} />
               </Grid>

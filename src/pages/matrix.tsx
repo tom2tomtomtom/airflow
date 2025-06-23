@@ -92,7 +92,7 @@ interface Matrix {
 }
 
 // Add dynamic fields to demo templates
-const templatesWithFields: Template[] = demoTemplates.map(template => ({
+const templatesWithFields: Template[] = demoTemplates.map((template: any) => ({
   ...template,
   dynamic_fields: [
     {
@@ -154,7 +154,7 @@ const MatrixPage: React.FC = () => {
     // Initialize field assignments when template is selected
     if (selectedTemplate && selectedTemplate.dynamic_fields) {
       const initialAssignments: Record<string, FieldAssignment> = {};
-      selectedTemplate.dynamic_fields.forEach(field => {
+      selectedTemplate.dynamic_fields.forEach((field: any) => {
         initialAssignments[field.id] = {
           fieldId: field.id,
           status: 'empty'
@@ -169,7 +169,7 @@ const MatrixPage: React.FC = () => {
     setMatrixName(`${template.name} - ${new Date().toLocaleDateString()}`);
   };
 
-  const handleFieldUpdate = (fieldId: string, value: string | undefined, assetId?: string) => {
+  const handleFieldUpdate = (fieldId: string, value?: string, assetId?: string) => {
     setFieldAssignments(prev => ({
       ...prev,
       [fieldId]: {
@@ -212,7 +212,7 @@ const MatrixPage: React.FC = () => {
         setSaveSuccess(false);
       }, 2000);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving matrix:', error);
     } finally {
       setLoading(false);
@@ -238,7 +238,7 @@ const MatrixPage: React.FC = () => {
     }
   };
 
-  const filteredTemplates = templatesWithFields.filter(template =>
+  const filteredTemplates = templatesWithFields.filter((template: any) =>
     template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     template.platform.toLowerCase().includes(searchTerm.toLowerCase()) ||
     template.category.toLowerCase().includes(searchTerm.toLowerCase())
@@ -310,7 +310,7 @@ const MatrixPage: React.FC = () => {
               </Typography>
               
               <Box sx={{ maxHeight: 600, overflowY: 'auto' }}>
-                {filteredTemplates.map((template) => (
+                {filteredTemplates.map((template: any) => (
                   <Card
                     key={template.id}
                     sx={{
@@ -368,7 +368,7 @@ const MatrixPage: React.FC = () => {
                   Saved Matrices
                 </Typography>
                 <Stack spacing={1}>
-                  {savedMatrices.map((matrix) => (
+                  {savedMatrices.map((matrix: any) => (
                     <Card key={matrix.id} variant="outlined">
                       <CardContent sx={{ py: 1 }}>
                         <Typography variant="subtitle2">{matrix.name}</Typography>
@@ -431,7 +431,7 @@ const MatrixPage: React.FC = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {selectedTemplate.dynamic_fields?.map((field) => (
+                      {selectedTemplate.dynamic_fields?.map((field: any) => (
                         <TableRow key={field.id}>
                           <TableCell>
                             <Box display="flex" alignItems="center" gap={1}>

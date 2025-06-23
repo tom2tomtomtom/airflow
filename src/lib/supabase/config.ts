@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { loggers } from '@/lib/logger';
 
 // Supabase configuration types
@@ -35,7 +36,7 @@ export function validateSupabaseConfig(): SupabaseConfig {
     if (!urlObj.protocol.startsWith('https')) {
       throw new Error('Supabase URL must use HTTPS protocol');
     }
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Invalid Supabase URL format: ${url}`);
   }
 

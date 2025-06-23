@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -46,7 +47,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Social Posts API error:', error);
     return res.status(500).json({
@@ -78,7 +79,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       return res.json({ data: [], count: 0 });
     }
 
-    const clientIds = userClients.map(uc => uc.client_id);
+    const clientIds = userClients.map((uc: any) => uc.client_id);
 
     let query = supabase
       .from('social_posts')
@@ -119,7 +120,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     // Filter by platform if specified
     let filteredPosts = posts || [];
     if (platform) {
-      filteredPosts = filteredPosts.filter(post => 
+      filteredPosts = filteredPosts.filter((post: any) => 
         post.social_post_platforms?.some((p: any) => p.platform === platform)
       );
     }
@@ -128,7 +129,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       data: filteredPosts,
       count: count || 0,
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error in handleGet:', error);
     return res.status(500).json({ error: 'Failed to fetch social posts' });
@@ -168,8 +169,8 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse, user: any
       .in('platform', postData.platforms)
       .eq('status', 'active');
 
-    const connectedPlatforms = platformConnections?.map(p => p.platform) || [];
-    const missingPlatforms = postData.platforms.filter(p => !connectedPlatforms.includes(p));
+    const connectedPlatforms = platformConnections?.map((p: any) => p.platform) || [];
+    const missingPlatforms = postData.platforms.filter((p: any) => !connectedPlatforms.includes(p));
 
     if (missingPlatforms.length > 0) {
       return res.status(400).json({ 
@@ -200,7 +201,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse, user: any
     }
 
     // Create platform associations
-    const platformPromises = postData.platforms.map(platform => 
+    const platformPromises = postData.platforms.map((platform: any) => 
       supabase
         .from('social_post_platforms')
         .insert({
@@ -225,7 +226,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse, user: any
         .eq('id', post.id);
 
       // Save publish results
-      const resultPromises = publishResults.map(result => 
+      const resultPromises = publishResults.map((result: any) => 
         supabase
           .from('social_post_results')
           .insert({
@@ -252,7 +253,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse, user: any
         message: 'Post scheduled successfully'
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error creating social post:', error);
     return res.status(500).json({ error: 'Failed to create social post' });
@@ -330,7 +331,7 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse, user: any
         .eq('post_id', post_id);
 
       // Create new platform associations
-      const platformPromises = updateData.platforms.map(platform => 
+      const platformPromises = updateData.platforms.map((platform: any) => 
         supabase
           .from('social_post_platforms')
           .insert({
@@ -346,7 +347,7 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse, user: any
       data: updatedPost,
       message: 'Social post updated successfully'
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error updating social post:', error);
     return res.status(500).json({ error: 'Failed to update social post' });
@@ -400,7 +401,7 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
     }
 
     return res.json({ message: 'Social post deleted successfully' });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error deleting social post:', error);
     return res.status(500).json({ error: 'Failed to delete social post' });
@@ -447,7 +448,7 @@ async function publishToMPlatforms(post: any, platforms: string[], clientId: str
           error: 'Platform API error',
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       results.push({
         platform,
         success: false,

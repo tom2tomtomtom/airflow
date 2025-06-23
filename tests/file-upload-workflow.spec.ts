@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { test, expect } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
@@ -306,6 +307,7 @@ test.describe('File Upload Workflow Testing', () => {
           await page.waitForTimeout(1000);
           
         } catch (error) {
+    const message = getErrorMessage(error);
           console.log(`  ❌ Error clicking button: ${error}`);
         }
       }

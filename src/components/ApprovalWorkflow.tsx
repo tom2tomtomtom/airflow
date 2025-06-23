@@ -137,7 +137,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
         const data = await response.json();
         setApprovals(data.data || []);
       }
-    } catch (error) {
+    } catch (error: any) {
     const message = getErrorMessage(error);
       console.error('Error fetching approvals:', error);
     } finally {
@@ -168,7 +168,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
         const error = await response.json();
         showNotification(error.error || 'Failed to process approval', 'error');
       }
-    } catch (error) {
+    } catch (error: any) {
     const message = getErrorMessage(error);
       showNotification('Error processing approval', 'error');
     }
@@ -176,7 +176,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
 
   // Handle bulk approval
   const handleBulkApproval = async () => {
-    const selectedIds = Object.keys(bulkSelection).filter(id => bulkSelection[id]);
+    const selectedIds = Object.keys(bulkSelection).filter((id: any) => bulkSelection[id]);
     if (selectedIds.length === 0) return;
 
     try {
@@ -202,7 +202,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
         const error = await response.json();
         showNotification(error.error || 'Failed to process bulk approvals', 'error');
       }
-    } catch (error) {
+    } catch (error: any) {
     const message = getErrorMessage(error);
       showNotification('Error processing bulk approvals', 'error');
     }
@@ -298,14 +298,14 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
   };
 
   const handleSelectAll = () => {
-    const pendingApprovals = approvals.filter(a => a.status === 'pending');
+    const pendingApprovals = approvals.filter((a: any) => a.status === 'pending');
     const allSelected = pendingApprovals.every(a => bulkSelection[a.id]);
     
     if (allSelected) {
       setBulkSelection({});
     } else {
       const newSelection: BulkSelection = {};
-      pendingApprovals.forEach(a => {
+      pendingApprovals.forEach((a: any) => {
         newSelection[a.id] = true;
       });
       setBulkSelection(newSelection);
@@ -317,7 +317,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
     fetchApprovals();
   }, [activeClient, tabValue, clientId, itemType, itemId]);
 
-  const filteredApprovals = tabValue === 'all' ? approvals : approvals.filter(a => a.status === tabValue);
+  const filteredApprovals = tabValue === 'all' ? approvals : approvals.filter((a: any) => a.status === tabValue);
   const selectedCount = Object.values(bulkSelection).filter(Boolean).length;
   const overdueCount = approvals.filter(isOverdue).length;
 

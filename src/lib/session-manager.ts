@@ -87,12 +87,12 @@ class SessionManager {
       
       // Enforce concurrent session limit in memory
       const userSessions = Array.from(this.memorySessions.values())
-        .filter(s => s.userId === data.userId)
+        .filter((s: any) => s.userId === data.userId)
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
       
       if (userSessions.length > MAX_CONCURRENT_SESSIONS) {
         const sessionsToRemove = userSessions.slice(MAX_CONCURRENT_SESSIONS);
-        sessionsToRemove.forEach(s => this.memorySessions.delete(s.id));
+        sessionsToRemove.forEach((s: any) => this.memorySessions.delete(s.id));
       }
     } else {
       const pipeline = redis!.pipeline();
@@ -130,7 +130,7 @@ class SessionManager {
           if (oldestSessions.length > 0) {
             const deletePipeline = redis!.pipeline();
             
-            oldestSessions.forEach(oldSessionId => {
+            oldestSessions.forEach((oldSessionId: any) => {
               deletePipeline.del(`${SESSION_PREFIX}${oldSessionId}`);
             });
             
@@ -244,7 +244,7 @@ class SessionManager {
   async getUserSessions(userId: string): Promise<Session[]> {
     if (this.useMemoryFallback) {
       return Array.from(this.memorySessions.values())
-        .filter(s => s.userId === userId)
+        .filter((s: any) => s.userId === userId)
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
     }
 
@@ -260,7 +260,7 @@ class SessionManager {
 
     const pipeline = redis!.pipeline();
     
-    sessionIds.forEach(sessionId => {
+    sessionIds.forEach((sessionId: any) => {
       pipeline.get(`${SESSION_PREFIX}${sessionId}`);
     });
     
@@ -273,7 +273,7 @@ class SessionManager {
         if (result[0] === null && result[1]) {
           try {
             sessions.push(JSON.parse(result[1] as string));
-          } catch (error) {
+          } catch (error: any) {
             loggers.auth.error('Failed to parse session data', error, {
               sessionId: sessionIds[index],
             });
@@ -288,9 +288,9 @@ class SessionManager {
   async deleteUserSessions(userId: string): Promise<number> {
     if (this.useMemoryFallback) {
       const sessions = Array.from(this.memorySessions.values())
-        .filter(s => s.userId === userId);
+        .filter((s: any) => s.userId === userId);
       
-      sessions.forEach(s => this.memorySessions.delete(s.id));
+      sessions.forEach((s: any) => this.memorySessions.delete(s.id));
       
       return sessions.length;
     }
@@ -307,7 +307,7 @@ class SessionManager {
 
     const pipeline = redis!.pipeline();
     
-    sessionIds.forEach(sessionId => {
+    sessionIds.forEach((sessionId: any) => {
       pipeline.del(`${SESSION_PREFIX}${sessionId}`);
     });
     

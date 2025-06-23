@@ -268,7 +268,7 @@ const VideoStudioPage: React.FC = () => {
       } else {
         throw new Error(result.error || 'Failed to start video generation');
       }
-    } catch (error) {
+    } catch (error: any) {
       showNotification('Failed to generate video. Please try again.', 'error');
       console.error('Video generation error:', error);
     } finally {
@@ -281,7 +281,7 @@ const VideoStudioPage: React.FC = () => {
     if (videoJobs.length === 0) return;
 
     try {
-      const activeJobs = videoJobs.filter(job =>
+      const activeJobs = videoJobs.filter((job: any) =>
         job.status === 'pending' || job.status === 'processing'
       );
 
@@ -290,12 +290,12 @@ const VideoStudioPage: React.FC = () => {
         const result = await response.json();
 
         if (result.success) {
-          setVideoJobs(prev => prev.map(j =>
+          setVideoJobs(prev => prev.map((j: any) =>
             j.id === job.id ? { ...j, ...result.job } : j
           ));
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error refreshing job status:', error);
     }
   };
@@ -395,7 +395,7 @@ const VideoStudioPage: React.FC = () => {
                     </Typography>
 
                     <Grid container spacing={2}>
-                      {templates.map((template) => (
+                      {templates.map((template: any) => (
                         <Grid size={{ xs: 12, sm: 6, md: 6 }} key={template.id}>
                           <Card
                             variant="outlined"
@@ -434,7 +434,7 @@ const VideoStudioPage: React.FC = () => {
                                 <Chip label={`${template.duration}s`} size="small" variant="outlined" />
                               </Box>
                               <Box display="flex" flexWrap="wrap" gap={0.5}>
-                                {template.platform.map((platform) => (
+                                {template.platform.map((platform: any) => (
                                   <Chip
                                     key={platform}
                                     label={platform}
@@ -1046,7 +1046,7 @@ const VideoStudioPage: React.FC = () => {
                       </Alert>
                     ) : (
                       <List>
-                        {videoJobs.map((job) => (
+                        {videoJobs.map((job: any) => (
                           <ListItem key={job.id} divider>
                             <ListItemIcon>
                               {getStatusIcon(job.status)}

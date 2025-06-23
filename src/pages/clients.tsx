@@ -114,10 +114,10 @@ const ClientsPage: React.FC = () => {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   // Get unique industries for filter
-  const industries = Array.from(new Set(clients.map(client => client.industry).filter(Boolean)));
+  const industries = Array.from(new Set(clients.map((client: any) => client.industry).filter(Boolean)));
 
   // Filter clients
-  const filteredClients = clients.filter(client => {
+  const filteredClients = clients.filter((client: any) => {
     const matchesSearch = client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          client.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesIndustry = !industryFilter || client.industry === industryFilter;
@@ -146,7 +146,7 @@ const ClientsPage: React.FC = () => {
         showNotification('Client created successfully!', 'success');
       }
       handleCloseDialog();
-    } catch (error) {
+    } catch (error: any) {
       showNotification('Failed to save client. Please try again.', 'error');
     } finally {
       setSubmitting(false);
@@ -162,7 +162,7 @@ const ClientsPage: React.FC = () => {
       showNotification('Client deleted successfully!', 'success');
       setDeleteDialogOpen(false);
       setClientToDelete(null);
-    } catch (error) {
+    } catch (error: any) {
       showNotification('Failed to delete client. Please try again.', 'error');
     }
   };
@@ -293,7 +293,7 @@ const ClientsPage: React.FC = () => {
                     onChange={(e) => setIndustryFilter(e.target.value)}
                   >
                     <MenuItem value="">All Industries</MenuItem>
-                    {industries.map((industry) => (
+                    {industries.map((industry: any) => (
                       <MenuItem key={industry} value={industry}>
                         {industry}
                       </MenuItem>
@@ -340,7 +340,7 @@ const ClientsPage: React.FC = () => {
         {/* Clients Grid */}
         {!loading && filteredClients.length > 0 && (
           <Grid container spacing={3}>
-            {filteredClients.map((client) => (
+            {filteredClients.map((client: any) => (
               <Grid size={{ xs: 12, sm: 6, md: 4 }} key={client.id}>
                 <Card
                   sx={{

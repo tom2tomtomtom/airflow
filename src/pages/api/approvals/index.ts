@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -43,7 +44,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Approvals API error:', error);
     return res.status(500).json({ 
@@ -75,7 +76,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     return res.json({ data: [], count: 0 });
   }
 
-  const clientIds = userClients.map(uc => uc.client_id);
+  const clientIds = userClients.map((uc: any) => uc.client_id);
 
   let query = supabase
     .from('approvals')
@@ -337,7 +338,7 @@ async function getApprovalItemDetails(itemType: string, itemId: string): Promise
       client_id: clientId,
       item_type: itemType,
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting approval item details:', error);
     return null;
@@ -395,7 +396,7 @@ async function determineApprovalAssignee(clientId: string, approvalType: string,
       .limit(1);
 
     return managers && managers.length > 0 ? managers[0].user_id : null;
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error determining approval assignee:', error);
     return null;
@@ -413,7 +414,7 @@ async function updateItemApprovalStatus(itemType: string, itemId: string, status
         updated_at: new Date().toISOString(),
       })
       .eq('id', itemId);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error updating item approval status:', error);
   }
@@ -424,7 +425,7 @@ async function triggerApprovalNotification(approval: any, action: string): Promi
     // In a full implementation, this would trigger real-time notifications
     // via WebSocket, email, or push notifications
     process.env.NODE_ENV === 'development' && console.log(`Triggering approval notification for action: ${action}`);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error triggering approval notification:', error);
   }
@@ -448,14 +449,14 @@ function calculateApprovalStatistics(approvals: any[]): any {
 
   // Calculate overdue approvals
   const now = new Date();
-  const overdueCount = approvals.filter(approval => 
+  const overdueCount = approvals.filter((approval: any) => 
     approval.status === 'pending' && 
     approval.due_date && 
     new Date(approval.due_date) < now
   ).length;
 
   // Calculate average approval time for completed approvals
-  const completedApprovals = approvals.filter(a => ['approved', 'rejected'].includes(a.status));
+  const completedApprovals = approvals.filter((a: any) => ['approved', 'rejected'].includes(a.status));
   const avgApprovalTime = completedApprovals.length > 0 
     ? completedApprovals.reduce((sum, approval) => {
         const start = new Date(approval.created_at).getTime();

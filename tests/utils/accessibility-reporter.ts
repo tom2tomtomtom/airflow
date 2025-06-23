@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 /**
  * Accessibility Reporter for Playwright Tests
  * Tracks and reports accessibility compliance across test runs
@@ -51,6 +52,7 @@ class AccessibilityReporter implements Reporter {
     try {
       mkdirSync(this.outputDir, { recursive: true });
     } catch (error) {
+    const message = getErrorMessage(error);
       // Directory might already exist
     }
   }
@@ -138,6 +140,7 @@ class AccessibilityReporter implements Reporter {
             }
           }
         } catch (error) {
+    const message = getErrorMessage(error);
           // Skip invalid JSON
         }
       }
@@ -172,6 +175,7 @@ class AccessibilityReporter implements Reporter {
             }
           }
         } catch (error) {
+    const message = getErrorMessage(error);
           // Skip invalid data
         }
       }

@@ -103,7 +103,7 @@ export class WorkflowErrorBoundary extends Component<Props, State> {
 
       // TODO: Send to actual error tracking service (Sentry, etc.)
       // await this.sendToErrorService(errorReport);
-    } catch (reportingError) {
+    } catch (reportingError: any) {
       console.error('Failed to report error:', reportingError);
     }
   };
@@ -153,7 +153,7 @@ export class WorkflowErrorBoundary extends Component<Props, State> {
 
     // In development, return original message
     return { message: error.message };
-  };
+  }
 
   private handleRetry = () => {
     this.setState({

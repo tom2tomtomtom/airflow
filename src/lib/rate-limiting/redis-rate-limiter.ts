@@ -26,7 +26,7 @@ export class RedisRateLimiter {
     this.initializeRedis();
   }
   
-  private async initializeRedis() {
+  private async initializeRedis() : Promise<void> {
     try {
       const config = getRedisConfig();
       
@@ -56,7 +56,7 @@ export class RedisRateLimiter {
       
       await this.client.connect();
       
-    } catch (error) {
+    } catch (error: any) {
       loggers.general.error('Failed to initialize Redis for rate limiting', error);
       this.isConnected = false;
     }
@@ -98,7 +98,7 @@ export class RedisRateLimiter {
         totalHits: count
       };
       
-    } catch (error) {
+    } catch (error: any) {
       loggers.general.error('Redis rate limit operation failed', error);
       throw error;
     }
@@ -152,7 +152,7 @@ export class RedisRateLimiter {
       } else {
         return this.fallbackRateLimit(identifier, options);
       }
-    } catch (error) {
+    } catch (error: any) {
       loggers.general.warn('Rate limit check failed, using fallback', error);
       return this.fallbackRateLimit(identifier, options);
     }
@@ -168,7 +168,7 @@ export class RedisRateLimiter {
     }
   }
   
-  async disconnect() {
+  async disconnect() : Promise<void> {
     if (this.client) {
       await this.client.disconnect();
     }
@@ -196,7 +196,7 @@ export class RedisRateLimiter {
           resetTime,
           totalHits: currentCount
         };
-      } catch (error) {
+      } catch (error: any) {
         loggers.general.error('Failed to get rate limit info from Redis', error);
       }
     }
@@ -234,7 +234,7 @@ export class RedisRateLimiter {
         if (keys.length > 0) {
           await this.client.del(keys);
         }
-      } catch (error) {
+      } catch (error: any) {
         loggers.general.error('Failed to reset rate limit in Redis', error);
       }
     }

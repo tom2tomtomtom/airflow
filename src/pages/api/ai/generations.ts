@@ -67,7 +67,7 @@ async function handler(
       success: true,
       generations: formattedGenerations,
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error fetching generations:', error);
     return res.status(500).json({ 

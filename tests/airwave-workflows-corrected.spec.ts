@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { test, expect } from '@playwright/test';
 
 test.describe('AIrWAVE Application Workflow Testing', () => {
@@ -118,7 +119,7 @@ test.describe('AIrWAVE Application Workflow Testing', () => {
     console.log(`🔘 Found ${buttons.length} buttons and ${links.length} links`);
     
     // Test button interactions
-    let buttonTestResults = [];
+    const buttonTestResults = [];
     for (let i = 0; i < Math.min(buttons.length, 3); i++) {
       try {
         const buttonText = await buttons[i].textContent();
@@ -126,6 +127,7 @@ test.describe('AIrWAVE Application Workflow Testing', () => {
         buttonTestResults.push(`✅ Button ${i + 1}: "${buttonText?.substring(0, 20)}..." - Click successful`);
         await page.waitForTimeout(500); // Wait for any effects
       } catch (error) {
+    const message = getErrorMessage(error);
         buttonTestResults.push(`❌ Button ${i + 1}: Click failed - ${error.message}`);
       }
     }
@@ -147,6 +149,7 @@ test.describe('AIrWAVE Application Workflow Testing', () => {
           await inputs[0].fill('test-value');
           console.log('   ✅ Input field interaction successful');
         } catch (error) {
+    const message = getErrorMessage(error);
           console.log(`   ❌ Input interaction failed: ${error.message}`);
         }
       }
@@ -241,6 +244,7 @@ test.describe('AIrWAVE Application Workflow Testing', () => {
           interactionCount++;
           await page.waitForTimeout(200);
         } catch (error) {
+    const message = getErrorMessage(error);
           workflow.errors.push(`Button ${i + 1} interaction failed`);
         }
       }
@@ -280,6 +284,7 @@ test.describe('AIrWAVE Application Workflow Testing', () => {
       expect(workflow.metrics.loadTime).toBeLessThan(15000);
       
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log(`❌ Workflow simulation failed: ${error.message}`);
       workflow.errors.push(error.message);
       throw error;

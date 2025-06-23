@@ -193,7 +193,7 @@ export const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
   const toggleExpanded = (itemId: string) => {
     setExpandedItems(prev =>
       prev.includes(itemId)
-        ? prev.filter(id => id !== itemId)
+        ? prev.filter((id: any) => id !== itemId)
         : [...prev, itemId]
     );
   };
@@ -260,7 +260,7 @@ export const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
         {hasChildren && (
           <Collapse in={isExpanded} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              {item.children!.map(child => renderNavItem(child, depth + 1))}
+              {item.children!.map((child: any) => renderNavItem(child, depth + 1))}
             </List>
           </Collapse>
         )}
@@ -286,7 +286,7 @@ export const SimplifiedNavigation: React.FC<SimplifiedNavigationProps> = ({
       {/* Navigation Items */}
       <Box sx={{ flex: 1, overflow: 'auto', py: 1 }}>
         <List>
-          {navigationItems.map(item => renderNavItem(item))}
+          {navigationItems.map((item: any) => renderNavItem(item))}
         </List>
       </Box>
 

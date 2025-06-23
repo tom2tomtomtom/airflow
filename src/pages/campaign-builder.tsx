@@ -216,7 +216,7 @@ const CampaignBuilderPage: React.FC = () => {
       if (result.data) {
         setCampaigns(result.data);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading campaigns:', error);
     } finally {
       setLoading(false);
@@ -336,7 +336,7 @@ const CampaignBuilderPage: React.FC = () => {
                         </Typography>
 
                         <Grid container spacing={2}>
-                          {campaignTemplates.map((template) => (
+                          {campaignTemplates.map((template: any) => (
                             <Grid size={{ xs: 12, md: 6 }} key={template.id}>
                               <Card
                                 variant="outlined"
@@ -365,7 +365,7 @@ const CampaignBuilderPage: React.FC = () => {
                                     {template.description}
                                   </Typography>
                                   <Box display="flex" flexWrap="wrap" gap={0.5} mb={2}>
-                                    {template.platforms.map((platform) => (
+                                    {template.platforms.map((platform: any) => (
                                       <Chip key={platform} label={platform} size="small" variant="outlined" />
                                     ))}
                                   </Box>
@@ -476,7 +476,7 @@ const CampaignBuilderPage: React.FC = () => {
                           <Grid size={{ xs: 6 }}>
                             <Box textAlign="center">
                               <Typography variant="h4" color="success.main">
-                                {campaigns.filter(c => c.status === 'active').length}
+                                {campaigns.filter((c: any) => c.status === 'active').length}
                               </Typography>
                               <Typography variant="caption" color="text.secondary">
                                 Active
@@ -605,7 +605,7 @@ const CampaignBuilderPage: React.FC = () => {
           <DialogTitle>Campaign Templates</DialogTitle>
           <DialogContent>
             <Grid container spacing={2}>
-              {campaignTemplates.map((template) => (
+              {campaignTemplates.map((template: any) => (
                 <Grid size={{ xs: 12, sm: 6 }} key={template.id}>
                   <Card variant="outlined">
                     <CardContent>

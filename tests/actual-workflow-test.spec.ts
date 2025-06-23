@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { test, expect } from '@playwright/test';
 
 test.describe('AIrWAVE Actual Workflow Testing', () => {
@@ -55,6 +56,7 @@ test.describe('AIrWAVE Actual Workflow Testing', () => {
             console.log(`   📍 Current URL: ${newUrl}`);
             
           } catch (error) {
+    const message = getErrorMessage(error);
             console.log(`   ❌ Button ${i + 1} click failed: ${error.message}`);
           }
         }
@@ -63,6 +65,7 @@ test.describe('AIrWAVE Actual Workflow Testing', () => {
       expect(pageContent.title).toBeTruthy();
       
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log(`❌ Authentication test failed: ${error.message}`);
       
       // Try to get more debugging info
@@ -135,6 +138,7 @@ test.describe('AIrWAVE Actual Workflow Testing', () => {
             }
           }
         } catch (error) {
+    const message = getErrorMessage(error);
           console.log(`   ❌ Link navigation failed: ${error.message}`);
         }
       }
@@ -211,6 +215,7 @@ test.describe('AIrWAVE Actual Workflow Testing', () => {
           await page.keyboard.press('Delete');
           
         } catch (error) {
+    const message = getErrorMessage(error);
           console.log(`   ❌ Input ${i + 1} interaction failed: ${error.message}`);
         }
       }
@@ -250,6 +255,7 @@ test.describe('AIrWAVE Actual Workflow Testing', () => {
           }
           
         } catch (error) {
+    const message = getErrorMessage(error);
           console.log(`   ❌ Form submission test failed: ${error.message}`);
         }
       }
@@ -274,7 +280,7 @@ test.describe('AIrWAVE Actual Workflow Testing', () => {
     
     // Test actual interactions and measure responsiveness
     const buttons = await page.locator('button').all();
-    let interactionTimes: number[] = [];
+    const interactionTimes: number[] = [];
     
     for (let i = 0; i < Math.min(buttons.length, 3); i++) {
       const interactionStart = Date.now();
@@ -285,6 +291,7 @@ test.describe('AIrWAVE Actual Workflow Testing', () => {
         console.log(`🔘 Button ${i + 1} response time: ${interactionTime}ms`);
         await page.waitForTimeout(500);
       } catch (error) {
+    const message = getErrorMessage(error);
         console.log(`🔘 Button ${i + 1} interaction failed: ${error.message}`);
       }
     }

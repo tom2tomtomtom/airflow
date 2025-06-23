@@ -111,7 +111,7 @@ const NotificationCenter: React.FC = () => {
   const handleMarkAsRead = async (notificationId: string) => {
     try {
       await markNotificationAsRead(notificationId);
-    } catch (error) {
+    } catch (error: any) {
       showNotification('Failed to mark notification as read', 'error');
     }
   };
@@ -120,40 +120,40 @@ const NotificationCenter: React.FC = () => {
     try {
       await dismissNotification(notificationId);
       showNotification('Notification dismissed', 'success');
-    } catch (error) {
+    } catch (error: any) {
       showNotification('Failed to dismiss notification', 'error');
     }
   };
 
   const handleMarkAllAsRead = async () => {
     try {
-      const unreadIds = unreadNotifications.map(n => n.id);
-      await Promise.all(unreadIds.map(id => markNotificationAsRead(id)));
+      const unreadIds = unreadNotifications.map((n: any) => n.id);
+      await Promise.all(unreadIds.map((id: any) => markNotificationAsRead(id)));
       showNotification('All notifications marked as read', 'success');
-    } catch (error) {
+    } catch (error: any) {
       showNotification('Failed to mark all as read', 'error');
     }
   };
 
   const handleClearAll = async () => {
     try {
-      await Promise.all(notifications.map(n => dismissNotification(n.id)));
+      await Promise.all(notifications.map((n: any) => dismissNotification(n.id)));
       showNotification('All notifications cleared', 'success');
-    } catch (error) {
+    } catch (error: any) {
       showNotification('Failed to clear notifications', 'error');
     }
   };
 
   // Filter notifications by category
   const allNotifications = notifications;
-  const executionNotifications = notifications.filter(n => n.category === 'execution');
-  const approvalNotifications = notifications.filter(n => n.category === 'approval');
-  const systemNotifications = notifications.filter(n => n.category === 'system');
+  const executionNotifications = notifications.filter((n: any) => n.category === 'execution');
+  const approvalNotifications = notifications.filter((n: any) => n.category === 'approval');
+  const systemNotifications = notifications.filter((n: any) => n.category === 'system');
 
   // Play sound for new urgent notifications
   useEffect(() => {
     if (settings.soundEnabled && unreadNotifications.length > 0) {
-      const urgentNotifications = unreadNotifications.filter(n => n.priority === 'urgent');
+      const urgentNotifications = unreadNotifications.filter((n: any) => n.priority === 'urgent');
       if (urgentNotifications.length > 0) {
         // Play notification sound
         const audio = new Audio('/sounds/notification.mp3');
@@ -175,7 +175,7 @@ const NotificationCenter: React.FC = () => {
           />
         </ListItem>
       ) : (
-        notificationList.map((notification) => (
+        notificationList.map((notification: any) => (
           <ListItem
             key={notification.id}
             sx={{

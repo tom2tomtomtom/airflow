@@ -66,7 +66,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
       return [];
     }
 
-    const filtered = mockData.filter(item =>
+    const filtered = mockData.filter((item: any) =>
       item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.metadata?.tags?.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -130,7 +130,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
   const handleSelectResult = (result: SearchResult) => {
     // Add to recent searches
     setRecentSearches(prev => {
-      const updated = [query, ...prev.filter(s => s !== query)].slice(0, 5);
+      const updated = [query, ...prev.filter((s: any) => s !== query)].slice(0, 5);
       localStorage.setItem('recentSearches', JSON.stringify(updated));
       return updated;
     });
@@ -179,7 +179,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
     }
   }, []);
 
-  const quickActions = mockData.filter(item => item.type === 'action').slice(0, 3);
+  const quickActions = mockData.filter((item: any) => item.type === 'action').slice(0, 3);
   const showQuickActions = !query.trim() && quickActions.length > 0;
   const showRecentSearches = !query.trim() && recentSearches.length > 0;
 
@@ -321,7 +321,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
                     Quick Actions
                   </Typography>
                   <List dense>
-                    {quickActions.map((action) => (
+                    {quickActions.map((action: any) => (
                       <ListItem
                         key={action.id}
                         onClick={() => handleSelectResult(action)}

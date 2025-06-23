@@ -119,7 +119,7 @@ export default function AssetBrowser({
       } else {
         setError(data.message || 'Failed to load assets');
       }
-    } catch (err) {
+    } catch (err: any) {
       setError('Failed to load assets');
     } finally {
       setLoading(false);
@@ -167,11 +167,11 @@ export default function AssetBrowser({
       });
 
       if (response.ok) {
-        setAssets(assets.map(a => 
+        setAssets(assets.map((a: any) => 
           a.id === asset.id ? { ...a, favorite: newFavoriteStatus } : a
         ));
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to toggle favorite:', err);
     }
   };
@@ -263,7 +263,7 @@ export default function AssetBrowser({
         </Box>
       ) : (
         <Grid container spacing={2}>
-          {assets.map((asset) => (
+          {assets.map((asset: any) => (
             <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={asset.id}>
               <Card
                 sx={{
@@ -288,10 +288,10 @@ export default function AssetBrowser({
                       display="flex"
                       alignItems="center"
                       justifyContent="center"
-                      bgcolor={assetTypeColors[asset.type]}
+                      bgcolor={assetTypeColors[asset.type as keyof typeof assetTypeColors] || '#666'}
                       color="white"
                     >
-                      {assetTypeIcons[asset.type]}
+                      {assetTypeIcons[asset.type as keyof typeof assetTypeIcons] || <TextFields />}
                     </Box>
                   )}
                   <IconButton
@@ -313,7 +313,7 @@ export default function AssetBrowser({
                   </Typography>
                   {asset.tags.length > 0 && (
                     <Box mt={1}>
-                      {asset.tags.slice(0, 2).map((tag) => (
+                      {asset.tags.slice(0, 2).map((tag: any) => (
                         <Chip
                           key={tag}
                           label={tag}
@@ -400,7 +400,7 @@ export default function AssetBrowser({
                   {selectedAsset.tags.length > 0 && (
                     <Box mt={2}>
                       <Typography variant="subtitle2" gutterBottom>Tags</Typography>
-                      {selectedAsset.tags.map((tag) => (
+                      {selectedAsset.tags.map((tag: any) => (
                         <Chip
                           key={tag}
                           label={tag}

@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -33,7 +34,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Matrices API error:', error);
     return res.status(500).json({
@@ -77,7 +78,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       .eq('user_id', user.id);
     
     if (userClients && userClients.length > 0) {
-      const clientIds = userClients.map(uc => uc.client_id);
+      const clientIds = userClients.map((uc: any) => uc.client_id);
       
       // Get campaigns for accessible clients
       const { data: accessibleCampaigns } = await supabase
@@ -86,7 +87,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
         .in('client_id', clientIds);
       
       if (accessibleCampaigns && accessibleCampaigns.length > 0) {
-        const campaignIds = accessibleCampaigns.map(c => c.id);
+        const campaignIds = accessibleCampaigns.map((c: any) => c.id);
         query = query.in('campaign_id', campaignIds);
       } else {
         return res.json({ data: [], count: 0 });
@@ -259,7 +260,7 @@ async function getMatrixExecutionStats(matrixId: string): Promise<any> {
       by_platform: platformBreakdown,
       last_execution: executions.length > 0 ? executions[executions.length - 1].created_at : null,
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting execution stats:', error);
     return { total: 0, by_status: {}, by_platform: {} };
@@ -336,7 +337,7 @@ async function generateMatrixContent(matrixData: any, template: any, userId: str
       template.dynamic_fields.forEach((field: any) => {
         fieldAssignments[field.id] = {
           status: 'pending',
-          content: variations.map(v => ({
+          content: variations.map((v: any) => ({
             id: `content-${field.id}-${v.id}`,
             variationId: v.id,
             content: field.defaultValue || '',
@@ -359,7 +360,7 @@ async function generateMatrixContent(matrixData: any, template: any, userId: str
       combinations.push({
         id: 'combo-2',
         name: 'A/B Test Combination',
-        variationIds: variations.slice(0, 2).map(v => v.id),
+        variationIds: variations.slice(0, 2).map((v: any) => v.id),
         isSelected: true,
         performanceScore: 0,
       });
@@ -370,7 +371,7 @@ async function generateMatrixContent(matrixData: any, template: any, userId: str
       combinations,
       field_assignments: fieldAssignments,
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error generating matrix content:', error);
     return {

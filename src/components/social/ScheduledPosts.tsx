@@ -154,10 +154,10 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
         },
       ];
 
-      const filteredPosts = filter === 'all' ? mockPosts : mockPosts.filter(post => post.status === filter);
+      const filteredPosts = filter === 'all' ? mockPosts : mockPosts.filter((post: any) => post.status === filter);
       setPosts(filteredPosts);
-      onScheduleUpdate(mockPosts.filter(p => p.status === 'scheduled').length);
-    } catch (error) {
+      onScheduleUpdate(mockPosts.filter((p: any) => p.status === 'scheduled').length);
+    } catch (error: any) {
       console.error('Error loading scheduled posts:', error);
       showNotification('Failed to load scheduled posts', 'error');
     } finally {
@@ -222,10 +222,10 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
 
     try {
       // Simulate API call
-      setPosts(prev => prev.filter(p => p.id !== postId));
+      setPosts(prev => prev.filter((p: any) => p.id !== postId));
       showNotification('Scheduled post deleted successfully', 'success');
-      onScheduleUpdate(posts.filter(p => p.status === 'scheduled').length - 1);
-    } catch (error) {
+      onScheduleUpdate(posts.filter((p: any) => p.status === 'scheduled').length - 1);
+    } catch (error: any) {
       showNotification('Failed to delete scheduled post', 'error');
     }
   };
@@ -233,7 +233,7 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
   const handlePublishNow = async (postId: string) => {
     try {
       // Simulate immediate publishing
-      setPosts(prev => prev.map(p => 
+      setPosts(prev => prev.map((p: any) => 
         p.id === postId 
           ? { ...p, status: 'publishing' as const }
           : p
@@ -241,12 +241,12 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
 
       // Simulate publishing delay
       setTimeout(() => {
-        setPosts(prev => prev.map(p => 
+        setPosts(prev => prev.map((p: any) => 
           p.id === postId 
             ? { 
                 ...p, 
                 status: 'published' as const,
-                publishResults: p.platforms.map(platform => ({
+                publishResults: p.platforms.map((platform: any) => ({
                   platform,
                   success: Math.random() > 0.2, // 80% success rate
                   postId: `${platform}_${Math.random().toString(36).substr(2, 9)}`,
@@ -257,20 +257,20 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
         showNotification('Post published successfully!', 'success');
       }, 2000);
 
-    } catch (error) {
+    } catch (error: any) {
       showNotification('Failed to publish post', 'error');
     }
   };
 
   const handlePausePost = async (postId: string) => {
     try {
-      setPosts(prev => prev.map(p => 
+      setPosts(prev => prev.map((p: any) => 
         p.id === postId 
           ? { ...p, status: 'paused' as const }
           : p
       ));
       showNotification('Post paused successfully', 'success');
-    } catch (error) {
+    } catch (error: any) {
       showNotification('Failed to pause post', 'error');
     }
   };
@@ -283,7 +283,7 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
   const groupPostsByDate = (posts: ScheduledPost[]) => {
     const groups: Record<string, ScheduledPost[]> = {};
     
-    posts.forEach(post => {
+    posts.forEach((post: any) => {
       const date = new Date(post.scheduledAt);
       let key: string;
       
@@ -362,7 +362,7 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
               </Typography>
               
               <Stack spacing={2}>
-                {groupPosts.map((post) => (
+                {groupPosts.map((post: any) => (
                   <Card key={post.id}>
                     <CardContent>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
@@ -416,7 +416,7 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
                             <Typography variant="caption" color="text.secondary">
                               Publishing to:
                             </Typography>
-                            {post.platforms.map((platform) => (
+                            {post.platforms.map((platform: any) => (
                               <Tooltip key={platform} title={platform}>
                                 {getPlatformIcon(platform)}
                               </Tooltip>
@@ -430,7 +430,7 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
                                 Publish Results:
                               </Typography>
                               <Stack direction="row" spacing={1} flexWrap="wrap" gap={0.5}>
-                                {post.publishResults.map((result) => (
+                                {post.publishResults.map((result: any) => (
                                   <Chip
                                     key={result.platform}
                                     label={`${result.platform}: ${result.success ? 'Success' : 'Failed'}`}

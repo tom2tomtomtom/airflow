@@ -79,7 +79,7 @@ export class AICostMonitor {
       } else {
         console.log('⚠️ AI Cost Monitor using local storage (Redis unavailable)');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('AI Cost Monitor Redis initialization failed:', error);
       this.useRedis = false;
     }
@@ -143,7 +143,7 @@ export class AICostMonitor {
       } else if (percentUsed >= this.alertThresholds.warning * 100) {
         await this.createAlert(userId, service, 'threshold', usage.totalCost, budget, percentUsed);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error checking user costs:', error);
     }
   }
@@ -162,7 +162,7 @@ export class AICostMonitor {
           await this.checkUserCosts(userId, service);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error checking all user costs:', error);
     }
   }
@@ -255,7 +255,7 @@ export class AICostMonitor {
         // Also store by user for quick lookup
         await redisManager.lpush(`ai_cost_alerts:${alert.userId}`, alert);
         await redisManager.expire(`ai_cost_alerts:${alert.userId}`, 30 * 24 * 60 * 60);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error storing alert in Redis:', error);
       }
     }
@@ -310,17 +310,17 @@ export class AICostMonitor {
             ) {
               return alert;
             }
-          } catch (error) {
+          } catch (error: any) {
             console.error('Error parsing alert:', error);
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error getting recent alerts from Redis:', error);
       }
     }
 
     // Check local alerts
-    return this.localAlerts.find(alert =>
+    return this.localAlerts.find((alert: any) =>
       alert.userId === userId &&
       alert.service === service &&
       alert.alertType === alertType &&
@@ -347,7 +347,7 @@ export class AICostMonitor {
         const key = `ai_cost_realtime:${userId}:${service}`;
         await redisManager.incrby(key, Math.round(cost * 10000)); // Store as cents * 100 for precision
         await redisManager.expire(key, 24 * 60 * 60); // 24 hours TTL
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error updating real-time metrics:', error);
       }
     }
@@ -399,18 +399,18 @@ export class AICostMonitor {
         for (const alertJson of alertsJson) {
           try {
             alerts.push(JSON.parse(alertJson));
-          } catch (error) {
+          } catch (error: any) {
             console.error('Error parsing alert:', error);
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error getting user alerts from Redis:', error);
       }
     }
 
     // Include local alerts
     const localUserAlerts = this.localAlerts
-      .filter(alert => alert.userId === userId)
+      .filter((alert: any) => alert.userId === userId)
       .slice(-limit);
     
     alerts.push(...localUserAlerts);
@@ -432,13 +432,13 @@ export class AICostMonitor {
       try {
         // This would require a more complex Redis structure to update specific alerts
         // For now, we'll just mark it in local storage
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error acknowledging alert in Redis:', error);
       }
     }
 
     // Update local alerts
-    const alert = this.localAlerts.find(a => a.id === alertId);
+    const alert = this.localAlerts.find((a: any) => a.id === alertId);
     if (alert) {
       alert.acknowledged = true;
       console.log(`✅ Alert acknowledged: ${alertId}`);

@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -36,7 +37,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
   try {
     return handleExecute(req, res, user, id);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Matrix Execute API error:', error);
     return res.status(500).json({
@@ -215,7 +216,7 @@ async function checkExecutionLimits(clientId: string, userId: string): Promise<{
     }
 
     return { allowed: true };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error checking execution limits:', error);
     return { 
@@ -341,7 +342,7 @@ async function executeImmediate(executionPlan: any): Promise<any> {
         estimated_completion: renderResult.estimated_completion,
       });
 
-    } catch (error) {
+    } catch (error: any) {
       const message = getErrorMessage(error);
       console.error('Error executing:', error);
       results.push({
@@ -355,8 +356,8 @@ async function executeImmediate(executionPlan: any): Promise<any> {
   return {
     type: 'immediate',
     total_executions: executionPlan.executions.length,
-    successful: results.filter(r => r.status === 'processing').length,
-    failed: results.filter(r => r.status === 'failed').length,
+    successful: results.filter((r: any) => r.status === 'processing').length,
+    failed: results.filter((r: any) => r.status === 'failed').length,
     results,
   };
 }
@@ -402,7 +403,7 @@ async function scheduleExecution(executionPlan: any, scheduledFor?: string): Pro
     type: 'scheduled',
     scheduled_for: scheduledTime.toISOString(),
     total_executions: executionPlan.executions.length,
-    execution_ids: executionRecords?.map(r => r.id) || [],
+    execution_ids: executionRecords?.map((r: any) => r.id) || [],
   };
 }
 
@@ -457,7 +458,7 @@ async function triggerRenderJob(execution: any): Promise<any> {
     } else {
       return await triggerCustomRender(execution);
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error triggering render job:', error);
     return {

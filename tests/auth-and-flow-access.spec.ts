@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { getErrorMessage } from '@/utils/errorUtils';
+import { test } from '@playwright/test';
 
 /**
  * Authentication & Flow Access Testing
@@ -170,6 +171,7 @@ test.describe('Authentication & Flow Access', () => {
         }
         
       } catch (error) {
+    const message = getErrorMessage(error);
         console.log(`  ${pagePath}: ❌ Error accessing page`);
       }
     }

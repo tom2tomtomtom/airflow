@@ -183,7 +183,8 @@
 
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withAPIRateLimit } from '@/lib/rate-limiter';
 import { successResponse, errorResponse, handleApiError, methodNotAllowed, validateRequiredFields, createPaginationMeta, ApiErrorCode } from '@/lib/api-response';
@@ -249,7 +250,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return methodNotAllowed(res, ['GET', 'POST', 'PUT', 'DELETE']);
     }
-  } catch (error) {
+  } catch (error: any) {
     return handleApiError(res, error, 'assets handler');
   }
 }
@@ -313,7 +314,7 @@ async function getAssets(
         .eq('user_id', userId);
 
       if (userClients && userClients.length > 0) {
-        const clientIds = userClients.map(uc => uc.client_id);
+        const clientIds = userClients.map((uc: any) => uc.client_id);
         query = query.in('client_id', clientIds);
       } else {
         // User has no clients, return empty result
@@ -358,7 +359,7 @@ async function getAssets(
       timestamp: new Date().toISOString()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return handleApiError(res, error, 'getAssets');
   }
 }
@@ -457,7 +458,7 @@ async function createAsset(
       asset
     });
 
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Create asset error:', error);
     return res.status(500).json({
@@ -548,7 +549,7 @@ async function updateAsset(
       asset
     });
 
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Update asset error:', error);
     return res.status(500).json({
@@ -611,7 +612,7 @@ async function deleteAsset(
       message: 'Asset deleted successfully'
     });
 
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Delete asset error:', error);
     return res.status(500).json({

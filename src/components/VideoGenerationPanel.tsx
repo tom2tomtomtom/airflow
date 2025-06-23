@@ -112,7 +112,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
 
   const fetchJobUpdates = async () => {
     try {
-      const pendingJobs = jobs.filter(job =>
+      const pendingJobs = jobs.filter((job: any) =>
         job.status === 'pending' || job.status === 'processing'
       );
       if (pendingJobs.length === 0) return;
@@ -121,12 +121,12 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
         const response = await fetch(`/api/video/status?job_id=${job.id}`);
         const data = await response.json();
         if (data.success) {
-          setJobs(prev => prev.map(j =>
+          setJobs(prev => prev.map((j: any) =>
             j.id === job.id ? { ...j, ...data.job } : j
           ));
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching job updates:', error);
     }
   };
@@ -208,8 +208,8 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
 
   const createPromptFromCombinations = (combinations: any[]) => {
     // Extract key elements from combinations to create a prompt
-    const headlines = combinations.map(c => c.fields?.headline?.value).filter(Boolean);
-    const copy = combinations.map(c => c.fields?.copy?.value).filter(Boolean);
+    const headlines = combinations.map((c: any) => c.fields?.headline?.value).filter(Boolean);
+    const copy = combinations.map((c: any) => c.fields?.copy?.value).filter(Boolean);
     const prompt = `Create a ${style} video that showcases: ${headlines.slice(0, 3).join(', ')}. Key messaging: ${copy.slice(0, 2).join('. ')}. Style should be professional and engaging for ${platform} platform.`;
     return prompt;
   };
@@ -258,9 +258,9 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
     }
   };
 
-  const completedJobs = jobs.filter(job => job.status === 'completed');
-  const failedJobs = jobs.filter(job => job.status === 'failed');
-  const processingJobs = jobs.filter(job => job.status === 'processing' || job.status === 'pending');
+  const completedJobs = jobs.filter((job: any) => job.status === 'completed');
+  const failedJobs = jobs.filter((job: any) => job.status === 'failed');
+  const processingJobs = jobs.filter((job: any) => job.status === 'processing' || job.status === 'pending');
 
   return (
     <Box>
@@ -339,7 +339,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
 
       {jobs.length > 0 && (
         <Grid container spacing={2}>
-          {jobs.map((job) => (
+          {jobs.map((job: any) => (
             <Grid size={{ xs: 12, md: 6, lg: 4 }} key={job.id}>
               <Card>
                 <CardContent>
@@ -434,7 +434,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
                   value={platform}
                   onChange={(e) => setPlatform(e.target.value)}
                 >
-                  {platforms.map((p) => (
+                  {platforms.map((p: any) => (
                     <MenuItem key={p.value} value={p.value}>
                       {p.label}
                     </MenuItem>
@@ -449,7 +449,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
                   value={style}
                   onChange={(e) => setStyle(e.target.value)}
                 >
-                  {styles.map((s) => (
+                  {styles.map((s: any) => (
                     <MenuItem key={s.value} value={s.value}>
                       {s.label}
                     </MenuItem>
@@ -464,7 +464,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
                   value={quality}
                   onChange={(e) => setQuality(e.target.value)}
                 >
-                  {qualities.map((q) => (
+                  {qualities.map((q: any) => (
                     <MenuItem key={q.value} value={q.value}>
                       {q.label}
                     </MenuItem>

@@ -355,7 +355,7 @@ describe('/api/campaigns', () => {
         // If we get here, the error wasn't thrown as expected
         // The actual implementation should handle this gracefully
         expect(res._getStatusCode()).toBeLessThan(500);
-      } catch (error) {
+      } catch (error: any) {
         // This is expected for our test
         expect(error).toBeDefined();
       }

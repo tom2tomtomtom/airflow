@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import formidable from 'formidable';
 import fs from 'fs';
 import path from 'path';
@@ -50,7 +51,7 @@ async function handler(
 
     try {
       [fields, files] = await form.parse(req);
-          } catch (parseError) {
+          } catch (parseError: any) {
       console.error('❌ Form parsing error:', parseError);
       return res.status(400).json({ 
         success: false, 
@@ -199,7 +200,7 @@ async function handler(
         };
 
         uploadedAssets.push(asset);
-              } catch (fileError) {
+              } catch (fileError: any) {
         console.error(`❌ File processing error for ${file.originalFilename}:`, fileError);
         errors.push(`${file.originalFilename}: Processing failed - ${fileError instanceof Error ? fileError.message : String(fileError)}`);
       } finally {
@@ -208,7 +209,7 @@ async function handler(
           if (file.filepath && fs.existsSync(file.filepath)) {
             fs.unlinkSync(file.filepath);
           }
-        } catch (cleanupError) {
+        } catch (cleanupError: any) {
           console.warn('⚠️ Failed to clean up temp file:', cleanupError);
         }
       }
@@ -234,7 +235,7 @@ async function handler(
 
         return res.status(200).json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Upload handler error:', error);
     return res.status(500).json({
       success: false,

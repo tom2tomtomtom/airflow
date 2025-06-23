@@ -71,7 +71,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
 
     // Filter executions that can be affected by this action
-    const targetExecutions = executions.filter(e => statusFilter.includes(e.status));
+    const targetExecutions = executions.filter((e: any) => statusFilter.includes(e.status));
 
     if (targetExecutions.length === 0) {
       return errorResponse(
@@ -83,7 +83,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
 
     // Update executions
-    const executionIds = targetExecutions.map(e => e.id);
+    const executionIds = targetExecutions.map((e: any) => e.id);
     const { error: updateError } = await supabase
       .from('executions')
       .update(updateData)
@@ -119,7 +119,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         affected_executions: executionIds.length
       }
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in queue action API:', error);
     return errorResponse(res, ApiErrorCode.INTERNAL_ERROR, 'Internal server error', 500);
   }

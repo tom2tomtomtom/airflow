@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 
 test.describe('Full Workflow Test', () => {
   test('Complete Authentication and Workflow Testing', async ({ page }) => {
@@ -176,7 +176,7 @@ async function testWorkflowDirectly(page: any) {
           console.log('🔧 State tracked:', state.activeStep, 'from', source);
         },
         
-        trackEvent: function(event, data) {
+        trackEvent: function(_event, data) {
           this.events.push({
             timestamp: Date.now(),
             event,
@@ -299,7 +299,7 @@ async function testWorkflowDirectly(page: any) {
               
               // Trigger change event
               const event = new Event('change', { bubbles: true });
-              input.dispatchEvent(event);
+              input.dispatchEvent(_event);
             }
           });
           console.log('✅ File upload simulated');

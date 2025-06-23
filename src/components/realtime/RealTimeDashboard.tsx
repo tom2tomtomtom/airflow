@@ -44,13 +44,13 @@ const RealTimeDashboard: React.FC = () => {
   });
 
   // Calculate real-time metrics
-  const recentEvents = events.filter(e =>
+  const recentEvents = events.filter((e: any) =>
     new Date(e.timestamp).getTime() > Date.now() - 60 * 60 * 1000 // Last hour
   );
 
-  const executionEvents = recentEvents.filter(e => e.type === 'execution_status_change');
-  const completedExecutions = executionEvents.filter(e => e.data.status === 'completed');
-  const failedExecutions = executionEvents.filter(e => e.data.status === 'failed');
+  const executionEvents = recentEvents.filter((e: any) => e.type === 'execution_status_change');
+  const completedExecutions = executionEvents.filter((e: any) => e.data.status === 'completed');
+  const failedExecutions = executionEvents.filter((e: any) => e.data.status === 'failed');
 
   const realTimeMetrics: RealTimeMetric[] = [
     {
@@ -214,7 +214,7 @@ const RealTimeDashboard: React.FC = () => {
                     Recent Alerts
                   </Typography>
                   <Stack spacing={1}>
-                    {unreadNotifications.slice(0, 3).map((notification) => (
+                    {unreadNotifications.slice(0, 3).map((notification: any) => (
                       <Box
                         key={notification.id}
                         sx={{

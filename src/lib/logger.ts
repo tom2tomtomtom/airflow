@@ -177,7 +177,7 @@ export function logPerformance<T>(
     const duration = performance.now() - start;
     logger.debug(`${operation} completed`, { duration: `${duration.toFixed(2)}ms` });
     return result;
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     const duration = performance.now() - start;
     logger.error(`${operation} failed`, error, { duration: `${duration.toFixed(2)}ms` });

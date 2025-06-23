@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -41,7 +42,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Copy Assets API error:', error);
     return res.status(500).json({ 
@@ -87,7 +88,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       .eq('user_id', user.id);
     
     if (userClients && userClients.length > 0) {
-      const clientIds = userClients.map(uc => uc.client_id);
+      const clientIds = userClients.map((uc: any) => uc.client_id);
       query = query.in('client_id', clientIds);
     } else {
       // User has no client access
@@ -131,7 +132,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   }
 
   // Calculate analytics for each copy asset
-  const enrichedData = data?.map(asset => ({
+  const enrichedData = data?.map((asset: any) => ({
     ...asset,
     analytics: {
       character_count: asset.content.length,
@@ -219,8 +220,8 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
 // Helper functions
 function calculateReadabilityScore(text: string): number {
   // Simple readability score based on sentence and word length
-  const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
-  const words = text.split(/\s+/).filter(w => w.length > 0);
+  const sentences = text.split(/[.!?]+/).filter((s: any) => s.trim().length > 0);
+  const words = text.split(/\s+/).filter((w: any) => w.length > 0);
   
   if (sentences.length === 0 || words.length === 0) return 50;
   
@@ -238,8 +239,8 @@ function analyzeSentiment(text: string): 'positive' | 'neutral' | 'negative' {
   const negativeWords = ['bad', 'terrible', 'awful', 'hate', 'worst', 'horrible', 'disappointing', 'failed', 'broken', 'useless'];
   
   const lowerText = text.toLowerCase();
-  const positiveCount = positiveWords.filter(word => lowerText.includes(word)).length;
-  const negativeCount = negativeWords.filter(word => lowerText.includes(word)).length;
+  const positiveCount = positiveWords.filter((word: any) => lowerText.includes(word)).length;
+  const negativeCount = negativeWords.filter((word: any) => lowerText.includes(word)).length;
   
   if (positiveCount > negativeCount) return 'positive';
   if (negativeCount > positiveCount) return 'negative';

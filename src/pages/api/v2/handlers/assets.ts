@@ -77,7 +77,7 @@ export async function handleAssetsRoutes(
           404
         );
     }
-  } catch (error) {
+  } catch (error: any) {
     return handleApiError(res, error, 'assets routes');
   }
 }
@@ -138,13 +138,13 @@ async function getAssets(req: NextApiRequest, res: NextApiResponse, context: Rou
   // Filter by search if provided
   let filteredAssets = mockAssets;
   if (search) {
-    filteredAssets = mockAssets.filter(asset =>
+    filteredAssets = mockAssets.filter((asset: any) =>
       asset.name.toLowerCase().includes(search.toLowerCase())
     );
   }
 
   if (type) {
-    filteredAssets = filteredAssets.filter(asset => asset.type === type);
+    filteredAssets = filteredAssets.filter((asset: any) => asset.type === type);
   }
 
   // Apply pagination

@@ -56,7 +56,7 @@ export const getSupabaseClient = () => {
 export const supabase = getSupabaseClient();
 
 // Cookie helpers for browser environment
-function getCookie(name: string): string | undefined {
+function getCookie(name: string)?: string {
   if (typeof document === 'undefined') return undefined;
   
   const value = `; ${document.cookie}`;
@@ -125,7 +125,7 @@ export async function getUserFromToken(token: string): Promise<any> {
     }
     
     return data.user;
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting user from token:', error);
     if (error instanceof Error) {
@@ -158,7 +158,7 @@ export async function getUserProfile(userId: string): Promise<any> {
     }
     
     return data;
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting user profile:', error);
     throw error;
@@ -183,7 +183,7 @@ export async function getUserClients(userId: string): Promise<string[]> {
     }
     
     return data?.map((uc: { client_id: string }) => uc.client_id) || [];
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting user clients:', error);
     throw error;
@@ -195,7 +195,7 @@ export async function userHasClientAccess(userId: string, clientId: string): Pro
   try {
     const userClients = await getUserClients(userId);
     return userClients.includes(clientId);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error checking client access:', error);
     return false;

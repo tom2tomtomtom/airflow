@@ -46,7 +46,7 @@ export function createSupabaseBrowserClient(): SupabaseClient<Database> {
 
     loggers.supabase.info('Browser Supabase client initialized');
     return browserClientInstance;
-  } catch (error) {
+  } catch (error: any) {
     loggers.supabase.error('Failed to create browser Supabase client', error);
     throw new Error('Failed to initialize Supabase client. Please check your configuration.');
   }
@@ -72,3 +72,7 @@ export function resetSupabaseBrowserClient(): void {
 
 // Re-export the main client getter as default
 export default getSupabaseBrowserClient;
+
+// Export createClient for consistency with server-side usage
+// This is primarily for browser environments
+export const createClient = createSupabaseBrowserClient;

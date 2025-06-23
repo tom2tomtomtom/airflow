@@ -85,7 +85,7 @@ export const SimplifiedLayout: React.FC<SimplifiedLayoutProps> = ({
     
     return segments[segments.length - 1]
       .split('-')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word: any) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   };
 
@@ -103,7 +103,7 @@ export const SimplifiedLayout: React.FC<SimplifiedLayoutProps> = ({
       currentPath += `/${segment}`;
       const label = segment
         .split('-')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .map((word: any) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
       
       const crumb: { label: string; href?: string } = { label };

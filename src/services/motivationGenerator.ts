@@ -125,7 +125,7 @@ export class MotivationGenerator {
 
       return motivationSet;
 
-    } catch (error) {
+    } catch (error: any) {
       const classified = classifyError(error as Error, {
         route: 'motivation-generator',
         metadata: { briefId: brief.id, motivationCount }
@@ -418,7 +418,7 @@ Make them diverse, authentic, and psychologically grounded.
         intensity: motivation.intensity || 'medium',
         confidence: typeof motivation.confidence === 'number' ? motivation.confidence : 0.5
       }));
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to parse motivation response', error);
       throw new Error('Invalid AI response format');
     }
@@ -480,7 +480,7 @@ Make them diverse, authentic, and psychologically grounded.
     const targetPerType = Math.floor(motivations.length / this.PSYCHOLOGY_TYPES.length);
 
     // Add balanced selection from each type
-    this.PSYCHOLOGY_TYPES.forEach(type => {
+    this.PSYCHOLOGY_TYPES.forEach((type: any) => {
       const typeMotivations = typeGroups[type] || [];
       const topFromType = typeMotivations
         .sort((a, b) => b.confidence - a.confidence)
@@ -492,7 +492,7 @@ Make them diverse, authentic, and psychologically grounded.
     const remaining = motivations.length - balanced.length;
     if (remaining > 0) {
       const remainingMotivations = motivations
-        .filter(m => !balanced.includes(m))
+        .filter((m: any) => !balanced.includes(m))
         .sort((a, b) => b.confidence - a.confidence)
         .slice(0, remaining);
       balanced.push(...remainingMotivations);
@@ -528,8 +528,8 @@ Make them diverse, authentic, and psychologically grounded.
 
   private calculateDiversityScore(motivation: PsychologicalMotivation, allMotivations: PsychologicalMotivation[]): number {
     // Calculate how different this motivation is from others
-    const typeScore = allMotivations.filter(m => m.psychologyType === motivation.psychologyType).length / allMotivations.length;
-    const categoryScore = allMotivations.filter(m => m.motivationCategory === motivation.motivationCategory).length / allMotivations.length;
+    const typeScore = allMotivations.filter((m: any) => m.psychologyType === motivation.psychologyType).length / allMotivations.length;
+    const categoryScore = allMotivations.filter((m: any) => m.motivationCategory === motivation.motivationCategory).length / allMotivations.length;
     
     // Lower scores mean more diverse (fewer similar motivations)
     return 1 - ((typeScore + categoryScore) / 2);
@@ -544,7 +544,7 @@ Make them diverse, authentic, and psychologically grounded.
     const totalConfidence = motivations.reduce((sum, m) => sum + m.confidence, 0);
     const averageConfidence = totalConfidence / motivations.length;
 
-    const uniqueSegments = [...new Set(motivations.map(m => m.targetSegment))];
+    const uniqueSegments = [...new Set(motivations.map((m: any) => m.targetSegment))];
     const diversityScore = uniqueSegments.length / motivations.length;
 
     return {
@@ -578,7 +578,7 @@ Make them diverse, authentic, and psychologically grounded.
     }
 
     // Check confidence levels
-    const lowConfidenceCount = motivationSet.motivations.filter(m => m.confidence < 0.6).length;
+    const lowConfidenceCount = motivationSet.motivations.filter((m: any) => m.confidence < 0.6).length;
     if (lowConfidenceCount > 3) {
       suggestions.push('Some motivations have low confidence - consider regenerating');
     }
@@ -635,7 +635,7 @@ Make them diverse, authentic, and psychologically grounded.
 
   private async enhanceMotivationConfidence(motivations: PsychologicalMotivation[]): Promise<PsychologicalMotivation[]> {
     // Use AI to enhance low-confidence motivations
-    const lowConfidence = motivations.filter(m => m.confidence < 0.7);
+    const lowConfidence = motivations.filter((m: any) => m.confidence < 0.7);
     const enhanced = await Promise.all(
       lowConfidence.map(async (motivation) => {
         const enhancementPrompt = this.buildEnhancementPrompt(motivation);
@@ -643,7 +643,7 @@ Make them diverse, authentic, and psychologically grounded.
           const response = await this.callAIService(enhancementPrompt);
           const enhanced = this.parseEnhancementResponse(response);
           return { ...motivation, ...enhanced, confidence: Math.min(motivation.confidence + 0.2, 1.0) };
-        } catch (error) {
+        } catch (error: any) {
           logger.warn('Failed to enhance motivation', error);
           return motivation;
         }
@@ -651,8 +651,8 @@ Make them diverse, authentic, and psychologically grounded.
     );
 
     // Replace original motivations with enhanced versions
-    return motivations.map(original => 
-      enhanced.find(e => e.id === original.id) || original
+    return motivations.map((original: any) => 
+      enhanced.find((e: any) => e.id === original.id) || original
     );
   }
 
@@ -663,7 +663,7 @@ Make them diverse, authentic, and psychologically grounded.
 
     motivations
       .sort((a, b) => b.confidence - a.confidence)
-      .forEach(motivation => {
+      .forEach((motivation: any) => {
         const key = `${motivation.psychologyType}_${motivation.motivationCategory}`;
         if (!seen.has(key)) {
           diverse.push(motivation);
@@ -676,7 +676,7 @@ Make them diverse, authentic, and psychologically grounded.
 
   private async alignWithSegments(motivations: PsychologicalMotivation[], segments: string[]): Promise<PsychologicalMotivation[]> {
     // Adjust motivations to better align with specified target segments
-    return motivations.map(motivation => ({
+    return motivations.map((motivation: any) => ({
       ...motivation,
       targetSegment: this.findBestSegmentMatch(motivation, segments)
     }));
@@ -685,7 +685,7 @@ Make them diverse, authentic, and psychologically grounded.
   private findBestSegmentMatch(motivation: PsychologicalMotivation, segments: string[]): string {
     // Simple matching - in real implementation would use more sophisticated matching
     const currentSegment = motivation.targetSegment.toLowerCase();
-    const match = segments.find(segment => 
+    const match = segments.find((segment: any) => 
       currentSegment.includes(segment.toLowerCase()) || 
       segment.toLowerCase().includes(currentSegment)
     );
@@ -715,7 +715,7 @@ Respond in JSON format with enhanced fields.
   private parseEnhancementResponse(response: string): Partial<PsychologicalMotivation> {
     try {
       return JSON.parse(response);
-    } catch (error) {
+    } catch (error: any) {
       logger.warn('Failed to parse enhancement response', error);
       return {};
     }

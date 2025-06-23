@@ -7,6 +7,7 @@ interface ClientContextType {
   clients: Client[];
   activeClient: Client | null;
   loading: boolean;
+  error: string | null;
   setActiveClient: (client: Client | null) => void;
   createClient: (clientData: Partial<Client>) => Promise<Client>;
   updateClient: (id: string, clientData: Partial<Client>) => Promise<Client>;
@@ -17,6 +18,7 @@ const ClientContext = createContext<ClientContextType>({
   clients: [],
   activeClient: null,
   loading: true,
+  error: null,
   setActiveClient: () => {},
   createClient: async () => {
     throw new Error('ClientContext not initialized');
@@ -97,7 +99,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
               localStorage.setItem('airwave_active_client', JSON.stringify(parsedClients[0]));
             }
           }
-        } catch (error) {
+        } catch (error: any) {
     const message = getErrorMessage(error);
           console.error('Error loading clients:', error);
           
@@ -176,7 +178,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       } else {
         throw new Error("Invalid response from server");
       }
-    } catch (error) {
+    } catch (error: any) {
     const message = getErrorMessage(error);
       console.error('Error creating client:', error);
       
@@ -246,7 +248,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       
       if (data.success && data.client) {
         // Update clients list
-        const updatedClients = clients.map(c => c.id === id ? data.client : c);
+        const updatedClients = clients.map((c: any) => c.id === id ? data.client : c);
         setClients(updatedClients);
         
         // Update active client if it's the one being updated
@@ -258,7 +260,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       } else {
         throw new Error("Invalid response from server");
       }
-    } catch (error) {
+    } catch (error: any) {
     const message = getErrorMessage(error);
       console.error('Error updating client:', error);
       
@@ -321,7 +323,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       
       if (data.success) {
         // Update local state
-        const updatedClients = clients.filter(c => c.id !== id);
+        const updatedClients = clients.filter((c: any) => c.id !== id);
         setClients(updatedClients);
         localStorage.setItem('airwave_clients', JSON.stringify(updatedClients));
 
@@ -334,12 +336,12 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           }
         }
       }
-    } catch (error) {
+    } catch (error: any) {
     const message = getErrorMessage(error);
       console.error('Error deleting client:', error);
       
       // Fallback to local deletion
-      const updatedClients = clients.filter(c => c.id !== id);
+      const updatedClients = clients.filter((c: any) => c.id !== id);
       setClients(updatedClients);
       localStorage.setItem('airwave_clients', JSON.stringify(updatedClients));
 

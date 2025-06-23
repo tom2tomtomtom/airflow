@@ -177,7 +177,7 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
       } else {
         setError(response?.data?.message || 'Failed to generate image');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Generation error:', err);
       
       if (axios.isAxiosError(err)) {

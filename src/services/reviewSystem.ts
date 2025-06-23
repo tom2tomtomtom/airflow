@@ -1,5 +1,4 @@
 import { getLogger } from '@/lib/logger';
-import { classifyError } from '@/lib/error-handling/error-classifier';
 import { createClient } from '@/lib/supabase/server';
 import { RenderedCampaign } from './campaignRenderer';
 import { PopulatedTemplate } from './templateEngine';
@@ -228,7 +227,7 @@ export class ReviewSystem {
 
       return workflow;
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to create review workflow', error);
       throw error;
     }
@@ -258,12 +257,12 @@ export class ReviewSystem {
         throw new Error('Workflow not found');
       }
 
-      const stage = workflow.stages.find(s => s.id === stageId);
+      const stage = workflow.stages.find((s: any) => s.id === stageId);
       if (!stage) {
         throw new Error('Stage not found');
       }
 
-      const reviewer = stage.reviewers.find(r => r.id === reviewerId);
+      const reviewer = stage.reviewers.find((r: any) => r.id === reviewerId);
       if (!reviewer) {
         throw new Error('Reviewer not found in stage');
       }
@@ -309,7 +308,7 @@ export class ReviewSystem {
         notifications
       };
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to submit review', error);
       throw error;
     }
@@ -327,7 +326,7 @@ export class ReviewSystem {
       if (!workflow) return null;
 
       const currentStage = workflow.stages[workflow.currentStage];
-      const pendingReviewers = currentStage?.reviewers.filter(r => r.status === 'assigned') || [];
+      const pendingReviewers = currentStage?.reviewers.filter((r: any) => r.status === 'assigned') || [];
       
       const recentActivity = await this.getRecentActivity(workflowId, 10);
       const analytics = await this.generateAnalytics(workflow);
@@ -340,7 +339,7 @@ export class ReviewSystem {
         analytics
       };
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to get workflow status', error);
       throw error;
     }
@@ -368,7 +367,7 @@ export class ReviewSystem {
 
       return reviewComment;
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to add comment', error);
       throw error;
     }
@@ -390,7 +389,7 @@ export class ReviewSystem {
         })
         .eq('id', commentId);
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to resolve comment', error);
       throw error;
     }
@@ -412,7 +411,7 @@ export class ReviewSystem {
       await this.updateWorkflow(workflow);
 
       // Send escalation notifications
-      const notifications = escalateTo.map(userId => ({
+      const notifications = escalateTo.map((userId: any) => ({
         id: this.generateNotificationId(),
         type: 'escalation' as const,
         recipient: userId,
@@ -433,7 +432,7 @@ export class ReviewSystem {
         escalateTo
       });
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to escalate workflow', error);
       throw error;
     }
@@ -515,7 +514,7 @@ export class ReviewSystem {
 
     const templates = requirementTemplates[stageType] || requirementTemplates.content;
     
-    return templates.map(req => ({
+    return templates.map((req: any) => ({
       id: this.generateRequirementId(),
       name: req.name || 'Requirement',
       description: req.description || '',
@@ -555,7 +554,7 @@ export class ReviewSystem {
   }
 
   private async checkStageCompletion(workflow: ReviewWorkflow, stage: ReviewStage): Promise<boolean> {
-    const completedReviewers = stage.reviewers.filter(r => r.status === 'completed');
+    const completedReviewers = stage.reviewers.filter((r: any) => r.status === 'completed');
     const totalReviewers = stage.reviewers.length;
 
     switch (stage.approvalThreshold) {
@@ -625,7 +624,7 @@ export class ReviewSystem {
   private async generateAnalytics(workflow: ReviewWorkflow): Promise<ReviewAnalytics> {
     // Calculate performance metrics
     const totalTime = workflow.updatedAt.getTime() - workflow.createdAt.getTime();
-    const completedStages = workflow.stages.filter(s => s.status === 'approved').length;
+    const completedStages = workflow.stages.filter((s: any) => s.status === 'approved').length;
     const averageStageTime = completedStages > 0 ? totalTime / completedStages : 0;
 
     // Calculate efficiency (simplified)
@@ -643,7 +642,7 @@ export class ReviewSystem {
       participation: {
         totalReviewers: workflow.stages.reduce((sum, stage) => sum + stage.reviewers.length, 0),
         activeReviewers: workflow.stages.reduce((sum, stage) => 
-          sum + stage.reviewers.filter(r => r.status === 'reviewing').length, 0
+          sum + stage.reviewers.filter((r: any) => r.status === 'reviewing').length, 0
         ),
         averageResponseTime: 0, // Would calculate from submission data
         topPerformers: [] // Would rank reviewers by performance
@@ -659,7 +658,7 @@ export class ReviewSystem {
   }
 
   private async sendStageNotifications(workflow: ReviewWorkflow, stage: ReviewStage): Promise<ReviewNotification[]> {
-    const notifications: ReviewNotification[] = stage.reviewers.map(reviewer => ({
+    const notifications: ReviewNotification[] = stage.reviewers.map((reviewer: any) => ({
       id: this.generateNotificationId(),
       type: 'assignment',
       recipient: reviewer.userId,
@@ -837,7 +836,7 @@ export class ReviewSystem {
 
     if (error) throw error;
 
-    return (data || []).map(row => this.mapRowToSubmission(row));
+    return (data || []).map((row: any) => this.mapRowToSubmission(row));
   }
 
   private mapRowToWorkflow(row: any): ReviewWorkflow {

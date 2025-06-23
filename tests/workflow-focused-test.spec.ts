@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { getErrorMessage } from '@/utils/errorUtils';
+import { test } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 
@@ -11,6 +12,7 @@ try {
     testCredentials = JSON.parse(fs.readFileSync(credentialsPath, 'utf8'));
   }
 } catch (error) {
+    const message = getErrorMessage(error);
   console.log('⚠️ Could not load test credentials');
 }
 
@@ -352,6 +354,7 @@ Launch next week
       await page.screenshot({ path: 'tests/screenshots/after-file-upload.png', fullPage: true });
       
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log('⚠️ File upload failed:', error);
     }
   }
@@ -434,6 +437,7 @@ async function interactWithWorkflowElements(page: any) {
         break; // Only click one button per interaction
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log('⚠️ Button click failed');
     }
   }
@@ -450,6 +454,7 @@ async function interactWithWorkflowElements(page: any) {
         await page.waitForTimeout(1000);
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log('⚠️ Card click failed');
     }
   }

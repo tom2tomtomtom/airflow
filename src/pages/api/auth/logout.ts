@@ -22,7 +22,7 @@ export default async function handler(
       // Try to sign out from Supabase
       try {
         await supabase.auth.signOut();
-      } catch (error) {
+      } catch (error: any) {
         console.error('Supabase signout error:', error);
         // Continue with cookie clearing even if Supabase signout fails
       }
@@ -39,7 +39,7 @@ export default async function handler(
       message: 'Logged out successfully'
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Logout error:', error);
     
     // Still clear cookies even if there's an error

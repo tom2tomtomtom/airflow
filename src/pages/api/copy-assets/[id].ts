@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -39,7 +40,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Copy Asset API error:', error);
     return res.status(500).json({ 
@@ -288,8 +289,8 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
 
 // Helper functions
 function calculateReadabilityScore(text: string): number {
-  const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
-  const words = text.split(/\s+/).filter(w => w.length > 0);
+  const sentences = text.split(/[.!?]+/).filter((s: any) => s.trim().length > 0);
+  const words = text.split(/\s+/).filter((w: any) => w.length > 0);
   
   if (sentences.length === 0 || words.length === 0) return 50;
   
@@ -305,8 +306,8 @@ function analyzeSentiment(text: string): 'positive' | 'neutral' | 'negative' {
   const negativeWords = ['bad', 'terrible', 'awful', 'hate', 'worst', 'horrible', 'disappointing', 'failed'];
   
   const lowerText = text.toLowerCase();
-  const positiveCount = positiveWords.filter(word => lowerText.includes(word)).length;
-  const negativeCount = negativeWords.filter(word => lowerText.includes(word)).length;
+  const positiveCount = positiveWords.filter((word: any) => lowerText.includes(word)).length;
+  const negativeCount = negativeWords.filter((word: any) => lowerText.includes(word)).length;
   
   if (positiveCount > negativeCount) return 'positive';
   if (negativeCount > positiveCount) return 'negative';
@@ -314,10 +315,10 @@ function analyzeSentiment(text: string): 'positive' | 'neutral' | 'negative' {
 }
 
 function calculateKeywordDensity(text: string): Record<string, number> {
-  const words = text.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+  const words = text.toLowerCase().split(/\s+/).filter((w: any) => w.length > 3);
   const frequency: Record<string, number> = {};
   
-  words.forEach(word => {
+  words.forEach((word: any) => {
     frequency[word] = (frequency[word] || 0) + 1;
   });
   

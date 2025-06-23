@@ -49,7 +49,7 @@ const checkDatabase = async (): Promise<HealthCheck> => {
         queryExecuted: true
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       service: 'database',
       status: 'unhealthy',
@@ -93,7 +93,7 @@ const checkRedis = async (): Promise<HealthCheck> => {
         pingSuccessful: true
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       service: 'redis',
       status: 'unhealthy',
@@ -128,7 +128,7 @@ const checkExternalAPIs = async (): Promise<HealthCheck[]> => {
           available: response.ok
         }
       });
-    } catch (error) {
+    } catch (error: any) {
       checks.push({
         service: 'openai',
         status: 'unhealthy',
@@ -154,7 +154,7 @@ const checkExternalAPIs = async (): Promise<HealthCheck[]> => {
         available: response.ok
       }
     });
-  } catch (error) {
+  } catch (error: any) {
     checks.push({
       service: 'supabase',
       status: 'unhealthy',
@@ -201,7 +201,7 @@ const checkSystemResources = (): HealthCheck => {
         }
       }
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       service: 'system',
       status: 'unhealthy',
@@ -246,9 +246,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     // Calculate summary
     const summary = {
       total: allChecks.length,
-      healthy: allChecks.filter(check => check.status === 'healthy').length,
-      unhealthy: allChecks.filter(check => check.status === 'unhealthy').length,
-      degraded: allChecks.filter(check => check.status === 'degraded').length
+      healthy: allChecks.filter((check: any) => check.status === 'healthy').length,
+      unhealthy: allChecks.filter((check: any) => check.status === 'unhealthy').length,
+      degraded: allChecks.filter((check: any) => check.status === 'degraded').length
     };
     
     // Determine overall status
@@ -282,7 +282,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     
     res.status(statusCode).json(response);
     
-  } catch (error) {
+  } catch (error: any) {
     loggers.general.error('Health check failed', error);
     
     res.status(503).json({

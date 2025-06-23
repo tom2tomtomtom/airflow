@@ -2,7 +2,8 @@ import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { z } from 'zod';
 
 const NotificationCreateSchema = z.object({
@@ -46,7 +47,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Notifications API error:', error);
     return res.status(500).json({
@@ -79,7 +80,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       return res.json({ data: [], count: 0, statistics: getEmptyStatistics() });
     }
 
-    const clientIds = userClients.map(uc => uc.client_id);
+    const clientIds = userClients.map((uc: any) => uc.client_id);
 
     let query = supabase
       .from('notifications')
@@ -141,7 +142,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
         total: count || 0
       }
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error in handleGet:', error);
     return res.status(500).json({ error: 'Failed to fetch notifications' });
@@ -183,7 +184,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
         .select('user_id')
         .eq('client_id', notificationData.client_id);
       
-      targetUsers = clientUsers?.map(u => u.user_id) || [];
+      targetUsers = clientUsers?.map((u: any) => u.user_id) || [];
     }
 
     // Create notifications for each target user
@@ -210,8 +211,8 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
     });
 
     const results = await Promise.all(notificationPromises);
-    const successfulNotifications = results.filter(r => !r.error).map(r => r.data);
-    const errors = results.filter(r => r.error);
+    const successfulNotifications = results.filter((r: any) => !r.error).map((r: any) => r.data);
+    const errors = results.filter((r: any) => r.error);
 
     if (errors.length > 0) {
       console.error('Some notifications failed to create:', errors);
@@ -228,7 +229,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
       created_count: successfulNotifications.length,
       failed_count: errors.length
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error creating notification:', error);
     return res.status(500).json({ error: 'Failed to create notification' });
@@ -320,7 +321,7 @@ async function handleBulkUpdate(req: NextApiRequest, res: NextApiResponse, user:
       message: `Notifications ${action} successfully`,
       updated_count: result?.data?.length || 0
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error(`Error in bulk ${action}:`, error);
     return res.status(500).json({ error: `Failed to ${action} notifications` });
@@ -339,7 +340,7 @@ async function calculateNotificationStatistics(userId: string, clientIds: string
     if (!notifications) return getEmptyStatistics();
 
     const total = notifications.length;
-    const unread = notifications.filter(n => !n.read).length;
+    const unread = notifications.filter((n: any) => !n.read).length;
     const byType = notifications.reduce((acc, n) => {
       acc[n.type] = (acc[n.type] || 0) + 1;
       return acc;
@@ -357,7 +358,7 @@ async function calculateNotificationStatistics(userId: string, clientIds: string
 
     // Calculate notifications from last 24 hours
     const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-    const recent = notifications.filter(n => n.created_at > last24Hours).length;
+    const recent = notifications.filter((n: any) => n.created_at > last24Hours).length;
 
     return {
       total,
@@ -368,7 +369,7 @@ async function calculateNotificationStatistics(userId: string, clientIds: string
       by_category: byCategory,
       by_priority: byPriority,
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error calculating notification statistics:', error);
     return getEmptyStatistics();
@@ -408,7 +409,7 @@ async function triggerNotificationEvent(notification: any): Promise<void> {
       notification.client_id,
       notification.created_by // Don't send to the creator unless they're the target
     );
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error triggering notification event:', error);
   }
@@ -459,7 +460,7 @@ export async function createExecutionNotification(
         metadata: { execution_id: executionId, status },
       }),
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error creating execution notification:', error);
   }
@@ -508,7 +509,7 @@ export async function createApprovalNotification(
         metadata: { approval_id: approvalId, action },
       }),
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error creating approval notification:', error);
   }

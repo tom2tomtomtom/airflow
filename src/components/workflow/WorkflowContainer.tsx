@@ -31,7 +31,7 @@ let performanceTracker: any = null;
 if (typeof window === 'undefined') {
   try {
     performanceTracker = require('@/lib/performance/performance-tracker').performanceTracker;
-  } catch (error) {
+  } catch (error: any) {
     // Performance tracker not available, use noop
     performanceTracker = {
       startTimer: () => {},
@@ -94,7 +94,7 @@ const StepSkeleton: React.FC<{ stepType: string }> = ({ stepType }) => {
       </Box>
 
       <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
-        {[1, 2, 3].map((i) => (
+        {[1, 2, 3].map((i: any) => (
           <Skeleton key={i} variant="rectangular" height={120} sx={{ borderRadius: 1 }} />
         ))}
       </Box>

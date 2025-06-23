@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { test, expect } from '@playwright/test';
 
 const REDBAEZ_BRIEF = `Creative Brief: Launching AIrWAVE 2.0 by Redbaez
@@ -57,6 +58,7 @@ test.describe('Comprehensive UI Flow Tests', () => {
         await page.waitForURL('**/dashboard', { timeout: 10000 });
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log('No login required or already authenticated');
     }
   });
@@ -106,6 +108,7 @@ test.describe('Comprehensive UI Flow Tests', () => {
           console.log(`⚠️ ${navItem.text} navigation link not found`);
         }
       } catch (error) {
+    const message = getErrorMessage(error);
         console.log(`❌ ${navItem.text} navigation failed: ${error.message}`);
         
         // Take error screenshot
@@ -293,6 +296,7 @@ test.describe('Comprehensive UI Flow Tests', () => {
       console.log('✅ Complete flow test finished successfully!');
       
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log(`❌ Flow test failed: ${error.message}`);
       
       // Take error screenshot
@@ -375,6 +379,7 @@ test.describe('Comprehensive UI Flow Tests', () => {
       console.log('✅ Assets page test completed');
       
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log(`❌ Assets test failed: ${error.message}`);
       
       await page.screenshot({ 
@@ -415,6 +420,7 @@ test.describe('Comprehensive UI Flow Tests', () => {
       console.log('✅ Error handling test completed');
       
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log(`❌ Error handling test failed: ${error.message}`);
     }
   });

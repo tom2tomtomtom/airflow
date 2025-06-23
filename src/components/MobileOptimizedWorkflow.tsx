@@ -350,7 +350,7 @@ const MobileMotivationsStep: React.FC<{ onSelect: (data: any) => void }> = ({ on
 
   const handleToggle = (id: string) => {
     const newSelected = selected.includes(id)
-      ? selected.filter(s => s !== id)
+      ? selected.filter((s: any) => s !== id)
       : [...selected, id];
     setSelected(newSelected);
     onSelect(newSelected);
@@ -358,7 +358,7 @@ const MobileMotivationsStep: React.FC<{ onSelect: (data: any) => void }> = ({ on
 
   return (
     <Box>
-      {motivations.map((motivation) => (
+      {motivations.map((motivation: any) => (
         <Card
           key={motivation.id}
           sx={{

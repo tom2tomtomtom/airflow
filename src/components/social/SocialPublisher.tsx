@@ -87,7 +87,7 @@ const SocialPublisher: React.FC<SocialPublisherProps> = ({
   });
   
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(
-    platforms.filter(p => p.status === 'active').map(p => p.name)
+    platforms.filter((p: any) => p.status === 'active').map((p: any) => p.name)
   );
   
   const [scheduledAt, setScheduledAt] = useState<Date | null>(null);
@@ -152,7 +152,7 @@ const SocialPublisher: React.FC<SocialPublisherProps> = ({
   const handlePlatformToggle = (platform: string) => {
     setSelectedPlatforms(prev =>
       prev.includes(platform)
-        ? prev.filter(p => p !== platform)
+        ? prev.filter((p: any) => p !== platform)
         : [...prev, platform]
     );
   };
@@ -243,7 +243,7 @@ const SocialPublisher: React.FC<SocialPublisherProps> = ({
 
         // Reset form
         setContent({ text: '', images: [], video: undefined, link: '' });
-        setSelectedPlatforms(platforms.filter(p => p.status === 'active').map(p => p.name));
+        setSelectedPlatforms(platforms.filter((p: any) => p.status === 'active').map((p: any) => p.name));
         setScheduledAt(null);
         setIsScheduled(false);
         setLinkPreview(null);
@@ -251,7 +251,7 @@ const SocialPublisher: React.FC<SocialPublisherProps> = ({
       } else {
         throw new Error(result.error || 'Failed to publish');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error publishing:', error);
       showNotification(
         error instanceof Error ? error.message : 'Failed to publish post',
@@ -270,7 +270,7 @@ const SocialPublisher: React.FC<SocialPublisherProps> = ({
           Select Platforms
         </Typography>
         <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
-          {platforms.map((platform) => (
+          {platforms.map((platform: any) => (
             <Chip
               key={platform.name}
               icon={getPlatformIcon(platform.name)}
@@ -304,7 +304,7 @@ const SocialPublisher: React.FC<SocialPublisherProps> = ({
         {/* Character counts for selected platforms */}
         {selectedPlatforms.length > 0 && (
           <Stack direction="row" spacing={2} flexWrap="wrap">
-            {selectedPlatforms.map((platform) => {
+            {selectedPlatforms.map((platform: any) => {
               const { limit, remaining, color } = getCharacterCount(platform);
               return (
                 <Chip

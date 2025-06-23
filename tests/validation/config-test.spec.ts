@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 /**
  * Configuration Validation Test
  * Ensures the comprehensive testing framework is properly configured
@@ -89,6 +90,7 @@ test.describe('Test Framework Validation', () => {
         // Try to navigate to a non-existent page
         await page.goto('https://nonexistent-domain-12345.com', { timeout: 5000 });
       } catch (error) {
+    const message = getErrorMessage(error);
         // This should fail gracefully
         expect(error.message).toContain('net::ERR_NAME_NOT_RESOLVED');
       }

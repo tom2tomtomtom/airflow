@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -26,7 +27,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
   try {
     return handleCancel(req, res, user, id);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Execution Cancel API error:', error);
     return res.status(500).json({ 
@@ -245,7 +246,7 @@ async function cleanupExternalResources(execution: any): Promise<any> {
 
     cleanupResult.success = cleanupResult.errors.length === 0;
     return cleanupResult;
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error cleaning up external resources:', error);
     cleanupResult.errors.push({
@@ -265,7 +266,7 @@ async function cancelCreatomateJob(jobId: string): Promise<{ success: boolean; e
     await new Promise(resolve => setTimeout(resolve, 100));
     
     return { success: true };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     return { 
       success: false, 
@@ -287,7 +288,7 @@ async function cancelPendingWebhooks(webhookIds: string[]): Promise<{ cleaned: a
         resource_id: webhookId,
         status: 'cancelled'
       });
-    } catch (error) {
+    } catch (error: any) {
     const message = getErrorMessage(error);
       errors.push({
         type: 'webhook',
@@ -305,7 +306,7 @@ async function cleanupTempFiles(tempFiles: string[]): Promise<{ success: boolean
     // Simulate file cleanup
     process.env.NODE_ENV === 'development' && console.log('Cleaning up temp files:', tempFiles.length);
     return { success: true, files_cleaned: tempFiles.length };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error cleaning up temp files:', error);
     return { success: false, files_cleaned: 0 };
@@ -367,7 +368,7 @@ async function handleRelatedExecutions(execution: any, force: boolean): Promise<
       affected_count: relatedExecutions.length,
       actions
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error handling related executions:', error);
     return { 
@@ -386,7 +387,7 @@ async function logCancellationEvent(executionId: string, userId: string, reason?
       force,
       timestamp: new Date().toISOString()
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error logging cancellation event:', error);
   }
@@ -397,7 +398,7 @@ async function triggerCancellationNotification(execution: any, user: any): Promi
     // In a full implementation, this would trigger real-time notifications
     // via WebSocket or Server-Sent Events to relevant stakeholders
     process.env.NODE_ENV === 'development' && console.log('Triggering cancellation notification for execution:', execution.id);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error triggering cancellation notification:', error);
   }

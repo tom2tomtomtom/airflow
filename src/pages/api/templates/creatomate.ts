@@ -26,7 +26,7 @@ async function handler(
           error: 'Method not allowed' 
         });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Creatomate API error:', error);
     return res.status(500).json({
       success: false,
@@ -47,7 +47,7 @@ async function handleGetTemplate(
       success: true,
       data: template
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching template:', error);
     return res.status(500).json({
       success: false,
@@ -83,7 +83,7 @@ async function handleRenderVideo(
         error: 'Invalid action. Use "render"'
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error rendering video:', error);
     return res.status(500).json({
       success: false,

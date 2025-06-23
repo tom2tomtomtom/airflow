@@ -106,7 +106,7 @@ export async function updateUserProfile(
   }
 
   // Handle other updates
-  Object.keys(updates).forEach(key => {
+  Object.keys(updates).forEach((key: any) => {
     if (key !== 'name' && updates[key] !== undefined) {
       profileUpdates[key] = updates[key];
     }
@@ -234,7 +234,7 @@ export async function migrateLegacyProfile(userId: string): Promise<boolean> {
     }
 
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error during profile migration:', error);
     return false;
   }

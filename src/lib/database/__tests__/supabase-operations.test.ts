@@ -479,7 +479,7 @@ describe('Supabase Database Operations', () => {
 
       try {
         await supabase.from('clients').select('*').single();
-      } catch (error) {
+      } catch (error: any) {
         expect(error).toBeInstanceOf(Error);
         expect((error as Error).message).toBe('Network error');
       }

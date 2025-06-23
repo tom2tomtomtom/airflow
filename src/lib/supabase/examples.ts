@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 /**
  * Example usage patterns for the new Supabase integration
  * These examples demonstrate best practices for different scenarios
@@ -35,7 +36,7 @@ export async function ClientComponentExample() {
       
     if (error) throw error;
     return data;
-  } catch (error) {
+  } catch (error: any) {
     // User-friendly error message
     const message = getErrorMessage(error);
     console.error('Failed to fetch clients:', message);
@@ -47,7 +48,7 @@ export async function ClientComponentExample() {
 // Server Component Example
 // ============================================
 export async function ServerComponentExample() {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createServerSupabaseClient();
   
   // Using retry for resilience
   return withRetry(async () => {
@@ -102,7 +103,7 @@ export async function APIRouteExample(userId: string) {
     );
     
     return { profile, settings: updates };
-  } catch (error) {
+  } catch (error: any) {
     // Error is already logged by handleSupabaseError
     throw error;
   }
@@ -183,7 +184,7 @@ export async function AuthenticationExample(email: string, password: string) {
       profile,
       session: data.session 
     };
-  } catch (error) {
+  } catch (error: any) {
     await handleSupabaseError(error, {
       operation: 'signIn',
       metadata: { email }
@@ -222,7 +223,7 @@ export async function FileUploadExample(file: File, bucket: string) {
       url: data.publicUrl,
       path: filePath
     };
-  } catch (error) {
+  } catch (error: any) {
     await handleSupabaseError(error, {
       operation: 'fileUpload',
       metadata: { 
@@ -274,7 +275,7 @@ export async function ComplexOperationExample(
   clientId: string,
   campaignData: any
 ) {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createServerSupabaseClient();
   
   try {
     // Note: Supabase doesn't support transactions in JS client yet
@@ -326,7 +327,7 @@ export async function ComplexOperationExample(
     }
     
     return campaign;
-  } catch (error) {
+  } catch (error: any) {
     await handleSupabaseError(error, {
       operation: 'createCampaign',
       table: 'campaigns',

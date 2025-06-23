@@ -92,7 +92,7 @@ const LoginPage: React.FC = () => {
       } else {
         setError(result.error || 'Invalid email or password');
       }
-    } catch (err) {
+    } catch (err: any) {
       setError('Invalid email or password');
     } finally {
       setLoading(false);

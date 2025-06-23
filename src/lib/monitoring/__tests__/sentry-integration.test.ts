@@ -421,7 +421,7 @@ describe('Sentry Integration Tests', () => {
         'Non-Error promise rejection captured',
       ];
       
-      ignoredErrors.forEach(errorType => {
+      ignoredErrors.forEach((errorType: any) => {
         const error = new Error(errorType);
         error.name = errorType;
         

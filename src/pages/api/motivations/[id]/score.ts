@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -39,7 +40,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Motivation Score API error:', error);
     return res.status(500).json({
@@ -371,8 +372,8 @@ async function getComparativeScoring(motivationId: string, clientId: string, bri
       };
     }
 
-    const scores = similarMotivations.map(m => m.relevance_score);
-    const ratings = similarMotivations.filter(m => m.effectiveness_rating).map(m => m.effectiveness_rating);
+    const scores = similarMotivations.map((m: any) => m.relevance_score);
+    const ratings = similarMotivations.filter((m: any) => m.effectiveness_rating).map((m: any) => m.effectiveness_rating);
 
     const avgScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
     const avgRating = ratings.length > 0 ? ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length : null;
@@ -384,7 +385,7 @@ async function getComparativeScoring(motivationId: string, clientId: string, bri
       average_effectiveness_rating: avgRating ? Math.round(avgRating * 100) / 100 : null,
       percentile_ranking: null, // Would need current motivation score to calculate
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting comparative scoring:', error);
     return {
@@ -399,7 +400,7 @@ async function getScoringHistory(motivationId: string): Promise<any[]> {
     // This would typically come from an audit table or version history
     // For now, we'll return empty array since we don't have scoring history table
     return [];
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting scoring history:', error);
     return [];
@@ -462,10 +463,10 @@ function generateScoringRecommendations(motivation: any, detailedScoring: any, c
 
 // Scoring calculation helpers
 function calculateTextAlignment(text1: string, text2: string): number {
-  const words1 = new Set(text1.split(/\s+/).filter(w => w.length > 3));
-  const words2 = new Set(text2.split(/\s+/).filter(w => w.length > 3));
+  const words1 = new Set(text1.split(/\s+/).filter((w: any) => w.length > 3));
+  const words2 = new Set(text2.split(/\s+/).filter((w: any) => w.length > 3));
   
-  const intersection = new Set([...words1].filter(x => words2.has(x)));
+  const intersection = new Set([...words1].filter((x: any) => words2.has(x)));
   const union = new Set([...words1, ...words2]);
   
   return union.size > 0 ? Math.round((intersection.size / union.size) * 100) : 0;
@@ -487,7 +488,7 @@ function calculateEmotionalImpact(category: string, description: string): number
   const emotionalWords = ['feel', 'emotion', 'heart', 'passion', 'love', 'fear', 'hope', 'dream', 'worry', 'excited'];
   const lowerDesc = description.toLowerCase();
   
-  const base = emotionalWords.filter(word => lowerDesc.includes(word)).length * 10;
+  const base = emotionalWords.filter((word: any) => lowerDesc.includes(word)).length * 10;
   
   // Category-based emotional impact
   const categoryImpact: Record<string, number> = {
@@ -544,7 +545,7 @@ function getCategoryEffectiveness(category: string): number {
 
 function calculateContentQuality(description: string): number {
   const wordCount = description.split(/\s+/).length;
-  const sentenceCount = description.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
+  const sentenceCount = description.split(/[.!?]+/).filter((s: any) => s.trim().length > 0).length;
   
   let score = 50;
   

@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 
@@ -22,7 +23,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     // Only log errors in development to prevent information leakage
     if (process.env.NODE_ENV === 'development') {
@@ -113,7 +114,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
   const { data: analytics } = await analyticsQuery;
 
   // Filter analytics to only include executions that used this copy asset
-  const relevantAnalytics = analytics?.filter(analytic => {
+  const relevantAnalytics = analytics?.filter((analytic: any) => {
     const execution = analytic.executions;
     if (!execution || !execution.metadata) return false;
     
@@ -177,7 +178,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
       metrics: performanceMetrics,
       usage_stats: {
         total_campaigns: usageStats?.length || 0,
-        active_campaigns: usageStats?.filter(u => u.status === 'active').length || 0,
+        active_campaigns: usageStats?.filter((u: any) => u.status === 'active').length || 0,
         campaigns: usageStats || [],
       },
       comparative_performance: comparativePerformance,
@@ -291,7 +292,7 @@ function aggregatePerformanceMetrics(analytics: any[]): any {
 
   if (analytics.length === 0) return totals;
 
-  analytics.forEach(metric => {
+  analytics.forEach((metric: any) => {
     totals.impressions += metric.impressions || 0;
     totals.clicks += metric.clicks || 0;
     totals.conversions += metric.conversions || 0;
@@ -316,8 +317,8 @@ function calculateComparativePerformance(asset: any, similarAssets: any[]): any 
     };
   }
 
-  const performanceScores = similarAssets.map(a => a.performance_score).filter(s => s !== null);
-  const complianceScores = similarAssets.map(a => a.brand_compliance_score).filter(s => s !== null);
+  const performanceScores = similarAssets.map((a: any) => a.performance_score).filter((s: any) => s !== null);
+  const complianceScores = similarAssets.map((a: any) => a.brand_compliance_score).filter((s: any) => s !== null);
 
   const performancePercentile = asset.performance_score 
     ? calculatePercentile(performanceScores, asset.performance_score)
@@ -337,7 +338,7 @@ function calculateComparativePerformance(asset: any, similarAssets: any[]): any 
 }
 
 function calculatePercentile(scores: number[], value: number): number {
-  const belowCount = scores.filter(score => score < value).length;
+  const belowCount = scores.filter((score: any) => score < value).length;
   return Math.round((belowCount / scores.length) * 100);
 }
 

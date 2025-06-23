@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { test, expect } from '@playwright/test';
 
 test.describe('AIrWAVE Application Tests', () => {
@@ -33,6 +34,7 @@ test.describe('AIrWAVE Application Tests', () => {
       expect(bodyText).toBeTruthy();
       
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log(`Application test failed: ${error.message}`);
       
       // Try to get more information about the error

@@ -80,7 +80,7 @@ export class WorkflowMetricsCollector {
       } else {
         console.log('⚠️ Workflow Metrics using local storage (Redis unavailable)');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Workflow Metrics Redis initialization failed:', error);
       this.useRedis = false;
     }
@@ -252,7 +252,7 @@ export class WorkflowMetricsCollector {
         // Trim realtime list to prevent memory issues
         const client = await redisManager.getClient();
         await client.ltrim('workflow_metrics:realtime', 0, 10000); // Keep last 10k metrics
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error storing metric in Redis:', error);
       }
     }
@@ -306,20 +306,20 @@ export class WorkflowMetricsCollector {
               if (!userId || metric.userId === userId) {
                 allMetrics.push(metric);
               }
-            } catch (error) {
+            } catch (error: any) {
               console.error('Error parsing metric:', error);
             }
           }
           
           currentDate.setDate(currentDate.getDate() + 1);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error getting metrics from Redis:', error);
       }
     }
 
     // Include local metrics
-    const filteredLocalMetrics = this.localMetrics.filter(metric => {
+    const filteredLocalMetrics = this.localMetrics.filter((metric: any) => {
       const metricDate = new Date(metric.timestamp);
       const matchesDate = metricDate >= startDate && metricDate <= endDate;
       const matchesUser = !userId || metric.userId === userId;
@@ -338,11 +338,11 @@ export class WorkflowMetricsCollector {
    * Calculate analytics from metrics
    */
   private calculateAnalytics(metrics: WorkflowMetric[]): WorkflowAnalytics {
-    const sessions = new Set(metrics.map(m => m.sessionId));
+    const sessions = new Set(metrics.map((m: any) => m.sessionId));
     const completedSessions = new Set(
       metrics
-        .filter(m => m.action === 'workflow_completion')
-        .map(m => m.sessionId)
+        .filter((m: any) => m.action === 'workflow_completion')
+        .map((m: any) => m.sessionId)
     );
 
     const stepMetrics: Record<string, WorkflowStepMetrics> = {};
@@ -410,10 +410,10 @@ export class WorkflowMetricsCollector {
     // Calculate session duration
     const sessionDurations: number[] = [];
     for (const sessionId of sessions) {
-      const sessionMetrics = metrics.filter(m => m.sessionId === sessionId);
+      const sessionMetrics = metrics.filter((m: any) => m.sessionId === sessionId);
       if (sessionMetrics.length > 0) {
-        const startTime = Math.min(...sessionMetrics.map(m => m.timestamp));
-        const endTime = Math.max(...sessionMetrics.map(m => m.timestamp));
+        const startTime = Math.min(...sessionMetrics.map((m: any) => m.timestamp));
+        const endTime = Math.max(...sessionMetrics.map((m: any) => m.timestamp));
         sessionDurations.push(endTime - startTime);
       }
     }
@@ -445,10 +445,10 @@ export class WorkflowMetricsCollector {
     const oneHourAgo = now - (60 * 60 * 1000);
     
     // Get recent metrics
-    const recentMetrics = this.localMetrics.filter(m => m.timestamp > oneHourAgo);
+    const recentMetrics = this.localMetrics.filter((m: any) => m.timestamp > oneHourAgo);
     
     // Count active sessions (sessions with activity in last hour)
-    const activeSessions = new Set(recentMetrics.map(m => m.sessionId)).size;
+    const activeSessions = new Set(recentMetrics.map((m: any) => m.sessionId)).size;
     
     // Current step distribution
     const currentStepDistribution: Record<string, number> = {};
@@ -466,9 +466,9 @@ export class WorkflowMetricsCollector {
     
     // Recent errors
     const recentErrors = recentMetrics
-      .filter(m => !m.success && m.errorMessage)
+      .filter((m: any) => !m.success && m.errorMessage)
       .slice(-10)
-      .map(m => ({
+      .map((m: any) => ({
         step: m.workflowStep,
         error: m.errorMessage!,
         timestamp: m.timestamp,
@@ -478,7 +478,7 @@ export class WorkflowMetricsCollector {
     const performanceAlerts: Array<{ step: string; issue: string; severity: 'low' | 'medium' | 'high' }> = [];
     
     for (const step of this.workflowSteps) {
-      const stepMetrics = recentMetrics.filter(m => m.workflowStep === step && m.duration);
+      const stepMetrics = recentMetrics.filter((m: any) => m.workflowStep === step && m.duration);
       if (stepMetrics.length > 0) {
         const avgDuration = stepMetrics.reduce((sum, m) => sum + (m.duration || 0), 0) / stepMetrics.length;
         
@@ -491,7 +491,7 @@ export class WorkflowMetricsCollector {
         }
       }
       
-      const errorRate = stepMetrics.filter(m => !m.success).length / Math.max(stepMetrics.length, 1);
+      const errorRate = stepMetrics.filter((m: any) => !m.success).length / Math.max(stepMetrics.length, 1);
       if (errorRate > 0.1) { // 10% error rate
         performanceAlerts.push({
           step,

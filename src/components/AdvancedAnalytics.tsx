@@ -223,7 +223,7 @@ export const AdvancedAnalytics: React.FC = () => {
 
       {/* Key Metrics */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        {metrics.map((metric) => (
+        {metrics.map((metric: any) => (
           <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2 }} key={metric.id}>
             <Card>
               <CardContent>
@@ -304,7 +304,7 @@ export const AdvancedAnalytics: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {performanceData.map((row) => (
+                {performanceData.map((row: any) => (
                   <TableRow key={row.period}>
                     <TableCell>{row.period}</TableCell>
                     <TableCell align="right">{row.views.toLocaleString()}</TableCell>

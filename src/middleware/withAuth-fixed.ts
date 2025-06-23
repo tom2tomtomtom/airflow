@@ -126,7 +126,7 @@ export function withAuth(handler: AuthenticatedHandler) {
         } else {
                     profile = profileData;
         }
-      } catch (profileException) {
+      } catch (profileException: any) {
         console.error('💥 withAuth: Profile creation exception:', profileException);
         // Use minimal profile as fallback
         const userName = user.user_metadata?.name || user.email?.split('@')[0] || 'User';
@@ -156,7 +156,7 @@ export function withAuth(handler: AuthenticatedHandler) {
         } else {
           userClients = clientsData || [];
         }
-      } catch (clientsException) {
+      } catch (clientsException: any) {
         console.error('💥 withAuth: Exception fetching user clients:', clientsException);
       }
 
@@ -172,7 +172,7 @@ export function withAuth(handler: AuthenticatedHandler) {
 
             // Call the handler
       return await handler(req as AuthenticatedRequest, res);
-    } catch (error) {
+    } catch (error: any) {
       const message = getErrorMessage(error);
       console.error('💥 withAuth: Authentication error:', error);
       console.error('Stack trace:', (error as any)?.stack);

@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { chromium, FullConfig } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
@@ -39,6 +40,7 @@ async function globalTeardown(config: FullConfig) {
         }
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log('ℹ️ Could not clean up test clients:', error.message);
     }
     
@@ -57,6 +59,7 @@ async function globalTeardown(config: FullConfig) {
         }
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log('ℹ️ Could not clean up test campaigns:', error.message);
     }
     
@@ -75,6 +78,7 @@ async function globalTeardown(config: FullConfig) {
         }
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log('ℹ️ Could not clean up test assets:', error.message);
     }
     
@@ -114,6 +118,7 @@ async function globalTeardown(config: FullConfig) {
           console.log(`   Failed: ${results.stats?.failed || 'N/A'}`);
           console.log(`   Skipped: ${results.stats?.skipped || 'N/A'}`);
         } catch (error) {
+    const message = getErrorMessage(error);
           console.log('ℹ️ Could not parse test results file');
         }
       }
@@ -122,6 +127,7 @@ async function globalTeardown(config: FullConfig) {
     console.log('🎉 Global teardown completed successfully');
     
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('❌ Global teardown failed:', error);
     // Don't throw error in teardown to avoid masking test failures
   } finally {

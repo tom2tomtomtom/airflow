@@ -22,7 +22,7 @@ class AICostController {
     return new AICostController();
   }
 
-  async checkBudget(service: string, model: string, tokens: number, userId: string) {
+  async checkBudget(service: string, model: string, tokens: number, userId: string) : Promise<void> {
     // Calculate estimated cost based on tokens
     const estimatedCost = this.calculateCost(service, model, tokens);
 
@@ -50,19 +50,19 @@ class AICostController {
     return (tokens / 1000) * rate;
   }
 
-  async getTotalSpent() {
+  async getTotalSpent() : Promise<void> {
     return 0;
   }
 
-  async getBudgetStatus() {
+  async getBudgetStatus() : Promise<void> {
     return { status: 'healthy', remaining: 1000 };
   }
 
-  async getMonthlyUsage(userId: string) {
+  async getMonthlyUsage(userId: string) : Promise<void> {
     return { totalCost: 0, totalTokens: 0, callCount: 0 };
   }
 
-  async getUsageBreakdown(userId: string, type: 'operation' | 'model') {
+  async getUsageBreakdown(userId: string, type: 'operation' | 'model') : Promise<void> {
     if (type === 'operation') {
       return {
         operationBreakdown: {
@@ -82,7 +82,7 @@ class AICostController {
     }
   }
 
-  async getDailyUsage(userId: string) {
+  async getDailyUsage(userId: string) : Promise<void> {
     return {
       dailyUsage: [
         { date: '2025-01-01', cost: 0.15, tokens: 500, operations: 3 },
@@ -92,7 +92,7 @@ class AICostController {
     };
   }
 
-  async getRecentOperations(userId: string, limit: number) {
+  async getRecentOperations(userId: string, limit: number) : Promise<void> {
     return [];
   }
 }
@@ -142,7 +142,7 @@ export async function handleAIRoutes(
           404
         );
     }
-  } catch (error) {
+  } catch (error: any) {
     return handleApiError(res, error, 'ai routes');
   }
 }
@@ -451,8 +451,8 @@ async function handleModels(
   } else if (capability) {
     // Filter by capability
     const modelsWithCapability: any[] = [];
-    Object.values(allModels).forEach(serviceModels => {
-      Object.values(serviceModels).forEach(model => {
+    Object.values(allModels).forEach((serviceModels: any) => {
+      Object.values(serviceModels).forEach((model: any) => {
         if (model.capabilities.includes(capability as string)) {
           modelsWithCapability.push(model);
         }
@@ -462,8 +462,8 @@ async function handleModels(
   } else {
     // Return all models in array format for tests
     const modelsList: any[] = [];
-    Object.values(allModels).forEach(serviceModels => {
-      Object.values(serviceModels).forEach(model => {
+    Object.values(allModels).forEach((serviceModels: any) => {
+      Object.values(serviceModels).forEach((model: any) => {
         modelsList.push(model);
       });
     });

@@ -126,7 +126,7 @@ export function withRateLimit(
         }
 
         return handler(req, res);
-      } catch (error) {
+      } catch (error: any) {
         // If rate limiting fails, allow the request but log the error
         if (process.env.NODE_ENV === 'development') {
           console.error('Rate limiting error:', error);
@@ -151,7 +151,7 @@ export const checkRateLimit = async (
       remaining: result.remaining,
       resetAt: new Date(result.reset),
     };
-  } catch (error) {
+  } catch (error: any) {
     // Fail open in case of errors
     if (process.env.NODE_ENV === 'development') {
       console.error('Rate limit check error:', error);

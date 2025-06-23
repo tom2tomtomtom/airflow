@@ -139,9 +139,9 @@ export function validateFile(file: File): { valid: boolean; errors: string[] } {
       size: file.size,
       type: file.type,
     });
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof z.ZodError) {
-      errors.push(...error.errors.map(e => e.message));
+      errors.push(...error.errors.map((e: any) => e.message));
     } else {
       errors.push('Invalid file format');
     }
@@ -176,11 +176,11 @@ export function validateBriefData(data: any): { valid: boolean; data?: any; erro
       data: validatedData,
       errors: [],
     };
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof z.ZodError) {
       return {
         valid: false,
-        errors: error.errors.map(e => `${e.path.join('.')}: ${e.message}`),
+        errors: error.errors.map((e: any) => `${e.path.join('.')}: ${e.message}`),
       };
     }
     return {
@@ -201,9 +201,9 @@ export function validateMotivations(motivations: any[]): { valid: boolean; data?
     try {
       const validated = MotivationSchema.parse(motivations[i]);
       validatedMotivations.push(validated);
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof z.ZodError) {
-        errors.push(`Motivation ${i + 1}: ${error.errors.map(e => e.message).join(', ')}`);
+        errors.push(`Motivation ${i + 1}: ${error.errors.map((e: any) => e.message).join(', ')}`);
       } else {
         errors.push(`Motivation ${i + 1}: Invalid format`);
       }
@@ -228,9 +228,9 @@ export function validateCopyVariations(copyVariations: any[]): { valid: boolean;
     try {
       const validated = CopyVariationSchema.parse(copyVariations[i]);
       validatedCopy.push(validated);
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof z.ZodError) {
-        errors.push(`Copy ${i + 1}: ${error.errors.map(e => e.message).join(', ')}`);
+        errors.push(`Copy ${i + 1}: ${error.errors.map((e: any) => e.message).join(', ')}`);
       } else {
         errors.push(`Copy ${i + 1}: Invalid format`);
       }
@@ -255,9 +255,9 @@ export function validateAssets(assets: any[]): { valid: boolean; data?: any[]; e
     try {
       const validated = AssetSchema.parse(assets[i]);
       validatedAssets.push(validated);
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof z.ZodError) {
-        errors.push(`Asset ${i + 1}: ${error.errors.map(e => e.message).join(', ')}`);
+        errors.push(`Asset ${i + 1}: ${error.errors.map((e: any) => e.message).join(', ')}`);
       } else {
         errors.push(`Asset ${i + 1}: Invalid format`);
       }
@@ -282,11 +282,11 @@ export function validateTemplate(template: any): { valid: boolean; data?: any; e
       data: validatedTemplate,
       errors: [],
     };
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof z.ZodError) {
       return {
         valid: false,
-        errors: error.errors.map(e => `${e.path.join('.')}: ${e.message}`),
+        errors: error.errors.map((e: any) => `${e.path.join('.')}: ${e.message}`),
       };
     }
     return {

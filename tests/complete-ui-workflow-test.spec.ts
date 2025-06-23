@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { test, expect, Page } from '@playwright/test';
 import path from 'path';
 
@@ -282,6 +283,7 @@ test.describe('AIRWAVE Complete UI Workflow Testing', () => {
         await page.waitForTimeout(5000);
         
       } catch (error) {
+    const message = getErrorMessage(error);
         console.log('⚠️ File upload failed:', error.message);
       }
     }
@@ -427,6 +429,7 @@ async function interactWithCurrentStep(page: Page, step: number) {
           break;
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log(`⚠️ Error interacting with step ${step}:`, error.message);
     }
 }

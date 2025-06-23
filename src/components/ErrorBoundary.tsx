@@ -48,7 +48,7 @@ class ErrorBoundary extends Component<Props, State> {
     });
   }
 
-  private async reportError(error: Error, errorInfo: ErrorInfo) {
+  private async reportError(error: Error, errorInfo: ErrorInfo) : Promise<void> {
     try {
       // Use the global error reporter
       await errorReporter.reportError(error, {
@@ -75,7 +75,7 @@ class ErrorBoundary extends Component<Props, State> {
           },
         });
       }
-    } catch (reportingError) {
+    } catch (reportingError: any) {
       // Silently fail if error reporting fails
       console.warn('Failed to report error:', reportingError);
     }

@@ -19,7 +19,7 @@ export const verifyCSRFToken = (token: string, secret: string): boolean => {
     // For simplicity, we'll just check if the token exists and is long enough
     // In a more sophisticated implementation, you'd compare HMAC signatures
     return token && token.length >= 32;
-  } catch (error) {
+  } catch (error: any) {
     loggers.general.error('CSRF token verification error', error);
     return false;
   }
@@ -157,7 +157,7 @@ export class CSRFProtection {
         Buffer.from(signature, 'hex'),
         Buffer.from(expectedSignature, 'hex')
       );
-    } catch (error) {
+    } catch (error: any) {
       return false;
     }
   }

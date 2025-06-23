@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { z } from 'zod';
 import OpenAI from 'openai';
@@ -117,7 +118,7 @@ Generate 8 diverse motivational concepts that would drive this audience to take 
     let motivationsData;
     try {
       motivationsData = JSON.parse(aiResponse);
-    } catch (parseError) {
+    } catch (parseError: any) {
       console.error('Failed to parse AI response:', aiResponse);
       throw new Error('Invalid response format from AI');
     }

@@ -1,9 +1,10 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 /**
  * Authentication helper for AIrWAVE testing
  * Handles login, role switching, and authentication state management
  */
 
-import { Page, Browser, BrowserContext } from '@playwright/test';
+import { Page, BrowserContext } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 
@@ -54,6 +55,7 @@ export class AuthHelper {
         await this.createTestUser(user);
         console.log(`✅ Created test user: ${user.email}`);
       } catch (error) {
+    const message = getErrorMessage(error);
         console.log(`⚠️ User ${user.email} may already exist: ${error.message}`);
       }
     }
@@ -78,6 +80,7 @@ export class AuthHelper {
       console.log(`User ${user.email} created and logged in`);
       await this.logout();
     } catch (error) {
+    const message = getErrorMessage(error);
       // User might already exist, try logging in
       await this.page.goto('/login');
       await this.login(user.email, user.password);
@@ -114,6 +117,7 @@ export class AuthHelper {
       // Wait for redirect to login
       await this.page.waitForURL('/login', { timeout: 10000 });
     } catch (error) {
+    const message = getErrorMessage(error);
       console.warn('Logout may have failed, clearing storage:', error.message);
       await this.page.evaluate(() => {
         localStorage.clear();
@@ -151,6 +155,7 @@ export class AuthHelper {
         console.log(`💾 Saved auth state for ${user.role}`);
         await this.logout();
       } catch (error) {
+    const message = getErrorMessage(error);
         console.error(`Failed to save auth state for ${user.role}:`, error);
       }
     }
@@ -172,6 +177,7 @@ export class AuthHelper {
       await this.page.waitForSelector('[data-testid="user-menu"]', { timeout: 5000 });
       console.log('Already authenticated');
     } catch (error) {
+    const message = getErrorMessage(error);
       // Not authenticated, login as default user
       console.log('Not authenticated, logging in as test user');
       await this.loginAs('user');
@@ -184,6 +190,7 @@ export class AuthHelper {
       await this.page.waitForSelector('[data-testid="user-menu"]', { timeout: 5000 });
       return true;
     } catch (error) {
+    const message = getErrorMessage(error);
       return false;
     }
   }
@@ -216,6 +223,7 @@ export class AuthHelper {
           await authHelper.loginAs('user');
           contexts.push(context);
         } catch (error) {
+    const message = getErrorMessage(error);
           console.log(`Session ${i + 1} rejected (expected for session limit)`);
         }
       }

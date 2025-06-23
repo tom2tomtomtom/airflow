@@ -64,7 +64,7 @@ describe('Basic Monitoring Tests', () => {
       const startTime = Date.now();
       
       // Start all operations
-      operations.forEach(op => {
+      operations.forEach((op: any) => {
         timers.set(`${op}:${userId}`, startTime);
       });
       
@@ -163,8 +163,8 @@ describe('Basic Monitoring Tests', () => {
       
       const total = timeSeriesData.reduce((sum, point) => sum + point.value, 0);
       const average = total / timeSeriesData.length;
-      const max = Math.max(...timeSeriesData.map(p => p.value));
-      const min = Math.min(...timeSeriesData.map(p => p.value));
+      const max = Math.max(...timeSeriesData.map((p: any) => p.value));
+      const min = Math.min(...timeSeriesData.map((p: any) => p.value));
       
       expect(total).toBe(550);
       expect(average).toBe(137.5);
@@ -198,7 +198,7 @@ describe('Basic Monitoring Tests', () => {
       // Simulate multiple operations with some failures
       const operations = Array(10).fill(null).map((_, i) => i < 8 ? 'success' : 'error');
       
-      operations.forEach(result => {
+      operations.forEach((result: any) => {
         if (result === 'success') {
           successCount++;
         } else {
@@ -273,7 +273,7 @@ describe('Basic Monitoring Tests', () => {
       const concurrentOps = new Map();
       
       // Start multiple operations
-      ['op1', 'op2', 'op3'].forEach(op => {
+      ['op1', 'op2', 'op3'].forEach((op: any) => {
         concurrentOps.set(op, Date.now());
       });
       

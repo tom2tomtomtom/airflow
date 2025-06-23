@@ -49,7 +49,7 @@ export const MotivationSelectionStep: React.FC<MotivationSelectionStepProps> = (
 
   // Handle next step
   const handleNext = useCallback(() => {
-    const selectedCount = motivations.filter(m => m.selected).length;
+    const selectedCount = motivations.filter((m: any) => m.selected).length;
     if (selectedCount < 1) {
       actions.setError('Please select at least 1 motivation to continue');
       return;
@@ -70,7 +70,7 @@ export const MotivationSelectionStep: React.FC<MotivationSelectionStepProps> = (
   }, [actions]);
 
   // Get selected count
-  const selectedCount = motivations.filter(m => m.selected).length;
+  const selectedCount = motivations.filter((m: any) => m.selected).length;
 
   return (
     <Box sx={{ maxWidth: 1000, mx: 'auto', p: 3 }}>
@@ -144,7 +144,7 @@ export const MotivationSelectionStep: React.FC<MotivationSelectionStepProps> = (
       {/* Motivations Grid */}
       {motivations.length > 0 && (
         <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, mb: 4 }}>
-          {motivations.map((motivation) => (
+          {motivations.map((motivation: any) => (
             <Box key={motivation.id}>
               <Card
                 sx={{

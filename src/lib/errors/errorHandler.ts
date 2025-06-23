@@ -119,7 +119,7 @@ export function withErrorHandler<T extends any[], R>(
   return async (...args: T): Promise<R> => {
     try {
       return await handler(...args);
-    } catch (error) {
+    } catch (error: any) {
       const appError = handleError(error);
       throw appError;
     }

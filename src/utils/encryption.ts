@@ -38,7 +38,7 @@ export function encryptData(plaintext: string): string {
     
     const result = iv.toString('hex') + tag.toString('hex') + encrypted;
     return result;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Encryption error:', error);
     throw new Error('Failed to encrypt data');
   }
@@ -61,7 +61,7 @@ export function decryptData(encryptedData: string): string {
     decrypted += decipher.final('utf8');
     
     return decrypted;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Decryption error:', error);
     throw new Error('Failed to decrypt data');
   }

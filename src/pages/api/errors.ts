@@ -77,7 +77,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       message: 'Error report received',
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error processing error report:', error);
     return res.status(500).json({
       error: 'Failed to process error report',

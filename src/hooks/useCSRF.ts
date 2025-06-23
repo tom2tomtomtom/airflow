@@ -36,7 +36,7 @@ export const useCSRF = () => {
       } else {
         throw new Error('Invalid CSRF token response');
       }
-    } catch (err) {
+    } catch (err: any) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch CSRF token';
       setError(errorMessage);
       console.error('CSRF token fetch error:', err);
@@ -141,7 +141,7 @@ export const getCSRFToken = async (): Promise<string | null> => {
     }
 
     return null;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error getting CSRF token:', error);
     return null;
   }

@@ -190,7 +190,7 @@ const LazyVideoGenerationSection: React.FC<LazyVideoGenerationSectionProps> = ({
             </Box>
 
             <Grid container spacing={3}>
-              {generatedVideos.map((video) => (
+              {generatedVideos.map((video: any) => (
                 <Grid size={{ xs: 12, sm: 6, md: 4 }} key={video.id}>
                   <Card>
                     <Grid container>

@@ -75,7 +75,7 @@ export function workflowReducer(state: WorkflowState, action: WorkflowAction): W
     case 'TOGGLE_MOTIVATION':
       return {
         ...state,
-        motivations: state?.motivations?.map(m =>
+        motivations: state?.motivations?.map((m: any) =>
           m.id === action.id ? { ...m, selected: !m.selected } : m
         ),
       };
@@ -86,7 +86,7 @@ export function workflowReducer(state: WorkflowState, action: WorkflowAction): W
     case 'TOGGLE_COPY':
       return {
         ...state,
-        copyVariations: state?.copyVariations?.map(c =>
+        copyVariations: state?.copyVariations?.map((c: any) =>
           c.id === action.id ? { ...c, selected: !c.selected } : c
         ),
       };
@@ -103,7 +103,7 @@ export function workflowReducer(state: WorkflowState, action: WorkflowAction): W
     case 'REMOVE_ASSET':
       return {
         ...state,
-        selectedAssets: state?.selectedAssets?.filter(a => a.id !== action.id),
+        selectedAssets: state?.selectedAssets?.filter((a: any) => a.id !== action.id),
       };
     
     case 'SET_SELECTED_TEMPLATE':

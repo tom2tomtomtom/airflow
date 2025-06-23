@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { getErrorMessage } from '@/utils/errorUtils';
+import { test } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 
@@ -87,6 +88,7 @@ Post-launch: 1 month
           return result;
           
         } catch (error) {
+    const message = getErrorMessage(error);
           console.error('❌ API error:', error);
           return { error: error.message };
         }

@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -32,7 +33,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Executions API error:', error);
     return res.status(500).json({
@@ -76,7 +77,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     return res.json({ data: [], count: 0 });
   }
 
-  const clientIds = userClients.map(uc => uc.client_id);
+  const clientIds = userClients.map((uc: any) => uc.client_id);
 
   // Apply filters
   if (filters.campaign_id) {
@@ -126,7 +127,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   }
 
   // Filter out executions where user doesn't have access
-  const accessibleExecutions = (data || []).filter(execution => 
+  const accessibleExecutions = (data || []).filter((execution: any) => 
     execution.matrices?.campaigns?.clients?.id && 
     clientIds.includes(execution.matrices.campaigns.clients.id)
   );
@@ -198,7 +199,7 @@ async function getExecutionAnalytics(executionId: string): Promise<any> {
         cpc: Math.round(cpc * 100) / 100,
         conversion_rate: Math.round(conversionRate * 100) / 100,
       },
-      daily_data: analytics.map(record => ({
+      daily_data: analytics.map((record: any) => ({
         date: record.date,
         impressions: record.impressions || 0,
         clicks: record.clicks || 0,
@@ -206,7 +207,7 @@ async function getExecutionAnalytics(executionId: string): Promise<any> {
         spend: parseFloat(record.spend) || 0,
       })),
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting execution analytics:', error);
     return {
@@ -239,7 +240,7 @@ function calculateExecutionStatistics(executions: any[]): any {
   const successRate = totalFinished > 0 ? (completedCount / totalFinished) * 100 : 0;
 
   // Calculate average execution time for completed executions
-  const completedExecutions = executions.filter(e => e.status === 'completed');
+  const completedExecutions = executions.filter((e: any) => e.status === 'completed');
   const avgExecutionTime = completedExecutions.length > 0 
     ? completedExecutions.reduce((sum, execution) => {
         const start = new Date(execution.created_at).getTime();

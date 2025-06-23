@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -33,7 +34,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Execution API error:', error);
     return res.status(500).json({ 
@@ -302,7 +303,7 @@ async function getExecutionLogs(executionId: string): Promise<any[]> {
     }
 
     return logs;
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting execution logs:', error);
     return [];
@@ -334,7 +335,7 @@ async function getExecutionAnalytics(executionId: string): Promise<any> {
       summary: totals,
       daily_data: analytics,
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting execution analytics:', error);
     return { has_data: false, error: 'Failed to retrieve analytics' };
@@ -392,7 +393,7 @@ async function getRelatedExecutions(matrixId: string, excludeId: string): Promis
       .limit(5);
 
     return executions || [];
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting related executions:', error);
     return [];
@@ -464,7 +465,7 @@ async function logExecutionEvent(executionId: string, eventType: string, details
   try {
     // In a full implementation, this would log to an execution_events table
     process.env.NODE_ENV === 'development' && console.log('Logging execution event:', event);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error logging execution event:', error);
   }
@@ -475,7 +476,7 @@ async function triggerExecutionNotification(execution: any, status: string): Pro
     // In a full implementation, this would trigger real-time notifications
     // via WebSocket or Server-Sent Events
     process.env.NODE_ENV === 'development' && console.log('Triggering execution notification for:', execution.id);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error triggering execution notification:', error);
   }

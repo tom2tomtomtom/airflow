@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -85,7 +86,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
   try {
     return handleGet(req, res, user);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Performance Analytics API error:', error);
     return res.status(500).json({ 
@@ -213,7 +214,7 @@ function generateTimeSeriesData(
     const dateStr = current.toISOString().split('T')[0];
     
     // Find analytics data for this date
-    const dayData = analyticsData.filter(item => 
+    const dayData = analyticsData.filter((item: any) => 
       item.date === dateStr
     );
 
@@ -356,7 +357,7 @@ async function getTopPerformers(filters: any, campaigns: any[]): Promise<any> {
   // Top performing campaigns
   const topCampaigns = campaigns
     .slice(0, 5)
-    .map(campaign => ({
+    .map((campaign: any) => ({
       id: campaign.id,
       name: campaign.name,
       impressions: Math.floor(Math.random() * 10000) + 1000,

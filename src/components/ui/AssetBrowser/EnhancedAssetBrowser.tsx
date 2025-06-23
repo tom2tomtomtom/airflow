@@ -133,26 +133,26 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
     // Apply search filter
     if (searchTerm.trim()) {
       const search = searchTerm.toLowerCase();
-      filtered = filtered.filter(asset =>
+      filtered = filtered.filter((asset: any) =>
         asset.name.toLowerCase().includes(search) ||
         asset.description?.toLowerCase().includes(search) ||
-        asset.tags.some(tag => tag.toLowerCase().includes(search))
+        asset.tags.some((tag: string) => tag.toLowerCase().includes(search))
       );
     }
 
     // Apply type filter
     if (filterType !== 'all') {
-      filtered = filtered.filter(asset => asset.type === filterType);
+      filtered = filtered.filter((asset: any) => asset.type === filterType);
     }
 
     // Apply favorites filter
     if (showFavoritesOnly) {
-      filtered = filtered.filter(asset => asset.isFavorite);
+      filtered = filtered.filter((asset: any) => asset.isFavorite);
     }
 
     // Apply client filter
     if (clientId) {
-      filtered = filtered.filter(asset => asset.clientId === clientId);
+      filtered = filtered.filter((asset: any) => asset.clientId === clientId);
     }
 
     // Sort assets
@@ -177,7 +177,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
       const isSelected = selectedAssets.some(selected => selected.id === asset.id);
       if (isSelected) {
         // Remove from selection
-        const newSelection = selectedAssets.filter(selected => selected.id !== asset.id);
+        const newSelection = selectedAssets.filter((selected: any) => selected.id !== asset.id);
         onAssetSelect?.(newSelection[0] || asset);
       } else {
         // Add to selection if within limits
@@ -417,7 +417,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
 
                 {asset.tags.length > 0 && (
                   <Box sx={{ mt: 1, display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
-                    {asset.tags.slice(0, 3).map((tag) => (
+                    {asset.tags.slice(0, 3).map((tag: any) => (
                       <Chip
                         key={tag}
                         size="small"
@@ -696,14 +696,15 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
         </Stack>
       ) : (
         <Grid container spacing={viewMode === 'compact' ? 1 : 2}>
-          {filteredAssets.map((asset) => (
+          {filteredAssets.map((asset: any) => (
             <Grid
-              item
               key={asset.id}
-              xs={viewMode === 'compact' ? 6 : 12}
-              sm={viewMode === 'compact' ? 4 : 6}
-              md={viewMode === 'compact' ? 3 : 4}
-              lg={viewMode === 'compact' ? 2 : 3}
+              size={{ 
+                xs: viewMode === 'compact' ? 6 : 12,
+                sm: viewMode === 'compact' ? 4 : 6,
+                md: viewMode === 'compact' ? 3 : 4,
+                lg: viewMode === 'compact' ? 2 : 3
+              }}
             >
               {renderAssetCard(asset)}
             </Grid>
@@ -795,7 +796,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
                 </Typography>
               )}
               <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                {previewAsset.tags.map((tag) => (
+                {previewAsset.tags.map((tag: any) => (
                   <Chip key={tag} size="small" label={tag} />
                 ))}
               </Box>

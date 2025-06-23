@@ -99,7 +99,7 @@ export function sanitizeObject<T extends Record<string, any>>(obj: T): T {
 
 // Validation error response
 export function validationErrorResponse(error: ZodError): NextResponse {
-  const errors = error.errors.map(err => ({
+  const errors = error.errors.map((err: any) => ({
     field: err.path.join('.'),
     message: err.message,
   }));
@@ -107,7 +107,7 @@ export function validationErrorResponse(error: ZodError): NextResponse {
   logger.warn('Validation error', { 
     message: 'Validation failed',
     errorCount: errors.length,
-    fields: errors.map(e => e.field).join(', ')
+    fields: errors.map((e: any) => e.field).join(', ')
   });
   
   return NextResponse.json(
@@ -135,7 +135,7 @@ export async function validateRequest<T>(
       input = Object.fromEntries(searchParams.entries());
       
       // Convert numeric strings to numbers for common fields
-      ['page', 'limit'].forEach(field => {
+      ['page', 'limit'].forEach((field: any) => {
         if (input[field]) {
           const num = Number(input[field]);
           if (!isNaN(num)) {
@@ -170,7 +170,7 @@ export async function validateRequest<T>(
     const data = schema.parse(input);
     
     return { data, error: null };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     if (error instanceof ZodError) {
       return { data: {} as T, error: validationErrorResponse(error) };

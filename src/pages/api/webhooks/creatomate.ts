@@ -63,7 +63,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     }
     
     res.status(200).json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error processing Creatomate webhook:', error);
     res.status(500).json({ error: 'Internal server error' });

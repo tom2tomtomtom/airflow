@@ -290,7 +290,7 @@ const PublishingAnalytics: React.FC<PublishingAnalyticsProps> = ({
       };
 
       setAnalyticsData(analyticsData);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading analytics:', error);
       showNotification('Failed to load analytics data', 'error');
     } finally {
@@ -562,7 +562,7 @@ const PublishingAnalytics: React.FC<PublishingAnalyticsProps> = ({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {analyticsData.platformMetrics.map((platform) => (
+                {analyticsData.platformMetrics.map((platform: any) => (
                   <TableRow key={platform.platform}>
                     <TableCell>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -608,7 +608,7 @@ const PublishingAnalytics: React.FC<PublishingAnalyticsProps> = ({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {analyticsData.topPosts.map((post) => (
+                {analyticsData.topPosts.map((post: any) => (
                   <TableRow key={post.id}>
                     <TableCell>
                       <Typography variant="body2" sx={{ maxWidth: 200 }}>

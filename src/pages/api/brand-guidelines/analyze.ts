@@ -135,11 +135,11 @@ async function analyzeBrandGuidelines(text: string): Promise<BrandGuidelines> {
     // Try to parse the JSON response
     try {
       return JSON.parse(content);
-    } catch (parseError) {
+    } catch (parseError: any) {
       console.error('Failed to parse OpenAI response as JSON:', content);
       throw new Error('Failed to parse AI response. Please try again.');
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('OpenAI analysis error:', error);
     throw error;
   }
@@ -207,7 +207,7 @@ export default async function handler(
     // Clean up temporary file
     try {
       await fs.unlink(file.filepath);
-    } catch (cleanupError) {
+    } catch (cleanupError: any) {
       console.warn('Failed to cleanup temp file:', cleanupError);
     }
 
@@ -217,7 +217,7 @@ export default async function handler(
       clientId
     });
 
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Brand guidelines analysis error:', error);
     return res.status(500).json({

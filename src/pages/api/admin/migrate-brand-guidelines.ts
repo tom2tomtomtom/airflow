@@ -63,7 +63,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       verification: verification
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Unexpected error:', error);
     return res.status(500).json({ 
       error: 'Unexpected error', 

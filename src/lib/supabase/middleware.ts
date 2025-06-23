@@ -90,7 +90,7 @@ export async function updateSession(request: NextRequest) {
     }
 
     return { response, user };
-  } catch (error) {
+  } catch (error: any) {
     loggers.supabase.error('Middleware session update failed', error);
     return { 
       response: NextResponse.next({ request: { headers: request.headers } }), 

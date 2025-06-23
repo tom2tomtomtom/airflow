@@ -77,6 +77,11 @@ const SAFE_PATTERNS = [
   '// Bearer tokens', // Comment
   'Password:', // UI label
   'password:', // Console output context
+  'TEST_JWT_TOKEN_PLACEHOLDER', // Test JWT tokens
+  'DEFAULT_JWT_TOKEN_PLACEHOLDER', // Test JWT tokens
+  '.test-signature', // Test JWT signatures
+  '.default-signature', // Test JWT signatures
+  'eyJpc3MiOiJ0ZXN0Ii', // Test JWT payload
 ];
 
 function shouldIgnoreFile(filePath) {

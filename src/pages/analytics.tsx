@@ -167,7 +167,7 @@ const AnalyticsPage: React.FC = () => {
       } else {
         throw new Error(result.error || 'Failed to fetch analytics overview');
       }
-    } catch (err) {
+    } catch (err: any) {
       setError(err instanceof Error ? err.message : 'Failed to load analytics');
     }
   };
@@ -191,7 +191,7 @@ const AnalyticsPage: React.FC = () => {
       } else {
         throw new Error(result.error || 'Failed to fetch analytics insights');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching insights:', err);
     }
   };
@@ -216,7 +216,7 @@ const AnalyticsPage: React.FC = () => {
       } else {
         throw new Error(result.error || 'Failed to fetch performance data');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching performance data:', err);
     }
   };
@@ -232,7 +232,7 @@ const AnalyticsPage: React.FC = () => {
         fetchAnalyticsInsights(),
         fetchPerformanceData(),
       ]);
-    } catch (err) {
+    } catch (err: any) {
       setError(err instanceof Error ? err.message : 'Failed to load analytics');
     } finally {
       setLoading(false);

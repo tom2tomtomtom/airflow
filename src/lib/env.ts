@@ -73,7 +73,7 @@ const envSchema = z.object({
 
   // Security
   ALLOWED_ORIGINS: z.string().optional().transform(val => 
-    val ? val.split(',').map(origin => origin.trim()) : []
+    val ? val.split(',').map((origin: any) => origin.trim()) : []
   ),
 
   // Monitoring
@@ -144,7 +144,7 @@ const parseEnv = () => {
         'JWT_SECRET'
       ];
       
-      const missing = criticalVars.filter(key => !parsed[key as keyof typeof parsed]);
+      const missing = criticalVars.filter((key: any) => !parsed[key as keyof typeof parsed]);
       if (missing.length > 0) {
         console.warn(`⚠️ Missing environment variables: ${missing.join(', ')}`);
         console.warn('Authentication may not work properly without these variables.');
@@ -152,7 +152,7 @@ const parseEnv = () => {
     }
     
     return parsed;
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     if (error instanceof z.ZodError) {
       const errorMessage = ['❌ Invalid environment variables:'];

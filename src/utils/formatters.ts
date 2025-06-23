@@ -247,8 +247,8 @@ export function extractInitials(name: string, maxInitials?: number): string {
   // Split by spaces and hyphens to handle compound names
   const words = name.trim().split(/[\s-]+/);
   const initials = words
-    .filter(word => word.length > 0)
-    .map(word => word[0].toUpperCase())
+    .filter((word: any) => word.length > 0)
+    .map((word: any) => word[0].toUpperCase())
     .slice(0, maxInitials)
     .join('');
   

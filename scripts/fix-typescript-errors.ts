@@ -1,6 +1,5 @@
 // scripts/fix-typescript-errors.ts
 import { promises as fs } from 'fs';
-import * as path from 'path';
 import { glob } from 'glob';
 
 interface Fix {

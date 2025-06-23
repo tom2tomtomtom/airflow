@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 
 const REDBAEZ_BRIEF = `Creative Brief: Launching AIrWAVE 2.0 by Redbaez
 

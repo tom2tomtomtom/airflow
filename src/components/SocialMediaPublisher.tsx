@@ -78,7 +78,7 @@ export default function SocialMediaPublisher() {
       } else {
         setError(data.error);
       }
-    } catch (err) {
+    } catch (err: any) {
       setError('Failed to load platforms');
     } finally {
       setLoading(false);
@@ -88,7 +88,7 @@ export default function SocialMediaPublisher() {
   const handlePlatformToggle = (platformId: string) => {
     setSelectedPlatforms(prev => 
       prev.includes(platformId)
-        ? prev.filter(id => id !== platformId)
+        ? prev.filter((id: any) => id !== platformId)
         : [...prev, platformId]
     );
   };
@@ -135,7 +135,7 @@ export default function SocialMediaPublisher() {
       } else {
         setError(data.error);
       }
-    } catch (err) {
+    } catch (err: any) {
       setError('Failed to publish content');
     } finally {
       setPublishing(false);
@@ -153,7 +153,7 @@ export default function SocialMediaPublisher() {
       } else {
         setError(data.error);
       }
-    } catch (err) {
+    } catch (err: any) {
       setError('Failed to connect platform');
     }
   };
@@ -184,7 +184,7 @@ export default function SocialMediaPublisher() {
           Select Platforms
         </Typography>
         <Box display="flex" flexDirection="column" gap={1}>
-          {platforms.map((platform) => (
+          {platforms.map((platform: any) => (
             <Box key={platform.id} display="flex" alignItems="center" justifyContent="space-between">
               <FormControlLabel
                 control={
@@ -283,7 +283,7 @@ export default function SocialMediaPublisher() {
                   )}
                 </ListItemIcon>
                 <ListItemText
-                  primary={`${platforms.find(p => p.id === result.platform)?.displayName || result.platform}`}
+                  primary={`${platforms.find((p: any) => p.id === result.platform)?.displayName || result.platform}`}
                   secondary={
                     result.success
                       ? `Successfully published${result.postId ? ` (ID: ${result.postId})` : ''}`

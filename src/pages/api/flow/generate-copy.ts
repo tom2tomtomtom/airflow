@@ -76,7 +76,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Debug logging to see what data we're receiving
   console.log('🔍 COPY API - Received data:', {
     motivationCount: motivations.length,
-    motivationTitles: motivations.map(m => m.title),
+    motivationTitles: motivations.map((m: any) => m.title),
     briefTitle: briefData.title,
     briefObjective: briefData.objective?.substring(0, 100) + '...',
     briefProduct: briefData.product,
@@ -93,7 +93,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       message: 'Copy variations generated successfully'
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error generating copy:', error);
     return res.status(500).json({
       success: false,
@@ -114,7 +114,7 @@ async function generateCopyFromMotivations(motivations: Motivation[], briefData:
         // Merge template and AI copy for best of both
         return [...templateCopy, ...aiCopy].slice(0, 15);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('OpenAI copy generation failed, using templates:', error);
     }
   }
@@ -222,7 +222,7 @@ Respond with JSON array only.`;
       cta: copy.cta || 'Learn more'
     })).slice(0, 100); // Limit to reasonable number
 
-  } catch (parseError) {
+  } catch (parseError: any) {
     console.error('Failed to parse OpenAI copy response:', parseError);
     throw new Error('Invalid JSON response from OpenAI');
   }

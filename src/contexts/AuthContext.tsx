@@ -52,13 +52,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 // Invalid stored user, remove it
                 localStorage.removeItem('airwave_user');
               }
-            } catch (parseError) {
+            } catch (parseError: any) {
               console.error('Error parsing stored user:', parseError);
               localStorage.removeItem('airwave_user');
             }
           }
         }
-      } catch (error) {
+      } catch (error: any) {
     const message = getErrorMessage(error);
         if (process.env.NODE_ENV === 'development') {
           console.error('Authentication error:', error);
@@ -117,7 +117,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         throw new Error('Invalid response from server');
       }
-    } catch (error) {
+    } catch (error: any) {
     const message = getErrorMessage(error);
       console.error('Login error:', error);
       throw error;
@@ -166,7 +166,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         throw new Error('Invalid response from server');
       }
-    } catch (error) {
+    } catch (error: any) {
     const message = getErrorMessage(error);
       console.error('Signup error:', error);
       throw error;

@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -37,7 +38,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Matrix API error:', error);
     return res.status(500).json({
@@ -340,7 +341,7 @@ function extractAssetIdsFromMatrix(matrix: any): string[] {
     }
 
     return [...new Set(assetIds)]; // Remove duplicates
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error extracting asset IDs:', error);
     return [];
@@ -409,7 +410,7 @@ async function getMatrixAnalytics(matrixId: string): Promise<any> {
       },
       platform_breakdown: platformBreakdown,
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting matrix analytics:', error);
     return {
@@ -538,7 +539,7 @@ async function getMatrixVersionHistory(matrixId: string): Promise<any[]> {
     // This would come from a matrix_versions table in a full implementation
     // For now, return empty array as we don't have version tracking table
     return [];
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting matrix version history:', error);
     return [];
@@ -607,7 +608,7 @@ async function createMatrixVersionEntry(matrixId: string, changes: any, userId: 
     // In a full implementation, this would create entries in a matrix_versions table
     // For now, we'll just log the change
     process.env.NODE_ENV === 'development' && console.log('Creating matrix version entry for:', matrixId);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error creating matrix version entry:', error);
   }

@@ -105,14 +105,14 @@ const LiveCollaboration: React.FC<LiveCollaborationProps> = ({
     ];
 
     // Filter out current user and simulate real-time updates
-    const filteredData = mockPresenceData.filter(p => p.id !== user?.id);
+    const filteredData = mockPresenceData.filter((p: any) => p.id !== user?.id);
     setPresenceData(filteredData);
     setLoading(false);
 
     // Simulate presence updates
     const interval = setInterval(() => {
       setPresenceData(prev => 
-        prev.map(p => ({
+        prev.map((p: any) => ({
           ...p,
           last_seen: p.status === 'online' ? new Date().toISOString() : p.last_seen,
         }))
@@ -140,9 +140,9 @@ const LiveCollaboration: React.FC<LiveCollaborationProps> = ({
     }
   };
 
-  const onlineUsers = presenceData.filter(p => p.status === 'online');
-  const awayUsers = presenceData.filter(p => p.status === 'away');
-  const busyUsers = presenceData.filter(p => p.status === 'busy');
+  const onlineUsers = presenceData.filter((p: any) => p.status === 'online');
+  const awayUsers = presenceData.filter((p: any) => p.status === 'away');
+  const busyUsers = presenceData.filter((p: any) => p.status === 'busy');
 
   const handleAvatarClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -201,7 +201,7 @@ const LiveCollaboration: React.FC<LiveCollaborationProps> = ({
     return (
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <AvatarGroup max={4} onClick={handleAvatarClick} sx={{ cursor: 'pointer' }}>
-          {onlineUsers.map(user => renderUserAvatar(user, 24))}
+          {onlineUsers.map((user: any) => renderUserAvatar(user, 24))}
         </AvatarGroup>
         {presenceData.length > 4 && (
           <Typography variant="caption" color="text.secondary">
@@ -234,7 +234,7 @@ const LiveCollaboration: React.FC<LiveCollaborationProps> = ({
               Online Now ({onlineUsers.length})
             </Typography>
             <AvatarGroup max={6}>
-              {onlineUsers.map(user => renderUserAvatar(user))}
+              {onlineUsers.map((user: any) => renderUserAvatar(user))}
             </AvatarGroup>
           </Box>
 
@@ -243,7 +243,7 @@ const LiveCollaboration: React.FC<LiveCollaborationProps> = ({
               <Divider sx={{ my: 2 }} />
               
               <List dense>
-                {onlineUsers.map(user => (
+                {onlineUsers.map((user: any) => (
                   <ListItem key={user.id} sx={{ px: 0 }}>
                     <ListItemAvatar>
                       {renderUserAvatar(user)}
@@ -291,7 +291,7 @@ const LiveCollaboration: React.FC<LiveCollaborationProps> = ({
 
                   {showAllUsers && (
                     <List dense>
-                      {[...busyUsers, ...awayUsers].map(user => (
+                      {[...busyUsers, ...awayUsers].map((user: any) => (
                         <ListItem key={user.id} sx={{ px: 0, opacity: 0.7 }}>
                           <ListItemAvatar>
                             {renderUserAvatar(user)}
@@ -358,7 +358,7 @@ const LiveCollaboration: React.FC<LiveCollaborationProps> = ({
             Team Members
           </Typography>
           <Stack spacing={1}>
-            {presenceData.map(user => (
+            {presenceData.map((user: any) => (
               <Box key={user.id} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 {renderUserAvatar(user, 24)}
                 <Box sx={{ flexGrow: 1 }}>

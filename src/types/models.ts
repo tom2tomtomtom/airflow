@@ -15,6 +15,7 @@ export interface BaseModel {
 // Client Model
 export interface Client extends BaseModel {
   name: string;
+  email?: string; // Primary contact email
   industry: string;
   logo: string;
   primaryColor: string;

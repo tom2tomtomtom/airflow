@@ -178,7 +178,7 @@ export const getContrastRatio = (color1: string, color2: string): number => {
     const g = parseInt(hex.substr(2, 2), 16) / 255;
     const b = parseInt(hex.substr(4, 2), 16) / 255;
 
-    const sRGB = [r, g, b].map(c =>
+    const sRGB = [r, g, b].map((c: any) =>
       c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
     );
 

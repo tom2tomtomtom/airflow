@@ -82,7 +82,7 @@ export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
       const workflowTemplates = creatomateTemplates.map(convertCreatomateTemplate);
       setTemplates(workflowTemplates);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading templates:', error);
       setLoadError('Failed to load templates. Using default template.');
 
@@ -149,18 +149,18 @@ export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
 
     // Platform-based recommendations
     if (platforms.includes('Instagram') || platforms.includes('TikTok') || platforms.includes('social')) {
-      recommendedTemplates = templates.filter(t => t.category === 'Social');
+      recommendedTemplates = templates.filter((t: any) => t.category === 'Social');
     } else if (platforms.includes('LinkedIn') || platforms.includes('business')) {
-      recommendedTemplates = templates.filter(t => t.category === 'Business');
+      recommendedTemplates = templates.filter((t: any) => t.category === 'Business');
     }
 
     // Content-based recommendations
     if (objective.includes('product') || objective.includes('showcase')) {
-      recommendedTemplates = [...recommendedTemplates, ...templates.filter(t => t.category === 'Product')];
+      recommendedTemplates = [...recommendedTemplates, ...templates.filter((t: any) => t.category === 'Product')];
     }
 
     if (objective.includes('explain') || objective.includes('educate')) {
-      recommendedTemplates = [...recommendedTemplates, ...templates.filter(t => t.category === 'Educational')];
+      recommendedTemplates = [...recommendedTemplates, ...templates.filter((t: any) => t.category === 'Educational')];
     }
 
     // Remove duplicates and limit to 3
@@ -255,8 +255,8 @@ export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
                 Recommended for Your Campaign
               </Typography>
               <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr', lg: '1fr 1fr 1fr' }, mb: 3 }}>
-                {recommendedTemplates.map((template) => {
-                  const creatomateTemplate = creatomateTemplates.find(ct => ct.id === template.id);
+                {recommendedTemplates.map((template: any) => {
+                  const creatomateTemplate = creatomateTemplates.find((ct: any) => ct.id === template.id);
                   return (
                     <Box key={template.id}>
                       <Card
@@ -364,8 +364,8 @@ export const TemplateSelectionStep: React.FC<TemplateSelectionStepProps> = ({
                   </Typography>
 
                   <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr', lg: '1fr 1fr 1fr' } }}>
-                    {categoryTemplates.map((template) => {
-                      const creatomateTemplate = creatomateTemplates.find(ct => ct.id === template.id);
+                    {categoryTemplates.map((template: any) => {
+                      const creatomateTemplate = creatomateTemplates.find((ct: any) => ct.id === template.id);
                       return (
                         <Box key={template.id}>
                           <Card

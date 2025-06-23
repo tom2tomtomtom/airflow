@@ -67,7 +67,7 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
     router.push('/create-client');
   };
 
-  const filteredClients = (clients as Client[])?.filter(client =>
+  const filteredClients = (clients as Client[])?.filter((client: any) =>
     client.name.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
@@ -200,7 +200,7 @@ const ClientSelector: React.FC<ClientSelectorProps> = ({
           </Box>
         )}
         {filteredClients.length > 0 ? (
-          filteredClients.map((client) => (
+          filteredClients.map((client: any) => (
             <MenuItem
               key={client.id}
               data-testid="client-option"

@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
-import { getAPM, recordMetric } from './apm';
+import { recordMetric } from './apm';
 import { getLogger } from '@/lib/logger';
 import { getRedisConfig } from '@/lib/config';
 import { createClient as createRedisClient } from 'redis';
@@ -103,7 +103,7 @@ export class MetricsCollector {
     this.startBufferFlushing();
   }
   
-  private async initializeRedis() {
+  private async initializeRedis() : Promise<void> {
     try {
       const config = getRedisConfig();
       this.redis = createRedisClient({
@@ -114,7 +114,7 @@ export class MetricsCollector {
       
       await this.redis.connect();
       logger.info('Redis connected for metrics collection');
-    } catch (error) {
+    } catch (error: any) {
       logger.warn('Redis not available for metrics', error);
     }
   }
@@ -204,7 +204,7 @@ export class MetricsCollector {
       
       return metrics;
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to collect application metrics', error);
       throw error;
     }
@@ -222,8 +222,8 @@ export class MetricsCollector {
         .select('id, created_at, is_active');
       
       const totalClients = clientsData?.length || 0;
-      const activeClients = clientsData?.filter(c => c.is_active).length || 0;
-      const newClients = clientsData?.filter(c => 
+      const activeClients = clientsData?.filter((c: any) => c.is_active).length || 0;
+      const newClients = clientsData?.filter((c: any) => 
         new Date(c.created_at).getTime() > oneDayAgo
       ).length || 0;
       
@@ -234,10 +234,10 @@ export class MetricsCollector {
         .gte('created_at', new Date(oneDayAgo).toISOString());
       
       const workflowsCreated = workflowsData?.length || 0;
-      const workflowsCompleted = workflowsData?.filter(w => w.status === 'completed').length || 0;
-      const workflowsFailed = workflowsData?.filter(w => w.status === 'failed').length || 0;
+      const workflowsCompleted = workflowsData?.filter((w: any) => w.status === 'completed').length || 0;
+      const workflowsFailed = workflowsData?.filter((w: any) => w.status === 'failed').length || 0;
       
-      const completedWorkflows = workflowsData?.filter(w => w.completed_at) || [];
+      const completedWorkflows = workflowsData?.filter((w: any) => w.completed_at) || [];
       const avgDuration = completedWorkflows.length > 0 
         ? completedWorkflows.reduce((sum, w) => {
             const duration = new Date(w.completed_at).getTime() - new Date(w.created_at).getTime();
@@ -252,8 +252,8 @@ export class MetricsCollector {
         .gte('created_at', new Date(oneDayAgo).toISOString());
       
       const campaignsCreated = campaignsData?.length || 0;
-      const activeCampaigns = campaignsData?.filter(c => c.status === 'active').length || 0;
-      const completedCampaigns = campaignsData?.filter(c => c.status === 'completed').length || 0;
+      const activeCampaigns = campaignsData?.filter((c: any) => c.status === 'active').length || 0;
+      const completedCampaigns = campaignsData?.filter((c: any) => c.status === 'completed').length || 0;
       
       const metrics: BusinessMetrics = {
         timestamp: now,
@@ -288,14 +288,14 @@ export class MetricsCollector {
       
       return metrics;
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to collect business metrics', error);
       throw error;
     }
   }
   
   // Helper methods for specific metric types
-  private async getRequestMetrics(startTime: number, endTime: number) {
+  private async getRequestMetrics(startTime: number, endTime: number) : Promise<void> {
     // This would typically come from request logging middleware
     // For now, return mock data
     return {
@@ -308,7 +308,7 @@ export class MetricsCollector {
     };
   }
   
-  private async getUserMetrics(startTime: number, endTime: number) {
+  private async getUserMetrics(startTime: number, endTime: number) : Promise<void> {
     const { data: sessions } = await this.supabase
       .from('user_sessions')
       .select('user_id, created_at, is_active')
@@ -321,19 +321,19 @@ export class MetricsCollector {
     
     return {
       active: sessions?.length || 0,
-      online: sessions?.filter(s => s.is_active).length || 0,
+      online: sessions?.filter((s: any) => s.is_active).length || 0,
       newSignups: newUsers?.length || 0
     };
   }
   
-  private async getAIMetrics(startTime: number, endTime: number) {
+  private async getAIMetrics(startTime: number, endTime: number) : Promise<void> {
     const { data: generations } = await this.supabase
       .from('ai_generations')
       .select('status, total_tokens, cost_usd')
       .gte('created_at', new Date(startTime).toISOString());
     
     const total = generations?.length || 0;
-    const successful = generations?.filter(g => g.status === 'success').length || 0;
+    const successful = generations?.filter((g: any) => g.status === 'success').length || 0;
     const failed = total - successful;
     const totalCost = generations?.reduce((sum, g) => sum + (g.cost_usd || 0), 0) || 0;
     const avgTokens = total > 0 
@@ -349,7 +349,7 @@ export class MetricsCollector {
     };
   }
   
-  private async getDatabaseMetrics() {
+  private async getDatabaseMetrics() : Promise<void> {
     // These would come from database monitoring
     return {
       connections: 0,
@@ -359,7 +359,7 @@ export class MetricsCollector {
     };
   }
   
-  private async getErrorMetrics(startTime: number, endTime: number) {
+  private async getErrorMetrics(startTime: number, endTime: number) : Promise<void> {
     // This would come from error logging
     return {
       total: 0,
@@ -398,7 +398,7 @@ export class MetricsCollector {
       const { error } = await this.supabase
         .from('performance_metrics')
         .insert(
-          buffer.map(metric => ({
+          buffer.map((metric: any) => ({
             metric_name: `${type}_metrics`,
             metric_type: 'gauge',
             value: JSON.stringify(metric).length, // Store size as value
@@ -423,7 +423,7 @@ export class MetricsCollector {
       // Clear buffer
       this.metricsBuffer.set(type, []);
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error(`Failed to flush ${type} metrics`, error);
     }
   }
@@ -434,7 +434,7 @@ export class MetricsCollector {
       try {
         const data = await this.redis.get(`metrics:${type}:latest`);
         return data ? JSON.parse(data) : null;
-      } catch (error) {
+      } catch (error: any) {
         logger.warn(`Failed to get latest ${type} metrics from Redis`, error);
       }
     }
@@ -579,7 +579,7 @@ export class MetricsCollector {
   // Stop collection and cleanup
   async stop(): Promise<void> {
     // Clear intervals
-    this.intervalHandles.forEach(handle => clearInterval(handle));
+    this.intervalHandles.forEach((handle: any) => clearInterval(handle));
     this.intervalHandles = [];
     
     // Flush remaining metrics

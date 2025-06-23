@@ -1,6 +1,5 @@
 #!/usr/bin/env tsx
 
-import { getErrorMessage } from '@/utils/errorUtils';
 
 /**
  * Database performance checker

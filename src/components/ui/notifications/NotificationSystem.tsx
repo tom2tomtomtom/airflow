@@ -112,7 +112,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
   }, [generateId, maxNotifications]);
 
   const removeNotification = useCallback((id: string) => {
-    setNotifications(prev => prev.filter(notification => notification.id !== id));
+    setNotifications(prev => prev.filter((notification: any) => notification.id !== id));
   }, []);
 
   const clearAll = useCallback(() => {
@@ -137,7 +137,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
 
   const updateNotification = useCallback((id: string, updates: Partial<Notification>) => {
     setNotifications(prev =>
-      prev.map(notification =>
+      prev.map((notification: any) =>
         notification.id === id ? { ...notification, ...updates } : notification
       )
     );
@@ -187,7 +187,7 @@ const NotificationContainer: React.FC<NotificationContainerProps> = ({
         }}
       >
         <Stack spacing={1}>
-          {notifications.map((notification) => (
+          {notifications.map((notification: any) => (
             <NotificationItem
               key={notification.id}
               notification={notification}

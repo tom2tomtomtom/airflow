@@ -56,8 +56,8 @@ export const MatrixBuildStep: React.FC<MatrixBuildStepProps> = ({
   const [buildingMatrix, setBuildingMatrix] = useState(false);
 
   // Get selected data
-  const selectedMotivations = motivations.filter(m => m.selected);
-  const selectedCopy = copyVariations.filter(c => c.selected);
+  const selectedMotivations = motivations.filter((m: any) => m.selected);
+  const selectedCopy = copyVariations.filter((c: any) => c.selected);
 
   // Build matrix automatically when component loads
   useEffect(() => {
@@ -74,9 +74,9 @@ export const MatrixBuildStep: React.FC<MatrixBuildStepProps> = ({
     let itemId = 1;
 
     // Create combinations of motivations, copy, and assets
-    selectedMotivations.forEach(motivation => {
-      selectedCopy.forEach(copy => {
-        selectedAssets.forEach(asset => {
+    selectedMotivations.forEach((motivation: any) => {
+      selectedCopy.forEach((copy: any) => {
+        selectedAssets.forEach((asset: any) => {
           items.push({
             id: `matrix-${itemId++}`,
             motivation: motivation.title,
@@ -124,14 +124,14 @@ export const MatrixBuildStep: React.FC<MatrixBuildStepProps> = ({
   }, []);
 
   const handleDeleteItem = useCallback((itemId: string) => {
-    setMatrixItems(items => items.filter(item => item.id !== itemId));
+    setMatrixItems(items => items.filter((item: any) => item.id !== itemId));
   }, []);
 
   // Get matrix statistics
   const getMatrixStats = () => {
     const totalCombinations = selectedMotivations.length * selectedCopy.length * selectedAssets.length;
-    const readyItems = matrixItems.filter(item => item.status === 'ready').length;
-    const platforms = [...new Set(matrixItems.map(item => item.platform))];
+    const readyItems = matrixItems.filter((item: any) => item.status === 'ready').length;
+    const platforms = [...new Set(matrixItems.map((item: any) => item.platform))];
     
     return {
       total: matrixItems.length,
@@ -272,7 +272,7 @@ export const MatrixBuildStep: React.FC<MatrixBuildStepProps> = ({
               </TableRow>
             </TableHead>
             <TableBody>
-              {matrixItems.map((item) => (
+              {matrixItems.map((item: any) => (
                 <TableRow key={item.id} hover>
                   <TableCell>
                     <Typography variant="body2" sx={{ fontWeight: 'medium' }}>

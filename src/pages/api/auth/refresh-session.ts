@@ -1,3 +1,4 @@
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
 
@@ -62,7 +63,7 @@ export default async function handler(
         }
       }
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Session refresh error:', error);
     return res.status(500).json({
       success: false,

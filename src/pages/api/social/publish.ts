@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import axios from 'axios';
 
@@ -45,7 +46,7 @@ async function publishToFacebook(accessToken: string, content: any): Promise<{ s
     }
 
     return { success: true, postId: result.id };
-  } catch (error) {
+  } catch (error: any) {
     return { success: false, error: getErrorMessage(error) };
   }
 }
@@ -70,7 +71,7 @@ async function publishToTwitter(accessToken: string, content: any): Promise<{ su
     }
 
     return { success: true, postId: result.data?.id };
-  } catch (error) {
+  } catch (error: any) {
     return { success: false, error: getErrorMessage(error) };
   }
 }
@@ -247,7 +248,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
       // Publish to each platform
       for (const platform of platforms) {
-        const connection = connections?.find(c => c.platform === platform);
+        const connection = connections?.find((c: any) => c.platform === platform);
         
         if (!connection || !connection.access_token) {
           results.push({
@@ -308,15 +309,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
         results,
         summary: {
           total: results.length,
-          successful: results.filter(r => r.success).length,
-          failed: results.filter(r => !r.success).length,
+          successful: results.filter((r: any) => r.success).length,
+          failed: results.filter((r: any) => !r.success).length,
         },
       });
     }
 
     res.setHeader('Allow', ['POST']);
     return res.status(405).json({ success: false, error: 'Method not allowed' });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Publish API error:', error);
     return res.status(500).json({

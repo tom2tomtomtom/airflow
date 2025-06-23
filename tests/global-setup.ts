@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { chromium, FullConfig } from '@playwright/test';
 
 async function globalSetup(config: FullConfig) {
@@ -61,12 +62,14 @@ async function globalSetup(config: FullConfig) {
       });
       console.log('✅ Test client created');
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log('ℹ️ Test client may already exist or API not ready');
     }
     
     console.log('🎉 Global setup completed successfully');
     
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('❌ Global setup failed:', error);
     throw error;
   } finally {

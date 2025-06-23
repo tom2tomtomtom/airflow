@@ -315,7 +315,7 @@ export function validateData(data: any, schema: ValidationSchema): ValidationRes
   const sanitizedData: { [key: string]: any } = {};
   
   // Validate each field in schema
-  Object.keys(schema).forEach(key => {
+  Object.keys(schema).forEach((key: any) => {
     const value = data[key];
     const rule = schema[key];
 

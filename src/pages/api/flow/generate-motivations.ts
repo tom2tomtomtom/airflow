@@ -78,7 +78,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       message: 'Motivations generated successfully'
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error generating motivations:', error);
     return res.status(500).json({
       success: false,
@@ -95,7 +95,7 @@ async function generateMotivationsFromBrief(briefData: BriefData): Promise<Motiv
       if (aiMotivations && aiMotivations.length > 0) {
         return aiMotivations;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('OpenAI motivation generation failed, falling back to templates:', error);
     }
   }
@@ -200,7 +200,7 @@ Respond ONLY with the JSON array.`;
       platforms: Array.isArray(motivation.platforms) ? motivation.platforms : briefData.platforms
     })).slice(0, 12); // Ensure max 12 motivations
 
-  } catch (parseError) {
+  } catch (parseError: any) {
     console.error('Failed to parse OpenAI motivations response:', parseError);
     throw new Error('Invalid JSON response from OpenAI');
   }
@@ -337,7 +337,7 @@ async function generateMotivationsWithTemplates(briefData: BriefData): Promise<M
     }
 
     // Check key messages alignment
-    keyMessages.forEach(message => {
+    keyMessages.forEach((message: any) => {
       if (message.toLowerCase().includes('quality') && template.title.includes('Authority')) {
         score += 4;
       }

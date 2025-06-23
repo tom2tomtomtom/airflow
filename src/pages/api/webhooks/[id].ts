@@ -2,7 +2,8 @@ import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { z } from 'zod';
 import { deliverWebhook, WEBHOOK_EVENTS } from './index';
 import crypto from 'crypto';
@@ -49,7 +50,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Webhook API error:', error);
     return res.status(500).json({
@@ -71,7 +72,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, w
       return res.status(403).json({ error: 'No client access' });
     }
 
-    const clientIds = userClients.map(uc => uc.client_id);
+    const clientIds = userClients.map((uc: any) => uc.client_id);
 
     // Get webhook with access validation
     const { data: webhook, error } = await supabase
@@ -121,7 +122,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, w
       statistics: stats,
       events: Object.values(WEBHOOK_EVENTS)
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error in handleGet:', error);
     return res.status(500).json({ error: 'Failed to fetch webhook' });
@@ -172,7 +173,7 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse, user: any
     // Validate event types if provided
     if (updateData.events) {
       const validEvents = Object.values(WEBHOOK_EVENTS);
-      const invalidEvents = updateData.events.filter(event => !validEvents.includes(event as any));
+      const invalidEvents = updateData.events.filter((event: any) => !validEvents.includes(event as any));
       if (invalidEvents.length > 0) {
         return res.status(400).json({ 
           error: 'Invalid event types',
@@ -226,7 +227,7 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse, user: any
         secret: webhook.secret ? `${webhook.secret.substring(0, 8)}...` : null
       }
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error updating webhook:', error);
     return res.status(500).json({ error: 'Failed to update webhook' });
@@ -282,7 +283,7 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
     }
 
     return res.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error deleting webhook:', error);
     return res.status(500).json({ error: 'Failed to delete webhook' });
@@ -377,7 +378,7 @@ async function handleTestWebhook(req: NextApiRequest, res: NextApiResponse, user
       result,
       payload
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error testing webhook:', error);
     return res.status(500).json({ error: 'Failed to test webhook' });
@@ -443,7 +444,7 @@ async function handleRegenerateSecret(req: NextApiRequest, res: NextApiResponse,
       success: true,
       secret: `${newSecret.substring(0, 8)}...`
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error regenerating webhook secret:', error);
     return res.status(500).json({ error: 'Failed to regenerate secret' });
@@ -508,7 +509,7 @@ async function handleToggleWebhook(req: NextApiRequest, res: NextApiResponse, us
       success: true,
       active: newActiveState
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error toggling webhook:', error);
     return res.status(500).json({ error: 'Failed to toggle webhook' });
@@ -550,7 +551,7 @@ async function testWebhookUrl(url: string, timeoutMs: number = 10000): Promise<{
         error: `HTTP ${response.status}: ${response.statusText}` 
       };
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     if ((error as any).name === 'AbortError') {
       return { success: false, error: 'Request timeout' };
@@ -573,7 +574,7 @@ async function logWebhookEvent(webhookId: string, action: string, userId: string
         metadata,
         timestamp: new Date().toISOString(),
       });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error logging webhook event:', error);
   }
@@ -593,9 +594,9 @@ function calculateDeliveryStatistics(deliveries: any[]): any {
     };
   }
 
-  const successful = deliveries.filter(d => d.success).length;
-  const failed = deliveries.filter(d => !d.success).length;
-  const recentFailures = deliveries.slice(0, 10).filter(d => !d.success).length;
+  const successful = deliveries.filter((d: any) => d.success).length;
+  const failed = deliveries.filter((d: any) => !d.success).length;
+  const recentFailures = deliveries.slice(0, 10).filter((d: any) => !d.success).length;
   
   const statusDistribution = deliveries.reduce((acc, delivery) => {
     const status = delivery.response_status || 0;
