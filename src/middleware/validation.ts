@@ -302,7 +302,7 @@ export async function validateCSRFToken(request: NextRequest): Promise<boolean> 
 
 // Rate limiting check (integrates with middleware rate limiting)
 export function checkAPIRateLimit(
-  _identifier: string,
+  __identifier: string,
   _limit: number = 100,
   _window: number = 60000
 ): boolean {

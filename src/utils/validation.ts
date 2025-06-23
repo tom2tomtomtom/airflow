@@ -122,7 +122,7 @@ export function validateFileType(filename: string, allowedTypes: string[]): bool
 /**
  * Validate file size
  */
-export function validateFileSize(sizeInBytes: number, maxSizeMB: number): boolean {
+export function validateFileSize(_sizeInBytes: number, maxSizeMB: number): boolean {
   const maxSizeBytes = maxSizeMB * 1024 * 1024;
   return sizeInBytes <= maxSizeBytes;
 }

@@ -4,7 +4,7 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": true, // ✅ ENABLED! Fixed all TypeScript errors
+    "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
@@ -29,12 +29,12 @@
     "strictPropertyInitialization": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
-    "noUnusedLocals": false, // TODO: Re-enable after systematic cleanup
-    "noUnusedParameters": false, // TODO: Re-enable after systematic cleanup
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": false, // TODO: Re-enable after systematic cleanup
-    "exactOptionalPropertyTypes": false, // TODO: Re-enable after systematic cleanup
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
     "baseUrl": ".",
     "typeRoots": ["./node_modules/@types", "./types"],
     "declaration": false,

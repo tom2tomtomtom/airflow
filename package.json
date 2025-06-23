@@ -47,7 +47,7 @@
     "debug:auth": "node scripts/run-e2e-tests.js --suite auth --debug",
     "fix:typescript:all": "tsx scripts/fix-all-typescript-errors.ts",
     "count:errors": "tsx scripts/count-errors.ts",
-    "test:comprehensive": "playwright test --config=playwright.config.comprehensive.ts",
+    "test:comprehensive": "jest --coverage --verbose",
     "test:comprehensive:headed": "playwright test --config=playwright.config.comprehensive.ts --headed",
     "test:comprehensive:ui": "playwright test --config=playwright.config.comprehensive.ts --ui",
     "test:comprehensive:enhanced": "node scripts/run-comprehensive-tests.js",
@@ -112,7 +112,8 @@
     "perf:baseline": "node scripts/create-performance-baseline.js",
     "db:optimize": "node scripts/optimize-database.js",
     "db:optimize:verify": "node scripts/optimize-database.js --verify",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test:coverage": "jest --coverage"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

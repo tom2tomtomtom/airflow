@@ -1,57 +1,30 @@
 module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'jsdom',
-  roots: [
-    '<rootDir>/src',
-    '<rootDir>/tests/utils',
+  "testEnvironment": "jsdom",
+  "setupFilesAfterEnv": [
+    "<rootDir>/src/test/setup.ts"
   ],
-  testMatch: [
-    '**/__tests__/**/*.ts?(x)',
-    '**/?(*.)+(spec|test).ts?(x)',
-    '!**/tests/e2e/**',
-    '!**/*.e2e.ts',
-    '!**/*.e2e.spec.ts',
-    '!**/tests/**/*.e2e.ts',
-    '!**/tests/**/*.e2e.spec.ts',
-    '!**/tests/e2e/**',
-    '!**/tests/**/*.playwright.ts',
-    '!**/tests/**/*.playwright.spec.ts',
-    '!**/tests/ui-*.spec.ts',
-    '!**/src/pages/api/webhooks/test.ts',
+  "moduleNameMapping": {
+    "^@/(.*)$": "<rootDir>/src/$1"
+  },
+  "collectCoverageFrom": [
+    "src/**/*.{ts,tsx}",
+    "!src/**/*.d.ts",
+    "!src/**/*.test.{ts,tsx}",
+    "!src/**/*.spec.{ts,tsx}",
+    "!src/test/**/*"
   ],
-  transform: {
-    '^.+\\.tsx?$': [
-      'ts-jest',
-      {
-        tsconfig: 'tsconfig.test.json',
-      },
-    ],
+  "coverageThreshold": {
+    "global": {
+      "branches": 50,
+      "functions": 50,
+      "lines": 50,
+      "statements": 50
+    }
   },
-  moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
-    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
-  },
-  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
-  testEnvironmentOptions: {
-    customExportConditions: [''],
-  },
-  collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
-    '!**/*.d.ts',
-    '!**/node_modules/**',
-    '!**/tests/e2e/**',
-    '!**/*.e2e.ts',
-    '!**/*.e2e.spec.ts',
-    '!**/tests/**/*.e2e.ts',
-    '!**/tests/**/*.e2e.spec.ts',
-    '!**/tests/ui-*.spec.ts',
-  ],
-  coverageThreshold: {
-    global: {
-      branches: 25,
-      functions: 25,
-      lines: 25,
-      statements: 25,
-    },
-  },
+  "coverageReporters": [
+    "text",
+    "html",
+    "lcov",
+    "json-summary"
+  ]
 };
