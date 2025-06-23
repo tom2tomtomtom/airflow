@@ -243,6 +243,127 @@ export const apiValidationSchemas = {
   }),
 };
 
+// Enhanced input sanitization functions
+export const sanitization = {
+  // HTML encode to prevent XSS
+  htmlEncode(input: string): string {
+    return input
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#x27;')
+      .replace(/\//g, '&#x2F;');
+  },
+
+  // Remove HTML tags completely
+  stripHTML(input: string): string {
+    return input.replace(/<[^>]*>/g, '');
+  },
+
+  // Sanitize for safe JSON insertion
+  sanitizeJSON(input: string): string {
+    return input
+      .replace(/\\/g, '\\\\')
+      .replace(/"/g, '\\"')
+      .replace(/\n/g, '\\n')
+      .replace(/\r/g, '\\r')
+      .replace(/\t/g, '\\t');
+  },
+
+  // Remove null bytes and control characters
+  removeControlChars(input: string): string {
+    // eslint-disable-next-line no-control-regex
+    return input.replace(/[\x00-\x1F\x7F]/g, '');
+  },
+
+  // Normalize Unicode to prevent homograph attacks
+  normalizeUnicode(input: string): string {
+    return input.normalize('NFKC');
+  },
+
+  // Clean filename for safe storage
+  sanitizeFilename(filename: string): string {
+    return filename
+      .replace(/[^a-zA-Z0-9.-]/g, '_') // Replace non-alphanumeric chars
+      .replace(/\.{2,}/g, '.') // Replace multiple dots
+      .replace(/^\.+|\.+$/g, '') // Remove leading/trailing dots
+      .substring(0, 255); // Limit length
+  },
+
+  // Sanitize URL to prevent open redirect
+  sanitizeURL(url: string): string {
+    try {
+      const parsed = new URL(url);
+      
+      // Only allow http/https protocols
+      if (!['http:', 'https:'].includes(parsed.protocol)) {
+        throw new Error('Invalid protocol');
+      }
+
+      // Block localhost and private IPs in production
+      if (process.env.NODE_ENV === 'production') {
+        const hostname = parsed.hostname.toLowerCase();
+        if (
+          hostname === 'localhost' ||
+          hostname.startsWith('127.') ||
+          hostname.startsWith('192.168.') ||
+          hostname.startsWith('10.') ||
+          hostname.match(/^172\.(1[6-9]|2[0-9]|3[01])\./)
+        ) {
+          throw new Error('Private IP not allowed');
+        }
+      }
+
+      return parsed.href;
+    } catch {
+      throw new Error('Invalid URL');
+    }
+  },
+
+  // Complete input sanitization for API inputs
+  sanitizeInput(input: string, options: {
+    allowHTML?: boolean;
+    maxLength?: number;
+    removeControlChars?: boolean;
+    normalizeUnicode?: boolean;
+  } = {}): string {
+    const {
+      allowHTML = false,
+      maxLength = 10000,
+      removeControlChars = true,
+      normalizeUnicode = true,
+    } = options;
+
+    let sanitized = input;
+
+    // Normalize Unicode
+    if (normalizeUnicode) {
+      sanitized = this.normalizeUnicode(sanitized);
+    }
+
+    // Remove control characters
+    if (removeControlChars) {
+      sanitized = this.removeControlChars(sanitized);
+    }
+
+    // Handle HTML
+    if (!allowHTML) {
+      sanitized = this.stripHTML(sanitized);
+    } else {
+      sanitized = this.htmlEncode(sanitized);
+    }
+
+    // Trim and limit length
+    sanitized = sanitized.trim();
+    if (maxLength && sanitized.length > maxLength) {
+      sanitized = sanitized.substring(0, maxLength);
+    }
+
+    return sanitized;
+  },
+};
+
 // Security validation helpers
 export const securityValidation = {
   // Detect XSS patterns
@@ -256,6 +377,11 @@ export const securityValidation = {
       /<embed/i,
       /vbscript:/i,
       /data:text\/html/i,
+      /%3cscript/i,
+      /%6a%61%76%61%73%63%72%69%70%74/i, // URL encoded javascript
+      /&lt;script/i,
+      /&gt;/i,
+      /&#x3c;script/i,
     ];
 
     return xssPatterns.some(pattern => pattern.test(input));
@@ -267,6 +393,14 @@ export const securityValidation = {
       /(\b(union|select|insert|update|delete|drop|create|alter|exec|execute)\b.*)+/i,
       /(';|--;|\/\*|\*\/)/i,
       /(\b(and|or)\b.*=.*)/i,
+      /0x[0-9a-f]+/i, // Hex values
+      /char\(/i,
+      /concat\(/i,
+      /group_concat\(/i,
+      /information_schema/i,
+      /load_file\(/i,
+      /outfile\b/i,
+      /dumpfile\b/i,
     ];
 
     return sqlPatterns.some(pattern => pattern.test(input));
@@ -282,6 +416,10 @@ export const securityValidation = {
       /\\.\\./, // Windows style
       /\.\.\\/,
       /\.\.\\\\/,
+      /\.\.%2f/i,
+      /\.\.%5c/i,
+      /%2e%2e%2f/i,
+      /%2e%2e%5c/i,
     ];
 
     return pathPatterns.some(pattern => pattern.test(input));
@@ -293,9 +431,64 @@ export const securityValidation = {
       /__proto__/,
       /constructor\s*\.\s*prototype/,
       /prototype\s*\.\s*constructor/,
+      /%5f%5fproto%5f%5f/i, // URL encoded __proto__
+      /\["__proto__"\]/,
+      /\['__proto__'\]/,
     ];
 
     return pollutionPatterns.some(pattern => pattern.test(input));
+  },
+
+  // Detect command injection patterns
+  containsCommandInjection(input: string): boolean {
+    const commandPatterns = [
+      /[;&|`$(){}]/,
+      /\$\(/,
+      /`[^`]*`/,
+      /%24%28/i, // URL encoded $(
+      /%60/i, // URL encoded backtick
+      /\|\s*\w+/,
+      /;\s*\w+/,
+      /&&\s*\w+/,
+      /\|\|\s*\w+/,
+    ];
+
+    return commandPatterns.some(pattern => pattern.test(input));
+  },
+
+  // Detect LDAP injection patterns
+  containsLDAPInjection(input: string): boolean {
+    const ldapPatterns = [
+      /[*()\\]/,
+      // eslint-disable-next-line no-control-regex
+      /\x00/,
+      /%00/i,
+      /\(\|\(/,
+      /\)\(\|/,
+      /\*\)/,
+      /\(\*/,
+    ];
+
+    return ldapPatterns.some(pattern => pattern.test(input));
+  },
+
+  // Detect NoSQL injection patterns
+  containsNoSQLInjection(input: string): boolean {
+    const nosqlPatterns = [
+      /\$where/i,
+      /\$regex/i,
+      /\$ne/i,
+      /\$gt/i,
+      /\$lt/i,
+      /\$or/i,
+      /\$and/i,
+      /\$in/i,
+      /\$nin/i,
+      /\$exists/i,
+      /\$not/i,
+    ];
+
+    return nosqlPatterns.some(pattern => pattern.test(input));
   },
 
   // General malicious pattern detection
@@ -304,7 +497,62 @@ export const securityValidation = {
       this.containsXSS(input) ||
       this.containsSQLInjection(input) ||
       this.containsPathTraversal(input) ||
-      this.containsPrototypePollution(input)
+      this.containsPrototypePollution(input) ||
+      this.containsCommandInjection(input) ||
+      this.containsLDAPInjection(input) ||
+      this.containsNoSQLInjection(input)
     );
+  },
+
+  // Validate and sanitize input comprehensively
+  validateAndSanitize(input: string, options: {
+    allowHTML?: boolean;
+    maxLength?: number;
+    checkMalicious?: boolean;
+    throwOnMalicious?: boolean;
+  } = {}): { sanitized: string; isValid: boolean; warnings: string[] } {
+    const {
+      allowHTML = false,
+      maxLength = 10000,
+      checkMalicious = true,
+      throwOnMalicious = false,
+    } = options;
+
+    const warnings: string[] = [];
+    let isValid = true;
+
+    // Check for malicious patterns
+    if (checkMalicious) {
+      const checks = [
+        { check: this.containsXSS(input), message: 'XSS patterns detected' },
+        { check: this.containsSQLInjection(input), message: 'SQL injection patterns detected' },
+        { check: this.containsPathTraversal(input), message: 'Path traversal patterns detected' },
+        { check: this.containsPrototypePollution(input), message: 'Prototype pollution patterns detected' },
+        { check: this.containsCommandInjection(input), message: 'Command injection patterns detected' },
+        { check: this.containsLDAPInjection(input), message: 'LDAP injection patterns detected' },
+        { check: this.containsNoSQLInjection(input), message: 'NoSQL injection patterns detected' },
+      ];
+
+      for (const { check, message } of checks) {
+        if (check) {
+          warnings.push(message);
+          isValid = false;
+          
+          if (throwOnMalicious) {
+            throw new Error(`Security violation: ${message}`);
+          }
+        }
+      }
+    }
+
+    // Sanitize the input
+    const sanitized = sanitization.sanitizeInput(input, {
+      allowHTML,
+      maxLength,
+      removeControlChars: true,
+      normalizeUnicode: true,
+    });
+
+    return { sanitized, isValid, warnings };
   },
 };

@@ -223,7 +223,7 @@ describe('Security Headers & CSRF Protection Tests', () => {
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
-        headers: Record<string, unknown>$1
+        headers: {} as Record<string, string>,
       });
 
       const protectedHandler = withCsrfProtection(mockHandler);
@@ -243,7 +243,7 @@ describe('Security Headers & CSRF Protection Tests', () => {
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'PUT',
-        headers: Record<string, unknown>$1
+        headers: {} as Record<string, string>,
       });
 
       const protectedHandler = withCsrfProtection(mockHandler);
@@ -258,7 +258,7 @@ describe('Security Headers & CSRF Protection Tests', () => {
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'DELETE',
-        headers: Record<string, unknown>$1
+        headers: {} as Record<string, string>,
       });
 
       const protectedHandler = withCsrfProtection(mockHandler);
