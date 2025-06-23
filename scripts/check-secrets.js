@@ -77,6 +77,8 @@ const SAFE_PATTERNS = [
   '// Bearer tokens', // Comment
   'Password:', // UI label
   'password:', // Console output context
+  'TestPass123!', // Test password in validation tests
+  'Password123!', // Test password in validation tests
   'TEST_JWT_TOKEN_PLACEHOLDER', // Test JWT tokens
   'DEFAULT_JWT_TOKEN_PLACEHOLDER', // Test JWT tokens
   '.test-signature', // Test JWT signatures
