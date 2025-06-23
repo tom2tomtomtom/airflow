@@ -356,7 +356,7 @@ export class CampaignRenderer {
     const campaign = await this.getRenderedCampaign(renderId);
     if (!campaign) return null;
 
-    let estimatedTimeRemaining?: number;
+    let estimatedTimeRemaining: number | undefined;
     if (campaign.status === 'rendering' && campaign.progress > 0) {
       const elapsed = Date.now() - campaign.renderedAt.getTime();
       const progressRate = campaign.progress / elapsed;

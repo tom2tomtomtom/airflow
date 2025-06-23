@@ -380,7 +380,7 @@ export const requireEnvVar = (key: string, description?: string): string => {
   return value;
 };
 
-export const getEnvVar = (key: string, defaultValue?: string)?: string => {
+export const getEnvVar = (key: string, defaultValue?: string): string | undefined => {
   return process.env[key] || defaultValue;
 };
 
@@ -390,7 +390,7 @@ export const getEnvBool = (key: string, defaultValue = false): boolean => {
   return ['true', '1', 'yes'].includes(value.toLowerCase());
 };
 
-export const getEnvNumber = (key: string, defaultValue?: number)?: number => {
+export const getEnvNumber = (key: string, defaultValue?: number): number | undefined => {
   const value = process.env[key];
   if (!value) return defaultValue;
   const parsed = Number(value);

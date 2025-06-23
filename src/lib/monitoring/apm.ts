@@ -161,7 +161,7 @@ export class APMManager {
     tags?: Record<string, string>;
     extra?: Record<string, any>;
     level?: 'fatal' | 'error' | 'warning' | 'info';
-  })?: string {
+  }): string | undefined {
     if (!this.config.sentry.enabled) return;
     
     return Sentry.withScope((scope) => {
@@ -293,7 +293,7 @@ export class APMManager {
   captureMessage(message: string, level: 'fatal' | 'error' | 'warning' | 'info' = 'info', context?: {
     tags?: Record<string, string>;
     extra?: Record<string, any>;
-  })?: string {
+  }): string | undefined {
     if (!this.config.sentry.enabled) return;
     
     return Sentry.withScope((scope) => {
@@ -406,7 +406,7 @@ export const initializeAPM = async (): Promise<APMManager> => {
 };
 
 // Convenience functions
-export const captureError = (error: Error, context?: Parameters<APMManager['captureError']>[1])?: string => {
+export const captureError = (error: Error, context?: Parameters<APMManager['captureError']>[1]): string | undefined => {
   return getAPM().captureError(error, context);
 };
 

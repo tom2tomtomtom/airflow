@@ -387,8 +387,8 @@ export class ExportEngine {
     const job = await this.getExportJob(jobId);
     if (!job) return null;
 
-    let estimatedTimeRemaining?: number;
-    let currentStep?: string;
+    let estimatedTimeRemaining: number | undefined;
+    let currentStep: string | undefined;
 
     if (job.status === 'processing' && job.startedAt && job.progress > 0) {
       const elapsed = Date.now() - job.startedAt.getTime();

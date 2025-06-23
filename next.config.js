@@ -42,6 +42,7 @@ const nextConfig = {
     ignoreDuringBuilds: true, // Temporarily allow warnings during builds
     dirs: ['src'], // Only lint src directory to avoid checking test files
   },
+
   
   
   // Image optimization
@@ -185,6 +186,12 @@ const nextConfig = {
   
   // Webpack configuration
   webpack: (config, { isServer, webpack, dev }) => {
+    // Exclude test files from build to prevent minification issues
+    config.module.rules.push({
+      test: /\.(test|spec)\.(js|jsx|ts|tsx)$/,
+      loader: 'ignore-loader',
+    });
+
     // Fix for React Email and Node.js modules
     if (!isServer) {
       config.resolve.fallback = {
@@ -204,11 +211,12 @@ const nextConfig = {
       };
     }
 
-    // Production bundle optimizations
+    // Production bundle optimizations - Disable problematic optimizations
     if (!dev && !isServer) {
-      // Enable minification for production builds
-      config.optimization.minimize = true;
-
+      // Disable minification in webpack config to prevent plugin conflicts
+      config.optimization.minimize = false;
+      
+      // Basic chunk splitting without complex optimizations
       config.optimization.splitChunks = {
         chunks: 'all',
         cacheGroups: {
@@ -216,26 +224,6 @@ const nextConfig = {
             test: /[\\/]node_modules[\\/]/,
             name: 'vendors',
             chunks: 'all',
-            priority: 10,
-          },
-          mui: {
-            test: /[\\/]node_modules[\\/]@mui[\\/]/,
-            name: 'mui',
-            chunks: 'all',
-            priority: 20,
-          },
-          react: {
-            test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
-            name: 'react',
-            chunks: 'all',
-            priority: 30,
-          },
-          common: {
-            name: 'common',
-            minChunks: 2,
-            chunks: 'all',
-            priority: 5,
-            reuseExistingChunk: true,
           },
         },
       };
@@ -268,9 +256,9 @@ const nextConfig = {
   skipMiddlewareUrlNormalize: true,
   skipTrailingSlashRedirect: true,
   
-  // Experimental features
+  // Experimental features - Conservative approach for stability
   experimental: {
-    optimizeCss: true, // Enable CSS optimization for production
+    // optimizeCss: true, // Disabled - causing webpack conflicts with Next.js 15.3.2
     optimizePackageImports: ['@mui/material', '@mui/icons-material', 'lodash', 'date-fns'],
     // instrumentationHook: true, // Removed - instrumentation.js is available by default
   },

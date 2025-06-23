@@ -156,7 +156,7 @@ export function withRateLimit(
       let nextCalled = false;
       rateLimit(req, res, () => {
         nextCalled = true;
-        handler(req, res).then(resolve).catch (reject: any);
+        handler(req, res).then(resolve).catch(reject);
       });
       
       // If next wasn't called, the rate limit was hit

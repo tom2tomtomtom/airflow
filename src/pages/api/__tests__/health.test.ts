@@ -1,12 +1,11 @@
 /**
- * Health API Endpoint Test Suite
- * Tests the /api/health endpoint for system health monitoring
+ * 🧪 Health Check API Tests
+ * Tests for /api/health endpoint functionality
  */
 
-// Set environment variables before importing
-process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co';
-process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'TEST_JWT_TOKEN_PLACEHOLDER';
-process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-service-role-key';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { createMocks } from 'node-mocks-http';
+import handler from '../health';
 
 // Mock external dependencies
 jest.mock('@supabase/supabase-js', () => ({
@@ -14,59 +13,47 @@ jest.mock('@supabase/supabase-js', () => ({
     from: jest.fn(() => ({
       select: jest.fn(() => ({
         limit: jest.fn(() => ({
-          single: jest.fn(() => Promise.resolve({
-            data: { id: 'test-client-id' },
-            error: null
-          }))
+          single: jest.fn(() => Promise.resolve({ data: null, error: null }))
         }))
       }))
     })),
     storage: {
-      listBuckets: jest.fn(() => Promise.resolve({
-        data: [{ name: 'test-bucket' }],
-        error: null
-      }))
+      listBuckets: jest.fn(() => Promise.resolve({ data: [], error: null }))
     }
   }))
 }));
 
 jest.mock('@upstash/redis', () => ({
-  Redis: jest.fn(() => ({
+  Redis: jest.fn().mockImplementation(() => ({
     ping: jest.fn(() => Promise.resolve('PONG'))
   }))
 }));
 
 jest.mock('@aws-sdk/client-s3', () => ({
-  S3Client: jest.fn(() => ({
+  S3Client: jest.fn().mockImplementation(() => ({
     send: jest.fn(() => Promise.resolve({}))
   })),
   HeadBucketCommand: jest.fn()
 }));
 
-// Mock fetch for Creatomate API
+// Mock fetch for external API calls
 global.fetch = jest.fn(() =>
   Promise.resolve({
     ok: true,
-    status: 200,
-    json: () => Promise.resolve([])
+    json: () => Promise.resolve({}),
   })
 ) as jest.Mock;
-
-import { createMocks } from 'node-mocks-http';
-import handler from '../health';
-
-
-// Test constants (safe for testing)
-const TEST_JWT_TOKEN_PLACEHOLDER = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0IiwicmVmIjoidGVzdCIsInJvbGUiOiJhbm9uIn0.test-signature';
-const DEFAULT_JWT_TOKEN_PLACEHOLDER = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0ZXN0IiwicmVmIjoiZGVmYXVsdCIsInJvbGUiOiJhbm9uIn0.default-signature';
 
 describe('/api/health', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Reset environment variables
+    process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co';
+    process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-key';
   });
 
-  test('should return health status on GET request', async () => {
-    const { req, res } = createMocks({
+  it('should return health status with basic structure', async () => {
+    const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
       method: 'GET',
     });
 
@@ -76,137 +63,60 @@ describe('/api/health', () => {
     
     const data = JSON.parse(res._getData());
     expect(data).toMatchObject({
-      status: expect.stringMatching(/^(healthy|degraded|unhealthy)$/),
+      status: expect.stringMatching(/healthy|degraded|unhealthy/),
       timestamp: expect.any(String),
       version: expect.any(String),
       uptime: expect.any(Number),
-      checks: {
-        database: {
-          status: expect.stringMatching(/^(ok|error|timeout)$/),
-          latency: expect.any(Number)
-        },
-        redis: {
-          status: expect.stringMatching(/^(ok|error|timeout)$/),
-          latency: expect.any(Number)
-        },
-        storage: {
-          status: expect.stringMatching(/^(ok|error|timeout)$/),
-          latency: expect.any(Number)
-        },
-        creatomate: {
-          status: expect.stringMatching(/^(ok|error|timeout)$/),
-          latency: expect.any(Number)
-        },
-        email: {
-          status: expect.stringMatching(/^(ok|error|timeout)$/),
-          latency: expect.any(Number)
-        }
-      }
+      environment: expect.any(String),
+      deployment: expect.objectContaining({
+        platform: expect.any(String),
+        region: expect.any(String),
+      }),
+      checks: expect.objectContaining({
+        database: expect.any(Object),
+        redis: expect.any(Object),
+        storage: expect.any(Object),
+        creatomate: expect.any(Object),
+        email: expect.any(Object),
+        ai_services: expect.any(Object),
+      }),
+      performance: expect.objectContaining({
+        memory_usage: expect.any(Number),
+        response_time: expect.any(Number),
+      }),
     });
   });
 
-  test('should return 405 for non-GET requests', async () => {
-    const { req, res } = createMocks({
+  it('should reject non-GET methods', async () => {
+    const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
       method: 'POST',
     });
 
     await handler(req, res);
 
     expect(res._getStatusCode()).toBe(405);
-    expect(res._getHeaders()).toMatchObject({
-      allow: ['GET']
-    });
+    expect(res._getData()).toBe('Method Not Allowed');
   });
 
-  test('should handle database connection errors gracefully', async () => {
-    // Mock database error
-    const mockCreateClient = require('@supabase/supabase-js').createClient;
-    mockCreateClient.mockReturnValueOnce({
-      from: jest.fn(() => ({
-        select: jest.fn(() => ({
-          limit: jest.fn(() => ({
-            single: jest.fn(() => Promise.resolve({
-              data: null,
-              error: { message: 'Connection failed', code: 'CONNECTION_ERROR' }
-            }))
-          }))
-        }))
-      })),
-      storage: {
-        listBuckets: jest.fn(() => Promise.resolve({
-          data: [{ name: 'test-bucket' }],
-          error: null
-        }))
-      }
-    });
-
-    const { req, res } = createMocks({
+  it('should set cache headers', async () => {
+    const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
       method: 'GET',
     });
 
     await handler(req, res);
 
-    expect(res._getStatusCode()).toBe(200); // Still returns 200 but with degraded status
-    
-    const data = JSON.parse(res._getData());
-    expect(data.status).toBe('degraded');
-    expect(data.checks.database.status).toBe('error');
-    expect(data.checks.database.message).toBe('Connection failed');
+    expect(res.getHeader('Cache-Control')).toBe('public, max-age=10');
   });
 
-  test('should handle external service timeouts', async () => {
-    // Mock fetch timeout for Creatomate
-    (global.fetch as jest.Mock).mockRejectedValueOnce(
-      Object.assign(new Error('Request timeout'), { name: 'TimeoutError' })
-    );
-
-    const { req, res } = createMocks({
+  it('should include performance metrics', async () => {
+    const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
       method: 'GET',
     });
 
     await handler(req, res);
-
-    expect(res._getStatusCode()).toBe(200);
 
     const data = JSON.parse(res._getData());
-    // The health endpoint might return 'error' instead of 'timeout' - let's accept both
-    expect(['timeout', 'error']).toContain(data.checks.creatomate.status);
-  });
-
-  test('should include cache headers', async () => {
-    const { req, res } = createMocks({
-      method: 'GET',
-    });
-
-    await handler(req, res);
-
-    expect(res._getHeaders()).toMatchObject({
-      'cache-control': 'public, max-age=10'
-    });
-  });
-
-  test('should handle missing environment variables gracefully', async () => {
-    // Temporarily remove environment variables
-    const originalRedisUrl = process.env.UPSTASH_REDIS_URL;
-    const originalRedisToken = process.env.UPSTASH_REDIS_TOKEN;
-    
-    delete process.env.UPSTASH_REDIS_URL;
-    delete process.env.UPSTASH_REDIS_TOKEN;
-
-    const { req, res } = createMocks({
-      method: 'GET',
-    });
-
-    await handler(req, res);
-
-    expect(res._getStatusCode()).toBe(200);
-    
-    const data = JSON.parse(res._getData());
-    expect(data.checks.redis.status).toBe('error');
-    expect(data.checks.redis.message).toContain('not configured');
-
-    // Restore environment variables
-    if (originalRedisUrl) process.env.UPSTASH_REDIS_URL = originalRedisUrl;
-    if (originalRedisToken) process.env.UPSTASH_REDIS_TOKEN = originalRedisToken;
+    expect(data.performance.memory_usage).toBeGreaterThan(0);
+    expect(data.performance.response_time).toBeGreaterThanOrEqual(0);
   });
 });

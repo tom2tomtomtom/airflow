@@ -56,7 +56,7 @@ export const getSupabaseClient = () => {
 export const supabase = getSupabaseClient();
 
 // Cookie helpers for browser environment
-function getCookie(name: string)?: string {
+function getCookie(name: string): string | undefined {
   if (typeof document === 'undefined') return undefined;
   
   const value = `; ${document.cookie}`;
