@@ -148,6 +148,11 @@ export class APIRequestBuilder {
     return this;
   }
 
+  withBody(body: any) {
+    this.body = body;
+    return this;
+  }
+
   build() {
     const { req, res } = createMocks({
       method: this.method,
@@ -349,6 +354,13 @@ export class APITestRunner {
   static async testEndpoint(handler: any, { req, res }: { req: any; res: any }) {
     await handler(req, res);
     return { req, res };
+  }
+
+  static expectSuccess(res: any) {
+    expect(res._getStatusCode()).toBe(200);
+    const data = JSON.parse(res._getData());
+    expect(data.success).toBe(true);
+    return data;
   }
 }
 
