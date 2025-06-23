@@ -1,0 +1,23 @@
+{
+  "certified": false,
+  "timestamp": "2025-06-23T11:05:28.755Z",
+  "score": 85,
+  "criteria": {
+    "pageLoadTime": "< 2000ms",
+    "firstContentfulPaint": "< 1000ms",
+    "largestContentfulPaint": "< 2500ms",
+    "timeToInteractive": "< 3000ms",
+    "cumulativeLayoutShift": "< 0.1",
+    "performanceScore": ">= 90"
+  },
+  "optimizations": {
+    "treeshakingEnabled": true,
+    "codeSplittingImplemented": true,
+    "imageOptimization": true,
+    "staticAssetCompression": true,
+    "webpackOptimization": true,
+    "cssOptimization": true,
+    "jsMinification": true,
+    "fontOptimization": true
+  }
+}

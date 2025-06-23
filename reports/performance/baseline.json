@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-06-23T11:05:28.752Z",
+  "metrics": {
+    "pageLoadTime": 0,
+    "firstContentfulPaint": 1200,
+    "largestContentfulPaint": 2800,
+    "timeToInteractive": 3200,
+    "cumulativeLayoutShift": 0.08,
+    "performanceScore": 85
+  },
+  "bundleSize": 478682842,
+  "optimizations": {
+    "treeshakingEnabled": true,
+    "codeSplittingImplemented": false,
+    "imageOptimization": false,
+    "staticAssetCompression": false,
+    "webpackOptimization": true,
+    "cssOptimization": false,
+    "jsMinification": false,
+    "fontOptimization": false
+  }
+}
