@@ -14,14 +14,9 @@ const AnalyticsQuerySchema = z.object({
   start_date: z.string().optional(),
   end_date: z.string().optional(),
   client_id: z.string().uuid().optional(),
-  metrics: z.array(z.enum([
-    'campaigns',
-    'videos',
-    'views',
-    'engagement',
-    'conversion',
-    'revenue'
-  ])).default(['campaigns', 'videos', 'views']),
+  metrics: z
+    .array(z.enum(['campaigns', 'videos', 'views', 'engagement', 'conversion', 'revenue']))
+    .default(['campaigns', 'videos', 'views']),
   granularity: z.enum(['hour', 'day', 'week', 'month']).default('day'),
 });
 
@@ -75,13 +70,17 @@ class AnalyticsAggregator {
    */
   async getAnalytics(params: z.infer<typeof AnalyticsQuerySchema>): Promise<AnalyticsResponse> {
     const startTime = Date.now();
-    
+
     // Generate date range
-    const { start_date, end_date } = this.getDateRange(params.period, params.start_date, params.end_date);
-    
+    const { start_date, end_date } = this.getDateRange(
+      params.period,
+      params.start_date,
+      params.end_date
+    );
+
     // Build cache key
     const cacheKey = this.buildCacheKey(params, start_date, end_date);
-    
+
     // Try cache first (analytics data changes infrequently)
     const cached = await this.getCachedAnalytics(cacheKey);
     if (cached) {
@@ -135,9 +134,7 @@ class AnalyticsAggregator {
 
     // Execute queries in parallel with batching
     const results = await Promise.all(
-      queries.map(({ metric, query }) =>
-        this.batchProcessor.add({ metric, query })
-      )
+      queries.map(({ metric, query }) => this.batchProcessor.add({ metric, query }))
     );
 
     // Process results
@@ -160,7 +157,7 @@ class AnalyticsAggregator {
     endDate: string
   ): any {
     const baseQuery = this.supabase.from(this.getTableForMetric(metric));
-    
+
     switch (metric) {
       case 'campaigns':
         return baseQuery
@@ -188,17 +185,16 @@ class AnalyticsAggregator {
           .lte('date', endDate);
 
       default:
-        return baseQuery
-          .select('*')
-          .gte('created_at', startDate)
-          .lte('created_at', endDate);
+        return baseQuery.select('*').gte('created_at', startDate).lte('created_at', endDate);
     }
   }
 
   /**
    * Process batch queries efficiently
    */
-  private async processBatchQueries(queries: Array<{ metric: string; query: any }>): Promise<any[]> {
+  private async processBatchQueries(
+    queries: Array<{ metric: string; query: any }>
+  ): Promise<any[]> {
     // Execute all queries in parallel
     const results = await Promise.all(
       queries.map(async ({ query }) => {
@@ -219,7 +215,7 @@ class AnalyticsAggregator {
 
     // Group data by time period
     const grouped = this.groupByTimePeriod(rawData, granularity);
-    
+
     // Convert to analytics metrics
     return Object.entries(grouped).map(([date, values]: [string, any[]]) => {
       const value = this.aggregateValues(values);
@@ -243,7 +239,7 @@ class AnalyticsAggregator {
         new Date(item.created_at || item.date),
         granularity
       );
-      
+
       if (!grouped[date]) {
         grouped[date] = [];
       }
@@ -258,7 +254,7 @@ class AnalyticsAggregator {
    */
   private aggregateValues(values: any[]): number {
     if (values.length === 0) return 0;
-    
+
     // For most metrics, we want the count
     return values.length;
   }
@@ -284,27 +280,50 @@ class AnalyticsAggregator {
   }
 
   /**
-   * Build summary statistics
+   * Build summary statistics with optimized single query
    */
   private async buildSummary(
     params: z.infer<typeof AnalyticsQuerySchema>,
     startDate: string,
     endDate: string
-  ): Promise<Omit<AnalyticsResponse['summary'], 'period_start' | 'period_end' | 'cache_hit' | 'query_time'>> {
-    // Execute summary queries in parallel
+  ): Promise<
+    Omit<AnalyticsResponse['summary'], 'period_start' | 'period_end' | 'cache_hit' | 'query_time'>
+  > {
+    // Try optimized materialized view first
+    try {
+      const { data: summaryData, error } = await this.supabase.rpc('get_analytics_summary', {
+        start_date: startDate,
+        end_date: endDate,
+        client_id_param: params.client_id || null,
+      });
+
+      if (!error && summaryData && summaryData.length > 0) {
+        const summary = summaryData[0];
+        return {
+          total_campaigns: summary.campaign_count || 0,
+          total_videos: summary.video_count || 0,
+          total_views: summary.total_views || 0,
+          avg_engagement: summary.avg_engagement || 0,
+        };
+      }
+    } catch (error) {
+      console.warn('Analytics summary RPC failed, falling back to individual queries');
+    }
+
+    // Fallback to original individual queries
     const [campaignCount, videoCount, totalViews] = await Promise.all([
       this.supabase
         .from('campaigns')
         .select('id', { count: 'exact' })
         .gte('created_at', startDate)
         .lte('created_at', endDate),
-      
+
       this.supabase
         .from('videos')
         .select('id', { count: 'exact' })
         .gte('created_at', startDate)
         .lte('created_at', endDate),
-      
+
       this.supabase
         .from('video_analytics')
         .select('views')
@@ -327,15 +346,23 @@ class AnalyticsAggregator {
    */
   private getTableForMetric(metric: string): string {
     switch (metric) {
-      case 'campaigns': return 'campaigns';
-      case 'videos': return 'videos';
+      case 'campaigns':
+        return 'campaigns';
+      case 'videos':
+        return 'videos';
       case 'views':
-      case 'engagement': return 'video_analytics';
-      default: return 'campaigns';
+      case 'engagement':
+        return 'video_analytics';
+      default:
+        return 'campaigns';
     }
   }
 
-  private getDateRange(period: string, startDate?: string, endDate?: string): { start_date: string; end_date: string } {
+  private getDateRange(
+    period: string,
+    startDate?: string,
+    endDate?: string
+  ): { start_date: string; end_date: string } {
     const now = new Date();
     const end = endDate ? new Date(endDate) : now;
     let start: Date;
@@ -362,7 +389,9 @@ class AnalyticsAggregator {
         start.setFullYear(end.getFullYear() - 1);
         break;
       default:
-        start = startDate ? new Date(startDate) : new Date(end.getTime() - 30 * 24 * 60 * 60 * 1000);
+        start = startDate
+          ? new Date(startDate)
+          : new Date(end.getTime() - 30 * 24 * 60 * 60 * 1000);
     }
 
     return {
@@ -391,16 +420,18 @@ class AnalyticsAggregator {
     }
   }
 
-  private async setCachedAnalytics(key: string, data: AnalyticsResponse, ttl: number): Promise<void> {
+  private async setCachedAnalytics(
+    key: string,
+    data: AnalyticsResponse,
+    ttl: number
+  ): Promise<void> {
     try {
       const expiresAt = new Date(Date.now() + ttl);
-      await this.supabase
-        .from('analytics_cache')
-        .upsert({
-          cache_key: key,
-          data,
-          expires_at: expiresAt.toISOString(),
-        });
+      await this.supabase.from('analytics_cache').upsert({
+        cache_key: key,
+        data,
+        expires_at: expiresAt.toISOString(),
+      });
     } catch (error) {
       console.warn('Failed to cache analytics:', error);
     }

@@ -209,12 +209,20 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { withAuth } from '@/middleware/withAuth';
 import { withAPIRateLimit } from '@/lib/rate-limiter';
-import { successResponse, errorResponse, handleApiError, methodNotAllowed, validateRequiredFields, createPaginationMeta, ApiErrorCode } from '@/lib/api-response';
+import {
+  successResponse,
+  errorResponse,
+  handleApiError,
+  methodNotAllowed,
+  validateRequiredFields,
+  createPaginationMeta,
+  ApiErrorCode,
+} from '@/lib/api-response';
 import { getAdminSupabaseClient } from '@/lib/supabase';
 
 // Get admin Supabase client for server-side operations
 const supabase = getAdminSupabaseClient();
-// GET handler - List clients with filtering and pagination
+// GET handler - List clients with filtering and pagination (optimized)
 async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   try {
     const {
@@ -227,44 +235,77 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       include_stats = false,
     } = req.query;
 
-    // Build query
-    let query = supabase
-      .from('clients')
-      .select(`
-        *
-        ${include_stats === 'true' ? `,
-          campaigns(count),
-          assets(count),
-          matrices(count)
-        ` : ''}
-      `);
-
-    // Apply search filter
-    if (search && typeof search === 'string') {
-      query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%,industry.ilike.%${search}%`);
-    }
-
-    // Apply industry filter
-    if (industry && typeof industry === 'string') {
-      query = query.eq('industry', industry);
-    }
-
-    // Apply sorting
-    const validSortFields = ['name', 'industry', 'created_at', 'updated_at'];
-    const sortField = validSortFields.includes(sort_by as string) ? sort_by as string : 'name';
-    const ascending = sort_order === 'asc';
-    query = query.order(sortField, { ascending });
-
-    // Apply pagination
     const limitNum = Math.min(parseInt(limit as string) || 50, 100);
     const offsetNum = parseInt(offset as string) || 0;
-    query = query.range(offsetNum, offsetNum + limitNum - 1);
+    const validSortFields = ['name', 'industry', 'created_at', 'updated_at'];
+    const sortField = validSortFields.includes(sort_by as string) ? (sort_by as string) : 'name';
+    const ascending = sort_order === 'asc';
 
-    // Execute query
-    const { data: clients, error, count } = await query;
+    let clients, count;
 
-    if (error) {
-      throw new Error(`Failed to fetch clients: ${error.message}`);
+    if (include_stats === 'true') {
+      // Use optimized query with client_statistics materialized view for stats
+      let query = supabase.from('client_list_view').select('*', { count: 'exact' });
+
+      // Apply filters using full-text search for better performance
+      if (search && typeof search === 'string') {
+        // Use full-text search if available, fallback to ILIKE
+        const useFullTextSearch = search.length > 2; // Only use FTS for longer queries
+
+        if (useFullTextSearch) {
+          query = query.textSearch('name_description_fts', search, {
+            type: 'websearch',
+            config: 'english',
+          });
+        } else {
+          query = query.or(
+            `name.ilike.%${search}%,description.ilike.%${search}%,industry.ilike.%${search}%`
+          );
+        }
+      }
+
+      if (industry && typeof industry === 'string') {
+        query = query.eq('industry', industry);
+      }
+
+      // Apply sorting and pagination
+      query = query.order(sortField, { ascending }).range(offsetNum, offsetNum + limitNum - 1);
+
+      const { data, error, count: totalCount } = await query;
+
+      if (error) {
+        throw new Error(`Failed to fetch clients with stats: ${error.message}`);
+      }
+
+      clients = data;
+      count = totalCount;
+    } else {
+      // Standard query without stats for better performance
+      let query = supabase.from('clients').select('*', { count: 'exact' });
+
+      // Apply search filter
+      if (search && typeof search === 'string') {
+        query = query.or(
+          `name.ilike.%${search}%,description.ilike.%${search}%,industry.ilike.%${search}%`
+        );
+      }
+
+      // Apply industry filter
+      if (industry && typeof industry === 'string') {
+        query = query.eq('industry', industry);
+      }
+
+      // Apply sorting and pagination
+      query = query.order(sortField, { ascending }).range(offsetNum, offsetNum + limitNum - 1);
+
+      const { data, error, count: totalCount } = await query;
+
+      if (error) {
+        throw new Error(`Failed to fetch clients: ${error.message}`);
+      }
+
+      clients = data;
+      count = totalCount;
     }
 
     // Create pagination metadata
@@ -276,7 +317,9 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
 
     return successResponse(res, clients, 200, {
       pagination: paginationMeta,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      optimized: true,
+      query_type: include_stats === 'true' ? 'with_stats' : 'basic',
     });
   } catch (error: any) {
     return handleApiError(res, error, 'handleGet');
@@ -295,7 +338,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
       secondaryColor,
       socialMedia,
       brand_guidelines,
-      contacts
+      contacts,
     } = req.body;
 
     // Validate required fields
@@ -310,7 +353,8 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
     }
 
     // Generate slug from name
-    const slug = name.toLowerCase()
+    const slug = name
+      .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
 
@@ -343,7 +387,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
       brand_guidelines: brand_guidelines || {
         voiceTone: '',
         targetAudience: '',
-        keyMessages: []
+        keyMessages: [],
       },
       is_active: true,
     };
@@ -369,9 +413,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
         phone: contact.phone || null,
       }));
 
-      const { error: contactsError } = await supabase
-        .from('client_contacts')
-        .insert(contactsData);
+      const { error: contactsError } = await supabase.from('client_contacts').insert(contactsData);
 
       if (contactsError) {
         // Log error but don't fail the request

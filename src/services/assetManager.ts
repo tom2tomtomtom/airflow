@@ -37,16 +37,16 @@ export interface AssetMetadata {
   quality?: number;
   hasTransparency?: boolean;
   isAnimated?: boolean;
-  
+
   // Video specific
   duration?: number;
   fps?: number;
   codec?: string;
-  
+
   // Document specific
   pageCount?: number;
   wordCount?: number;
-  
+
   // General
   description?: string;
   altText?: string;
@@ -118,9 +118,13 @@ export class AssetManager {
   private readonly MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
   private readonly SUPPORTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
   private readonly SUPPORTED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/mov'];
-  private readonly SUPPORTED_DOCUMENT_TYPES = ['application/pdf', 'application/msword', 'text/plain'];
-  
-  private async getSupabase() : Promise<void> {
+  private readonly SUPPORTED_DOCUMENT_TYPES = [
+    'application/pdf',
+    'application/msword',
+    'text/plain',
+  ];
+
+  private async getSupabase(): Promise<void> {
     return await this.supabasePromise;
   }
 
@@ -139,7 +143,7 @@ export class AssetManager {
       autoOptimize = true,
       generateThumbnail = true,
       analyzeWithAI = true,
-      collectionId
+      collectionId,
     } = options;
 
     try {
@@ -148,7 +152,7 @@ export class AssetManager {
         fileSize: file.size,
         briefId,
         category,
-        usage
+        usage,
       });
 
       // Validate file
@@ -160,7 +164,7 @@ export class AssetManager {
 
       // Create initial asset record
       const assetId = this.generateAssetId();
-      
+
       const asset: Asset = {
         id: assetId,
         briefId,
@@ -173,7 +177,7 @@ export class AssetManager {
         metadata: {
           description,
           altText,
-          keywords: tags
+          keywords: tags,
         },
         tags,
         category,
@@ -181,7 +185,7 @@ export class AssetManager {
         status: 'uploading',
         uploadedAt: new Date(),
         updatedAt: new Date(),
-        uploadedBy
+        uploadedBy,
       };
 
       // Update status to processing
@@ -195,7 +199,7 @@ export class AssetManager {
         const optimized = await this.processImage(file, generateThumbnail);
         processedFile = new File([optimized.main], fileName, { type: file.type });
         thumbnailBuffer = optimized.thumbnail;
-        
+
         // Add image metadata
         asset.dimensions = optimized.dimensions;
         asset.colorPalette = optimized.colorPalette;
@@ -221,7 +225,7 @@ export class AssetManager {
         this.STORAGE_BUCKET,
         `${briefId}/${fileName}`
       );
-      
+
       if (!mainUploadResult.success) {
         throw new Error(`Upload failed: ${mainUploadResult.error}`);
       }
@@ -235,7 +239,7 @@ export class AssetManager {
           this.THUMBNAIL_BUCKET,
           `${briefId}/thumb_${fileName}`
         );
-        
+
         if (thumbnailUploadResult.success) {
           asset.thumbnailUrl = thumbnailUploadResult.url!;
         }
@@ -264,17 +268,16 @@ export class AssetManager {
         assetId,
         fileName,
         fileSize: asset.fileSize,
-        url: asset.url
+        url: asset.url,
       });
 
       return asset;
-
     } catch (error: any) {
       const classified = classifyError(error as Error, {
         route: 'asset-manager',
-        metadata: { fileName: file.name, briefId, fileSize: file.size }
+        metadata: { fileName: file.name, briefId, fileSize: file.size },
       });
-      
+
       logger.error('Asset upload failed', classified.originalError);
       throw error;
     }
@@ -295,14 +298,12 @@ export class AssetManager {
       sortBy = 'uploadedAt',
       sortOrder = 'desc',
       limit = 20,
-      offset = 0
+      offset = 0,
     } = options;
 
     try {
       const supabase = await this.getSupabase();
-      let query = supabase
-        .from('assets')
-        .select('*', { count: 'exact' });
+      let query = supabase.from('assets').select('*', { count: 'exact' });
 
       // Apply filters
       if (briefId) query = query.eq('brief_id', briefId);
@@ -313,7 +314,9 @@ export class AssetManager {
         query = query.overlaps('tags', tags);
       }
       if (searchQuery) {
-        query = query.or(`file_name.ilike.%${searchQuery}%,original_name.ilike.%${searchQuery}%,tags.cs.{${searchQuery}}`);
+        query = query.or(
+          `file_name.ilike.%${searchQuery}%,original_name.ilike.%${searchQuery}%,tags.cs.{${searchQuery}}`
+        );
       }
 
       // Apply sorting
@@ -335,9 +338,8 @@ export class AssetManager {
       return {
         assets,
         total,
-        hasMore
+        hasMore,
       };
-
     } catch (error: any) {
       logger.error('Asset search failed', error);
       throw error;
@@ -347,11 +349,7 @@ export class AssetManager {
   async getAssetById(assetId: string): Promise<Asset | null> {
     try {
       const supabase = await this.getSupabase();
-      const { data, error } = await supabase
-        .from('assets')
-        .select('*')
-        .eq('id', assetId)
-        .single();
+      const { data, error } = await supabase.from('assets').select('*').eq('id', assetId).single();
 
       if (error) {
         if (error.code === 'PGRST116') return null; // Not found
@@ -359,7 +357,6 @@ export class AssetManager {
       }
 
       return this.mapRowToAsset(data);
-
     } catch (error: any) {
       logger.error('Failed to get asset by ID', error);
       throw error;
@@ -375,24 +372,23 @@ export class AssetManager {
 
       // Delete from storage
       await this.deleteFileFromStorage(this.STORAGE_BUCKET, this.getStoragePathFromUrl(asset.url));
-      
+
       if (asset.thumbnailUrl) {
-        await this.deleteFileFromStorage(this.THUMBNAIL_BUCKET, this.getStoragePathFromUrl(asset.thumbnailUrl));
+        await this.deleteFileFromStorage(
+          this.THUMBNAIL_BUCKET,
+          this.getStoragePathFromUrl(asset.thumbnailUrl)
+        );
       }
 
       // Delete from database
       const supabase = await this.getSupabase();
-      const { error } = await supabase
-        .from('assets')
-        .delete()
-        .eq('id', assetId);
+      const { error } = await supabase.from('assets').delete().eq('id', assetId);
 
       if (error) {
         throw error;
       }
 
       logger.info('Asset deleted', { assetId, deletedBy });
-
     } catch (error: any) {
       logger.error('Asset deletion failed', error);
       throw error;
@@ -411,12 +407,7 @@ export class AssetManager {
       assets?: string[];
     } = {}
   ): Promise<AssetCollection> {
-    const {
-      category = 'campaign',
-      usage = 'primary',
-      tags = [],
-      assets = []
-    } = options;
+    const { category = 'campaign', usage = 'primary', tags = [], assets = [] } = options;
 
     try {
       const collection: AssetCollection = {
@@ -430,7 +421,7 @@ export class AssetManager {
         usage,
         createdAt: new Date(),
         updatedAt: new Date(),
-        createdBy
+        createdBy,
       };
 
       // Save to database
@@ -439,16 +430,13 @@ export class AssetManager {
       // Add assets if provided
       if (assets.length > 0) {
         await this.addAssetsToCollection(collection.id, assets);
-        
+
         // Fetch assets to populate collection
-        const assetObjects = await Promise.all(
-          assets.map((id: any) => this.getAssetById(id))
-        );
+        const assetObjects = await Promise.all(assets.map((id: any) => this.getAssetById(id)));
         collection.assets = assetObjects.filter(Boolean) as Asset[];
       }
 
       return collection;
-
     } catch (error: any) {
       logger.error('Collection creation failed', error);
       throw error;
@@ -458,34 +446,94 @@ export class AssetManager {
   async getCollections(briefId: string): Promise<AssetCollection[]> {
     try {
       const supabase = await this.getSupabase();
+
+      // Use the optimized view that joins collections with asset counts
       const { data, error } = await supabase
-        .from('asset_collections')
+        .from('asset_collection_view')
         .select('*')
         .eq('brief_id', briefId)
         .order('created_at', { ascending: false });
 
       if (error) {
-        throw error;
+        // Fallback to original query if view doesn't exist
+        return await this.getCollectionsWithN1Query(briefId);
       }
 
-      const collections = await Promise.all(
-        (data || []).map(async (row) => {
-          const collection = this.mapRowToCollection(row);
-          
-          // Load assets for each collection
-          const assets = await this.getCollectionAssets(collection.id);
-          collection.assets = assets;
-          
-          return collection;
-        })
-      );
+      // Map the optimized data to collections with assets loaded efficiently
+      const collections = await this.mapOptimizedCollectionData(data || []);
 
       return collections;
-
     } catch (error: any) {
       logger.error('Failed to get collections', error);
+      // Fallback to N+1 query if optimized version fails
+      return await this.getCollectionsWithN1Query(briefId);
+    }
+  }
+
+  // Optimized asset loading for collections
+  private async mapOptimizedCollectionData(collectionRows: any[]): Promise<AssetCollection[]> {
+    if (collectionRows.length === 0) return [];
+
+    // Extract all asset IDs from all collections in one go
+    const allAssetIds = collectionRows.flatMap(row => row.asset_ids || []).filter(Boolean);
+
+    // Load all assets in a single query
+    const assetMap = new Map<string, Asset>();
+    if (allAssetIds.length > 0) {
+      const supabase = await this.getSupabase();
+      const { data: assetData, error } = await supabase
+        .from('assets')
+        .select('*')
+        .in('id', allAssetIds);
+
+      if (!error && assetData) {
+        assetData.forEach(assetRow => {
+          assetMap.set(assetRow.id, this.mapRowToAsset(assetRow));
+        });
+      }
+    }
+
+    // Map collections and assign assets
+    return collectionRows.map(row => {
+      const collection = this.mapRowToCollection(row);
+
+      // Assign assets from the map
+      if (row.asset_ids && Array.isArray(row.asset_ids)) {
+        collection.assets = row.asset_ids
+          .map((id: string) => assetMap.get(id))
+          .filter(Boolean) as Asset[];
+      }
+
+      return collection;
+    });
+  }
+
+  // Fallback method with N+1 queries (original implementation)
+  private async getCollectionsWithN1Query(briefId: string): Promise<AssetCollection[]> {
+    const supabase = await this.getSupabase();
+    const { data, error } = await supabase
+      .from('asset_collections')
+      .select('*')
+      .eq('brief_id', briefId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
       throw error;
     }
+
+    const collections = await Promise.all(
+      (data || []).map(async row => {
+        const collection = this.mapRowToCollection(row);
+
+        // Load assets for each collection (N+1 query)
+        const assets = await this.getCollectionAssets(collection.id);
+        collection.assets = assets;
+
+        return collection;
+      })
+    );
+
+    return collections;
   }
 
   // Private methods
@@ -497,7 +545,7 @@ export class AssetManager {
     const supportedTypes = [
       ...this.SUPPORTED_IMAGE_TYPES,
       ...this.SUPPORTED_VIDEO_TYPES,
-      ...this.SUPPORTED_DOCUMENT_TYPES
+      ...this.SUPPORTED_DOCUMENT_TYPES,
     ];
 
     if (!supportedTypes.includes(file.type)) {
@@ -513,7 +561,10 @@ export class AssetManager {
     return 'other';
   }
 
-  private async processImage(file: File, generateThumbnail: boolean): Promise<{
+  private async processImage(
+    file: File,
+    generateThumbnail: boolean
+  ): Promise<{
     main: Buffer;
     thumbnail: Buffer | null;
     dimensions: { width: number; height: number };
@@ -524,14 +575,14 @@ export class AssetManager {
     isAnimated: boolean;
   }> {
     const buffer = Buffer.from(await file.arrayBuffer());
-    
+
     // Analyze original image
     const analysis = await analyzeImage(buffer);
-    
+
     // Optimize main image
     const optimized = await optimizeImage(buffer, {
       quality: 90,
-      format: 'webp'
+      format: 'webp',
     });
 
     // Generate thumbnail if requested
@@ -541,7 +592,7 @@ export class AssetManager {
         width: 300,
         height: 300,
         quality: 80,
-        format: 'jpeg'
+        format: 'jpeg',
       });
       thumbnail = thumbResult.buffer;
     }
@@ -551,13 +602,13 @@ export class AssetManager {
       thumbnail,
       dimensions: {
         width: analysis.metadata.width,
-        height: analysis.metadata.height
+        height: analysis.metadata.height,
       },
       colorPalette: [analysis.dominantColor],
       dominantColor: analysis.dominantColor,
       format: analysis.metadata.format,
       hasTransparency: analysis.hasTransparency,
-      isAnimated: analysis.isAnimated
+      isAnimated: analysis.isAnimated,
     };
   }
 
@@ -573,7 +624,7 @@ export class AssetManager {
       duration: 0,
       fps: 30,
       codec: 'h264',
-      dimensions: { width: 1920, height: 1080 }
+      dimensions: { width: 1920, height: 1080 },
     };
   }
 
@@ -585,7 +636,7 @@ export class AssetManager {
     // In production, would parse PDF/DOC files
     return {
       pageCount: 1,
-      wordCount: 0
+      wordCount: 0,
     };
   }
 
@@ -596,38 +647,31 @@ export class AssetManager {
   ): Promise<{ success: boolean; url?: string; error?: string }> {
     try {
       const supabase = await this.getSupabase();
-      const { data, error } = await supabase.storage
-        .from(bucket)
-        .upload(path, file, {
-          upsert: true
-        });
+      const { data, error } = await supabase.storage.from(bucket).upload(path, file, {
+        upsert: true,
+      });
 
       if (error) {
         return { success: false, error: error.message };
       }
 
-      const { data: urlData } = supabase.storage
-        .from(bucket)
-        .getPublicUrl(path);
+      const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(path);
 
       return {
         success: true,
-        url: urlData.publicUrl
+        url: urlData.publicUrl,
       };
-
     } catch (error: any) {
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }
 
   private async deleteFileFromStorage(bucket: string, path: string): Promise<void> {
     const supabase = await this.getSupabase();
-    const { error } = await supabase.storage
-      .from(bucket)
-      .remove([path]);
+    const { error } = await supabase.storage.from(bucket).remove([path]);
 
     if (error) {
       logger.warn('Failed to delete file from storage', error);
@@ -642,36 +686,34 @@ export class AssetManager {
       objects: ['object1', 'object2'],
       mood: 'professional',
       style: 'modern',
-      confidence: 0.85
+      confidence: 0.85,
     };
   }
 
   private async saveAssetToDatabase(asset: Asset): Promise<void> {
     const supabase = await this.getSupabase();
-    const { error } = await supabase
-      .from('assets')
-      .upsert({
-        id: asset.id,
-        brief_id: asset.briefId,
-        file_name: asset.fileName,
-        original_name: asset.originalName,
-        file_type: asset.fileType,
-        mime_type: asset.mimeType,
-        file_size: asset.fileSize,
-        url: asset.url,
-        thumbnail_url: asset.thumbnailUrl,
-        metadata: asset.metadata,
-        tags: asset.tags,
-        category: asset.category,
-        usage: asset.usage,
-        dimensions: asset.dimensions,
-        color_palette: asset.colorPalette,
-        dominant_color: asset.dominantColor,
-        status: asset.status,
-        uploaded_at: asset.uploadedAt.toISOString(),
-        updated_at: asset.updatedAt.toISOString(),
-        uploaded_by: asset.uploadedBy
-      });
+    const { error } = await supabase.from('assets').upsert({
+      id: asset.id,
+      brief_id: asset.briefId,
+      file_name: asset.fileName,
+      original_name: asset.originalName,
+      file_type: asset.fileType,
+      mime_type: asset.mimeType,
+      file_size: asset.fileSize,
+      url: asset.url,
+      thumbnail_url: asset.thumbnailUrl,
+      metadata: asset.metadata,
+      tags: asset.tags,
+      category: asset.category,
+      usage: asset.usage,
+      dimensions: asset.dimensions,
+      color_palette: asset.colorPalette,
+      dominant_color: asset.dominantColor,
+      status: asset.status,
+      uploaded_at: asset.uploadedAt.toISOString(),
+      updated_at: asset.updatedAt.toISOString(),
+      uploaded_by: asset.uploadedBy,
+    });
 
     if (error) {
       throw error;
@@ -680,21 +722,19 @@ export class AssetManager {
 
   private async saveCollectionToDatabase(collection: AssetCollection): Promise<void> {
     const supabase = await this.getSupabase();
-    const { error } = await supabase
-      .from('asset_collections')
-      .upsert({
-        id: collection.id,
-        brief_id: collection.briefId,
-        name: collection.name,
-        description: collection.description,
-        cover_asset_id: collection.coverAssetId,
-        tags: collection.tags,
-        category: collection.category,
-        usage: collection.usage,
-        created_at: collection.createdAt.toISOString(),
-        updated_at: collection.updatedAt.toISOString(),
-        created_by: collection.createdBy
-      });
+    const { error } = await supabase.from('asset_collections').upsert({
+      id: collection.id,
+      brief_id: collection.briefId,
+      name: collection.name,
+      description: collection.description,
+      cover_asset_id: collection.coverAssetId,
+      tags: collection.tags,
+      category: collection.category,
+      usage: collection.usage,
+      created_at: collection.createdAt.toISOString(),
+      updated_at: collection.updatedAt.toISOString(),
+      created_by: collection.createdBy,
+    });
 
     if (error) {
       throw error;
@@ -703,13 +743,11 @@ export class AssetManager {
 
   private async addAssetToCollection(collectionId: string, assetId: string): Promise<void> {
     const supabase = await this.getSupabase();
-    const { error } = await supabase
-      .from('collection_assets')
-      .upsert({
-        collection_id: collectionId,
-        asset_id: assetId,
-        added_at: new Date().toISOString()
-      });
+    const { error } = await supabase.from('collection_assets').upsert({
+      collection_id: collectionId,
+      asset_id: assetId,
+      added_at: new Date().toISOString(),
+    });
 
     if (error) {
       throw error;
@@ -726,9 +764,11 @@ export class AssetManager {
     const supabase = await this.getSupabase();
     const { data, error } = await supabase
       .from('collection_assets')
-      .select(`
+      .select(
+        `
         assets (*)
-      `)
+      `
+      )
       .eq('collection_id', collectionId);
 
     if (error) {
@@ -762,7 +802,7 @@ export class AssetManager {
       status: row.status,
       uploadedAt: new Date(row.uploaded_at),
       updatedAt: new Date(row.updated_at),
-      uploadedBy: row.uploaded_by
+      uploadedBy: row.uploaded_by,
     };
   }
 
@@ -779,7 +819,7 @@ export class AssetManager {
       usage: row.usage,
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),
-      createdBy: row.created_by
+      createdBy: row.created_by,
     };
   }
 
@@ -803,7 +843,7 @@ export class AssetManager {
     const extension = originalName.split('.').pop();
     const baseName = originalName.split('.').slice(0, -1).join('.');
     const safeName = baseName.replace(/[^a-zA-Z0-9-_]/g, '_');
-    
+
     return `${timestamp}_${random}_${safeName}.${extension}`;
   }
 }
