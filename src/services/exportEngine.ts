@@ -1,8 +1,6 @@
 import { getLogger } from '@/lib/logger';
-import { classifyError } from '@/lib/error-handling/error-classifier';
 import { createClient } from '@/lib/supabase/server';
 import { RenderedCampaign, RenderOutput } from './campaignRenderer';
-import { PopulatedTemplate } from './templateEngine';
 import { Asset } from './assetManager';
 
 const logger = getLogger('export-engine');
@@ -30,12 +28,12 @@ export interface ExportFormat {
   type: 'package' | 'archive' | 'platform' | 'print' | 'web' | 'email' | 'social';
   packaging: 'zip' | 'tar' | 'folder' | 'individual';
   compression: 'none' | 'lossless' | 'lossy' | 'adaptive';
-  qualitySettings: {
+  qualitySettings: {},
     images: 'web' | 'print' | 'high' | 'original';
     documents: 'compressed' | 'standard' | 'high';
     videos: 'web' | 'social' | 'broadcast' | 'original';
   };
-  fileNaming: {
+  fileNaming: {},
     pattern: string; // e.g., "{campaign}_{version}_{format}"
     includeMetadata: boolean;
     includeTimestamp: boolean;
@@ -47,7 +45,7 @@ export interface ExportFormat {
 
 export interface ExportDestination {
   type: 'download' | 'storage' | 'ftp' | 'cloud' | 'email' | 'platform_api';
-  config: {
+  config: {},
     // For storage/cloud
     bucket?: string;
     path?: string;
@@ -116,7 +114,7 @@ export interface ExportResult {
   status: 'success' | 'partial' | 'failed';
   errors: string[];
   warnings: string[];
-  metadata: {
+  metadata: {},
     totalFiles: number;
     totalSize: number;
     exportTime: number;
@@ -134,7 +132,7 @@ export interface ExportFile {
   size: number;
   checksum: string;
   url?: string;
-  metadata: {
+  metadata: {},
     width?: number;
     height?: number;
     duration?: number;
@@ -149,12 +147,12 @@ export interface ExportMetadata {
   totalSize: number;
   estimatedSize: number;
   exportDuration: number;
-  compression: {
+  compression: {},
     originalSize: number;
     compressedSize: number;
     ratio: number;
   };
-  quality: {
+  quality: {},
     averageImageQuality: number;
     averageFileSize: number;
     lossyConversions: number;
@@ -182,7 +180,7 @@ export interface ExportTemplate {
 
 export interface PlatformSpec {
   platform: string;
-  requirements: {
+  requirements: {},
     imageFormats: string[];
     videoFormats: string[];
     maxFileSize: number;
@@ -192,13 +190,13 @@ export interface PlatformSpec {
       aspectRatio: string;
       purpose: string;
     }>;
-    naming: {
+    naming: {},
       pattern: string;
       maxLength: number;
       allowedChars: string;
     };
   };
-  qualitySettings: {
+  qualitySettings: {},
     imageQuality: number;
     compression: string;
     colorSpace: string;
@@ -256,7 +254,7 @@ export class ExportEngine {
         progress: 0,
         results: [],
         errors: [],
-        metadata: {
+        metadata: {},
           totalCampaigns: campaignIds.length,
           totalFiles: estimations.totalFiles,
           totalSize: 0,
@@ -278,7 +276,7 @@ export class ExportEngine {
 
       return exportJob;
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to create export job', error);
       throw error;
     }
@@ -314,7 +312,7 @@ export class ExportEngine {
           job.progress = Math.round(((i + 1) / job.campaignIds.length) * 90); // Reserve 10% for final steps
           await this.updateExportJob(job);
 
-        } catch (error) {
+        } catch (error: any) {
           const errorMessage = error instanceof Error ? error.message : 'Unknown error';
           job.errors.push(`Campaign ${job.campaignIds[i]}: ${errorMessage}`);
           logger.warn('Campaign export failed', { campaignId: job.campaignIds[i], error: errorMessage });
@@ -350,7 +348,7 @@ export class ExportEngine {
 
       return job;
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Export job processing failed', error);
       throw error;
     }
@@ -371,7 +369,7 @@ export class ExportEngine {
 
       return this.mapRowToExportJob(data);
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to get export job', error);
       throw error;
     }
@@ -428,7 +426,7 @@ export class ExportEngine {
 
       logger.info('Export job cancelled', { jobId });
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to cancel export job', error);
       throw error;
     }
@@ -464,7 +462,7 @@ export class ExportEngine {
   async getExportTemplates(category?: string): Promise<ExportTemplate[]> {
     const templates = Array.from(this.exportTemplates.values());
     return category 
-      ? templates.filter(t => t.category === category)
+      ? templates.filter((t: any) => t.category === category)
       : templates;
   }
 
@@ -505,7 +503,7 @@ export class ExportEngine {
         errors: uploadResults.errors
       };
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Platform export failed', error);
       throw error;
     }
@@ -586,7 +584,7 @@ export class ExportEngine {
       status: 'success',
       errors: [],
       warnings: [],
-      metadata: {
+      metadata: {},
         totalFiles: 0,
         totalSize: 0,
         exportTime: 0,
@@ -627,7 +625,7 @@ export class ExportEngine {
       result.metadata.totalSize = result.files.reduce((sum, file) => sum + file.size, 0);
       result.metadata.exportTime = Date.now() - startTime;
 
-    } catch (error) {
+    } catch (error: any) {
       result.status = 'failed';
       result.errors.push(error instanceof Error ? error.message : 'Unknown error');
     }
@@ -663,7 +661,7 @@ export class ExportEngine {
       format: output.format,
       size: fileData.length,
       checksum: this.calculateChecksum(fileData),
-      metadata: {
+      metadata: {},
         width: output.dimensions.width,
         height: output.dimensions.height,
         created: new Date(),
@@ -699,7 +697,7 @@ export class ExportEngine {
       format: 'md',
       size: readmeBuffer.length,
       checksum: this.calculateChecksum(readmeBuffer),
-      metadata: {
+      metadata: {},
         created: new Date(),
         modified: new Date()
       }
@@ -717,7 +715,7 @@ export class ExportEngine {
 - **Dimensions**: ${campaign.dimensions.width}x${campaign.dimensions.height}
 
 ## Output Files
-${campaign.outputFiles.map(file => `- ${file.name} (${file.format}, ${this.formatBytes(file.fileSize)})`).join('\n')}
+${campaign.outputFiles.map((file: any) => `- ${file.name} (${file.format}, ${this.formatBytes(file.fileSize)})`).join('\n')}
 
 ## Metadata
 - **Render Time**: ${campaign.renderTime}ms
@@ -737,7 +735,7 @@ Generated by AIRWAVE Export Engine
       exportDate: new Date().toISOString(),
       version: result.metadata.version,
       format: job.exportFormat,
-      files: result.files.map(file => ({
+      files: result.files.map((file: any) => ({
         name: file.name,
         path: file.path,
         type: file.type,
@@ -758,7 +756,7 @@ Generated by AIRWAVE Export Engine
       format: 'json',
       size: manifestBuffer.length,
       checksum: this.calculateChecksum(manifestBuffer),
-      metadata: {
+      metadata: {},
         created: new Date(),
         modified: new Date()
       }
@@ -853,7 +851,7 @@ Generated by AIRWAVE Export Engine
     );
 
     if (unsupportedFormats.length > 0) {
-      issues.push(`Unsupported formats: ${unsupportedFormats.map(f => f.format).join(', ')}`);
+      issues.push(`Unsupported formats: ${unsupportedFormats.map((f: any) => f.format).join(', ')}`);
     }
 
     // Check file sizes
@@ -892,7 +890,7 @@ Generated by AIRWAVE Export Engine
     // Placeholder for platform API integration
     return {
       success: true,
-      uploadedAssets: assets.map(a => a.id),
+      uploadedAssets: assets.map((a: any) => a.id),
       errors: []
     };
   }
@@ -994,7 +992,7 @@ Generated by AIRWAVE Export Engine
     // Initialize platform specifications
     this.platformSpecs.set('facebook', {
       platform: 'facebook',
-      requirements: {
+      requirements: {},
         imageFormats: ['jpg', 'png'],
         videoFormats: ['mp4'],
         maxFileSize: 4 * 1024 * 1024, // 4MB
@@ -1002,13 +1000,13 @@ Generated by AIRWAVE Export Engine
           { width: 1200, height: 630, aspectRatio: '1.91:1', purpose: 'feed' },
           { width: 1080, height: 1080, aspectRatio: '1:1', purpose: 'square' }
         ],
-        naming: {
+        naming: {},
           pattern: '{campaign}_{format}',
           maxLength: 100,
           allowedChars: 'a-zA-Z0-9_-'
         }
       },
-      qualitySettings: {
+      qualitySettings: {},
         imageQuality: 85,
         compression: 'lossy',
         colorSpace: 'sRGB'
@@ -1025,16 +1023,16 @@ Generated by AIRWAVE Export Engine
       name: 'Social Media Export',
       description: 'Optimized for social media platforms',
       category: 'social',
-      format: {
+      format: {},
         type: 'platform',
         packaging: 'zip',
         compression: 'lossy',
-        qualitySettings: {
+        qualitySettings: {},
           images: 'web',
           documents: 'compressed',
           videos: 'social'
         },
-        fileNaming: {
+        fileNaming: {},
           pattern: '{campaign}_{platform}_{format}',
           includeMetadata: true,
           includeTimestamp: false,
@@ -1043,10 +1041,10 @@ Generated by AIRWAVE Export Engine
         includedAssets: ['image', 'video'],
         outputFormats: ['jpg', 'png', 'mp4']
       },
-      destination: {
+      destination: {},
         type: 'download'
       },
-      options: {
+      options: {},
         includeAssets: true,
         generatePreviews: true,
         createManifest: true

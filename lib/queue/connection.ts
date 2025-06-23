@@ -33,6 +33,7 @@ try {
     console.warn('No Redis URL configured. Queue functionality will be disabled.');
   }
 } catch (error) {
+    const message = getErrorMessage(error);
   console.error('Failed to initialize Redis connection:', error);
   connection = null;
   connectionOptions = null;

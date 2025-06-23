@@ -21,12 +21,12 @@ interface HealthCheckResponse {
   version: string;
   uptime: number;
   environment: string;
-  deployment: {
+  deployment: {},
     platform: string;
     region: string;
     commit?: string;
   };
-  checks: {
+  checks: {},
     database: ServiceCheck;
     redis: ServiceCheck;
     storage: ServiceCheck;
@@ -34,7 +34,7 @@ interface HealthCheckResponse {
     email: ServiceCheck;
     ai_services: ServiceCheck;
   };
-  performance: {
+  performance: {},
     memory_usage: number;
     cpu_load?: number;
     response_time: number;
@@ -61,21 +61,18 @@ async function checkDatabase(): Promise<ServiceCheck> {
       return {
         status: 'error',
         message: error.message,
-        latency,
-      };
+        latency};
     }
 
     return {
       status: 'ok',
-      latency,
-    };
-  } catch (error) {
+      latency};
+  } catch (error: any) {
     const message = getErrorMessage(error);
     return {
       status: 'error',
       message: error instanceof Error ? error.message : 'Unknown error',
-      latency: Date.now() - start,
-    };
+      latency: Date.now() - start};
   }
 }
 
@@ -88,29 +85,25 @@ async function checkRedis(): Promise<ServiceCheck> {
       return {
         status: 'error',
         message: 'Redis service not configured (optional)',
-        latency: 0,
-      };
+        latency: 0};
     }
 
     const redis = new Redis({
       url: process.env.UPSTASH_REDIS_URL,
-      token: process.env.UPSTASH_REDIS_TOKEN,
-    });
+      token: process.env.UPSTASH_REDIS_TOKEN});
 
     await redis.ping();
     const latency = Date.now() - start;
 
     return {
       status: 'ok',
-      latency,
-    };
-  } catch (error) {
+      latency};
+  } catch (error: any) {
     const message = getErrorMessage(error);
     return {
       status: 'error',
       message: error instanceof Error ? error.message : 'Unknown error',
-      latency: Date.now() - start,
-    };
+      latency: Date.now() - start};
   }
 }
 
@@ -122,23 +115,19 @@ async function checkStorage(): Promise<ServiceCheck> {
     if (process.env.AWS_S3_BUCKET && process.env.AWS_ACCESS_KEY_ID) {
       const s3Client = new S3Client({
         region: process.env.AWS_REGION || 'us-east-1',
-        credentials: {
+        credentials: {},
           accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
-        },
-      });
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!}});
 
       const command = new HeadBucketCommand({
-        Bucket: process.env.AWS_S3_BUCKET,
-      });
+        Bucket: process.env.AWS_S3_BUCKET});
 
       await s3Client.send(command);
 
       return {
         status: 'ok',
         latency: Date.now() - start,
-        details: { provider: 's3' },
-      };
+        details: { provider: 's3' }};
     }
 
     // Fall back to Supabase storage check
@@ -153,22 +142,19 @@ async function checkStorage(): Promise<ServiceCheck> {
       return {
         status: 'error',
         message: error.message,
-        latency: Date.now() - start,
-      };
+        latency: Date.now() - start};
     }
 
     return {
       status: 'ok',
       latency: Date.now() - start,
-      details: { provider: 'supabase' },
-    };
-  } catch (error) {
+      details: { provider: 'supabase' }};
+  } catch (error: any) {
     const message = getErrorMessage(error);
     return {
       status: 'error',
       message: error instanceof Error ? error.message : 'Unknown error',
-      latency: Date.now() - start,
-    };
+      latency: Date.now() - start};
   }
 }
 
@@ -178,9 +164,8 @@ async function checkCreatomate(): Promise<ServiceCheck> {
   try {
     const response = await fetch('https://api.creatomate.com/v1/templates', {
       method: 'GET',
-      headers: {
-        Authorization: `Bearer ${process.env.CREATOMATE_API_KEY}`,
-      },
+      headers: {},
+        Authorization: `Bearer ${process.env.CREATOMATE_API_KEY}`},
       signal: AbortSignal.timeout(5000), // 5 second timeout
     });
 
@@ -190,21 +175,18 @@ async function checkCreatomate(): Promise<ServiceCheck> {
       return {
         status: 'error',
         message: `HTTP ${response.status}`,
-        latency,
-      };
+        latency};
     }
 
     return {
       status: 'ok',
-      latency,
-    };
-  } catch (error) {
+      latency};
+  } catch (error: any) {
     const message = getErrorMessage(error);
     return {
       status: (error as any).name === 'AbortError' ? 'timeout' : 'error',
       message: error instanceof Error ? error.message : 'Unknown error',
-      latency: Date.now() - start,
-    };
+      latency: Date.now() - start};
   }
 }
 
@@ -218,8 +200,7 @@ async function checkEmail(): Promise<ServiceCheck> {
         status: 'ok',
         message: 'Email service using fallback logging (Resend not configured)',
         latency: Date.now() - start,
-        details: { provider: 'fallback' },
-      };
+        details: { provider: 'fallback' }};
     }
 
     // We could make a test API call to Resend here
@@ -227,15 +208,13 @@ async function checkEmail(): Promise<ServiceCheck> {
     return {
       status: 'ok',
       latency: Date.now() - start,
-      details: { provider: 'resend' },
-    };
-  } catch (error) {
+      details: { provider: 'resend' }};
+  } catch (error: any) {
     const message = getErrorMessage(error);
     return {
       status: 'error',
       message: error instanceof Error ? error.message : 'Unknown error',
-      latency: Date.now() - start,
-    };
+      latency: Date.now() - start};
   }
 }
 
@@ -248,22 +227,19 @@ async function checkAIServices(): Promise<ServiceCheck> {
       return {
         status: 'error',
         message: 'OpenAI API not configured (optional)',
-        latency: 0,
-      };
+        latency: 0};
     }
 
     // For now, just check if the key exists - we don't want to make actual API calls in health check
     return {
       status: 'ok',
       message: 'AI services configured',
-      latency: Date.now() - start,
-    };
-  } catch (error) {
+      latency: Date.now() - start};
+  } catch (error: any) {
     return {
       status: 'error',
       message: error instanceof Error ? error.message : 'Unknown error',
-      latency: Date.now() - start,
-    };
+      latency: Date.now() - start};
   }
 }
 
@@ -297,8 +273,7 @@ export default async function handler(
     storage,
     creatomate,
     email,
-    ai_services,
-  };
+    ai_services};
 
   // Determine overall health status
   const criticalServices = ['database'];
@@ -329,17 +304,14 @@ export default async function handler(
     version: process.env.npm_package_version || '1.0.0',
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'development',
-    deployment: {
+    deployment: {},
       platform: process.env.VERCEL ? 'Vercel' : process.env.NETLIFY ? 'Netlify' : 'Unknown',
       region: process.env.VERCEL_REGION || process.env.AWS_REGION || 'Unknown',
-      commit: process.env.VERCEL_GIT_COMMIT_SHA || process.env.COMMIT_REF || undefined,
-    },
+      commit: process.env.VERCEL_GIT_COMMIT_SHA || process.env.COMMIT_REF || undefined},
     checks,
-    performance: {
+    performance: {},
       memory_usage: (process.memoryUsage().heapUsed / process.memoryUsage().heapTotal) * 100,
-      response_time: Date.now() - startTime,
-    },
-  };
+      response_time: Date.now() - startTime}};
 
   // Set appropriate status code - always return 200 for basic health check
   const statusCode = 200; // Always return 200 unless completely broken

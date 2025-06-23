@@ -15,25 +15,16 @@ import {
   IconButton,
   Card,
   CardContent,
-  Stack,
-  Tooltip,
-  Badge,
-} from '@mui/material';
+  Badge} from '@mui/material';
 import {
   ArrowDropDown as ArrowDropDownIcon,
   Business as BusinessIcon,
   Check as CheckIcon,
   Add as AddIcon,
   Search as SearchIcon,
-  Person as PersonIcon,
-  Email as EmailIcon,
-  Phone as PhoneIcon,
-  LocationOn as LocationIcon,
-  Clear as ClearIcon,
-} from '@mui/icons-material';
+  Clear as ClearIcon} from '@mui/icons-material';
 import { useRouter } from 'next/router';
 import { useClient } from '@/contexts/ClientContext';
-import { ActionButton } from '../buttons/ActionButton';
 import { LoadingState } from '../feedback/LoadingState';
 import { ErrorState } from '../feedback/ErrorState';
 import { createAccessibleField } from '@/utils/accessibility';
@@ -68,8 +59,7 @@ export const EnhancedClientSelector: React.FC<EnhancedClientSelectorProps> = ({
   placeholder = 'Select a client...',
   disabled = false,
   error = false,
-  helperText,
-}) => {
+  helperText}) => {
   const router = useRouter();
   const { activeClient, setActiveClient, clients, loading, error: clientError } = useClient();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -79,8 +69,7 @@ export const EnhancedClientSelector: React.FC<EnhancedClientSelectorProps> = ({
   // Create accessible props
   const { fieldProps } = createAccessibleField('Client Selector', {
     required: false,
-    invalid: error,
-  });
+    invalid: error});
 
   // Filter and sort clients
   const filteredClients = useMemo(() => {
@@ -91,7 +80,7 @@ export const EnhancedClientSelector: React.FC<EnhancedClientSelectorProps> = ({
     // Apply search filter
     if (searchTerm.trim()) {
       const search = searchTerm.toLowerCase();
-      filtered = filtered.filter(client =>
+      filtered = filtered.filter((client: any) =>
         client.name.toLowerCase().includes(search) ||
         client.email?.toLowerCase().includes(search) ||
         client.industry?.toLowerCase().includes(search)
@@ -111,7 +100,7 @@ export const EnhancedClientSelector: React.FC<EnhancedClientSelectorProps> = ({
     if (!clients || !showRecentClients) return [];
     
     return clients
-      .filter(client => client.id !== activeClient?.id)
+      .filter((client: any) => client.id !== activeClient?.id)
       .slice(0, 5);
   }, [clients, activeClient, showRecentClients]);
 
@@ -154,8 +143,7 @@ export const EnhancedClientSelector: React.FC<EnhancedClientSelectorProps> = ({
           width: compact ? 24 : 32,
           height: compact ? 24 : 32,
           bgcolor: 'primary.main',
-          fontSize: compact ? '0.75rem' : '0.875rem',
-        }}
+          fontSize: compact ? '0.75rem' : '0.875rem'}}
       >
         {client.name.charAt(0).toUpperCase()}
       </Avatar>
@@ -166,8 +154,7 @@ export const EnhancedClientSelector: React.FC<EnhancedClientSelectorProps> = ({
             fontWeight: 500,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}
+            whiteSpace: 'nowrap'}}
         >
           {client.name}
         </Typography>
@@ -181,8 +168,7 @@ export const EnhancedClientSelector: React.FC<EnhancedClientSelectorProps> = ({
                   height: 16,
                   fontSize: '0.65rem',
                   bgcolor: 'action.hover',
-                  color: 'text.secondary',
-                }}
+                  color: 'text.secondary'}}
               />
             )}
             {client.email && (
@@ -238,9 +224,7 @@ export const EnhancedClientSelector: React.FC<EnhancedClientSelectorProps> = ({
           color: activeClient ? 'text.primary' : 'text.secondary',
           ...getSizeProps(),
           '&:hover': {
-            borderColor: error ? 'error.dark' : 'primary.main',
-          },
-        }}
+            borderColor: error ? 'error.dark' : 'primary.main'}}}
       >
         {activeClient ? renderClientInfo(activeClient, true) : placeholder}
       </Button>
@@ -269,9 +253,7 @@ export const EnhancedClientSelector: React.FC<EnhancedClientSelectorProps> = ({
         maxWidth: '200px',
         '& .MuiChip-label': {
           overflow: 'hidden',
-          textOverflow: 'ellipsis',
-        },
-      }}
+          textOverflow: 'ellipsis'}}}
     />
   );
 
@@ -285,9 +267,7 @@ export const EnhancedClientSelector: React.FC<EnhancedClientSelectorProps> = ({
         cursor: disabled ? 'default' : 'pointer',
         opacity: disabled ? 0.6 : 1,
         '&:hover': {
-          opacity: disabled ? 0.6 : 0.8,
-        },
-      }}
+          opacity: disabled ? 0.6 : 0.8}}}
     >
       {activeClient ? (
         renderClientInfo(activeClient, true)
@@ -310,9 +290,7 @@ export const EnhancedClientSelector: React.FC<EnhancedClientSelectorProps> = ({
         cursor: disabled ? 'default' : 'pointer',
         borderColor: error ? 'error.main' : 'divider',
         '&:hover': {
-          borderColor: disabled ? 'divider' : error ? 'error.dark' : 'primary.main',
-        },
-      }}
+          borderColor: disabled ? 'divider' : error ? 'error.dark' : 'primary.main'}}}
       onClick={handleClick}
     >
       <CardContent sx={{ p: 2 }}>
@@ -376,12 +354,10 @@ export const EnhancedClientSelector: React.FC<EnhancedClientSelectorProps> = ({
         open={isOpen}
         onClose={handleClose}
         PaperProps={{
-          sx: {
+          sx: {},
             maxHeight: maxMenuHeight,
             width: Math.max(anchorEl?.getBoundingClientRect().width || 0, 300),
-            mt: 1,
-          },
-        }}
+            mt: 1}}}
         transformOrigin={{ horizontal: 'left', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
       >
@@ -397,8 +373,7 @@ export const EnhancedClientSelector: React.FC<EnhancedClientSelectorProps> = ({
                   <InputAdornment position="start">
                     <SearchIcon fontSize="small" />
                   </InputAdornment>
-                ),
-              }}
+                )}}
               sx={{ width: '100%' }}
             />
           </Box>
@@ -411,7 +386,7 @@ export const EnhancedClientSelector: React.FC<EnhancedClientSelectorProps> = ({
                 Recent Clients
               </Typography>
             </Box>
-            {recentClients.map((client) => (
+            {recentClients.map((client: any) => (
               <MenuItem
                 key={`recent-${client.id}`}
                 onClick={() => handleClientSelect(client)}
@@ -424,9 +399,7 @@ export const EnhancedClientSelector: React.FC<EnhancedClientSelectorProps> = ({
                     '& .MuiBadge-badge': {
                       fontSize: '0.6rem',
                       height: 16,
-                      minWidth: 16,
-                    },
-                  }}
+                      minWidth: 16}}}
                 >
                   {renderClientInfo(client)}
                 </Badge>
@@ -443,7 +416,7 @@ export const EnhancedClientSelector: React.FC<EnhancedClientSelectorProps> = ({
             </Typography>
           </MenuItem>
         ) : (
-          filteredClients.map((client) => (
+          filteredClients.map((client: any) => (
             <MenuItem
               key={client.id}
               onClick={() => handleClientSelect(client)}

@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -14,8 +15,7 @@ const MatrixUpdateSchema = z.object({
   lock_fields: z.array(z.string()).optional(),
   status: z.enum(['draft', 'pending', 'approved', 'rejected', 'active', 'completed']).optional(),
   approval_comments: z.string().optional(),
-  generation_settings: z.any().optional(),
-});
+  generation_settings: z.any().optional()});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -37,7 +37,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Matrix API error:', error);
     return res.status(500).json({
@@ -51,8 +51,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, m
   const { 
     include_executions = true,
     include_assets = true,
-    include_analytics = false,
-  } = req.query;
+    include_analytics = false} = req.query;
 
   // First verify user has access to this matrix
   const { data: matrix, error } = await supabase
@@ -219,8 +218,7 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, m
     .from('matrices')
     .update({
       ...updateData,
-      updated_at: new Date().toISOString(),
-    })
+      updated_at: new Date().toISOString()})
     .eq('id', matrixId)
     .select(`
       *,
@@ -295,8 +293,7 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
     .update({
       status: 'archived',
       archived_at: new Date().toISOString(),
-      archived_by: user.id,
-    })
+      archived_by: user.id})
     .eq('id', matrixId);
 
   if (error) {
@@ -340,7 +337,7 @@ function extractAssetIdsFromMatrix(matrix: any): string[] {
     }
 
     return [...new Set(assetIds)]; // Remove duplicates
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error extracting asset IDs:', error);
     return [];
@@ -363,8 +360,7 @@ async function getMatrixAnalytics(matrixId: string): Promise<any> {
     if (!executions || executions.length === 0) {
       return {
         has_data: false,
-        message: 'No execution data available',
-      };
+        message: 'No execution data available'};
     }
 
     // Aggregate performance metrics
@@ -400,22 +396,19 @@ async function getMatrixAnalytics(matrixId: string): Promise<any> {
 
     return {
       has_data: true,
-      summary: {
+      summary: {},
         ...totalMetrics,
         ctr: Math.round(ctr * 100) / 100,
         cpc: Math.round(cpc * 100) / 100,
         conversion_rate: Math.round(conversionRate * 100) / 100,
-        total_executions: executions.length,
-      },
-      platform_breakdown: platformBreakdown,
-    };
-  } catch (error) {
+        total_executions: executions.length},
+      platform_breakdown: platformBreakdown};
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting matrix analytics:', error);
     return {
       has_data: false,
-      error: 'Failed to retrieve analytics data',
-    };
+      error: 'Failed to retrieve analytics data'};
   }
 }
 
@@ -480,15 +473,13 @@ function calculateMatrixQuality(matrix: any): any {
   return {
     score: Math.max(0, qualityScore),
     grade: qualityScore >= 90 ? 'A' : qualityScore >= 80 ? 'B' : qualityScore >= 70 ? 'C' : qualityScore >= 60 ? 'D' : 'F',
-    completeness: {
+    completeness: {},
       variations: variationsCount > 0,
       combinations: combinationsCount > 0,
       field_assignments: assignedFields > 0,
-      assets: relatedAssets > 0,
-    },
+      assets: relatedAssets > 0},
     issues,
-    recommendations,
-  };
+    recommendations};
 }
 
 function generateMatrixInsights(matrix: any): string[] {
@@ -538,7 +529,7 @@ async function getMatrixVersionHistory(matrixId: string): Promise<any[]> {
     // This would come from a matrix_versions table in a full implementation
     // For now, return empty array as we don't have version tracking table
     return [];
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting matrix version history:', error);
     return [];
@@ -607,7 +598,7 @@ async function createMatrixVersionEntry(matrixId: string, changes: any, userId: 
     // In a full implementation, this would create entries in a matrix_versions table
     // For now, we'll just log the change
     process.env.NODE_ENV === 'development' && console.log('Creating matrix version entry for:', matrixId);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error creating matrix version entry:', error);
   }

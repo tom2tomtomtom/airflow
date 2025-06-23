@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { getErrorMessage } from '@/utils/errorUtils';
+import { test } from '@playwright/test';
 
 test.describe('Simple Navigation Tests', () => {
   test('Home page loads', async ({ page }) => {
@@ -108,6 +109,7 @@ test.describe('Simple Navigation Tests', () => {
         console.log(`✅ ${pagePath} loaded successfully`);
         
       } catch (error) {
+    const message = getErrorMessage(error);
         console.log(`❌ ${pagePath} failed: ${error.message}`);
         
         // Take error screenshot

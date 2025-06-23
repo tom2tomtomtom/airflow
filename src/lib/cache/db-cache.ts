@@ -9,8 +9,7 @@ const DB_NAMESPACES = {
   CAMPAIGNS: 'db:campaigns',
   TEMPLATES: 'db:templates',
   USER_PROFILES: 'db:profiles',
-  MATRICES: 'db:matrices',
-} as const;
+  MATRICES: 'db:matrices'} as const;
 
 // Generate cache key from query parameters
 function generateQueryHash(query: string, params?: any[]): string {
@@ -20,12 +19,12 @@ function generateQueryHash(query: string, params?: any[]): string {
 
 // Client Data Caching
 export class ClientCache {
-  static async getClient(clientId: string, userId: string) {
+  static async getClient(clientId: string, userId: string) : Promise<void> {
     const key = `${userId}:client:${clientId}`;
     return await cacheManager.get(key, DB_NAMESPACES.CLIENTS);
   }
 
-  static async setClient(clientId: string, userId: string, clientData: any) {
+  static async setClient(clientId: string, userId: string, clientData: any) : Promise<void> {
     const key = `${userId}:client:${clientId}`;
     const tags = [`user:${userId}`, `client:${clientId}`, 'clients'];
     
@@ -46,12 +45,12 @@ export class ClientCache {
     return success;
   }
 
-  static async getUserClients(userId: string) {
+  static async getUserClients(userId: string) : Promise<void> {
     const key = `${userId}:clients:all`;
     return await cacheManager.get(key, DB_NAMESPACES.CLIENTS);
   }
 
-  static async setUserClients(userId: string, clients: any[]) {
+  static async setUserClients(userId: string, clients: any[]) : Promise<void> {
     const key = `${userId}:clients:all`;
     const tags = [`user:${userId}`, 'clients'];
     
@@ -72,23 +71,23 @@ export class ClientCache {
     return success;
   }
 
-  static async invalidateClient(clientId: string) {
+  static async invalidateClient(clientId: string) : Promise<void> {
     return await cacheManager.invalidateByTag(`client:${clientId}`);
   }
 
-  static async invalidateUser(userId: string) {
+  static async invalidateUser(userId: string) : Promise<void> {
     return await cacheManager.invalidateByTag(`user:${userId}`);
   }
 }
 
 // Asset Data Caching
 export class AssetCache {
-  static async getAsset(assetId: string, userId: string) {
+  static async getAsset(assetId: string, userId: string) : Promise<void> {
     const key = `${userId}:asset:${assetId}`;
     return await cacheManager.get(key, DB_NAMESPACES.ASSETS);
   }
 
-  static async setAsset(assetId: string, userId: string, assetData: any) {
+  static async setAsset(assetId: string, userId: string, assetData: any) : Promise<void> {
     const key = `${userId}:asset:${assetId}`;
     const tags = [`user:${userId}`, `asset:${assetId}`, 'assets'];
     
@@ -109,12 +108,12 @@ export class AssetCache {
     return success;
   }
 
-  static async getClientAssets(clientId: string, userId: string) {
+  static async getClientAssets(clientId: string, userId: string) : Promise<void> {
     const key = `${userId}:client:${clientId}:assets`;
     return await cacheManager.get(key, DB_NAMESPACES.ASSETS);
   }
 
-  static async setClientAssets(clientId: string, userId: string, assets: any[]) {
+  static async setClientAssets(clientId: string, userId: string, assets: any[]) : Promise<void> {
     const key = `${userId}:client:${clientId}:assets`;
     const tags = [`user:${userId}`, `client:${clientId}`, 'assets'];
     
@@ -135,23 +134,23 @@ export class AssetCache {
     return success;
   }
 
-  static async invalidateAsset(assetId: string) {
+  static async invalidateAsset(assetId: string) : Promise<void> {
     return await cacheManager.invalidateByTag(`asset:${assetId}`);
   }
 
-  static async invalidateClient(clientId: string) {
+  static async invalidateClient(clientId: string) : Promise<void> {
     return await cacheManager.invalidateByTag(`client:${clientId}`);
   }
 }
 
 // Campaign Data Caching
 export class CampaignCache {
-  static async getCampaign(campaignId: string, userId: string) {
+  static async getCampaign(campaignId: string, userId: string) : Promise<void> {
     const key = `${userId}:campaign:${campaignId}`;
     return await cacheManager.get(key, DB_NAMESPACES.CAMPAIGNS);
   }
 
-  static async setCampaign(campaignId: string, userId: string, campaignData: any) {
+  static async setCampaign(campaignId: string, userId: string, campaignData: any) : Promise<void> {
     const key = `${userId}:campaign:${campaignId}`;
     const tags = [`user:${userId}`, `campaign:${campaignId}`, 'campaigns'];
     
@@ -172,12 +171,12 @@ export class CampaignCache {
     return success;
   }
 
-  static async getClientCampaigns(clientId: string, userId: string) {
+  static async getClientCampaigns(clientId: string, userId: string) : Promise<void> {
     const key = `${userId}:client:${clientId}:campaigns`;
     return await cacheManager.get(key, DB_NAMESPACES.CAMPAIGNS);
   }
 
-  static async setClientCampaigns(clientId: string, userId: string, campaigns: any[]) {
+  static async setClientCampaigns(clientId: string, userId: string, campaigns: any[]) : Promise<void> {
     const key = `${userId}:client:${clientId}:campaigns`;
     const tags = [`user:${userId}`, `client:${clientId}`, 'campaigns'];
     
@@ -198,23 +197,23 @@ export class CampaignCache {
     return success;
   }
 
-  static async invalidateCampaign(campaignId: string) {
+  static async invalidateCampaign(campaignId: string) : Promise<void> {
     return await cacheManager.invalidateByTag(`campaign:${campaignId}`);
   }
 
-  static async invalidateClient(clientId: string) {
+  static async invalidateClient(clientId: string) : Promise<void> {
     return await cacheManager.invalidateByTag(`client:${clientId}`);
   }
 }
 
 // User Profile Caching
 export class UserProfileCache {
-  static async getProfile(userId: string) {
+  static async getProfile(userId: string) : Promise<void> {
     const key = `profile:${userId}`;
     return await cacheManager.get(key, DB_NAMESPACES.USER_PROFILES);
   }
 
-  static async setProfile(userId: string, profileData: any) {
+  static async setProfile(userId: string, profileData: any) : Promise<void> {
     const key = `profile:${userId}`;
     const tags = [`user:${userId}`, 'profiles'];
     
@@ -235,14 +234,14 @@ export class UserProfileCache {
     return success;
   }
 
-  static async invalidateProfile(userId: string) {
+  static async invalidateProfile(userId: string) : Promise<void> {
     return await cacheManager.invalidateByTag(`user:${userId}`);
   }
 }
 
 // Generic Query Caching
 export class QueryCache {
-  static async get(query: string, params?: any[], namespace?: string) {
+  static async get(query: string, params?: any[], namespace?: string) : Promise<void> {
     const key = generateQueryHash(query, params);
     return await cacheManager.get(key, namespace || 'db:query');
   }
@@ -274,7 +273,7 @@ export class QueryCache {
     return success;
   }
 
-  static async invalidateByTag(tag: string) {
+  static async invalidateByTag(tag: string) : Promise<void> {
     return await cacheManager.invalidateByTag(tag);
   }
 }
@@ -282,14 +281,14 @@ export class QueryCache {
 // Database Cache Utilities
 export class DBCacheUtils {
   // Clear all database cache for a user
-  static async clearUserCache(userId: string) {
+  static async clearUserCache(userId: string) : Promise<void> {
     const deleted = await cacheManager.invalidateByTag(`user:${userId}`);
     loggers.db.info('User database cache cleared', { userId, deletedEntries: deleted });
     return deleted;
   }
 
   // Clear specific database cache type
-  static async clearCacheType(type: keyof typeof DB_NAMESPACES) {
+  static async clearCacheType(type: keyof typeof DB_NAMESPACES) : Promise<void> {
     const namespace = DB_NAMESPACES[type];
     const success = await cacheManager.clear(namespace);
     loggers.db.info('Database cache type cleared', { type, namespace, success });
@@ -297,7 +296,7 @@ export class DBCacheUtils {
   }
 
   // Get database cache statistics
-  static async getCacheStats() {
+  static async getCacheStats() : Promise<void> {
     const stats = await cacheManager.getStats();
     loggers.db.debug('Database cache stats retrieved', stats as any);
     return stats;
@@ -308,7 +307,7 @@ export class DBCacheUtils {
     query: string,
     queryFn: () => Promise<T>,
     params?: any[],
-    options: {
+    options: {},
       ttl?: number;
       tags?: string[];
       namespace?: string;
@@ -322,8 +321,7 @@ export class DBCacheUtils {
       queryFn,
       {
         ttl: options.ttl || CACHE_TTL.DB_QUERY,
-        tags: options.tags || ['db-query'],
-      },
+        tags: options.tags || ['db-query']},
       namespace
     );
   }
@@ -335,5 +333,4 @@ export default {
   CampaignCache,
   UserProfileCache,
   QueryCache,
-  DBCacheUtils,
-};
+  DBCacheUtils};

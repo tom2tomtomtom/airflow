@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -15,8 +16,7 @@ const MatrixCreateSchema = z.object({
   field_assignments: z.any().default({}),
   lock_fields: z.array(z.string()).default([]),
   auto_generate: z.boolean().default(false),
-  generation_settings: z.any().optional(),
-});
+  generation_settings: z.any().optional()});
 
 const MatrixUpdateSchema = MatrixCreateSchema.partial().omit(['campaign_id'] as any);
 
@@ -33,7 +33,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Matrices API error:', error);
     return res.status(500).json({
@@ -53,8 +53,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     search,
     sort_by = 'created_at',
     sort_order = 'desc',
-    include_executions = false,
-  } = req.query;
+    include_executions = false} = req.query;
 
   let query = supabase
     .from('matrices')
@@ -77,7 +76,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       .eq('user_id', user.id);
     
     if (userClients && userClients.length > 0) {
-      const clientIds = userClients.map(uc => uc.client_id);
+      const clientIds = userClients.map((uc: any) => uc.client_id);
       
       // Get campaigns for accessible clients
       const { data: accessibleCampaigns } = await supabase
@@ -86,7 +85,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
         .in('client_id', clientIds);
       
       if (accessibleCampaigns && accessibleCampaigns.length > 0) {
-        const campaignIds = accessibleCampaigns.map(c => c.id);
+        const campaignIds = accessibleCampaigns.map((c: any) => c.id);
         query = query.in('campaign_id', campaignIds);
       } else {
         return res.json({ data: [], count: 0 });
@@ -126,8 +125,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       const executionStats = await getMatrixExecutionStats(matrix.id);
       return {
         ...matrix,
-        execution_stats: executionStats,
-      };
+        execution_stats: executionStats};
     }));
   }
 
@@ -138,7 +136,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     data: enrichedData,
     count,
     portfolio_stats: portfolioStats,
-    pagination: {
+    pagination: {},
       limit: parseInt(limit as string),
       offset: parseInt(offset as string),
       total: count || 0
@@ -215,8 +213,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
       status: 'draft',
       created_by: user.id,
       approved_by: null,
-      approval_date: null,
-    })
+      approval_date: null})
     .select(`
       *,
       campaigns(id, name, status, clients(name, slug)),
@@ -241,7 +238,7 @@ async function getMatrixExecutionStats(matrixId: string): Promise<any> {
       .select('status, platform, content_type, created_at')
       .eq('matrix_id', matrixId);
 
-    if (!executions) return { total: 0, by_status: {}, by_platform: {} };
+    if (!executions) return { total: 0, by_status: {} by_platform: {} };
 
     const statusBreakdown = executions.reduce((acc, exec) => {
       acc[exec.status] = (acc[exec.status] || 0) + 1;
@@ -257,12 +254,11 @@ async function getMatrixExecutionStats(matrixId: string): Promise<any> {
       total: executions.length,
       by_status: statusBreakdown,
       by_platform: platformBreakdown,
-      last_execution: executions.length > 0 ? executions[executions.length - 1].created_at : null,
-    };
-  } catch (error) {
+      last_execution: executions.length > 0 ? executions[executions.length - 1].created_at : null};
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting execution stats:', error);
-    return { total: 0, by_status: {}, by_platform: {} };
+    return { total: 0, by_status: {} by_platform: {} };
   }
 }
 
@@ -293,8 +289,7 @@ function calculateMatrixPortfolioStats(matrices: any[]): any {
     status_distribution: statusCount,
     template_distribution: templateCount,
     platform_distribution: platformCount,
-    average_variations: Math.round(avgVariations * 100) / 100,
-  };
+    average_variations: Math.round(avgVariations * 100) / 100};
 }
 
 function generateMatrixSlug(name: string, campaignId: string): string {
@@ -327,8 +322,7 @@ async function generateMatrixContent(matrixData: any, template: any, userId: str
         id: `var-${i + 1}`,
         name: `Variation ${String.fromCharCode(65 + i)}`,
         isActive: true,
-        isDefault: i === 0,
-      });
+        isDefault: i === 0});
     }
 
     // Generate field assignments based on template
@@ -336,13 +330,11 @@ async function generateMatrixContent(matrixData: any, template: any, userId: str
       template.dynamic_fields.forEach((field: any) => {
         fieldAssignments[field.id] = {
           status: 'pending',
-          content: variations.map(v => ({
+          content: variations.map((v: any) => ({
             id: `content-${field.id}-${v.id}`,
             variationId: v.id,
-            content: field.defaultValue || '',
-          })),
-          assets: [],
-        };
+            content: field.defaultValue || ''})),
+          assets: []};
       });
     }
 
@@ -352,31 +344,28 @@ async function generateMatrixContent(matrixData: any, template: any, userId: str
       name: 'Primary Combination',
       variationIds: [variations[0]?.id],
       isSelected: true,
-      performanceScore: 0,
-    });
+      performanceScore: 0});
 
     if (variations.length > 1) {
       combinations.push({
         id: 'combo-2',
         name: 'A/B Test Combination',
-        variationIds: variations.slice(0, 2).map(v => v.id),
+        variationIds: variations.slice(0, 2).map((v: any) => v.id),
         isSelected: true,
-        performanceScore: 0,
-      });
+        performanceScore: 0});
     }
 
     return {
       variations,
       combinations,
-      field_assignments: fieldAssignments,
-    };
-  } catch (error) {
+      field_assignments: fieldAssignments};
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error generating matrix content:', error);
     return {
       variations: [],
       combinations: [],
-      field_assignments: {},
+      field_assignments: {}
     };
   }
 }

@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 /**
  * Global setup for AIrWAVE comprehensive testing
  * Handles test database setup, environment configuration, and authentication
@@ -69,6 +70,7 @@ async function globalSetup(config: FullConfig) {
     console.log('✅ Global setup completed successfully!');
     
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('❌ Global setup failed:', error);
     throw error;
   }

@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { getErrorMessage } from '@/utils/errorUtils';
+import { test } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 
@@ -12,6 +13,7 @@ try {
     console.log('✅ Test credentials loaded');
   }
 } catch (error) {
+    const message = getErrorMessage(error);
   console.log('⚠️ Could not load test credentials');
 }
 
@@ -354,6 +356,7 @@ Create engaging social media content for a tech startup launching a new producti
         await page.screenshot({ path: 'tests/screenshots/after-processing.png', fullPage: true });
         
       } catch (error) {
+    const message = getErrorMessage(error);
         console.log('⚠️ File upload failed:', error);
       }
     }
@@ -531,6 +534,7 @@ async function tryRandomInteraction(page: any) {
       }
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     console.log('🎲 Random interaction failed (expected)');
   }
 }

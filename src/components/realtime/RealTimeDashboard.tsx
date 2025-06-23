@@ -33,24 +33,19 @@ interface RealTimeMetric {
 
 const RealTimeDashboard: React.FC = () => {
   const { activeClient } = useClient();
-  const {
-    events,
-    notifications,
-    unreadNotifications,
-    connectionStatus,
-  } = useRealtime({
+  const { events, notifications, unreadNotifications, connectionStatus } = useRealtime({
     enableNotifications: true,
     pollInterval: 5000,
   });
 
   // Calculate real-time metrics
-  const recentEvents = events.filter(e =>
-    new Date(e.timestamp).getTime() > Date.now() - 60 * 60 * 1000 // Last hour
+  const recentEvents = events.filter(
+    (e: any) => new Date(e.timestamp).getTime() > Date.now() - 60 * 60 * 1000 // Last hour
   );
 
-  const executionEvents = recentEvents.filter(e => e.type === 'execution_status_change');
-  const completedExecutions = executionEvents.filter(e => e.data.status === 'completed');
-  const failedExecutions = executionEvents.filter(e => e.data.status === 'failed');
+  const executionEvents = recentEvents.filter((e: any) => e.type === 'execution_status_change');
+  const completedExecutions = executionEvents.filter((e: any) => e.data.status === 'completed');
+  const failedExecutions = executionEvents.filter((e: any) => e.data.status === 'failed');
 
   const realTimeMetrics: RealTimeMetric[] = [
     {
@@ -126,7 +121,13 @@ const RealTimeDashboard: React.FC = () => {
           <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
             <Card>
               <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                  }}
+                >
                   <Box>
                     <Typography color="text.secondary" variant="body2" gutterBottom>
                       {metric.label}
@@ -153,9 +154,7 @@ const RealTimeDashboard: React.FC = () => {
                       </Box>
                     )}
                   </Box>
-                  <Avatar sx={{ bgcolor: metric.color }}>
-                    {metric.icon}
-                  </Avatar>
+                  <Avatar sx={{ bgcolor: metric.color }}>{metric.icon}</Avatar>
                 </Box>
               </CardContent>
             </Card>
@@ -167,11 +166,7 @@ const RealTimeDashboard: React.FC = () => {
       <Grid container spacing={3}>
         {/* Activity Feed */}
         <Grid size={{ xs: 12, md: 8 }}>
-          <ActivityFeed
-            title="Live Activity Feed"
-            showControls={true}
-            maxHeight={600}
-          />
+          <ActivityFeed title="Live Activity Feed" showControls={true} maxHeight={600} />
         </Grid>
 
         {/* Collaboration Sidebar */}
@@ -214,7 +209,7 @@ const RealTimeDashboard: React.FC = () => {
                     Recent Alerts
                   </Typography>
                   <Stack spacing={1}>
-                    {unreadNotifications.slice(0, 3).map((notification) => (
+                    {unreadNotifications.slice(0, 3).map((notification: any) => (
                       <Box
                         key={notification.id}
                         sx={{
@@ -225,8 +220,8 @@ const RealTimeDashboard: React.FC = () => {
                             notification.priority === 'urgent'
                               ? 'error.main'
                               : notification.priority === 'high'
-                              ? 'warning.main'
-                              : 'info.main'
+                                ? 'warning.main'
+                                : 'info.main'
                           }`,
                         }}
                       >

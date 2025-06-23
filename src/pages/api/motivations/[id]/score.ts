@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -14,10 +15,8 @@ const ScoreUpdateSchema = z.object({
     audience_relevance: z.number().min(0).max(100).optional(),
     emotional_impact: z.number().min(0).max(100).optional(),
     brand_fit: z.number().min(0).max(100).optional(),
-    market_differentiation: z.number().min(0).max(100).optional(),
-  }).optional(),
-  notes: z.string().optional(),
-});
+    market_differentiation: z.number().min(0).max(100).optional()}).optional(),
+  notes: z.string().optional()});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -39,7 +38,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Motivation Score API error:', error);
     return res.status(500).json({
@@ -105,17 +104,15 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, m
   const recommendations = generateScoringRecommendations(motivation, detailedScoring, comparativeScoring);
 
   return res.json({
-    data: {
+    data: {},
       motivation_id: motivationId,
-      current_scores: {
+      current_scores: {},
         relevance_score: motivation.relevance_score,
-        effectiveness_rating: motivation.effectiveness_rating,
-      },
+        effectiveness_rating: motivation.effectiveness_rating},
       detailed_scoring: detailedScoring,
       comparative_scoring: comparativeScoring,
       scoring_history: scoringHistory,
-      recommendations,
-    }
+      recommendations}
   });
 }
 
@@ -166,16 +163,14 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
     .update({
       relevance_score: autoScoring.overall_score,
       effectiveness_rating: autoScoring.effectiveness_rating,
-      generation_context: {
+      generation_context: {},
         ...(motivation as any).generation_context,
-        auto_scoring: {
+        auto_scoring: {},
           timestamp: new Date().toISOString(),
           scores: autoScoring.detailed_scores,
-          calculated_by: user.id,
-        }
+          calculated_by: user.id}
       },
-      updated_at: new Date().toISOString(),
-    })
+      updated_at: new Date().toISOString()})
     .eq('id', motivationId)
     .select()
     .single();
@@ -187,10 +182,9 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
 
   return res.json({
     message: 'Motivation scoring calculated successfully',
-    data: {
+    data: {},
       motivation: updatedMotivation,
-      scoring_details: autoScoring,
-    }
+      scoring_details: autoScoring}
   });
 }
 
@@ -231,8 +225,7 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, m
 
   // Build update object
   const updateData: any = {
-    updated_at: new Date().toISOString(),
-  };
+    updated_at: new Date().toISOString()};
 
   if (scoreData.relevance_score !== undefined) {
     updateData.relevance_score = scoreData.relevance_score;
@@ -245,13 +238,12 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, m
   // Update generation context with manual scoring info
   updateData.generation_context = {
     ...motivation.generation_context,
-    manual_scoring: {
+    manual_scoring: {},
       timestamp: new Date().toISOString(),
       scored_by: user.id,
       manual_override: scoreData.manual_override,
       scoring_context: scoreData.scoring_context,
-      notes: scoreData.notes,
-    }
+      notes: scoreData.notes}
   };
 
   const { data: updatedMotivation, error } = await supabase
@@ -279,8 +271,7 @@ async function calculateDetailedScoring(motivation: any, brief: any): Promise<an
     audience_relevance: 0,
     emotional_impact: 0,
     brand_fit: 0,
-    market_differentiation: 0,
-  };
+    market_differentiation: 0};
 
   // Brief alignment scoring
   if (brief.objectives) {
@@ -314,8 +305,7 @@ async function calculateDetailedScoring(motivation: any, brief: any): Promise<an
     detailed_scores: scores,
     overall_score: Math.round(overall),
     scoring_method: 'algorithm_v1',
-    calculated_at: new Date().toISOString(),
-  };
+    calculated_at: new Date().toISOString()};
 }
 
 async function calculateComprehensiveScoring(motivation: any): Promise<any> {
@@ -323,16 +313,14 @@ async function calculateComprehensiveScoring(motivation: any): Promise<any> {
     keyword_relevance: calculateKeywordRelevance(motivation),
     category_effectiveness: getCategoryEffectiveness(motivation.category),
     content_quality: calculateContentQuality(motivation.description),
-    uniqueness: await calculateUniqueness(motivation),
-  };
+    uniqueness: await calculateUniqueness(motivation)};
 
   // Calculate overall score
   const weights: Record<string, number> = {
     keyword_relevance: 0.3,
     category_effectiveness: 0.25,
     content_quality: 0.25,
-    uniqueness: 0.2,
-  };
+    uniqueness: 0.2};
 
   const overall = Object.entries(scores).reduce((sum, [key, score]) => {
     return sum + (score * (weights[key] || 0));
@@ -345,8 +333,7 @@ async function calculateComprehensiveScoring(motivation: any): Promise<any> {
     overall_score: Math.round(overall),
     effectiveness_rating,
     detailed_scores: scores,
-    weights_used: weights,
-  };
+    weights_used: weights};
 }
 
 async function getComparativeScoring(motivationId: string, clientId: string, briefId?: string): Promise<any> {
@@ -367,12 +354,11 @@ async function getComparativeScoring(motivationId: string, clientId: string, bri
     if (!similarMotivations || similarMotivations.length === 0) {
       return {
         has_comparison_data: false,
-        message: 'No comparable motivations found',
-      };
+        message: 'No comparable motivations found'};
     }
 
-    const scores = similarMotivations.map(m => m.relevance_score);
-    const ratings = similarMotivations.filter(m => m.effectiveness_rating).map(m => m.effectiveness_rating);
+    const scores = similarMotivations.map((m: any) => m.relevance_score);
+    const ratings = similarMotivations.filter((m: any) => m.effectiveness_rating).map((m: any) => m.effectiveness_rating);
 
     const avgScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
     const avgRating = ratings.length > 0 ? ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length : null;
@@ -384,13 +370,12 @@ async function getComparativeScoring(motivationId: string, clientId: string, bri
       average_effectiveness_rating: avgRating ? Math.round(avgRating * 100) / 100 : null,
       percentile_ranking: null, // Would need current motivation score to calculate
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting comparative scoring:', error);
     return {
       has_comparison_data: false,
-      message: 'Error retrieving comparison data',
-    };
+      message: 'Error retrieving comparison data'};
   }
 }
 
@@ -399,7 +384,7 @@ async function getScoringHistory(motivationId: string): Promise<any[]> {
     // This would typically come from an audit table or version history
     // For now, we'll return empty array since we don't have scoring history table
     return [];
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting scoring history:', error);
     return [];
@@ -424,8 +409,7 @@ function generateScoringRecommendations(motivation: any, detailedScoring: any, c
     rational: 'Support with data and logical arguments',
     social: 'Leverage social proof and community elements',
     fear: 'Balance with positive outcomes and solutions',
-    aspiration: 'Connect to future-state visioning',
-  };
+    aspiration: 'Connect to future-state visioning'};
 
   if (categoryRecommendations[motivation.category]) {
     recommendations.push(categoryRecommendations[motivation.category]);
@@ -462,10 +446,10 @@ function generateScoringRecommendations(motivation: any, detailedScoring: any, c
 
 // Scoring calculation helpers
 function calculateTextAlignment(text1: string, text2: string): number {
-  const words1 = new Set(text1.split(/\s+/).filter(w => w.length > 3));
-  const words2 = new Set(text2.split(/\s+/).filter(w => w.length > 3));
+  const words1 = new Set(text1.split(/\s+/).filter((w: any) => w.length > 3));
+  const words2 = new Set(text2.split(/\s+/).filter((w: any) => w.length > 3));
   
-  const intersection = new Set([...words1].filter(x => words2.has(x)));
+  const intersection = new Set([...words1].filter((x: any) => words2.has(x)));
   const union = new Set([...words1, ...words2]);
   
   return union.size > 0 ? Math.round((intersection.size / union.size) * 100) : 0;
@@ -487,7 +471,7 @@ function calculateEmotionalImpact(category: string, description: string): number
   const emotionalWords = ['feel', 'emotion', 'heart', 'passion', 'love', 'fear', 'hope', 'dream', 'worry', 'excited'];
   const lowerDesc = description.toLowerCase();
   
-  const base = emotionalWords.filter(word => lowerDesc.includes(word)).length * 10;
+  const base = emotionalWords.filter((word: any) => lowerDesc.includes(word)).length * 10;
   
   // Category-based emotional impact
   const categoryImpact: Record<string, number> = {
@@ -498,8 +482,7 @@ function calculateEmotionalImpact(category: string, description: string): number
     status: 60,
     rational: 40,
     convenience: 30,
-    safety: 50,
-  };
+    safety: 50};
   
   return Math.min(100, base + (categoryImpact[category] || 50));
 }
@@ -536,15 +519,14 @@ function getCategoryEffectiveness(category: string): number {
     status: 60,
     convenience: 55,
     safety: 75,
-    other: 50,
-  };
+    other: 50};
   
   return effectiveness[category] || 50;
 }
 
 function calculateContentQuality(description: string): number {
   const wordCount = description.split(/\s+/).length;
-  const sentenceCount = description.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
+  const sentenceCount = description.split(/[.!?]+/).filter((s: any) => s.trim().length > 0).length;
   
   let score = 50;
   

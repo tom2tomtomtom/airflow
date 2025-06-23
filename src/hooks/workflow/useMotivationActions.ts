@@ -19,13 +19,13 @@ if (typeof window === 'undefined') {
     aiCircuitBreaker = require('@/lib/circuit-breaker/ai-circuit-breaker').aiCircuitBreaker;
     workflowMetrics = require('@/lib/monitoring/workflow-metrics').workflowMetrics;
     performanceTracker = require('@/lib/performance/performance-tracker').performanceTracker;
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Server-side dependencies not available, using fallbacks');
   }
 }
 
 interface UseMotivationActionsProps {
-  state: {
+  state: {},
     briefData: BriefData | null;
   };
   dispatch: (action: any) => void;
@@ -43,8 +43,7 @@ export const useMotivationActions = ({
   dispatch,
   withErrorHandling,
   userId,
-  sessionId,
-}: UseMotivationActionsProps) => {
+  sessionId}: UseMotivationActionsProps) => {
   const { showNotification } = useNotification();
   const { makeCSRFRequest } = useCSRF();
 
@@ -119,8 +118,7 @@ export const useMotivationActions = ({
                 briefData: state.briefData,
                 model: fallbackModel || 'gpt-4o-mini',
                 budgetAware: true
-              }),
-            });
+              })});
           },
           async () => {
             // Fallback: provide generic motivations
@@ -209,6 +207,5 @@ export const useMotivationActions = ({
 
   return {
     generateMotivations,
-    selectMotivation,
-  };
+    selectMotivation};
 };

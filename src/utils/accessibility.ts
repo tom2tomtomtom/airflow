@@ -34,15 +34,15 @@ export interface AccessibleFieldProps {
 
 export const createAccessibleField = (
   label: string,
-  options: {
+  options: {},
     required?: boolean;
     invalid?: boolean;
     description?: string;
     errorMessage?: string;
   } = {}
 ): {
-  fieldProps: AccessibleFieldProps;
-  labelProps: { htmlFor: string; id: string };
+  fieldProps: AccessibleFieldProps;,
+    labelProps: { htmlFor: string; id: string };
   descriptionProps?: { id: string };
   errorProps?: { id: string; role: string; 'aria-live': 'polite' };
 } => {
@@ -54,26 +54,22 @@ export const createAccessibleField = (
   const describedByIds = [descriptionId, errorId].filter(Boolean).join(' ');
 
   return {
-    fieldProps: {
+    fieldProps: {},
       id: fieldId,
       'aria-label': label,
       'aria-describedby': describedByIds || undefined,
       'aria-required': options.required,
-      'aria-invalid': options.invalid,
-    },
-    labelProps: {
+      'aria-invalid': options.invalid},
+    labelProps: {},
       htmlFor: fieldId,
-      id: labelId,
-    },
+      id: labelId},
     descriptionProps: descriptionId ? { id: descriptionId } : undefined,
     errorProps: errorId
       ? {
           id: errorId,
           role: 'alert',
-          'aria-live': 'polite' as const,
-        }
-      : undefined,
-  };
+          'aria-live': 'polite' as const}
+      : undefined};
 };
 
 // Focus management utilities
@@ -178,7 +174,7 @@ export const getContrastRatio = (color1: string, color2: string): number => {
     const g = parseInt(hex.substr(2, 2), 16) / 255;
     const b = parseInt(hex.substr(4, 2), 16) / 255;
 
-    const sRGB = [r, g, b].map(c =>
+    const sRGB = [r, g, b].map((c: unknown) =>
       c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
     );
 
@@ -207,8 +203,8 @@ export const meetsWCAGAAA = (foreground: string, background: string, fontSize = 
 
 // Skip link component props
 export interface SkipLinkProps {
-  href: string;
-  children: React.ReactNode;
+  href: string;,
+    children: React.ReactNode;
   className?: string;
 }
 
@@ -228,8 +224,7 @@ export const createModalProps = (title?: string, description?: string): ModalA11
     'aria-modal': true,
     'aria-labelledby': titleId,
     'aria-describedby': descId,
-    role: 'dialog',
-  };
+    role: 'dialog'};
 };
 
 // Loading state accessibility
@@ -247,8 +242,7 @@ export const createLoadingProps = (
   return {
     'aria-live': 'polite',
     'aria-busy': isLoading,
-    'aria-label': isLoading ? loadingText : completeText,
-  };
+    'aria-label': isLoading ? loadingText : completeText};
 };
 
 // Button accessibility enhancements
@@ -262,7 +256,7 @@ export interface ButtonA11yProps {
 }
 
 export const createButtonProps = (
-  options: {
+  options: {},
     pressed?: boolean;
     expanded?: boolean;
     controls?: string;
@@ -277,8 +271,7 @@ export const createButtonProps = (
     'aria-expanded': options.expanded,
     'aria-controls': options.controls,
     'aria-describedby': options.describedBy,
-    disabled: options.disabled,
-  };
+    disabled: options.disabled};
 };
 
 // Navigation accessibility
@@ -295,8 +288,7 @@ export const createNavProps = (
   return {
     role: 'navigation',
     'aria-label': label,
-    'aria-current': current,
-  };
+    'aria-current': current};
 };
 
 // Table accessibility
@@ -321,8 +313,7 @@ export const createTableProps = (
     'aria-label': label,
     'aria-describedby': descId,
     'aria-rowcount': rowCount,
-    'aria-colcount': colCount,
-  };
+    'aria-colcount': colCount};
 };
 
 // Reduced motion detection
@@ -353,5 +344,4 @@ export const commonAriaAttributes = {
   required: { 'aria-required': true },
   invalid: (isInvalid: boolean) => ({ 'aria-invalid': isInvalid }),
   current: (current: string) => ({ 'aria-current': current }),
-  live: (level: 'polite' | 'assertive') => ({ 'aria-live': level }),
-} as const;
+  live: (level: 'polite' | 'assertive') => ({ 'aria-live': level })} as const;

@@ -130,7 +130,7 @@ export class ImageOptimizer {
       
       return result;
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Image optimization failed', error);
       throw error;
     }
@@ -154,7 +154,7 @@ export class ImageOptimizer {
       const maxWidth = originalMetadata.width || 1920;
       
       // Filter sizes that are larger than original
-      const validSizes = sizes.filter(size => size <= maxWidth);
+      const validSizes = sizes.filter((size: any) => size <= maxWidth);
       
       // Generate standard images
       const standardImages = await Promise.all(
@@ -213,7 +213,7 @@ export class ImageOptimizer {
         metadata
       };
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Responsive image generation failed', error);
       throw error;
     }
@@ -221,7 +221,7 @@ export class ImageOptimizer {
   
   async generatePlaceholder(
     input: Buffer | string,
-    options: {
+    options: {},
       width?: number;
       height?: number;
       blur?: number;
@@ -244,7 +244,7 @@ export class ImageOptimizer {
       
       return placeholder;
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Placeholder generation failed', error);
       throw error;
     }
@@ -260,7 +260,7 @@ export class ImageOptimizer {
       const [r, g, b] = dominant.data;
       return `rgb(${r}, ${g}, ${b})`;
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Dominant color extraction failed', error);
       return '#cccccc'; // Fallback color
     }
@@ -289,7 +289,7 @@ export class ImageOptimizer {
         hasTransparency: metadata.hasAlpha
       };
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Image analysis failed', error);
       throw error;
     }

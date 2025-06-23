@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 /**
  * Global teardown for AIrWAVE comprehensive testing
  * Cleans up test data, connections, and artifacts
@@ -6,7 +7,6 @@
 import { FullConfig } from '@playwright/test';
 import { TestDatabase } from './test-database';
 import fs from 'fs';
-import path from 'path';
 
 async function globalTeardown(config: FullConfig) {
   console.log('🧹 Starting AIrWAVE test cleanup...');
@@ -32,6 +32,7 @@ async function globalTeardown(config: FullConfig) {
     console.log('✅ Global teardown completed successfully!');
     
   } catch (error) {
+    const message = getErrorMessage(error);
     console.error('❌ Global teardown failed:', error);
     // Don't throw to avoid masking test failures
   }
@@ -92,6 +93,7 @@ async function generateTestSummary() {
     console.log(`Duration: ${(summary.duration / 1000).toFixed(2)}s`);
     
   } catch (error) {
+    const message = getErrorMessage(error);
     console.warn('⚠️ Could not generate test summary:', error.message);
   }
 }

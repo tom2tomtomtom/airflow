@@ -14,11 +14,7 @@ import {
   Card,
   CardContent,
 } from '@mui/material';
-import {
-  Upload,
-  AutoAwesome,
-  Add as AddIcon,
-} from '@mui/icons-material';
+import { Upload, AutoAwesome, Add as AddIcon } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
 import AssetUploadModal from '@/components/AssetUploadModal';
 import { useAuth } from '@/contexts/AuthContext';
@@ -54,12 +50,7 @@ const AssetsPage = () => {
   // Show loading or redirect if not authenticated
   if (loading) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="100vh"
-      >
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
         <Typography>Loading...</Typography>
       </Box>
     );
@@ -103,14 +94,14 @@ const AssetsPage = () => {
       <Head>
         <title>Assets | AIrWAVE</title>
       </Head>
-      
+
       <Box sx={{ width: '100%' }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
           <Typography variant="h4" gutterBottom>
             Asset Library
           </Typography>
         </Box>
-        
+
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={tabValue} onChange={handleTabChange}>
             <Tab label="All Assets" />
@@ -122,7 +113,7 @@ const AssetsPage = () => {
 
         <TabPanel value={tabValue} index={0}>
           <Grid container spacing={3}>
-            {mockAssets.map((asset) => (
+            {mockAssets.map((asset: any) => (
               <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={asset.id}>
                 <Card sx={{ height: '100%' }} data-testid="asset-card">
                   <Box
@@ -150,7 +141,7 @@ const AssetsPage = () => {
                 </Card>
               </Grid>
             ))}
-            
+
             {/* Empty state with upload button */}
             {mockAssets.length === 0 && (
               <Grid size={{ xs: 12 }}>
@@ -177,11 +168,11 @@ const AssetsPage = () => {
         <TabPanel value={tabValue} index={1}>
           <Typography>Images view</Typography>
         </TabPanel>
-        
+
         <TabPanel value={tabValue} index={2}>
           <Typography>Videos view</Typography>
         </TabPanel>
-        
+
         <TabPanel value={tabValue} index={3}>
           <Typography>Audio view</Typography>
         </TabPanel>
@@ -192,7 +183,7 @@ const AssetsPage = () => {
           sx={{ position: 'fixed', bottom: 16, right: 16 }}
           icon={<SpeedDialIcon openIcon={<AddIcon />} />}
         >
-          {speedDialActions.map((action) => (
+          {speedDialActions.map((action: any) => (
             <SpeedDialAction
               key={action.name}
               icon={action.icon}

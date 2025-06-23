@@ -1,11 +1,5 @@
 import React from 'react';
-import { 
-  Box, 
-  CircularProgress, 
-  Typography, 
-  LinearProgress,
-  Skeleton,
-} from '@mui/material';
+import { Box, CircularProgress, Typography, LinearProgress, Skeleton } from '@mui/material';
 
 interface LoadingSpinnerProps {
   message?: string;
@@ -14,8 +8,8 @@ interface LoadingSpinnerProps {
   variant?: 'circular' | 'linear' | 'skeleton';
 }
 
-export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ 
-  message = 'Loading...', 
+export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
+  message = 'Loading...',
   size = 'medium',
   fullScreen = false,
   variant = 'circular',
@@ -39,12 +33,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   if (variant === 'linear') {
     return (
       <Box sx={{ width: '100%' }}>
-        <Typography 
-          variant="body2" 
-          color="text.secondary" 
-          align="center"
-          sx={{ mb: 1 }}
-        >
+        <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 1 }}>
           {message}
         </Typography>
         <LinearProgress />
@@ -116,9 +105,9 @@ export const AssetGridSkeleton: React.FC<{ count?: number }> = ({ count = 6 }) =
 };
 
 // Table Loading Skeleton
-export const TableSkeleton: React.FC<{ rows?: number; columns?: number }> = ({ 
-  rows = 5, 
-  columns = 4 
+export const TableSkeleton: React.FC<{ rows?: number; columns?: number }> = ({
+  rows = 5,
+  columns = 4,
 }) => {
   return (
     <Box>
@@ -130,8 +119,8 @@ export const TableSkeleton: React.FC<{ rows?: number; columns?: number }> = ({
       </Box>
       {/* Rows */}
       {Array.from({ length: rows }).map((_, rowIndex) => (
-        <Box 
-          key={rowIndex} 
+        <Box
+          key={rowIndex}
           sx={{ display: 'flex', gap: 2, p: 2, borderBottom: 1, borderColor: 'divider' }}
         >
           {Array.from({ length: columns }).map((_, colIndex) => (

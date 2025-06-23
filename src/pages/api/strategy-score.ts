@@ -1,13 +1,16 @@
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { z } from 'zod';
 import { env } from '@/lib/env';
 import OpenAI from 'openai';
 
 const StrategyScoreSchema = z.object({
-  motivations: z.array(z.object({
-    statement: z.string(),
-    description: z.string(),
-  })),
+  motivations: z.array(
+    z.object({
+      statement: z.string(),
+      description: z.string(),
+    })
+  ),
   brief_context: z.string(),
 });
 
@@ -17,7 +20,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
   const parseResult = StrategyScoreSchema.safeParse(req.body);
   if (!parseResult.success) {
-    return res.status(400).json({ success: false, message: 'Invalid input', errors: parseResult.error.errors });
+    return res
+      .status(400)
+      .json({ success: false, message: 'Invalid input', errors: parseResult.error.errors });
   }
   const { motivations, brief_context } = parseResult.data;
   try {
@@ -37,7 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       temperature: 0.2,
       max_tokens: 800,
     });
-    
+
     const scored = completion.choices[0]?.message?.content;
     return res.status(200).json({ success: true, scored });
   } catch (err: any) {

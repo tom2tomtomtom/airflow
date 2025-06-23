@@ -73,31 +73,45 @@ const CampaignsPage: React.FC = () => {
     handleMenuClose();
   };
 
-  const getStatusColor = (status: string): "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning" => {
+  const getStatusColor = (
+    status: string
+  ): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' => {
     switch (status) {
-      case 'active': return 'success';
-      case 'paused': return 'warning';
-      case 'completed': return 'info';
-      case 'draft': return 'default';
-      case 'archived': return 'error';
-      default: return 'default';
+      case 'active':
+        return 'success';
+      case 'paused':
+        return 'warning';
+      case 'completed':
+        return 'info';
+      case 'draft':
+        return 'default';
+      case 'archived':
+        return 'error';
+      default:
+        return 'default';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'active': return <PlayIcon sx={{ fontSize: 16 }} />;
-      case 'paused': return <PauseIcon sx={{ fontSize: 16 }} />;
-      case 'archived': return <ArchiveIcon sx={{ fontSize: 16 }} />;
-      default: return <></>;
+      case 'active':
+        return <PlayIcon sx={{ fontSize: 16 }} />;
+      case 'paused':
+        return <PauseIcon sx={{ fontSize: 16 }} />;
+      case 'archived':
+        return <ArchiveIcon sx={{ fontSize: 16 }} />;
+      default:
+        return <></>;
     }
   };
 
-  const filteredCampaigns = campaigns?.filter((campaign: any) =>
-    campaign.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    campaign.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    campaign.objective?.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
+  const filteredCampaigns =
+    campaigns?.filter(
+      (campaign: any) =>
+        campaign.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        campaign.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        campaign.objective?.toLowerCase().includes(searchTerm.toLowerCase())
+    ) || [];
 
   return (
     <DashboardLayout>
@@ -113,10 +127,7 @@ const CampaignsPage: React.FC = () => {
               </Typography>
               <ClientSelector variant="compact" />
             </Box>
-            <AnimatedActionButton
-              onClick={handleCreateCampaign}
-              loading={false}
-            >
+            <AnimatedActionButton onClick={handleCreateCampaign} loading={false}>
               <AddIcon sx={{ mr: 1 }} />
               Create Campaign
             </AnimatedActionButton>
@@ -125,7 +136,7 @@ const CampaignsPage: React.FC = () => {
             fullWidth
             placeholder="Search campaigns..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={e => setSearchTerm(e.target.value)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -148,7 +159,7 @@ const CampaignsPage: React.FC = () => {
 
         {activeClient && isLoading && (
           <Grid container spacing={3}>
-            {[1, 2, 3].map((i) => (
+            {[1, 2, 3].map((i: any) => (
               <Grid size={{ xs: 12, sm: 6, md: 4 }} key={i}>
                 <CardSkeleton height={300} />
               </Grid>
@@ -157,11 +168,7 @@ const CampaignsPage: React.FC = () => {
         )}
 
         {activeClient && error && (
-          <ErrorMessage
-            title="Failed to load campaigns"
-            error={error}
-            onRetry={refetch}
-          />
+          <ErrorMessage title="Failed to load campaigns" error={error} onRetry={refetch} />
         )}
 
         {activeClient && !isLoading && !error && filteredCampaigns.length === 0 && (
@@ -177,10 +184,7 @@ const CampaignsPage: React.FC = () => {
             </Typography>
             {!searchTerm && (
               <Box sx={{ mt: 2 }}>
-                <AnimatedActionButton
-                  onClick={handleCreateCampaign}
-                  loading={false}
-                >
+                <AnimatedActionButton onClick={handleCreateCampaign} loading={false}>
                   <AddIcon sx={{ mr: 1 }} />
                   Create First Campaign
                 </AnimatedActionButton>
@@ -217,10 +221,7 @@ const CampaignsPage: React.FC = () => {
                       <Typography variant="h6" component="h2" gutterBottom>
                         {campaign.name}
                       </Typography>
-                      <IconButton
-                        size="small"
-                        onClick={(e) => handleMenuOpen(e, campaign)}
-                      >
+                      <IconButton size="small" onClick={e => handleMenuOpen(e, campaign)}>
                         <MoreIcon />
                       </IconButton>
                     </Box>
@@ -232,12 +233,7 @@ const CampaignsPage: React.FC = () => {
                         icon={getStatusIcon(campaign.status)}
                       />
                       {campaign.targeting?.platforms?.map((platform: string) => (
-                        <Chip
-                          key={platform}
-                          label={platform}
-                          size="small"
-                          variant="outlined"
-                        />
+                        <Chip key={platform} label={platform} size="small" variant="outlined" />
                       ))}
                     </Stack>
                     <Typography
@@ -268,8 +264,8 @@ const CampaignsPage: React.FC = () => {
                       <Box display="flex" alignItems="center" gap={0.5} mb={1}>
                         <BudgetIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
                         <Typography variant="caption" color="text.secondary">
-                          ${campaign.budget.spent.toLocaleString()} /{' '}
-                          ${campaign.budget.total.toLocaleString()}
+                          ${campaign.budget.spent.toLocaleString()} / $
+                          {campaign.budget.total.toLocaleString()}
                         </Typography>
                       </Box>
                     )}
@@ -304,11 +300,7 @@ const CampaignsPage: React.FC = () => {
 
         {/* Actions Menu */}
         <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-          <MenuItem
-            onClick={() =>
-              selectedCampaign && handleEditCampaign(selectedCampaign.id)
-            }
-          >
+          <MenuItem onClick={() => selectedCampaign && handleEditCampaign(selectedCampaign.id)}>
             <EditIcon fontSize="small" sx={{ mr: 1 }} />
             Edit
           </MenuItem>

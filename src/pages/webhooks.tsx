@@ -14,7 +14,7 @@ const WebhooksPage: NextPage = () => {
         <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
           Configure webhooks to receive real-time notifications about events in your campaigns
         </Typography>
-        
+
         <WebhookManager />
       </Box>
     </DashboardLayout>

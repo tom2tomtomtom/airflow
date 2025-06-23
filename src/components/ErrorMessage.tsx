@@ -22,7 +22,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
   // Handle different error types including Supabase errors
   const getErrorMessage = (err: any): string => {
     if (message) return message;
-    
+
     // Handle Supabase-style errors (objects with code, message, details, hint)
     if (err && typeof err === 'object' && !Array.isArray(err) && !(err instanceof Error)) {
       if (err.message) return err.message;
@@ -31,22 +31,22 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
       // If it's an object without clear message properties, stringify it safely
       return JSON.stringify(err);
     }
-    
+
     // Handle Error instances
     if (err instanceof Error) return err.message;
-    
+
     // Handle string errors
     if (typeof err === 'string') return err;
-    
+
     return 'An unexpected error occurred';
   };
 
   const errorMessage = getErrorMessage(error);
-  
+
   if (variant === 'inline') {
     return (
-      <Alert 
-        severity="error" 
+      <Alert
+        severity="error"
         action={
           onRetry && (
             <Button color="inherit" size="small" onClick={onRetry} startIcon={<RefreshIcon />}>
@@ -59,7 +59,11 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
         {errorMessage}
         {showDetails && error instanceof Error && error.stack && (
           <Box mt={1}>
-            <Typography variant="caption" component="pre" sx={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
+            <Typography
+              variant="caption"
+              component="pre"
+              sx={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}
+            >
               {error.stack}
             </Typography>
           </Box>
@@ -86,18 +90,17 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
         {errorMessage}
       </Typography>
       {onRetry && (
-        <Button
-          variant="contained"
-          onClick={onRetry}
-          startIcon={<RefreshIcon />}
-          sx={{ mt: 2 }}
-        >
+        <Button variant="contained" onClick={onRetry} startIcon={<RefreshIcon />} sx={{ mt: 2 }}>
           Try Again
         </Button>
       )}
       {showDetails && error instanceof Error && error.stack && (
         <Box mt={3} p={2} bgcolor="grey.100" borderRadius={1} maxWidth={600} width="100%">
-          <Typography variant="caption" component="pre" sx={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap', textAlign: 'left' }}>
+          <Typography
+            variant="caption"
+            component="pre"
+            sx={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap', textAlign: 'left' }}
+          >
             {error.stack}
           </Typography>
         </Box>
@@ -115,7 +118,7 @@ export const getUserFriendlyErrorMessage = (error: any): string => {
     return 'You need to be logged in to perform this action';
   }
   if (error?.response?.status === 403) {
-    return 'You don\'t have permission to perform this action';
+    return "You don't have permission to perform this action";
   }
   if (error?.response?.status === 404) {
     return 'The requested resource was not found';
@@ -126,7 +129,7 @@ export const getUserFriendlyErrorMessage = (error: any): string => {
   if (error?.response?.status >= 500) {
     return 'Server error. Please try again later';
   }
-  
+
   // Handle Supabase errors
   if (error?.code === 'PGRST116') {
     return 'The table or column does not exist. Please check your database schema';
@@ -134,29 +137,29 @@ export const getUserFriendlyErrorMessage = (error: any): string => {
   if (error?.code?.startsWith('PGRST')) {
     return `Database error: ${error.details || error.message || 'An error occurred'}`;
   }
-  
+
   // Handle network errors
   if (error?.code === 'NETWORK_ERROR' || !navigator.onLine) {
     return 'Network error. Please check your internet connection';
   }
-  
+
   // Handle API key errors
   if (error?.message?.includes('API key')) {
     return 'API configuration error. Please contact support';
   }
-  
+
   // Handle Supabase-style errors (objects with code, message, details, hint)
   if (error && typeof error === 'object' && !Array.isArray(error) && !(error instanceof Error)) {
     if (error.message) return error.message;
     if (error.error_description) return error.error_description;
     if (error.code) return `Error ${error.code}: ${error.details || 'An error occurred'}`;
   }
-  
+
   // Handle Error instances
   if (error instanceof Error) return error.message;
-  
+
   // Handle string errors
   if (typeof error === 'string') return error;
-  
+
   return 'An unexpected error occurred';
 };

@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { test, expect } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
@@ -8,8 +9,8 @@ import path from 'path';
  */
 
 const CREDENTIALS = {
-  email: 'tomh@redbaez.com',
-  password: 'Wijlre2010'
+  email: process.env.TEST_USER_EMAIL || 'test@example.com',
+  password: process.env.TEST_USER_PASSWORD || 'test-password-123'
 };
 
 const REDBAEZ_BRIEF = `Creative Brief: Launching AIrWAVE 2.0 by Redbaez
@@ -306,6 +307,7 @@ test.describe('File Upload Workflow Testing', () => {
           await page.waitForTimeout(1000);
           
         } catch (error) {
+    const message = getErrorMessage(error);
           console.log(`  ❌ Error clicking button: ${error}`);
         }
       }

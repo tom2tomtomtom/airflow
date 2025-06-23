@@ -12,8 +12,7 @@ export enum ErrorCode {
   INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR',
   RATE_LIMIT_EXCEEDED = 'RATE_LIMIT_EXCEEDED',
   VALIDATION_ERROR = 'VALIDATION_ERROR',
-  INVALID_TOKEN = 'INVALID_TOKEN',
-}
+  INVALID_TOKEN = 'INVALID_TOKEN'}
 
 // Error response helper
 export const errorResponse = (
@@ -24,11 +23,9 @@ export const errorResponse = (
 ) => {
   return res.status(statusCode).json({
     success: false,
-    error: {
+    error: {},
       code,
-      message,
-    },
-  });
+      message });
 };
 
 // Get the authentication token from localStorage
@@ -39,7 +36,7 @@ const getAuthToken = (): string | null => {
     
     const userData = JSON.parse(user);
     return userData.token || null;
-  } catch (error) {
+  } catch (error: unknown) {
     const message = getErrorMessage(error);
     if (process.env.NODE_ENV === 'development') {
       console.error('Error getting auth token:', error);
@@ -59,9 +56,8 @@ export const apiRequest = async <T>(
     // Set default headers - include credentials for cookie-based auth
     const headers = {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers || {}),
-    };
+      ...(token ? { Authorization: `Bearer ${token}` } : Record<string, unknown>$1,
+      ...(options.headers || {})};
     
     // Make the request with credentials to include cookies
     const response = await fetch(url, {
@@ -79,7 +75,7 @@ export const apiRequest = async <T>(
     }
     
     return data as T;
-  } catch (error) {
+  } catch (error: unknown) {
     const message = getErrorMessage(error);
     if (process.env.NODE_ENV === 'development') {
 
@@ -94,42 +90,38 @@ export const apiRequest = async <T>(
 export const authApi = {
   login: async (email: string, password: string) => {
     return apiRequest<{
-      success: boolean;
-      user: {
-        id: string;
-        email: string;
-        name: string;
-        token: string;
+      success: boolean;,
+    user: {},
+        id: string;,
+    email: string;,
+    name: string;,
+    token: string;
       };
     }>('/api/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ email, password }),
-    });
+      body: JSON.stringify({ email, password })});
   },
   
   signup: async (email: string, password: string, name: string) => {
     return apiRequest<{
-      success: boolean;
-      user: {
-        id: string;
-        email: string;
-        name: string;
-        token: string;
+      success: boolean;,
+    user: {},
+        id: string;,
+    email: string;,
+    name: string;,
+    token: string;
       };
     }>('/api/auth/signup', {
       method: 'POST',
-      body: JSON.stringify({ email, password, name }),
-    });
-  },
-};
+      body: JSON.stringify({ email, password, name })}); };
 
 // Client API
 export interface Client {
-  id: string;
-  name: string;
-  description: string;
-  primaryColor: string;
-  secondaryColor: string;
+  id: string;,
+    name: string;,
+    description: string;,
+    primaryColor: string;,
+    secondaryColor: string;
   logoUrl?: string;
   userId: string;
 }
@@ -137,138 +129,124 @@ export interface Client {
 export const clientApi = {
   getClients: async () => {
     return apiRequest<{
-      success: boolean;
-      clients: Client[];
+      success: boolean;,
+    clients: Client[];
     }>('/api/clients');
   },
   
   createClient: async (clientData: Omit<Client, 'id' | 'userId'>) => {
     return apiRequest<{
-      success: boolean;
-      client: Client;
+      success: boolean;,
+    client: Client;
     }>('/api/clients', {
       method: 'POST',
-      body: JSON.stringify(clientData),
-    });
+      body: JSON.stringify(clientData)});
   },
   
   updateClient: async (id: string, clientData: Partial<Omit<Client, 'id' | 'userId'>>) => {
     return apiRequest<{
-      success: boolean;
-      client: Client;
+      success: boolean;,
+    client: Client;
     }>(`/api/clients/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(clientData),
-    });
+      body: JSON.stringify(clientData)});
   },
   
   deleteClient: async (id: string) => {
     return apiRequest<{
-      success: boolean;
-      message: string;
-      client: Client;
+      success: boolean;,
+    message: string;,
+    client: Client;
     }>(`/api/clients/${id}`, {
-      method: 'DELETE',
-    });
-  },
-};
+      method: 'DELETE'}); };
 
 // Assets API
 export interface Asset {
-  id: string;
-  name: string;
-  type: 'image' | 'video' | 'text' | 'voice';
-  url: string;
+  id: string;,
+    name: string;,
+    type: 'image' | 'video' | 'text' | 'voice';,
+    url: string;
   thumbnailUrl?: string;
   description?: string;
-  tags: string[];
-  dateCreated: string;
-  clientId: string;
-  userId: string;
+  tags: string[];,
+    dateCreated: string;,
+    clientId: string;,
+    userId: string;
 }
 
 export const assetApi = {
   getAssets: async (clientId?: string) => {
     const url = clientId ? `/api/assets?clientId=${clientId}` : '/api/assets';
     return apiRequest<{
-      success: boolean;
-      assets: Asset[];
+      success: boolean;,
+    assets: Asset[];
     }>(url);
   },
   
   createAsset: async (assetData: Omit<Asset, 'id' | 'dateCreated' | 'userId'>) => {
     return apiRequest<{
-      success: boolean;
-      asset: Asset;
+      success: boolean;,
+    asset: Asset;
     }>('/api/assets', {
       method: 'POST',
-      body: JSON.stringify(assetData),
-    });
+      body: JSON.stringify(assetData)});
   },
   
   updateAsset: async (id: string, assetData: Partial<Omit<Asset, 'id' | 'userId'>>) => {
     return apiRequest<{
-      success: boolean;
-      asset: Asset;
+      success: boolean;,
+    asset: Asset;
     }>(`/api/assets/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(assetData),
-    });
+      body: JSON.stringify(assetData)});
   },
   
   deleteAsset: async (id: string) => {
     return apiRequest<{
-      success: boolean;
-      message: string;
+      success: boolean;,
+    message: string;
     }>(`/api/assets/${id}`, {
-      method: 'DELETE',
-    });
-  },
-};
+      method: 'DELETE'}); };
 
 // AI Generation API
 export interface GenerationPrompt {
-  prompt: string;
-  type: 'text' | 'image' | 'video' | 'voice';
-  parameters?: Record<string, any>;
+  prompt: string;,
+    type: 'text' | 'image' | 'video' | 'voice';
+  parameters?: Record<string, unknown>;
   clientId: string;
 }
 
 export interface GenerationResult {
-  id: string;
-  type: 'text' | 'image' | 'video' | 'voice';
-  content: string | string[]; // URL for media, text content for text
-  prompt: string;
-  dateCreated: string;
-  clientId: string;
-  userId: string;
+  id: string;,
+    type: 'text' | 'image' | 'video' | 'voice';,
+    content: string | string[]; // URL for media, text content for text
+  prompt: string;,
+    dateCreated: string;,
+    clientId: string;,
+    userId: string;
 }
 
 export const aiApi = {
   generate: async (promptData: GenerationPrompt) => {
     return apiRequest<{
-      success: boolean;
-      result: GenerationResult;
+      success: boolean;,
+    result: GenerationResult;
     }>('/api/ai/generate', {
       method: 'POST',
-      body: JSON.stringify(promptData),
-    });
+      body: JSON.stringify(promptData)});
   },
   
   getGenerations: async (clientId?: string) => {
     const url = clientId ? `/api/ai/generations?clientId=${clientId}` : '/api/ai/generations';
     return apiRequest<{
-      success: boolean;
-      generations: GenerationResult[];
-    }>(url);
-  },
-};
+      success: boolean;,
+    generations: GenerationResult[];
+    }>(url); };
 
 const api = {
   auth: authApi,
   client: clientApi,
   asset: assetApi,
-  ai: aiApi,
-};
+  ai: aiApi};
 
 export default api;

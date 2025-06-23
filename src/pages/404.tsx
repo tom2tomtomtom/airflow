@@ -1,17 +1,8 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import {
-  Box,
-  Container,
-  Typography,
-  Button,
-  Paper,
-} from '@mui/material';
-import {
-  Home as HomeIcon,
-  Dashboard as DashboardIcon,
-} from '@mui/icons-material';
+import { Box, Container, Typography, Button, Paper } from '@mui/material';
+import { Home as HomeIcon, Dashboard as DashboardIcon } from '@mui/icons-material';
 
 export default function Custom404() {
   const router = useRouter();
@@ -21,7 +12,7 @@ export default function Custom404() {
       <Head>
         <title>404 - Page Not Found | AIrFLOW</title>
       </Head>
-      
+
       <Container maxWidth="md">
         <Box
           sx={{
@@ -49,15 +40,16 @@ export default function Custom404() {
             >
               404
             </Typography>
-            
+
             <Typography variant="h4" gutterBottom>
               Page Not Found
             </Typography>
-            
+
             <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-              The page you&apos;re looking for doesn&apos;t exist. It might have been moved or deleted.
+              The page you&apos;re looking for doesn&apos;t exist. It might have been moved or
+              deleted.
             </Typography>
-            
+
             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
               <Button
                 variant="contained"
@@ -66,16 +58,12 @@ export default function Custom404() {
               >
                 Go to Dashboard
               </Button>
-              
-              <Button
-                variant="outlined"
-                startIcon={<HomeIcon />}
-                onClick={() => router.push('/')}
-              >
+
+              <Button variant="outlined" startIcon={<HomeIcon />} onClick={() => router.push('/')}>
                 Go Home
               </Button>
             </Box>
-            
+
             <Box sx={{ mt: 4 }}>
               <Typography variant="body2" color="text.secondary">
                 If you believe this is an error, please contact support.

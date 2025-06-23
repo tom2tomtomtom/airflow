@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { getErrorMessage } from '@/utils/errorUtils';
+import { test } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 
@@ -66,6 +67,7 @@ test.describe('Workflow Corrected Test', () => {
           
           return response;
         } catch (error) {
+    const message = getErrorMessage(error);
           const duration = Date.now() - startTime;
           console.log(`❌ API ERROR: ${args[0]} ${duration}ms`, error);
           throw error;
@@ -82,7 +84,7 @@ test.describe('Workflow Corrected Test', () => {
       };
       
       // Monitor file input changes
-      document.addEventListener('change', (event) => {
+      document.addEventListener('change', (_event) => {
         if (event.target && (event.target as HTMLInputElement).type === 'file') {
           const fileInput = event.target as HTMLInputElement;
           console.log(`📁 FILE INPUT CHANGE: ${fileInput.files?.length || 0} files selected`);

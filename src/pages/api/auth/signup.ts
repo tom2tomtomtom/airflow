@@ -1,3 +1,4 @@
+import { NextApiRequest, NextApiResponse } from 'next';
 import { getErrorMessage } from '@/utils/errorUtils';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
@@ -129,8 +130,7 @@ export default async function handler(
       process.env.NODE_ENV === 'development' && console.log('Email confirmation required');
       return res.status(200).json({
         success: true,
-        message: 'Please check your email for a confirmation link before logging in.',
-      });
+        message: 'Please check your email for a confirmation link before logging in.'});
     }
 
     // If no email confirmation required, create user profile
@@ -167,7 +167,7 @@ export default async function handler(
 
     return res.status(200).json({
       success: true,
-      user: {
+      user: {},
         id: authData.user.id,
         email: authData.user.email || email,
         name: name,

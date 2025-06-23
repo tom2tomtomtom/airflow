@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   Box,
   Paper,
@@ -23,8 +23,6 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Stack,
-  Tooltip,
-  Badge,
   Menu,
   ListItemIcon,
   ListItemText,
@@ -48,7 +46,6 @@ import {
   ViewList as ViewListIcon,
   ViewModule as ViewModuleIcon,
   GridView as GridViewIcon,
-  FilterList as FilterListIcon,
   MoreVert as MoreVertIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
@@ -133,26 +130,27 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
     // Apply search filter
     if (searchTerm.trim()) {
       const search = searchTerm.toLowerCase();
-      filtered = filtered.filter(asset =>
-        asset.name.toLowerCase().includes(search) ||
-        asset.description?.toLowerCase().includes(search) ||
-        asset.tags.some(tag => tag.toLowerCase().includes(search))
+      filtered = filtered.filter(
+        (asset: any) =>
+          asset.name.toLowerCase().includes(search) ||
+          asset.description?.toLowerCase().includes(search) ||
+          asset.tags.some((tag: string) => tag.toLowerCase().includes(search))
       );
     }
 
     // Apply type filter
     if (filterType !== 'all') {
-      filtered = filtered.filter(asset => asset.type === filterType);
+      filtered = filtered.filter((asset: any) => asset.type === filterType);
     }
 
     // Apply favorites filter
     if (showFavoritesOnly) {
-      filtered = filtered.filter(asset => asset.isFavorite);
+      filtered = filtered.filter((asset: any) => asset.isFavorite);
     }
 
     // Apply client filter
     if (clientId) {
-      filtered = filtered.filter(asset => asset.clientId === clientId);
+      filtered = filtered.filter((asset: any) => asset.clientId === clientId);
     }
 
     // Sort assets
@@ -177,7 +175,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
       const isSelected = selectedAssets.some(selected => selected.id === asset.id);
       if (isSelected) {
         // Remove from selection
-        const newSelection = selectedAssets.filter(selected => selected.id !== asset.id);
+        const newSelection = selectedAssets.filter((selected: any) => selected.id !== asset.id);
         onAssetSelect?.(newSelection[0] || asset);
       } else {
         // Add to selection if within limits
@@ -204,12 +202,15 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
     onAssetFavorite?.(asset.id, !asset.isFavorite);
   };
 
-  const handleUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files) {
-      onAssetUpload?.(files);
-    }
-  }, [onAssetUpload]);
+  const handleUpload = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const files = event.target.files;
+      if (files) {
+        onAssetUpload?.(files);
+      }
+    },
+    [onAssetUpload]
+  );
 
   const getAssetIcon = (type: Asset['type']) => {
     switch (type) {
@@ -329,7 +330,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
               >
                 <IconButton
                   size="small"
-                  onClick={(e) => handleFavoriteToggle(asset, e)}
+                  onClick={e => handleFavoriteToggle(asset, e)}
                   sx={{
                     backgroundColor: 'rgba(255, 255, 255, 0.9)',
                     '&:hover': {
@@ -337,15 +338,11 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
                     },
                   }}
                 >
-                  {asset.isFavorite ? (
-                    <FavoriteIcon color="error" />
-                  ) : (
-                    <FavoriteBorderIcon />
-                  )}
+                  {asset.isFavorite ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
                 </IconButton>
                 <IconButton
                   size="small"
-                  onClick={(e) => handleAssetMenu(asset, e)}
+                  onClick={e => handleAssetMenu(asset, e)}
                   sx={{
                     backgroundColor: 'rgba(255, 255, 255, 0.9)',
                     '&:hover': {
@@ -417,7 +414,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
 
                 {asset.tags.length > 0 && (
                   <Box sx={{ mt: 1, display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
-                    {asset.tags.slice(0, 3).map((tag) => (
+                    {asset.tags.slice(0, 3).map((tag: any) => (
                       <Chip
                         key={tag}
                         size="small"
@@ -505,20 +502,10 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
           </Box>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <IconButton
-              size="small"
-              onClick={(e) => handleFavoriteToggle(asset, e)}
-            >
-              {asset.isFavorite ? (
-                <FavoriteIcon color="error" />
-              ) : (
-                <FavoriteBorderIcon />
-              )}
+            <IconButton size="small" onClick={e => handleFavoriteToggle(asset, e)}>
+              {asset.isFavorite ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
             </IconButton>
-            <IconButton
-              size="small"
-              onClick={(e) => handleAssetMenu(asset, e)}
-            >
+            <IconButton size="small" onClick={e => handleAssetMenu(asset, e)}>
               <MoreVertIcon />
             </IconButton>
           </Box>
@@ -532,15 +519,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
   }
 
   if (error) {
-    return (
-      <ErrorState
-        type="error"
-        message={error}
-        showRetry
-        onRetry={onRefresh}
-        variant="card"
-      />
-    );
+    return <ErrorState type="error" message={error} showRetry onRetry={onRefresh} variant="card" />;
   }
 
   return (
@@ -551,7 +530,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
             Asset Library
           </Typography>
-          
+
           <Box sx={{ display: 'flex', gap: 1 }}>
             {allowUpload && (
               <Button
@@ -570,7 +549,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
                 />
               </Button>
             )}
-            
+
             <IconButton onClick={onRefresh} size="small">
               <RefreshIcon />
             </IconButton>
@@ -584,7 +563,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
               size="small"
               placeholder="Search assets..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -607,7 +586,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
               <Select
                 value={filterType}
                 label="Type"
-                onChange={(e) => setFilterType(e.target.value as FilterType)}
+                onChange={e => setFilterType(e.target.value as FilterType)}
               >
                 <MenuItem value="all">All Types</MenuItem>
                 <MenuItem value="image">Images</MenuItem>
@@ -623,7 +602,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
               <Select
                 value={sortBy}
                 label="Sort by"
-                onChange={(e) => setSortBy(e.target.value as SortOption)}
+                onChange={e => setSortBy(e.target.value as SortOption)}
               >
                 <MenuItem value="date">Date</MenuItem>
                 <MenuItem value="name">Name</MenuItem>
@@ -691,19 +670,18 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
           </Typography>
         </Box>
       ) : viewMode === 'list' ? (
-        <Stack spacing={1}>
-          {filteredAssets.map(renderListItem)}
-        </Stack>
+        <Stack spacing={1}>{filteredAssets.map(renderListItem)}</Stack>
       ) : (
         <Grid container spacing={viewMode === 'compact' ? 1 : 2}>
-          {filteredAssets.map((asset) => (
+          {filteredAssets.map((asset: any) => (
             <Grid
-              item
               key={asset.id}
-              xs={viewMode === 'compact' ? 6 : 12}
-              sm={viewMode === 'compact' ? 4 : 6}
-              md={viewMode === 'compact' ? 3 : 4}
-              lg={viewMode === 'compact' ? 2 : 3}
+              size={{
+                xs: viewMode === 'compact' ? 6 : 12,
+                sm: viewMode === 'compact' ? 4 : 6,
+                md: viewMode === 'compact' ? 3 : 4,
+                lg: viewMode === 'compact' ? 2 : 3,
+              }}
             >
               {renderAssetCard(asset)}
             </Grid>
@@ -760,7 +738,9 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
       >
         {previewAsset && (
           <>
-            <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <DialogTitle
+              sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+            >
               {previewAsset.name}
               <IconButton onClick={() => setPreviewAsset(null)}>
                 <CloseIcon />
@@ -795,7 +775,7 @@ export const EnhancedAssetBrowser: React.FC<EnhancedAssetBrowserProps> = ({
                 </Typography>
               )}
               <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                {previewAsset.tags.map((tag) => (
+                {previewAsset.tags.map((tag: any) => (
                   <Chip key={tag} size="small" label={tag} />
                 ))}
               </Box>

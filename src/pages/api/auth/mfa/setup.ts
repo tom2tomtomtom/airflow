@@ -1,3 +1,4 @@
+import { NextApiResponse } from 'next';
 import { getErrorMessage } from '@/utils/errorUtils';
 import type { NextApiResponse } from 'next';
 import { setupMFA } from '@/lib/mfa';
@@ -37,21 +38,18 @@ async function handler(
 
     return res.status(200).json({
       success: true,
-      data: {
+      data: {},
         qrCodeUrl: mfaResult.qrCodeUrl,
         backupCodes: mfaResult.backupCodes,
         // Only include secret in development for testing
-        ...(process.env.NODE_ENV === 'development' && { secret: mfaResult.secret }),
-      },
-    });
+        ...(process.env.NODE_ENV === 'development' && { secret: mfaResult.secret })}});
 
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('MFA setup error:', error);
     return res.status(500).json({
       success: false,
-      error: 'Failed to setup MFA. Please try again.',
-    });
+      error: 'Failed to setup MFA. Please try again.'});
   }
 }
 

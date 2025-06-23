@@ -16,15 +16,13 @@ import {
   TableRow,
   LinearProgress,
   Stack,
-  Tooltip,
-} from '@mui/material';
+  Tooltip} from '@mui/material';
 import {
   Webhook as WebhookIcon,
   Add as AddIcon,
   Edit as EditIcon,
   Refresh as RefreshIcon,
-  MoreVert as MoreIcon,
-} from '@mui/icons-material';
+  MoreVert as MoreIcon} from '@mui/icons-material';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
 
@@ -107,14 +105,13 @@ const WebhookManager: React.FC = () => {
     retry_policy: {
       max_attempts: 3,
       backoff_strategy: 'exponential' as 'linear' | 'exponential',
-      initial_delay_ms: 1000,
+      initial_delay_ms: 1000
     },
-    headers: {} as Record<string, string>,
+    headers: {} as Record<string, string>
   });
   const [testData, setTestData] = useState({
     event_type: '',
-    test_data: '{}',
-  });
+    test_data: '{}'});
 
   // Fetch webhooks
   const fetchWebhooks = async () => {
@@ -123,8 +120,8 @@ const WebhookManager: React.FC = () => {
       setLoading(true);
       const response = await fetch('/api/webhooks', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
       });
       if (response.ok) {
         const data = await response.json();
@@ -132,7 +129,7 @@ const WebhookManager: React.FC = () => {
         setStatistics(data.statistics);
         setAvailableEvents(data.events || []);
       }
-    } catch (error) {
+    } catch (error: any) {
       const message = getErrorMessage(error);
       if (process.env.NODE_ENV === 'development') {
         console.error('Error fetching webhooks:', error);
@@ -219,7 +216,7 @@ const WebhookManager: React.FC = () => {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  webhooks.map((webhook) => (
+                  webhooks.map((webhook: any) => (
                     <TableRow key={webhook.id} hover>
                       <TableCell>
                         <Box>
@@ -249,7 +246,7 @@ const WebhookManager: React.FC = () => {
                       </TableCell>
                       <TableCell>
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                          {webhook.events.slice(0, 3).map((event) => (
+                          {webhook.events.slice(0, 3).map((event: any) => (
                             <Chip
                               key={event}
                               label={event}

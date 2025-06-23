@@ -1,36 +1,56 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { SupabaseClient } from '@supabase/supabase-js';
+import { Database } from '@/types/database';
+import { validateSupabaseConfig } from './config';
+import { loggers } from '@/lib/logger';
 
-export async function createClient() {
-  const cookieStore = await cookies();
+// Create a Supabase client for server-side usage with anon key (Pages Router compatible)
+export function createServerSupabaseClient(
+  req?: NextApiRequest,
+  res?: NextApiResponse
+): SupabaseClient<Database> {
+  const config = validateSupabaseConfig();
 
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-        set(name: string, value: string, options: CookieOptions) {
-          try {
-            cookieStore.set({ name, value, ...options });
-          } catch (error) {
-            // The `set` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
-          }
-        },
-        remove(name: string, options: CookieOptions) {
-          try {
-            cookieStore.set({ name, value: '', ...options });
-          } catch (error) {
-            // The `delete` method was called from a Server Component.
-            // This can be ignored if you have middleware refreshing
-            // user sessions.
-          }
-        },
-      },
-    }
-  );
+  try {
+    const client = createServerClient<Database>(
+      config.url,
+      config.anonKey,
+      {
+        cookies: {},
+          get(name: string) {
+            return req?.cookies[name];
+          },
+          set(name: string, value: string, options: CookieOptions) {
+            if (res) {
+              try {
+                // Use Next.js API response to set cookies
+                const cookieValue = `${name}=${value}; Path=/; HttpOnly; Secure; SameSite=Lax`;
+                res.setHeader('Set-Cookie', cookieValue);
+              } catch (error: any) {
+                loggers.supabase.debug('Cookie set from API handler', { name, error });
+              }
+            }
+          },
+          remove(name: string, options: CookieOptions) {
+            if (res) {
+              try {
+                // Use Next.js API response to remove cookies
+                const cookieValue = `${name}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`;
+                res.setHeader('Set-Cookie', cookieValue);
+              } catch (error: any) {
+                loggers.supabase.debug('Cookie remove from API handler', { name, error });
+              }
+            }
+          }}}
+    );
+
+    return client;
+  } catch (error: any) {
+    loggers.supabase.error('Failed to create server Supabase client', error);
+    throw new Error('Failed to initialize server Supabase client');
+  }
 }
+
+// Legacy alias for backwards compatibility
+export const createClient = createServerSupabaseClient;

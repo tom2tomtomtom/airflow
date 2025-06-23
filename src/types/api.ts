@@ -13,23 +13,23 @@ export interface BaseApiResponse {
 // Authentication API Responses
 export interface LoginResponse extends BaseApiResponse {
   user?: {
-    id: string;
-    email: string;
-    name: string;
+    id: string;,
+    email: string;,
+    name: string;,
     role: string;
   };
   session?: {
-    access_token: string;
-    refresh_token: string;
+    access_token: string;,
+    refresh_token: string;,
     expires_at: string;
   };
 }
 
 export interface SignupResponse extends BaseApiResponse {
   user?: {
-    id: string;
-    email: string;
-    name: string;
+    id: string;,
+    email: string;,
+    name: string;,
     role: string;
   };
 }
@@ -37,9 +37,9 @@ export interface SignupResponse extends BaseApiResponse {
 export interface SessionResponse extends BaseApiResponse {
   authenticated: boolean;
   user?: {
-    id: string;
-    email: string;
-    name: string;
+    id: string;,
+    email: string;,
+    name: string;,
     role: string;
   };
 }
@@ -47,26 +47,26 @@ export interface SessionResponse extends BaseApiResponse {
 // AI Generation API Responses
 export interface AIGenerationResponse extends BaseApiResponse {
   data?: {
-    id: string;
-    type: 'text' | 'image' | 'video' | 'voice';
+    id: string;,
+    type: 'text' | 'image' | 'video' | 'voice';,
     content: string;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
     created_at: string;
   };
 }
 
 export interface GenerationsListResponse extends BaseApiResponse {
   data?: Array<{
-    id: string;
-    type: string;
-    content: string;
-    created_at: string;
+    id: string;,
+    type: string;,
+    content: string;,
+    created_at: string;,
     status: string;
   }>;
   pagination?: {
-    page: number;
-    limit: number;
-    total: number;
+    page: number;,
+    limit: number;,
+    total: number;,
     totalPages: number;
   };
 }
@@ -74,27 +74,27 @@ export interface GenerationsListResponse extends BaseApiResponse {
 // Asset Management API Responses
 export interface AssetUploadResponse extends BaseApiResponse {
   asset?: {
-    id: string;
-    filename: string;
-    url: string;
-    type: string;
-    size: number;
+    id: string;,
+    filename: string;,
+    url: string;,
+    type: string;,
+    size: number;,
     created_at: string;
   };
 }
 
 export interface AssetsListResponse extends BaseApiResponse {
   assets?: Array<{
-    id: string;
-    filename: string;
-    url: string;
-    type: string;
-    size: number;
+    id: string;,
+    filename: string;,
+    url: string;,
+    type: string;,
+    size: number;,
     created_at: string;
   }>;
   pagination?: {
-    page: number;
-    limit: number;
+    page: number;,
+    limit: number;,
     total: number;
   };
 }
@@ -102,21 +102,21 @@ export interface AssetsListResponse extends BaseApiResponse {
 // Campaign API Responses
 export interface CampaignResponse extends BaseApiResponse {
   campaign?: {
-    id: string;
-    name: string;
-    description: string;
-    status: string;
-    created_at: string;
+    id: string;,
+    name: string;,
+    description: string;,
+    status: string;,
+    created_at: string;,
     updated_at: string;
   };
 }
 
 export interface CampaignsListResponse extends BaseApiResponse {
   campaigns?: Array<{
-    id: string;
-    name: string;
-    description: string;
-    status: string;
+    id: string;,
+    name: string;,
+    description: string;,
+    status: string;,
     created_at: string;
   }>;
 }
@@ -124,22 +124,22 @@ export interface CampaignsListResponse extends BaseApiResponse {
 // Analytics API Responses
 export interface AnalyticsResponse extends BaseApiResponse {
   data?: {
-    metrics: Array<{
-      id: string;
-      label: string;
-      value: string | number;
-      change: number;
-      trend: 'up' | 'down' | 'stable';
+    metrics: Array<{,
+    id: string;,
+    label: string;,
+    value: string | number;,
+    change: number;,
+    trend: 'up' | 'down' | 'stable';
     }>;
-    charts?: Record<string, any>;
+    charts?: Record<string, unknown>;
     timeRange: string;
   };
 }
 
 // Health Check Response
 export interface HealthResponse extends BaseApiResponse {
-  status: 'healthy' | 'unhealthy';
-  timestamp: string;
+  status: 'healthy' | 'unhealthy';,
+    timestamp: string;
   services?: Record<string, 'up' | 'down'>;
 }
 
@@ -150,9 +150,9 @@ export interface CSRFTokenResponse extends BaseApiResponse {
 
 // Error Response
 export interface ErrorResponse extends BaseApiResponse {
-  success: false;
-  error: string;
-  details?: Record<string, any>;
+  success: false;,
+    error: string;
+  details?: Record<string, unknown>;
   code?: string;
 }
 
@@ -166,22 +166,22 @@ export interface PaginationParams {
 
 export interface SearchParams extends PaginationParams {
   query?: string;
-  filters?: Record<string, any>;
+  filters?: Record<string, unknown>;
 }
 
 // AI Generation Request
 export interface AIGenerationRequest {
-  prompt: string;
-  type: 'text' | 'image' | 'video' | 'voice';
-  clientId: string;
-  parameters?: Record<string, any>;
+  prompt: string;,
+    type: 'text' | 'image' | 'video' | 'voice';,
+    clientId: string;
+  parameters?: Record<string, unknown>;
 }
 
 // Asset Upload Request
 export interface AssetUploadRequest {
   file: File;
   type?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 // Campaign Request
@@ -189,23 +189,25 @@ export interface CampaignRequest {
   name: string;
   description?: string;
   status?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 // Authentication Request
 export interface LoginRequest {
-  email: string;
-  password: string;
+  email: string;,
+    password: string;
 }
 
 export interface SignupRequest {
-  email: string;
-  password: string;
-  name: string;
+  email: string;,
+    password: string;,
+    name: string;
 }
 
 // Type guards for API responses
-export function isSuccessResponse(response: BaseApiResponse): response is BaseApiResponse & { success: true } {
+export function isSuccessResponse(
+  response: BaseApiResponse
+): response is BaseApiResponse & { success: true } {
   return response.success === true;
 }
 
@@ -221,24 +223,24 @@ export const API_ENDPOINTS = {
   LOGOUT: '/api/auth/logout',
   SESSION: '/api/auth/session',
   CSRF_TOKEN: '/api/auth/csrf-token',
-  
+
   // AI Generation
   AI_GENERATE: '/api/ai/generate',
   AI_GENERATIONS: '/api/ai/generations',
-  
+
   // Assets
   ASSETS: '/api/assets',
   ASSET_UPLOAD: '/api/assets/upload',
-  
+
   // Campaigns
   CAMPAIGNS: '/api/campaigns',
-  
+
   // Analytics
   ANALYTICS_OVERVIEW: '/api/analytics/overview',
   ANALYTICS_PERFORMANCE: '/api/analytics/performance',
-  
+
   // Health
   HEALTH: '/api/health',
 } as const;
 
-export type ApiEndpoint = typeof API_ENDPOINTS[keyof typeof API_ENDPOINTS];
+export type ApiEndpoint = (typeof API_ENDPOINTS)[keyof typeof API_ENDPOINTS];

@@ -14,8 +14,7 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemIcon,
-} from '@mui/material';
+  ListItemIcon} from '@mui/material';
 import {
   Facebook,
   Twitter,
@@ -25,8 +24,7 @@ import {
   Schedule,
   Check,
   Error,
-  Link as LinkIcon,
-} from '@mui/icons-material';
+  Link as LinkIcon} from '@mui/icons-material';
 
 interface Platform {
   id: string;
@@ -48,8 +46,7 @@ const platformIcons: Record<string, React.ReactElement> = {
   facebook: <Facebook />,
   twitter: <Twitter />,
   linkedin: <LinkedIn />,
-  instagram: <Instagram />,
-};
+  instagram: <Instagram />};
 
 export default function SocialMediaPublisher() {
   const [platforms, setPlatforms] = useState<Platform[]>([]);
@@ -78,7 +75,7 @@ export default function SocialMediaPublisher() {
       } else {
         setError(data.error);
       }
-    } catch (err) {
+    } catch (err: any) {
       setError('Failed to load platforms');
     } finally {
       setLoading(false);
@@ -88,7 +85,7 @@ export default function SocialMediaPublisher() {
   const handlePlatformToggle = (platformId: string) => {
     setSelectedPlatforms(prev => 
       prev.includes(platformId)
-        ? prev.filter(id => id !== platformId)
+        ? prev.filter((id: any) => id !== platformId)
         : [...prev, platformId]
     );
   };
@@ -111,17 +108,13 @@ export default function SocialMediaPublisher() {
 
       const response = await fetch('/api/social/publish', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {},
+          'Content-Type': 'application/json'},
         body: JSON.stringify({
           platforms: selectedPlatforms,
-          content: {
+          content: {},
             text: content,
-            link: link || undefined,
-          },
-        }),
-      });
+            link: link || undefined}})});
 
       const data = await response.json();
 
@@ -135,7 +128,7 @@ export default function SocialMediaPublisher() {
       } else {
         setError(data.error);
       }
-    } catch (err) {
+    } catch (err: any) {
       setError('Failed to publish content');
     } finally {
       setPublishing(false);
@@ -153,7 +146,7 @@ export default function SocialMediaPublisher() {
       } else {
         setError(data.error);
       }
-    } catch (err) {
+    } catch (err: any) {
       setError('Failed to connect platform');
     }
   };
@@ -184,7 +177,7 @@ export default function SocialMediaPublisher() {
           Select Platforms
         </Typography>
         <Box display="flex" flexDirection="column" gap={1}>
-          {platforms.map((platform) => (
+          {platforms.map((platform: any) => (
             <Box key={platform.id} display="flex" alignItems="center" justifyContent="space-between">
               <FormControlLabel
                 control={
@@ -242,8 +235,7 @@ export default function SocialMediaPublisher() {
           value={link}
           onChange={(e) => setLink(e.target.value)}
           InputProps={{
-            startAdornment: <LinkIcon sx={{ mr: 1, color: 'text.secondary' }} />,
-          }}
+            startAdornment: <LinkIcon sx={{ mr: 1, color: 'text.secondary' }} />}}
         />
       </Box>
 
@@ -283,7 +275,7 @@ export default function SocialMediaPublisher() {
                   )}
                 </ListItemIcon>
                 <ListItemText
-                  primary={`${platforms.find(p => p.id === result.platform)?.displayName || result.platform}`}
+                  primary={`${platforms.find((p: any) => p.id === result.platform)?.displayName || result.platform}`}
                   secondary={
                     result.success
                       ? `Successfully published${result.postId ? ` (ID: ${result.postId})` : ''}`

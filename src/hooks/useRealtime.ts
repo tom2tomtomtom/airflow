@@ -40,8 +40,7 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
     pollInterval = 10000, // 10 seconds
     enableNotifications = true,
     categories = [],
-    autoMarkRead = false,
-  } = options;
+    autoMarkRead = false} = options;
 
   const { activeClient } = useClient();
   const { user, isAuthenticated } = useAuth();
@@ -64,14 +63,11 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
       const params = new URLSearchParams({
         client_id: activeClient.id,
         limit: '50',
-        ...(lastFetch && { since: lastFetch }),
-      });
+        ...(lastFetch && { since: lastFetch })});
 
       const response = await fetch(`/api/realtime/websocket?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
+        headers: {},
+          'Authorization': `Bearer ${localStorage.getItem('token')}`}});
 
       if (response.ok) {
         const data = await response.json();
@@ -90,7 +86,7 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
       } else {
         throw new Error('Failed to fetch events');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching realtime events:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch events');
       isConnected.current = false;
@@ -124,19 +120,16 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
       const params = new URLSearchParams({
         client_id: activeClient.id,
         read: 'false',
-        limit: '20',
-      });
+        limit: '20'});
 
       if (categories.length > 0) {
-        categories.forEach(category => params.append('category', category));
+        categories.forEach((category: any) => params.append('category', category));
       }
 
       const response = await fetch(`/api/notifications?${params}`, {
-        headers: {
+        headers: {},
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+          'Content-Type': 'application/json'}});
 
       if (response.ok) {
         const data = await response.json();
@@ -151,7 +144,7 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
         console.warn('Failed to fetch notifications:', response.status, response.statusText);
         setNotifications([]);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching notifications:', err);
       setNotifications([]);
     }
@@ -164,19 +157,17 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
     try {
       await fetch('/api/realtime/websocket', {
         method: 'PUT',
-        headers: {
+        headers: {},
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify({ event_ids: eventIds }),
-      });
+          'Authorization': `Bearer ${localStorage.getItem('token')}`},
+        body: JSON.stringify({ event_ids: eventIds })});
 
       setEvents(prev => 
-        prev.map(event => 
+        prev.map((event: any) => 
           eventIds.includes(event.id) ? { ...event, read: true } : event
         )
       );
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error marking events as read:', err);
     }
   }, [isAuthenticated]);
@@ -188,21 +179,19 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
     try {
       await fetch(`/api/notifications/${notificationId}`, {
         method: 'PUT',
-        headers: {
+        headers: {},
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify({ read: true }),
-      });
+          'Authorization': `Bearer ${localStorage.getItem('token')}`},
+        body: JSON.stringify({ read: true })});
 
       setNotifications(prev => 
-        prev.map(notification => 
+        prev.map((notification: any) => 
           notification.id === notificationId 
             ? { ...notification, read: true } 
             : notification
         )
       );
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error marking notification as read:', err);
     }
   }, [isAuthenticated]);
@@ -214,15 +203,13 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
     try {
       await fetch(`/api/notifications/${notificationId}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
+        headers: {},
+          'Authorization': `Bearer ${localStorage.getItem('token')}`}});
 
       setNotifications(prev => 
-        prev.filter(notification => notification.id !== notificationId)
+        prev.filter((notification: any) => notification.id !== notificationId)
       );
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error dismissing notification:', err);
     }
   }, [isAuthenticated]);
@@ -238,18 +225,15 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
     try {
       await fetch('/api/realtime/websocket', {
         method: 'POST',
-        headers: {
+        headers: {},
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+          'Authorization': `Bearer ${localStorage.getItem('token')}`},
         body: JSON.stringify({
           type,
           data,
           client_id: activeClient.id,
-          target_user_ids: targetUserIds,
-        }),
-      });
-    } catch (err) {
+          target_user_ids: targetUserIds})});
+    } catch (err: any) {
       console.error('Error creating event:', err);
     }
   }, [isAuthenticated, activeClient]);
@@ -294,8 +278,8 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
   useEffect(() => {
     if (autoMarkRead && events.length > 0) {
       const unreadEventIds = events
-        .filter(event => !event.read)
-        .map(event => event.id);
+        .filter((event: any) => !event.read)
+        .map((event: any) => event.id);
       
       if (unreadEventIds.length > 0) {
         markEventsAsRead(unreadEventIds);
@@ -304,8 +288,8 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
   }, [events, autoMarkRead, markEventsAsRead]);
 
   // Computed values
-  const unreadEvents = events.filter(event => !event.read);
-  const unreadNotifications = notifications.filter(notification => !notification.read);
+  const unreadEvents = events.filter((event: any) => !event.read);
+  const unreadNotifications = notifications.filter((notification: any) => !notification.read);
   const connectionStatus = isConnected.current ? 'connected' : 'disconnected';
 
   return {
@@ -332,8 +316,7 @@ export const useRealtime = (options: UseRealtimeOptions = {}) => {
     
     // Control
     startPolling,
-    stopPolling,
-  };
+    stopPolling};
 };
 
 // Hook for specific event types
@@ -349,15 +332,13 @@ export const useExecutionEvents = () => {
 
   return {
     ...realtime,
-    executionEvents,
-  };
+    executionEvents};
 };
 
 // Hook for approval events
 export const useApprovalEvents = () => {
   const realtime = useRealtime({
-    categories: ['approval'],
-  });
+    categories: ['approval']});
 
   const approvalEvents = realtime.events.filter(
     event => event.type === 'approval_decision'
@@ -365,16 +346,14 @@ export const useApprovalEvents = () => {
 
   return {
     ...realtime,
-    approvalEvents,
-  };
+    approvalEvents};
 };
 
 // Hook for notifications only
 export const useNotifications = (options: { categories?: string[] } = {}) => {
   const realtime = useRealtime({
     enableNotifications: true,
-    categories: options.categories,
-  });
+    categories: options.categories});
 
   return {
     notifications: realtime.notifications,
@@ -383,6 +362,5 @@ export const useNotifications = (options: { categories?: string[] } = {}) => {
     dismiss: realtime.dismissNotification,
     loading: realtime.loading,
     error: realtime.error,
-    refresh: realtime.refresh,
-  };
+    refresh: realtime.refresh};
 };

@@ -10,13 +10,11 @@ jest.mock('mixpanel-browser', () => ({
   init: jest.fn(),
   track: jest.fn(),
   identify: jest.fn(),
-  people: {
+  people: {},
     set: jest.fn(),
-    increment: jest.fn(),
-  },
+    increment: jest.fn()},
   time_event: jest.fn(),
-  reset: jest.fn(),
-}));
+  reset: jest.fn()}));
 
 // Mock console methods
 const _mockConsoleLog = jest.spyOn(console, 'log').mockImplementation(() => {});
@@ -50,8 +48,7 @@ describe('Basic Analytics Tests', () => {
       const eventData = {
         user_id: 'user123',
         action: 'click',
-        element: 'signup_button',
-      };
+        element: 'signup_button'};
       
       mixpanel.track('Button Click', eventData);
       
@@ -74,8 +71,7 @@ describe('Basic Analytics Tests', () => {
       const userProperties = {
         email: 'test@example.com',
         plan: 'pro',
-        signup_date: '2024-01-15',
-      };
+        signup_date: '2024-01-15'};
       
       mixpanel.people.set(userProperties);
       
@@ -120,8 +116,7 @@ describe('Basic Analytics Tests', () => {
         email: 'test@example.com',
         source: 'landing_page',
         plan: 'free',
-        timestamp: Date.now(),
-      };
+        timestamp: Date.now()};
       
       mixpanel.track('User Signup', signupData);
       
@@ -135,8 +130,7 @@ describe('Basic Analytics Tests', () => {
       const loginData = {
         user_id: 'user123',
         login_method: 'google',
-        timestamp: Date.now(),
-      };
+        timestamp: Date.now()};
       
       mixpanel.track('User Login', loginData);
       
@@ -153,8 +147,7 @@ describe('Basic Analytics Tests', () => {
         client_id: 'client789',
         template: 'social_media',
         assets_count: 5,
-        timestamp: Date.now(),
-      };
+        timestamp: Date.now()};
       
       mixpanel.track('Campaign Created', campaignData);
       
@@ -172,8 +165,7 @@ describe('Basic Analytics Tests', () => {
         duration: 30,
         resolution: '1080p',
         format: 'mp4',
-        timestamp: Date.now(),
-      };
+        timestamp: Date.now()};
       
       mixpanel.track('Video Generated', videoData);
       
@@ -189,8 +181,7 @@ describe('Basic Analytics Tests', () => {
         asset_type: 'image',
         file_size: 1024000,
         client_id: 'client456',
-        timestamp: Date.now(),
-      };
+        timestamp: Date.now()};
       
       mixpanel.track('Asset Uploaded', assetData);
       
@@ -207,8 +198,7 @@ describe('Basic Analytics Tests', () => {
         page: 'dashboard',
         load_time: 1250,
         user_agent: 'Chrome',
-        timestamp: Date.now(),
-      };
+        timestamp: Date.now()};
       
       mixpanel.track('Page Load', performanceData);
       
@@ -224,8 +214,7 @@ describe('Basic Analytics Tests', () => {
         method: 'GET',
         response_time: 450,
         status: 200,
-        timestamp: Date.now(),
-      };
+        timestamp: Date.now()};
       
       mixpanel.track('API Call', apiData);
       
@@ -241,8 +230,7 @@ describe('Basic Analytics Tests', () => {
         step: 'brief_upload',
         duration: 5000,
         success: true,
-        timestamp: Date.now(),
-      };
+        timestamp: Date.now()};
       
       mixpanel.track('Workflow Step', workflowData);
       
@@ -260,8 +248,7 @@ describe('Basic Analytics Tests', () => {
         error_type: 'JavaScript Error',
         user_id: 'user123',
         context: 'campaign_creation',
-        timestamp: Date.now(),
-      };
+        timestamp: Date.now()};
       
       mixpanel.track('Error Occurred', errorData);
       
@@ -278,8 +265,7 @@ describe('Basic Analytics Tests', () => {
         status_code: 500,
         error_message: 'Internal Server Error',
         user_id: 'user123',
-        timestamp: Date.now(),
-      };
+        timestamp: Date.now()};
       
       mixpanel.track('API Error', apiErrorData);
       
@@ -298,8 +284,7 @@ describe('Basic Analytics Tests', () => {
         success: true,
         duration: 2500,
         tokens_used: 500,
-        timestamp: Date.now(),
-      };
+        timestamp: Date.now()};
       
       mixpanel.track('Feature Used', featureData);
       
@@ -315,8 +300,7 @@ describe('Basic Analytics Tests', () => {
         session_duration: 1800000,
         pages_viewed: 8,
         actions_taken: 15,
-        timestamp: Date.now(),
-      };
+        timestamp: Date.now()};
       
       mixpanel.track('Session End', engagementData);
       
@@ -332,8 +316,7 @@ describe('Basic Analytics Tests', () => {
         plan_type: 'pro',
         amount: 99.99,
         currency: 'USD',
-        timestamp: Date.now(),
-      };
+        timestamp: Date.now()};
       
       mixpanel.track('Conversion', conversionData);
       
@@ -378,8 +361,7 @@ describe('Basic Analytics Tests', () => {
         user_id: 'user123',
         action: 'click',
         value: 100,
-        metadata: { source: 'button' },
-      };
+        metadata: { source: 'button' }};
       
       expect(() => {
         mixpanel.track('valid_event', validProperties);
@@ -395,8 +377,7 @@ describe('Basic Analytics Tests', () => {
         event_name: 'string',
         user_id: 'string',
         timestamp: 'number',
-        properties: 'object',
-      };
+        properties: 'object'};
       
       Object.entries(eventStructure).forEach(([key, expectedType]) => {
         expect(typeof key).toBe('string');
@@ -409,10 +390,9 @@ describe('Basic Analytics Tests', () => {
       const eventData = {
         event_name: 'test_event',
         timestamp: Date.now(),
-        user_id: 'user456',
-      };
+        user_id: 'user456'};
       
-      requiredProperties.forEach(prop => {
+      requiredProperties.forEach((prop: any) => {
         expect(eventData).toHaveProperty(prop);
         expect(eventData[prop]).toBeDefined();
       });
@@ -423,8 +403,7 @@ describe('Basic Analytics Tests', () => {
         user_id: 'user123',
         email: 'test@example.com',
         password: 'secret123', // Should be filtered out
-        action: 'login',
-      };
+        action: 'login'};
       
       const sanitizedData = {
         user_id: sensitiveData.user_id,

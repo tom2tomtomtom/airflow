@@ -3,10 +3,10 @@ import { Box, Typography, Paper, Grid } from '@mui/material';
 
 export default function DebugPage() {
   const envVars = {
-    'NEXT_PUBLIC_DEMO_MODE': process.env.NEXT_PUBLIC_DEMO_MODE,
-    'NEXT_PUBLIC_SUPABASE_URL': process.env.NEXT_PUBLIC_SUPABASE_URL ? 'SET' : 'NOT SET',
-    'NEXT_PUBLIC_SUPABASE_ANON_KEY': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'SET' : 'NOT SET',
-    'NODE_ENV': process.env.NODE_ENV,
+    NEXT_PUBLIC_DEMO_MODE: process.env.NEXT_PUBLIC_DEMO_MODE,
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'SET' : 'NOT SET',
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'SET' : 'NOT SET',
+    NODE_ENV: process.env.NODE_ENV,
   };
 
   return (
@@ -14,7 +14,7 @@ export default function DebugPage() {
       <Typography variant="h4" gutterBottom>
         🔍 Debug Information
       </Typography>
-      
+
       <Paper sx={{ p: 3, mb: 3 }}>
         <Typography variant="h6" gutterBottom>
           Environment Variables
@@ -34,7 +34,9 @@ export default function DebugPage() {
         <Typography variant="h6" gutterBottom>
           Current URL & Timestamp
         </Typography>
-        <Typography>URL: {typeof window !== 'undefined' ? window.location.href : 'Server Side'}</Typography>
+        <Typography>
+          URL: {typeof window !== 'undefined' ? window.location.href : 'Server Side'}
+        </Typography>
         <Typography>Build Time: {new Date().toISOString()}</Typography>
       </Paper>
 
@@ -43,9 +45,10 @@ export default function DebugPage() {
           Expected Behavior
         </Typography>
         <Typography>
-          • NEXT_PUBLIC_DEMO_MODE should be "false"<br/>
-          • Supabase variables should be "SET"<br/>
-          • If demo mode is "true", authentication will be disabled
+          • NEXT_PUBLIC_DEMO_MODE should be "false"
+          <br />
+          • Supabase variables should be "SET"
+          <br />• If demo mode is "true", authentication will be disabled
         </Typography>
       </Paper>
     </Box>

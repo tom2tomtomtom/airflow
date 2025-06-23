@@ -92,7 +92,7 @@ interface Matrix {
 }
 
 // Add dynamic fields to demo templates
-const templatesWithFields: Template[] = demoTemplates.map(template => ({
+const templatesWithFields: Template[] = demoTemplates.map((template: any) => ({
   ...template,
   dynamic_fields: [
     {
@@ -100,39 +100,47 @@ const templatesWithFields: Template[] = demoTemplates.map(template => ({
       name: 'Headline',
       type: 'text' as const,
       required: true,
-      description: `Main headline text for ${template.name}`
+      description: `Main headline text for ${template.name}`,
     },
     {
       id: 'df2',
       name: 'Background Image',
       type: 'image' as const,
       required: true,
-      description: 'Background or main image'
+      description: 'Background or main image',
     },
     {
       id: 'df3',
       name: 'Call to Action',
       type: 'text' as const,
       required: false,
-      description: 'Optional call to action text'
+      description: 'Optional call to action text',
     },
-    ...(template.platform === 'instagram' ? [{
-      id: 'df4',
-      name: 'Story Link',
-      type: 'link' as const,
-      required: false,
-      description: 'Swipe up link (if applicable)'
-    }] : []),
-    ...(template.platform === 'youtube' ? [{
-      id: 'df5',
-      name: 'Video Duration',
-      type: 'text' as const,
-      required: false,
-      description: 'Video duration overlay'
-    }] : [])
+    ...(template.platform === 'instagram'
+      ? [
+          {
+            id: 'df4',
+            name: 'Story Link',
+            type: 'link' as const,
+            required: false,
+            description: 'Swipe up link (if applicable)',
+          },
+        ]
+      : []),
+    ...(template.platform === 'youtube'
+      ? [
+          {
+            id: 'df5',
+            name: 'Video Duration',
+            type: 'text' as const,
+            required: false,
+            description: 'Video duration overlay',
+          },
+        ]
+      : []),
   ],
   is_creatomate: true,
-  creatomate_id: `crt-${template.id}`
+  creatomate_id: `crt-${template.id}`,
 }));
 
 // Matrix Page Component
@@ -154,10 +162,10 @@ const MatrixPage: React.FC = () => {
     // Initialize field assignments when template is selected
     if (selectedTemplate && selectedTemplate.dynamic_fields) {
       const initialAssignments: Record<string, FieldAssignment> = {};
-      selectedTemplate.dynamic_fields.forEach(field => {
+      selectedTemplate.dynamic_fields.forEach((field: any) => {
         initialAssignments[field.id] = {
           fieldId: field.id,
-          status: 'empty'
+          status: 'empty',
         };
       });
       setFieldAssignments(initialAssignments);
@@ -169,28 +177,28 @@ const MatrixPage: React.FC = () => {
     setMatrixName(`${template.name} - ${new Date().toLocaleDateString()}`);
   };
 
-  const handleFieldUpdate = (fieldId: string, value: string | undefined, assetId?: string) => {
+  const handleFieldUpdate = (fieldId: string, value?: string, assetId?: string) => {
     setFieldAssignments(prev => ({
       ...prev,
       [fieldId]: {
         ...prev[fieldId],
         value,
         assetId,
-        status: value || assetId ? 'completed' : 'empty'
-      }
+        status: value || assetId ? 'completed' : 'empty',
+      },
     }));
   };
 
   const handleSaveMatrix = async () => {
     if (!selectedTemplate || !matrixName) return;
-    
+
     setLoading(true);
     setSaveSuccess(false);
-    
+
     try {
       // Simulate saving matrix
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
+
       const newMatrix: Matrix = {
         id: `matrix-${Date.now()}`,
         name: matrixName,
@@ -198,12 +206,12 @@ const MatrixPage: React.FC = () => {
         templateName: selectedTemplate.name,
         fieldAssignments,
         created_at: new Date().toISOString(),
-        status: 'draft'
+        status: 'draft',
       };
-      
+
       setSavedMatrices([...savedMatrices, newMatrix]);
       setSaveSuccess(true);
-      
+
       // Reset after success
       setTimeout(() => {
         setSelectedTemplate(null);
@@ -211,8 +219,7 @@ const MatrixPage: React.FC = () => {
         setMatrixName('');
         setSaveSuccess(false);
       }, 2000);
-      
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving matrix:', error);
     } finally {
       setLoading(false);
@@ -238,15 +245,17 @@ const MatrixPage: React.FC = () => {
     }
   };
 
-  const filteredTemplates = templatesWithFields.filter(template =>
-    template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    template.platform.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    template.category.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredTemplates = templatesWithFields.filter(
+    (template: any) =>
+      template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      template.platform.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      template.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const isMatrixComplete = selectedTemplate?.dynamic_fields?.every(field => 
-    field.required ? fieldAssignments[field.id]?.status === 'completed' : true
-  ) ?? false;
+  const isMatrixComplete =
+    selectedTemplate?.dynamic_fields?.every(field =>
+      field.required ? fieldAssignments[field.id]?.status === 'completed' : true
+    ) ?? false;
 
   return (
     <DashboardLayout title="Matrix Editor">
@@ -294,7 +303,7 @@ const MatrixPage: React.FC = () => {
                 fullWidth
                 placeholder="Search templates..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -304,13 +313,13 @@ const MatrixPage: React.FC = () => {
                 }}
                 sx={{ mb: 2 }}
               />
-              
+
               <Typography variant="h6" gutterBottom>
                 Select Template
               </Typography>
-              
+
               <Box sx={{ maxHeight: 600, overflowY: 'auto' }}>
-                {filteredTemplates.map((template) => (
+                {filteredTemplates.map((template: any) => (
                   <Card
                     key={template.id}
                     sx={{
@@ -322,7 +331,7 @@ const MatrixPage: React.FC = () => {
                       '&:hover': {
                         transform: 'translateY(-2px)',
                         boxShadow: 3,
-                      }
+                      },
                     }}
                     onClick={() => handleTemplateSelect(template)}
                   >
@@ -335,9 +344,7 @@ const MatrixPage: React.FC = () => {
                       />
                     )}
                     <CardContent>
-                      <Typography variant="subtitle1">
-                        {template.name}
-                      </Typography>
+                      <Typography variant="subtitle1">{template.name}</Typography>
                       <Box display="flex" gap={1} mt={1}>
                         <Chip label={template.platform} size="small" />
                         <Chip label={template.aspect_ratio} size="small" variant="outlined" />
@@ -349,9 +356,9 @@ const MatrixPage: React.FC = () => {
                         <Typography variant="caption" color="text.secondary">
                           Used {template.usage_count} times
                         </Typography>
-                        <Chip 
-                          label={`${Math.round(template.performance_score * 100)}%`} 
-                          size="small" 
+                        <Chip
+                          label={`${Math.round(template.performance_score * 100)}%`}
+                          size="small"
                           color="success"
                         />
                       </Box>
@@ -368,7 +375,7 @@ const MatrixPage: React.FC = () => {
                   Saved Matrices
                 </Typography>
                 <Stack spacing={1}>
-                  {savedMatrices.map((matrix) => (
+                  {savedMatrices.map((matrix: any) => (
                     <Card key={matrix.id} variant="outlined">
                       <CardContent sx={{ py: 1 }}>
                         <Typography variant="subtitle2">{matrix.name}</Typography>
@@ -391,16 +398,17 @@ const MatrixPage: React.FC = () => {
                   <Box>
                     <TextField
                       value={matrixName}
-                      onChange={(e) => setMatrixName(e.target.value)}
+                      onChange={e => setMatrixName(e.target.value)}
                       variant="standard"
                       placeholder="Matrix Name"
-                      sx={{ 
+                      sx={{
                         fontSize: '1.5rem',
-                        '& input': { fontSize: '1.5rem' }
+                        '& input': { fontSize: '1.5rem' },
                       }}
                     />
                     <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                      {selectedTemplate.platform} • {selectedTemplate.dimensions} • {selectedTemplate.content_type}
+                      {selectedTemplate.platform} • {selectedTemplate.dimensions} •{' '}
+                      {selectedTemplate.content_type}
                     </Typography>
                   </Box>
                   <Button
@@ -431,15 +439,13 @@ const MatrixPage: React.FC = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {selectedTemplate.dynamic_fields?.map((field) => (
+                      {selectedTemplate.dynamic_fields?.map((field: any) => (
                         <TableRow key={field.id}>
                           <TableCell>
                             <Box display="flex" alignItems="center" gap={1}>
                               {getFieldIcon(field.type)}
                               <Box>
-                                <Typography variant="body1">
-                                  {field.name}
-                                </Typography>
+                                <Typography variant="body1">{field.name}</Typography>
                                 <Typography variant="caption" color="text.secondary">
                                   {field.description}
                                 </Typography>
@@ -462,7 +468,7 @@ const MatrixPage: React.FC = () => {
                                 size="small"
                                 fullWidth
                                 value={fieldAssignments[field.id]?.value || ''}
-                                onChange={(e) => handleFieldUpdate(field.id, e.target.value)}
+                                onChange={e => handleFieldUpdate(field.id, e.target.value)}
                                 placeholder="Enter text..."
                               />
                             ) : field.type === 'color' ? (
@@ -470,7 +476,7 @@ const MatrixPage: React.FC = () => {
                                 size="small"
                                 type="color"
                                 value={fieldAssignments[field.id]?.value || '#000000'}
-                                onChange={(e) => handleFieldUpdate(field.id, e.target.value)}
+                                onChange={e => handleFieldUpdate(field.id, e.target.value)}
                               />
                             ) : field.type === 'link' ? (
                               <TextField
@@ -478,7 +484,7 @@ const MatrixPage: React.FC = () => {
                                 fullWidth
                                 type="url"
                                 value={fieldAssignments[field.id]?.value || ''}
-                                onChange={(e) => handleFieldUpdate(field.id, e.target.value)}
+                                onChange={e => handleFieldUpdate(field.id, e.target.value)}
                                 placeholder="https://..."
                               />
                             ) : (
@@ -499,8 +505,8 @@ const MatrixPage: React.FC = () => {
                                 fieldAssignments[field.id]?.status === 'completed'
                                   ? 'success'
                                   : fieldAssignments[field.id]?.status === 'in-progress'
-                                  ? 'warning'
-                                  : 'default'
+                                    ? 'warning'
+                                    : 'default'
                               }
                             />
                           </TableCell>
@@ -533,15 +539,14 @@ const MatrixPage: React.FC = () => {
             A matrix allows you to create multiple content variations from a single template.
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Start by selecting a template from the library, then fill in the dynamic fields with your content.
+            Start by selecting a template from the library, then fill in the dynamic fields with
+            your content.
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowCreateDialog(false)}>
-            Cancel
-          </Button>
-          <Button 
-            variant="contained" 
+          <Button onClick={() => setShowCreateDialog(false)}>Cancel</Button>
+          <Button
+            variant="contained"
             onClick={() => {
               setShowCreateDialog(false);
               // Focus on template selection

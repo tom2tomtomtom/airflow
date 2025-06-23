@@ -10,10 +10,10 @@ const SESSION_TTL = 7 * 24 * 60 * 60; // 7 days in seconds
 const MAX_CONCURRENT_SESSIONS = 5;
 
 // Initialize Redis client for sessions
-const redis = env.REDIS_URL 
+const redis = env.REDIS_URL
   ? new Redis(env.REDIS_URL, {
       keyPrefix: 'airwave:',
-      retryStrategy: (times) => {
+      retryStrategy: times => {
         const delay = Math.min(times * 50, 2000);
         return delay;
       },
@@ -49,10 +49,10 @@ class SessionManager {
   constructor() {
     this.useMemoryFallback = !redis;
     this.memorySessions = new Map();
-    
+
     if (this.useMemoryFallback) {
       loggers.auth.warn('Using in-memory session storage - not recommended for production');
-      
+
       // Clean up expired sessions every hour
       setInterval(() => this.cleanupMemorySessions(), 60 * 60 * 1000);
     }
@@ -84,41 +84,33 @@ class SessionManager {
 
     if (this.useMemoryFallback) {
       this.memorySessions.set(sessionId, session);
-      
+
       // Enforce concurrent session limit in memory
       const userSessions = Array.from(this.memorySessions.values())
-        .filter(s => s.userId === data.userId)
+        .filter((s: any) => s.userId === data.userId)
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-      
+
       if (userSessions.length > MAX_CONCURRENT_SESSIONS) {
         const sessionsToRemove = userSessions.slice(MAX_CONCURRENT_SESSIONS);
-        sessionsToRemove.forEach(s => this.memorySessions.delete(s.id));
+        sessionsToRemove.forEach((s: any) => this.memorySessions.delete(s.id));
       }
     } else {
       const pipeline = redis!.pipeline();
-      
+
       // Store session data
-      pipeline.setex(
-        `${SESSION_PREFIX}${sessionId}`,
-        SESSION_TTL,
-        JSON.stringify(session)
-      );
-      
+      pipeline.setex(`${SESSION_PREFIX}${sessionId}`, SESSION_TTL, JSON.stringify(session));
+
       // Add to user's session list
-      pipeline.zadd(
-        `${USER_SESSIONS_PREFIX}${data.userId}`,
-        Date.now(),
-        sessionId
-      );
-      
+      pipeline.zadd(`${USER_SESSIONS_PREFIX}${data.userId}`, Date.now(), sessionId);
+
       // Enforce concurrent session limit
       pipeline.zcard(`${USER_SESSIONS_PREFIX}${data.userId}`);
-      
+
       const results = await pipeline.exec();
-      
+
       if (results) {
         const sessionCount = results[results.length - 1]?.[1] as number;
-        
+
         if (sessionCount > MAX_CONCURRENT_SESSIONS) {
           // Remove oldest sessions
           const oldestSessions = await redis!.zrange(
@@ -126,20 +118,20 @@ class SessionManager {
             0,
             sessionCount - MAX_CONCURRENT_SESSIONS - 1
           );
-          
+
           if (oldestSessions.length > 0) {
             const deletePipeline = redis!.pipeline();
-            
-            oldestSessions.forEach(oldSessionId => {
+
+            oldestSessions.forEach((oldSessionId: any) => {
               deletePipeline.del(`${SESSION_PREFIX}${oldSessionId}`);
             });
-            
+
             deletePipeline.zremrangebyrank(
               `${USER_SESSIONS_PREFIX}${data.userId}`,
               0,
               sessionCount - MAX_CONCURRENT_SESSIONS - 1
             );
-            
+
             await deletePipeline.exec();
           }
         }
@@ -167,23 +159,23 @@ class SessionManager {
     }
 
     const sessionData = await redis!.get(`${SESSION_PREFIX}${sessionId}`);
-    
+
     if (!sessionData) {
       return null;
     }
 
     const session = JSON.parse(sessionData) as Session;
-    
+
     // Update last activity
     session.lastActivity = new Date();
     await redis!.expire(`${SESSION_PREFIX}${sessionId}`, SESSION_TTL);
-    
+
     return session;
   }
 
   async updateSession(sessionId: string, updates: Partial<Session>): Promise<boolean> {
     const session = await this.getSession(sessionId);
-    
+
     if (!session) {
       return false;
     }
@@ -218,19 +210,19 @@ class SessionManager {
     }
 
     const session = await this.getSession(sessionId);
-    
+
     if (!session) {
       return false;
     }
 
     const pipeline = redis!.pipeline();
-    
+
     // Remove session
     pipeline.del(`${SESSION_PREFIX}${sessionId}`);
-    
+
     // Remove from user's session list
     pipeline.zrem(`${USER_SESSIONS_PREFIX}${session.userId}`, sessionId);
-    
+
     await pipeline.exec();
 
     loggers.auth.info('Session deleted', {
@@ -244,36 +236,32 @@ class SessionManager {
   async getUserSessions(userId: string): Promise<Session[]> {
     if (this.useMemoryFallback) {
       return Array.from(this.memorySessions.values())
-        .filter(s => s.userId === userId)
+        .filter((s: any) => s.userId === userId)
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
     }
 
-    const sessionIds = await redis!.zrevrange(
-      `${USER_SESSIONS_PREFIX}${userId}`,
-      0,
-      -1
-    );
+    const sessionIds = await redis!.zrevrange(`${USER_SESSIONS_PREFIX}${userId}`, 0, -1);
 
     if (sessionIds.length === 0) {
       return [];
     }
 
     const pipeline = redis!.pipeline();
-    
-    sessionIds.forEach(sessionId => {
+
+    sessionIds.forEach((sessionId: any) => {
       pipeline.get(`${SESSION_PREFIX}${sessionId}`);
     });
-    
+
     const results = await pipeline.exec();
-    
+
     const sessions: Session[] = [];
-    
+
     if (results) {
       results.forEach((result, index) => {
         if (result[0] === null && result[1]) {
           try {
             sessions.push(JSON.parse(result[1] as string));
-          } catch (error) {
+          } catch (error: any) {
             loggers.auth.error('Failed to parse session data', error, {
               sessionId: sessionIds[index],
             });
@@ -287,32 +275,29 @@ class SessionManager {
 
   async deleteUserSessions(userId: string): Promise<number> {
     if (this.useMemoryFallback) {
-      const sessions = Array.from(this.memorySessions.values())
-        .filter(s => s.userId === userId);
-      
-      sessions.forEach(s => this.memorySessions.delete(s.id));
-      
+      const sessions = Array.from(this.memorySessions.values()).filter(
+        (s: any) => s.userId === userId
+      );
+
+      sessions.forEach((s: any) => this.memorySessions.delete(s.id));
+
       return sessions.length;
     }
 
-    const sessionIds = await redis!.zrange(
-      `${USER_SESSIONS_PREFIX}${userId}`,
-      0,
-      -1
-    );
+    const sessionIds = await redis!.zrange(`${USER_SESSIONS_PREFIX}${userId}`, 0, -1);
 
     if (sessionIds.length === 0) {
       return 0;
     }
 
     const pipeline = redis!.pipeline();
-    
-    sessionIds.forEach(sessionId => {
+
+    sessionIds.forEach((sessionId: any) => {
       pipeline.del(`${SESSION_PREFIX}${sessionId}`);
     });
-    
+
     pipeline.del(`${USER_SESSIONS_PREFIX}${userId}`);
-    
+
     await pipeline.exec();
 
     loggers.auth.info('User sessions deleted', {
@@ -333,7 +318,7 @@ class SessionManager {
       return false;
     }
 
-    return await redis!.expire(`${SESSION_PREFIX}${sessionId}`, SESSION_TTL) === 1;
+    return (await redis!.expire(`${SESSION_PREFIX}${sessionId}`, SESSION_TTL)) === 1;
   }
 
   async getActiveSessions(): Promise<number> {
@@ -353,7 +338,7 @@ class SessionManager {
 
     const pattern = `airwave:${SESSION_PREFIX}*`;
     const keys = await redis!.keys(pattern);
-    
+
     if (keys.length > 0) {
       await redis!.del(...keys);
     }
@@ -361,7 +346,7 @@ class SessionManager {
     // Also clear user session lists
     const userPattern = `airwave:${USER_SESSIONS_PREFIX}*`;
     const userKeys = await redis!.keys(userPattern);
-    
+
     if (userKeys.length > 0) {
       await redis!.del(...userKeys);
     }

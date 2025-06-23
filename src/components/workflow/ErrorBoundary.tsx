@@ -80,7 +80,8 @@ export class WorkflowErrorBoundary extends Component<Props, State> {
         errorId: this.state.errorId,
         message: sanitizedError.message,
         stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
-        componentStack: process.env.NODE_ENV === 'development' ? errorInfo.componentStack : undefined,
+        componentStack:
+          process.env.NODE_ENV === 'development' ? errorInfo.componentStack : undefined,
         context: this.props.context,
         timestamp: new Date().toISOString(),
         userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
@@ -97,13 +98,13 @@ export class WorkflowErrorBoundary extends Component<Props, State> {
           errorId: errorReport.errorId,
           message: errorReport.message,
           context: errorReport.context,
-          timestamp: errorReport.timestamp
+          timestamp: errorReport.timestamp,
         });
       }
 
       // TODO: Send to actual error tracking service (Sentry, etc.)
       // await this.sendToErrorService(errorReport);
-    } catch (reportingError) {
+    } catch (reportingError: any) {
       console.error('Failed to report error:', reportingError);
     }
   };
@@ -136,9 +137,9 @@ export class WorkflowErrorBoundary extends Component<Props, State> {
       // For non-sensitive errors, still provide a user-friendly message
       const userFriendlyMessages: Record<string, string> = {
         'Network Error': 'Connection error. Please check your internet connection and try again.',
-        'ChunkLoadError': 'Loading error. Please refresh the page and try again.',
-        'TypeError': 'An unexpected error occurred. Please refresh the page and try again.',
-        'ReferenceError': 'An unexpected error occurred. Please refresh the page and try again.',
+        ChunkLoadError: 'Loading error. Please refresh the page and try again.',
+        TypeError: 'An unexpected error occurred. Please refresh the page and try again.',
+        ReferenceError: 'An unexpected error occurred. Please refresh the page and try again.',
       };
 
       for (const [pattern, message] of Object.entries(userFriendlyMessages)) {
@@ -153,7 +154,7 @@ export class WorkflowErrorBoundary extends Component<Props, State> {
 
     // In development, return original message
     return { message: error.message };
-  };
+  }
 
   private handleRetry = () => {
     this.setState({
@@ -169,7 +170,9 @@ export class WorkflowErrorBoundary extends Component<Props, State> {
   };
 
   private handleReportBug = () => {
-    const subject = encodeURIComponent(`Bug Report: ${this.state.error?.message || 'Workflow Error'}`);
+    const subject = encodeURIComponent(
+      `Bug Report: ${this.state.error?.message || 'Workflow Error'}`
+    );
     const body = encodeURIComponent(`
 Error ID: ${this.state.errorId}
 Context: ${this.props.context || 'Unknown'}
@@ -179,7 +182,7 @@ Timestamp: ${new Date().toISOString()}
 Please describe what you were doing when this error occurred:
 [Your description here]
     `);
-    
+
     window.open(`mailto:support@airwave.app?subject=${subject}&body=${body}`);
   };
 
@@ -195,13 +198,14 @@ Please describe what you were doing when this error occurred:
         <Box sx={{ p: 3, maxWidth: 800, mx: 'auto' }}>
           <Paper sx={{ p: 4, textAlign: 'center' }}>
             <ErrorIcon sx={{ fontSize: 64, color: 'error.main', mb: 2 }} />
-            
+
             <Typography variant="h4" gutterBottom color="error">
               Oops! Something went wrong
             </Typography>
-            
+
             <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-              We encountered an unexpected error in the workflow. Don't worry, your progress has been saved.
+              We encountered an unexpected error in the workflow. Don't worry, your progress has
+              been saved.
             </Typography>
 
             <Alert severity="error" sx={{ mb: 3, textAlign: 'left' }}>
@@ -213,27 +217,22 @@ Please describe what you were doing when this error occurred:
                 <strong>Context:</strong> {this.props.context || 'Workflow'}
               </Typography>
               <Typography variant="body2">
-                <strong>Message:</strong> {this.state.error ? this.sanitizeErrorForProduction(this.state.error).message : 'Unknown error occurred'}
+                <strong>Message:</strong>{' '}
+                {this.state.error
+                  ? this.sanitizeErrorForProduction(this.state.error).message
+                  : 'Unknown error occurred'}
               </Typography>
             </Alert>
 
             <Stack direction="row" spacing={2} justifyContent="center" sx={{ mb: 3 }}>
-              <Button
-                variant="contained"
-                onClick={this.handleRetry}
-                startIcon={<RefreshIcon />}
-              >
+              <Button variant="contained" onClick={this.handleRetry} startIcon={<RefreshIcon />}>
                 Try Again
               </Button>
-              
-              <Button
-                variant="outlined"
-                onClick={this.handleGoHome}
-                startIcon={<HomeIcon />}
-              >
+
+              <Button variant="outlined" onClick={this.handleGoHome} startIcon={<HomeIcon />}>
                 Go to Dashboard
               </Button>
-              
+
               <Button
                 variant="outlined"
                 color="secondary"
@@ -261,7 +260,7 @@ Please describe what you were doing when this error occurred:
                         </Typography>
                       </Paper>
                     </Box>
-                    
+
                     {this.state.errorInfo && (
                       <Box>
                         <Typography variant="subtitle2" gutterBottom>
@@ -311,9 +310,9 @@ export function withErrorBoundary<P extends object>(
 export function useErrorHandler() {
   const reportError = React.useCallback((error: Error, context?: string) => {
     const errorId = `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     console.error('Manual error report:', error);
-    
+
     // TODO: Send to error tracking service
     const errorReport = {
       errorId,
@@ -324,9 +323,9 @@ export function useErrorHandler() {
       userAgent: navigator.userAgent,
       url: window.location.href,
     };
-    
+
     console.error('Error Report:', errorReport);
-    
+
     return errorId;
   }, []);
 

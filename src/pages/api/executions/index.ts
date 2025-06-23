@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -18,8 +19,7 @@ const ExecutionFilterSchema = z.object({
   offset: z.number().min(0).default(0),
   sort_by: z.enum(['created_at', 'updated_at', 'status', 'priority']).default('created_at'),
   sort_order: z.enum(['asc', 'desc']).default('desc'),
-  include_analytics: z.boolean().default(false),
-});
+  include_analytics: z.boolean().default(false)});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -32,7 +32,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Executions API error:', error);
     return res.status(500).json({
@@ -76,7 +76,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     return res.json({ data: [], count: 0 });
   }
 
-  const clientIds = userClients.map(uc => uc.client_id);
+  const clientIds = userClients.map((uc: any) => uc.client_id);
 
   // Apply filters
   if (filters.campaign_id) {
@@ -126,7 +126,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   }
 
   // Filter out executions where user doesn't have access
-  const accessibleExecutions = (data || []).filter(execution => 
+  const accessibleExecutions = (data || []).filter((execution: any) => 
     execution.matrices?.campaigns?.clients?.id && 
     clientIds.includes(execution.matrices.campaigns.clients.id)
   );
@@ -138,8 +138,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       const analytics = await getExecutionAnalytics(execution.id);
       return {
         ...execution,
-        analytics,
-      };
+        analytics};
     }));
   }
 
@@ -150,7 +149,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     data: enrichedData,
     count: accessibleExecutions.length,
     statistics,
-    pagination: {
+    pagination: {},
       limit: filters.limit,
       offset: filters.offset,
       total: count || 0
@@ -172,8 +171,7 @@ async function getExecutionAnalytics(executionId: string): Promise<any> {
     if (!analytics || analytics.length === 0) {
       return {
         has_data: false,
-        message: 'No analytics data available',
-      };
+        message: 'No analytics data available'};
     }
 
     // Aggregate metrics
@@ -192,27 +190,23 @@ async function getExecutionAnalytics(executionId: string): Promise<any> {
 
     return {
       has_data: true,
-      summary: {
+      summary: {},
         ...totals,
         ctr: Math.round(ctr * 100) / 100,
         cpc: Math.round(cpc * 100) / 100,
-        conversion_rate: Math.round(conversionRate * 100) / 100,
-      },
-      daily_data: analytics.map(record => ({
+        conversion_rate: Math.round(conversionRate * 100) / 100},
+      daily_data: analytics.map((record: any) => ({
         date: record.date,
         impressions: record.impressions || 0,
         clicks: record.clicks || 0,
         conversions: record.conversions || 0,
-        spend: parseFloat(record.spend) || 0,
-      })),
-    };
-  } catch (error) {
+        spend: parseFloat(record.spend) || 0}))};
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting execution analytics:', error);
     return {
       has_data: false,
-      error: 'Failed to retrieve analytics',
-    };
+      error: 'Failed to retrieve analytics'};
   }
 }
 
@@ -239,7 +233,7 @@ function calculateExecutionStatistics(executions: any[]): any {
   const successRate = totalFinished > 0 ? (completedCount / totalFinished) * 100 : 0;
 
   // Calculate average execution time for completed executions
-  const completedExecutions = executions.filter(e => e.status === 'completed');
+  const completedExecutions = executions.filter((e: any) => e.status === 'completed');
   const avgExecutionTime = completedExecutions.length > 0 
     ? completedExecutions.reduce((sum, execution) => {
         const start = new Date(execution.created_at).getTime();
@@ -255,8 +249,7 @@ function calculateExecutionStatistics(executions: any[]): any {
     content_type_distribution: contentTypeCount,
     success_rate: Math.round(successRate * 100) / 100,
     average_execution_time_minutes: Math.round(avgExecutionTime * 100) / 100,
-    active_executions: (statusCount.pending || 0) + (statusCount.processing || 0),
-  };
+    active_executions: (statusCount.pending || 0) + (statusCount.processing || 0)};
 }
 
 export default withAuth(withSecurityHeaders(handler));

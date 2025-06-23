@@ -1,3 +1,4 @@
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
 import { z } from 'zod';
@@ -17,22 +18,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
   const parseResult = ExecutionScheduleSchema.safeParse(req.body);
   if (!parseResult.success) {
-    return res.status(400).json({ success: false, message: 'Invalid input', errors: parseResult.error.errors });
+    return res
+      .status(400)
+      .json({ success: false, message: 'Invalid input', errors: parseResult.error.errors });
   }
   const { matrix_id, platform, schedule_time, budget, user_id, config } = parseResult.data;
   // Save execution record
-  const { data, error } = await supabase.from('executions').insert({
-    matrix_id,
-    platform,
-    schedule_time,
-    budget,
-    user_id,
-    config,
-    status: 'scheduled',
-    created_at: new Date().toISOString(),
-  }).select().single();
+  const { data, error } = await supabase
+    .from('executions')
+    .insert({
+      matrix_id,
+      platform,
+      schedule_time,
+      budget,
+      user_id,
+      config,
+      status: 'scheduled',
+      created_at: new Date().toISOString(),
+    })
+    .select()
+    .single();
   if (error) {
-    return res.status(500).json({ success: false, message: 'Failed to schedule execution', error: error.message });
+    return res
+      .status(500)
+      .json({ success: false, message: 'Failed to schedule execution', error: error.message });
   }
   return res.status(200).json({ success: true, execution: data });
 }

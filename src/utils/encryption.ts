@@ -3,22 +3,22 @@ import crypto from 'crypto';
 // AES-256-GCM encryption for MFA secrets
 const ALGORITHM = 'aes-256-gcm';
 const KEY_LENGTH = 32; // 256 bits
-const IV_LENGTH = 16;  // 128 bits
+const IV_LENGTH = 16; // 128 bits
 const TAG_LENGTH = 16; // 128 bits
 
 // Get encryption key from environment or generate one
 function getEncryptionKey(): Buffer {
   const keyFromEnv = process.env.MFA_ENCRYPTION_KEY;
-  
+
   if (keyFromEnv) {
     return Buffer.from(keyFromEnv, 'base64');
   }
-  
+
   if (process.env.NODE_ENV === 'development') {
-    console.warn('⚠️  Using development MFA encryption key. Set MFA_ENCRYPTION_KEY in production!');
+    
     return crypto.scryptSync('dev-mfa-key-airwave', 'salt', KEY_LENGTH);
   }
-  
+
   throw new Error('MFA_ENCRYPTION_KEY environment variable is required for production');
 }
 
@@ -27,19 +27,19 @@ export function encryptData(plaintext: string): string {
   try {
     const key = getEncryptionKey();
     const iv = crypto.randomBytes(IV_LENGTH);
-    
+
     const cipher = crypto.createCipher(ALGORITHM, key);
     cipher.setAAD(Buffer.from('mfa-secret'));
-    
+
     let encrypted = cipher.update(plaintext, 'utf8', 'hex');
     encrypted += cipher.final('hex');
-    
+
     const tag = cipher.getAuthTag();
-    
+
     const result = iv.toString('hex') + tag.toString('hex') + encrypted;
     return result;
-  } catch (error) {
-    console.error('Encryption error:', error);
+  } catch (error: unknown) {
+    
     throw new Error('Failed to encrypt data');
   }
 }
@@ -48,21 +48,24 @@ export function encryptData(plaintext: string): string {
 export function decryptData(encryptedData: string): string {
   try {
     const key = getEncryptionKey();
-    
+
     const iv = Buffer.from(encryptedData.slice(0, IV_LENGTH * 2), 'hex');
-    const tag = Buffer.from(encryptedData.slice(IV_LENGTH * 2, (IV_LENGTH + TAG_LENGTH) * 2), 'hex');
+    const tag = Buffer.from(
+      encryptedData.slice(IV_LENGTH * 2, (IV_LENGTH + TAG_LENGTH) * 2),
+      'hex'
+    );
     const encrypted = encryptedData.slice((IV_LENGTH + TAG_LENGTH) * 2);
-    
+
     const decipher = crypto.createDecipher(ALGORITHM, key);
     decipher.setAAD(Buffer.from('mfa-secret'));
     decipher.setAuthTag(tag);
-    
+
     let decrypted = decipher.update(encrypted, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
-    
+
     return decrypted;
-  } catch (error) {
-    console.error('Decryption error:', error);
+  } catch (error: unknown) {
+    
     throw new Error('Failed to decrypt data');
   }
 }

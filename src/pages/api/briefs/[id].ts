@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -15,8 +16,7 @@ const BriefUpdateSchema = z.object({
   platforms: z.array(z.string()).optional(),
   budget: z.number().optional(),
   timeline: z.any().optional(),
-  parsing_status: z.enum(['pending', 'processing', 'completed', 'error']).optional(),
-});
+  parsing_status: z.enum(['pending', 'processing', 'completed', 'error']).optional()});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -38,7 +38,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Brief API error:', error);
     return res.status(500).json({ 
@@ -108,11 +108,10 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, b
     .order('created_at', { ascending: false });
 
   return res.json({
-    data: {
+    data: {},
       ...brief,
       content_variations: contentVariations || [],
-      related_strategies: strategies || [],
-    }
+      related_strategies: strategies || []}
   });
 }
 
@@ -151,8 +150,7 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, b
 
   const updateData = {
     ...validationResult.data,
-    updated_at: new Date().toISOString(),
-  };
+    updated_at: new Date().toISOString()};
 
   const { data: brief, error } = await supabase
     .from('briefs')

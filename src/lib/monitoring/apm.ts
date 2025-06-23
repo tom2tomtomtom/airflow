@@ -6,7 +6,7 @@ import { getLogger } from '@/lib/logger';
 const logger = getLogger('apm');
 
 export interface APMConfig {
-  sentry: {
+  sentry: {},
     enabled: boolean;
     dsn: string;
     environment: string;
@@ -14,7 +14,7 @@ export interface APMConfig {
     tracesSampleRate: number;
     profilesSampleRate: number;
   };
-  datadog: {
+  datadog: {},
     enabled: boolean;
     host: string;
     port: number;
@@ -58,7 +58,7 @@ export class APMManager {
     const monitoring = getMonitoringConfig();
     
     return {
-      sentry: {
+      sentry: {},
         enabled: monitoring.sentry?.enabled || false,
         dsn: monitoring.sentry?.dsn || '',
         environment: process.env.NODE_ENV || 'development',
@@ -66,7 +66,7 @@ export class APMManager {
         tracesSampleRate: monitoring.sentry?.tracesSampleRate || 0.1,
         profilesSampleRate: monitoring.sentry?.profilesSampleRate || 0.1
       },
-      datadog: {
+      datadog: {},
         enabled: monitoring.datadog?.enabled || false,
         host: monitoring.datadog?.host || 'localhost',
         port: monitoring.datadog?.port || 8125,
@@ -96,7 +96,7 @@ export class APMManager {
           ],
           
           // Filter sensitive data
-          beforeSend: (event) => {
+          beforeSend: (_event) => {
             // Remove sensitive headers
             if (event.request?.headers) {
               delete event.request.headers.authorization;
@@ -112,7 +112,7 @@ export class APMManager {
           },
           
           // Custom error filtering
-          beforeSendTransaction: (event) => {
+          beforeSendTransaction: (_event) => {
             // Don't send health check transactions
             if (event.transaction?.includes('/health')) {
               return null;
@@ -148,7 +148,7 @@ export class APMManager {
       
       this.initialized = true;
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to initialize APM', error);
       throw error;
     }
@@ -272,7 +272,7 @@ export class APMManager {
           this.statsd.timing(metric.name, metric.value, tags);
           break;
       }
-    } catch (error) {
+    } catch (error: any) {
       logger.warn('Failed to record metric', error, { metric: metric.name });
     }
   }
@@ -341,7 +341,7 @@ export class APMManager {
         // Send a test event (will be filtered out in beforeSend)
         Sentry.captureMessage('Health check', 'info');
         result.sentry.healthy = true;
-      } catch (error) {
+      } catch (error: any) {
         logger.warn('Sentry health check failed', error);
       }
     }
@@ -351,7 +351,7 @@ export class APMManager {
       try {
         this.statsd.gauge('health.check', 1, ['source:apm']);
         result.datadog.healthy = true;
-      } catch (error) {
+      } catch (error: any) {
         logger.warn('DataDog health check failed', error);
       }
     }
@@ -378,7 +378,7 @@ export class APMManager {
     const sensitiveParams = ['token', 'key', 'secret', 'password', 'auth'];
     let sanitized = queryString;
     
-    sensitiveParams.forEach(param => {
+    sensitiveParams.forEach((param: any) => {
       const regex = new RegExp(`${param}=[^&]*`, 'gi');
       sanitized = sanitized.replace(regex, `${param}=[REDACTED]`);
     });
@@ -453,7 +453,7 @@ export const createAPMMiddleware = () => {
       
       trace.finish({
         success: res.statusCode < 400,
-        tags: {
+        tags: {},
           method: req.method,
           status_code: res.statusCode.toString(),
           route: req.route?.path || req.path

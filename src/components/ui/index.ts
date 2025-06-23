@@ -24,15 +24,19 @@ export { EnhancedClientSelector } from './ClientSelector/EnhancedClientSelector'
 export { EnhancedAssetBrowser } from './AssetBrowser/EnhancedAssetBrowser';
 
 // Notification System
-export { 
-  NotificationProvider, 
-  useNotifications, 
-  useNotificationHelpers 
+export {
+  NotificationProvider,
+  useNotifications,
+  useNotificationHelpers,
 } from './notifications/NotificationSystem';
 export type { Notification } from './notifications/NotificationSystem';
 
 // Error Handling
-export { default as ErrorBoundary, withErrorBoundary, useErrorHandler } from './ErrorBoundary/ErrorBoundary';
+export {
+  default as ErrorBoundary,
+  withErrorBoundary,
+  useErrorHandler,
+} from './ErrorBoundary/ErrorBoundary';
 
 // Re-export common types
 export type { SelectOption } from './forms/FormSelect';

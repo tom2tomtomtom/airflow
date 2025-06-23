@@ -12,8 +12,8 @@ const environmentSchema = z.object({
   
   // Domain & CORS
   NEXT_PUBLIC_DOMAIN: z.string().min(1, 'Domain is required'),
-  ALLOWED_ORIGINS: z.string().transform(str => str.split(',').map(s => s.trim())),
-  ALLOWED_HOSTS: z.string().transform(str => str.split(',').map(s => s.trim())),
+  ALLOWED_ORIGINS: z.string().transform(str => str.split(',').map((s: any) => s.trim())),
+  ALLOWED_HOSTS: z.string().transform(str => str.split(',').map((s: any) => s.trim())),
   
   // Database (Required)
   NEXT_PUBLIC_SUPABASE_URL: z.string().url('Invalid Supabase URL'),
@@ -74,7 +74,7 @@ const environmentSchema = z.object({
   NEXT_PUBLIC_STORAGE_URL: z.string().url().optional(),
   MAX_FILE_SIZE: z.number().int().positive().default(52428800),
   MAX_FILES_PER_UPLOAD: z.number().int().positive().default(10),
-  ALLOWED_FILE_TYPES: z.string().transform(str => str.split(',').map(s => s.trim())),
+  ALLOWED_FILE_TYPES: z.string().transform(str => str.split(',').map((s: any) => s.trim())),
   UPLOAD_PATH: z.string().default('/uploads'),
   
   // AWS S3 (Optional)
@@ -145,7 +145,7 @@ const environmentSchema = z.object({
   
   // Admin & Maintenance
   MAINTENANCE_MODE: z.boolean().default(false),
-  ADMIN_EMAILS: z.string().transform(str => str.split(',').map(s => s.trim())),
+  ADMIN_EMAILS: z.string().transform(str => str.split(',').map((s: any) => s.trim())),
   ENABLE_ADMIN_PANEL: z.boolean().default(true),
   
   // Payment & Integrations
@@ -178,8 +178,7 @@ const environmentSchema = z.object({
   ENABLE_HEALTH_CHECKS: z.boolean().default(true),
   BACKUP_SCHEDULE: z.string().default('0 2 * * *'),
   BACKUP_RETENTION_DAYS: z.number().int().positive().default(30),
-  ENABLE_AUTO_BACKUP: z.boolean().default(true),
-});
+  ENABLE_AUTO_BACKUP: z.boolean().default(true)});
 
 // Transform string values from process.env to appropriate types
 const transformEnvValues = (env: Record<string, string | undefined>) => {
@@ -226,7 +225,7 @@ export const validateEnvironment = () => {
         'CSRF_SECRET'
       ];
       
-      const missingFields = productionRequiredFields.filter(field => !config[field as keyof typeof config]);
+      const missingFields = productionRequiredFields.filter((field: any) => !config[field as keyof typeof config]);
       
       if (missingFields.length > 0) {
         throw new Error(`Production environment missing required fields: ${missingFields.join(', ')}`);
@@ -255,7 +254,7 @@ export const validateEnvironment = () => {
     loggers.general.info('Environment validation successful', {
       environment: config.NODE_ENV,
       version: config.NEXT_PUBLIC_APP_VERSION,
-      features: {
+      features: {},
         ai: config.ENABLE_AI_FEATURES,
         social: config.ENABLE_SOCIAL_PUBLISHING,
         video: config.ENABLE_VIDEO_GENERATION,
@@ -264,15 +263,15 @@ export const validateEnvironment = () => {
     });
     
     return config;
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof z.ZodError) {
-      const errorMessages = error.errors.map(err => 
+      const errorMessages = error.errors.map((err: any) => 
         `${err.path.join('.')}: ${err.message}`
       );
       
       loggers.general.error('Environment validation failed', {
         errors: errorMessages,
-        received: error.errors.map(err => ({
+        received: error.errors.map((err: any) => ({
           field: err.path.join('.'),
           value: err.received,
           expected: err.expected
@@ -320,7 +319,7 @@ export const getSecurityConfig = () => {
     encryptionKey: config.ENCRYPTION_KEY,
     cookieSecret: config.COOKIE_SECRET,
     csrfSecret: config.CSRF_SECRET,
-    cookieOptions: {
+    cookieOptions: {},
       secure: config.COOKIE_SECURE,
       sameSite: config.COOKIE_SAME_SITE,
       httpOnly: config.COOKIE_HTTP_ONLY,
@@ -336,7 +335,7 @@ export const getDatabaseConfig = () => {
     supabaseUrl: config.NEXT_PUBLIC_SUPABASE_URL,
     supabaseAnonKey: config.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     supabaseServiceKey: config.SUPABASE_SERVICE_ROLE_KEY,
-    poolConfig: {
+    poolConfig: {},
       min: config.DB_POOL_MIN,
       max: config.DB_POOL_MAX,
       idleTimeout: config.DB_POOL_IDLE_TIMEOUT,
@@ -360,17 +359,17 @@ export const getRedisConfig = () => {
 export const getRateLimitConfig = () => {
   const config = getConfig();
   return {
-    general: {
+    general: {},
       max: config.RATE_LIMIT_MAX,
       window: config.RATE_LIMIT_WINDOW,
       skipSuccessfulRequests: config.RATE_LIMIT_SKIP_SUCCESSFUL_REQUESTS,
       skipFailedRequests: config.RATE_LIMIT_SKIP_FAILED_REQUESTS
     },
-    api: {
+    api: {},
       max: config.API_RATE_LIMIT_MAX,
       window: config.API_RATE_LIMIT_WINDOW
     },
-    ai: {
+    ai: {},
       max: config.AI_RATE_LIMIT_MAX,
       window: config.AI_RATE_LIMIT_WINDOW
     }

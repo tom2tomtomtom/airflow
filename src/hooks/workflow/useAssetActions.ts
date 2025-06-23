@@ -6,17 +6,26 @@ interface UseAssetActionsProps {
 }
 
 export const useAssetActions = ({ dispatch }: UseAssetActionsProps) => {
-  const selectAsset = useCallback((asset: Asset) => {
-    dispatch({ type: 'ADD_ASSET', asset });
-  }, [dispatch]);
+  const selectAsset = useCallback(
+    (asset: Asset) => {
+      dispatch({ type: 'ADD_ASSET', asset });
+    },
+    [dispatch]
+  );
 
-  const removeAsset = useCallback((id: string) => {
-    dispatch({ type: 'REMOVE_ASSET', id });
-  }, [dispatch]);
+  const removeAsset = useCallback(
+    (id: string) => {
+      dispatch({ type: 'REMOVE_ASSET', id });
+    },
+    [dispatch]
+  );
 
-  const selectTemplate = useCallback((template: Template) => {
-    dispatch({ type: 'SET_SELECTED_TEMPLATE', template });
-  }, [dispatch]);
+  const selectTemplate = useCallback(
+    (template: Template) => {
+      dispatch({ type: 'SET_SELECTED_TEMPLATE', template });
+    },
+    [dispatch]
+  );
 
   return {
     selectAsset,

@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { triggerWebhookEvent, WEBHOOK_EVENTS } from '../../webhooks/index';
@@ -11,8 +12,7 @@ const RetryRequestSchema = z.object({
   priority: z.enum(['low', 'normal', 'high', 'urgent']).optional(),
   reset_attempts: z.boolean().default(false), // Reset retry attempt counter
   delay_seconds: z.number().min(0).max(3600).default(0), // Delay before retry
-  retry_reason: z.string().optional(),
-});
+  retry_reason: z.string().optional()});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -29,7 +29,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
   try {
     return handleRetry(req, res, user, id);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Execution Retry API error:', error);
     return res.status(500).json({ 
@@ -138,17 +138,15 @@ async function handleRetry(req: NextApiRequest, res: NextApiResponse, user: any,
   await supabase
     .from('executions')
     .update({
-      metadata: {
+      metadata: {},
         ...execution.metadata,
-        retry_info: {
+        retry_info: {},
           retried_at: new Date().toISOString(),
           retried_by: user.id,
           retry_execution_id: retryExecution.id,
-          retry_reason: retryData.retry_reason,
-        }
+          retry_reason: retryData.retry_reason}
       },
-      updated_at: new Date().toISOString(),
-    })
+      updated_at: new Date().toISOString()})
     .eq('id', executionId);
 
   // Log retry event
@@ -162,14 +160,13 @@ async function handleRetry(req: NextApiRequest, res: NextApiResponse, user: any,
 
   return res.json({
     message: 'Execution retry initiated successfully',
-    data: {
+    data: {},
       original_execution_id: executionId,
       retry_execution: retryExecution,
       trigger_result: triggerResult,
       estimated_start: retryData.delay_seconds > 0 
         ? new Date(Date.now() + retryData.delay_seconds * 1000).toISOString()
-        : new Date().toISOString(),
-    }
+        : new Date().toISOString()}
   });
 }
 
@@ -255,7 +252,7 @@ async function checkRetryLimits(executionId: string, execution: any, resetAttemp
     }
 
     return { allowed: true };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error checking retry limits:', error);
     return { 
@@ -281,7 +278,7 @@ async function prepareRetryExecution(originalExecution: any, retryData: any, use
     content_type: originalExecution.content_type,
     platform: originalExecution.platform,
     status: retryData.delay_seconds > 0 ? 'scheduled' : 'pending',
-    metadata: {
+    metadata: {},
       ...originalExecution.metadata,
       is_retry: true,
       original_execution_id: originalExecution.id,
@@ -291,14 +288,12 @@ async function prepareRetryExecution(originalExecution: any, retryData: any, use
       scheduled_for: retryData.delay_seconds > 0 
         ? new Date(Date.now() + retryData.delay_seconds * 1000).toISOString()
         : null,
-      retry_config: {
+      retry_config: {},
         force: retryData.force,
         reset_attempts: retryData.reset_attempts,
-        delay_seconds: retryData.delay_seconds,
-      }
+        delay_seconds: retryData.delay_seconds}
     },
-    created_by: userId,
-  };
+    created_by: userId};
 
   return retryExecutionData;
 }
@@ -311,8 +306,7 @@ async function triggerRetryExecution(retryExecution: any, delaySeconds: number):
         success: true,
         type: 'scheduled',
         message: `Retry scheduled for ${delaySeconds} seconds`,
-        scheduled_for: retryExecution.metadata.scheduled_for,
-      };
+        scheduled_for: retryExecution.metadata.scheduled_for};
     }
 
     // Trigger immediate retry
@@ -324,11 +318,10 @@ async function triggerRetryExecution(retryExecution: any, delaySeconds: number):
       .from('executions')
       .update({
         status: triggerResult.success ? 'processing' : 'failed',
-        metadata: {
+        metadata: {},
           ...retryExecution.metadata,
           trigger_result: triggerResult,
-          triggered_at: new Date().toISOString(),
-        }
+          triggered_at: new Date().toISOString()}
       })
       .eq('id', retryExecution.id);
 
@@ -336,17 +329,15 @@ async function triggerRetryExecution(retryExecution: any, delaySeconds: number):
       success: triggerResult.success,
       type: 'immediate',
       message: triggerResult.success ? 'Retry execution triggered successfully' : 'Failed to trigger retry execution',
-      job_id: triggerResult.job_id,
-    };
-  } catch (error) {
+      job_id: triggerResult.job_id};
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error triggering retry execution:', error);
     return {
       success: false,
       type: 'error',
       message: 'Error triggering retry execution',
-      error: getErrorMessage(error),
-    };
+      error: getErrorMessage(error)};
   }
 }
 
@@ -363,23 +354,20 @@ async function triggerExecutionPipeline(execution: any): Promise<any> {
       return {
         success: true,
         job_id: jobId,
-        estimated_completion: new Date(Date.now() + 2 * 60 * 1000).toISOString(),
-      };
+        estimated_completion: new Date(Date.now() + 2 * 60 * 1000).toISOString()};
     } else {
       // Trigger custom render
       const jobId = `custom-retry-${Date.now()}`;
       return {
         success: true,
         job_id: jobId,
-        estimated_completion: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
-      };
+        estimated_completion: new Date(Date.now() + 5 * 60 * 1000).toISOString()};
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     return {
       success: false,
-      error: getErrorMessage(error),
-    };
+      error: getErrorMessage(error)};
   }
 }
 
@@ -387,7 +375,7 @@ async function logRetryEvent(originalId: string, retryId: string, userId: string
   try {
     // In a full implementation, this would log to an execution_events table
     process.env.NODE_ENV === 'development' && console.log('Logging retry event:', event);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error logging retry event:', error);
   }
@@ -403,39 +391,33 @@ async function triggerExecutionRetryWebhook(retryExecution: any, originalExecuti
     const webhookData = {
       execution_id: retryExecution.id,
       original_execution_id: originalExecution.id,
-      campaign: {
+      campaign: {},
         id: retryExecution.matrices?.campaigns?.id,
-        name: retryExecution.matrices?.campaigns?.name,
-      },
-      matrix: {
+        name: retryExecution.matrices?.campaigns?.name},
+      matrix: {},
         id: retryExecution.matrix_id,
-        name: retryExecution.matrices?.name,
-      },
+        name: retryExecution.matrices?.name},
       platform: retryExecution.platform,
       content_type: retryExecution.content_type,
       status: retryExecution.status,
       retry_reason: retryData.retry_reason,
-      retried_by: {
+      retried_by: {},
         id: user.id,
-        name: user.full_name || user.email,
-      },
-      retry_options: {
+        name: user.full_name || user.email},
+      retry_options: {},
         force: retryData.force,
         priority: retryData.priority,
         delay_seconds: retryData.delay_seconds,
-        reset_attempts: retryData.reset_attempts,
-      },
-      original_failure: {
+        reset_attempts: retryData.reset_attempts},
+      original_failure: {},
         status: originalExecution.status,
         error_message: originalExecution.error_message,
-        failed_at: originalExecution.updated_at,
-      },
-      timestamp: new Date().toISOString(),
-    };
+        failed_at: originalExecution.updated_at},
+      timestamp: new Date().toISOString()};
 
     // Trigger the webhook
     await triggerWebhookEvent(WEBHOOK_EVENTS.EXECUTION_STARTED, webhookData, clientId);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error triggering execution retry webhook:', error);
   }

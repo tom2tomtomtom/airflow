@@ -11,11 +11,9 @@ import {
   StepLabel,
   StepContent,
   CircularProgress,
-  Alert,
-} from '@mui/material';
+  Alert} from '@mui/material';
 import {
-  ArrowBack,
-} from '@mui/icons-material';
+  ArrowBack} from '@mui/icons-material';
 import { addDays } from 'date-fns';
 import DashboardLayout from '../../components/DashboardLayout';
 import { useNotification } from '../../contexts/NotificationContext';
@@ -31,8 +29,7 @@ const CampaignBasicInfo = dynamic(
         <CircularProgress />
       </Box>
     ),
-    ssr: false,
-  }
+    ssr: false}
 );
 
 const PlatformSelection = dynamic(
@@ -43,8 +40,7 @@ const PlatformSelection = dynamic(
         <CircularProgress />
       </Box>
     ),
-    ssr: false,
-  }
+    ssr: false}
 );
 
 const CampaignSchedule = dynamic(
@@ -55,8 +51,7 @@ const CampaignSchedule = dynamic(
         <CircularProgress />
       </Box>
     ),
-    ssr: false,
-  }
+    ssr: false}
 );
 
 const steps = [
@@ -84,8 +79,7 @@ const NewCampaign: React.FC = () => {
     endDate: addDays(new Date(), 30),
     frequency: 'daily',
     estimatedPosts: '',
-    notes: '',
-  });
+    notes: ''});
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -121,7 +115,7 @@ const NewCampaign: React.FC = () => {
         budget: campaignData.budget ? parseFloat(campaignData.budget) : 0,
         start_date: campaignData.startDate?.toISOString(),
         end_date: campaignData.endDate?.toISOString(),
-        targeting: {
+        targeting: {},
           audience: campaignData.targetAudience || '',
           frequency: campaignData.frequency || 'daily',
           estimatedPosts: campaignData.estimatedPosts || ''
@@ -135,11 +129,9 @@ const NewCampaign: React.FC = () => {
 
             const response = await fetch('/api/campaigns', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(apiData),
-      });
+        headers: {},
+          'Content-Type': 'application/json'},
+        body: JSON.stringify(apiData)});
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
@@ -159,7 +151,7 @@ const NewCampaign: React.FC = () => {
       showNotification('Campaign created successfully!', 'success');
       // API returns { data: campaign } not { campaign }
       router.push(`/campaigns/${result.data.id}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating campaign:', error);
       showNotification('Failed to create campaign. Please try again.', 'error');
     } finally {

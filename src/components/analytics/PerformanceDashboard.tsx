@@ -12,7 +12,7 @@ import {
   Paper,
   Select,
   CircularProgress,
-  Grid
+  Grid,
 } from '@mui/material';
 import {
   TrendingUp as TrendingUpIcon,
@@ -22,9 +22,8 @@ import {
   Error as ErrorIcon,
   Info as InfoIcon,
   Refresh as RefreshIcon,
-  Download as DownloadIcon
+  Download as DownloadIcon,
 } from '@mui/icons-material';
-
 
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
@@ -53,10 +52,7 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
-  clientId,
-  dateRange,
-}) => {
+const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ clientId, dateRange }) => {
   const { activeClient } = useClient();
   const { showNotification } = useNotification();
 
@@ -108,7 +104,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
       if (filters.campaignId) params.append('campaign_id', filters.campaignId);
 
       const response = await fetch(`/api/analytics/performance?${params}`, {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
 
       if (response.ok) {
@@ -117,7 +113,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
       } else {
         throw new Error('Failed to load performance data');
       }
-    } catch (error) {
+    } catch (error: any) {
       const message = getErrorMessage(error);
       console.error('Error loading performance data:', error);
       showNotification('Failed to load performance data', 'error');
@@ -137,14 +133,14 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
       if (dateRange?.end) params.append('date_to', dateRange.end);
 
       const response = await fetch(`/api/analytics/insights?${params}`, {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
 
       if (response.ok) {
         const data = await response.json();
         setInsights(data.data);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading insights:', error);
     }
   };
@@ -168,29 +164,34 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
 
   const getInsightIcon = (type: string) => {
     switch (type) {
-      case 'success': return <CheckCircleIcon color="success" />;
-      case 'warning': return <WarningIcon color="warning" />;
-      case 'error': return <ErrorIcon color="error" />;
-      case 'info': return <InfoIcon color="info" />;
-      default: return <InfoIcon />;
+      case 'success':
+        return <CheckCircleIcon color="success" />;
+      case 'warning':
+        return <WarningIcon color="warning" />;
+      case 'error':
+        return <ErrorIcon color="error" />;
+      case 'info':
+        return <InfoIcon color="info" />;
+      default:
+        return <InfoIcon />;
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'error';
-      case 'medium': return 'warning';
-      case 'low': return 'info';
-      default: return 'default';
+      case 'high':
+        return 'error';
+      case 'medium':
+        return 'warning';
+      case 'low':
+        return 'info';
+      default:
+        return 'default';
     }
   };
 
   if (!targetClientId) {
-    return (
-      <Alert severity="info">
-        Please select a client to view performance dashboard
-      </Alert>
-    );
+    return <Alert severity="info">Please select a client to view performance dashboard</Alert>;
   }
 
   return (
@@ -224,7 +225,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
               <Select
                 value={filters.granularity}
                 label="Granularity"
-                onChange={(e) => setFilters({ ...filters, granularity: e.target.value })}
+                onChange={e => setFilters({ ...filters, granularity: e.target.value })}
               >
                 <MenuItem value="hour">Hourly</MenuItem>
                 <MenuItem value="day">Daily</MenuItem>
@@ -239,7 +240,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
               <Select
                 value={filters.platform}
                 label="Platform"
-                onChange={(e) => setFilters({ ...filters, platform: e.target.value })}
+                onChange={e => setFilters({ ...filters, platform: e.target.value })}
               >
                 <MenuItem value="">All Platforms</MenuItem>
                 <MenuItem value="facebook">Facebook</MenuItem>
@@ -252,13 +253,13 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Stack direction="row" spacing={1} flexWrap="wrap">
-              {['impressions', 'clicks', 'conversions', 'spend'].map((metric) => (
+              {['impressions', 'clicks', 'conversions', 'spend'].map((metric: any) => (
                 <Chip
                   key={metric}
                   label={metric}
                   onClick={() => {
                     const newMetrics = filters.metrics.includes(metric)
-                      ? filters.metrics.filter(m => m !== metric)
+                      ? filters.metrics.filter((m: any) => m !== metric)
                       : [...filters.metrics, metric];
                     setFilters({ ...filters, metrics: newMetrics });
                   }}

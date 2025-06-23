@@ -11,10 +11,8 @@ import pdfParse from 'pdf-parse';
 
 // Configure to handle file uploads
 export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+  api: {},
+    bodyParser: false}};
 
 interface BriefData {
   title: string;
@@ -35,8 +33,7 @@ interface BriefData {
 
 // Initialize OpenAI client
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+  apiKey: process.env.OPENAI_API_KEY});
 
 // Function to estimate token count (rough approximation: 1 token ≈ 4 characters)
 function estimateTokenCount(text: string): number {
@@ -149,8 +146,7 @@ Return only the JSON object.`;
             }
           ],
           temperature: 0.1,
-          max_tokens: 1500,
-        }),
+          max_tokens: 1500}),
         new Promise((_, reject) => 
           setTimeout(() => reject(new Error('OpenAI chunk request timeout')), 20000)
         )
@@ -170,12 +166,12 @@ Return only the JSON object.`;
           
           const chunkData = JSON.parse(cleanedResponse);
           chunkResults.push(chunkData);
-                  } catch (parseError) {
+                  } catch (parseError: any) {
           console.warn(`Failed to parse chunk ${i + 1} response:`, parseError);
           console.warn(`Raw response was:`, responseText.substring(0, 200) + '...');
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn(`Error processing chunk ${i + 1}:`, error);
     }
   }
@@ -222,7 +218,7 @@ function mergeChunkResults(chunkResults: Partial<BriefData>[], fallbackTitle: st
     
     // Merge arrays, removing duplicates
     if (chunk.keyMessages && Array.isArray(chunk.keyMessages)) {
-      chunk.keyMessages.forEach(msg => {
+      chunk.keyMessages.forEach((msg: any) => {
         if (msg && !merged.keyMessages.includes(msg)) {
           merged.keyMessages.push(msg);
         }
@@ -230,7 +226,7 @@ function mergeChunkResults(chunkResults: Partial<BriefData>[], fallbackTitle: st
     }
     
     if (chunk.platforms && Array.isArray(chunk.platforms)) {
-      chunk.platforms.forEach(platform => {
+      chunk.platforms.forEach((platform: any) => {
         if (platform && !merged.platforms.includes(platform)) {
           merged.platforms.push(platform);
         }
@@ -238,7 +234,7 @@ function mergeChunkResults(chunkResults: Partial<BriefData>[], fallbackTitle: st
     }
     
     if (chunk.requirements && Array.isArray(chunk.requirements)) {
-      chunk.requirements.forEach(req => {
+      chunk.requirements.forEach((req: any) => {
         if (req && !merged.requirements?.includes(req)) {
           merged.requirements?.push(req);
         }
@@ -246,7 +242,7 @@ function mergeChunkResults(chunkResults: Partial<BriefData>[], fallbackTitle: st
     }
 
     if (chunk.competitors && Array.isArray(chunk.competitors)) {
-      chunk.competitors.forEach(comp => {
+      chunk.competitors.forEach((comp: any) => {
         if (comp && !merged.competitors?.includes(comp)) {
           merged.competitors?.push(comp);
         }
@@ -325,8 +321,7 @@ Respond ONLY with the JSON object, no additional text or explanation.`;
           }
         ],
         temperature: 0.1,
-        max_tokens: 2000,
-      }),
+        max_tokens: 2000}),
       new Promise((_, reject) => 
         setTimeout(() => reject(new Error('OpenAI request timeout')), 30000)
       )
@@ -372,7 +367,7 @@ Respond ONLY with the JSON object, no additional text or explanation.`;
 
     return parsedData as BriefData;
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in OpenAI parsing:', error);
     return null;
   }
@@ -398,8 +393,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       uploadDir: '/tmp',
       keepExtensions: true,
       maxFileSize: 10 * 1024 * 1024, // 10MB
-      multiples: false,
-    });
+      multiples: false});
 
         const [fields, files] = await form.parse(req);
     console.log('File upload parsing completed. Files:', Object.keys(files));
@@ -430,7 +424,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           const buffer = fs.readFileSync(uploadedFile.filepath);
           const result = await mammoth.extractRawText({ buffer });
           fileContent = result.value;
-                  } catch (docError) {
+                  } catch (docError: any) {
           console.warn('.doc parsing failed, this format may not be fully supported');
           fileContent = `Document: ${uploadedFile.originalFilename}\nNote: .doc format may require conversion to .docx for best results.`;
         }
@@ -444,7 +438,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         // Try to read as text for unknown formats
                 fileContent = fs.readFileSync(uploadedFile.filepath, 'utf8');
               }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error reading file:', error);
       throw new Error(`Failed to read file: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
@@ -479,7 +473,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       message: 'Brief parsed successfully'
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error parsing brief:', error);
     console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
 
@@ -525,7 +519,7 @@ async function parseDocumentContent(content: string, title: string): Promise<Bri
     if (aiParsedData) {
             return aiParsedData;
     }
-  } catch (error) {
+  } catch (error: any) {
     console.warn('OpenAI parsing failed, falling back to pattern matching:', error);
   }
 
@@ -574,7 +568,7 @@ async function parseDocumentContent(content: string, title: string): Promise<Bri
   for (const pattern of messagePatterns) {
     const match = content.match(pattern);
     if (match) {
-      const messages = match[1].split(/[,\n\-\•]/).map(m => m.trim()).filter(m => m.length > 0);
+      const messages = match[1].split(/[,\n\-\•]/).map((m: any) => m.trim()).filter((m: any) => m.length > 0);
       keyMessages.push(...messages.slice(0, 5)); // Limit to 5 messages
       break;
     }
@@ -584,7 +578,7 @@ async function parseDocumentContent(content: string, title: string): Promise<Bri
   const platforms: string[] = [];
   const platformKeywords = ['instagram', 'facebook', 'linkedin', 'twitter', 'youtube', 'tiktok', 'snapchat'];
   
-  platformKeywords.forEach(platform => {
+  platformKeywords.forEach((platform: any) => {
     if (contentLower.includes(platform)) {
       platforms.push(platform.charAt(0).toUpperCase() + platform.slice(1));
     }
@@ -632,7 +626,7 @@ async function parseDocumentContent(content: string, title: string): Promise<Bri
   for (const pattern of requirementPatterns) {
     const match = content.match(pattern);
     if (match) {
-      const reqs = match[1].split(/[,\n\-\•]/).map(r => r.trim()).filter(r => r.length > 0);
+      const reqs = match[1].split(/[,\n\-\•]/).map((r: any) => r.trim()).filter((r: any) => r.length > 0);
       requirements.push(...reqs.slice(0, 10)); // Limit to 10 requirements
       break;
     }
@@ -717,7 +711,7 @@ async function parseDocumentContent(content: string, title: string): Promise<Bri
   for (const pattern of competitorPatterns) {
     const match = content.match(pattern);
     if (match) {
-      const comps = match[1].split(/[,\n\-\•]/).map(c => c.trim()).filter(c => c.length > 0);
+      const comps = match[1].split(/[,\n\-\•]/).map((c: any) => c.trim()).filter((c: any) => c.length > 0);
       competitors.push(...comps.slice(0, 5)); // Limit to 5 competitors
       break;
     }

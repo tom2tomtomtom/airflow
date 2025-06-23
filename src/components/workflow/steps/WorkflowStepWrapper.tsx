@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { Box, Paper, Typography, Stepper, Step, StepLabel, StepContent } from '@mui/material';
+import { Box, Paper, Typography, Stepper, Step, StepLabel } from '@mui/material';
 import { useWorkflow } from '../WorkflowProvider';
 
 interface WorkflowStepWrapperProps {
@@ -19,12 +19,12 @@ export const WorkflowStepWrapper: React.FC<WorkflowStepWrapperProps> = ({
 
   const steps = [
     'Upload Brief',
-    'Review Content', 
+    'Review Content',
     'Generate Motivations',
     'Select Motivations',
     'Generate Copy',
     'Select Copy',
-    'Complete'
+    'Complete',
   ];
 
   return (
@@ -34,7 +34,7 @@ export const WorkflowStepWrapper: React.FC<WorkflowStepWrapperProps> = ({
           <Typography variant="h5" sx={{ mb: 2, fontWeight: 600 }}>
             Workflow Progress
           </Typography>
-          
+
           <Stepper activeStep={state.currentStep} orientation="horizontal" alternativeLabel>
             {steps.map((label, index) => (
               <Step key={label} completed={index < state.currentStep}>

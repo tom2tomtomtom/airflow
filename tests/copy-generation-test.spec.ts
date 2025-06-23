@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { getErrorMessage } from '@/utils/errorUtils';
+import { test } from '@playwright/test';
 
 test.describe('Copy Generation Fix Test', () => {
   test.beforeEach(async ({ page }) => {
@@ -113,6 +114,7 @@ Industry: Consumer Goods
               }
               
             } catch (error) {
+    const message = getErrorMessage(error);
               console.error('❌ Copy generation failed:', error);
               throw error;
             }
@@ -127,6 +129,7 @@ Industry: Consumer Goods
       }
       
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('Test error:', error);
       
       // Take screenshot for debugging

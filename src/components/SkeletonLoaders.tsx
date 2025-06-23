@@ -1,14 +1,5 @@
 import React from 'react';
-import {
-  Box,
-  Card,
-  CardContent,
-  Skeleton,
-  Grid,
-  List,
-  ListItem,
-  Avatar,
-} from '@mui/material';
+import { Box, Card, CardContent, Skeleton, Grid, List, ListItem, Avatar } from '@mui/material';
 
 // Generic skeleton for cards
 export const CardSkeleton: React.FC<{ height?: number }> = ({ height = 200 }) => (
@@ -69,23 +60,23 @@ export const ListItemSkeleton: React.FC<{ items?: number }> = ({ items = 5 }) =>
 );
 
 // Table skeleton
-export const TableSkeleton: React.FC<{ rows?: number; columns?: number }> = ({ 
-  rows = 5, 
-  columns = 4 
+export const TableSkeleton: React.FC<{ rows?: number; columns?: number }> = ({
+  rows = 5,
+  columns = 4,
 }) => (
   <Box>
     {/* Header */}
     <Box display="flex" gap={2} mb={2} p={2} bgcolor="background.paper">
       {[...Array(columns)].map((_, index) => (
-        <Skeleton key={index} variant="text" width={`${100/columns}%`} height={24} />
+        <Skeleton key={index} variant="text" width={`${100 / columns}%`} height={24} />
       ))}
     </Box>
-    
+
     {/* Rows */}
     {[...Array(rows)].map((_, rowIndex) => (
       <Box key={rowIndex} display="flex" gap={2} p={2} borderBottom={1} borderColor="divider">
         {[...Array(columns)].map((_, colIndex) => (
-          <Skeleton key={colIndex} variant="text" width={`${100/columns}%`} height={20} />
+          <Skeleton key={colIndex} variant="text" width={`${100 / columns}%`} height={20} />
         ))}
       </Box>
     ))}
@@ -96,14 +87,14 @@ export const TableSkeleton: React.FC<{ rows?: number; columns?: number }> = ({
 export const FormSkeleton: React.FC = () => (
   <Box>
     <Skeleton variant="text" width="30%" height={32} sx={{ mb: 3 }} />
-    
+
     {[...Array(4)].map((_, index) => (
       <Box key={index} mb={3}>
         <Skeleton variant="text" width="20%" height={20} sx={{ mb: 1 }} />
         <Skeleton variant="rectangular" width="100%" height={56} sx={{ borderRadius: 1 }} />
       </Box>
     ))}
-    
+
     <Box display="flex" gap={2} mt={4}>
       <Skeleton variant="rectangular" width={120} height={40} sx={{ borderRadius: 1 }} />
       <Skeleton variant="rectangular" width={100} height={40} sx={{ borderRadius: 1 }} />
@@ -127,7 +118,7 @@ export const ContentSkeleton: React.FC = () => (
 export const NavigationSkeleton: React.FC = () => (
   <Box p={2}>
     <Skeleton variant="text" width="60%" height={32} sx={{ mb: 3 }} />
-    
+
     {[...Array(6)].map((_, index) => (
       <Box key={index} display="flex" alignItems="center" mb={2}>
         <Skeleton variant="circular" width={24} height={24} sx={{ mr: 2 }} />
@@ -149,7 +140,7 @@ export const WorkflowSkeleton: React.FC = () => (
         </Box>
       ))}
     </Box>
-    
+
     {/* Content */}
     <Card>
       <CardContent>
@@ -183,7 +174,7 @@ export const AnalyticsSkeleton: React.FC = () => (
         ))}
       </Grid>
     </Grid>
-    
+
     {/* Charts */}
     <Grid size={{ xs: 12, md: 8 }}>
       <Card>
@@ -193,7 +184,7 @@ export const AnalyticsSkeleton: React.FC = () => (
         </CardContent>
       </Card>
     </Grid>
-    
+
     <Grid size={{ xs: 12, md: 4 }}>
       <Card>
         <CardContent>
@@ -232,7 +223,7 @@ export const ProgressSkeleton: React.FC = () => (
       </Box>
       <Skeleton variant="text" width="10%" height={20} />
     </Box>
-    
+
     <Skeleton variant="text" width="50%" height={16} />
   </Box>
 );

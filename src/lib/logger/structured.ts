@@ -66,7 +66,7 @@ export class StructuredLogger {
       };
       
       // Remove undefined values
-      Object.keys(entry).forEach(key => {
+      Object.keys(entry).forEach((key: any) => {
         if (entry[key as keyof StructuredLogEntry] === undefined) {
           delete entry[key as keyof StructuredLogEntry];
         }
@@ -156,7 +156,7 @@ export class StructuredLogger {
   }): void {
     this.info(`AUDIT: ${action}`, {
       ...context,
-      metadata: {
+      metadata: {},
         auditType: 'user_action',
         ...context.metadata
       }
@@ -166,10 +166,10 @@ export class StructuredLogger {
   performance(operation: string, duration: number, context?: LogContext): void {
     const level = duration > 1000 ? 'warn' : 'info';
     this.logger[level](`PERF: ${operation}`, {
-      context: {
+      context: {},
         ...context,
         duration,
-        metadata: {
+        metadata: {},
           performanceType: 'operation_timing',
           ...context?.metadata
         }
@@ -183,7 +183,7 @@ export class StructuredLogger {
   }): void {
     this.warn(`SECURITY: ${event}`, {
       ...context,
-      metadata: {
+      metadata: {},
         securityType: 'security_event',
         ...context.metadata
       }
@@ -200,9 +200,9 @@ export class StructuredLogger {
   }): void {
     const level = context.statusCode >= 400 ? 'warn' : 'info';
     this.logger[level](`API: ${context.method} ${context.route}`, {
-      context: {
+      context: {},
         ...context,
-        metadata: {
+        metadata: {},
           requestType: 'api_request',
           ...context.metadata
         }
@@ -221,9 +221,9 @@ export class StructuredLogger {
   }): void {
     const level = context.success ? 'info' : 'error';
     this.logger[level](`AI: ${context.generationType} via ${context.provider}`, {
-      context: {
+      context: {},
         ...context,
-        metadata: {
+        metadata: {},
           aiType: 'generation_request',
           ...context.metadata
         }
@@ -234,9 +234,9 @@ export class StructuredLogger {
   workflow(workflowId: string, step: string, status: 'started' | 'completed' | 'failed', context?: LogContext): void {
     const level = status === 'failed' ? 'error' : 'info';
     this.logger[level](`WORKFLOW: ${step} ${status}`, {
-      context: {
+      context: {},
         ...context,
-        metadata: {
+        metadata: {},
           workflowType: 'workflow_step',
           workflowId,
           step,
@@ -261,7 +261,7 @@ export class StructuredLogger {
     const childLogger = Object.create(this);
     const originalMethods = ['debug', 'info', 'warn', 'error'];
     
-    originalMethods.forEach(method => {
+    originalMethods.forEach((method: any) => {
       childLogger[method] = (message: string, context?: LogContext) => {
         const mergedContext = { ...persistentContext, ...context };
         this[method as keyof this](message, mergedContext);
@@ -280,7 +280,7 @@ export class StructuredLogger {
     // Note: This would typically integrate with a metrics system
     return {
       totalLogs: 0,
-      logsByLevel: {},
+      logsByLevel: {}
       recentErrors: []
     };
   }

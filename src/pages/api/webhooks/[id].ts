@@ -2,7 +2,8 @@ import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { z } from 'zod';
 import { deliverWebhook, WEBHOOK_EVENTS } from './index';
 import crypto from 'crypto';
@@ -16,16 +17,13 @@ const WebhookUpdateSchema = z.object({
   retry_policy: z.object({
     max_attempts: z.number().min(1).max(10).default(3),
     backoff_strategy: z.enum(['linear', 'exponential']).default('exponential'),
-    initial_delay_ms: z.number().min(1000).default(1000),
-  }).optional(),
+    initial_delay_ms: z.number().min(1000).default(1000)}).optional(),
   headers: z.record(z.string()).optional(),
-  timeout_ms: z.number().min(1000).max(30000).optional(),
-});
+  timeout_ms: z.number().min(1000).max(30000).optional()});
 
 const WebhookTestSchema = z.object({
   event_type: z.string().min(1, 'Event type is required'),
-  test_data: z.record(z.any()).optional(),
-});
+  test_data: z.record(z.any()).optional()});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -49,7 +47,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Webhook API error:', error);
     return res.status(500).json({
@@ -71,7 +69,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, w
       return res.status(403).json({ error: 'No client access' });
     }
 
-    const clientIds = userClients.map(uc => uc.client_id);
+    const clientIds = userClients.map((uc: any) => uc.client_id);
 
     // Get webhook with access validation
     const { data: webhook, error } = await supabase
@@ -112,7 +110,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, w
     const stats = calculateDeliveryStatistics(deliveries || []);
 
     return res.json({ 
-      data: {
+      data: {},
         ...webhook,
         secret: webhook.secret ? `${webhook.secret.substring(0, 8)}...` : null // Mask secret
       },
@@ -121,7 +119,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, w
       statistics: stats,
       events: Object.values(WEBHOOK_EVENTS)
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error in handleGet:', error);
     return res.status(500).json({ error: 'Failed to fetch webhook' });
@@ -172,7 +170,7 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse, user: any
     // Validate event types if provided
     if (updateData.events) {
       const validEvents = Object.values(WEBHOOK_EVENTS);
-      const invalidEvents = updateData.events.filter(event => !validEvents.includes(event as any));
+      const invalidEvents = updateData.events.filter((event: any) => !validEvents.includes(event as any));
       if (invalidEvents.length > 0) {
         return res.status(400).json({ 
           error: 'Invalid event types',
@@ -198,8 +196,7 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse, user: any
       .from('webhooks')
       .update({
         ...updateData,
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString()})
       .eq('id', webhookId)
       .select(`
         *,
@@ -217,16 +214,15 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse, user: any
     await logWebhookEvent(webhookId, 'updated', user.id, {
       changes: updateData,
       previous_url: existingWebhook.url,
-      previous_events: existingWebhook.events,
-    });
+      previous_events: existingWebhook.events});
 
     return res.json({ 
-      data: {
+      data: {},
         ...webhook,
         secret: webhook.secret ? `${webhook.secret.substring(0, 8)}...` : null
       }
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error updating webhook:', error);
     return res.status(500).json({ error: 'Failed to update webhook' });
@@ -267,8 +263,7 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
     await logWebhookEvent(webhookId, 'deleted', user.id, {
       url: webhook.url,
       events: webhook.events,
-      total_deliveries: webhook.total_deliveries,
-    });
+      total_deliveries: webhook.total_deliveries});
 
     // Delete webhook (cascade will handle deliveries and logs)
     const { error } = await supabase
@@ -282,7 +277,7 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
     }
 
     return res.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error deleting webhook:', error);
     return res.status(500).json({ error: 'Failed to delete webhook' });
@@ -358,8 +353,7 @@ async function handleTestWebhook(req: NextApiRequest, res: NextApiResponse, user
       data: test_data || {
         message: `Test webhook for event: ${event_type}`,
         user: user.email || user.id,
-        client_id: webhook.client_id,
-      }
+        client_id: webhook.client_id}
     };
 
     // Deliver test webhook
@@ -369,15 +363,14 @@ async function handleTestWebhook(req: NextApiRequest, res: NextApiResponse, user
     await logWebhookEvent(webhookId, 'tested', user.id, {
       event_type,
       test_data,
-      result,
-    });
+      result});
 
     return res.json({ 
       success: result.success,
       result,
       payload
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error testing webhook:', error);
     return res.status(500).json({ error: 'Failed to test webhook' });
@@ -422,8 +415,7 @@ async function handleRegenerateSecret(req: NextApiRequest, res: NextApiResponse,
       .from('webhooks')
       .update({
         secret: newSecret,
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString()})
       .eq('id', webhookId)
       .select('*')
       .single();
@@ -436,14 +428,13 @@ async function handleRegenerateSecret(req: NextApiRequest, res: NextApiResponse,
     // Log secret regeneration
     await logWebhookEvent(webhookId, 'secret_regenerated', user.id, {
       previous_secret_length: webhook.secret?.length || 0,
-      new_secret_length: newSecret.length,
-    });
+      new_secret_length: newSecret.length});
 
     return res.json({ 
       success: true,
       secret: `${newSecret.substring(0, 8)}...`
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error regenerating webhook secret:', error);
     return res.status(500).json({ error: 'Failed to regenerate secret' });
@@ -487,8 +478,7 @@ async function handleToggleWebhook(req: NextApiRequest, res: NextApiResponse, us
       .from('webhooks')
       .update({
         active: newActiveState,
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString()})
       .eq('id', webhookId)
       .select('*')
       .single();
@@ -501,14 +491,13 @@ async function handleToggleWebhook(req: NextApiRequest, res: NextApiResponse, us
     // Log toggle action
     await logWebhookEvent(webhookId, newActiveState ? 'activated' : 'deactivated', user.id, {
       previous_state: webhook.active,
-      new_state: newActiveState,
-    });
+      new_state: newActiveState});
 
     return res.json({ 
       success: true,
       active: newActiveState
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error toggling webhook:', error);
     return res.status(500).json({ error: 'Failed to toggle webhook' });
@@ -527,18 +516,16 @@ async function testWebhookUrl(url: string, timeoutMs: number = 10000): Promise<{
 
     const response = await fetch(url, {
       method: 'POST',
-      headers: {
+      headers: {},
         'Content-Type': 'application/json',
         'User-Agent': 'AIrFLOW-Webhook-Test/1.0',
-        'X-AIrFLOW-Test': 'true',
-      },
+        'X-AIrFLOW-Test': 'true'},
       body: JSON.stringify({
         event: 'webhook.test',
         timestamp: new Date().toISOString(),
         data: { message: 'This is a webhook test from AIrFLOW' }
       }),
-      signal: controller.signal,
-    });
+      signal: controller.signal});
 
     clearTimeout(timeoutId);
 
@@ -550,7 +537,7 @@ async function testWebhookUrl(url: string, timeoutMs: number = 10000): Promise<{
         error: `HTTP ${response.status}: ${response.statusText}` 
       };
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     if ((error as any).name === 'AbortError') {
       return { success: false, error: 'Request timeout' };
@@ -571,9 +558,8 @@ async function logWebhookEvent(webhookId: string, action: string, userId: string
         action,
         user_id: userId,
         metadata,
-        timestamp: new Date().toISOString(),
-      });
-  } catch (error) {
+        timestamp: new Date().toISOString()});
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error logging webhook event:', error);
   }
@@ -593,9 +579,9 @@ function calculateDeliveryStatistics(deliveries: any[]): any {
     };
   }
 
-  const successful = deliveries.filter(d => d.success).length;
-  const failed = deliveries.filter(d => !d.success).length;
-  const recentFailures = deliveries.slice(0, 10).filter(d => !d.success).length;
+  const successful = deliveries.filter((d: any) => d.success).length;
+  const failed = deliveries.filter((d: any) => !d.success).length;
+  const recentFailures = deliveries.slice(0, 10).filter((d: any) => !d.success).length;
   
   const statusDistribution = deliveries.reduce((acc, delivery) => {
     const status = delivery.response_status || 0;
@@ -611,8 +597,7 @@ function calculateDeliveryStatistics(deliveries: any[]): any {
     success_rate: deliveries.length > 0 ? Math.round((successful / deliveries.length) * 100) : 0,
     recent_failures: recentFailures,
     last_delivery: deliveries[0]?.delivered_at || null,
-    status_distribution: statusDistribution,
-  };
+    status_distribution: statusDistribution};
 }
 
 function getStatusRange(status: number): string {

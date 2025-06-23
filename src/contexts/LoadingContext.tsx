@@ -3,8 +3,8 @@ import { useRouter } from 'next/router';
 import { LinearProgress, Box } from '@mui/material';
 
 interface LoadingContextType {
-  isLoading: boolean;
-  setLoading: (loading: boolean) => void;
+  isLoading: boolean;,
+    setLoading: (loading: boolean) => void;
 }
 
 const LoadingContext = createContext<LoadingContextType | undefined>(undefined);
@@ -46,7 +46,7 @@ export const LoadingProvider: React.FC<LoadingProviderProps> = ({ children }) =>
   };
 
   return (
-    <LoadingContext.Provider value={{ isLoading, setLoading }}>
+    <LoadingContext.Provider value={{ isLoading, setLoading }>
       {/* Global loading indicator */}
       {isLoading && (
         <Box
@@ -59,13 +59,13 @@ export const LoadingProvider: React.FC<LoadingProviderProps> = ({ children }) =>
             height: '3px',
           }}
         >
-          <LinearProgress 
-            sx={{ 
+          <LinearProgress
+            sx={{
               height: '3px',
               '& .MuiLinearProgress-bar': {
                 background: 'linear-gradient(90deg, #7C3AED, #EC4899)',
               },
-            }} 
+            }}
           />
         </Box>
       )}

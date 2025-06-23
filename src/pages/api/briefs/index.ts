@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -18,8 +19,7 @@ const BriefCreateSchema = z.object({
   platforms: z.array(z.string()).optional(),
   budget: z.number().optional(),
   timeline: z.any().optional(),
-  client_id: z.string().uuid('Invalid client ID'),
-});
+  client_id: z.string().uuid('Invalid client ID')});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -34,7 +34,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Briefs API error:', error);
     return res.status(500).json({ 
@@ -74,7 +74,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       .eq('user_id', user.id);
     
     if (userClients && userClients.length > 0) {
-      const clientIds = userClients.map(uc => uc.client_id);
+      const clientIds = userClients.map((uc: any) => uc.client_id);
       query = query.in('client_id', clientIds);
     } else {
       // User has no client access
@@ -104,7 +104,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   return res.json({ 
     data: data || [],
     count,
-    pagination: {
+    pagination: {},
       limit: parseInt(limit as string),
       offset: parseInt(offset as string),
       total: count || 0
@@ -142,8 +142,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
     .insert({
       ...briefData,
       created_by: user.id,
-      parsing_status: briefData.raw_content ? 'pending' : 'completed',
-    })
+      parsing_status: briefData.raw_content ? 'pending' : 'completed'})
     .select(`
       *,
       clients(name, slug),
@@ -161,16 +160,13 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
     try {
       await fetch(`${req.headers.origin}/api/brief-parse`, {
         method: 'POST',
-        headers: {
+        headers: {},
           'Content-Type': 'application/json',
-          'Authorization': req.headers.authorization || '',
-        },
+          'Authorization': req.headers.authorization || ''},
         body: JSON.stringify({
           brief_id: brief.id,
-          content: briefData.raw_content,
-        }),
-      });
-    } catch (parseError) {
+          content: briefData.raw_content})});
+    } catch (parseError: any) {
       console.error('Error triggering brief parsing:', parseError);
       // Don't fail the request, just log the error
     }

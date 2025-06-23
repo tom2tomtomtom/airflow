@@ -10,7 +10,7 @@ export interface SeederOptions {
 
 export interface SeedResult {
   success: boolean;
-  created: {
+  created: {},
     profiles: number;
     clients: number;
     projects: number;
@@ -28,7 +28,7 @@ export class DatabaseSeeder {
     const startTime = Date.now();
     const result: SeedResult = {
       success: true,
-      created: {
+      created: {},
         profiles: 0,
         clients: 0,
         projects: 0,
@@ -62,7 +62,7 @@ export class DatabaseSeeder {
         errors: result.errors.length
       });
       
-    } catch (error) {
+    } catch (error: any) {
       result.success = false;
       result.errors.push(error instanceof Error ? error.message : 'Unknown error');
       result.duration = Date.now() - startTime;
@@ -92,7 +92,7 @@ export class DatabaseSeeder {
         if (error) {
           loggers.general.warn(`Failed to clear table ${table}`, error);
         }
-      } catch (error) {
+      } catch (error: any) {
         loggers.general.warn(`Error clearing table ${table}`, error);
       }
     }
@@ -115,7 +115,7 @@ export class DatabaseSeeder {
             loggers.general.info(`Created profile: ${profile.email}`);
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         result.errors.push(`Error creating profile ${profile.email}: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     }
@@ -138,7 +138,7 @@ export class DatabaseSeeder {
             loggers.general.info(`Created client: ${client.name}`);
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         result.errors.push(`Error creating client ${client.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     }
@@ -161,7 +161,7 @@ export class DatabaseSeeder {
             loggers.general.info(`Created project: ${project.name}`);
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         result.errors.push(`Error creating project ${project.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     }
@@ -184,7 +184,7 @@ export class DatabaseSeeder {
             loggers.general.info(`Created campaign: ${campaign.name}`);
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         result.errors.push(`Error creating campaign ${campaign.name}: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     }
@@ -207,7 +207,7 @@ export class DatabaseSeeder {
             loggers.general.info(`Created feature flag: ${flag.key}`);
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         result.errors.push(`Error creating feature flag ${flag.key}: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
     }
@@ -266,7 +266,7 @@ export class DatabaseSeeder {
         description: 'A demo client for testing and development',
         industry: 'Technology',
         website: 'https://democlient.com',
-        settings: {
+        settings: {},
           timezone: 'UTC',
           currency: 'USD',
           branding: { primaryColor: '#0066cc' }
@@ -334,7 +334,7 @@ export class DatabaseSeeder {
         description: 'Build brand awareness through social media',
         status: 'active' as const,
         campaign_type: 'social' as const,
-        target_audience: {
+        target_audience: {},
           age_range: '25-45',
           interests: ['technology', 'business'],
           location: 'North America'
@@ -344,7 +344,7 @@ export class DatabaseSeeder {
         budget: 25000,
         start_date: '2024-01-15',
         end_date: '2024-02-15',
-        metrics: {},
+        metrics: {}
         created_by: '22222222-2222-2222-2222-222222222222'
       }
     ];

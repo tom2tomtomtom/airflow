@@ -1,15 +1,15 @@
 export interface AuthState {
   isAuthenticated: boolean;
-  user?: any;
+  user?: unknown;
   loading: boolean;
   error?: string;
-  lastCheck: number;
-  checkInProgress: boolean;
+  lastCheck: number;,
+    checkInProgress: boolean;
 }
 
 export class AuthStateManager {
   private static instance: AuthStateManager;
-  private state: AuthState = {
+  private state: AuthState = {,
     isAuthenticated: false,
     loading: true,
     lastCheck: 0,
@@ -30,7 +30,7 @@ export class AuthStateManager {
 
   subscribe(listener: (state: AuthState) => void): () => void {
     this.listeners.push(listener);
-    
+
     return () => {
       const index = this.listeners.indexOf(listener);
       if (index > -1) {
@@ -45,10 +45,10 @@ export class AuthStateManager {
   }
 
   private notifyListeners(): void {
-    this.listeners.forEach(listener => {
+    this.listeners.forEach((listener: unknown) => {
       try {
         listener(this.getState());
-      } catch (error) {
+      } catch (error: unknown) {
         console.error('Auth state listener error:', error);
       }
     });
@@ -66,10 +66,10 @@ export class AuthStateManager {
       return this.getState();
     }
 
-    this.updateState({ 
-      checkInProgress: true, 
+    this.updateState({
+      checkInProgress: true,
       loading: true,
-      error: undefined 
+      error: undefined,
     });
 
     try {
@@ -81,7 +81,7 @@ export class AuthStateManager {
 
       if (response.ok) {
         const userData = await response.json();
-        
+
         this.updateState({
           isAuthenticated: true,
           user: userData.user,
@@ -100,7 +100,7 @@ export class AuthStateManager {
           error: response.status === 401 ? 'Not authenticated' : 'Auth check failed',
         });
       }
-    } catch (error) {
+    } catch (error: unknown) {
       this.updateState({
         isAuthenticated: false,
         user: undefined,
@@ -122,7 +122,7 @@ export class AuthStateManager {
         method: 'POST',
         credentials: 'include',
       });
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Logout error:', error);
     }
 

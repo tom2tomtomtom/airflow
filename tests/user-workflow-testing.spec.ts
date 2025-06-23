@@ -1,4 +1,5 @@
-import { test, expect, Page } from '@playwright/test';
+import { getErrorMessage } from '@/utils/errorUtils';
+import { test, Page } from '@playwright/test';
 
 /**
  * Complete User Workflow Testing
@@ -90,6 +91,7 @@ class UserWorkflowTester {
 
         steps_completed++;
       } catch (error) {
+    const message = getErrorMessage(error);
         errors.push(`Form filling failed: ${error.message}`);
       }
 
@@ -105,6 +107,7 @@ class UserWorkflowTester {
           errors.push('Submit button not found');
         }
       } catch (error) {
+    const message = getErrorMessage(error);
         errors.push(`Submission failed: ${error.message}`);
       }
 
@@ -120,6 +123,7 @@ class UserWorkflowTester {
         console.log('    ✅ Registration response received');
         steps_completed++;
       } catch (error) {
+    const message = getErrorMessage(error);
         errors.push(`No clear response to registration: ${error.message}`);
       }
 
@@ -157,11 +161,13 @@ class UserWorkflowTester {
           console.log('    ✅ Login with new credentials successful');
           steps_completed++;
         } catch (error) {
+    const message = getErrorMessage(error);
           errors.push(`Login with new credentials failed: ${error.message}`);
         }
       }
 
     } catch (error) {
+    const message = getErrorMessage(error);
       errors.push(`Workflow failed: ${error.message}`);
     }
 
@@ -231,6 +237,7 @@ class UserWorkflowTester {
 
         steps_completed++;
       } catch (error) {
+    const message = getErrorMessage(error);
         errors.push(`Credential entry failed: ${error.message}`);
       }
 
@@ -246,6 +253,7 @@ class UserWorkflowTester {
           errors.push('Login button not found');
         }
       } catch (error) {
+    const message = getErrorMessage(error);
         errors.push(`Login submission failed: ${error.message}`);
       }
 
@@ -258,6 +266,7 @@ class UserWorkflowTester {
         ]);
         steps_completed++;
       } catch (error) {
+    const message = getErrorMessage(error);
         errors.push(`Authentication timeout: ${error.message}`);
       }
 
@@ -286,6 +295,7 @@ class UserWorkflowTester {
       }
 
     } catch (error) {
+    const message = getErrorMessage(error);
       errors.push(`Login workflow failed: ${error.message}`);
     }
 
@@ -366,6 +376,7 @@ class UserWorkflowTester {
           }
         }
       } catch (error) {
+    const message = getErrorMessage(error);
         errors.push(`File selection test failed: ${error.message}`);
       }
 
@@ -446,6 +457,7 @@ class UserWorkflowTester {
       }
 
     } catch (error) {
+    const message = getErrorMessage(error);
       errors.push(`Asset upload workflow failed: ${error.message}`);
     }
 
@@ -527,6 +539,7 @@ class UserWorkflowTester {
           errors.push('No text area for brief input');
         }
       } catch (error) {
+    const message = getErrorMessage(error);
         errors.push(`Brief submission failed: ${error.message}`);
       }
 
@@ -552,6 +565,7 @@ class UserWorkflowTester {
           errors.push('Processing timeout - no response');
         }
       } catch (error) {
+    const message = getErrorMessage(error);
         errors.push(`Processing wait failed: ${error.message}`);
       }
 
@@ -589,6 +603,7 @@ class UserWorkflowTester {
       }
 
     } catch (error) {
+    const message = getErrorMessage(error);
       errors.push(`Brief processing workflow failed: ${error.message}`);
     }
 
@@ -723,6 +738,7 @@ class UserWorkflowTester {
       }
 
     } catch (error) {
+    const message = getErrorMessage(error);
       errors.push(`Search and filtering workflow failed: ${error.message}`);
     }
 

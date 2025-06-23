@@ -10,28 +10,28 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
-  
+
   // Get authenticated user
   const userId = (req as any).userId;
   const userEmail = (req as any).userEmail;
-  
+
   if (!userId) {
     throw new AuthorizationError('Authentication required');
   }
-  
+
   const { confirmation } = req.body;
-  
+
   // Require explicit confirmation
   if (confirmation !== 'DELETE MY ACCOUNT') {
     throw new ValidationError(
       'Please confirm by typing "DELETE MY ACCOUNT" in the confirmation field'
     );
   }
-  
+
   try {
     // Delete all user data
     await deleteUserData(userId);
-    
+
     // Send confirmation email
     if (userEmail) {
       await sendEmail({
@@ -45,15 +45,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
         `,
       });
     }
-    
+
     // Log the user out by clearing their session
     // This would be handled by your auth system
-    
+
     res.status(200).json({
       success: true,
       message: 'Your account and all associated data have been permanently deleted.',
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Account deletion failed:', error);
     throw error;

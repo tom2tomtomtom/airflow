@@ -82,7 +82,7 @@ export class DatabaseBackupManager {
         duration
       };
       
-    } catch (error) {
+    } catch (error: any) {
       const duration = Date.now() - startTime;
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
@@ -137,7 +137,7 @@ export class DatabaseBackupManager {
         tablesRestored: await this.countTables()
       };
       
-    } catch (error) {
+    } catch (error: any) {
       const duration = Date.now() - startTime;
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
@@ -183,7 +183,7 @@ export class DatabaseBackupManager {
       
       // Write backup to file
       const backupContent = JSON.stringify({
-        metadata: {
+        metadata: {},
           timestamp: new Date().toISOString(),
           since: since?.toISOString(),
           tables,
@@ -211,7 +211,7 @@ export class DatabaseBackupManager {
         duration
       };
       
-    } catch (error) {
+    } catch (error: any) {
       const duration = Date.now() - startTime;
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
@@ -271,7 +271,7 @@ export class DatabaseBackupManager {
         tablesRestored
       };
       
-    } catch (error) {
+    } catch (error: any) {
       const duration = Date.now() - startTime;
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
@@ -286,7 +286,7 @@ export class DatabaseBackupManager {
   }
   
   // Schedule automated backups
-  async scheduleBackups(schedule: {
+  async scheduleBackups(schedule: {},
     full: { enabled: boolean; cron: string; retention: number };
     incremental: { enabled: boolean; cron: string; retention: number };
     destination: string;
@@ -313,13 +313,13 @@ export class DatabaseBackupManager {
     
     // Table filtering
     if (options.includeTables) {
-      options.includeTables.forEach(table => {
+      options.includeTables.forEach((table: any) => {
         parts.push(`--table=${table}`);
       });
     }
     
     if (options.excludeTables) {
-      options.excludeTables.forEach(table => {
+      options.excludeTables.forEach((table: any) => {
         parts.push(`--exclude-table=${table}`);
       });
     }
@@ -365,7 +365,7 @@ export class DatabaseBackupManager {
         if (dropError) {
           loggers.general.warn(`Failed to drop table ${table.table_name}`, dropError);
         }
-      } catch (error) {
+      } catch (error: any) {
         loggers.general.warn(`Error dropping table ${table.table_name}`, error);
       }
     }
@@ -375,7 +375,7 @@ export class DatabaseBackupManager {
     try {
       const { data, error } = await this.supabase.rpc('get_table_names');
       return data?.length || 0;
-    } catch (error) {
+    } catch (error: any) {
       return 0;
     }
   }
@@ -407,7 +407,7 @@ export class DatabaseBackupManager {
       
       return backups.sort((a, b) => b.created.getTime() - a.created.getTime());
       
-    } catch (error) {
+    } catch (error: any) {
       loggers.general.error('Failed to get backup history', error);
       return [];
     }

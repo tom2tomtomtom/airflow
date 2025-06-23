@@ -44,15 +44,12 @@ export const FormTextField: React.FC<FormTextFieldProps> = ({
   const errorMessage = error?.message as string;
 
   // Create accessible field props
-  const { fieldProps, labelProps, descriptionProps, errorProps } = createAccessibleField(
-    label,
-    {
-      required: Boolean(rules.required),
-      invalid: hasError,
-      description,
-      errorMessage,
-    }
-  );
+  const { fieldProps, labelProps, descriptionProps, errorProps } = createAccessibleField(label, {
+    required: Boolean(rules.required),
+    invalid: hasError,
+    description,
+    errorMessage,
+  });
 
   return (
     <Box sx={{ mb: 2 }}>

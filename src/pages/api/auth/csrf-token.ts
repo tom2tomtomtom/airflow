@@ -1,10 +1,18 @@
 /**
- * CSRF Token API Endpoint
- * Provides CSRF tokens for client-side security
+ * CSRF Token Generation Endpoint
+ * Provides CSRF tokens for client-side applications
  */
 
-import { handleCSRFToken } from '@/lib/csrf';
-import { withAPIRateLimit } from '@/lib/rate-limiter';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { generateCsrfTokenAPI } from '@/middleware/withCsrfProtection';
 
-// Apply rate limiting and handle CSRF token requests
-export default withAPIRateLimit(handleCSRFToken);
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'GET') {
+    return res.status(405).json({
+      success: false,
+      error: { code: 'METHOD_NOT_ALLOWED', message: 'Method not allowed' },
+    });
+  }
+
+  return generateCsrfTokenAPI(req, res);
+}

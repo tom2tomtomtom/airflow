@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { getErrorMessage } from '@/utils/errorUtils';
+import { test } from '@playwright/test';
 
 const REDBAEZ_BRIEF = `Creative Brief: Launching AIrWAVE 2.0 by Redbaez
 
@@ -151,6 +152,7 @@ test.describe('Flow UI Comprehensive Inspection', () => {
         }
         
       } catch (error) {
+    const message = getErrorMessage(error);
         console.log(`❌ Error filling brief: ${error.message}`);
       }
     } else {
@@ -248,6 +250,7 @@ test.describe('Flow UI Comprehensive Inspection', () => {
           const firstMotivationText = await page.locator(selector).first().textContent();
           console.log(`First motivation preview: ${firstMotivationText?.substring(0, 100)}...`);
         } catch (error) {
+    const message = getErrorMessage(error);
           console.log('Could not read motivation text');
         }
       }
@@ -393,6 +396,7 @@ test.describe('Flow UI Comprehensive Inspection', () => {
           });
         }
       } catch (error) {
+    const message = getErrorMessage(error);
         console.log(`Error with button ${i}: ${error.message}`);
       }
     }

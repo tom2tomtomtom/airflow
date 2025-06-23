@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -11,10 +12,8 @@ const BulkApprovalDecisionSchema = z.object({
   comments: z.string().optional(),
   changes_requested: z.array(z.object({
     field: z.string(),
-    reason: z.string(),
-  })).optional(),
-  conditions: z.array(z.string()).optional(),
-});
+    reason: z.string()})).optional(),
+  conditions: z.array(z.string()).optional()});
 
 const BulkApprovalCreateSchema = z.object({
   items: z.array(z.object({
@@ -23,10 +22,8 @@ const BulkApprovalCreateSchema = z.object({
     approval_type: z.enum(['content', 'legal', 'brand', 'final']).default('content'),
     priority: z.enum(['low', 'normal', 'high', 'urgent']).default('normal'),
     due_date: z.string().optional(),
-    notes: z.string().optional(),
-  })).min(1).max(20),
-  client_id: z.string().uuid(),
-});
+    notes: z.string().optional()})).min(1).max(20),
+  client_id: z.string().uuid()});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -41,7 +38,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Bulk Approvals API error:', error);
     return res.status(500).json({ 
@@ -78,7 +75,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
 
   // Validate all items exist and belong to the client
   const validationResults = await validateBulkItems(items, client_id);
-  const invalidItems = validationResults.filter(result => !result.valid);
+  const invalidItems = validationResults.filter((result: any) => !result.valid);
   
   if (invalidItems.length > 0) {
     return res.status(400).json({ 
@@ -105,8 +102,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
       client_id,
       assigned_to: assignedTo,
       created_by: user.id,
-      status: 'pending',
-    };
+      status: 'pending'};
   }));
 
   const { data: createdApprovals, error } = await supabase
@@ -129,7 +125,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
 
   // Trigger notifications for each unique assignee
   const assigneeNotifications: Record<string, any[]> = {};
-  createdApprovals.forEach(approval => {
+  createdApprovals.forEach((approval: any) => {
     if (!assigneeNotifications[approval.assigned_to]) {
       assigneeNotifications[approval.assigned_to] = [];
     }
@@ -142,10 +138,9 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
 
   return res.status(201).json({ 
     data: createdApprovals,
-    summary: {
+    summary: {},
       total_created: createdApprovals.length,
-      assignees: Object.keys(assigneeNotifications).length,
-    }
+      assignees: Object.keys(assigneeNotifications).length}
   });
 }
 
@@ -181,13 +176,13 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any): 
 
   // Verify user has permission for all approvals
   const permissionChecks = await Promise.all(
-    approvals.map(approval => verifyApprovalPermission(approval, user.id, 'decide'))
+    approvals.map((approval: any) => verifyApprovalPermission(approval, user.id, 'decide'))
   );
 
   const unauthorizedApprovals = permissionChecks
     .map((hasPermission, index) => ({ hasPermission, approval: approvals[index] }))
-    .filter(item => !item.hasPermission)
-    .map(item => item.approval.id);
+    .filter((item: any) => !item.hasPermission)
+    .map((item: any) => item.approval.id);
 
   if (unauthorizedApprovals.length > 0) {
     return res.status(403).json({ 
@@ -197,11 +192,11 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any): 
   }
 
   // Check all approvals are in pending state
-  const nonPendingApprovals = approvals.filter(approval => approval.status !== 'pending');
+  const nonPendingApprovals = approvals.filter((approval: any) => approval.status !== 'pending');
   if (nonPendingApprovals.length > 0) {
     return res.status(409).json({ 
       error: 'Some approvals are not in pending state',
-      non_pending_approvals: nonPendingApprovals.map(a => ({ id: a.id, status: a.status }))
+      non_pending_approvals: nonPendingApprovals.map((a: any) => ({ id: a.id, status: a.status }))
     });
   }
 
@@ -221,8 +216,7 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any): 
     changes_requested,
     conditions,
     decided_by: user.id,
-    decided_at: new Date().toISOString(),
-  };
+    decided_at: new Date().toISOString()};
 
   // Update all approvals
   const { data: updatedApprovals, error: updateError } = await supabase
@@ -230,8 +224,7 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any): 
     .update({
       status: newStatus,
       decision_data: decisionData,
-      updated_at: new Date().toISOString(),
-    })
+      updated_at: new Date().toISOString()})
     .in('id', approval_ids)
     .select(`
       *,
@@ -248,20 +241,20 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any): 
   await logBulkApprovalDecision(approval_ids, action, user.id, comments);
 
   // Update item statuses
-  const itemUpdates = approvals.map(approval => ({
+  const itemUpdates = approvals.map((approval: any) => ({
     item_type: approval.item_type,
     item_id: approval.item_id
   }));
   await updateItemsStatusAfterDecision(itemUpdates, action);
 
   // Trigger post-decision workflows
-  await Promise.all(updatedApprovals.map(approval => 
+  await Promise.all(updatedApprovals.map((approval: any) => 
     triggerPostDecisionWorkflow(approval, { action, comments })
   ));
 
   // Group notifications by affected users
   const notificationGroups: Record<string, any[]> = {};
-  updatedApprovals.forEach(approval => {
+  updatedApprovals.forEach((approval: any) => {
     const key = approval.created_by; // Notify creators
     if (!notificationGroups[key]) {
       notificationGroups[key] = [];
@@ -276,12 +269,11 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any): 
 
   return res.json({ 
     data: updatedApprovals,
-    summary: {
+    summary: {},
       total_processed: updatedApprovals.length,
       action: action,
       decided_by: user.id,
-      decided_at: decisionData.decided_at,
-    }
+      decided_at: decisionData.decided_at}
   });
 }
 
@@ -354,7 +346,7 @@ async function validateBulkItems(items: any[], clientId: string): Promise<any[]>
       }
 
       return { valid: true, item_id: item.item_id };
-    } catch (error) {
+    } catch (error: any) {
     const message = getErrorMessage(error);
       return { valid: false, item_id: item.item_id, reason: 'Validation error' };
     }
@@ -371,15 +363,15 @@ async function checkExistingApprovals(items: any[]): Promise<any[]> {
 
   if (!existingApprovals) return [];
 
-  return items.filter(item => 
+  return items.filter((item: any) => 
     existingApprovals.some(existing => 
       existing.item_type === item.item_type && 
       existing.item_id === item.item_id
     )
-  ).map(item => ({
+  ).map((item: any) => ({
     item_type: item.item_type,
     item_id: item.item_id,
-    existing_approval_id: existingApprovals.find(existing => 
+    existing_approval_id: existingApprovals.find((existing: any) => 
       existing.item_type === item.item_type && 
       existing.item_id === item.item_id
     )?.id
@@ -405,8 +397,7 @@ async function determineApprovalAssignee(clientId: string, approvalType: string,
       content: ['content_reviewer', 'manager'],
       legal: ['legal_reviewer', 'manager'],
       brand: ['brand_manager', 'manager'],
-      final: ['manager', 'director'],
-    };
+      final: ['manager', 'director']};
 
     const roles = roleMapping[approvalType] || ['manager'];
 
@@ -419,7 +410,7 @@ async function determineApprovalAssignee(clientId: string, approvalType: string,
       .limit(1);
 
     return approvers && approvers.length > 0 ? approvers[0].user_id : null;
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error determining approval assignee:', error);
     return null;
@@ -435,10 +426,9 @@ async function updateItemsApprovalStatus(items: any[], status: string): Promise<
         .from(table)
         .update({
           approval_status: status,
-          updated_at: new Date().toISOString(),
-        })
+          updated_at: new Date().toISOString()})
         .eq('id', item.item_id);
-    } catch (error) {
+    } catch (error: any) {
     const message = getErrorMessage(error);
       console.error(`Error updating item ${item.item_id} status:`, error);
     }
@@ -462,10 +452,9 @@ async function updateItemsStatusAfterDecision(items: any[], decision: string): P
         .from(table)
         .update({
           approval_status: newStatus,
-          updated_at: new Date().toISOString(),
-        })
+          updated_at: new Date().toISOString()})
         .eq('id', item.item_id);
-    } catch (error) {
+    } catch (error: any) {
     const message = getErrorMessage(error);
       console.error(`Error updating item ${item.item_id} status after decision:`, error);
     }
@@ -484,11 +473,10 @@ async function verifyApprovalPermission(approval: any, userId: string, action: s
     if (!userClient) return false;
 
     const permissions: Record<string, boolean> = {
-      decide: approval.assigned_to === userId || ['manager', 'director'].includes(userClient.role),
-    };
+      decide: approval.assigned_to === userId || ['manager', 'director'].includes(userClient.role)};
 
     return permissions[action] || false;
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error verifying approval permission:', error);
     return false;
@@ -507,12 +495,11 @@ async function triggerPostDecisionWorkflow(approval: any, decision: any): Promis
           .from('campaigns')
           .update({
             status: 'active',
-            activated_at: new Date().toISOString(),
-          })
+            activated_at: new Date().toISOString()})
           .eq('id', approval.item_id);
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error triggering post-decision workflow:', error);
   }
@@ -521,7 +508,7 @@ async function triggerPostDecisionWorkflow(approval: any, decision: any): Promis
 async function logBulkApprovalDecision(approvalIds: string[], action: string, userId: string, comments?: string): Promise<void> {
   try {
     // Empty try block
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error logging bulk approval decision:', error);
   }
@@ -530,7 +517,7 @@ async function logBulkApprovalDecision(approvalIds: string[], action: string, us
 async function triggerBulkNotification(userId: string, approvals: any[], action: string): Promise<void> {
   try {
     process.env.NODE_ENV === 'development' && console.log('Triggering bulk notification for', approvals.length, 'approvals with action:', action);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error triggering bulk notification:', error);
   }

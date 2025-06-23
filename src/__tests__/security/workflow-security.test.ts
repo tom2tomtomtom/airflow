@@ -165,7 +165,7 @@ describe('Workflow Security Validation', () => {
             {
               title: '<script>alert("XSS")</script>Motivation',
               description: 'Description<img src="x" onerror="alert(1)">',
-              metadata: {
+              metadata: {},
                 source: 'javascript:alert("hack")',
                 tags: ['<script>malicious()</script>', 'clean-tag']
               }
@@ -373,9 +373,6 @@ describe('Workflow Security Validation', () => {
       };
 
       const validation = validateBriefData(codeInjectionData);
-      if (!validation.valid) {
-        console.log('Validation errors:', validation.errors);
-      }
       expect(validation.valid).toBe(true);
       
       if (validation.data) {

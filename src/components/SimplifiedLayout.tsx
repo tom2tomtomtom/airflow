@@ -37,13 +37,13 @@ interface SimplifiedLayoutProps {
 export const SimplifiedLayout: React.FC<SimplifiedLayoutProps> = ({
   children,
   title,
-  breadcrumbs = []
+  breadcrumbs = [],
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const router = useRouter();
   const { user, logout } = useAuth();
-  
+
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(null);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -77,55 +77,51 @@ export const SimplifiedLayout: React.FC<SimplifiedLayoutProps> = ({
 
   const getPageTitle = () => {
     if (title) return title;
-    
+
     // Auto-generate title from route
     const path = router.pathname;
     const segments = path.split('/').filter(Boolean);
     if (segments.length === 0) return 'Dashboard';
-    
+
     return segments[segments.length - 1]
       .split('-')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .map((word: any) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   };
 
   const generateBreadcrumbs = () => {
     if (breadcrumbs.length > 0) return breadcrumbs;
-    
+
     // Auto-generate breadcrumbs from route
     const path = router.pathname;
     const segments = path.split('/').filter(Boolean);
-    
-    const crumbs: Array<{ label: string; href?: string }> = [{ label: 'Dashboard', href: '/dashboard' }];
-    
+
+    const crumbs: Array<{ label: string; href?: string }> = [
+      { label: 'Dashboard', href: '/dashboard' },
+    ];
+
     let currentPath = '';
     segments.forEach((segment, index) => {
       currentPath += `/${segment}`;
       const label = segment
         .split('-')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .map((word: any) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
-      
+
       const crumb: { label: string; href?: string } = { label };
       if (index !== segments.length - 1) {
         crumb.href = currentPath;
       }
       crumbs.push(crumb);
     });
-    
+
     return crumbs;
   };
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
       {/* Desktop Navigation */}
-      {!isMobile && (
-        <SimplifiedNavigation
-          open={true}
-          onClose={() => {}}
-          variant="permanent"
-        />
-      )}
+      {!isMobile && <SimplifiedNavigation open={true} onClose={() => {}} variant="permanent" />}
 
       {/* Mobile Navigation */}
       {isMobile && (
@@ -139,14 +135,14 @@ export const SimplifiedLayout: React.FC<SimplifiedLayoutProps> = ({
       {/* Main Content Area */}
       <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {/* Top App Bar */}
-        <AppBar 
-          position="sticky" 
+        <AppBar
+          position="sticky"
           elevation={0}
-          sx={{ 
+          sx={{
             backgroundColor: 'background.paper',
             borderBottom: 1,
             borderColor: 'divider',
-            color: 'text.primary'
+            color: 'text.primary',
           }}
         >
           <Toolbar sx={{ justifyContent: 'space-between' }}>
@@ -161,30 +157,27 @@ export const SimplifiedLayout: React.FC<SimplifiedLayoutProps> = ({
                   <MenuIcon />
                 </IconButton>
               )}
-              
+
               <Box>
                 <Typography variant="h6" fontWeight={600}>
                   {getPageTitle()}
                 </Typography>
-                
+
                 {/* Breadcrumbs */}
-                <Breadcrumbs 
-                  aria-label="breadcrumb" 
-                  sx={{ fontSize: '0.875rem' }}
-                >
-                  {generateBreadcrumbs().map((crumb, index) => (
+                <Breadcrumbs aria-label="breadcrumb" sx={{ fontSize: '0.875rem' }}>
+                  {generateBreadcrumbs().map((crumb, index) =>
                     crumb.href ? (
                       <Link
                         key={index}
                         color="inherit"
                         href={crumb.href}
-                        onClick={(e) => {
+                        onClick={e => {
                           e.preventDefault();
                           router.push(crumb.href!);
                         }}
-                        sx={{ 
+                        sx={{
                           textDecoration: 'none',
-                          '&:hover': { textDecoration: 'underline' }
+                          '&:hover': { textDecoration: 'underline' },
                         }}
                       >
                         {crumb.label}
@@ -194,7 +187,7 @@ export const SimplifiedLayout: React.FC<SimplifiedLayoutProps> = ({
                         {crumb.label}
                       </Typography>
                     )
-                  ))}
+                  )}
                 </Breadcrumbs>
               </Box>
             </Box>
@@ -209,7 +202,7 @@ export const SimplifiedLayout: React.FC<SimplifiedLayoutProps> = ({
               >
                 <Search />
               </IconButton>
-              
+
               <IconButton size="small" sx={{ color: 'text.secondary' }}>
                 <Notifications />
               </IconButton>
@@ -218,14 +211,12 @@ export const SimplifiedLayout: React.FC<SimplifiedLayoutProps> = ({
               <Button
                 onClick={handleUserMenuOpen}
                 startIcon={
-                  <Avatar sx={{ width: 32, height: 32 }}>
-                    {user?.name?.charAt(0) || 'U'}
-                  </Avatar>
+                  <Avatar sx={{ width: 32, height: 32 }}>{user?.name?.charAt(0) || 'U'}</Avatar>
                 }
-                sx={{ 
+                sx={{
                   textTransform: 'none',
                   color: 'text.primary',
-                  '&:hover': { backgroundColor: 'action.hover' }
+                  '&:hover': { backgroundColor: 'action.hover' },
                 }}
               >
                 {user?.name || 'User'}
@@ -238,15 +229,30 @@ export const SimplifiedLayout: React.FC<SimplifiedLayoutProps> = ({
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
               >
-                <MenuItem onClick={() => { router.push('/profile'); handleUserMenuClose(); }}>
+                <MenuItem
+                  onClick={() => {
+                    router.push('/profile');
+                    handleUserMenuClose();
+                  }}
+                >
                   <AccountCircle sx={{ mr: 2 }} />
                   Profile
                 </MenuItem>
-                <MenuItem onClick={() => { router.push('/settings'); handleUserMenuClose(); }}>
+                <MenuItem
+                  onClick={() => {
+                    router.push('/settings');
+                    handleUserMenuClose();
+                  }}
+                >
                   <Settings sx={{ mr: 2 }} />
                   Settings
                 </MenuItem>
-                <MenuItem onClick={() => { router.push('/help'); handleUserMenuClose(); }}>
+                <MenuItem
+                  onClick={() => {
+                    router.push('/help');
+                    handleUserMenuClose();
+                  }}
+                >
                   <Help sx={{ mr: 2 }} />
                   Help
                 </MenuItem>
@@ -260,22 +266,19 @@ export const SimplifiedLayout: React.FC<SimplifiedLayoutProps> = ({
         </AppBar>
 
         {/* Page Content */}
-        <Box 
-          component="main" 
-          sx={{ 
+        <Box
+          component="main"
+          sx={{
             flex: 1,
             backgroundColor: 'background.default',
-            overflow: 'auto'
+            overflow: 'auto',
           }}
         >
           {children}
         </Box>
 
         {/* Global Search */}
-        <GlobalSearch
-          open={searchOpen}
-          onClose={() => setSearchOpen(false)}
-        />
+        <GlobalSearch open={searchOpen} onClose={() => setSearchOpen(false)} />
       </Box>
     </Box>
   );

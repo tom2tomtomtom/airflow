@@ -18,8 +18,7 @@ import {
   Stepper,
   Step,
   StepLabel,
-  StepContent,
-} from '@mui/material';
+  StepContent} from '@mui/material';
 import {
   CloudUpload,
   Close,
@@ -28,8 +27,7 @@ import {
   PictureAsPdf,
   Article,
   CheckCircle,
-  AutoAwesome,
-} from '@mui/icons-material';
+  AutoAwesome} from '@mui/icons-material';
 import { useDropzone } from 'react-dropzone';
 import { useNotification } from '@/contexts/NotificationContext';
 
@@ -55,8 +53,7 @@ const steps = [
 export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
   open,
   onClose,
-  onUploadComplete,
-}) => {
+  onUploadComplete}) => {
   const [files, setFiles] = useState<FilePreview[]>([]);
   const [uploading, setUploading] = useState(false);
   const [processing, setProcessing] = useState(false);
@@ -81,24 +78,22 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
   };
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    const newFiles = acceptedFiles.map((file) => ({
+    const newFiles = acceptedFiles.map((file: any) => ({
       file,
       type: file.type,
-      size: formatFileSize(file.size),
-    }));
+      size: formatFileSize(file.size)}));
     setFiles(newFiles);
     setActiveStep(0);
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: {
+    accept: {},
       'application/pdf': ['.pdf'],
       'application/msword': ['.doc'],
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
       'text/plain': ['.txt'],
-      'text/markdown': ['.md'],
-    },
+      'text/markdown': ['.md']},
     multiple: false,
     maxSize: 10 * 1024 * 1024, // 10MB
   });
@@ -128,8 +123,7 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
 
       const response = await fetch('/api/flow/parse-brief', {
         method: 'POST',
-        body: formData,
-      });
+        body: formData});
 
       clearInterval(progressInterval);
       setUploadProgress(100);
@@ -219,9 +213,7 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
                     transition: 'all 0.2s',
                     '&:hover': {
                       borderColor: 'primary.main',
-                      backgroundColor: 'action.hover',
-                    },
-                  }}
+                      backgroundColor: 'action.hover'}}}
                 >
                   <input {...getInputProps()} />
                   <CloudUpload sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />

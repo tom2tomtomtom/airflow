@@ -8,7 +8,7 @@ let redisManager: any = null;
 if (typeof window === 'undefined') {
   try {
     redisManager = require('@/lib/redis/redis-config').redisManager;
-  } catch (error) {
+  } catch (error: any) {
     // Redis not available, will fallback to in-memory
     console.warn('Redis not available, using in-memory performance tracking');
   }
@@ -54,7 +54,7 @@ export class ProductionPerformanceTracker {
         // eslint-disable-next-line no-console
         console.log('⚠️ Performance tracker using in-memory storage (Redis unavailable)');
       }
-    } catch (error) {
+    } catch (error: any) {
       // eslint-disable-next-line no-console
       console.warn('Performance tracker Redis initialization failed:', error);
       this.useRedis = false;
@@ -158,7 +158,7 @@ export class ProductionPerformanceTracker {
       // Set TTL for metrics (30 days)
       await redisManager.expire(key, 30 * 24 * 60 * 60);
       await redisManager.expire(dailyKey, 30 * 24 * 60 * 60);
-    } catch (error) {
+    } catch (error: any) {
       // eslint-disable-next-line no-console
       console.error('Failed to persist performance metric:', error);
     }
@@ -178,7 +178,7 @@ export class ProductionPerformanceTracker {
       const result = await fn();
       await this.end(operationName, userId);
       return result;
-    } catch (error) {
+    } catch (error: any) {
       await this.end(operationName, userId);
       throw error;
     }
@@ -198,7 +198,7 @@ export class ProductionPerformanceTracker {
       const result = fn();
       await this.end(operationName, userId);
       return result;
-    } catch (error) {
+    } catch (error: any) {
       await this.end(operationName, userId);
       throw error;
     }
@@ -220,8 +220,8 @@ export class ProductionPerformanceTracker {
       const client = await redisManager.getClient();
       const metrics = await client.lrange(key, 0, limit - 1);
 
-      return metrics.map(metric => JSON.parse(metric));
-    } catch (error) {
+      return metrics.map((metric: any) => JSON.parse(metric));
+    } catch (error: any) {
       // eslint-disable-next-line no-console
       console.error('Failed to get performance metrics:', error);
       return [];
@@ -242,7 +242,7 @@ export class ProductionPerformanceTracker {
       const client = await redisManager.getClient();
 
       return await client.hgetall(key);
-    } catch (error) {
+    } catch (error: any) {
       // eslint-disable-next-line no-console
       console.error('Failed to get daily performance summary:', error);
       return {};
@@ -260,7 +260,7 @@ export class ProductionPerformanceTracker {
    * Get all active timer names
    */
   public getActiveTimers(): string[] {
-    return Array.from(this.timers.keys()).filter(key => !key.includes(':context'));
+    return Array.from(this.timers.keys()).filter((key: any) => !key.includes(':context'));
   }
 
   /**

@@ -7,14 +7,12 @@ import {
   TextField,
   Alert,
   LinearProgress,
-  Paper,
-} from '@mui/material';
+  Paper} from '@mui/material';
 import {
   CloudUpload as CloudUploadIcon,
   CheckCircle as CheckCircleIcon,
   ArrowForward as ArrowForwardIcon,
-  Clear as ClearIcon,
-} from '@mui/icons-material';
+  Clear as ClearIcon} from '@mui/icons-material';
 import { useDropzone } from 'react-dropzone';
 import { useWorkflow } from '../WorkflowProvider';
 import { BriefData, StepComponentProps } from '@/lib/workflow/workflow-types';
@@ -23,8 +21,7 @@ import { withErrorBoundary } from '../ErrorBoundary';
 interface BriefUploadStepProps extends StepComponentProps {}
 
 const BriefUploadStepComponent: React.FC<BriefUploadStepProps> = ({
-  onNext,
-}) => {
+  onNext}) => {
   const { state, actions } = useWorkflow();
   const {
     briefData,
@@ -33,8 +30,7 @@ const BriefUploadStepComponent: React.FC<BriefUploadStepProps> = ({
     uploadedFile,
     showBriefReview,
     briefConfirmed,
-    lastError,
-  } = state;
+    lastError} = state;
 
   // Dropzone configuration
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -46,12 +42,11 @@ const BriefUploadStepComponent: React.FC<BriefUploadStepProps> = ({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: {
+    accept: {},
       'application/pdf': ['.pdf'],
       'application/msword': ['.doc'],
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
-      'text/plain': ['.txt'],
-    },
+      'text/plain': ['.txt']},
     multiple: false,
     maxSize: 10 * 1024 * 1024, // 10MB
   });
@@ -96,9 +91,7 @@ const BriefUploadStepComponent: React.FC<BriefUploadStepProps> = ({
         transition: 'all 0.2s ease-in-out',
         '&:hover': {
           borderColor: 'primary.main',
-          bgcolor: 'action.hover',
-        },
-      }}
+          bgcolor: 'action.hover'}}}
     >
       <input {...getInputProps()} />
       <CloudUploadIcon sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />

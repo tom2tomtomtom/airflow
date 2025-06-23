@@ -29,8 +29,7 @@ describe('env utilities', () => {
         SUPABASE_URL: 'https://test.supabase.co',
         SUPABASE_SERVICE_KEY: 'test-service-key',
         OPENAI_API_KEY: 'sk-test-key',
-        ELEVENLABS_API_KEY: 'elevenlabs-test-key',
-      };
+        ELEVENLABS_API_KEY: 'elevenlabs-test-key'};
 
       const result = validateEnv(validEnv);
       expect(result.NODE_ENV).toBe('development');
@@ -41,8 +40,7 @@ describe('env utilities', () => {
       const invalidEnv = {
         NODE_ENV: 'invalid',
         NEXT_PUBLIC_API_URL: 'http://localhost:3000',
-        JWT_SECRET: 'a'.repeat(32),
-      };
+        JWT_SECRET: 'a'.repeat(32)};
 
       expect(() => validateEnv(invalidEnv)).toThrow('Environment validation failed');
     });
@@ -51,8 +49,7 @@ describe('env utilities', () => {
       const invalidEnv = {
         NODE_ENV: 'development',
         JWT_SECRET: 'too-short',
-        NEXT_PUBLIC_API_URL: 'http://localhost:3000',
-      };
+        NEXT_PUBLIC_API_URL: 'http://localhost:3000'};
 
       expect(() => validateEnv(invalidEnv)).toThrow('JWT_SECRET must be at least 32 characters long');
     });
@@ -67,8 +64,7 @@ describe('env utilities', () => {
         SUPABASE_URL: 'https://test.supabase.co',
         SUPABASE_SERVICE_KEY: 'test-service-key',
         OPENAI_API_KEY: 'sk-test-key',
-        ELEVENLABS_API_KEY: 'elevenlabs-test-key',
-      };
+        ELEVENLABS_API_KEY: 'elevenlabs-test-key'};
 
       const result = validateEnv(minimalEnv);
       expect(result.STORAGE_BUCKET).toBe('airwave-assets');
@@ -88,8 +84,7 @@ describe('env utilities', () => {
         OPENAI_API_KEY: 'sk-test-key',
         ELEVENLABS_API_KEY: 'elevenlabs-test-key',
         MAX_FILE_SIZE: '104857600', // 100MB as string
-        RATE_LIMIT_MAX: '100',
-      };
+        RATE_LIMIT_MAX: '100'};
 
       const result = validateEnv(envWithNumbers);
       expect(result.MAX_FILE_SIZE).toBe(104857600);
@@ -126,8 +121,7 @@ describe('env utilities', () => {
         NEXT_PUBLIC_SUPABASE_ANON_KEY: 'test-anon-key',
         SUPABASE_SERVICE_KEY: 'test-service-key',
         OPENAI_API_KEY: 'sk-test-key',
-        ELEVENLABS_API_KEY: 'elevenlabs-test-key',
-      };
+        ELEVENLABS_API_KEY: 'elevenlabs-test-key'};
 
       const result = checkProductionReadiness();
       expect(result.isReady).toBe(true);
@@ -137,8 +131,7 @@ describe('env utilities', () => {
     it('should identify missing required variables', () => {
       process.env = {
         NODE_ENV: 'production',
-        JWT_SECRET: 'a'.repeat(32),
-      };
+        JWT_SECRET: 'a'.repeat(32)};
 
       const result = checkProductionReadiness();
       expect(result.isReady).toBe(false);
@@ -156,8 +149,7 @@ describe('env utilities', () => {
         NEXT_PUBLIC_SUPABASE_ANON_KEY: 'test-anon-key',
         SUPABASE_SERVICE_KEY: 'test-service-key',
         OPENAI_API_KEY: 'sk-test-key',
-        ELEVENLABS_API_KEY: 'elevenlabs-test-key',
-      };
+        ELEVENLABS_API_KEY: 'elevenlabs-test-key'};
 
       const result = checkProductionReadiness();
       expect(result.warnings).toContain('JWT_SECRET should be at least 32 characters for production');
@@ -172,8 +164,7 @@ describe('env utilities', () => {
         NEXT_PUBLIC_SUPABASE_ANON_KEY: 'test-anon-key',
         SUPABASE_SERVICE_KEY: 'test-service-key',
         OPENAI_API_KEY: 'sk-test-key',
-        ELEVENLABS_API_KEY: 'elevenlabs-test-key',
-      };
+        ELEVENLABS_API_KEY: 'elevenlabs-test-key'};
 
       const result = checkProductionReadiness();
       expect(result.warnings.some(w => w.includes('SENTRY_DSN'))).toBe(true);
@@ -192,8 +183,7 @@ describe('env utilities', () => {
         SUPABASE_URL: 'https://test.supabase.co',
         SUPABASE_SERVICE_KEY: 'test-service-key',
         OPENAI_API_KEY: 'sk-test-key',
-        ELEVENLABS_API_KEY: 'elevenlabs-test-key',
-      };
+        ELEVENLABS_API_KEY: 'elevenlabs-test-key'};
 
       process.env = { ...process.env, ...validEnv };
 
@@ -219,8 +209,7 @@ describe('env utilities', () => {
         SUPABASE_URL: 'https://test.supabase.co',
         SUPABASE_SERVICE_KEY: 'test-service-key',
         OPENAI_API_KEY: 'sk-test-key',
-        ELEVENLABS_API_KEY: 'elevenlabs-test-key',
-      };
+        ELEVENLABS_API_KEY: 'elevenlabs-test-key'};
 
       logEnvironmentStatus();
       

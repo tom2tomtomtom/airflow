@@ -43,8 +43,7 @@ interface CopyVariation {
 
 // Initialize OpenAI client
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+  apiKey: process.env.OPENAI_API_KEY});
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -76,7 +75,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Debug logging to see what data we're receiving
   console.log('🔍 COPY API - Received data:', {
     motivationCount: motivations.length,
-    motivationTitles: motivations.map(m => m.title),
+    motivationTitles: motivations.map((m: any) => m.title),
     briefTitle: briefData.title,
     briefObjective: briefData.objective?.substring(0, 100) + '...',
     briefProduct: briefData.product,
@@ -93,7 +92,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       message: 'Copy variations generated successfully'
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error generating copy:', error);
     return res.status(500).json({
       success: false,
@@ -114,7 +113,7 @@ async function generateCopyFromMotivations(motivations: Motivation[], briefData:
         // Merge template and AI copy for best of both
         return [...templateCopy, ...aiCopy].slice(0, 15);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('OpenAI copy generation failed, using templates:', error);
     }
   }
@@ -222,7 +221,7 @@ Respond with JSON array only.`;
       cta: copy.cta || 'Learn more'
     })).slice(0, 100); // Limit to reasonable number
 
-  } catch (parseError) {
+  } catch (parseError: any) {
     console.error('Failed to parse OpenAI copy response:', parseError);
     throw new Error('Invalid JSON response from OpenAI');
   }
@@ -307,31 +306,31 @@ function generateCopyWithTemplates(motivations: Motivation[], briefData: BriefDa
 
   // Platform-specific adaptations
   const platformAdaptations: Record<string, { maxWords: number; style: string; emojis: boolean; hashtags: boolean }> = {
-    Instagram: {
+    Instagram: {},
       maxWords: 8,
       style: 'visual',
       emojis: true,
       hashtags: true
     },
-    Facebook: {
+    Facebook: {},
       maxWords: 10,
       style: 'conversational',
       emojis: false,
       hashtags: false
     },
-    LinkedIn: {
+    LinkedIn: {},
       maxWords: 10,
       style: 'professional',
       emojis: false,
       hashtags: false
     },
-    Twitter: {
+    Twitter: {},
       maxWords: 6,
       style: 'concise',
       emojis: true,
       hashtags: true
     },
-    TikTok: {
+    TikTok: {},
       maxWords: 7,
       style: 'trendy',
       emojis: true,

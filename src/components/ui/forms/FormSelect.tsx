@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   FormControl,
-  InputLabel,
   Select,
   MenuItem,
   FormHelperText,
@@ -16,7 +15,7 @@ import { Info as InfoIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-mater
 import { useFormContext, Controller } from 'react-hook-form';
 import { createAccessibleField } from '@/utils/accessibility';
 
-interface SelectOption {
+export interface SelectOption {
   value: string | number;
   label: string;
   description?: string;
@@ -60,24 +59,21 @@ export const FormSelect: React.FC<FormSelectProps> = ({
   const errorMessage = error?.message as string;
 
   // Create accessible field props
-  const { fieldProps, labelProps, descriptionProps, errorProps } = createAccessibleField(
-    label,
-    {
-      required: Boolean(rules.required),
-      invalid: hasError,
-      description,
-      errorMessage,
-    }
-  );
+  const { fieldProps, labelProps, descriptionProps, errorProps } = createAccessibleField(label, {
+    required: Boolean(rules.required),
+    invalid: hasError,
+    description,
+    errorMessage,
+  });
 
   const renderValue = (selected: unknown) => {
     if (allowMultiple && Array.isArray(selected)) {
       if (selected.length === 0) return <em>None selected</em>;
-      
+
       return (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-          {selected.map((val) => {
-            const option = options.find(opt => opt.value === val);
+          {selected.map((val: any) => {
+            const option = options.find((opt: any) => opt.value === val);
             return (
               <Chip
                 key={val}
@@ -97,7 +93,7 @@ export const FormSelect: React.FC<FormSelectProps> = ({
       );
     }
 
-    const selectedOption = options.find(opt => opt.value === selected);
+    const selectedOption = options.find((opt: any) => opt.value === selected);
     return selectedOption?.label || '';
   };
 
@@ -163,7 +159,7 @@ export const FormSelect: React.FC<FormSelectProps> = ({
               ) : options.length === 0 ? (
                 <MenuItem disabled>No options available</MenuItem>
               ) : (
-                options.map((option) => (
+                options.map((option: any) => (
                   <MenuItem
                     key={option.value}
                     value={option.value}
@@ -182,9 +178,7 @@ export const FormSelect: React.FC<FormSelectProps> = ({
                     }}
                   >
                     {option.icon && (
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        {option.icon}
-                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>{option.icon}</Box>
                     )}
                     <Box sx={{ flex: 1 }}>
                       <Typography variant="body2">{option.label}</Typography>

@@ -7,48 +7,48 @@ export interface DatabaseSchema {
   profiles: Profile;
   user_sessions: UserSession;
   user_permissions: UserPermission;
-  
+
   // Client Management
   clients: Client;
   client_users: ClientUser;
-  
+
   // Project & Campaign Management
   projects: Project;
   campaigns: Campaign;
   campaign_assets: CampaignAsset;
-  
+
   // Workflow & Content
   workflows: Workflow;
   workflow_steps: WorkflowStep;
   briefs: Brief;
   motivations: Motivation;
   copy_variations: CopyVariation;
-  
+
   // Asset Management
   assets: Asset;
   asset_tags: AssetTag;
   asset_versions: AssetVersion;
-  
+
   // AI & Generation
   ai_generations: AIGeneration;
   ai_usage_logs: AIUsageLog;
   ai_cost_tracking: AICostTracking;
-  
+
   // Analytics & Metrics
   analytics_events: AnalyticsEvent;
   performance_metrics: PerformanceMetric;
   user_activity_logs: UserActivityLog;
-  
+
   // System & Configuration
   feature_flags: FeatureFlag;
   system_settings: SystemSetting;
   audit_logs: AuditLog;
-  
+
   // Integrations
   social_accounts: SocialAccount;
   api_keys: APIKey;
   webhooks: Webhook;
-  
+
   // Notifications & Communications
   notifications: Notification;
   email_templates: EmailTemplate;

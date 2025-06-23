@@ -1,3 +1,4 @@
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { swaggerSpec } from '@/lib/swagger';
 
@@ -26,6 +27,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
+
   return res.status(200).json(swaggerSpec);
 }

@@ -2,7 +2,7 @@ import { AppConfig } from './index';
 
 // Environment-specific configuration overrides
 export const environmentConfigs = {
-  development: {
+  development: {},
     // Development-specific settings
     COOKIE_SECURE: false, // Allow HTTP in development
     ENABLE_DEBUG_LOGS: true,
@@ -11,10 +11,9 @@ export const environmentConfigs = {
     DEV_BYPASS_AUTH: false, // Can be overridden per developer
     DEV_MOCK_APIS: false,
     ENABLE_SECURITY_HEADERS: false, // Relaxed for development
-    SENTRY_ENVIRONMENT: 'development',
-  },
+    SENTRY_ENVIRONMENT: 'development'},
   
-  test: {
+  test: {},
     // Test environment settings
     NODE_ENV: 'test' as const,
     LOG_LEVEL: 'error' as const, // Minimal logging in tests
@@ -30,7 +29,7 @@ export const environmentConfigs = {
     CACHE_TTL: 60, // Short TTL for tests
   },
   
-  staging: {
+  staging: {},
     // Staging environment (production-like but with relaxed monitoring)
     NODE_ENV: 'production' as const,
     LOG_LEVEL: 'debug' as const, // More verbose logging for debugging
@@ -41,10 +40,9 @@ export const environmentConfigs = {
     SENTRY_ENVIRONMENT: 'staging',
     // Relaxed rate limits for testing
     RATE_LIMIT_MAX: 500,
-    API_RATE_LIMIT_MAX: 5000,
-  },
+    API_RATE_LIMIT_MAX: 5000},
   
-  production: {
+  production: {},
     // Production environment settings
     NODE_ENV: 'production' as const,
     LOG_LEVEL: 'info' as const,
@@ -62,8 +60,7 @@ export const environmentConfigs = {
     ENABLE_PERFORMANCE_MONITORING: true,
     // Security settings
     HSTS_MAX_AGE: 31536000, // 1 year
-    COOKIE_SAME_SITE: 'strict' as const,
-  }
+    COOKIE_SAME_SITE: 'strict' as const}
 };
 
 export type Environment = keyof typeof environmentConfigs;
@@ -75,7 +72,7 @@ export const getEnvironmentConfig = (env: Environment): Partial<AppConfig> => {
 
 // Environment validation rules
 export const environmentValidationRules = {
-  development: {
+  development: {},
     // Development can be more lenient
     requiredSecrets: ['JWT_SECRET', 'NEXTAUTH_SECRET'],
     optionalSecrets: ['OPENAI_API_KEY', 'SUPABASE_SERVICE_ROLE_KEY'],
@@ -84,7 +81,7 @@ export const environmentValidationRules = {
     ]
   },
   
-  test: {
+  test: {},
     // Test environment minimal requirements
     requiredSecrets: ['JWT_SECRET'],
     optionalSecrets: ['TEST_DATABASE_URL'],
@@ -93,7 +90,7 @@ export const environmentValidationRules = {
     ]
   },
   
-  staging: {
+  staging: {},
     // Staging should be close to production
     requiredSecrets: [
       'JWT_SECRET',
@@ -110,7 +107,7 @@ export const environmentValidationRules = {
     ]
   },
   
-  production: {
+  production: {},
     // Production requires all security measures
     requiredSecrets: [
       'JWT_SECRET',
@@ -141,7 +138,7 @@ export const validateEnvironmentRequirements = (env: Environment, config: Partia
   const warnings: string[] = [];
   
   // Check required secrets
-  rules.requiredSecrets.forEach(secret => {
+  rules.requiredSecrets.forEach((secret: any) => {
     if (!config[secret as keyof AppConfig]) {
       errors.push(`Missing required secret for ${env}: ${secret}`);
     }
@@ -149,7 +146,7 @@ export const validateEnvironmentRequirements = (env: Environment, config: Partia
   
   // Check recommended secrets for production
   if (env === 'production' && rules.recommendedSecrets) {
-    rules.recommendedSecrets.forEach(secret => {
+    rules.recommendedSecrets.forEach((secret: any) => {
       if (!config[secret as keyof AppConfig]) {
         warnings.push(`Missing recommended secret for production: ${secret}`);
       }

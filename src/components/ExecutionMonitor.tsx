@@ -27,8 +27,7 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemIcon,
-} from '@mui/material';
+  ListItemIcon} from '@mui/material';
 import {
   PlayArrow as PlayIcon,
   Stop as StopIcon,
@@ -40,8 +39,7 @@ import {
   Pending as PendingIcon,
   Cancel as CancelIcon,
   Analytics as AnalyticsIcon,
-  Timeline as TimelineIcon,
-} from '@mui/icons-material';
+  Timeline as TimelineIcon} from '@mui/icons-material';
 import { useNotification } from '@/contexts/NotificationContext';
 import { useClient } from '@/contexts/ClientContext';
 import { useExecutionEvents } from '@/hooks/useRealtime';
@@ -93,8 +91,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
   showHeader = true,
   realtime = true,
   campaignId,
-  matrixId,
-}) => {
+  matrixId}) => {
   const { activeClient } = useClient();
   const { showNotification } = useNotification();
   const { executionEvents, connectionStatus } = useExecutionEvents();
@@ -110,8 +107,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
     priority: 'normal',
     reset_attempts: false,
     delay_seconds: 0,
-    retry_reason: '',
-  });
+    retry_reason: ''});
 
   // Fetch executions
   const fetchExecutions = async () => {
@@ -125,20 +121,17 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
         sort_order: 'desc',
         ...filters,
         ...(campaignId && { campaign_id: campaignId }),
-        ...(matrixId && { matrix_id: matrixId }),
-      });
+        ...(matrixId && { matrix_id: matrixId })});
 
       const response = await fetch(`/api/executions?${params}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
+        headers: {},
+          'Authorization': `Bearer ${localStorage.getItem('token')}`}});
 
       if (response.ok) {
         const data = await response.json();
         setExecutions(data.data || []);
       }
-    } catch (error) {
+    } catch (error: any) {
     const message = getErrorMessage(error);
       console.error('Error fetching executions:', error);
     } finally {
@@ -153,12 +146,10 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
     try {
       const response = await fetch(`/api/executions/${selectedExecution.id}/retry`, {
         method: 'POST',
-        headers: {
+        headers: {},
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify(retryOptions),
-      });
+          'Authorization': `Bearer ${localStorage.getItem('token')}`},
+        body: JSON.stringify(retryOptions)});
 
       if (response.ok) {
         const data = await response.json();
@@ -169,7 +160,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
         const error = await response.json();
         showNotification(error.error || 'Failed to retry execution', 'error');
       }
-    } catch (error) {
+    } catch (error: any) {
     const message = getErrorMessage(error);
       showNotification('Error retrying execution', 'error');
     }
@@ -182,15 +173,12 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
     try {
       const response = await fetch(`/api/executions/${selectedExecution.id}/cancel`, {
         method: 'POST',
-        headers: {
+        headers: {},
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
+          'Authorization': `Bearer ${localStorage.getItem('token')}`},
         body: JSON.stringify({
           reason: 'User requested cancellation',
-          cleanup_resources: true,
-        }),
-      });
+          cleanup_resources: true})});
 
       if (response.ok) {
         showNotification('Execution cancelled successfully', 'success');
@@ -200,7 +188,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
         const error = await response.json();
         showNotification(error.error || 'Failed to cancel execution', 'error');
       }
-    } catch (error) {
+    } catch (error: any) {
     const message = getErrorMessage(error);
       showNotification('Error cancelling execution', 'error');
     }
@@ -232,8 +220,7 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
       twitter: { color: '#1DA1F2', name: 'Twitter' },
       linkedin: { color: '#0A66C2', name: 'LinkedIn' },
       youtube: { color: '#FF0000', name: 'YouTube' },
-      tiktok: { color: '#000000', name: 'TikTok' },
-    };
+      tiktok: { color: '#000000', name: 'TikTok' }};
     return displays[platform as keyof typeof displays] || { color: '#666', name: platform };
   };
 
@@ -325,10 +312,10 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
       <Grid container spacing={2} sx={{ mb: 2 }}>
         {[
           { label: 'Total', count: executions.length, color: 'default' },
-          { label: 'Processing', count: executions.filter(e => e.status === 'processing').length, color: 'info' },
-          { label: 'Completed', count: executions.filter(e => e.status === 'completed').length, color: 'success' },
-          { label: 'Failed', count: executions.filter(e => e.status === 'failed').length, color: 'error' },
-        ].map((stat) => (
+          { label: 'Processing', count: executions.filter((e: any) => e.status === 'processing').length, color: 'info' },
+          { label: 'Completed', count: executions.filter((e: any) => e.status === 'completed').length, color: 'success' },
+          { label: 'Failed', count: executions.filter((e: any) => e.status === 'failed').length, color: 'error' },
+        ].map((stat: any) => (
           <Grid size={{ xs: 3 }} key={stat.label}>
             <Card variant="outlined" sx={{ textAlign: 'center', py: 1 }}>
               <Typography variant="h6" color={`${stat.color}.main`}>

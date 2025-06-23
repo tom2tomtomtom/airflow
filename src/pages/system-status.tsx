@@ -9,20 +9,20 @@ interface SystemStatus {
   status: 'ready' | 'incomplete';
   timestamp: string;
   environment: Record<string, string>;
-  supabase: {
+  supabase: {},
     status: string;
     url: string;
   };
-  configuration: {
+  configuration: {},
     isDemoMode: boolean;
     isConfigured: boolean;
     missingRequired: string[] | null;
   };
-  deployment: {
+  deployment: {},
     platform: string;
     region: string;
   };
-  recommendations: {
+  recommendations: {},
     message: string;
     steps: string[];
   } | null;

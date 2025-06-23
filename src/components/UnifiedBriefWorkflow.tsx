@@ -20,23 +20,13 @@ export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({
 
   // Return mobile version for mobile devices
   if (isMobile) {
-    return (
-      <MobileOptimizedWorkflow
-        open={open}
-        onClose={onClose}
-        onComplete={onComplete}
-      />
-    );
+    return <MobileOptimizedWorkflow open={open} onClose={onClose} onComplete={onComplete} />;
   }
 
   // Return desktop version with new architecture
   return (
     <WorkflowProvider>
-      <WorkflowContainer
-        open={open}
-        onClose={onClose}
-        onComplete={onComplete}
-      />
+      <WorkflowContainer open={open} onClose={onClose} onComplete={onComplete} />
     </WorkflowProvider>
   );
 };

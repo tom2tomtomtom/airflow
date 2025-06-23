@@ -1,3 +1,4 @@
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
 import { env } from '@/lib/env';
@@ -19,19 +20,39 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
   const parseResult = MatrixGenerateSchema.safeParse(req.body);
   if (!parseResult.success) {
-    return res.status(400).json({ success: false, message: 'Invalid input', errors: parseResult.error.errors });
+    return res
+      .status(400)
+      .json({ success: false, message: 'Invalid input', errors: parseResult.error.errors });
   }
-  const { template_id, asset_ids, content_id, user_id, lock_fields = [], variation_count } = parseResult.data;
+  const {
+    template_id,
+    asset_ids,
+    content_id,
+    user_id,
+    lock_fields = [],
+    variation_count,
+  } = parseResult.data;
   // Fetch template, assets, and content
-  const { data: template, error: templateError } = await supabase.from('templates').select('*').eq('id', template_id).single();
+  const { data: template, error: templateError } = await supabase
+    .from('templates')
+    .select('*')
+    .eq('id', template_id)
+    .single();
   if (templateError || !template) {
     return res.status(404).json({ success: false, message: 'Template not found' });
   }
-  const { data: assets, error: assetError } = await supabase.from('assets').select('*').in('id', asset_ids);
+  const { data: assets, error: assetError } = await supabase
+    .from('assets')
+    .select('*')
+    .in('id', asset_ids);
   if (assetError || !assets || assets.length === 0) {
     return res.status(404).json({ success: false, message: 'Assets not found' });
   }
-  const { data: content, error: contentError } = await supabase.from('generated_content').select('*').eq('id', content_id).single();
+  const { data: content, error: contentError } = await supabase
+    .from('generated_content')
+    .select('*')
+    .eq('id', content_id)
+    .single();
   if (contentError || !content) {
     return res.status(404).json({ success: false, message: 'Generated content not found' });
   }
@@ -52,21 +73,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       temperature: 0.5,
       max_tokens: 1500,
     });
-    
+
     const variations = completion.choices[0]?.message?.content;
     // Save matrix
-    const { data: matrix, error: saveError } = await supabase.from('matrices').insert({
-      template_id,
-      asset_ids,
-      content_id,
-      user_id,
-      lock_fields,
-      variation_count,
-      variations,
-      created_at: new Date().toISOString(),
-    }).select().single();
+    const { data: matrix, error: saveError } = await supabase
+      .from('matrices')
+      .insert({
+        template_id,
+        asset_ids,
+        content_id,
+        user_id,
+        lock_fields,
+        variation_count,
+        variations,
+        created_at: new Date().toISOString(),
+      })
+      .select()
+      .single();
     if (saveError) {
-      return res.status(500).json({ success: false, message: 'Failed to save matrix', error: saveError.message });
+      return res
+        .status(500)
+        .json({ success: false, message: 'Failed to save matrix', error: saveError.message });
     }
     return res.status(200).json({ success: true, matrix });
   } catch (err: any) {

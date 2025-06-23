@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { getErrorMessage } from '@/utils/errorUtils';
+import { test } from '@playwright/test';
 
 test.describe('Simple Flow Analysis', () => {
   test('Examine Flow Page DOM Structure', async ({ page }) => {
@@ -49,6 +50,7 @@ test.describe('Simple Flow Analysis', () => {
           const content = await page.locator(className).first().textContent();
           console.log(`Content preview: ${content?.substring(0, 200)}...`);
         } catch (error) {
+    const message = getErrorMessage(error);
           console.log(`Could not read content of ${className}`);
         }
       }
@@ -77,6 +79,7 @@ test.describe('Simple Flow Analysis', () => {
         const enabled = await button.isEnabled();
         console.log(`Button ${i}: "${text?.trim()}" (visible: ${visible}, enabled: ${enabled})`);
       } catch (error) {
+    const message = getErrorMessage(error);
         console.log(`Button ${i}: Error reading - ${error.message}`);
       }
     }

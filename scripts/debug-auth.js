@@ -8,9 +8,9 @@
 const axios = require('axios');
 const fs = require('fs');
 
-const BASE_URL = 'http://localhost:3001';
-const TEST_EMAIL = 'tomh@redbaez.com';
-const TEST_PASSWORD = 'Wijlre2010';
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001';
+const TEST_EMAIL = process.env.TEST_USER_EMAIL || 'test@example.com';
+const TEST_PASSWORD = process.env.TEST_USER_PASSWORD || 'test-password-123';
 
 async function debugAuth() {
   console.log('🔍 AIrWAVE Authentication Debug Tool');

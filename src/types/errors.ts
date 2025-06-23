@@ -46,8 +46,7 @@ export enum ErrorCode {
   // System errors
   SYSTEM_CONFIGURATION_ERROR = 'SYSTEM_CONFIGURATION_ERROR',
   SYSTEM_MAINTENANCE = 'SYSTEM_MAINTENANCE',
-  SYSTEM_UNKNOWN_ERROR = 'SYSTEM_UNKNOWN_ERROR',
-}
+  SYSTEM_UNKNOWN_ERROR = 'SYSTEM_UNKNOWN_ERROR'}
 
 export interface ErrorContext {
   userId?: string;
@@ -108,8 +107,7 @@ export class AppError extends Error {
       context: this.context,
       details: this.details,
       timestamp: this.timestamp,
-      stack: this.stack,
-    };
+      stack: this.stack};
   }
 }
 
@@ -207,9 +205,9 @@ export const isDatabaseError = (error: unknown): error is DatabaseError => {
 
 // Error response formatter for API responses
 export interface ErrorResponse {
-  success: false;
-  error: {
-    code: ErrorCode;
+  success: false;,
+    error: {},
+    code: ErrorCode;,
     message: string;
     details?: ErrorDetails;
     timestamp: Date;
@@ -220,14 +218,12 @@ export interface ErrorResponse {
 export const formatErrorResponse = (error: AppError, requestId?: string): ErrorResponse => {
   return {
     success: false,
-    error: {
+    error: {},
       code: error.code,
       message: error.message,
       details: error.details,
       timestamp: error.timestamp,
-      requestId,
-    },
-  };
+      requestId };
 };
 
 // Helper to convert unknown errors to AppError

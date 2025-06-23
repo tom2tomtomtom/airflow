@@ -20,15 +20,13 @@ import {
   DialogTitle,
   DialogContent,
   IconButton,
-  FormHelperText,
-} from '@mui/material';
+  FormHelperText} from '@mui/material';
 import {
   AutoAwesome,
   Close as CloseIcon,
   Download,
   ContentCopy,
-  Info as InfoIcon,
-} from '@mui/icons-material';
+  Info as InfoIcon} from '@mui/icons-material';
 import axios, { AxiosError } from 'axios';
 import { Asset, BrandGuidelines } from '@/types/models';
 import { demoAssets } from '@/utils/demoData';
@@ -60,8 +58,7 @@ interface AIImageGeneratorProps {
 export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
   clientId,
   onImageGenerated,
-  brandGuidelines,
-}) => {
+  brandGuidelines}) => {
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -75,8 +72,7 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
     quality: 'standard',
     style: 'vivid',
     purpose: 'general',
-    enhance_prompt: true,
-  });
+    enhance_prompt: true});
 
   const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
   const hasApiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY || false;
@@ -129,7 +125,7 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
             name: `AI Generated - ${prompt.substring(0, 50)}...`,
             ai_prompt: prompt,
             created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
           } as unknown as Asset,
           generation_details: {
             original_prompt: prompt,
@@ -138,9 +134,9 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
             settings: {
               size: options.size,
               quality: options.quality,
-              style: options.style,
-            },
-          },
+              style: options.style
+            }
+          }
         };
         
         setGeneratedImage(response);
@@ -164,8 +160,7 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
         client_id: clientId,
         ...options,
         brand_guidelines: brandGuidelines,
-        tags: ['ai-generated', options.purpose],
-      });
+        tags: ['ai-generated', options.purpose]});
 
       if (response?.data?.success) {
         setGeneratedImage(response.data);
@@ -177,7 +172,7 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
       } else {
         setError(response?.data?.message || 'Failed to generate image');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Generation error:', err);
       
       if (axios.isAxiosError(err)) {
@@ -396,8 +391,7 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
                     maxHeight: '70vh',
                     objectFit: 'contain',
                     borderRadius: 2,
-                    mb: 2,
-                  }}
+                    mb: 2}}
                 />
 
                 <Box mb={2}>

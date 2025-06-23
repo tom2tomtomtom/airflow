@@ -3,15 +3,13 @@ import {
   Chip,
   Box,
   Typography,
-  LinearProgress,
-} from '@mui/material';
+  LinearProgress} from '@mui/material';
 import {
   Check as CheckIcon,
   Refresh as RefreshIcon,
   Close as CloseIcon,
   Warning as WarningIcon,
-  Error as ErrorIcon,
-} from '@mui/icons-material';
+  Error as ErrorIcon} from '@mui/icons-material';
 
 export type StatusType = 'empty' | 'in-progress' | 'completed' | 'error' | 'warning';
 
@@ -30,8 +28,7 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({
   showIcon = true,
   variant = 'chip',
   size = 'small',
-  progress,
-}) => {
+  progress}) => {
   const getStatusConfig = () => {
     switch (status) {
       case 'completed':
@@ -40,32 +37,28 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({
           color: 'success' as const,
           icon: <CheckIcon />,
           bgColor: '#e8f5e8',
-          textColor: '#2e7d32',
-        };
+          textColor: '#2e7d32'};
       case 'in-progress':
         return {
           label: label || 'In Progress',
           color: 'primary' as const,
           icon: <RefreshIcon />,
           bgColor: '#e3f2fd',
-          textColor: '#1976d2',
-        };
+          textColor: '#1976d2'};
       case 'error':
         return {
           label: label || 'Error',
           color: 'error' as const,
           icon: <ErrorIcon />,
           bgColor: '#ffebee',
-          textColor: '#d32f2f',
-        };
+          textColor: '#d32f2f'};
       case 'warning':
         return {
           label: label || 'Warning',
           color: 'warning' as const,
           icon: <WarningIcon />,
           bgColor: '#fff8e1',
-          textColor: '#f57c00',
-        };
+          textColor: '#f57c00'};
       case 'empty':
       default:
         return {
@@ -73,8 +66,7 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({
           color: 'default' as const,
           icon: <CloseIcon />,
           bgColor: '#f5f5f5',
-          textColor: '#757575',
-        };
+          textColor: '#757575'};
     }
   };
 
@@ -86,12 +78,10 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({
       label: config.label,
       color: config.color,
       size: size,
-      sx: {
+      sx: {},
         fontWeight: 500,
         '& .MuiChip-icon': {
-          fontSize: size === 'small' ? '16px' : '20px',
-        },
-      },
+          fontSize: size === 'small' ? '16px' : '20px'}},
       ...(showIcon && { icon: config.icon }), // Only include icon prop if showIcon is true
     };
 
@@ -112,8 +102,7 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({
           bgcolor: config.bgColor,
           color: config.textColor,
           fontSize: size === 'small' ? '0.75rem' : '0.875rem',
-          fontWeight: 500,
-        }}
+          fontWeight: 500}}
       >
         {showIcon && React.cloneElement(config.icon, { 
           fontSize: size === 'small' ? 'small' : 'medium' 
@@ -136,8 +125,7 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({
         variant={size === 'small' ? 'caption' : 'body2'}
         sx={{ 
           color: config.textColor,
-          fontWeight: 500,
-        }}
+          fontWeight: 500}}
       >
         {config.label}
       </Typography>
@@ -168,8 +156,7 @@ export const CompletionStatus: React.FC<CompletionStatusProps> = ({
   total,
   showPercentage = true,
   showProgress = true,
-  size = 'small',
-}) => {
+  size = 'small'}) => {
   const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
   
   const getStatus = (): StatusType => {
@@ -195,8 +182,7 @@ export const CompletionStatus: React.FC<CompletionStatusProps> = ({
             sx={{
               width: 100,
               height: size === 'small' ? 4 : 6,
-              borderRadius: 2,
-            }}
+              borderRadius: 2}}
           />
           <Typography variant="caption" color="text.secondary">
             {completed}/{total}

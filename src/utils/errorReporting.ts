@@ -4,7 +4,7 @@ export interface ErrorContext {
   userId?: string;
   action?: string;
   component?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 export class ErrorReporter {
@@ -38,27 +38,23 @@ export class ErrorReporter {
   private setupGlobalErrorHandlers() {
 
     // Handle unhandled promise rejections
-    window.addEventListener('unhandledrejection', (event) => {
+    window.addEventListener('unhandledrejection', (_event) => {
       this.reportError(new Error(`Unhandled Promise Rejection: ${event.reason}`), {
         action: 'unhandled_promise_rejection',
-        metadata: {
+        metadata: {},
           reason: event.reason,
-          promise: event.promise,
-        },
-      });
+          promise: event.promise}});
     });
 
     // Handle global JavaScript errors
-    window.addEventListener('error', (event) => {
+    window.addEventListener('error', (_event) => {
       this.reportError(new Error(event.message), {
         action: 'global_error',
-        metadata: {
+        metadata: {},
           filename: event.filename,
           lineno: event.lineno,
           colno: event.colno,
-          source: (event as any).source,
-        },
-      });
+          source: (event as any).source}});
     });
   }
 
@@ -73,23 +69,20 @@ export class ErrorReporter {
         url: typeof window !== 'undefined' ? window.location.href : 'Unknown',
         userId: this.userId,
         sessionId: this.sessionId,
-        context,
-      };
+        context};
 
       // Send to error reporting API
       const response = await fetch('/api/errors', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(errorReport),
-      });
+        headers: {},
+          'Content-Type': 'application/json'},
+        body: JSON.stringify(errorReport)});
       
       if (!response.ok) {
         throw new Error(`Error reporting failed: ${response.status}`);
       }
 
-    } catch (reportingError) {
+    } catch (reportingError: unknown) {
       // Fallback: log to console if reporting fails
       console.error('Failed to report error:', reportingError);
       console.error('Original error:', error);
@@ -104,34 +97,28 @@ export class ErrorReporter {
   async reportAPIError(error: Error, endpoint: string, method: string = 'GET') {
     return this.reportError(error, {
       action: 'api_error',
-      metadata: {
+      metadata: {},
         endpoint,
         method,
-        timestamp: new Date().toISOString(),
-      },
-    });
+        timestamp: new Date().toISOString()}});
   }
 
   async reportUIError(error: Error, component: string, action: string) {
     return this.reportError(error, {
       action: 'ui_error',
       component,
-      metadata: {
+      metadata: {},
         userAction: action,
-        timestamp: new Date().toISOString(),
-      },
-    });
+        timestamp: new Date().toISOString()}});
   }
 
   async reportValidationError(error: Error, form: string, field?: string) {
     return this.reportError(error, {
       action: 'validation_error',
       component: form,
-      metadata: {
+      metadata: {},
         field,
-        timestamp: new Date().toISOString(),
-      },
-    });
+        timestamp: new Date().toISOString()}});
   }
 }
 
@@ -157,19 +144,18 @@ export function useErrorReporting() {
     reportError: errorReporter.reportError.bind(errorReporter),
     reportAPIError: errorReporter.reportAPIError.bind(errorReporter),
     reportUIError: errorReporter.reportUIError.bind(errorReporter),
-    reportValidationError: errorReporter.reportValidationError.bind(errorReporter),
-  };
+    reportValidationError: errorReporter.reportValidationError.bind(errorReporter)};
 }
 
 // Higher-order function to wrap async functions with error reporting
-export function withErrorReporting<T extends (...args: any[]) => Promise<any>>(
+export function withErrorReporting<T extends (...args: unknown[]) => Promise<any>>(
   fn: T,
   context: ErrorContext = {}
 ): T {
-  return (async (...args: any[]) => {
+  return (async (...args: unknown[]) => {
     try {
       return await fn(...args);
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof Error) {
         await errorReporter.reportError(error, context);
       }

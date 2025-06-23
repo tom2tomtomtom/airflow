@@ -19,11 +19,12 @@ function getOAuthConfig(platform: string): OAuthConfig | null {
       return {
         authUrl: 'https://www.facebook.com/v18.0/dialog/oauth',
         clientId: process.env.FACEBOOK_CLIENT_ID!,
-        scope: 'pages_manage_posts,pages_read_engagement,pages_show_list,instagram_basic,instagram_content_publish',
+        scope:
+          'pages_manage_posts,pages_read_engagement,pages_show_list,instagram_basic,instagram_content_publish',
         responseType: 'code',
         redirectUri,
       };
-    
+
     case 'instagram':
       // Instagram uses Facebook's API
       return {
@@ -33,7 +34,7 @@ function getOAuthConfig(platform: string): OAuthConfig | null {
         responseType: 'code',
         redirectUri,
       };
-    
+
     case 'twitter':
       return {
         authUrl: 'https://twitter.com/i/oauth2/authorize',
@@ -42,7 +43,7 @@ function getOAuthConfig(platform: string): OAuthConfig | null {
         responseType: 'code',
         redirectUri,
       };
-    
+
     case 'linkedin':
       return {
         authUrl: 'https://www.linkedin.com/oauth/v2/authorization',
@@ -51,7 +52,7 @@ function getOAuthConfig(platform: string): OAuthConfig | null {
         responseType: 'code',
         redirectUri,
       };
-    
+
     default:
       return null;
   }
@@ -74,12 +75,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       }
 
       // Generate state parameter for CSRF protection
-      const state = btoa(JSON.stringify({
-        userId,
-        clientId,
-        platform,
-        timestamp: Date.now(),
-      }));
+      const state = btoa(
+        JSON.stringify({
+          userId,
+          clientId,
+          platform,
+          timestamp: Date.now(),
+        })
+      );
 
       // Build OAuth URL
       const authUrl = new URL(config.authUrl);
@@ -104,7 +107,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
     res.setHeader('Allow', ['GET']);
     return res.status(405).json({ success: false, error: 'Method not allowed' });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('OAuth auth API error:', error);
     return res.status(500).json({

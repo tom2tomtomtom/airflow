@@ -4,8 +4,8 @@
  */
 
 const CREDENTIALS = {
-  email: 'tomh@redbaez.com',
-  password: 'Wijlre2010'
+  email: process.env.TEST_USER_EMAIL || 'test@example.com',
+  password: process.env.TEST_USER_PASSWORD || 'test-password-123'
 };
 
 const REDBAEZ_BRIEF = `Creative Brief: Launching AIrWAVE 2.0 by Redbaez

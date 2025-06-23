@@ -37,7 +37,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse): Promise<voi
     // Get subscriptions for a specific event
     const webhookManager = WebhookManager.getInstance();
     const subscriptions = await webhookManager.getSubscriptionsForEvent(
-      event,
+      _event,
       client_id as string
     );
 
@@ -64,8 +64,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, userId: str
     client_id,
     {
       ...metadata,
-      created_by: userId,
-    }
+      created_by: userId}
   );
   
   res.status(201).json({ subscription });
@@ -85,12 +84,10 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, userId: stri
     url,
     events,
     active,
-    metadata: {
+    metadata: {},
       ...metadata,
       updated_by: userId,
-      updated_at: new Date().toISOString(),
-    },
-  });
+      updated_at: new Date().toISOString()}});
   
   res.status(200).json({ subscription });
 }

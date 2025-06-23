@@ -21,8 +21,7 @@ import {
   DialogActions,
   CircularProgress,
   Alert,
-  InputAdornment,
-} from '@mui/material';
+  InputAdornment} from '@mui/material';
 import {
   Search,
   Clear,
@@ -34,8 +33,7 @@ import {
   VideoFile,
   AudioFile,
   TextFields,
-  Refresh,
-} from '@mui/icons-material';
+  Refresh} from '@mui/icons-material';
 
 interface Asset {
   id: string;
@@ -67,15 +65,13 @@ const assetTypeIcons = {
   image: <Image />,
   video: <VideoFile />,
   voice: <AudioFile />,
-  text: <TextFields />,
-};
+  text: <TextFields />};
 
 const assetTypeColors = {
   image: '#4CAF50',
   video: '#2196F3',
   voice: '#FF9800',
-  text: '#9C27B0',
-};
+  text: '#9C27B0'};
 
 export default function AssetBrowser({ 
   clientId, 
@@ -104,8 +100,7 @@ export default function AssetBrowser({
       const params = new URLSearchParams({
         limit: '20',
         sortBy,
-        sortOrder,
-      });
+        sortOrder});
 
       if (searchTerm) params.append('search', searchTerm);
       if (selectedType) params.append('type', selectedType);
@@ -119,7 +114,7 @@ export default function AssetBrowser({
       } else {
         setError(data.message || 'Failed to load assets');
       }
-    } catch (err) {
+    } catch (err: any) {
       setError('Failed to load assets');
     } finally {
       setLoading(false);
@@ -155,23 +150,19 @@ export default function AssetBrowser({
       const newFavoriteStatus = !asset.favorite;
       const response = await fetch(`/api/assets/${asset.id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {},
+          'Content-Type': 'application/json'},
         body: JSON.stringify({
-          metadata: {
+          metadata: {},
             ...asset.metadata,
-            favorite: newFavoriteStatus,
-          },
-        }),
-      });
+            favorite: newFavoriteStatus}})});
 
       if (response.ok) {
-        setAssets(assets.map(a => 
+        setAssets(assets.map((a: any) => 
           a.id === asset.id ? { ...a, favorite: newFavoriteStatus } : a
         ));
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed to toggle favorite:', err);
     }
   };
@@ -199,8 +190,7 @@ export default function AssetBrowser({
                   <InputAdornment position="start">
                     <Search />
                   </InputAdornment>
-                ),
-              }}
+                )}}
             />
           </Grid>
           
@@ -263,14 +253,13 @@ export default function AssetBrowser({
         </Box>
       ) : (
         <Grid container spacing={2}>
-          {assets.map((asset) => (
+          {assets.map((asset: any) => (
             <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={asset.id}>
               <Card
                 sx={{
                   cursor: 'pointer',
                   '&:hover': { transform: 'translateY(-2px)' },
-                  transition: 'transform 0.2s',
-                }}
+                  transition: 'transform 0.2s'}}
                 onClick={() => handleAssetClick(asset)}
               >
                 <Box position="relative">
@@ -288,10 +277,10 @@ export default function AssetBrowser({
                       display="flex"
                       alignItems="center"
                       justifyContent="center"
-                      bgcolor={assetTypeColors[asset.type]}
+                      bgcolor={assetTypeColors[asset.type as keyof typeof assetTypeColors] || '#666'}
                       color="white"
                     >
-                      {assetTypeIcons[asset.type]}
+                      {assetTypeIcons[asset.type as keyof typeof assetTypeIcons] || <TextFields />}
                     </Box>
                   )}
                   <IconButton
@@ -313,7 +302,7 @@ export default function AssetBrowser({
                   </Typography>
                   {asset.tags.length > 0 && (
                     <Box mt={1}>
-                      {asset.tags.slice(0, 2).map((tag) => (
+                      {asset.tags.slice(0, 2).map((tag: any) => (
                         <Chip
                           key={tag}
                           label={tag}
@@ -400,7 +389,7 @@ export default function AssetBrowser({
                   {selectedAsset.tags.length > 0 && (
                     <Box mt={2}>
                       <Typography variant="subtitle2" gutterBottom>Tags</Typography>
-                      {selectedAsset.tags.map((tag) => (
+                      {selectedAsset.tags.map((tag: any) => (
                         <Chip
                           key={tag}
                           label={tag}

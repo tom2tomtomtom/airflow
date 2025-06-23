@@ -19,8 +19,7 @@ export async function sendEmail(options: EmailOptions): Promise<{ success: boole
   
   return {
     success: true,
-    id: `email_${Date.now()}`,
-  };
+    id: `email_${Date.now()}`};
 }
 
 /**
@@ -35,8 +34,7 @@ export async function sendDataExportEmail(to: string, downloadUrl: string): Prom
       <p>You can download your data export from the link below:</p>
       <a href="${downloadUrl}">Download Data Export</a>
       <p>This link will expire in 7 days.</p>
-    `,
-  });
+    `});
 }
 
 /**
@@ -50,8 +48,7 @@ export async function sendDataDeletionEmail(to: string): Promise<void> {
       <h1>Data Deletion Completed</h1>
       <p>Your personal data has been successfully deleted from our systems.</p>
       <p>If you have any questions, please contact our support team.</p>
-    `,
-  });
+    `});
 }
 
 /**
@@ -59,7 +56,7 @@ export async function sendDataDeletionEmail(to: string): Promise<void> {
  */
 export async function sendRenderCompleteEmail(
   to: string,
-  renderDetails: {
+  renderDetails: {},
     id: string;
     name: string;
     downloadUrl?: string;
@@ -77,6 +74,5 @@ export async function sendRenderCompleteEmail(
         <p><a href="${renderDetails.downloadUrl}">Download your render</a></p>
       ` : ''}
       <p>Render ID: ${renderDetails.id}</p>
-    `,
-  });
+    `});
 }

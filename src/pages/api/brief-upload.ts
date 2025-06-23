@@ -1,3 +1,4 @@
+import { NextApiRequest, NextApiResponse } from 'next';
 import { getErrorMessage } from '@/utils/errorUtils';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import formidable, { File } from 'formidable';
@@ -6,10 +7,8 @@ import { env } from '@/lib/env';
 import fs from 'fs/promises';
 
 export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+  api: {},
+    bodyParser: false}};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   if (req.method !== 'POST') {
@@ -64,7 +63,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       
       return res.status(200).json({ success: true, brief });
-    } catch (error) {
+    } catch (error: any) {
     const message = getErrorMessage(error);
       console.error('File processing error:', error);
       return res.status(500).json({ 

@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 /**
  * Strategy Development Page Object Model
  * Handles interactions with brief creation and AI strategy development
@@ -239,6 +240,7 @@ export class StrategyPage {
     try {
       await this.extractedTextPreview.waitFor({ state: 'visible', timeout: timeoutMs });
     } catch (error) {
+    const message = getErrorMessage(error);
       // Check if there was a parsing error
       const hasError = await this.documentParseError.isVisible();
       if (hasError) {
@@ -283,6 +285,7 @@ export class StrategyPage {
       await this.strategyResults.waitFor({ state: 'visible', timeout: timeoutMs });
       await this.aiProcessingModal.waitFor({ state: 'hidden' });
     } catch (error) {
+    const message = getErrorMessage(error);
       // Check if processing failed
       const hasRetryButton = await this.retryProcessingButton.isVisible();
       if (hasRetryButton) {

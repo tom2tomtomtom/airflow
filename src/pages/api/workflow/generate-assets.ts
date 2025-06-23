@@ -45,7 +45,8 @@
  */
 
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withAPIRateLimit } from '@/lib/rate-limiter';
 import { successResponse, errorResponse, handleApiError, methodNotAllowed, validateRequiredFields, ApiErrorCode } from '@/lib/api-response';
@@ -55,11 +56,11 @@ class AICostController {
     return new AICostController();
   }
 
-  async checkBudget(service: string, model: string, tokens: number, userId: string) {
+  async checkBudget(service: string, model: string, tokens: number, userId: string) : Promise<void> {
     return { allowed: true, budgetRemaining: 1000, reason: 'Budget check passed' };
   }
 
-  async trackUsage(service: string, model: string, tokens: number, cost: number, userId: string, metadata: any) {
+  async trackUsage(service: string, model: string, tokens: number, cost: number, userId: string, metadata: any) : Promise<void> {
     console.log(`Tracked usage: ${service}/${model} - ${tokens} tokens, $${cost}`, metadata);
   }
 }
@@ -87,7 +88,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return methodNotAllowed(res, ['POST']);
     }
-  } catch (error) {
+  } catch (error: any) {
     return handleApiError(res, error, 'workflow generate assets handler');
   }
 }
@@ -189,11 +190,11 @@ async function generateWorkflowAssets(
           tags: ['ai-generated', prompt.purpose || 'general', 'workflow'],
           client_id: clientId || workflow.client_id,
           created_by: userId,
-          metadata: {
+          metadata: {},
             ai_generated: true,
             original_prompt: prompt.text,
             enhanced_prompt: enhancedPrompt,
-            generation_settings: {
+            generation_settings: {},
               size: prompt.size || '1024x1024',
               quality: prompt.quality || 'standard',
               style: prompt.style || 'vivid'
@@ -251,7 +252,7 @@ async function generateWorkflowAssets(
           id: asset.id,
           type: 'image',
           url: asset.file_url,
-          metadata: {
+          metadata: {},
             ...asset.metadata,
             name: asset.name,
             description: asset.description,
@@ -263,7 +264,7 @@ async function generateWorkflowAssets(
           selected: false
         });
 
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Error generating asset for prompt ${i}:`, error);
         errors.push({
           prompt: prompt.text,
@@ -281,13 +282,13 @@ async function generateWorkflowAssets(
       timestamp: new Date().toISOString()
     });
 
-  } catch (error) {
+  } catch (error: any) {
     return handleApiError(res, error, 'generateWorkflowAssets');
   }
 }
 
 // Mock image generation function - replace with actual DALL-E API call
-async function generateImage(params: {
+async function generateImage(params: {},
   prompt: string;
   size: string;
   quality: string;

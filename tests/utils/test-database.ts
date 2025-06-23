@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 /**
  * Test database management for AIrWAVE testing
  * Handles test data seeding, cleanup, and isolation
@@ -40,6 +41,7 @@ export class TestDatabase {
       await this.seedTestData();
       console.log('✅ Test database setup complete');
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('❌ Test database setup failed:', error);
       throw error;
     }
@@ -58,6 +60,7 @@ export class TestDatabase {
       await this.cleanupTestData();
       console.log('✅ Test database cleanup complete');
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('❌ Test database cleanup failed:', error);
       // Don't throw to avoid masking test failures
     }
@@ -228,6 +231,7 @@ export class TestDatabase {
           console.warn(`Warning: Could not clean ${table}:`, error.message);
         }
       } catch (error) {
+    const message = getErrorMessage(error);
         console.warn(`Warning: Could not clean ${table}:`, error.message);
       }
     }

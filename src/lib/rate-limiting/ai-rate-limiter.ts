@@ -8,7 +8,7 @@ let redisManager: any = null;
 if (typeof window === 'undefined') {
   try {
     redisManager = require('@/lib/redis/redis-config').redisManager;
-  } catch (error) {
+  } catch (error: any) {
     // Redis not available, will fallback to in-memory
     console.warn('Redis not available, using in-memory rate limiting');
   }
@@ -50,7 +50,7 @@ export class AIRateLimiter {
       windowMs: 60 * 1000, // 1 minute
       maxRequests: 20, // 20 requests per minute
     },
-    'default': {
+    default: {
       windowMs: 60 * 1000, // 1 minute
       maxRequests: 10, // 10 requests per minute
     },
@@ -75,7 +75,7 @@ export class AIRateLimiter {
       } else {
         console.log('⚠️ AI Rate Limiter using in-memory fallback (Redis unavailable)');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('AI Rate Limiter Redis initialization failed:', error);
       this.useRedis = false;
     }
@@ -90,7 +90,7 @@ export class AIRateLimiter {
     customConfig?: Partial<RateLimitConfig>
   ): Promise<RateLimitResult> {
     const config = {
-      ...this.defaultLimits[operation] || this.defaultLimits.default,
+      ...(this.defaultLimits[operation] || this.defaultLimits.default),
       ...customConfig,
     };
 
@@ -106,10 +106,7 @@ export class AIRateLimiter {
   /**
    * Redis-based distributed rate limiting
    */
-  private async checkRedisLimit(
-    key: string,
-    config: RateLimitConfig
-  ): Promise<RateLimitResult> {
+  private async checkRedisLimit(key: string, config: RateLimitConfig): Promise<RateLimitResult> {
     try {
       const client = await redisManager.getClient();
       const now = Date.now();
@@ -117,28 +114,28 @@ export class AIRateLimiter {
 
       // Use Redis sorted set for sliding window rate limiting
       const pipeline = client.pipeline();
-      
+
       // Remove expired entries
       pipeline.zremrangebyscore(key, 0, windowStart);
-      
+
       // Count current requests in window
       pipeline.zcard(key);
-      
+
       // Add current request
       pipeline.zadd(key, now, `${now}-${Math.random()}`);
-      
+
       // Set expiration
       pipeline.expire(key, Math.ceil(config.windowMs / 1000));
 
       const results = await pipeline.exec();
-      
+
       if (!results) {
         throw new Error('Redis pipeline execution failed');
       }
 
       const currentCount = (results[1][1] as number) || 0;
       const allowed = currentCount < config.maxRequests;
-      
+
       // If not allowed, remove the request we just added
       if (!allowed) {
         await client.zpopmax(key);
@@ -150,7 +147,7 @@ export class AIRateLimiter {
         resetTime: now + config.windowMs,
         totalRequests: currentCount + (allowed ? 1 : 0),
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Redis rate limiting error:', error);
       // Fallback to memory-based limiting
       return this.checkMemoryLimit(key, config);
@@ -160,15 +157,13 @@ export class AIRateLimiter {
   /**
    * In-memory fallback rate limiting
    */
-  private checkMemoryLimit(
-    key: string,
-    config: RateLimitConfig
-  ): RateLimitResult {
+  private checkMemoryLimit(key: string, config: RateLimitConfig): RateLimitResult {
     const now = Date.now();
     const existing = this.fallbackStore.get(key);
 
     // Clean up expired entries periodically
-    if (Math.random() < 0.1) { // 10% chance to clean up
+    if (Math.random() < 0.1) {
+      // 10% chance to clean up
       this.cleanupExpiredEntries();
     }
 
@@ -189,7 +184,7 @@ export class AIRateLimiter {
 
     // Existing window
     const allowed = existing.count < config.maxRequests;
-    
+
     if (allowed) {
       existing.count++;
     }
@@ -224,7 +219,10 @@ export class AIRateLimiter {
   /**
    * Get current rate limit status for a user and operation
    */
-  async getStatus(userId: string, operation: string): Promise<{
+  async getStatus(
+    userId: string,
+    operation: string
+  ): Promise<{
     remaining: number;
     resetTime: number;
     totalRequests: number;
@@ -247,7 +245,7 @@ export class AIRateLimiter {
           resetTime: now + config.windowMs,
           totalRequests: currentCount,
         };
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error getting rate limit status from Redis:', error);
       }
     }
@@ -282,7 +280,7 @@ export class AIRateLimiter {
         const client = await redisManager.getClient();
         await client.del(key);
         return true;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error resetting rate limit in Redis:', error);
       }
     }
@@ -297,7 +295,7 @@ export class AIRateLimiter {
    */
   updateConfig(operation: string, config: Partial<RateLimitConfig>): void {
     this.defaultLimits[operation] = {
-      ...this.defaultLimits[operation] || this.defaultLimits.default,
+      ...(this.defaultLimits[operation] || this.defaultLimits.default),
       ...config,
     };
   }

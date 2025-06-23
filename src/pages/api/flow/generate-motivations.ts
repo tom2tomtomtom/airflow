@@ -46,7 +46,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!user) {
     return res.status(401).json({
       success: false,
-      message: 'Authentication required'
+      message: 'Authentication required',
     });
   }
   const { briefData }: { briefData: BriefData } = req.body;
@@ -65,24 +65,23 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     product: briefData.product,
     service: briefData.service,
     valueProposition: briefData.valueProposition?.substring(0, 100) + '...',
-    industry: briefData.industry
+    industry: briefData.industry,
   });
 
   try {
-        // Generate motivations based on brief analysis
+    // Generate motivations based on brief analysis
     const motivations = await generateMotivationsFromBrief(briefData);
 
-        return res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: motivations,
-      message: 'Motivations generated successfully'
+      message: 'Motivations generated successfully',
     });
-
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error generating motivations:', error);
     return res.status(500).json({
       success: false,
-      message: error instanceof Error ? error.message : 'Failed to generate motivations'
+      message: error instanceof Error ? error.message : 'Failed to generate motivations',
     });
   }
 }
@@ -95,7 +94,7 @@ async function generateMotivationsFromBrief(briefData: BriefData): Promise<Motiv
       if (aiMotivations && aiMotivations.length > 0) {
         return aiMotivations;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('OpenAI motivation generation failed, falling back to templates:', error);
     }
   }
@@ -157,15 +156,15 @@ Respond ONLY with the JSON array.`;
       messages: [
         {
           role: 'user',
-          content: prompt
-        }
+          content: prompt,
+        },
       ],
       temperature: 0.7,
       max_tokens: 1500, // Reduce tokens for faster response
     }),
-    new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('OpenAI request timeout')), 8000) // 8 second timeout for Netlify
-    )
+    new Promise(
+      (_, reject) => setTimeout(() => reject(new Error('OpenAI request timeout')), 8000) // 8 second timeout for Netlify
+    ),
   ]);
 
   const responseText = (response as any).choices[0]?.message?.content?.trim();
@@ -173,7 +172,7 @@ Respond ONLY with the JSON array.`;
     throw new Error('No response from OpenAI');
   }
 
-    try {
+  try {
     // Clean up markdown formatting that OpenAI sometimes adds
     let cleanedResponse = responseText;
     if (cleanedResponse.includes('```json')) {
@@ -182,162 +181,175 @@ Respond ONLY with the JSON array.`;
     if (cleanedResponse.includes('```')) {
       cleanedResponse = cleanedResponse.replace(/```/g, '');
     }
-    
+
     const motivations = JSON.parse(cleanedResponse);
-    
+
     if (!Array.isArray(motivations)) {
       throw new Error('Response is not an array');
     }
 
     // Validate and format motivations
-    return motivations.map((motivation, index) => ({
-      id: motivation.id || `motivation_${index + 1}`,
-      title: motivation.title || `Motivation ${index + 1}`,
-      description: motivation.description || 'AI-generated motivation description',
-      score: Math.min(100, Math.max(1, motivation.score || 75)),
-      reasoning: motivation.reasoning || 'AI-generated reasoning',
-      targetEmotions: Array.isArray(motivation.targetEmotions) ? motivation.targetEmotions : ['engagement'],
-      platforms: Array.isArray(motivation.platforms) ? motivation.platforms : briefData.platforms
-    })).slice(0, 12); // Ensure max 12 motivations
-
-  } catch (parseError) {
+    return motivations
+      .map((motivation, index) => ({
+        id: motivation.id || `motivation_${index + 1}`,
+        title: motivation.title || `Motivation ${index + 1}`,
+        description: motivation.description || 'AI-generated motivation description',
+        score: Math.min(100, Math.max(1, motivation.score || 75)),
+        reasoning: motivation.reasoning || 'AI-generated reasoning',
+        targetEmotions: Array.isArray(motivation.targetEmotions)
+          ? motivation.targetEmotions
+          : ['engagement'],
+        platforms: Array.isArray(motivation.platforms) ? motivation.platforms : briefData.platforms,
+      }))
+      .slice(0, 12); // Ensure max 12 motivations
+  } catch (parseError: any) {
     console.error('Failed to parse OpenAI motivations response:', parseError);
     throw new Error('Invalid JSON response from OpenAI');
   }
 }
 
 async function generateMotivationsWithTemplates(briefData: BriefData): Promise<Motivation[]> {
-  // Analyze brief content to generate relevant motivations  
+  // Analyze brief content to generate relevant motivations
   const { objective, targetAudience, keyMessages, platforms } = briefData;
-  
+
   // Base motivation templates with scoring logic
   const motivationTemplates = [
     {
       title: 'Emotional Connection',
-      description: 'Build deep emotional bonds through authentic storytelling and relatable experiences',
+      description:
+        'Build deep emotional bonds through authentic storytelling and relatable experiences',
       reasoning: 'Emotional connections drive 70% more engagement than rational appeals',
       targetEmotions: ['trust', 'belonging', 'excitement'],
-      baseScore: 85
+      baseScore: 85,
     },
     {
       title: 'Social Proof Validation',
       description: 'Leverage testimonials, reviews, and community endorsements for credibility',
       reasoning: 'Social proof increases conversion rates by up to 15%',
       targetEmotions: ['confidence', 'trust', 'security'],
-      baseScore: 82
+      baseScore: 82,
     },
     {
       title: 'Innovation Leadership',
       description: 'Position as industry pioneer with cutting-edge solutions and forward-thinking',
       reasoning: 'Innovation messaging appeals to early adopters and tech-savvy audiences',
       targetEmotions: ['excitement', 'curiosity', 'pride'],
-      baseScore: 78
+      baseScore: 78,
     },
     {
       title: 'Community Building',
       description: 'Foster sense of belonging and shared values within target community',
       reasoning: 'Community-driven content generates 6x more engagement',
       targetEmotions: ['belonging', 'pride', 'connection'],
-      baseScore: 80
+      baseScore: 80,
     },
     {
       title: 'Problem Solution Focus',
       description: 'Address specific pain points with clear, actionable solutions',
       reasoning: 'Problem-solution messaging has 40% higher click-through rates',
       targetEmotions: ['relief', 'hope', 'confidence'],
-      baseScore: 88
+      baseScore: 88,
     },
     {
       title: 'Aspirational Lifestyle',
       description: 'Present idealized future state that audience aspires to achieve',
       reasoning: 'Aspirational content drives 25% more shares and saves',
       targetEmotions: ['desire', 'motivation', 'optimism'],
-      baseScore: 75
+      baseScore: 75,
     },
     {
       title: 'Urgency and Scarcity',
       description: 'Create time-sensitive opportunities and limited availability messaging',
       reasoning: 'Urgency tactics increase immediate action by 30%',
       targetEmotions: ['urgency', 'excitement', 'fear of missing out'],
-      baseScore: 72
+      baseScore: 72,
     },
     {
       title: 'Authority and Expertise',
       description: 'Establish thought leadership through expert insights and industry knowledge',
       reasoning: 'Authority positioning increases trust and premium pricing acceptance',
       targetEmotions: ['respect', 'confidence', 'trust'],
-      baseScore: 79
+      baseScore: 79,
     },
     {
       title: 'Personal Transformation',
       description: 'Focus on individual growth and positive life changes',
       reasoning: 'Transformation stories resonate with 85% of personal development audiences',
       targetEmotions: ['hope', 'determination', 'pride'],
-      baseScore: 81
+      baseScore: 81,
     },
     {
       title: 'Value and ROI Emphasis',
       description: 'Highlight concrete benefits, savings, and return on investment',
       reasoning: 'ROI-focused messaging appeals to decision-makers and budget holders',
       targetEmotions: ['satisfaction', 'security', 'confidence'],
-      baseScore: 86
+      baseScore: 86,
     },
     {
       title: 'Behind-the-Scenes Authenticity',
       description: 'Show genuine process, people, and company culture for transparency',
       reasoning: 'Authentic content builds 3x stronger brand loyalty',
       targetEmotions: ['trust', 'connection', 'appreciation'],
-      baseScore: 77
+      baseScore: 77,
     },
     {
       title: 'Trend and Zeitgeist Alignment',
       description: 'Align messaging with current cultural movements and trending topics',
       reasoning: 'Trend-aligned content receives 50% more organic reach',
       targetEmotions: ['relevance', 'excitement', 'inclusion'],
-      baseScore: 73
-    }
+      baseScore: 73,
+    },
   ];
 
   // Score and select top 10 motivations based on brief analysis
   const scoredMotivations = motivationTemplates.map((template, index) => {
     let score = template.baseScore;
-    
+
     // Adjust score based on brief content relevance
-    
+
     // Check objective alignment
     if (objective.toLowerCase().includes('engagement')) {
       if (template.title.includes('Emotional') || template.title.includes('Community')) {
         score += 8;
       }
     }
-    
+
     if (objective.toLowerCase().includes('awareness')) {
       if (template.title.includes('Social Proof') || template.title.includes('Authority')) {
         score += 6;
       }
     }
 
-    if (objective.toLowerCase().includes('conversion') || objective.toLowerCase().includes('sales')) {
+    if (
+      objective.toLowerCase().includes('conversion') ||
+      objective.toLowerCase().includes('sales')
+    ) {
       if (template.title.includes('Problem Solution') || template.title.includes('Value')) {
         score += 10;
       }
     }
 
     // Check target audience alignment
-    if (targetAudience.toLowerCase().includes('young') || targetAudience.toLowerCase().includes('millennial')) {
+    if (
+      targetAudience.toLowerCase().includes('young') ||
+      targetAudience.toLowerCase().includes('millennial')
+    ) {
       if (template.title.includes('Innovation') || template.title.includes('Trend')) {
         score += 5;
       }
     }
 
-    if (targetAudience.toLowerCase().includes('professional') || targetAudience.toLowerCase().includes('business')) {
+    if (
+      targetAudience.toLowerCase().includes('professional') ||
+      targetAudience.toLowerCase().includes('business')
+    ) {
       if (template.title.includes('Authority') || template.title.includes('Value')) {
         score += 7;
       }
     }
 
     // Check key messages alignment
-    keyMessages.forEach(message => {
+    keyMessages.forEach((message: any) => {
       if (message.toLowerCase().includes('quality') && template.title.includes('Authority')) {
         score += 4;
       }
@@ -364,7 +376,7 @@ async function generateMotivationsWithTemplates(briefData: BriefData): Promise<M
 
     // Add some randomization to prevent identical results
     score += Math.random() * 5 - 2.5;
-    
+
     return {
       id: `motivation_${index + 1}`,
       title: template.title,
@@ -372,14 +384,12 @@ async function generateMotivationsWithTemplates(briefData: BriefData): Promise<M
       score: Math.round(Math.max(0, Math.min(100, score))),
       reasoning: template.reasoning,
       targetEmotions: template.targetEmotions,
-      platforms: platforms
+      platforms: platforms,
     };
   });
 
   // Sort by score and return top 10
-  return scoredMotivations
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 10);
+  return scoredMotivations.sort((a, b) => b.score - a.score).slice(0, 10);
 }
 
 // Apply authentication, AI rate limiting, and CSRF protection for security

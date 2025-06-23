@@ -136,7 +136,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<CostCheckRespon
       budgetRemaining: budgetCheck.budgetRemaining || 0,
       estimatedCost: recommendation?.cost || 0,
       recommendation,
-      usageStats: {
+      usageStats: {},
         dailyRate,
         projectedMonthly,
         percentOfBudget
@@ -154,7 +154,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<CostCheckRespon
 
     return res.status(200).json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Cost check error:', error);
     
     return res.status(500).json({

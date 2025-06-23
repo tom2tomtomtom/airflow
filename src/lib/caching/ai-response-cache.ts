@@ -11,7 +11,7 @@ if (typeof window === 'undefined') {
   try {
     crypto = require('crypto');
     redisManager = require('@/lib/redis/redis-config').redisManager;
-  } catch (error) {
+  } catch (error: any) {
     // Server dependencies not available, will fallback to in-memory
     console.warn('Server dependencies not available, using fallbacks');
   }
@@ -19,8 +19,8 @@ if (typeof window === 'undefined') {
   // Client-side fallback for crypto
   crypto = {
     createHash: () => ({
-      update: () => ({ digest: () => Math.random().toString(36) })
-    })
+      update: () => ({ digest: () => Math.random().toString(36) }),
+    }),
   };
 }
 
@@ -86,7 +86,7 @@ export class AIResponseCache {
       } else {
         console.log('⚠️ AI Response Cache using in-memory storage (Redis unavailable)');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('AI Response Cache Redis initialization failed:', error);
       this.useRedis = false;
     }
@@ -104,7 +104,7 @@ export class AIResponseCache {
     // Create a deterministic hash of the input
     const inputString = JSON.stringify(input, Object.keys(input).sort());
     const hash = crypto.createHash('sha256').update(inputString).digest('hex');
-    
+
     return `${config.keyPrefix}:${hash}`;
   }
 
@@ -121,7 +121,7 @@ export class AIResponseCache {
       if (this.useRedis) {
         cachedResponse = await redisManager.get<CachedResponse<T>>(key);
       } else {
-        cachedResponse = this.memoryCache.get(key) as CachedResponse<T> || null;
+        cachedResponse = (this.memoryCache.get(key) as CachedResponse<T>) || null;
       }
 
       if (!cachedResponse) {
@@ -131,7 +131,7 @@ export class AIResponseCache {
       // Check if cache has expired
       const now = Date.now();
       const ageInSeconds = (now - cachedResponse.timestamp) / 1000;
-      
+
       if (ageInSeconds > config.ttl) {
         // Cache expired, remove it
         await this.delete(operation, input);
@@ -140,7 +140,7 @@ export class AIResponseCache {
 
       console.log(`🎯 Cache hit for ${operation} (age: ${Math.round(ageInSeconds)}s)`);
       return cachedResponse.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting cached response:', error);
       return null;
     }
@@ -150,9 +150,9 @@ export class AIResponseCache {
    * Set cached response
    */
   async set<T>(
-    operation: string, 
-    input: any, 
-    data: T, 
+    operation: string,
+    input: any,
+    data: T,
     metadata?: Record<string, any>
   ): Promise<boolean> {
     try {
@@ -186,7 +186,7 @@ export class AIResponseCache {
         console.log(`💾 Cached ${operation} response in memory`);
         return true;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error setting cached response:', error);
       return false;
     }
@@ -204,7 +204,7 @@ export class AIResponseCache {
       } else {
         return this.memoryCache.delete(key);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting cached response:', error);
       return false;
     }
@@ -222,7 +222,7 @@ export class AIResponseCache {
       } else {
         return this.memoryCache.has(key);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error checking cache existence:', error);
       return false;
     }
@@ -244,11 +244,11 @@ export class AIResponseCache {
         const client = await redisManager.getClient();
         const pattern = `${config.keyPrefix}:*`;
         const keys = await client.keys(pattern);
-        
+
         if (keys.length > 0) {
           cleared = await client.del(...keys);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error clearing Redis cache:', error);
       }
     } else {
@@ -259,8 +259,8 @@ export class AIResponseCache {
           keysToDelete.push(key);
         }
       }
-      
-      keysToDelete.forEach(key => this.memoryCache.delete(key));
+
+      keysToDelete.forEach((key: any) => this.memoryCache.delete(key));
       cleared = keysToDelete.length;
     }
 
@@ -286,19 +286,19 @@ export class AIResponseCache {
     if (this.useRedis) {
       try {
         const client = await redisManager.getClient();
-        
+
         for (const [operation, config] of Object.entries(this.cacheConfigs)) {
           const pattern = `${config.keyPrefix}:*`;
           const keys = await client.keys(pattern);
-          
+
           stats.operations[operation] = {
             keys: keys.length,
             totalSize: 0, // Would need to calculate actual size
           };
-          
+
           stats.totalKeys += keys.length;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error getting Redis cache stats:', error);
       }
     } else {
@@ -313,7 +313,7 @@ export class AIResponseCache {
             operationKeys++;
           }
         }
-        
+
         stats.operations[operation] = {
           keys: operationKeys,
           totalSize: 0,
@@ -344,7 +344,9 @@ export class AIResponseCache {
   /**
    * Warm up cache with common requests
    */
-  async warmUp(commonRequests: Array<{ operation: string; input: any; data: any }>): Promise<number> {
+  async warmUp(
+    commonRequests: Array<{ operation: string; input: any; data: any }>
+  ): Promise<number> {
     let warmedUp = 0;
 
     for (const request of commonRequests) {
@@ -353,7 +355,7 @@ export class AIResponseCache {
         if (success) {
           warmedUp++;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error warming up cache:', error);
       }
     }

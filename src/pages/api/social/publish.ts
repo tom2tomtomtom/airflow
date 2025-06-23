@@ -1,12 +1,13 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import axios from 'axios';
 
 interface PublishRequest {
   platforms: string[];
-  content: {
+  content: {},
     text?: string;
     images?: string[];
     video?: string;
@@ -35,8 +36,7 @@ async function publishToFacebook(accessToken: string, content: any): Promise<{ s
 
     const response = await fetch('https://graph.facebook.com/v18.0/me/feed', {
       method: 'POST',
-      body: formData,
-    });
+      body: formData});
 
     const result = await response.json();
 
@@ -45,7 +45,7 @@ async function publishToFacebook(accessToken: string, content: any): Promise<{ s
     }
 
     return { success: true, postId: result.id };
-  } catch (error) {
+  } catch (error: any) {
     return { success: false, error: getErrorMessage(error) };
   }
 }
@@ -54,14 +54,11 @@ async function publishToTwitter(accessToken: string, content: any): Promise<{ su
   try {
     const response = await fetch('https://api.twitter.com/2/tweets', {
       method: 'POST',
-      headers: {
+      headers: {},
         'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'},
       body: JSON.stringify({
-        text: content.text || '',
-      }),
-    });
+        text: content.text || ''})});
 
     const result = await response.json();
 
@@ -70,7 +67,7 @@ async function publishToTwitter(accessToken: string, content: any): Promise<{ su
     }
 
     return { success: true, postId: result.data?.id };
-  } catch (error) {
+  } catch (error: any) {
     return { success: false, error: getErrorMessage(error) };
   }
 }
@@ -87,8 +84,7 @@ async function publishToInstagram(accessToken: string, pageId: string, content: 
         {
           image_url: content.images[0],
           caption: content.text || '',
-          access_token: accessToken,
-        }
+          access_token: accessToken}
       );
     } else if (content.video) {
       // Video post
@@ -98,8 +94,7 @@ async function publishToInstagram(accessToken: string, pageId: string, content: 
           video_url: content.video,
           caption: content.text || '',
           media_type: 'VIDEO',
-          access_token: accessToken,
-        }
+          access_token: accessToken}
       );
     } else {
       return { success: false, error: 'Instagram requires an image or video' };
@@ -114,8 +109,7 @@ async function publishToInstagram(accessToken: string, pageId: string, content: 
       `https://graph.facebook.com/v18.0/${pageId}/media_publish`,
       {
         creation_id: mediaResponse.data.id,
-        access_token: accessToken,
-      }
+        access_token: accessToken}
     );
 
     return { success: true, postId: publishResponse.data.id };
@@ -129,38 +123,30 @@ async function publishToLinkedIn(accessToken: string, profileId: string, content
     const postData = {
       author: `urn:li:person:${profileId}`,
       lifecycleState: 'PUBLISHED',
-      specificContent: {
+      specificContent: {},
         'com.linkedin.ugc.ShareContent': {
-          shareCommentary: {
-            text: content.text || '',
-          },
-          shareMediaCategory: 'NONE',
-        },
-      },
-      visibility: {
-        'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC',
-      },
-    };
+          shareCommentary: {},
+            text: content.text || ''},
+          shareMediaCategory: 'NONE'}},
+      visibility: {},
+        'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC'}};
 
     // If there's a link, add it as media
     if (content.link) {
       postData.specificContent['com.linkedin.ugc.ShareContent'].shareMediaCategory = 'ARTICLE';
       (postData.specificContent['com.linkedin.ugc.ShareContent'] as any).media = [{
         status: 'READY',
-        originalUrl: content.link,
-      }];
+        originalUrl: content.link}];
     }
 
     const response = await axios.post(
       'https://api.linkedin.com/v2/ugcPosts',
       postData,
       {
-        headers: {
+        headers: {},
           'Authorization': `Bearer ${accessToken}`,
           'Content-Type': 'application/json',
-          'X-Restli-Protocol-Version': '2.0.0',
-        },
-      }
+          'X-Restli-Protocol-Version': '2.0.0'}}
     );
 
     return { success: true, postId: response?.data?.id };
@@ -205,8 +191,7 @@ async function publishToPlatform(platform: string, connection: any, content: any
     platform,
     success: result.success,
     postId: result.postId,
-    error: result.error,
-  };
+    error: result.error};
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
@@ -247,14 +232,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
       // Publish to each platform
       for (const platform of platforms) {
-        const connection = connections?.find(c => c.platform === platform);
+        const connection = connections?.find((c: any) => c.platform === platform);
         
         if (!connection || !connection.access_token) {
           results.push({
             platform,
             success: false,
-            error: 'Platform not connected or token missing',
-          });
+            error: 'Platform not connected or token missing'});
           continue;
         }
 
@@ -263,8 +247,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
           results.push({
             platform,
             success: false,
-            error: 'Access token expired, please reconnect your account',
-          });
+            error: 'Access token expired, please reconnect your account'});
           continue;
         }
 
@@ -282,8 +265,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
             content: content,
             status: result.success ? 'published' : 'failed',
             error_message: result.error,
-            published_at: result.success ? new Date().toISOString() : null,
-          });
+            published_at: result.success ? new Date().toISOString() : null});
       }
 
       // Log the publish attempt
@@ -293,36 +275,30 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
           platform: 'multi',
           date: new Date().toISOString().split('T')[0],
           client_id: clientId,
-          raw_data: {
-            publish_attempt: {
+          raw_data: {},
+            publish_attempt: {},
               platforms,
               content,
               results,
-              timestamp: new Date().toISOString(),
-            },
-          },
-        });
+              timestamp: new Date().toISOString()}}});
 
       return res.status(200).json({
         success: true,
         results,
-        summary: {
+        summary: {},
           total: results.length,
-          successful: results.filter(r => r.success).length,
-          failed: results.filter(r => !r.success).length,
-        },
-      });
+          successful: results.filter((r: any) => r.success).length,
+          failed: results.filter((r: any) => !r.success).length}});
     }
 
     res.setHeader('Allow', ['POST']);
     return res.status(405).json({ success: false, error: 'Method not allowed' });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Publish API error:', error);
     return res.status(500).json({
       success: false,
-      error: 'Internal server error',
-    });
+      error: 'Internal server error'});
   }
 }
 

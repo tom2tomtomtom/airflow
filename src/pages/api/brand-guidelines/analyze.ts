@@ -9,24 +9,22 @@ import mammoth from 'mammoth';
 import pdf from 'pdf-parse';
 
 export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+  api: {},
+    bodyParser: false}};
 
 interface BrandGuidelines {
-  colors: {
+  colors: {},
     primary: string[];
     secondary: string[];
     accent: string[];
   };
-  toneOfVoice: {
+  toneOfVoice: {},
     personality: string[];
     communication_style: string;
     dos: string[];
     donts: string[];
   };
-  typography: {
+  typography: {},
     primary_font: string;
     secondary_font: string;
     font_weights: string[];
@@ -51,8 +49,7 @@ interface AnalysisResponse {
 
 // Initialize OpenAI client
 const openai = hasOpenAI ? new OpenAI({
-  apiKey: env.OPENAI_API_KEY,
-}) : null;
+  apiKey: env.OPENAI_API_KEY}) : null;
 
 async function extractTextFromFile(file: formidable.File): Promise<string> {
   const buffer = await fs.readFile(file.filepath);
@@ -124,8 +121,7 @@ async function analyzeBrandGuidelines(text: string): Promise<BrandGuidelines> {
         }
       ],
       temperature: 0.3,
-      max_tokens: 1500,
-    });
+      max_tokens: 1500});
 
     const content = completion.choices[0]?.message?.content;
     if (!content) {
@@ -135,11 +131,11 @@ async function analyzeBrandGuidelines(text: string): Promise<BrandGuidelines> {
     // Try to parse the JSON response
     try {
       return JSON.parse(content);
-    } catch (parseError) {
+    } catch (parseError: any) {
       console.error('Failed to parse OpenAI response as JSON:', content);
       throw new Error('Failed to parse AI response. Please try again.');
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('OpenAI analysis error:', error);
     throw error;
   }
@@ -164,8 +160,7 @@ export default async function handler(
 
     const form = formidable({
       maxFileSize: 10 * 1024 * 1024, // 10MB limit
-      maxFiles: 1,
-    });
+      maxFiles: 1});
 
     const [fields, files] = await form.parse(req);
     const file = Array.isArray(files.file) ? files.file[0] : files.file;
@@ -207,7 +202,7 @@ export default async function handler(
     // Clean up temporary file
     try {
       await fs.unlink(file.filepath);
-    } catch (cleanupError) {
+    } catch (cleanupError: any) {
       console.warn('Failed to cleanup temp file:', cleanupError);
     }
 
@@ -217,7 +212,7 @@ export default async function handler(
       clientId
     });
 
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Brand guidelines analysis error:', error);
     return res.status(500).json({

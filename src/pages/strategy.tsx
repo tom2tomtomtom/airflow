@@ -11,14 +11,12 @@ import {
   CardContent,
   Chip,
   Alert,
-  CircularProgress,
-} from '@mui/material';
+  CircularProgress} from '@mui/material';
 import {
   AutoAwesome as AIIcon,
   TrendingUp as StrategyIcon,
   Lightbulb as IdeaIcon,
-  GpsFixed as TargetIcon,
-} from '@mui/icons-material';
+  GpsFixed as TargetIcon} from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useNotification } from '@/contexts/NotificationContext';
 
@@ -48,12 +46,10 @@ const StrategyPage: React.FC = () => {
     try {
       const response = await fetch('/api/strategy-generate', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {},
+          'Content-Type': 'application/json'},
         body: JSON.stringify({ brief }),
-        credentials: 'include',
-      });
+        credentials: 'include'});
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: Failed to generate strategy`);
@@ -67,7 +63,7 @@ const StrategyPage: React.FC = () => {
       } else {
         throw new Error(result.message || 'Failed to generate strategy');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating strategy:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to generate strategy';
       setError(errorMessage);

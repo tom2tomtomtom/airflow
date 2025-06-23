@@ -64,7 +64,13 @@ const navigation = [
   { name: 'Approvals', href: '/approvals', icon: ApprovalsIcon },
   { name: 'Preview', href: '/preview', icon: PreviewIcon },
   { divider: true },
-  { name: 'Social Publishing', href: '/social-publishing', icon: SocialIcon, disabled: true, comingSoon: true },
+  {
+    name: 'Social Publishing',
+    href: '/social-publishing',
+    icon: SocialIcon,
+    disabled: true,
+    comingSoon: true,
+  },
   { name: 'Webhooks', href: '/webhooks', icon: WebhookIcon },
 ];
 
@@ -101,19 +107,21 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
   const drawer = (
     <div>
       <Toolbar sx={{ py: 2 }}>
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          width: '100%',
-          justifyContent: 'center'
-        }}>
-          <Typography 
-            variant="h5" 
-            noWrap 
-            component="div" 
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            width: '100%',
+            justifyContent: 'center',
+          }}
+        >
+          <Typography
+            variant="h5"
+            noWrap
+            component="div"
             className="text-gradient"
-            sx={{ 
-              fontWeight: 700, 
+            sx={{
+              fontWeight: 700,
               cursor: 'pointer',
               fontSize: '1.75rem',
               letterSpacing: '-0.02em',
@@ -130,21 +138,22 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
           if (item.divider) {
             return <Divider key={`divider-${index}`} sx={{ my: 1 }} />;
           }
-          
+
           const Icon = item.icon!;
-          const isActive = router.pathname === item.href || 
-                          (item.href === '/clients' && router.pathname.startsWith('/clients')) ||
-                          (item.href === '/campaigns' && router.pathname.startsWith('/campaigns'));
-          
+          const isActive =
+            router.pathname === item.href ||
+            (item.href === '/clients' && router.pathname.startsWith('/clients')) ||
+            (item.href === '/campaigns' && router.pathname.startsWith('/campaigns'));
+
           return (
             <ListItem key={item.name} disablePadding>
               <ListItemButton
                 selected={isActive}
                 disabled={item.disabled}
-                onClick={(e) => {
+                onClick={e => {
                   e.preventDefault();
                   e.stopPropagation();
-                                    if (!item.disabled && item.href) {
+                  if (!item.disabled && item.href) {
                     router.push(item.href);
                     if (isMobile) {
                       setMobileOpen(false);
@@ -161,8 +170,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
                     paddingLeft: item.disabled ? '16px' : '20px',
                   },
                   '&.Mui-selected': {
-                    background: (theme) => 
-                      theme.palette.mode === 'light' 
+                    background: theme =>
+                      theme.palette.mode === 'light'
                         ? 'linear-gradient(135deg, #7C3AED 0%, #EC4899 100%)'
                         : 'linear-gradient(135deg, #A78BFA 0%, #F472B6 100%)',
                     color: '#FFFFFF',
@@ -181,14 +190,16 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
                   },
                 }}
               >
-                <ListItemIcon sx={{ 
-                  minWidth: 40,
-                  transition: 'transform 0.3s ease',
-                  ...(isActive && { transform: 'scale(1.1)' })
-                }}>
+                <ListItemIcon
+                  sx={{
+                    minWidth: 40,
+                    transition: 'transform 0.3s ease',
+                    ...(isActive && { transform: 'scale(1.1)' }),
+                  }}
+                >
                   <Icon />
                 </ListItemIcon>
-                <ListItemText 
+                <ListItemText
                   primary={item.name}
                   secondary={item.comingSoon ? 'Coming Soon' : undefined}
                   primaryTypographyProps={{
@@ -229,16 +240,14 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
         sx={{
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
-          background: (theme) => 
-            theme.palette.mode === 'light'
-              ? 'rgba(255, 255, 255, 0.7)'
-              : 'rgba(15, 22, 41, 0.6)',
+          background: theme =>
+            theme.palette.mode === 'light' ? 'rgba(255, 255, 255, 0.7)' : 'rgba(15, 22, 41, 0.6)',
           backdropFilter: 'blur(10px)',
           WebkitBackdropFilter: 'blur(10px)',
           color: 'text.primary',
           boxShadow: 'none',
           borderBottom: '1px solid',
-          borderColor: (theme) => 
+          borderColor: theme =>
             theme.palette.mode === 'light'
               ? 'rgba(124, 58, 237, 0.1)'
               : 'rgba(167, 139, 250, 0.15)',
@@ -257,7 +266,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
           <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 600, flexGrow: 1 }}>
             {title || 'AIrFLOW Dashboard'}
           </Typography>
-          
+
           {/* Global Search Button */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mr: 2 }}>
             <TextField
@@ -272,9 +281,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
                 ),
                 endAdornment: (
                   <InputAdornment position="end">
-                    <Chip 
-                      label="⌘K" 
-                      size="small" 
+                    <Chip
+                      label="⌘K"
+                      size="small"
                       variant="outlined"
                       sx={{ height: 20, fontSize: '0.7rem' }}
                     />
@@ -282,18 +291,18 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
                 ),
                 readOnly: true,
               }}
-              sx={{ 
+              sx={{
                 minWidth: 200,
                 cursor: 'pointer',
                 '& .MuiInputBase-input': {
                   cursor: 'pointer',
                 },
-                display: { xs: 'none', md: 'block' }
+                display: { xs: 'none', md: 'block' },
               }}
             />
-            
+
             {/* Mobile search icon */}
-            <IconButton 
+            <IconButton
               onClick={() => setSearchOpen(true)}
               sx={{ display: { xs: 'block', md: 'none' } }}
             >
@@ -304,17 +313,17 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <ClientSelector variant="chip" />
             <LiveCollaboration compact />
-            <IconButton 
+            <IconButton
               onClick={toggleMode}
-              sx={{ 
+              sx={{
                 p: 1,
-                background: (theme) => 
-                  theme.palette.mode === 'light' 
+                background: theme =>
+                  theme.palette.mode === 'light'
                     ? 'rgba(124, 58, 237, 0.1)'
                     : 'rgba(167, 139, 250, 0.1)',
                 '&:hover': {
-                  background: (theme) => 
-                    theme.palette.mode === 'light' 
+                  background: theme =>
+                    theme.palette.mode === 'light'
                       ? 'rgba(124, 58, 237, 0.2)'
                       : 'rgba(167, 139, 250, 0.2)',
                   transform: 'rotate(180deg)',
@@ -334,7 +343,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
         aria-label="navigation menu"
-       data-testid="sidebar-nav">
+        data-testid="sidebar-nav"
+      >
         <Drawer
           variant="temporary"
           open={mobileOpen}
@@ -344,17 +354,17 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
           }}
           sx={{
             display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { 
-              boxSizing: 'border-box', 
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
               width: drawerWidth,
-              background: (theme) => 
+              background: theme =>
                 theme.palette.mode === 'light'
                   ? 'rgba(255, 255, 255, 0.7)'
                   : 'rgba(15, 22, 41, 0.6)',
               backdropFilter: 'blur(10px)',
               WebkitBackdropFilter: 'blur(10px)',
               borderRight: '1px solid',
-              borderColor: (theme) => 
+              borderColor: theme =>
                 theme.palette.mode === 'light'
                   ? 'rgba(255, 255, 255, 0.18)'
                   : 'rgba(167, 139, 250, 0.2)',
@@ -367,17 +377,17 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
           variant="permanent"
           sx={{
             display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { 
-              boxSizing: 'border-box', 
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
               width: drawerWidth,
-              background: (theme) => 
+              background: theme =>
                 theme.palette.mode === 'light'
                   ? 'rgba(255, 255, 255, 0.7)'
                   : 'rgba(15, 22, 41, 0.6)',
               backdropFilter: 'blur(10px)',
               WebkitBackdropFilter: 'blur(10px)',
               borderRight: '1px solid',
-              borderColor: (theme) => 
+              borderColor: theme =>
                 theme.palette.mode === 'light'
                   ? 'rgba(255, 255, 255, 0.18)'
                   : 'rgba(167, 139, 250, 0.2)',
@@ -390,9 +400,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
       </Box>
       <Box
         component="main"
-        sx={{ 
-          flexGrow: 1, 
-          p: 4, 
+        sx={{
+          flexGrow: 1,
+          p: 4,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           minHeight: '100vh',
           background: 'transparent',
@@ -402,12 +412,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ title, childre
         <Toolbar />
         {children}
       </Box>
-      
+
       {/* Global Search Modal */}
-      <GlobalSearch 
-        open={searchOpen} 
-        onClose={() => setSearchOpen(false)} 
-      />
+      <GlobalSearch open={searchOpen} onClose={() => setSearchOpen(false)} />
     </Box>
   );
 };

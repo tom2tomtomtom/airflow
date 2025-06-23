@@ -22,8 +22,7 @@ jest.mock('react', () => ({
   useEffect: jest.fn(),
   useRef: jest.fn(() => ({ current: null })),
   useState: jest.fn((initial) => [initial, jest.fn()]),
-  useCallback: jest.fn((fn) => fn),
-}));
+  useCallback: jest.fn((fn) => fn)}));
 
 describe('accessibility utilities', () => {
   beforeEach(() => {
@@ -407,9 +406,10 @@ describe('accessibility utilities', () => {
       mockUseEffect = jest.fn();
 
       // Mock React hooks
-      const React = require('react');
-      React.useRef = mockUseRef;
-      React.useEffect = mockUseEffect;
+      jest.doMock('react', () => ({
+        ...jest.requireActual('react'),
+        useRef: mockUseRef,
+        useEffect: mockUseEffect}));
 
       // Mock document.activeElement
       Object.defineProperty(document, 'activeElement', {
@@ -552,9 +552,10 @@ describe('accessibility utilities', () => {
       mockUseEffect = jest.fn();
 
       // Mock React hooks
-      const React = require('react');
-      React.useState = mockUseState;
-      React.useEffect = mockUseEffect;
+      jest.doMock('react', () => ({
+        ...jest.requireActual('react'),
+        useState: mockUseState,
+        useEffect: mockUseEffect}));
 
       // Mock window.matchMedia
       mockMatchMedia = jest.fn().mockReturnValue({

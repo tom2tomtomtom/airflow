@@ -80,7 +80,7 @@ export class WorkflowMetricsCollector {
       } else {
         console.log('⚠️ Workflow Metrics using local storage (Redis unavailable)');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Workflow Metrics Redis initialization failed:', error);
       this.useRedis = false;
     }
@@ -102,8 +102,7 @@ export class WorkflowMetricsCollector {
       action: 'step_start',
       timestamp: Date.now(),
       success: true,
-      metadata,
-    };
+      metadata};
 
     await this.recordMetric(metric);
     
@@ -136,8 +135,7 @@ export class WorkflowMetricsCollector {
       duration,
       success,
       errorMessage,
-      metadata,
-    };
+      metadata};
 
     await this.recordMetric(metric);
     
@@ -161,8 +159,7 @@ export class WorkflowMetricsCollector {
       timestamp: Date.now(),
       success: false,
       errorMessage: reason,
-      metadata: { abandonmentPoint: lastStep },
-    };
+      metadata: { abandonmentPoint: lastStep }};
 
     await this.recordMetric(metric);
     
@@ -186,8 +183,7 @@ export class WorkflowMetricsCollector {
       timestamp: Date.now(),
       duration: totalDuration,
       success: true,
-      metadata,
-    };
+      metadata};
 
     await this.recordMetric(metric);
     
@@ -218,14 +214,12 @@ export class WorkflowMetricsCollector {
       duration,
       success,
       errorMessage,
-      metadata: {
+      metadata: {},
         service,
         model,
         tokensUsed,
         cost,
-        costPerToken: cost / tokensUsed,
-      },
-    };
+        costPerToken: cost / tokensUsed}};
 
     await this.recordMetric(metric);
     
@@ -252,7 +246,7 @@ export class WorkflowMetricsCollector {
         // Trim realtime list to prevent memory issues
         const client = await redisManager.getClient();
         await client.ltrim('workflow_metrics:realtime', 0, 10000); // Keep last 10k metrics
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error storing metric in Redis:', error);
       }
     }
@@ -303,23 +297,23 @@ export class WorkflowMetricsCollector {
           for (const metricJson of dayMetrics) {
             try {
               const metric = JSON.parse(metricJson);
-              if (!userId || metric.userId === userId) {
+              if (!userId || metric.userId === userId) {;
                 allMetrics.push(metric);
               }
-            } catch (error) {
+            } catch (error: any) {
               console.error('Error parsing metric:', error);
             }
           }
           
           currentDate.setDate(currentDate.getDate() + 1);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error getting metrics from Redis:', error);
       }
     }
 
     // Include local metrics
-    const filteredLocalMetrics = this.localMetrics.filter(metric => {
+    const filteredLocalMetrics = this.localMetrics.filter((metric: any) => {;
       const metricDate = new Date(metric.timestamp);
       const matchesDate = metricDate >= startDate && metricDate <= endDate;
       const matchesUser = !userId || metric.userId === userId;
@@ -338,11 +332,11 @@ export class WorkflowMetricsCollector {
    * Calculate analytics from metrics
    */
   private calculateAnalytics(metrics: WorkflowMetric[]): WorkflowAnalytics {
-    const sessions = new Set(metrics.map(m => m.sessionId));
-    const completedSessions = new Set(
+    const sessions = new Set(metrics.map((m: any) => m.sessionId));
+    const completedSessions = new Set(;
       metrics
-        .filter(m => m.action === 'workflow_completion')
-        .map(m => m.sessionId)
+        .filter((m: any) => m.action === 'workflow_completion');
+        .map((m: any) => m.sessionId)
     );
 
     const stepMetrics: Record<string, WorkflowStepMetrics> = {};
@@ -356,7 +350,7 @@ export class WorkflowMetricsCollector {
         averageDuration: 0,
         errorRate: 0,
         abandonmentRate: 0,
-        commonErrors: {},
+        commonErrors: {}
       };
     }
 
@@ -364,7 +358,7 @@ export class WorkflowMetricsCollector {
     const stepCompletions: Record<string, number[]> = {};
     
     for (const metric of metrics) {
-      if (metric.action === 'step_completion' && stepMetrics[metric.workflowStep]) {
+      if (metric.action === 'step_completion' && stepMetrics[metric.workflowStep]) {;
         const step = stepMetrics[metric.workflowStep];
         step.totalAttempts++;
         
@@ -396,29 +390,28 @@ export class WorkflowMetricsCollector {
     }
 
     // Calculate user journey and drop-off rates
-    const userJourney = this.workflowSteps.map((step, index) => {
+    const userJourney = this.workflowSteps.map((step, index) => {;
       const stepAttempts = stepMetrics[step].totalAttempts;
       const previousStepAttempts = index > 0 ? stepMetrics[this.workflowSteps[index - 1]].totalAttempts : sessions.size;
       
       return {
         step,
         dropOffRate: previousStepAttempts > 0 ? 1 - (stepAttempts / previousStepAttempts) : 0,
-        averageTimeSpent: stepMetrics[step].averageDuration,
-      };
+        averageTimeSpent: stepMetrics[step].averageDuration};
     });
 
     // Calculate session duration
     const sessionDurations: number[] = [];
     for (const sessionId of sessions) {
-      const sessionMetrics = metrics.filter(m => m.sessionId === sessionId);
+      const sessionMetrics = metrics.filter((m: any) => m.sessionId === sessionId);
       if (sessionMetrics.length > 0) {
-        const startTime = Math.min(...sessionMetrics.map(m => m.timestamp));
-        const endTime = Math.max(...sessionMetrics.map(m => m.timestamp));
+        const startTime = Math.min(...sessionMetrics.map((m: any) => m.timestamp));
+        const endTime = Math.max(...sessionMetrics.map((m: any) => m.timestamp));
         sessionDurations.push(endTime - startTime);
       }
     }
 
-    const averageSessionDuration = sessionDurations.length > 0 
+    const averageSessionDuration = sessionDurations.length > 0 ;
       ? sessionDurations.reduce((a, b) => a + b, 0) / sessionDurations.length 
       : 0;
 
@@ -428,15 +421,14 @@ export class WorkflowMetricsCollector {
       completionRate: sessions.size > 0 ? completedSessions.size / sessions.size : 0,
       averageSessionDuration,
       stepMetrics,
-      userJourney,
-    };
+      userJourney};
   }
 
   /**
    * Get real-time workflow status
    */
   async getRealTimeStatus(): Promise<{
-    activeSessions: number;
+    activeSessions: number;,
     currentStepDistribution: Record<string, number>;
     recentErrors: Array<{ step: string; error: string; timestamp: number }>;
     performanceAlerts: Array<{ step: string; issue: string; severity: 'low' | 'medium' | 'high' }>;
@@ -445,17 +437,17 @@ export class WorkflowMetricsCollector {
     const oneHourAgo = now - (60 * 60 * 1000);
     
     // Get recent metrics
-    const recentMetrics = this.localMetrics.filter(m => m.timestamp > oneHourAgo);
+    const recentMetrics = this.localMetrics.filter((m: any) => m.timestamp > oneHourAgo);
     
     // Count active sessions (sessions with activity in last hour)
-    const activeSessions = new Set(recentMetrics.map(m => m.sessionId)).size;
+    const activeSessions = new Set(recentMetrics.map((m: any) => m.sessionId)).size;
     
     // Current step distribution
     const currentStepDistribution: Record<string, number> = {};
     const latestStepBySession: Record<string, string> = {};
     
     for (const metric of recentMetrics) {
-      if (metric.action === 'step_start') {
+      if (metric.action === 'step_start') {;
         latestStepBySession[metric.sessionId] = metric.workflowStep;
       }
     }
@@ -465,20 +457,19 @@ export class WorkflowMetricsCollector {
     }
     
     // Recent errors
-    const recentErrors = recentMetrics
-      .filter(m => !m.success && m.errorMessage)
+    const recentErrors = recentMetrics;
+      .filter((m: any) => !m.success && m.errorMessage)
       .slice(-10)
-      .map(m => ({
+      .map((m: any) => ({
         step: m.workflowStep,
         error: m.errorMessage!,
-        timestamp: m.timestamp,
-      }));
+        timestamp: m.timestamp}));
     
     // Performance alerts
     const performanceAlerts: Array<{ step: string; issue: string; severity: 'low' | 'medium' | 'high' }> = [];
     
     for (const step of this.workflowSteps) {
-      const stepMetrics = recentMetrics.filter(m => m.workflowStep === step && m.duration);
+      const stepMetrics = recentMetrics.filter((m: any) => m.workflowStep === step && m.duration);
       if (stepMetrics.length > 0) {
         const avgDuration = stepMetrics.reduce((sum, m) => sum + (m.duration || 0), 0) / stepMetrics.length;
         
@@ -486,18 +477,16 @@ export class WorkflowMetricsCollector {
           performanceAlerts.push({
             step,
             issue: `Average duration ${(avgDuration / 1000).toFixed(1)}s exceeds threshold`,
-            severity: avgDuration > 60000 ? 'high' : 'medium',
-          });
+            severity: avgDuration > 60000 ? 'high' : 'medium'});
         }
       }
       
-      const errorRate = stepMetrics.filter(m => !m.success).length / Math.max(stepMetrics.length, 1);
+      const errorRate = stepMetrics.filter((m: any) => !m.success).length / Math.max(stepMetrics.length, 1);
       if (errorRate > 0.1) { // 10% error rate
         performanceAlerts.push({
           step,
           issue: `Error rate ${(errorRate * 100).toFixed(1)}% exceeds threshold`,
-          severity: errorRate > 0.25 ? 'high' : 'medium',
-        });
+          severity: errorRate > 0.25 ? 'high' : 'medium'});
       }
     }
     
@@ -505,8 +494,7 @@ export class WorkflowMetricsCollector {
       activeSessions,
       currentStepDistribution,
       recentErrors,
-      performanceAlerts,
-    };
+      performanceAlerts};
   }
 }
 

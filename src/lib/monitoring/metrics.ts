@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
-import { getAPM, recordMetric } from './apm';
+import { recordMetric } from './apm';
 import { getLogger } from '@/lib/logger';
 import { getRedisConfig } from '@/lib/config';
 import { createClient as createRedisClient } from 'redis';
@@ -7,54 +7,54 @@ import { createClient as createRedisClient } from 'redis';
 const logger = getLogger('metrics');
 
 export interface SystemMetrics {
-  timestamp: number;
-  cpu: {
-    usage: number;
+  timestamp: number;,
+  cpu: {},
+    usage: number;,
     load: [number, number, number]; // 1min, 5min, 15min
   };
   memory: {
     used: number;
-    free: number;
+    free: number;,
     total: number;
-    heapUsed: number;
+    heapUsed: number;,
     heapTotal: number;
   };
   disk: {
     used: number;
-    free: number;
+    free: number;,
     total: number;
   };
   network?: {
-    bytesIn: number;
+    bytesIn: number;,
     bytesOut: number;
   };
 }
 
 export interface ApplicationMetrics {
-  timestamp: number;
-  requests: {
-    total: number;
+  timestamp: number;,
+  requests: {},
+    total: number;,
     successful: number;
-    failed: number;
+    failed: number;,
     avgResponseTime: number;
-    p95ResponseTime: number;
+    p95ResponseTime: number;,
     p99ResponseTime: number;
   };
   users: {
     active: number;
-    online: number;
+    online: number;,
     newSignups: number;
   };
   ai: {
     generationsTotal: number;
-    generationsSuccess: number;
+    generationsSuccess: number;,
     generationsFailed: number;
-    totalCost: number;
+    totalCost: number;,
     avgTokens: number;
   };
   database: {
     connections: number;
-    queries: number;
+    queries: number;,
     slowQueries: number;
     avgQueryTime: number;
   };
@@ -66,24 +66,24 @@ export interface ApplicationMetrics {
 }
 
 export interface BusinessMetrics {
-  timestamp: number;
-  clients: {
-    total: number;
+  timestamp: number;,
+  clients: {},
+    total: number;,
     active: number;
     newSignups: number;
   };
   workflows: {
     created: number;
-    completed: number;
+    completed: number;,
     failed: number;
     avgDuration: number;
   };
   campaigns: {
     active: number;
-    created: number;
+    created: number;,
     completed: number;
   };
-  revenue: {
+  revenue: {},
     mrr?: number;
     arr?: number;
     churn?: number;
@@ -103,10 +103,10 @@ export class MetricsCollector {
     this.startBufferFlushing();
   }
   
-  private async initializeRedis() {
+  private async initializeRedis() : Promise<void> {
     try {
       const config = getRedisConfig();
-      this.redis = createRedisClient({
+      this.redis = createRedisClient({;
         url: config.url,
         password: config.password,
         database: config.db
@@ -114,13 +114,13 @@ export class MetricsCollector {
       
       await this.redis.connect();
       logger.info('Redis connected for metrics collection');
-    } catch (error) {
+    } catch (error: any) {
       logger.warn('Redis not available for metrics', error);
     }
   }
   
   private startBufferFlushing() {
-    const flushHandle = setInterval(() => {
+    const flushHandle = setInterval(() => {;
       this.flushMetricsBuffer();
     }, this.flushInterval);
     
@@ -132,7 +132,7 @@ export class MetricsCollector {
     const os = await import('os');
     const process = globalThis.process;
     
-    const metrics: SystemMetrics = {
+    const metrics: SystemMetrics = {;
       timestamp: Date.now(),
       cpu: {
         usage: process.cpuUsage().user / 1000000, // Convert to seconds
@@ -184,7 +184,7 @@ export class MetricsCollector {
       // Error metrics
       const errorMetrics = await this.getErrorMetrics(oneHourAgo, now);
       
-      const metrics: ApplicationMetrics = {
+      const metrics: ApplicationMetrics = {;
         timestamp: now,
         requests: requestMetrics,
         users: userMetrics,
@@ -204,7 +204,7 @@ export class MetricsCollector {
       
       return metrics;
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to collect application metrics', error);
       throw error;
     }
@@ -222,8 +222,8 @@ export class MetricsCollector {
         .select('id, created_at, is_active');
       
       const totalClients = clientsData?.length || 0;
-      const activeClients = clientsData?.filter(c => c.is_active).length || 0;
-      const newClients = clientsData?.filter(c => 
+      const activeClients = clientsData?.filter((c: any) => c.is_active).length || 0;
+      const newClients = clientsData?.filter((c: any) => ;
         new Date(c.created_at).getTime() > oneDayAgo
       ).length || 0;
       
@@ -234,11 +234,11 @@ export class MetricsCollector {
         .gte('created_at', new Date(oneDayAgo).toISOString());
       
       const workflowsCreated = workflowsData?.length || 0;
-      const workflowsCompleted = workflowsData?.filter(w => w.status === 'completed').length || 0;
-      const workflowsFailed = workflowsData?.filter(w => w.status === 'failed').length || 0;
+      const workflowsCompleted = workflowsData?.filter((w: any) => w.status === 'completed').length || 0;
+      const workflowsFailed = workflowsData?.filter((w: any) => w.status === 'failed').length || 0;
       
-      const completedWorkflows = workflowsData?.filter(w => w.completed_at) || [];
-      const avgDuration = completedWorkflows.length > 0 
+      const completedWorkflows = workflowsData?.filter((w: any) => w.completed_at) || [];
+      const avgDuration = completedWorkflows.length > 0 ;
         ? completedWorkflows.reduce((sum, w) => {
             const duration = new Date(w.completed_at).getTime() - new Date(w.created_at).getTime();
             return sum + duration;
@@ -252,10 +252,10 @@ export class MetricsCollector {
         .gte('created_at', new Date(oneDayAgo).toISOString());
       
       const campaignsCreated = campaignsData?.length || 0;
-      const activeCampaigns = campaignsData?.filter(c => c.status === 'active').length || 0;
-      const completedCampaigns = campaignsData?.filter(c => c.status === 'completed').length || 0;
+      const activeCampaigns = campaignsData?.filter((c: any) => c.status === 'active').length || 0;
+      const completedCampaigns = campaignsData?.filter((c: any) => c.status === 'completed').length || 0;
       
-      const metrics: BusinessMetrics = {
+      const metrics: BusinessMetrics = {;
         timestamp: now,
         clients: {
           total: totalClients,
@@ -273,7 +273,7 @@ export class MetricsCollector {
           created: campaignsCreated,
           completed: completedCampaigns
         },
-        revenue: {
+        revenue: {},
           // Would be populated from billing system
         }
       };
@@ -288,14 +288,14 @@ export class MetricsCollector {
       
       return metrics;
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to collect business metrics', error);
       throw error;
     }
   }
   
   // Helper methods for specific metric types
-  private async getRequestMetrics(startTime: number, endTime: number) {
+  private async getRequestMetrics(startTime: number, endTime: number) : Promise<void> {
     // This would typically come from request logging middleware
     // For now, return mock data
     return {
@@ -308,7 +308,7 @@ export class MetricsCollector {
     };
   }
   
-  private async getUserMetrics(startTime: number, endTime: number) {
+  private async getUserMetrics(startTime: number, endTime: number) : Promise<void> {
     const { data: sessions } = await this.supabase
       .from('user_sessions')
       .select('user_id, created_at, is_active')
@@ -321,22 +321,22 @@ export class MetricsCollector {
     
     return {
       active: sessions?.length || 0,
-      online: sessions?.filter(s => s.is_active).length || 0,
+      online: sessions?.filter((s: any) => s.is_active).length || 0,
       newSignups: newUsers?.length || 0
     };
   }
   
-  private async getAIMetrics(startTime: number, endTime: number) {
+  private async getAIMetrics(startTime: number, endTime: number) : Promise<void> {
     const { data: generations } = await this.supabase
       .from('ai_generations')
       .select('status, total_tokens, cost_usd')
       .gte('created_at', new Date(startTime).toISOString());
     
     const total = generations?.length || 0;
-    const successful = generations?.filter(g => g.status === 'success').length || 0;
+    const successful = generations?.filter((g: any) => g.status === 'success').length || 0;
     const failed = total - successful;
     const totalCost = generations?.reduce((sum, g) => sum + (g.cost_usd || 0), 0) || 0;
-    const avgTokens = total > 0 
+    const avgTokens = total > 0 ;
       ? (generations?.reduce((sum, g) => sum + (g.total_tokens || 0), 0) || 0) / total
       : 0;
     
@@ -349,7 +349,7 @@ export class MetricsCollector {
     };
   }
   
-  private async getDatabaseMetrics() {
+  private async getDatabaseMetrics() : Promise<void> {
     // These would come from database monitoring
     return {
       connections: 0,
@@ -359,11 +359,11 @@ export class MetricsCollector {
     };
   }
   
-  private async getErrorMetrics(startTime: number, endTime: number) {
+  private async getErrorMetrics(startTime: number, endTime: number) : Promise<void> {
     // This would come from error logging
     return {
       total: 0,
-      byType: {},
+      byType: {}
       byRoute: {}
     };
   }
@@ -398,7 +398,7 @@ export class MetricsCollector {
       const { error } = await this.supabase
         .from('performance_metrics')
         .insert(
-          buffer.map(metric => ({
+          buffer.map((metric: any) => ({
             metric_name: `${type}_metrics`,
             metric_type: 'gauge',
             value: JSON.stringify(metric).length, // Store size as value
@@ -423,7 +423,7 @@ export class MetricsCollector {
       // Clear buffer
       this.metricsBuffer.set(type, []);
       
-    } catch (error) {
+    } catch (error: any) {
       logger.error(`Failed to flush ${type} metrics`, error);
     }
   }
@@ -434,7 +434,7 @@ export class MetricsCollector {
       try {
         const data = await this.redis.get(`metrics:${type}:latest`);
         return data ? JSON.parse(data) : null;
-      } catch (error) {
+      } catch (error: any) {
         logger.warn(`Failed to get latest ${type} metrics from Redis`, error);
       }
     }
@@ -470,9 +470,9 @@ export class MetricsCollector {
   
   // Metrics dashboard data
   async getDashboardData(): Promise<{
-    system: SystemMetrics | null;
+    system: SystemMetrics | null;,
     application: ApplicationMetrics | null;
-    business: BusinessMetrics | null;
+    business: BusinessMetrics | null;,
     alerts: Array<{ type: string; message: string; severity: 'low' | 'medium' | 'high' | 'critical' }>;
   }> {
     const [system, application, business] = await Promise.all([
@@ -494,7 +494,7 @@ export class MetricsCollector {
   
   private generateAlerts(system: any, application: any, business: any): Array<{
     type: string;
-    message: string;
+    message: string;,
     severity: 'low' | 'medium' | 'high' | 'critical';
   }> {
     const alerts = [];
@@ -543,7 +543,7 @@ export class MetricsCollector {
   // Start automated collection
   startAutomatedCollection(intervals: {
     system: number;
-    application: number;
+    application: number;,
     business: number;
   } = {
     system: 30000,     // 30 seconds
@@ -551,22 +551,22 @@ export class MetricsCollector {
     business: 300000   // 5 minutes
   }): void {
     // System metrics
-    const systemHandle = setInterval(() => {
-      this.collectSystemMetrics().catch(error => {
+    const systemHandle = setInterval(() => {;
+      this.collectSystemMetrics().catch(error => {;
         logger.error('Failed to collect system metrics', error);
       });
     }, intervals.system);
     
     // Application metrics
-    const appHandle = setInterval(() => {
-      this.collectApplicationMetrics().catch(error => {
+    const appHandle = setInterval(() => {;
+      this.collectApplicationMetrics().catch(error => {;
         logger.error('Failed to collect application metrics', error);
       });
     }, intervals.application);
     
     // Business metrics
-    const businessHandle = setInterval(() => {
-      this.collectBusinessMetrics().catch(error => {
+    const businessHandle = setInterval(() => {;
+      this.collectBusinessMetrics().catch(error => {;
         logger.error('Failed to collect business metrics', error);
       });
     }, intervals.business);
@@ -579,7 +579,7 @@ export class MetricsCollector {
   // Stop collection and cleanup
   async stop(): Promise<void> {
     // Clear intervals
-    this.intervalHandles.forEach(handle => clearInterval(handle));
+    this.intervalHandles.forEach((handle: any) => clearInterval(handle));
     this.intervalHandles = [];
     
     // Flush remaining metrics
@@ -597,7 +597,7 @@ export class MetricsCollector {
 // Singleton instance
 let metricsInstance: MetricsCollector | null = null;
 
-export const getMetricsCollector = (): MetricsCollector => {
+export const getMetricsCollector = (): MetricsCollector => {;
   if (!metricsInstance) {
     metricsInstance = new MetricsCollector();
   }
@@ -605,7 +605,7 @@ export const getMetricsCollector = (): MetricsCollector => {
 };
 
 // Initialize metrics collection
-export const initializeMetrics = (): MetricsCollector => {
+export const initializeMetrics = (): MetricsCollector => {;
   const collector = getMetricsCollector();
   collector.startAutomatedCollection();
   return collector;

@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 
@@ -132,7 +133,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     }
 
     return res.json({
-      data: {
+      data: {},
         id: brief.id,
         name: brief.name,
         parsing_status: status,
@@ -142,21 +143,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
         completeness_score: completenessScore,
         completeness_details: completenessDetails,
         confidence_scores: brief.confidence_scores,
-        related_counts: {
+        related_counts: {},
           motivations: motivationsCount || 0,
-          content_variations: contentVariationsCount || 0,
-        },
+          content_variations: contentVariationsCount || 0},
         next_steps: nextSteps,
         last_updated: brief.updated_at,
-        timestamps: {
+        timestamps: {},
           created: brief.created_at,
           updated: brief.updated_at,
-          parsed: brief.parsed_at,
-        }
+          parsed: brief.parsed_at}
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Brief status API error:', error);
     return res.status(500).json({ 

@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 
@@ -22,7 +23,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     // Only log errors in development to prevent information leakage
     if (process.env.NODE_ENV === 'development') {
@@ -113,7 +114,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
   const { data: analytics } = await analyticsQuery;
 
   // Filter analytics to only include executions that used this copy asset
-  const relevantAnalytics = analytics?.filter(analytic => {
+  const relevantAnalytics = analytics?.filter((analytic: any) => {
     const execution = analytic.executions;
     if (!execution || !execution.metadata) return false;
     
@@ -162,33 +163,29 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
   }
 
   return res.json({
-    data: {
-      asset_info: {
+    data: {},
+      asset_info: {},
         id: asset.id,
         title: asset.title,
         type: asset.type,
         platform: asset.platform,
-        created_at: asset.created_at,
-      },
-      current_scores: {
+        created_at: asset.created_at},
+      current_scores: {},
         performance_score: asset.performance_score,
-        brand_compliance_score: asset.brand_compliance_score,
-      },
+        brand_compliance_score: asset.brand_compliance_score},
       metrics: performanceMetrics,
-      usage_stats: {
+      usage_stats: {},
         total_campaigns: usageStats?.length || 0,
-        active_campaigns: usageStats?.filter(u => u.status === 'active').length || 0,
-        campaigns: usageStats || [],
-      },
+        active_campaigns: usageStats?.filter((u: any) => u.status === 'active').length || 0,
+        campaigns: usageStats || []},
       comparative_performance: comparativePerformance,
       trend_analysis: trendAnalysis,
       insights,
       predictions,
-      period: {
+      period: {},
         start_date: startDate.toISOString(),
         end_date: endDate.toISOString(),
-        period_label: period,
-      }
+        period_label: period}
     }
   });
 }
@@ -226,8 +223,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
 
   // Update performance scores
   const updateData: any = {
-    updated_at: new Date().toISOString(),
-  };
+    updated_at: new Date().toISOString()};
 
   if (performance_score !== undefined) {
     updateData.performance_score = Math.max(0, Math.min(100, performance_score));
@@ -247,13 +243,12 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
 
     updateData.metadata = {
       ...currentAsset?.metadata,
-      performance_update: {
+      performance_update: {},
         timestamp: new Date().toISOString(),
         updated_by: user.id,
         engagement_metrics,
         conversion_metrics,
-        notes,
-      }
+        notes}
     };
   }
 
@@ -286,12 +281,11 @@ function aggregatePerformanceMetrics(analytics: any[]): any {
     ctr: 0,
     cpc: 0,
     cpm: 0,
-    roas: 0,
-  };
+    roas: 0};
 
   if (analytics.length === 0) return totals;
 
-  analytics.forEach(metric => {
+  analytics.forEach((metric: any) => {
     totals.impressions += metric.impressions || 0;
     totals.clicks += metric.clicks || 0;
     totals.conversions += metric.conversions || 0;
@@ -312,12 +306,11 @@ function calculateComparativePerformance(asset: any, similarAssets: any[]): any 
     return {
       performance_percentile: null,
       compliance_percentile: null,
-      ranking: null,
-    };
+      ranking: null};
   }
 
-  const performanceScores = similarAssets.map(a => a.performance_score).filter(s => s !== null);
-  const complianceScores = similarAssets.map(a => a.brand_compliance_score).filter(s => s !== null);
+  const performanceScores = similarAssets.map((a: any) => a.performance_score).filter((s: any) => s !== null);
+  const complianceScores = similarAssets.map((a: any) => a.brand_compliance_score).filter((s: any) => s !== null);
 
   const performancePercentile = asset.performance_score 
     ? calculatePercentile(performanceScores, asset.performance_score)
@@ -332,12 +325,11 @@ function calculateComparativePerformance(asset: any, similarAssets: any[]): any 
     compliance_percentile: compliancePercentile,
     total_similar_assets: similarAssets.length,
     avg_performance_score: performanceScores.length > 0 ? performanceScores.reduce((a, b) => a + b, 0) / performanceScores.length : null,
-    avg_compliance_score: complianceScores.length > 0 ? complianceScores.reduce((a, b) => a + b, 0) / complianceScores.length : null,
-  };
+    avg_compliance_score: complianceScores.length > 0 ? complianceScores.reduce((a, b) => a + b, 0) / complianceScores.length : null};
 }
 
 function calculatePercentile(scores: number[], value: number): number {
-  const belowCount = scores.filter(score => score < value).length;
+  const belowCount = scores.filter((score: any) => score < value).length;
   return Math.round((belowCount / scores.length) * 100);
 }
 
@@ -346,8 +338,7 @@ function analyzeTrend(analytics: any[]): any {
     return {
       direction: 'insufficient_data',
       change_percentage: 0,
-      confidence: 0,
-    };
+      confidence: 0};
   }
 
   // Sort by date
@@ -411,24 +402,20 @@ function generatePerformancePredictions(metrics: any, trend: any): any {
       next_7_days: null,
       next_30_days: null,
       confidence: 0,
-      notes: 'Insufficient data for predictions',
-    };
+      notes: 'Insufficient data for predictions'};
   }
 
   const currentCTR = metrics.ctr;
   const trendMultiplier = 1 + (trend.change_percentage / 100);
 
   return {
-    next_7_days: {
+    next_7_days: {},
       expected_ctr: Math.round(currentCTR * Math.pow(trendMultiplier, 0.25) * 100) / 100,
-      confidence: trend.confidence * 0.8,
-    },
-    next_30_days: {
+      confidence: trend.confidence * 0.8},
+    next_30_days: {},
       expected_ctr: Math.round(currentCTR * trendMultiplier * 100) / 100,
-      confidence: trend.confidence * 0.6,
-    },
-    methodology: 'Predictions based on historical trend analysis and performance indicators',
-  };
+      confidence: trend.confidence * 0.6},
+    methodology: 'Predictions based on historical trend analysis and performance indicators'};
 }
 
 export default withAuth(withSecurityHeaders(handler));

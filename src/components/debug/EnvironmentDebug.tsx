@@ -1,5 +1,5 @@
 import React from 'react';
-'use client';
+('use client');
 
 import { useEffect, useState } from 'react';
 import { env, isDemo } from '@/lib/env';
@@ -20,17 +20,14 @@ export function EnvironmentDebug() {
     'Supabase URL': env.NEXT_PUBLIC_SUPABASE_URL ? '✅ Set' : '❌ Not set',
     'Supabase Anon Key': env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? '✅ Set' : '❌ Not set',
     'API URL': env.NEXT_PUBLIC_API_URL || '❌ Not set',
-    'Environment': env.NODE_ENV,
+    Environment: env.NODE_ENV,
   };
 
   return (
     <div className="fixed bottom-4 right-4 bg-gray-900 text-white p-4 rounded-lg shadow-xl max-w-sm z-50">
       <div className="flex justify-between items-center mb-2">
         <h3 className="font-bold">Environment Debug</h3>
-        <button 
-          onClick={() => setShowDebug(false)}
-          className="text-gray-400 hover:text-white"
-        >
+        <button onClick={() => setShowDebug(false)} className="text-gray-400 hover:text-white">
           ✕
         </button>
       </div>

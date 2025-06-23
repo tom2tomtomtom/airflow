@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -9,8 +10,7 @@ const InsightsFilterSchema = z.object({
   client_id: z.string().uuid(),
   date_from: z.string().optional(),
   date_to: z.string().optional(),
-  insight_types: z.array(z.enum(['performance', 'optimization', 'trends', 'anomalies', 'predictions'])).default(['performance', 'optimization', 'trends']),
-});
+  insight_types: z.array(z.enum(['performance', 'optimization', 'trends', 'anomalies', 'predictions'])).default(['performance', 'optimization', 'trends'])});
 
 interface AnalyticsInsights {
   performance_insights: Array<{
@@ -32,7 +32,7 @@ interface AnalyticsInsights {
     priority_score: number;
     actions: string[];
   }>;
-  trend_analysis: {
+  trend_analysis: {},
     emerging_trends: Array<{
       trend: string;
       growth_rate: number;
@@ -54,8 +54,8 @@ interface AnalyticsInsights {
     description: string;
     possible_causes: string[];
   }>;
-  predictions: {
-    next_30_days: {
+  predictions: {},
+    next_30_days: {},
       expected_impressions: number;
       expected_conversions: number;
       expected_spend: number;
@@ -69,7 +69,7 @@ interface AnalyticsInsights {
       expected_improvement: string;
     }>;
   };
-  content_performance: {
+  content_performance: {},
     top_performing_content_types: Array<{
       type: string;
       avg_engagement: number;
@@ -83,7 +83,7 @@ interface AnalyticsInsights {
       improvement_suggestions: string[];
     }>;
   };
-  competitive_insights: {
+  competitive_insights: {},
     market_share_estimate: number;
     competitive_position: 'leading' | 'competitive' | 'lagging';
     opportunities: string[];
@@ -101,7 +101,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
   try {
     return handleGet(req, res, user);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Analytics Insights API error:', error);
     return res.status(500).json({ 
@@ -140,8 +140,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
 
   return res.json({
     success: true,
-    data: insights,
-  });
+    data: insights});
 }
 
 async function generateAnalyticsInsights(
@@ -179,8 +178,7 @@ async function generateAnalyticsInsights(
     anomaly_detection,
     predictions,
     content_performance,
-    competitive_insights,
-  };
+    competitive_insights};
 }
 
 async function getClientDataForInsights(clientId: string): Promise<any> {
@@ -223,8 +221,7 @@ async function getClientDataForInsights(clientId: string): Promise<any> {
     campaigns: campaigns || [],
     analytics: analytics || [],
     videoGenerations: videoGenerations || [],
-    approvals: approvals || [],
-  };
+    approvals: approvals || []};
 }
 
 function generatePerformanceInsights(data: any): any[] {
@@ -490,7 +487,7 @@ function generatePredictions(data: any): any {
   const avgDailySpend = recentData.reduce((sum: number, item: any) => sum + parseFloat(item.spend || '0'), 0) / recentData.length;
 
   return {
-    next_30_days: {
+    next_30_days: {},
       expected_impressions: Math.round(avgDailyImpressions * 30 * 1.05), // 5% growth assumption
       expected_conversions: Math.round(avgDailyConversions * 30 * 1.03), // 3% growth assumption
       expected_spend: Math.round(avgDailySpend * 30 * 1.02 * 100) / 100, // 2% growth assumption

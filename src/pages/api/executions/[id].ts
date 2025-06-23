@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -10,8 +11,7 @@ const ExecutionUpdateSchema = z.object({
   render_url: z.string().optional(),
   metadata: z.any().optional(),
   error_message: z.string().optional(),
-  completion_percentage: z.number().min(0).max(100).optional(),
-});
+  completion_percentage: z.number().min(0).max(100).optional()});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -33,7 +33,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Execution API error:', error);
     return res.status(500).json({ 
@@ -171,16 +171,14 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, e
       from: existingExecution.status,
       to: updateData.status,
       changed_by: user.id,
-      timestamp: new Date().toISOString(),
-    });
+      timestamp: new Date().toISOString()});
   }
 
   const { data: execution, error } = await supabase
     .from('executions')
     .update({
       ...updateData,
-      updated_at: new Date().toISOString(),
-    })
+      updated_at: new Date().toISOString()})
     .eq('id', executionId)
     .select(`
       *,
@@ -246,13 +244,11 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
     .from('executions')
     .update({
       status: 'cancelled',
-      metadata: {
+      metadata: {},
         ...(existingExecution as any).metadata,
         deleted_at: new Date().toISOString(),
-        deleted_by: user.id,
-      },
-      updated_at: new Date().toISOString(),
-    })
+        deleted_by: user.id},
+      updated_at: new Date().toISOString()})
     .eq('id', executionId);
 
   if (error) {
@@ -262,12 +258,10 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
 
   await logExecutionEvent(executionId, 'deleted', {
     deleted_by: user.id,
-    timestamp: new Date().toISOString(),
-  });
+    timestamp: new Date().toISOString()});
 
   return res.status(200).json({ 
-    message: 'Execution deleted successfully',
-  });
+    message: 'Execution deleted successfully'});
 }
 
 // Helper functions
@@ -302,7 +296,7 @@ async function getExecutionLogs(executionId: string): Promise<any[]> {
     }
 
     return logs;
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting execution logs:', error);
     return [];
@@ -332,9 +326,8 @@ async function getExecutionAnalytics(executionId: string): Promise<any> {
     return {
       has_data: true,
       summary: totals,
-      daily_data: analytics,
-    };
-  } catch (error) {
+      daily_data: analytics};
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting execution analytics:', error);
     return { has_data: false, error: 'Failed to retrieve analytics' };
@@ -377,8 +370,7 @@ function calculateExecutionProgress(execution: any): any {
     percentage: progressPercentage,
     estimated_completion: estimatedCompletion?.toISOString(),
     time_elapsed_seconds: Math.round(timeElapsed),
-    status_message: getStatusMessage(execution.status, progressPercentage),
-  };
+    status_message: getStatusMessage(execution.status, progressPercentage)};
 }
 
 async function getRelatedExecutions(matrixId: string, excludeId: string): Promise<any[]> {
@@ -392,7 +384,7 @@ async function getRelatedExecutions(matrixId: string, excludeId: string): Promis
       .limit(5);
 
     return executions || [];
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting related executions:', error);
     return [];
@@ -464,7 +456,7 @@ async function logExecutionEvent(executionId: string, eventType: string, details
   try {
     // In a full implementation, this would log to an execution_events table
     process.env.NODE_ENV === 'development' && console.log('Logging execution event:', event);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error logging execution event:', error);
   }
@@ -475,7 +467,7 @@ async function triggerExecutionNotification(execution: any, status: string): Pro
     // In a full implementation, this would trigger real-time notifications
     // via WebSocket or Server-Sent Events
     process.env.NODE_ENV === 'development' && console.log('Triggering execution notification for:', execution.id);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error triggering execution notification:', error);
   }
@@ -488,8 +480,7 @@ function getStatusMessage(status: string, percentage: number): string {
     completed: 'Execution completed successfully',
     failed: 'Execution failed',
     cancelled: 'Execution cancelled',
-    scheduled: 'Scheduled for future execution',
-  };
+    scheduled: 'Scheduled for future execution'};
 
   return messages[status] || 'Unknown status';
 }

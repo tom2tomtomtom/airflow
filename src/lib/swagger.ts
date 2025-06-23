@@ -1,217 +1,159 @@
 // Minimal OpenAPI specification for testing
 export const swaggerSpec = {
   openapi: '3.0.0',
-  info: {
+  info: {},
     title: 'AIRWAVE API',
     version: '1.0.0',
-    description: 'API documentation for AIRWAVE platform',
-  },
+    description: 'API documentation for AIRWAVE platform'},
   servers: [
     {
       url: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000',
-      description: 'Development server',
-    },
+      description: 'Development server'},
   ],
-  components: {
-    securitySchemes: {
-      bearerAuth: {
+  components: {},
+    securitySchemes: {},
+      bearerAuth: {},
         type: 'http',
         scheme: 'bearer',
-        bearerFormat: 'JWT',
-      },
-      cookieAuth: {
+        bearerFormat: 'JWT'},
+      cookieAuth: {},
         type: 'apiKey',
         in: 'cookie',
-        name: 'auth-token',
-      },
-    },
-    schemas: {
-      Error: {
+        name: 'auth-token'}},
+    schemas: {},
+      Error: {},
         type: 'object',
-        properties: {
-          success: {
+        properties: {},
+          success: {},
             type: 'boolean',
-            example: false,
-          },
-          error: {
+            example: false},
+          error: {},
             type: 'object',
-            properties: {
-              code: {
+            properties: {},
+              code: {},
                 type: 'string',
-                example: 'VALIDATION_ERROR',
-              },
-              message: {
+                example: 'VALIDATION_ERROR'},
+              message: {},
                 type: 'string',
-                example: 'Invalid input data',
-              },
-            },
-          },
-        },
-      },
-      Success: {
+                example: 'Invalid input data'}}}}},
+      Success: {},
         type: 'object',
-        properties: {
-          success: {
+        properties: {},
+          success: {},
             type: 'boolean',
-            example: true,
-          },
-          data: {
+            example: true},
+          data: {},
+            type: 'object'},
+          meta: {},
             type: 'object',
-          },
-          meta: {
-            type: 'object',
-            properties: {
-              timestamp: {
+            properties: {},
+              timestamp: {},
                 type: 'string',
-                format: 'date-time',
-              },
-              pagination: {
+                format: 'date-time'},
+              pagination: {},
                 type: 'object',
-                properties: {
+                properties: {},
                   page: { type: 'integer' },
                   limit: { type: 'integer' },
                   total: { type: 'integer' },
-                  totalPages: { type: 'integer' },
-                },
-              },
-            },
-          },
-        },
-      },
-      Client: {
+                  totalPages: { type: 'integer' }}}}}}},
+      Client: {},
         type: 'object',
-        properties: {
-          id: {
+        properties: {},
+          id: {},
             type: 'string',
             format: 'uuid',
-            example: '123e4567-e89b-12d3-a456-426614174000',
-          },
-          name: {
+            example: '123e4567-e89b-12d3-a456-426614174000'},
+          name: {},
             type: 'string',
-            example: 'Acme Corporation',
-          },
-          email: {
+            example: 'Acme Corporation'},
+          email: {},
             type: 'string',
             format: 'email',
-            example: 'contact@acme.com',
-          },
-          industry: {
+            example: 'contact@acme.com'},
+          industry: {},
             type: 'string',
-            example: 'Technology',
-          },
-          brandGuidelines: {
+            example: 'Technology'},
+          brandGuidelines: {},
             type: 'object',
-            properties: {
-              colors: {
+            properties: {},
+              colors: {},
                 type: 'array',
                 items: { type: 'string' },
-                example: ['#FF0000', '#00FF00'],
-              },
-              fonts: {
+                example: ['#FF0000', '#00FF00']},
+              fonts: {},
                 type: 'array',
                 items: { type: 'string' },
-                example: ['Arial', 'Helvetica'],
-              },
-              tone: {
+                example: ['Arial', 'Helvetica']},
+              tone: {},
                 type: 'string',
-                example: 'Professional and friendly',
-              },
-            },
-          },
-          createdAt: {
+                example: 'Professional and friendly'}}},
+          createdAt: {},
             type: 'string',
-            format: 'date-time',
-          },
-          updatedAt: {
+            format: 'date-time'},
+          updatedAt: {},
             type: 'string',
-            format: 'date-time',
-          },
-        },
-      },
-      Asset: {
+            format: 'date-time'}}},
+      Asset: {},
         type: 'object',
-        properties: {
-          id: {
+        properties: {},
+          id: {},
             type: 'string',
-            format: 'uuid',
-          },
-          name: {
+            format: 'uuid'},
+          name: {},
             type: 'string',
-            example: 'Product Hero Image',
-          },
-          type: {
+            example: 'Product Hero Image'},
+          type: {},
             type: 'string',
             enum: ['image', 'video', 'audio', 'document'],
-            example: 'image',
-          },
-          url: {
+            example: 'image'},
+          url: {},
             type: 'string',
             format: 'uri',
-            example: 'https://cdn.airwave.app/assets/hero-image.jpg',
-          },
-          thumbnailUrl: {
+            example: 'https://cdn.airwave.app/assets/hero-image.jpg'},
+          thumbnailUrl: {},
             type: 'string',
-            format: 'uri',
-          },
-          size: {
+            format: 'uri'},
+          size: {},
             type: 'integer',
-            example: 1024000,
-          },
-          mimeType: {
+            example: 1024000},
+          mimeType: {},
             type: 'string',
-            example: 'image/jpeg',
-          },
-          clientId: {
+            example: 'image/jpeg'},
+          clientId: {},
             type: 'string',
-            format: 'uuid',
-          },
-          tags: {
+            format: 'uuid'},
+          tags: {},
             type: 'array',
             items: { type: 'string' },
-            example: ['hero', 'product', 'marketing'],
-          },
-          createdAt: {
+            example: ['hero', 'product', 'marketing']},
+          createdAt: {},
             type: 'string',
-            format: 'date-time',
-          },
-        },
-      },
-    },
-  },
+            format: 'date-time'}}}}},
   security: [
     {
-      bearerAuth: [],
-    },
+      bearerAuth: []},
     {
-      cookieAuth: [],
-    },
+      cookieAuth: []},
   ],
-  paths: {
+  paths: {},
     '/api/health': {
-      get: {
+      get: {},
         summary: 'Health check',
         description: 'Check if the API is running and healthy',
         tags: ['System'],
-        responses: {
-          200: {
+        responses: {},
+          200: {},
             description: 'API is healthy',
-            content: {
+            content: {},
               'application/json': {
-                schema: {
+                schema: {},
                   type: 'object',
-                  properties: {
+                  properties: {},
                     status: { type: 'string', example: 'ok' },
-                    timestamp: { type: 'string', format: 'date-time' },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
+                    timestamp: { type: 'string', format: 'date-time' }}}}}}}}},
     '/api/clients': {
-      get: {
+      get: {},
         summary: 'List all clients',
         description: 'Retrieve a paginated list of clients with optional filtering and sorting',
         tags: ['Clients'],
@@ -242,18 +184,18 @@ export const swaggerSpec = {
             description: 'Number of clients to skip'
           }
         ],
-        responses: {
-          200: {
+        responses: {},
+          200: {},
             description: 'Successfully retrieved clients',
-            content: {
+            content: {},
               'application/json': {
-                schema: {
+                schema: {},
                   allOf: [
                     { $ref: '#/components/schemas/Success' },
                     {
                       type: 'object',
-                      properties: {
-                        data: {
+                      properties: {},
+                        data: {},
                           type: 'array',
                           items: { $ref: '#/components/schemas/Client' }
                         }
@@ -264,9 +206,9 @@ export const swaggerSpec = {
               }
             }
           },
-          401: {
+          401: {},
             description: 'Unauthorized',
-            content: {
+            content: {},
               'application/json': {
                 schema: { $ref: '#/components/schemas/Error' }
               }
@@ -274,19 +216,19 @@ export const swaggerSpec = {
           }
         }
       },
-      post: {
+      post: {},
         summary: 'Create a new client',
         description: 'Create a new client with brand guidelines and contact information',
         tags: ['Clients'],
         security: [{ bearerAuth: [] }, { cookieAuth: [] }],
-        requestBody: {
+        requestBody: {},
           required: true,
-          content: {
+          content: {},
             'application/json': {
-              schema: {
+              schema: {},
                 type: 'object',
                 required: ['name', 'industry'],
-                properties: {
+                properties: {},
                   name: { type: 'string', example: 'Acme Corporation' },
                   industry: { type: 'string', example: 'Technology' },
                   description: { type: 'string', example: 'Leading technology company' },
@@ -296,17 +238,17 @@ export const swaggerSpec = {
             }
           }
         },
-        responses: {
-          201: {
+        responses: {},
+          201: {},
             description: 'Client created successfully',
-            content: {
+            content: {},
               'application/json': {
-                schema: {
+                schema: {},
                   allOf: [
                     { $ref: '#/components/schemas/Success' },
                     {
                       type: 'object',
-                      properties: {
+                      properties: {},
                         data: { $ref: '#/components/schemas/Client' }
                       }
                     }
@@ -315,9 +257,9 @@ export const swaggerSpec = {
               }
             }
           },
-          400: {
+          400: {},
             description: 'Validation error',
-            content: {
+            content: {},
               'application/json': {
                 schema: { $ref: '#/components/schemas/Error' }
               }
@@ -327,7 +269,7 @@ export const swaggerSpec = {
       }
     },
     '/api/assets': {
-      get: {
+      get: {},
         summary: 'List all assets',
         description: 'Retrieve a paginated list of assets with filtering and sorting options',
         tags: ['Assets'],
@@ -358,18 +300,18 @@ export const swaggerSpec = {
             description: 'Filter assets by type'
           }
         ],
-        responses: {
-          200: {
+        responses: {},
+          200: {},
             description: 'Successfully retrieved assets',
-            content: {
+            content: {},
               'application/json': {
-                schema: {
+                schema: {},
                   allOf: [
                     { $ref: '#/components/schemas/Success' },
                     {
                       type: 'object',
-                      properties: {
-                        data: {
+                      properties: {},
+                        data: {},
                           type: 'array',
                           items: { $ref: '#/components/schemas/Asset' }
                         }
@@ -382,6 +324,4 @@ export const swaggerSpec = {
           }
         }
       }
-    },
-  },
-};
+    }}};

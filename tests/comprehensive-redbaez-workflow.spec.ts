@@ -1,5 +1,5 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { test, expect } from '@playwright/test';
-import path from 'path';
 
 /**
  * Comprehensive End-to-End RedBaez AIRWAVE Workflow Test
@@ -161,6 +161,7 @@ class RedBaezWorkflowTester {
       await this.step12_VerifySuccess();
 
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('🚨 Workflow failed with error:', error);
     }
 
@@ -180,6 +181,7 @@ class RedBaezWorkflowTester {
       const title = await this.page.title();
       this.updateStep(1, 'completed', `Page loaded: "${title}"`);
     } catch (error) {
+    const message = getErrorMessage(error);
       this.updateStep(1, 'failed', undefined, error.message);
       throw error;
     }
@@ -234,6 +236,7 @@ class RedBaezWorkflowTester {
         throw new Error('No brief input method found on page');
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       this.updateStep(2, 'failed', undefined, error.message);
       throw error;
     }
@@ -278,6 +281,7 @@ class RedBaezWorkflowTester {
         this.updateStep(3, 'completed', 'No submit button found - brief may auto-process');
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       this.updateStep(3, 'failed', undefined, error.message);
     }
   }
@@ -328,6 +332,7 @@ class RedBaezWorkflowTester {
         }
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       this.updateStep(4, 'failed', undefined, error.message);
     }
   }
@@ -374,6 +379,7 @@ class RedBaezWorkflowTester {
         }
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       this.updateStep(5, 'failed', undefined, error.message);
     }
   }
@@ -418,6 +424,7 @@ class RedBaezWorkflowTester {
         this.updateStep(6, 'completed', 'Navigated to assets page directly');
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       this.updateStep(6, 'failed', undefined, error.message);
     }
   }
@@ -457,6 +464,7 @@ class RedBaezWorkflowTester {
         this.updateStep(7, 'completed', 'Navigated to templates via direct URL');
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       this.updateStep(7, 'failed', undefined, error.message);
     }
   }
@@ -495,6 +503,7 @@ class RedBaezWorkflowTester {
         }
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       this.updateStep(8, 'failed', undefined, error.message);
     }
   }
@@ -529,6 +538,7 @@ class RedBaezWorkflowTester {
         this.updateStep(9, 'failed', undefined, 'No selectable templates found');
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       this.updateStep(9, 'failed', undefined, error.message);
     }
   }
@@ -576,6 +586,7 @@ class RedBaezWorkflowTester {
         }
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       this.updateStep(10, 'failed', undefined, error.message);
     }
   }
@@ -621,6 +632,7 @@ class RedBaezWorkflowTester {
         }
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       this.updateStep(11, 'failed', undefined, error.message);
     }
   }
@@ -644,6 +656,7 @@ class RedBaezWorkflowTester {
         this.updateStep(12, 'failed', undefined, `Low success rate: ${successRate.toFixed(1)}%`);
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       this.updateStep(12, 'failed', undefined, error.message);
     }
   }
@@ -726,6 +739,7 @@ test.describe('Comprehensive RedBaez AIRWAVE Workflow', () => {
         results.push({ page: pagePath, accessible: true, loadTime });
         console.log(`✅ ${pagePath} - ${loadTime}ms`);
       } catch (error) {
+    const message = getErrorMessage(error);
         const loadTime = Date.now() - startTime;
         results.push({ page: pagePath, accessible: false, loadTime });
         console.log(`❌ ${pagePath} - Failed (${loadTime}ms)`);

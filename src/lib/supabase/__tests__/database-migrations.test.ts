@@ -13,16 +13,14 @@ const mockSchemaValidator = {
   validateConstraints: jest.fn(),
   validateIndexes: jest.fn(),
   validateForeignKeys: jest.fn(),
-  validateRowLevelSecurity: jest.fn(),
-};
+  validateRowLevelSecurity: jest.fn()};
 
 // Mock migration runner
 const mockMigrationRunner = {
   runMigration: jest.fn(),
   rollbackMigration: jest.fn(),
   getMigrationStatus: jest.fn(),
-  validateMigrationIntegrity: jest.fn(),
-};
+  validateMigrationIntegrity: jest.fn()};
 
 describe('Database Migration Testing', () => {
   beforeEach(() => {
@@ -78,8 +76,7 @@ describe('Database Migration Testing', () => {
         website: { type: 'text', nullable: true },
         created_by: { type: 'uuid', nullable: true, references: 'profiles(id)' },
         created_at: { type: 'timestamptz', nullable: true, default: 'now()' },
-        updated_at: { type: 'timestamptz', nullable: true, default: 'now()' },
-      };
+        updated_at: { type: 'timestamptz', nullable: true, default: 'now()' }};
 
       mockSchemaValidator.validateColumnExists.mockResolvedValue(true);
 
@@ -110,8 +107,7 @@ describe('Database Migration Testing', () => {
         brand_guidelines: { type: 'jsonb', nullable: true },
         confidence_scores: { type: 'jsonb', nullable: true },
         created_at: { type: 'timestamptz', nullable: true, default: 'now()' },
-        updated_at: { type: 'timestamptz', nullable: true, default: 'now()' },
-      };
+        updated_at: { type: 'timestamptz', nullable: true, default: 'now()' }};
 
       mockSchemaValidator.validateColumnExists.mockResolvedValue(true);
 
@@ -201,8 +197,7 @@ describe('Database Migration Testing', () => {
         tablesCreated: 22,
         indexesCreated: 15,
         constraintsAdded: 8,
-        executionTime: 1250,
-      };
+        executionTime: 1250};
 
       mockMigrationRunner.runMigration.mockResolvedValue(migrationResult);
 
@@ -222,8 +217,7 @@ describe('Database Migration Testing', () => {
         tablesDropped: 1,
         columnsRemoved: 0,
         constraintsRemoved: 2,
-        executionTime: 450,
-      };
+        executionTime: 450};
 
       mockMigrationRunner.rollbackMigration.mockResolvedValue(rollbackResult);
 
@@ -248,8 +242,7 @@ describe('Database Migration Testing', () => {
         issues: [],
         warnings: [
           'Table "deprecated_table" exists but is not referenced in current schema',
-        ],
-      };
+        ]};
 
       mockMigrationRunner.validateMigrationIntegrity.mockResolvedValue(integrityCheck);
 
@@ -273,8 +266,7 @@ describe('Database Migration Testing', () => {
           '20250107_add_client_color_columns',
         ],
         pendingMigrations: [],
-        lastMigrationDate: '2025-01-07T10:30:00Z',
-      };
+        lastMigrationDate: '2025-01-07T10:30:00Z'};
 
       mockMigrationRunner.getMigrationStatus.mockResolvedValue(migrationStatus);
 
@@ -294,29 +286,25 @@ describe('Database Migration Testing', () => {
           query: 'SELECT COUNT(*) FROM briefs WHERE client_id NOT IN (SELECT id FROM clients)',
           expected: 0,
           actual: 0,
-          passed: true,
-        },
+          passed: true},
         {
           check: 'orphaned_campaigns',
           query: 'SELECT COUNT(*) FROM campaigns WHERE brief_id NOT IN (SELECT id FROM briefs)',
           expected: 0,
           actual: 0,
-          passed: true,
-        },
+          passed: true},
         {
           check: 'orphaned_assets',
           query: 'SELECT COUNT(*) FROM assets WHERE client_id NOT IN (SELECT id FROM clients)',
           expected: 0,
           actual: 0,
-          passed: true,
-        },
+          passed: true},
         {
           check: 'invalid_user_clients',
           query: 'SELECT COUNT(*) FROM user_clients WHERE user_id NOT IN (SELECT id FROM profiles)',
           expected: 0,
           actual: 0,
-          passed: true,
-        },
+          passed: true},
       ];
 
       for (const check of integrityChecks) {
@@ -332,22 +320,19 @@ describe('Database Migration Testing', () => {
           description: 'All briefs should have valid parsing status',
           validValues: ['pending', 'processing', 'completed', 'failed'],
           invalidCount: 0,
-          passed: true,
-        },
+          passed: true},
         {
           check: 'campaign_status_values',
           description: 'All campaigns should have valid status',
           validValues: ['draft', 'active', 'paused', 'completed', 'archived'],
           invalidCount: 0,
-          passed: true,
-        },
+          passed: true},
         {
           check: 'asset_type_values',
           description: 'All assets should have valid type',
           validValues: ['image', 'video', 'audio', 'document', 'template'],
           invalidCount: 0,
-          passed: true,
-        },
+          passed: true},
       ];
 
       for (const check of consistencyChecks) {
@@ -362,26 +347,22 @@ describe('Database Migration Testing', () => {
           table: 'briefs',
           column: 'objectives',
           validSchema: true,
-          invalidRecords: 0,
-        },
+          invalidRecords: 0},
         {
           table: 'briefs',
           column: 'timeline',
           validSchema: true,
-          invalidRecords: 0,
-        },
+          invalidRecords: 0},
         {
           table: 'templates',
           column: 'structure',
           validSchema: true,
-          invalidRecords: 0,
-        },
+          invalidRecords: 0},
         {
           table: 'profiles',
           column: 'preferences',
           validSchema: true,
-          invalidRecords: 0,
-        },
+          invalidRecords: 0},
       ];
 
       for (const check of jsonSchemaChecks) {
@@ -399,22 +380,19 @@ describe('Database Migration Testing', () => {
           avgExecutionTime: 2.5,
           maxExecutionTime: 15.0,
           threshold: 50.0,
-          passed: true,
-        },
+          passed: true},
         {
           query: 'SELECT b.*, c.name as client_name FROM briefs b JOIN clients c ON b.client_id = c.id',
           avgExecutionTime: 8.2,
           maxExecutionTime: 25.0,
           threshold: 100.0,
-          passed: true,
-        },
+          passed: true},
         {
           query: 'SELECT COUNT(*) FROM campaigns WHERE status = $1 AND created_at > $2',
           avgExecutionTime: 1.8,
           maxExecutionTime: 8.0,
           threshold: 25.0,
-          passed: true,
-        },
+          passed: true},
       ];
 
       for (const metric of performanceMetrics) {
@@ -431,22 +409,19 @@ describe('Database Migration Testing', () => {
           index: 'clients_name_idx',
           usageCount: 1250,
           hitRatio: 0.95,
-          effective: true,
-        },
+          effective: true},
         {
           table: 'briefs',
           index: 'briefs_client_id_idx',
           usageCount: 2100,
           hitRatio: 0.98,
-          effective: true,
-        },
+          effective: true},
         {
           table: 'campaigns',
           index: 'campaigns_status_idx',
           usageCount: 850,
           hitRatio: 0.92,
-          effective: true,
-        },
+          effective: true},
       ];
 
       for (const stat of indexUsageStats) {

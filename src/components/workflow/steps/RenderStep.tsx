@@ -41,27 +41,18 @@ interface RenderJob {
   estimatedTime?: number;
 }
 
-export const RenderStep: React.FC<RenderStepProps> = ({
-  onPrevious,
-  onComplete,
-}) => {
+export const RenderStep: React.FC<RenderStepProps> = ({ onPrevious, onComplete }) => {
   const { state, actions } = useWorkflow();
-  const {
-    briefData,
-    motivations,
-    copyVariations,
-    selectedAssets,
-    selectedTemplate,
-    lastError,
-  } = state;
+  const { briefData, motivations, copyVariations, selectedAssets, selectedTemplate, lastError } =
+    state;
 
   const [renderJobs, setRenderJobs] = useState<RenderJob[]>([]);
   const [isRendering, setIsRendering] = useState(false);
   const [overallProgress, setOverallProgress] = useState(0);
 
   // Get selected data for rendering
-  const selectedMotivations = motivations.filter(m => m.selected);
-  const selectedCopy = copyVariations.filter(c => c.selected);
+  const selectedMotivations = motivations.filter((m: any) => m.selected);
+  const selectedCopy = copyVariations.filter((c: any) => c.selected);
 
   // Initialize render jobs
   useEffect(() => {
@@ -91,20 +82,18 @@ export const RenderStep: React.FC<RenderStepProps> = ({
     // Simulate rendering process
     for (let i = 0; i < renderJobs.length; i++) {
       const job = renderJobs[i];
-      
+
       // Update job status to rendering
-      setRenderJobs(prev => prev.map(j => 
-        j.id === job.id ? { ...j, status: 'rendering' as const } : j
-      ));
+      setRenderJobs(prev =>
+        prev.map((j: any) => (j.id === job.id ? { ...j, status: 'rendering' as const } : j))
+      );
 
       // Simulate rendering progress
       for (let progress = 0; progress <= 100; progress += 10) {
         await new Promise(resolve => setTimeout(resolve, 200));
-        
-        setRenderJobs(prev => prev.map(j => 
-          j.id === job.id ? { ...j, progress } : j
-        ));
-        
+
+        setRenderJobs(prev => prev.map((j: any) => (j.id === job.id ? { ...j, progress } : j)));
+
         // Update overall progress
         const completedJobs = i;
         const currentJobProgress = progress / 100;
@@ -114,14 +103,18 @@ export const RenderStep: React.FC<RenderStepProps> = ({
 
       // Complete the job
       const success = Math.random() > 0.1; // 90% success rate
-      setRenderJobs(prev => prev.map(j => 
-        j.id === job.id ? {
-          ...j,
-          status: success ? 'completed' as const : 'failed' as const,
-          videoUrl: success ? `https://example.com/video-${job.id}.mp4` : undefined,
-          error: success ? undefined : 'Rendering failed due to template incompatibility',
-        } : j
-      ));
+      setRenderJobs(prev =>
+        prev.map((j: any) =>
+          j.id === job.id
+            ? {
+                ...j,
+                status: success ? ('completed' as const) : ('failed' as const),
+                videoUrl: success ? `https://example.com/video-${job.id}.mp4` : undefined,
+                error: success ? undefined : 'Rendering failed due to template incompatibility',
+              }
+            : j
+        )
+      );
     }
 
     setIsRendering(false);
@@ -130,28 +123,32 @@ export const RenderStep: React.FC<RenderStepProps> = ({
 
   // Retry failed job
   const handleRetryJob = useCallback(async (jobId: string) => {
-    setRenderJobs(prev => prev.map(j => 
-      j.id === jobId ? { ...j, status: 'rendering' as const, progress: 0, error: undefined } : j
-    ));
+    setRenderJobs(prev =>
+      prev.map((j: any) =>
+        j.id === jobId ? { ...j, status: 'rendering' as const, progress: 0, error: undefined } : j
+      )
+    );
 
     // Simulate retry
     for (let progress = 0; progress <= 100; progress += 10) {
       await new Promise(resolve => setTimeout(resolve, 150));
-      setRenderJobs(prev => prev.map(j => 
-        j.id === jobId ? { ...j, progress } : j
-      ));
+      setRenderJobs(prev => prev.map((j: any) => (j.id === jobId ? { ...j, progress } : j)));
     }
 
     // Complete retry
     const success = Math.random() > 0.3; // 70% success rate on retry
-    setRenderJobs(prev => prev.map(j => 
-      j.id === jobId ? {
-        ...j,
-        status: success ? 'completed' as const : 'failed' as const,
-        videoUrl: success ? `https://example.com/video-${jobId}-retry.mp4` : undefined,
-        error: success ? undefined : 'Retry failed - please check template settings',
-      } : j
-    ));
+    setRenderJobs(prev =>
+      prev.map((j: any) =>
+        j.id === jobId
+          ? {
+              ...j,
+              status: success ? ('completed' as const) : ('failed' as const),
+              videoUrl: success ? `https://example.com/video-${jobId}-retry.mp4` : undefined,
+              error: success ? undefined : 'Retry failed - please check template settings',
+            }
+          : j
+      )
+    );
   }, []);
 
   // Handle download
@@ -173,7 +170,7 @@ export const RenderStep: React.FC<RenderStepProps> = ({
 
   // Handle workflow completion
   const handleComplete = useCallback(() => {
-    const completedJobs = renderJobs.filter(job => job.status === 'completed');
+    const completedJobs = renderJobs.filter((job: any) => job.status === 'completed');
     onComplete?.({
       briefData,
       selectedMotivations,
@@ -182,7 +179,15 @@ export const RenderStep: React.FC<RenderStepProps> = ({
       selectedTemplate,
       renderedVideos: completedJobs,
     });
-  }, [renderJobs, briefData, selectedMotivations, selectedCopy, selectedAssets, selectedTemplate, onComplete]);
+  }, [
+    renderJobs,
+    briefData,
+    selectedMotivations,
+    selectedCopy,
+    selectedAssets,
+    selectedTemplate,
+    onComplete,
+  ]);
 
   // Clear error
   const handleClearError = useCallback(() => {
@@ -191,11 +196,11 @@ export const RenderStep: React.FC<RenderStepProps> = ({
 
   // Get render statistics
   const getRenderStats = () => {
-    const completed = renderJobs.filter(job => job.status === 'completed').length;
-    const failed = renderJobs.filter(job => job.status === 'failed').length;
-    const pending = renderJobs.filter(job => job.status === 'pending').length;
-    const rendering = renderJobs.filter(job => job.status === 'rendering').length;
-    
+    const completed = renderJobs.filter((job: any) => job.status === 'completed').length;
+    const failed = renderJobs.filter((job: any) => job.status === 'failed').length;
+    const pending = renderJobs.filter((job: any) => job.status === 'pending').length;
+    const rendering = renderJobs.filter((job: any) => job.status === 'rendering').length;
+
     return { completed, failed, pending, rendering, total: renderJobs.length };
   };
 
@@ -226,11 +231,7 @@ export const RenderStep: React.FC<RenderStepProps> = ({
 
       {/* Error Alert */}
       {lastError && (
-        <Alert 
-          severity="error" 
-          sx={{ mb: 3 }}
-          onClose={handleClearError}
-        >
+        <Alert severity="error" sx={{ mb: 3 }} onClose={handleClearError}>
           {lastError}
         </Alert>
       )}
@@ -240,8 +241,15 @@ export const RenderStep: React.FC<RenderStepProps> = ({
         <Typography variant="h6" gutterBottom>
           Rendering Progress
         </Typography>
-        
-        <Box sx={{ display: 'grid', gap: 3, gridTemplateColumns: { xs: '1fr 1fr', md: '1fr 1fr 1fr 1fr' }, mb: 3 }}>
+
+        <Box
+          sx={{
+            display: 'grid',
+            gap: 3,
+            gridTemplateColumns: { xs: '1fr 1fr', md: '1fr 1fr 1fr 1fr' },
+            mb: 3,
+          }}
+        >
           <Box sx={{ textAlign: 'center' }}>
             <Typography variant="h3" color="success.main">
               {stats.completed}
@@ -307,7 +315,8 @@ export const RenderStep: React.FC<RenderStepProps> = ({
             Ready to Render Videos
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-            Start the rendering process to generate {renderJobs.length} videos based on your campaign matrix.
+            Start the rendering process to generate {renderJobs.length} videos based on your
+            campaign matrix.
           </Typography>
           <Button
             variant="contained"
@@ -330,29 +339,29 @@ export const RenderStep: React.FC<RenderStepProps> = ({
                 key={job.id}
                 divider={index < renderJobs.length - 1}
                 sx={{
-                  bgcolor: job.status === 'completed' ? 'success.50' : 
-                           job.status === 'failed' ? 'error.50' : 'inherit'
+                  bgcolor:
+                    job.status === 'completed'
+                      ? 'success.50'
+                      : job.status === 'failed'
+                        ? 'error.50'
+                        : 'inherit',
                 }}
               >
-                <ListItemIcon>
-                  {getStatusIcon(job.status)}
-                </ListItemIcon>
-                
+                <ListItemIcon>{getStatusIcon(job.status)}</ListItemIcon>
+
                 <ListItemText
                   primary={
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Typography variant="body1">
-                        {job.motivation}
-                      </Typography>
+                      <Typography variant="body1">{job.motivation}</Typography>
                       <Chip label={job.platform} size="small" />
                     </Box>
                   }
                   secondary={
                     <Box>
                       {job.status === 'rendering' && (
-                        <LinearProgress 
-                          variant="determinate" 
-                          value={job.progress} 
+                        <LinearProgress
+                          variant="determinate"
+                          value={job.progress}
                           sx={{ mt: 1, mb: 1 }}
                         />
                       )}
@@ -369,7 +378,7 @@ export const RenderStep: React.FC<RenderStepProps> = ({
                     </Box>
                   }
                 />
-                
+
                 <Stack direction="row" spacing={1}>
                   {job.status === 'completed' && job.videoUrl && (
                     <>
@@ -401,20 +410,12 @@ export const RenderStep: React.FC<RenderStepProps> = ({
 
       {/* Action Buttons */}
       <Box sx={{ display: 'flex', gap: 2, justifyContent: 'space-between' }}>
-        <Button
-          variant="outlined"
-          onClick={onPrevious}
-          startIcon={<ArrowBackIcon />}
-        >
+        <Button variant="outlined" onClick={onPrevious} startIcon={<ArrowBackIcon />}>
           Back to Matrix
         </Button>
 
         {stats.completed > 0 && (
-          <Button
-            variant="contained"
-            onClick={handleComplete}
-            color="success"
-          >
+          <Button variant="contained" onClick={handleComplete} color="success">
             Complete Workflow ({stats.completed} videos ready)
           </Button>
         )}

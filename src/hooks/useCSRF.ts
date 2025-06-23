@@ -19,8 +19,7 @@ export const useCSRF = () => {
     try {
       const response = await fetch('/api/auth/csrf-token', {
         method: 'GET',
-        credentials: 'include',
-      });
+        credentials: 'include'});
 
       if (!response.ok) {
         throw new Error(`Failed to get CSRF token: ${response.status}`);
@@ -36,7 +35,7 @@ export const useCSRF = () => {
       } else {
         throw new Error('Invalid CSRF token response');
       }
-    } catch (err) {
+    } catch (err: any) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch CSRF token';
       setError(errorMessage);
       console.error('CSRF token fetch error:', err);
@@ -72,8 +71,7 @@ export const useCSRF = () => {
     }
 
     return {
-      'x-csrf-token': token,
-    };
+      'x-csrf-token': token};
   }, [getCSRFToken]);
 
   // Make authenticated request with CSRF protection
@@ -86,11 +84,9 @@ export const useCSRF = () => {
     return fetch(url, {
       ...options,
       credentials: 'include',
-      headers: {
+      headers: {},
         ...csrfHeaders,
-        ...options.headers,
-      },
-    });
+        ...options.headers}});
   }, [getCSRFHeaders]);
 
   // Initialize token on mount
@@ -110,8 +106,7 @@ export const useCSRF = () => {
     fetchCSRFToken,
     getCSRFToken,
     getCSRFHeaders,
-    makeCSRFRequest,
-  };
+    makeCSRFRequest};
 };
 
 // Utility function for one-off CSRF requests
@@ -126,8 +121,7 @@ export const getCSRFToken = async (): Promise<string | null> => {
     // Fetch new token
     const response = await fetch('/api/auth/csrf-token', {
       method: 'GET',
-      credentials: 'include',
-    });
+      credentials: 'include'});
 
     if (!response.ok) {
       throw new Error(`Failed to get CSRF token: ${response.status}`);
@@ -141,7 +135,7 @@ export const getCSRFToken = async (): Promise<string | null> => {
     }
 
     return null;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error getting CSRF token:', error);
     return null;
   }
@@ -161,9 +155,7 @@ export const makeCSRFRequest = async (
   return fetch(url, {
     ...options,
     credentials: 'include',
-    headers: {
+    headers: {},
       'x-csrf-token': token,
-      ...options.headers,
-    },
-  });
+      ...options.headers}});
 };

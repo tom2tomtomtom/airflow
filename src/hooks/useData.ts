@@ -24,8 +24,7 @@ export const campaignToUICampaign = (campaign: Campaign): UICampaign => {
     endDate: campaign.schedule?.endDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     platforms: campaign.targeting?.platforms || [],
     createdAt: campaign.dateCreated,
-    updatedAt: campaign.lastModified,
-  };
+    updatedAt: campaign.lastModified};
 };
 
 // Type mapping for entity types
@@ -96,7 +95,7 @@ export function useData<T extends keyof EntityTypes>(
         }
 
         setData(result);
-      } catch (err) {
+      } catch (err: any) {
         setError(err as Error);
       } finally {
         setLoading(false);
@@ -122,16 +121,15 @@ export const useClients = () => {
           const userData = JSON.parse(storedUser);
           token = userData.token;
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error parsing stored user:', error);
       }
 
       // Use credentials include to send cookies for authentication
       const response = await fetch('/api/clients', {
-        headers: {
+        headers: {},
           'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-        },
+          ...(token ? { 'Authorization': `Bearer ${token}` } : Record<string, unknown>$1},
         credentials: 'include', // Include cookies for authentication
       });
 
@@ -156,8 +154,7 @@ export const useClients = () => {
         return false;
       }
       return failureCount < 3;
-    },
-  });
+    }});
 };
 
 // Custom hook for fetching assets
@@ -177,8 +174,7 @@ export const useAssets = (clientId?: string) => {
       return data || [];
     },
     staleTime: 5 * 60 * 1000,
-    enabled: true,
-  });
+    enabled: true});
 };
 
 // Custom hook for fetching templates
@@ -205,7 +201,7 @@ export const useTemplates = () => {
         }
         
         // Ensure data is always an array and each template has required fields
-        const templates = (data || []).map(template => ({
+        const templates = (data || []).map((template: any) => ({
           ...template,
           // Ensure required fields exist to prevent crashes
           dynamicFields: template.dynamicFields || [],
@@ -218,7 +214,7 @@ export const useTemplates = () => {
         }));
         
         return templates;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Templates API error:', error);
         // In production, gracefully return empty array instead of crashing
         return [];
@@ -231,8 +227,7 @@ export const useTemplates = () => {
         return false;
       }
       return failureCount < 2;
-    },
-  });
+    }});
 };
 
 // Custom hook for fetching campaigns
@@ -242,8 +237,7 @@ export const useCampaigns = (clientId?: string) => {
     queryFn: async () => {
       try {
         const response = await fetch('/api/campaigns', {
-          credentials: 'include',
-        });
+          credentials: 'include'});
         
         if (!response.ok) {
           // TEMPORARY FIX: Don't throw error for authentication issues during testing
@@ -253,14 +247,13 @@ export const useCampaigns = (clientId?: string) => {
         
         const result = await response.json();
         return result.data || [];
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching campaigns:', error);
         return [];
       }
     },
     staleTime: 5 * 60 * 1000,
-    retry: false,
-  });
+    retry: false});
 };
 
 // Custom hook for fetching a single campaign
@@ -272,8 +265,7 @@ export const useCampaign = (campaignId?: string) => {
       
       try {
         const response = await fetch(`/api/campaigns/${campaignId}`, {
-          credentials: 'include',
-        });
+          credentials: 'include'});
         
         if (!response.ok) {
           if (response.status === 404) {
@@ -284,15 +276,14 @@ export const useCampaign = (campaignId?: string) => {
         
         const result = await response.json();
         return result.data || null;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching campaign:', error);
         throw error;
       }
     },
     enabled: !!campaignId,
     staleTime: 5 * 60 * 1000,
-    retry: false,
-  });
+    retry: false});
 };
 
 // Custom hook for fetching matrices
@@ -311,8 +302,7 @@ export const useMatrices = (clientId?: string) => {
       if (error) throw error;
       return data || [];
     },
-    staleTime: 5 * 60 * 1000,
-  });
+    staleTime: 5 * 60 * 1000});
 };
 
 // Custom hook for creating/updating assets
@@ -333,7 +323,7 @@ export const useCreateAsset = () => {
 
       if (error) throw error;
       return { data, error: null };
-    } catch (err) {
+    } catch (err: any) {
       const error = err as Error;
       setError(error);
       return { data: null, error };
@@ -363,7 +353,7 @@ export const useCreateMatrix = () => {
 
       if (error) throw error;
       return { data, error: null };
-    } catch (err) {
+    } catch (err: any) {
       const error = err as Error;
       setError(error);
       return { data: null, error };
@@ -386,7 +376,7 @@ export const useCreateMatrix = () => {
 
       if (error) throw error;
       return { data, error: null };
-    } catch (err) {
+    } catch (err: any) {
       const error = err as Error;
       setError(error);
       return { data: null, error };
@@ -430,7 +420,7 @@ export const useFileUpload = () => {
         .getPublicUrl(filePath);
 
       return { url: urlData.publicUrl, path: filePath, error: null };
-    } catch (err) {
+    } catch (err: any) {
       const error = err as Error;
       setError(error);
       return { url: null, path: null, error };

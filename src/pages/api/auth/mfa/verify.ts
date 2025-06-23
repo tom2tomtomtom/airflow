@@ -1,3 +1,4 @@
+import { NextApiResponse } from 'next';
 import { getErrorMessage } from '@/utils/errorUtils';
 import type { NextApiResponse } from 'next';
 import { verifyAndEnableMFA } from '@/lib/mfa';
@@ -6,7 +7,10 @@ import { z } from 'zod';
 import type { AuthenticatedRequest } from '@/middleware/withAuth';
 
 const verifyMFASchema = z.object({
-  token: z.string().length(6, 'Verification code must be 6 digits').regex(/^\d+$/, 'Verification code must contain only numbers'),
+  token: z
+    .string()
+    .length(6, 'Verification code must be 6 digits')
+    .regex(/^\d+$/, 'Verification code must contain only numbers'),
 });
 
 interface MFAVerifyResponse {
@@ -25,11 +29,11 @@ async function handler(
 
   try {
     const { user } = req;
-    
+
     if (!user) {
-      return res.status(401).json({ 
-        success: false, 
-        error: 'Authentication required' 
+      return res.status(401).json({
+        success: false,
+        error: 'Authentication required',
       });
     }
 
@@ -38,7 +42,8 @@ async function handler(
     try {
       validatedData = verifyMFASchema.parse(req.body);
     } catch (validationError: any) {
-      const errors = validationError.errors?.map((err: any) => err.message).join(', ') || 'Invalid input data';
+      const errors =
+        validationError.errors?.map((err: any) => err.message).join(', ') || 'Invalid input data';
       return res.status(400).json({
         success: false,
         error: errors,
@@ -61,8 +66,7 @@ async function handler(
       success: true,
       message: 'MFA has been successfully enabled for your account',
     });
-
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('MFA verification error:', error);
     return res.status(500).json({

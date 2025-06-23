@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { getErrorMessage } from '@/utils/errorUtils';
@@ -10,8 +11,7 @@ const ExportSchema = z.object({
   format: z.enum(['json', 'csv', 'pdf', 'xlsx', 'platform_specific']),
   platform: z.enum(['youtube', 'instagram', 'tiktok', 'facebook', 'linkedin', 'twitter']).optional(),
   include_assets: z.boolean().default(true),
-  include_videos: z.boolean().default(true),
-});
+  include_videos: z.boolean().default(true)});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -23,7 +23,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
   try {
     return handleExport(req, res, user);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Campaign Export API error:', error);
     return res.status(500).json({ 
@@ -70,18 +70,16 @@ async function handleExport(req: NextApiRequest, res: NextApiResponse, user: any
 
   return res.json({
     message: 'Export generated successfully',
-    data: exportResult,
-  });
+    data: exportResult});
 }
 
 async function gatherCampaignData(campaignId: string, includeAssets: boolean, includeVideos: boolean): Promise<any> {
   const data: any = {
-    campaign: {},
+    campaign: {}
     strategy: { motivations: [], copy_assets: [] },
     matrix: { combinations: [] },
     assets: [],
-    videos: [],
-  };
+    videos: []};
 
   // Get campaign details
   const { data: campaign } = await supabase
@@ -153,16 +151,14 @@ async function generateExport(data: any, format: string, platform?: string): Pro
         format: 'json',
         content: JSON.stringify(data, null, 2),
         filename: `campaign-${data?.campaign?.name}-${Date.now()}.json`,
-        mime_type: 'application/json',
-      };
+        mime_type: 'application/json'};
 
     case 'csv':
       return {
         format: 'csv',
         content: convertToCSV(data),
         filename: `campaign-${data?.campaign?.name}-${Date.now()}.csv`,
-        mime_type: 'text/csv',
-      };
+        mime_type: 'text/csv'};
 
     case 'platform_specific':
       return generatePlatformSpecificExport(data, platform);
@@ -173,8 +169,7 @@ async function generateExport(data: any, format: string, platform?: string): Pro
         content: null,
         filename: `campaign-${data?.campaign?.name}-${Date.now()}.pdf`,
         mime_type: 'application/pdf',
-        error: 'PDF export not yet implemented',
-      };
+        error: 'PDF export not yet implemented'};
 
     case 'xlsx':
       return {
@@ -182,8 +177,7 @@ async function generateExport(data: any, format: string, platform?: string): Pro
         content: null,
         filename: `campaign-${data?.campaign?.name}-${Date.now()}.xlsx`,
         mime_type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        error: 'Excel export not yet implemented',
-      };
+        error: 'Excel export not yet implemented'};
 
     default:
       throw new Error('Unsupported export format');
@@ -243,65 +237,56 @@ function convertToCSV(data: any): string {
     ]);
   });
 
-  return rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+  return rows.map((row: any) => row.map((cell: any) => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
 }
 
 function generatePlatformSpecificExport(data: any, platform?: string): any {
   if (!platform) {
     return {
       format: 'platform_specific',
-      error: 'Platform not specified',
-    };
+      error: 'Platform not specified'};
   }
 
   const platformExports: Record<string, any> = {
-    youtube: {
+    youtube: {},
       title: data?.campaign?.name,
       description: data?.campaign?.description,
       tags: data?.strategy?.motivations.map((m: any) => m.category).filter(Boolean),
       thumbnails: data?.assets?.filter((a: any) => a.type === 'image').slice(0, 3),
-      videos: data?.videos?.filter((v: any) => v.config?.video_config?.platform === 'youtube'),
-    },
-    instagram: {
+      videos: data?.videos?.filter((v: any) => v.config?.video_config?.platform === 'youtube')},
+    instagram: {},
       posts: data?.strategy?.copy_assets.filter((c: any) => c.platform === 'instagram'),
       stories: data?.videos?.filter((v: any) => v.config?.video_config?.aspect_ratio === '9:16'),
-      hashtags: generateHashtags(data?.strategy?.motivations),
-    },
-    tiktok: {
+      hashtags: generateHashtags(data?.strategy?.motivations)},
+    tiktok: {},
       videos: data?.videos?.filter((v: any) => v.config?.video_config?.platform === 'tiktok'),
       captions: data?.strategy?.copy_assets.filter((c: any) => c.platform === 'tiktok'),
-      effects: [],
-    },
-    facebook: {
+      effects: []},
+    facebook: {},
       posts: data?.strategy?.copy_assets.filter((c: any) => c.platform === 'facebook'),
       ads: data?.matrix?.combinations,
-      targeting: extractTargetingData(data?.strategy?.motivations),
-    },
-    linkedin: {
+      targeting: extractTargetingData(data?.strategy?.motivations)},
+    linkedin: {},
       posts: data?.strategy?.copy_assets.filter((c: any) => c.platform === 'linkedin'),
       articles: [],
-      company_updates: data?.matrix?.combinations,
-    },
-    twitter: {
+      company_updates: data?.matrix?.combinations},
+    twitter: {},
       tweets: data?.strategy?.copy_assets.filter((c: any) => c.platform === 'twitter'),
       threads: [],
-      hashtags: generateHashtags(data?.strategy?.motivations),
-    },
-  };
+      hashtags: generateHashtags(data?.strategy?.motivations)}};
 
   return {
     format: 'platform_specific',
     platform,
     content: JSON.stringify(platformExports[platform] || {}, null, 2),
     filename: `${platform}-export-${data?.campaign?.name}-${Date.now()}.json`,
-    mime_type: 'application/json',
-  };
+    mime_type: 'application/json'};
 }
 
 function generateHashtags(motivations: any[]): string[] {
   const hashtags = new Set<string>();
   
-  motivations.forEach(motivation => {
+  motivations.forEach((motivation: any) => {
     if (motivation.category) {
       hashtags.add(`#${motivation.category.toLowerCase().replace(/\s+/g, '')}`);
     }
@@ -318,10 +303,9 @@ function generateHashtags(motivations: any[]): string[] {
 
 function extractTargetingData(motivations: any[]): any {
   return {
-    demographics: motivations.map(m => m.category).filter(Boolean),
-    interests: motivations.map(m => m.title).filter(Boolean),
-    behaviors: [],
-  };
+    demographics: motivations.map((m: any) => m.category).filter(Boolean),
+    interests: motivations.map((m: any) => m.title).filter(Boolean),
+    behaviors: []};
 }
 
 export default withAuth(withSecurityHeaders(handler));

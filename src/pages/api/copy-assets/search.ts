@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 
@@ -29,8 +30,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       tags,
       sentiment,
       limit = 20,
-      offset = 0,
-    } = req.query;
+      offset = 0} = req.query;
 
     if (!query || typeof query !== 'string' || query.trim().length < 2) {
       return res.status(400).json({ 
@@ -52,7 +52,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
         return res.json({ data: [], count: 0, suggestions: [] });
       }
       
-      clientIds = userClients.map(uc => uc.client_id);
+      clientIds = userClients.map((uc: any) => uc.client_id);
     }
 
     // Build the search query
@@ -110,7 +110,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     }
 
     if (tags && typeof tags === 'string') {
-      const tagArray = tags.split(',').map(t => t.trim());
+      const tagArray = tags.split(',').map((t: any) => t.trim());
       searchQuery = searchQuery.overlaps('tags', tagArray);
     }
 
@@ -135,12 +135,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     const suggestions = await generateSearchSuggestions(searchTerm, clientIds);
 
     // Add search relevance scoring and highlighting
-    const enrichedResults = (results || []).map(result => ({
+    const enrichedResults = (results || []).map((result: any) => ({
       ...result,
       search_relevance: calculateRelevanceScore(result, searchTerm),
       highlighted_content: highlightMatches(result.content, searchTerm),
-      highlighted_title: result.title ? highlightMatches(result.title, searchTerm) : null,
-    }));
+      highlighted_title: result.title ? highlightMatches(result.title, searchTerm) : null}));
 
     // Sort by relevance
     enrichedResults.sort((a, b) => b.search_relevance - a.search_relevance);
@@ -150,21 +149,20 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       count,
       query: searchTerm,
       suggestions,
-      filters_applied: {
+      filters_applied: {},
         type, platform, tone, ai_generated, sentiment,
         performance_range: performance_min || performance_max ? [performance_min, performance_max] : null,
         character_range: character_min || character_max ? [character_min, character_max] : null,
         word_range: word_min || word_max ? [word_min, word_max] : null,
-        tags: tags ? (typeof tags === 'string' ? tags.split(',').map(t => t.trim()) : tags) : null,
-      },
-      pagination: {
+        tags: tags ? (typeof tags === 'string' ? tags.split(',').map((t: any) => t.trim()) : tags) : null},
+      pagination: {},
         limit: parseInt(limit as string),
         offset: parseInt(offset as string),
         total: count || 0
       }
     });
 
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Copy Assets Search API error:', error);
     return res.status(500).json({ 
@@ -187,7 +185,7 @@ async function generateSearchSuggestions(query: string, clientIds: string[]): Pr
 
     // Extract and count tag frequencies
     const tagFrequency: Record<string, number> = {};
-    popularTags?.forEach(asset => {
+    popularTags?.forEach((asset: any) => {
       asset.tags?.forEach((tag: string) => {
         if (tag.toLowerCase().includes(query.toLowerCase())) {
           tagFrequency[tag] = (tagFrequency[tag] || 0) + 1;
@@ -216,7 +214,7 @@ async function generateSearchSuggestions(query: string, clientIds: string[]): Pr
     const types = new Set<string>();
     const tones = new Set<string>();
     
-    popularTypes?.forEach(asset => {
+    popularTypes?.forEach((asset: any) => {
       if (asset.type && asset.type.toLowerCase().includes(query.toLowerCase())) {
         types.add(asset.type);
       }
@@ -230,7 +228,7 @@ async function generateSearchSuggestions(query: string, clientIds: string[]): Pr
 
     return [...new Set(suggestions)].slice(0, 8);
 
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error generating search suggestions:', error);
     return [];

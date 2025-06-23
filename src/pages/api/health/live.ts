@@ -14,16 +14,16 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Livene
       alive: false,
       timestamp: new Date().toISOString(),
       uptime: 0,
-      pid: 0
+      pid: 0,
     });
   }
-  
+
   const response: LivenessResponse = {
     alive: true,
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    pid: process.pid
+    pid: process.pid,
   };
-  
+
   res.status(200).json(response);
 }

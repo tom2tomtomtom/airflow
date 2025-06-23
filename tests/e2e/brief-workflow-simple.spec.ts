@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { getErrorMessage } from '@/utils/errorUtils';
+import { test } from '@playwright/test';
 
 test.describe('Brief Workflow Simple Test', () => {
   test('should test brief workflow without login', async ({ page }) => {
@@ -164,6 +165,7 @@ Competitors: Lemonade, Progressive, Geico
           }
           
         } catch (error) {
+    const message = getErrorMessage(error);
           console.log('❌ Motivations API Error:', error);
         }
         
@@ -172,6 +174,7 @@ Competitors: Lemonade, Progressive, Geico
       }
       
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log('❌ Parse Brief API Error:', error);
     }
     

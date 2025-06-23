@@ -17,24 +17,19 @@ jest.mock('@sentry/nextjs', () => ({
   withScope: jest.fn((callback) => callback({
     setTag: jest.fn(),
     setContext: jest.fn(),
-    setLevel: jest.fn(),
-  })),
+    setLevel: jest.fn()})),
   startTransaction: jest.fn().mockReturnValue({
     setTag: jest.fn(),
     setData: jest.fn(),
-    finish: jest.fn(),
-  }),
+    finish: jest.fn()}),
   getCurrentHub: jest.fn().mockReturnValue({
     getScope: jest.fn().mockReturnValue({
       setTag: jest.fn(),
-      setContext: jest.fn(),
-    }),
-  }),
+      setContext: jest.fn()})}),
   replayIntegration: jest.fn(),
   browserTracingIntegration: jest.fn(),
   httpIntegration: jest.fn(),
-  captureConsoleIntegration: jest.fn(),
-}));
+  captureConsoleIntegration: jest.fn()}));
 
 // Mock console methods
 const _mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -71,8 +66,7 @@ describe('Sentry Integration Tests', () => {
       const context = {
         user: { id: 'user123', email: 'test@example.com' },
         request: { url: '/api/campaigns', method: 'POST' },
-        extra: { campaignId: 'campaign456' },
-      };
+        extra: { campaignId: 'campaign456' }};
       
       Sentry.withScope((scope) => {
         scope.setTag('error_type', 'api_error');
@@ -111,8 +105,7 @@ describe('Sentry Integration Tests', () => {
           endpoint: '/api/campaigns',
           method: 'GET',
           status: 500,
-          response: 'Internal Server Error',
-        });
+          response: 'Internal Server Error'});
         Sentry.captureException(apiError);
       });
       
@@ -131,8 +124,7 @@ describe('Sentry Integration Tests', () => {
         scope.setContext('database_details', {
           operation: 'SELECT',
           table: 'campaigns',
-          query: 'SELECT * FROM campaigns WHERE user_id = ?',
-        });
+          query: 'SELECT * FROM campaigns WHERE user_id = ?'});
         Sentry.captureException(dbError);
       });
       
@@ -153,8 +145,7 @@ describe('Sentry Integration Tests', () => {
           model: 'gpt-4',
           tokens: 1000,
           operation: 'chat_completion',
-          cost: 0.02,
-        });
+          cost: 0.02});
         Sentry.captureException(aiError);
       });
       
@@ -169,8 +160,7 @@ describe('Sentry Integration Tests', () => {
       
       const transaction = Sentry.startTransaction({
         name: 'Campaign Creation',
-        op: 'workflow',
-      });
+        op: 'workflow'});
       
       transaction.setTag('user_id', 'user123');
       transaction.setData('campaign_type', 'social_media');
@@ -182,8 +172,7 @@ describe('Sentry Integration Tests', () => {
       
       expect(Sentry.startTransaction).toHaveBeenCalledWith({
         name: 'Campaign Creation',
-        op: 'workflow',
-      });
+        op: 'workflow'});
       expect(transaction.setTag).toHaveBeenCalledWith('user_id', 'user123');
       expect(transaction.setData).toHaveBeenCalledWith('campaign_type', 'social_media');
     });
@@ -194,8 +183,7 @@ describe('Sentry Integration Tests', () => {
       
       const transaction = Sentry.startTransaction({
         name: 'GET /api/campaigns',
-        op: 'http.server',
-      });
+        op: 'http.server'});
       
       transaction.setTag('http.method', 'GET');
       transaction.setTag('http.status_code', '200');
@@ -214,8 +202,7 @@ describe('Sentry Integration Tests', () => {
       
       const transaction = Sentry.startTransaction({
         name: 'Database Query',
-        op: 'db.query',
-      });
+        op: 'db.query'});
       
       transaction.setTag('db.operation', 'SELECT');
       transaction.setTag('db.table', 'campaigns');
@@ -234,8 +221,7 @@ describe('Sentry Integration Tests', () => {
       
       const transaction = Sentry.startTransaction({
         name: 'AI Copy Generation',
-        op: 'ai.generation',
-      });
+        op: 'ai.generation'});
       
       transaction.setTag('ai.provider', 'openai');
       transaction.setTag('ai.model', 'gpt-4');
@@ -260,8 +246,7 @@ describe('Sentry Integration Tests', () => {
         id: 'user123',
         email: 'test@example.com',
         username: 'testuser',
-        plan: 'pro',
-      };
+        plan: 'pro'};
       
       Sentry.setUser(user);
       
@@ -276,23 +261,19 @@ describe('Sentry Integration Tests', () => {
         message: 'User navigated to campaigns page',
         category: 'navigation',
         level: 'info',
-        data: {
+        data: {},
           from: '/dashboard',
           to: '/campaigns',
-          method: 'click',
-        },
-      });
+          method: 'click'}});
       
       expect(Sentry.addBreadcrumb).toHaveBeenCalledWith({
         message: 'User navigated to campaigns page',
         category: 'navigation',
         level: 'info',
-        data: {
+        data: {},
           from: '/dashboard',
           to: '/campaigns',
-          method: 'click',
-        },
-      });
+          method: 'click'}});
     });
 
     test('should add API call breadcrumbs', () => {
@@ -303,25 +284,21 @@ describe('Sentry Integration Tests', () => {
         message: 'API call to create campaign',
         category: 'http',
         level: 'info',
-        data: {
+        data: {},
           url: '/api/campaigns',
           method: 'POST',
           status_code: 201,
-          response_time: 450,
-        },
-      });
+          response_time: 450}});
       
       expect(Sentry.addBreadcrumb).toHaveBeenCalledWith({
         message: 'API call to create campaign',
         category: 'http',
         level: 'info',
-        data: {
+        data: {},
           url: '/api/campaigns',
           method: 'POST',
           status_code: 201,
-          response_time: 450,
-        },
-      });
+          response_time: 450}});
     });
 
     test('should add user action breadcrumbs', () => {
@@ -332,25 +309,21 @@ describe('Sentry Integration Tests', () => {
         message: 'User uploaded asset',
         category: 'user',
         level: 'info',
-        data: {
+        data: {},
           action: 'upload',
           asset_type: 'image',
           file_size: 1024000,
-          file_name: 'logo.png',
-        },
-      });
+          file_name: 'logo.png'}});
       
       expect(Sentry.addBreadcrumb).toHaveBeenCalledWith({
         message: 'User uploaded asset',
         category: 'user',
         level: 'info',
-        data: {
+        data: {},
           action: 'upload',
           asset_type: 'image',
           file_size: 1024000,
-          file_name: 'logo.png',
-        },
-      });
+          file_name: 'logo.png'}});
     });
   });
 
@@ -359,8 +332,7 @@ describe('Sentry Integration Tests', () => {
       // Mock client environment
       Object.defineProperty(window, 'location', {
         value: { origin: 'https://app.airwave.com' },
-        writable: true,
-      });
+        writable: true});
       
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const Sentry = require('@sentry/nextjs');
@@ -421,7 +393,7 @@ describe('Sentry Integration Tests', () => {
         'Non-Error promise rejection captured',
       ];
       
-      ignoredErrors.forEach(errorType => {
+      ignoredErrors.forEach((errorType: any) => {
         const error = new Error(errorType);
         error.name = errorType;
         
@@ -460,8 +432,7 @@ describe('Sentry Integration Tests', () => {
           step: 'copy_generation',
           user_id: 'user123',
           session_id: 'session456',
-          progress: 0.6,
-        });
+          progress: 0.6});
         Sentry.captureException(workflowError);
       });
       
@@ -481,8 +452,7 @@ describe('Sentry Integration Tests', () => {
           service: 'openai',
           current_cost: 55.00,
           monthly_limit: 50.00,
-          usage_percentage: 110,
-        });
+          usage_percentage: 110});
         Sentry.captureException(costError);
       });
       
@@ -501,8 +471,7 @@ describe('Sentry Integration Tests', () => {
           operation: 'db_query',
           duration: 5000, // 5 seconds
           threshold: 1000, // 1 second
-          query: 'SELECT * FROM campaigns WHERE user_id = ?',
-        });
+          query: 'SELECT * FROM campaigns WHERE user_id = ?'});
         Sentry.captureException(performanceIssue);
       });
       
@@ -524,8 +493,7 @@ describe('Sentry Integration Tests', () => {
         networkDetailAllowUrls: [
           'https://app.airwave.com',
           'https://api.creatomate.com',
-        ],
-      };
+        ]};
       
       expect(replayConfig.maskAllInputs).toBe(true);
       expect(replayConfig.networkDetailAllowUrls).toContain('https://app.airwave.com');
@@ -539,8 +507,7 @@ describe('Sentry Integration Tests', () => {
         'Validation Error': 'Please correct the highlighted fields',
         'Authentication Error': 'Please log in again',
         'Rate Limit Error': 'Please wait a moment before trying again',
-        'Server Error': 'Our team has been notified. Please try again later',
-      };
+        'Server Error': 'Our team has been notified. Please try again later'};
       
       Object.entries(errorRecoveryMap).forEach(([_errorType, suggestion]) => {
         expect(typeof suggestion).toBe('string');
@@ -553,8 +520,7 @@ describe('Sentry Integration Tests', () => {
         'info': 1,
         'warning': 2,
         'error': 3,
-        'fatal': 4,
-      };
+        'fatal': 4};
       
       Object.entries(errorSeverityLevels).forEach(([level, severity]) => {
         expect(typeof level).toBe('string');
@@ -572,22 +538,19 @@ describe('Sentry Integration Tests', () => {
         error_id: 'test-event-id',
         resolved_at: new Date().toISOString(),
         resolution_method: 'user_retry',
-        success: true,
-      };
+        success: true};
       
       Sentry.addBreadcrumb({
         message: 'Error resolved by user action',
         category: 'error_resolution',
         level: 'info',
-        data: errorResolution,
-      });
+        data: errorResolution});
       
       expect(Sentry.addBreadcrumb).toHaveBeenCalledWith({
         message: 'Error resolved by user action',
         category: 'error_resolution',
         level: 'info',
-        data: errorResolution,
-      });
+        data: errorResolution});
     });
   });
 });

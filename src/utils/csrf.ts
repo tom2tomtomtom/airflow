@@ -59,7 +59,7 @@ export function verifyCSRFToken(token: string, sessionId?: string): boolean {
       Buffer.from(signature, 'hex'),
       Buffer.from(expectedSignature, 'hex')
     );
-  } catch (error) {
+  } catch (error: any) {
     console.error('CSRF token verification error:', error);
     return false;
   }
@@ -93,10 +93,9 @@ export function withCSRFProtection(
       if (!isValidOrigin) {
         return res.status(403).json({
           success: false,
-          error: {
+          error: {},
             code: 'FORBIDDEN',
-            message: 'Invalid origin',
-          }
+            message: 'Invalid origin'}
         });
       }
     }
@@ -107,20 +106,18 @@ export function withCSRFProtection(
     if (!csrfToken) {
       return res.status(403).json({
         success: false,
-        error: {
+        error: {},
           code: 'FORBIDDEN',
-          message: 'CSRF token missing',
-        }
+          message: 'CSRF token missing'}
       });
     }
     
     if (!verifyCSRFToken(csrfToken, sessionId)) {
       return res.status(403).json({
         success: false,
-        error: {
+        error: {},
           code: 'FORBIDDEN',
-          message: 'Invalid CSRF token',
-        }
+          message: 'Invalid CSRF token'}
       });
     }
     
@@ -170,7 +167,7 @@ export const csrfClient = {
       const response = await fetch('/api/auth/csrf-token');
       const data = await response.json();
       this.token = data.csrfToken;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get CSRF token:', error);
       throw new Error('CSRF token unavailable');
     }
@@ -181,12 +178,10 @@ export const csrfClient = {
     
     return fetch(url, {
       ...options,
-      headers: {
+      headers: {},
         ...options.headers,
         'X-CSRF-Token': token,
-        'Content-Type': 'application/json',
-      },
-    });
+        'Content-Type': 'application/json'}});
   }
 };
 
@@ -204,6 +199,5 @@ export function useCSRF() {
   
   return {
     makeSecureRequest,
-    refreshToken,
-  };
+    refreshToken};
 }

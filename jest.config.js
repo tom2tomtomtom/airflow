@@ -1,57 +1,47 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
-  roots: [
-    '<rootDir>/src',
-    '<rootDir>/tests/utils',
+  setupFilesAfterEnv: [
+    '<rootDir>/src/test/setup.ts'
   ],
-  testMatch: [
-    '**/__tests__/**/*.ts?(x)',
-    '**/?(*.)+(spec|test).ts?(x)',
-    '!**/tests/e2e/**',
-    '!**/*.e2e.ts',
-    '!**/*.e2e.spec.ts',
-    '!**/tests/**/*.e2e.ts',
-    '!**/tests/**/*.e2e.spec.ts',
-    '!**/tests/e2e/**',
-    '!**/tests/**/*.playwright.ts',
-    '!**/tests/**/*.playwright.spec.ts',
-    '!**/tests/ui-*.spec.ts',
-    '!**/src/pages/api/webhooks/test.ts',
-  ],
-  transform: {
-    '^.+\\.tsx?$': [
-      'ts-jest',
-      {
-        tsconfig: 'tsconfig.test.json',
-      },
-    ],
-  },
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
-    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+    '^@/(.*)$': '<rootDir>/src/$1'
   },
-  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
-  testEnvironmentOptions: {
-    customExportConditions: [''],
+  transform: {
+    '^.+\\.(ts|tsx)$': ['ts-jest', {
+      tsconfig: {
+        jsx: 'react-jsx'
+      }
+    }],
+    '^.+\\.(js|jsx)$': 'babel-jest'
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!(.*\\.mjs$))'
+  ],
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
-    '!**/*.d.ts',
-    '!**/node_modules/**',
-    '!**/tests/e2e/**',
-    '!**/*.e2e.ts',
-    '!**/*.e2e.spec.ts',
-    '!**/tests/**/*.e2e.ts',
-    '!**/tests/**/*.e2e.spec.ts',
-    '!**/tests/ui-*.spec.ts',
+    '!src/**/*.d.ts',
+    '!src/**/*.test.{ts,tsx}',
+    '!src/**/*.spec.{ts,tsx}',
+    '!src/test/**/*'
   ],
   coverageThreshold: {
     global: {
-      branches: 25,
-      functions: 25,
-      lines: 25,
-      statements: 25,
-    },
+      branches: 50,
+      functions: 50,
+      lines: 50,
+      statements: 50
+    }
   },
+  coverageReporters: [
+    'text',
+    'html',
+    'lcov',
+    'json-summary'
+  ],
+  testMatch: [
+    '<rootDir>/src/**/__tests__/**/*.{ts,tsx}',
+    '<rootDir>/src/**/*.{test,spec}.{ts,tsx}'
+  ],
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json']
 };

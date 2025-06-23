@@ -1,3 +1,4 @@
+import { NextApiRequest, NextApiResponse } from 'next';
 import { getErrorMessage } from '@/utils/errorUtils';
 import { withAuthRateLimit } from '@/lib/rate-limiter';
 import type { NextApiRequest, NextApiResponse } from 'next';
@@ -57,8 +58,7 @@ async function handler(
     // Use Supabase authentication
     const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
       email,
-      password,
-    });
+      password});
 
     if (authError || !authData.user) {
       return res.status(401).json({
@@ -104,8 +104,7 @@ async function handler(
           last_name: nameParts.slice(1).join(' ') || '',
           role: 'user',
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        })
+          updated_at: new Date().toISOString()})
         .select()
         .single();
 
@@ -123,8 +122,7 @@ async function handler(
             full_name: userName,
             role: 'user',
             created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          })
+            updated_at: new Date().toISOString()})
           .select()
           .single();
 
@@ -171,16 +169,14 @@ async function handler(
 
     return res.status(200).json({
       success: true,
-      user: {
+      user: {},
         id: userProfile.id,
         email: authData.user.email || email,
         name: userName || 'User',
         role: userProfile.role || 'user',
-        token: authData.session?.access_token || '',
-      },
-    });
+        token: authData.session?.access_token || ''}});
 
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Login error:', error);
     return res.status(500).json({

@@ -26,8 +26,7 @@ import {
   Select,
   MenuItem,
   Avatar,
-  Stack,
-} from '@mui/material';
+  Stack} from '@mui/material';
 import {
   Visibility as PreviewIcon,
   Edit as EditIcon,
@@ -38,8 +37,7 @@ import {
   Business as BusinessIcon,
   Refresh as RefreshIcon,
   FullscreenExit as ExitFullscreenIcon,
-  Fullscreen as FullscreenIcon,
-} from '@mui/icons-material';
+  Fullscreen as FullscreenIcon} from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
 import ApprovalWorkflow from '@/components/ApprovalWorkflow';
 import { useClient } from '@/contexts/ClientContext';
@@ -53,12 +51,12 @@ interface PreviewItem {
   status: 'draft' | 'pending_approval' | 'approved' | 'rejected' | 'published';
   created_at: string;
   updated_at: string;
-  created_by: {
+  created_by: {},
     id: string;
     name: string;
     avatar_url?: string;
   };
-  client: {
+  client: {},
     id: string;
     name: string;
     logo?: string;
@@ -101,8 +99,7 @@ const PreviewPage: React.FC = () => {
   const [approvalDecision, setApprovalDecision] = useState<ApprovalDecision>({
     action: 'approve',
     comments: '',
-    changes_requested: [],
-  });
+    changes_requested: []});
   const [submittingApproval, setSubmittingApproval] = useState(false);
 
   // Fetch preview item
@@ -120,8 +117,7 @@ const PreviewPage: React.FC = () => {
         execution: `/api/executions/${item_id}`,
         campaign: `/api/campaigns/${item_id}`,
         video: `/api/video/generations/${item_id}`,
-        copy_asset: `/api/copy-assets/${item_id}`,
-      };
+        copy_asset: `/api/copy-assets/${item_id}`};
 
       const endpoint = apiEndpoints[item_type as string];
       if (!endpoint) {
@@ -143,24 +139,21 @@ const PreviewPage: React.FC = () => {
           status: data.status || 'draft',
           created_at: data.created_at,
           updated_at: data.updated_at,
-          created_by: {
+          created_by: {},
             id: data.created_by || data.user_id || 'unknown',
             name: data.profiles?.full_name || data.creator?.name || 'Unknown User',
-            avatar_url: data.profiles?.avatar_url || data.creator?.avatar_url,
-          },
-          client: {
+            avatar_url: data.profiles?.avatar_url || data.creator?.avatar_url},
+          client: {},
             id: data.client_id || activeClient?.id || 'unknown',
             name: data.clients?.name || activeClient?.name || 'Unknown Client',
-            logo: data.clients?.logo || activeClient?.logo,
-          },
-          metadata: data.metadata || {},
-        };
+            logo: data.clients?.logo || activeClient?.logo},
+          metadata: data.metadata || {}};
 
         setPreviewItem(transformedItem);
       } else {
         throw new Error(result.error || 'Failed to fetch preview item');
       }
-    } catch (err) {
+    } catch (err: any) {
       setError(err instanceof Error ? err.message : 'Failed to load preview item');
     } finally {
       setLoading(false);
@@ -175,21 +168,17 @@ const PreviewPage: React.FC = () => {
     try {
       const response = await fetch('/api/approvals', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: {},
+          'Content-Type': 'application/json'},
         body: JSON.stringify({
           item_type: previewItem.type,
           item_id: previewItem.id,
           approval_type: 'content',
           priority: 'normal',
           notes: approvalDecision.comments,
-          metadata: {
+          metadata: {},
             decision: approvalDecision.action,
-            changes_requested: approvalDecision.changes_requested,
-          },
-        }),
-      });
+            changes_requested: approvalDecision.changes_requested}})});
 
       const result = await response.json();
 
@@ -200,7 +189,7 @@ const PreviewPage: React.FC = () => {
       } else {
         throw new Error(result.error || 'Failed to submit approval');
       }
-    } catch (err) {
+    } catch (err: any) {
       showNotification('Failed to submit approval decision', 'error');
     } finally {
       setSubmittingApproval(false);
@@ -535,8 +524,7 @@ const PreviewPage: React.FC = () => {
                 label="Decision"
                 onChange={(e) => setApprovalDecision({
                   ...approvalDecision,
-                  action: e.target.value as ApprovalDecision['action'],
-                })}
+                  action: e.target.value as ApprovalDecision['action']})}
               >
                 <MenuItem value="approve">Approve</MenuItem>
                 <MenuItem value="request_changes">Request Changes</MenuItem>
@@ -553,8 +541,7 @@ const PreviewPage: React.FC = () => {
               value={approvalDecision.comments}
               onChange={(e) => setApprovalDecision({
                 ...approvalDecision,
-                comments: e.target.value,
-              })}
+                comments: e.target.value})}
             />
           </DialogContent>
           <DialogActions>

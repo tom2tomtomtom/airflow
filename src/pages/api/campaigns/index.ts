@@ -1,11 +1,12 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
 
-const CampaignCreateSchema = z.object({
+const CampaignCreateSchema = z.object({;
   name: z.string().min(1, 'Name is required'),
   description: z.string().optional(),
   objective: z.string().min(1, 'Objective is required'),
@@ -20,8 +21,7 @@ const CampaignCreateSchema = z.object({
   priority: z.enum(['low', 'medium', 'high', 'urgent']).default('medium'),
   campaign_type: z.enum(['awareness', 'consideration', 'conversion', 'retention', 'mixed']).default('awareness'),
   kpis: z.array(z.string()).default([]),
-  creative_requirements: z.any().default({}),
-});
+  creative_requirements: z.any().default({})});
 
 const CampaignUpdateSchema = CampaignCreateSchema.partial().omit(['client_id'] as any);
 
@@ -38,12 +38,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Campaigns API error:', error);
     return res.status(500).json({ 
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
+      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined;
     });
   }
 }
@@ -56,17 +56,16 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   
   const { limit = 50, offset = 0 } = req.query;
   
-  const portfolioStats = {
+  const portfolioStats = {;
     total_campaigns: 0,
-    status_distribution: {},
-    priority_distribution: {},
-    type_distribution: {},
+    status_distribution: {}
+    priority_distribution: {}
+    type_distribution: {}
     budget_summary: {
       total_budget: 0,
       total_spent: 0,
       remaining_budget: 0,
-      utilization_rate: 0,
-    }
+      utilization_rate: 0}
   };
 
   return res.json({ 
@@ -99,7 +98,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
   
   const slug = generateCampaignSlug(campaignData.name);
   
-  const mockCampaign = {
+  const mockCampaign = {;
     id: `campaign-${Date.now()}`,
     ...campaignData,
     slug,
@@ -137,7 +136,7 @@ async function getCampaignStats(campaignId: string): Promise<any> {
       .select('status')
       .eq('campaign_id', campaignId);
 
-    const executionStats = executions?.reduce((acc, exec) => {
+    const executionStats = executions?.reduce((acc, exec) => {;
       acc[exec.status] = (acc[exec.status] || 0) + 1;
       return acc;
     }, {} as Record<string, number>) || {};
@@ -148,7 +147,7 @@ async function getCampaignStats(campaignId: string): Promise<any> {
       .select('impressions, clicks, conversions, spend')
       .eq('campaign_id', campaignId);
 
-    const analyticsTotal = analytics?.reduce((acc, record) => {
+    const analyticsTotal = analytics?.reduce((acc, record) => {;
       acc.impressions += record.impressions || 0;
       acc.clicks += record.clicks || 0;
       acc.conversions += record.conversions || 0;
@@ -160,36 +159,35 @@ async function getCampaignStats(campaignId: string): Promise<any> {
       matrices_count: matricesCount || 0,
       executions_count: executions?.length || 0,
       execution_status: executionStats,
-      performance: {
+      performance: {},
         ...analyticsTotal,
         ctr: analyticsTotal.impressions > 0 ? (analyticsTotal.clicks / analyticsTotal.impressions) * 100 : 0,
-        conversion_rate: analyticsTotal.clicks > 0 ? (analyticsTotal.conversions / analyticsTotal.clicks) * 100 : 0,
-      }
+        conversion_rate: analyticsTotal.clicks > 0 ? (analyticsTotal.conversions / analyticsTotal.clicks) * 100 : 0}
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting campaign stats:', error);
     return {
       matrices_count: 0,
       executions_count: 0,
-      execution_status: {},
+      execution_status: {}
       performance: { impressions: 0, clicks: 0, conversions: 0, spend: 0, ctr: 0, conversion_rate: 0 }
     };
   }
 }
 
 function calculatePortfolioStats(campaigns: any[]): any {
-  const statusCount = campaigns.reduce((acc, campaign) => {
+  const statusCount = campaigns.reduce((acc, campaign) => {;
     acc[campaign.status] = (acc[campaign.status] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
-  const priorityCount = campaigns.reduce((acc, campaign) => {
+  const priorityCount = campaigns.reduce((acc, campaign) => {;
     acc[campaign.priority] = (acc[campaign.priority] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
-  const typeCount = campaigns.reduce((acc, campaign) => {
+  const typeCount = campaigns.reduce((acc, campaign) => {;
     acc[campaign.campaign_type] = (acc[campaign.campaign_type] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
@@ -206,8 +204,7 @@ function calculatePortfolioStats(campaigns: any[]): any {
       total_budget: totalBudget,
       total_spent: totalSpent,
       remaining_budget: totalBudget - totalSpent,
-      utilization_rate: totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0,
-    }
+      utilization_rate: totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0}
   };
 }
 
@@ -236,10 +233,9 @@ async function initializeCampaignAnalytics(campaignId: string): Promise<void> {
         spend: 0,
         raw_data: {
           initialized: true,
-          created_at: new Date().toISOString(),
-        }
+          created_at: new Date().toISOString()}
       });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error initializing campaign analytics:', error);
     // Don't throw error, as this is not critical for campaign creation

@@ -32,20 +32,26 @@ export interface CreatomateRenderResponse {
 }
 
 export class CreatomateService {
-  private apiKey: string = '5ab32660fef044e5b135a646a78cff8ec7e2503b79e201bad7e566f4b24ec111f2fa7e01a824eaa77904c1783e083efa';
+  private apiKey: string;
   private baseUrl: string = 'https://api.creatomate.com/v1';
   private defaultTemplateId: string = '374ee9e3-de75-4feb-bfae-5c5e11d88d80';
+
+  constructor() {
+    const apiKey = process.env.CREATOMATE_API_KEY;
+    if (!apiKey) {
+      throw new Error('CREATOMATE_API_KEY environment variable is required');
+    }
+    this.apiKey = apiKey;
+  }
 
   async getTemplate(templateId?: string): Promise<CreatomateTemplate> {
     const id = templateId || this.defaultTemplateId;
 
     try {
       const response = await fetch(`${this.baseUrl}/templates/${id}`, {
-        headers: {
+        headers: {},
           'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
-        },
-      });
+          'Content-Type': 'application/json'}});
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -53,7 +59,7 @@ export class CreatomateService {
 
       const data = await response.json();
       return this.mapCreatomateTemplate(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Error fetching template ${id}:`, error);
       return this.getDefaultTemplate();
     }
@@ -62,11 +68,9 @@ export class CreatomateService {
   async getTemplates(limit: number = 20): Promise<CreatomateTemplate[]> {
     try {
       const response = await fetch(`${this.baseUrl}/templates?limit=${limit}`, {
-        headers: {
+        headers: {},
           'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
-        },
-      });
+          'Content-Type': 'application/json'}});
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -78,7 +82,7 @@ export class CreatomateService {
       const templates = Array.isArray(data) ? data : (data.data || []);
 
       return templates.map((template: any) => this.mapCreatomateTemplate(template));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching templates:', error);
       // Return default template as fallback
       return [this.getDefaultTemplate()];
@@ -91,16 +95,13 @@ export class CreatomateService {
     try {
       const response = await fetch(`${this.baseUrl}/renders`, {
         method: 'POST',
-        headers: {
+        headers: {},
           'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
-        },
+          'Content-Type': 'application/json'},
         body: JSON.stringify({
           template_id: id,
           modifications,
-          output_format: 'mp4',
-        }),
-      });
+          output_format: 'mp4'})});
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -114,9 +115,8 @@ export class CreatomateService {
         thumbnail: data.thumbnail,
         created_at: data.created_at,
         completed_at: data.completed_at,
-        error: data.error,
-      };
-    } catch (error) {
+        error: data.error};
+    } catch (error: any) {
       console.error('Error rendering video:', error);
       throw new Error(`Failed to render video: ${error}`);
     }
@@ -125,11 +125,9 @@ export class CreatomateService {
   async getRenderStatus(renderId: string): Promise<CreatomateRenderResponse> {
     try {
       const response = await fetch(`${this.baseUrl}/renders/${renderId}`, {
-        headers: {
+        headers: {},
           'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
-        },
-      });
+          'Content-Type': 'application/json'}});
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -143,9 +141,8 @@ export class CreatomateService {
         thumbnail: data.thumbnail,
         created_at: data.created_at,
         completed_at: data.completed_at,
-        error: data.error,
-      };
-    } catch (error) {
+        error: data.error};
+    } catch (error: any) {
       console.error(`Error getting render status ${renderId}:`, error);
       throw new Error('Failed to get render status');
     }
@@ -169,17 +166,14 @@ export class CreatomateService {
           name: 'Background Music',
           type: 'audio',
           source: 'https://creatomate.com/files/assets/b5dc815e-dcc9-4c62-9405-f94913936bf5',
-          modifiable: true,
-        },
+          modifiable: true},
         {
           id: 'Text-1',
           name: 'Main Text',
           type: 'text',
           text: 'Welcome to AIrWAVE! 🚀',
-          modifiable: true,
-        },
-      ],
-    };
+          modifiable: true},
+      ]};
   }
 
   private mapCreatomateTemplate(data: any): CreatomateTemplate {
@@ -200,9 +194,7 @@ export class CreatomateService {
         type: this.getElementType(element),
         source: element.source,
         text: element.text,
-        modifiable: element.modifiable !== false,
-      })),
-    };
+        modifiable: element.modifiable !== false}))};
   }
 
   private getElementType(element: any): 'text' | 'image' | 'video' | 'audio' {

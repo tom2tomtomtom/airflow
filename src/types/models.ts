@@ -4,24 +4,25 @@ export type BaseMetadata = Record<string, MetadataValue | Record<string, Metadat
 
 // Base model with common fields
 export interface BaseModel {
-  id: string;
-  dateCreated: string;
-  lastModified: string;
-  createdBy: string;
-  version: number;
-  metadata: BaseMetadata;
+  id: string;,
+    dateCreated: string;,
+    lastModified: string;,
+    createdBy: string;,
+    version: number;,
+    metadata: BaseMetadata;
 }
 
 // Client Model
 export interface Client extends BaseModel {
   name: string;
-  industry: string;
-  logo: string;
-  primaryColor: string;
-  secondaryColor: string;
-  description: string;
-  website: string;
-  socialMedia: {
+  email?: string; // Primary contact email
+  industry: string;,
+    logo: string;,
+    primaryColor: string;,
+    secondaryColor: string;,
+    description: string;,
+    website: string;,
+    socialMedia: {},
     instagram?: string;
     facebook?: string;
     twitter?: string;
@@ -29,60 +30,60 @@ export interface Client extends BaseModel {
     tiktok?: string;
     youtube?: string;
   };
-  contacts: Contact[];
-  brand_guidelines: BrandGuidelines;
-  tenantId: string;
-  isActive: boolean;
+  contacts: Contact[];,
+    brand_guidelines: BrandGuidelines;,
+    tenantId: string;,
+    isActive: boolean;
 }
 
 // Contact Model
 export interface Contact {
-  id: string;
-  name: string;
-  role: string;
-  email: string;
+  id: string;,
+    name: string;,
+    role: string;,
+    email: string;
   phone?: string;
   isActive: boolean;
 }
 
 // Brand Guidelines Model
 export interface BrandGuidelines {
-  voiceTone: string;
-  targetAudience: string;
-  keyMessages: string[];
+  voiceTone: string;,
+    targetAudience: string;,
+    keyMessages: string[];
   colors?: {
-    primary: string;
+    primary: string;,
     secondary: string;
     accent?: string;
     background?: string;
     text?: string;
   };
   typography?: {
-    headingFont: string;
+    headingFont: string;,
     bodyFont: string;
     sizes?: Record<string, string>;
   };
   logoUsage?: string;
   dosDonts?: {
-    dos: string[];
+    dos: string[];,
     donts: string[];
   };
 }
 
 // Campaign Model
 export interface Campaign extends BaseModel {
-  name: string;
-  description: string;
-  clientId: string;
-  status: 'draft' | 'active' | 'paused' | 'completed' | 'archived';
+  name: string;,
+    description: string;,
+    clientId: string;,
+    status: 'draft' | 'active' | 'paused' | 'completed' | 'archived';
   schedule?: CampaignSchedule;
   budget?: {
-    total: number;
-    spent: number;
+    total: number;,
+    spent: number;,
     currency: string;
   };
-  targeting: CampaignTarget;
-  content: CampaignContent[];
+  targeting: CampaignTarget;,
+    content: CampaignContent[];
   performance?: CampaignPerformance;
   strategyId?: string;
   tags?: string[];
@@ -104,7 +105,7 @@ export interface CampaignSchedule {
   daysOfWeek?: number[]; // 0 = Sunday, 1 = Monday, etc.
   timeOfDay?: string; // HH:MM format
   recurrence?: {
-    type: 'daily' | 'weekly' | 'monthly';
+    type: 'daily' | 'weekly' | 'monthly';,
     interval: number;
     endAfterOccurrences?: number;
     endDate?: string;
@@ -125,9 +126,9 @@ export interface Locations {
   cities?: string[];
   postalCodes?: string[];
   radius?: {
-    lat: number;
-    lng: number;
-    distance: number;
+    lat: number;,
+    lng: number;,
+    distance: number;,
     unit: 'km' | 'mi';
   };
 }
@@ -160,9 +161,9 @@ export interface ContentMetadata {
 
 // Campaign Content Model
 export interface CampaignContent {
-  id: string;
-  type: 'post' | 'story' | 'ad' | 'video' | 'email' | 'banner';
-  platform: string;
+  id: string;,
+    type: 'post' | 'story' | 'ad' | 'video' | 'email' | 'banner';,
+    platform: string;
   matrixId?: string;
   combinationId?: string;
   assetIds?: string[];
@@ -173,17 +174,17 @@ export interface CampaignContent {
   url?: string;
   status: 'draft' | 'ready' | 'scheduled' | 'published' | 'failed';
   schedule?: {
-    publishDate: string;
+    publishDate: string;,
     timezone: string;
   };
   performance?: {
-    impressions: number;
-    engagement: number;
-    clicks: number;
-    conversions: number;
-    reach: number;
-    shares: number;
-    comments: number;
+    impressions: number;,
+    engagement: number;,
+    clicks: number;,
+    conversions: number;,
+    reach: number;,
+    shares: number;,
+    comments: number;,
     likes: number;
   };
   metadata?: ContentMetadata;
@@ -191,16 +192,16 @@ export interface CampaignContent {
 
 // Campaign Performance Model
 export interface CampaignPerformance {
-  impressions: number;
-  clicks: number;
-  conversions: number;
-  engagement: number;
-  reach: number;
-  ctr: number;
+  impressions: number;,
+    clicks: number;,
+    conversions: number;,
+    engagement: number;,
+    reach: number;,
+    ctr: number;
   cpc?: number;
   cpm?: number;
-  conversionRate: number;
-  engagementRate: number;
+  conversionRate: number;,
+    engagementRate: number;
   roi?: number;
   spend?: number;
   revenue?: number;
@@ -214,16 +215,16 @@ export interface CampaignPerformance {
 
 // Asset Model
 export interface Asset extends BaseModel {
-  name: string;
-  type: 'image' | 'video' | 'audio' | 'document' | 'copy';
-  url: string;
+  name: string;,
+    type: 'image' | 'video' | 'audio' | 'document' | 'copy';,
+    url: string;
   thumbnail?: string;
-  clientId: string;
-  tags: string[];
-  status: 'active' | 'archived' | 'deleted';
-  permissions: {
-    public: boolean;
-    userIds: string[];
+  clientId: string;,
+    tags: string[];,
+    status: 'active' | 'archived' | 'deleted';,
+    permissions: {},
+    public: boolean;,
+    userIds: string[];,
     roleIds: string[];
   };
   metadata: AssetMetadata;
@@ -248,9 +249,9 @@ export interface AssetMetadata {
 
 // Template Model
 export interface Template extends BaseModel {
-  name: string;
-  platform: string;
-  aspectRatio: string;
+  name: string;,
+    platform: string;,
+    aspectRatio: string;
   description?: string;
   thumbnail?: string;
   category?: string;
@@ -260,9 +261,9 @@ export interface Template extends BaseModel {
   recommendedUsage?: string;
   usageCount?: number;
   performance?: {
-    views: number;
-    engagement: number;
-    conversion: number;
+    views: number;,
+    engagement: number;,
+    conversion: number;,
     score: number;
   };
   dynamicFields?: DynamicField[];
@@ -274,17 +275,17 @@ export interface Template extends BaseModel {
   // Additional properties for compatibility
   width?: number;
   height?: number;
-  structure?: any;
+  structure?: unknown;
   aspect_ratio?: string;
 }
 
 // Dynamic Field Model
 export interface DynamicField {
-  id: string;
-  name: string;
-  type: 'text' | 'image' | 'video' | 'audio' | 'color';
-  required: boolean;
-  description: string;
+  id: string;,
+    name: string;,
+    type: 'text' | 'image' | 'video' | 'audio' | 'color';,
+    required: boolean;,
+    description: string;
   defaultValue?: string;
   constraints?: {
     minLength?: number;
@@ -296,20 +297,20 @@ export interface DynamicField {
 
 // Strategy Model
 export interface Strategy extends BaseModel {
-  name: string;
-  description: string;
-  clientId: string;
-  objectives: string[];
-  targetAudience: {
-    demographics: string[];
-    interests: string[];
+  name: string;,
+    description: string;,
+    clientId: string;,
+    objectives: string[];,
+    targetAudience: {},
+    demographics: string[];,
+    interests: string[];,
     behaviors: string[];
   };
-  keyMessages: string[];
-  contentPlan: {
-    platforms: string[];
-    contentTypes: string[];
-    frequency: string;
+  keyMessages: string[];,
+    contentPlan: {},
+    platforms: string[];,
+    contentTypes: string[];,
+    frequency: string;,
     timeline: string;
   };
   kpis: string[];
@@ -321,12 +322,12 @@ export interface Strategy extends BaseModel {
 export interface Matrix extends BaseModel {
   name: string;
   description?: string;
-  clientId: string;
-  templateId: string;
-  status: 'draft' | 'pending' | 'approved' | 'rejected';
-  variations: Variation[];
-  combinations: VariationCombination[];
-  fieldAssignments: Record<string, FieldAssignment>;
+  clientId: string;,
+    templateId: string;,
+    status: 'draft' | 'pending' | 'approved' | 'rejected';,
+    variations: Variation[];,
+    combinations: VariationCombination[];,
+    fieldAssignments: Record<string, FieldAssignment>;
   approvalStatus?: {
     status: 'pending' | 'approved' | 'rejected';
     approvedBy?: string;
@@ -337,18 +338,18 @@ export interface Matrix extends BaseModel {
 
 // Variation Model
 export interface Variation {
-  id: string;
-  name: string;
-  isActive: boolean;
+  id: string;,
+    name: string;,
+    isActive: boolean;
   isDefault?: boolean;
 }
 
 // Variation Combination Model
 export interface VariationCombination {
-  id: string;
-  name: string;
-  variationIds: string[];
-  isSelected: boolean;
+  id: string;,
+    name: string;,
+    variationIds: string[];,
+    isSelected: boolean;
   performanceScore?: number;
 }
 
@@ -361,13 +362,13 @@ export interface FieldAssignment {
 
 // Content Variation Model
 export interface ContentVariation {
-  id: string;
-  variationId: string;
-  content: string;
+  id: string;,
+    variationId: string;,
+    content: string;
 }
 
 // Asset Variation Model
 export interface AssetVariation {
-  variationId: string;
-  assetId: string;
+  variationId: string;,
+    assetId: string;
 }

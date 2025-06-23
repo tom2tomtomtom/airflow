@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 /**
  * Complete User Workflow Tests
  * End-to-end testing of the entire AIrWAVE platform workflow
@@ -353,6 +354,7 @@ test.describe('Complete User Workflow - AIrWAVE Platform', () => {
           await assetsPage.uploadFileByDrop('test-image.jpg', 'image');
           // Should fail gracefully
         } catch (error) {
+    const message = getErrorMessage(error);
           // Expected to fail
         }
         

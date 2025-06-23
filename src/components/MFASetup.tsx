@@ -18,15 +18,13 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-  Divider,
-} from '@mui/material';
+  Divider} from '@mui/material';
 import {
   Security as SecurityIcon,
   Key as KeyIcon,
   CheckCircle as CheckCircleIcon,
   Warning as WarningIcon,
-  ContentCopy as CopyIcon,
-} from '@mui/icons-material';
+  ContentCopy as CopyIcon} from '@mui/icons-material';
 
 interface MFAStatus {
   isConfigured: boolean;
@@ -68,7 +66,7 @@ export const MFASetup: React.FC = () => {
       } else {
         setError(data.error || 'Failed to load MFA status');
       }
-    } catch (err) {
+    } catch (err: any) {
       setError('Network error while loading MFA status');
     } finally {
       setLoading(false);
@@ -81,8 +79,7 @@ export const MFASetup: React.FC = () => {
 
     try {
       const response = await fetch('/api/auth/mfa/setup', {
-        method: 'POST',
-      });
+        method: 'POST'});
       const data = await response.json();
 
       if (data.success) {
@@ -92,7 +89,7 @@ export const MFASetup: React.FC = () => {
       } else {
         setError(data.error || 'Failed to setup MFA');
       }
-    } catch (err) {
+    } catch (err: any) {
       setError('Network error while setting up MFA');
     } finally {
       setLoading(false);
@@ -111,11 +108,9 @@ export const MFASetup: React.FC = () => {
     try {
       const response = await fetch('/api/auth/mfa/verify', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token: verificationCode }),
-      });
+        headers: {},
+          'Content-Type': 'application/json'},
+        body: JSON.stringify({ token: verificationCode })});
       const data = await response.json();
 
       if (data.success) {
@@ -127,7 +122,7 @@ export const MFASetup: React.FC = () => {
       } else {
         setError(data.error || 'Failed to verify MFA');
       }
-    } catch (err) {
+    } catch (err: any) {
       setError('Network error while verifying MFA');
     } finally {
       setLoading(false);

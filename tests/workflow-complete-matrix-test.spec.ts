@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { test, expect } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
@@ -48,6 +49,7 @@ test.describe('Complete Workflow to Matrix Test', () => {
         timeout: 10000 
       });
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log('⚠️ First navigation attempt failed, retrying...');
       await page.waitForTimeout(1000);
       await page.goto('http://localhost:3000/flow', { 
@@ -246,6 +248,7 @@ test.describe('Complete Workflow to Matrix Test', () => {
           }
         }
       } catch (error) {
+    const message = getErrorMessage(error);
         // Look for any text that indicates we're in the motivations step
         const motivationText = page.locator('text=Strategic Motivations').or(page.locator('text=Motivations')).first();
         const hasMotivationText = await motivationText.isVisible();

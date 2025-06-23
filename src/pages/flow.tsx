@@ -1,23 +1,18 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
-import {
-  Box,
-  Paper,
-  Typography,
-  Button,
-  CircularProgress,
-} from '@mui/material';
-import {
-  AutoAwesome as MagicIcon,
-} from '@mui/icons-material';
+import { Box, Paper, Typography, Button, CircularProgress } from '@mui/material';
+import { AutoAwesome as MagicIcon } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
 
 // Lazy load the workflow component for better performance
 const UnifiedBriefWorkflow = dynamic(
-  () => import('@/components/UnifiedBriefWorkflow').then(mod => ({ default: mod.UnifiedBriefWorkflow })),
+  () =>
+    import('@/components/UnifiedBriefWorkflow').then(mod => ({
+      default: mod.UnifiedBriefWorkflow,
+    })),
   {
     loading: () => (
       <Box display="flex" justifyContent="center" py={4}>
@@ -34,20 +29,19 @@ const FlowPage: React.FC = () => {
   const { showNotification } = useNotification();
 
   // Debug effect to track workflow open state changes
-  React.useEffect(() => {
-      }, [openWorkflow]);
+  React.useEffect(() => {}, [openWorkflow]);
 
   const handleWorkflowComplete = () => {
-        setOpenWorkflow(false);
+    setOpenWorkflow(false);
     showNotification('Content workflow completed successfully!', 'success');
   };
 
   const handleOpenWorkflow = () => {
-        setOpenWorkflow(true);
+    setOpenWorkflow(true);
   };
 
   const handleCloseWorkflow = () => {
-        setOpenWorkflow(false);
+    setOpenWorkflow(false);
   };
 
   return (
@@ -79,7 +73,8 @@ const FlowPage: React.FC = () => {
               </Typography>
               <Typography variant="body1" color="text.secondary" paragraph>
                 Use our unified workflow to upload briefs and generate strategic content with AI.
-                Our AI will analyze your brand guidelines and create content that aligns with your objectives.
+                Our AI will analyze your brand guidelines and create content that aligns with your
+                objectives.
               </Typography>
             </Box>
 
@@ -89,11 +84,11 @@ const FlowPage: React.FC = () => {
                 size="large"
                 startIcon={<MagicIcon />}
                 onClick={handleOpenWorkflow}
-                sx={{ 
-                  py: 2, 
+                sx={{
+                  py: 2,
                   px: 4,
                   fontSize: '1.1rem',
-                  borderRadius: 2 
+                  borderRadius: 2,
                 }}
               >
                 {openWorkflow ? 'Hide Workflow' : 'Start Flow'}
@@ -104,7 +99,14 @@ const FlowPage: React.FC = () => {
               <Typography variant="h6" gutterBottom>
                 What you can do:
               </Typography>
-              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2, mt: 2 }}>
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                  gap: 2,
+                  mt: 2,
+                }}
+              >
                 <Box>
                   <Typography variant="subtitle2" color="primary.main">
                     Upload Briefs

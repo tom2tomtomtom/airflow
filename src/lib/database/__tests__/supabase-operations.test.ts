@@ -14,17 +14,14 @@ import type { Client, Asset, Brief, Matrix } from '@/types/database';
 
 // Mock Supabase client
 jest.mock('@/lib/supabase', () => ({
-  supabase: {
+  supabase: {},
     from: jest.fn(),
-    auth: {
+    auth: {},
       getUser: jest.fn(),
       signInWithPassword: jest.fn(),
       signUp: jest.fn(),
-      signOut: jest.fn(),
-    },
-    rpc: jest.fn(),
-  },
-}));
+      signOut: jest.fn()},
+    rpc: jest.fn()}}));
 
 // Mock console methods
 const _mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -53,8 +50,7 @@ describe('Supabase Database Operations', () => {
     limit: jest.fn().mockReturnThis(),
     range: jest.fn().mockReturnThis(),
     single: jest.fn().mockResolvedValue({ data: null, error: null }),
-    maybeSingle: jest.fn().mockResolvedValue({ data: null, error: null }),
-  } as any);
+    maybeSingle: jest.fn().mockResolvedValue({ data: null, error: null })} as any);
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -73,8 +69,7 @@ describe('Supabase Database Operations', () => {
       industry: 'Technology',
       logo_url: 'https://example.com/logo.png',
       primary_color: '#007bff',
-      secondary_color: '#6c757d',
-    };
+      secondary_color: '#6c757d'};
 
     test('should create a new client', async () => {
       const mockResponse = { data: mockClient, error: null };
@@ -174,8 +169,7 @@ describe('Supabase Database Operations', () => {
       created_by: 'user123',
       file_size: 1024000,
       mime_type: 'image/jpeg',
-      tags: ['marketing', 'social'],
-    };
+      tags: ['marketing', 'social']};
 
     test('should create a new asset', async () => {
       const mockResponse = { data: mockAsset, error: null };
@@ -264,8 +258,7 @@ describe('Supabase Database Operations', () => {
       objectives: { primary: 'Increase brand awareness' },
       target_audience: 'Millennials aged 25-35',
       platforms: ['facebook', 'instagram'],
-      budget: 50000,
-    };
+      budget: 50000};
 
     test('should create a new brief', async () => {
       const mockResponse = { data: mockBrief, error: null };
@@ -286,8 +279,7 @@ describe('Supabase Database Operations', () => {
         ...mockBrief,
         raw_content: 'Original brief content...',
         parsing_status: 'completed',
-        parsed_at: new Date().toISOString(),
-      };
+        parsed_at: new Date().toISOString()};
       const mockResponse = { data: briefWithContent, error: null };
       mockSupabase.from().select().eq().single.mockResolvedValue(mockResponse);
 
@@ -308,8 +300,7 @@ describe('Supabase Database Operations', () => {
         .from('briefs')
         .update({
           parsing_status: 'completed',
-          parsed_at: new Date().toISOString(),
-        })
+          parsed_at: new Date().toISOString()})
         .eq('id', 'brief123');
 
       expect(result.error).toBeNull();
@@ -343,8 +334,7 @@ describe('Supabase Database Operations', () => {
       created_by: 'user123',
       budget: 25000,
       start_date: '2024-01-01',
-      end_date: '2024-01-31',
-    };
+      end_date: '2024-01-31'};
 
     test('should create a new campaign', async () => {
       const mockResponse = { data: mockCampaign, error: null };
@@ -402,8 +392,7 @@ describe('Supabase Database Operations', () => {
       combinations: [
         { asset_id: 'asset1', copy_id: 'copy1' },
         { asset_id: 'asset2', copy_id: 'copy2' },
-      ],
-    };
+      ]};
 
     test('should create a new matrix', async () => {
       const mockResponse = { data: mockMatrix, error: null };
@@ -422,8 +411,7 @@ describe('Supabase Database Operations', () => {
       const matrixWithRelations = {
         ...mockMatrix,
         campaign: { name: 'Test Campaign' },
-        assets: [{ id: 'asset1', name: 'Asset 1' }],
-      };
+        assets: [{ id: 'asset1', name: 'Asset 1' }]};
       const mockResponse = { data: matrixWithRelations, error: null };
       mockSupabase.from().select().eq().single.mockResolvedValue(mockResponse);
 
@@ -448,8 +436,7 @@ describe('Supabase Database Operations', () => {
 
       const result = await supabase.rpc('create_campaign_with_assets', {
         campaign_data: { name: 'Test Campaign' },
-        asset_ids: ['asset1', 'asset2'],
-      });
+        asset_ids: ['asset1', 'asset2']});
 
       expect(result.error).toBeNull();
       expect(result.data).toBe(true);
@@ -463,8 +450,7 @@ describe('Supabase Database Operations', () => {
 
       const result = await supabase.rpc('create_campaign_with_assets', {
         campaign_data: { name: '' }, // Invalid data
-        asset_ids: ['asset1'],
-      });
+        asset_ids: ['asset1']});
 
       expect(result.error).toBeTruthy();
       expect(result.data).toBeNull();
@@ -479,7 +465,7 @@ describe('Supabase Database Operations', () => {
 
       try {
         await supabase.from('clients').select('*').single();
-      } catch (error) {
+      } catch (error: any) {
         expect(error).toBeInstanceOf(Error);
         expect((error as Error).message).toBe('Network error');
       }

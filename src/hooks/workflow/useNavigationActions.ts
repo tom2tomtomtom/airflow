@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { workflowMetrics } from '@/lib/monitoring/workflow-metrics';
 
 interface UseNavigationActionsProps {
-  state: {
+  state: {},
     currentStep: number;
   };
   dispatch: (action: any) => void;
@@ -14,8 +14,7 @@ export const useNavigationActions = ({
   state,
   dispatch,
   userId,
-  sessionId,
-}: UseNavigationActionsProps) => {
+  sessionId}: UseNavigationActionsProps) => {
   // Define workflow steps for navigation
   const workflowSteps = [
     { id: 'brief-upload', title: 'Upload Brief' },
@@ -58,6 +57,5 @@ export const useNavigationActions = ({
     nextStep,
     previousStep,
     goToStep,
-    workflowSteps,
-  };
+    workflowSteps};
 };

@@ -50,7 +50,7 @@ export const SmartProgressIndicator: React.FC<SmartProgressIndicatorProps> = ({
   currentStep,
   onStepComplete,
   showDetails = false,
-  variant = 'detailed'
+  variant = 'detailed',
 }) => {
   const [progress, setProgress] = useState(0);
   const [timeRemaining, setTimeRemaining] = useState(0);
@@ -59,16 +59,16 @@ export const SmartProgressIndicator: React.FC<SmartProgressIndicatorProps> = ({
 
   useEffect(() => {
     // Calculate overall progress
-    const completedSteps = steps.filter(step => step.status === 'completed').length;
+    const completedSteps = steps.filter((step: any) => step.status === 'completed').length;
     const totalSteps = steps.length;
     const baseProgress = (completedSteps / totalSteps) * 100;
-    
+
     // Add current step progress
     const currentStepObj = steps[currentStep];
     if (currentStepObj && currentStepObj.status === 'active') {
       const currentStepProgress = stepProgress[currentStepObj.id] || 0;
       const stepWeight = 100 / totalSteps;
-      setProgress(baseProgress + (currentStepProgress * stepWeight / 100));
+      setProgress(baseProgress + (currentStepProgress * stepWeight) / 100);
     } else {
       setProgress(baseProgress);
     }
@@ -95,7 +95,7 @@ export const SmartProgressIndicator: React.FC<SmartProgressIndicatorProps> = ({
           }
           return {
             ...prev,
-            [currentStepObj.id]: Math.min(current + (100 / currentStepObj.estimatedTime), 100)
+            [currentStepObj.id]: Math.min(current + 100 / currentStepObj.estimatedTime, 100),
           };
         });
       }, 1000);
@@ -114,10 +114,14 @@ export const SmartProgressIndicator: React.FC<SmartProgressIndicatorProps> = ({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'success';
-      case 'active': return 'primary';
-      case 'error': return 'error';
-      default: return 'default';
+      case 'completed':
+        return 'success';
+      case 'active':
+        return 'primary';
+      case 'error':
+        return 'error';
+      default:
+        return 'default';
     }
   };
 
@@ -132,16 +136,16 @@ export const SmartProgressIndicator: React.FC<SmartProgressIndicatorProps> = ({
             {formatTime(timeRemaining)} remaining
           </Typography>
         </Box>
-        <LinearProgress 
-          variant="determinate" 
-          value={progress} 
-          sx={{ 
-            height: 8, 
+        <LinearProgress
+          variant="determinate"
+          value={progress}
+          sx={{
+            height: 8,
             borderRadius: 1,
             '& .MuiLinearProgress-bar': {
               borderRadius: 1,
-            }
-          }} 
+            },
+          }}
         />
         <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
           {Math.round(progress)}% complete
@@ -160,11 +164,7 @@ export const SmartProgressIndicator: React.FC<SmartProgressIndicatorProps> = ({
             <Typography variant="h6">AI Processing</Typography>
           </Box>
           <Box display="flex" alignItems="center" gap={1}>
-            <Chip 
-              label={`${Math.round(progress)}%`} 
-              color="primary" 
-              size="small" 
-            />
+            <Chip label={`${Math.round(progress)}%`} color="primary" size="small" />
             <Typography variant="caption" color="text.secondary">
               {formatTime(timeRemaining)} left
             </Typography>
@@ -173,24 +173,22 @@ export const SmartProgressIndicator: React.FC<SmartProgressIndicatorProps> = ({
 
         {/* Progress Bar */}
         <Box mb={3}>
-          <LinearProgress 
-            variant="determinate" 
-            value={progress} 
-            sx={{ 
-              height: 12, 
+          <LinearProgress
+            variant="determinate"
+            value={progress}
+            sx={{
+              height: 12,
               borderRadius: 2,
               '& .MuiLinearProgress-bar': {
                 borderRadius: 2,
-              }
-            }} 
+              },
+            }}
           />
         </Box>
 
         {/* Current Step Info */}
         <Box display="flex" alignItems="center" gap={2} mb={2}>
-          <Avatar sx={{ bgcolor: 'primary.light' }}>
-            {steps[currentStep]?.icon}
-          </Avatar>
+          <Avatar sx={{ bgcolor: 'primary.light' }}>{steps[currentStep]?.icon}</Avatar>
           <Box>
             <Typography variant="subtitle1" fontWeight={500}>
               {steps[currentStep]?.label}
@@ -203,8 +201,9 @@ export const SmartProgressIndicator: React.FC<SmartProgressIndicatorProps> = ({
 
         {/* Toggle Steps Detail */}
         <Box display="flex" alignItems="center" justifyContent="center">
-          <IconButton 
-            onClick={() => setShowSteps(!showSteps)} aria-label="Icon button"
+          <IconButton
+            onClick={() => setShowSteps(!showSteps)}
+            aria-label="Icon button"
             size="small"
           >
             {showSteps ? <ExpandLess /> : <ExpandMore />}
@@ -245,9 +244,7 @@ export const SmartProgressIndicator: React.FC<SmartProgressIndicatorProps> = ({
                       )}
                     </Box>
                   ) : (
-                    <Avatar sx={{ bgcolor: 'grey.300', width: 32, height: 32 }}>
-                      {step.icon}
-                    </Avatar>
+                    <Avatar sx={{ bgcolor: 'grey.300', width: 32, height: 32 }}>{step.icon}</Avatar>
                   )}
                 </ListItemIcon>
                 <ListItemText
@@ -267,7 +264,7 @@ export const SmartProgressIndicator: React.FC<SmartProgressIndicatorProps> = ({
                     </Box>
                   }
                 />
-                <Chip 
+                <Chip
                   label={step.status === 'active' ? formatTime(step.estimatedTime) : step.status}
                   size="small"
                   color={getStatusColor(step.status) as any}
@@ -290,7 +287,7 @@ export const briefWorkflowSteps: ProgressStep[] = [
     description: 'Analyzing document and extracting key information',
     icon: <CloudUpload />,
     estimatedTime: 15,
-    status: 'pending'
+    status: 'pending',
   },
   {
     id: 'motivations',
@@ -298,7 +295,7 @@ export const briefWorkflowSteps: ProgressStep[] = [
     description: 'AI creating strategic motivations from brief content',
     icon: <Psychology />,
     estimatedTime: 25,
-    status: 'pending'
+    status: 'pending',
   },
   {
     id: 'copy',
@@ -306,7 +303,7 @@ export const briefWorkflowSteps: ProgressStep[] = [
     description: 'Generating platform-specific copy variations',
     icon: <ContentCopy />,
     estimatedTime: 20,
-    status: 'pending'
+    status: 'pending',
   },
   {
     id: 'assets',
@@ -314,7 +311,7 @@ export const briefWorkflowSteps: ProgressStep[] = [
     description: 'Organizing and optimizing visual assets',
     icon: <Image />,
     estimatedTime: 10,
-    status: 'pending'
+    status: 'pending',
   },
   {
     id: 'template',
@@ -322,7 +319,7 @@ export const briefWorkflowSteps: ProgressStep[] = [
     description: 'Setting up video template with content',
     icon: <VideoLibrary />,
     estimatedTime: 15,
-    status: 'pending'
+    status: 'pending',
   },
   {
     id: 'matrix',
@@ -330,7 +327,7 @@ export const briefWorkflowSteps: ProgressStep[] = [
     description: 'Creating content matrix for all variations',
     icon: <GridView />,
     estimatedTime: 10,
-    status: 'pending'
+    status: 'pending',
   },
   {
     id: 'render',
@@ -338,6 +335,6 @@ export const briefWorkflowSteps: ProgressStep[] = [
     description: 'Preparing final configuration for video generation',
     icon: <Send />,
     estimatedTime: 5,
-    status: 'pending'
-  }
+    status: 'pending',
+  },
 ];

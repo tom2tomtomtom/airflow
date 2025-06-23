@@ -66,15 +66,15 @@ export function estimateTokensForCopy(
   
   // Input tokens from motivations and brief
   const motivationText = motivations
-    .filter(m => m.selected)
-    .map(m => `${m.title} ${m.description}`)
+    .filter((m: any) => m.selected)
+    .map((m: any) => `${m.title} ${m.description}`)
     .join(' ');
   
   const briefText = `${briefData.title} ${briefData.objective} ${briefData.targetAudience}`;
   const inputTokens = Math.ceil((motivationText + briefText).length / 4);
   
   // Output tokens: 3 copy variations per motivation per platform
-  const selectedMotivations = motivations.filter(m => m.selected).length;
+  const selectedMotivations = motivations.filter((m: any) => m.selected).length;
   const targetPlatforms = platforms.length || briefData.platforms?.length || 3;
   const copyVariations = selectedMotivations * targetPlatforms * 3;
   const outputTokens = copyVariations * 50; // ~50 tokens per copy variation
@@ -131,20 +131,17 @@ export function estimateCost(
   tokens: number
 ): number {
   const costPerK: Record<string, Record<string, number>> = {
-    openai: {
+    openai: {},
       'gpt-4': 0.06,
       'gpt-4o-mini': 0.002,
       'gpt-3.5-turbo': 0.002,
-      'dall-e-3': 0.04,
-    },
-    anthropic: {
+      'dall-e-3': 0.04},
+    anthropic: {},
       'claude-3-opus': 0.06,
       'claude-3-sonnet': 0.012,
-      'claude-3-haiku': 0.0008,
-    },
-    elevenlabs: {
-      'eleven_monolingual_v1': 0.30,
-    }
+      'claude-3-haiku': 0.0008},
+    elevenlabs: {},
+      'eleven_monolingual_v1': 0.30}
   };
 
   const rate = costPerK[service]?.[model] || 0.01; // Default fallback
@@ -180,7 +177,7 @@ export function getRecommendedModel(
   const serviceModels = models[service] || models.openai;
   
   // Try preferred model first
-  const preferred = serviceModels.find(m => m.name === preferredModel);
+  const preferred = serviceModels.find((m: any) => m.name === preferredModel);
   if (preferred) {
     const cost = estimateCost(service, preferred.name, estimatedTokens);
     if (cost <= budgetRemaining) {

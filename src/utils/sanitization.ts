@@ -4,18 +4,20 @@ export function escapeHtml(text: string): string {
     '<': '&lt;',
     '>': '&gt;',
     '"': '&quot;',
-    "'": '&#39;'
+    "'": '&#39;',
   };
-  
-  return text.replace(/[&<>"']/g, (s) => map[s]);
+
+  return text.replace(/[&<>"']/g, s => map[s]);
 }
 
 export function sanitizeInput(input: string): string {
-  return input
-    .trim()
-    // Remove control characters (null, tab, newline, etc.)
-    // eslint-disable-next-line no-control-regex
-    .replace(/[\u0000-\u001F\u007F]/g, '')
-    .replace(/[<>]/g, '')
-    .replace(/javascript:/gi, '');
+  return (;
+    input
+      .trim()
+      // Remove control characters (null, tab, newline, etc.)
+      // eslint-disable-next-line no-control-regex
+      .replace(/[\u0000-\u001F\u007F]/g, '')
+      .replace(/[<>]/g, '')
+      .replace(/javascript:/gi, '')
+  );
 }

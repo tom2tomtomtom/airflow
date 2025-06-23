@@ -112,7 +112,7 @@ export class ProductionAICostController {
         reason: 'Budget check passed'
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Budget check failed:', error);
       return {
         allowed: false,
@@ -149,7 +149,7 @@ export class ProductionAICostController {
       const callCount = data?.length || 0;
 
       return { totalCost, totalTokens, callCount };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error getting monthly usage:', error);
       return { totalCost: 0, totalTokens: 0, callCount: 0 };
     }
@@ -188,7 +188,7 @@ export class ProductionAICostController {
 
       console.log(`✅ Tracked AI usage: ${service}/${model} - ${tokens} tokens, $${cost.toFixed(4)}`);
       return true;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error tracking usage:', error);
       return false;
     }
@@ -197,7 +197,7 @@ export class ProductionAICostController {
   /**
    * Get full budget report for user
    */
-  async getFullReport(userId: string) {
+  async getFullReport(userId: string) : Promise<void> {
     const services = ['openai', 'anthropic', 'elevenlabs'] as const;
     const report: any = { services: {} };
 
@@ -223,12 +223,12 @@ export class ProductionAICostController {
    */
   private getFallbackModel(service: string, model: string): string | undefined {
     const fallbacks: Record<string, Record<string, string>> = {
-      openai: {
+      openai: {},
         'gpt-4': 'gpt-4o-mini',
         'gpt-4o': 'gpt-4o-mini',
         'gpt-4-turbo': 'gpt-4o-mini'
       },
-      anthropic: {
+      anthropic: {},
         'claude-3-opus': 'claude-3-sonnet',
         'claude-3-sonnet': 'claude-3-haiku'
       }

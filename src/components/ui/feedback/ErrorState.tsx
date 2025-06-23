@@ -48,7 +48,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
 
   const getIcon = () => {
     if (icon) return icon;
-    
+
     switch (type) {
       case 'warning':
         return <WarningIcon sx={{ fontSize: 40 }} />;
@@ -92,10 +92,8 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
         p: variant === 'inline' ? 2 : 3,
       }}
     >
-      <Box sx={{ color: getColor() }}>
-        {getIcon()}
-      </Box>
-      
+      <Box sx={{ color: getColor() }}>{getIcon()}</Box>
+
       <Box>
         {title && (
           <Typography
@@ -109,7 +107,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
             {title}
           </Typography>
         )}
-        
+
         <Typography
           variant="body1"
           color="text.secondary"
@@ -140,7 +138,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
                     {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                   </IconButton>
                 </Box>
-                
+
                 <Collapse in={expanded}>
                   <Box
                     sx={{
@@ -199,12 +197,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
       </Box>
 
       {showRetry && onRetry && (
-        <ActionButton
-          variant="outline"
-          onClick={onRetry}
-          startIcon={<RefreshIcon />}
-          size="medium"
-        >
+        <ActionButton variant="outline" onClick={onRetry} startIcon={<RefreshIcon />} size="medium">
           {retryText}
         </ActionButton>
       )}
@@ -216,12 +209,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
       severity={getSeverity()}
       action={
         showRetry && onRetry ? (
-          <IconButton
-            color="inherit"
-            size="small"
-            onClick={onRetry}
-            aria-label={retryText}
-          >
+          <IconButton color="inherit" size="small" onClick={onRetry} aria-label={retryText}>
             <RefreshIcon />
           </IconButton>
         ) : undefined
@@ -237,7 +225,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
       <Typography variant="body2" sx={{ mb: details ? 1 : 0 }}>
         {message}
       </Typography>
-      
+
       {details && (
         <Box>
           {collapsible ? (
@@ -252,12 +240,10 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
                 }}
                 onClick={() => setExpanded(!expanded)}
               >
-                <Typography variant="body2">
-                  {expanded ? 'Hide' : 'Show'} Details
-                </Typography>
+                <Typography variant="body2">{expanded ? 'Hide' : 'Show'} Details</Typography>
                 {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
               </Box>
-              
+
               <Collapse in={expanded}>
                 <Box sx={{ mt: 1 }}>
                   <Typography
@@ -309,9 +295,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
             borderColor: 'divider',
           }}
         >
-          <CardContent sx={{ p: 0 }}>
-            {renderContent()}
-          </CardContent>
+          <CardContent sx={{ p: 0 }}>{renderContent()}</CardContent>
         </Card>
       );
     default:

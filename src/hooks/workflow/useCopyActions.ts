@@ -16,13 +16,13 @@ if (typeof window === 'undefined') {
     aiRateLimiter = require('@/lib/rate-limiting/ai-rate-limiter').aiRateLimiter;
     aiResponseCache = require('@/lib/caching/ai-response-cache').aiResponseCache;
     aiCircuitBreaker = require('@/lib/circuit-breaker/ai-circuit-breaker').aiCircuitBreaker;
-  } catch (error) {
+  } catch (error: any) {
     console.warn('Server-side dependencies not available, using fallbacks');
   }
 }
 
 interface UseCopyActionsProps {
-  state: {
+  state: {},
     briefData: BriefData | null;
     motivations: Motivation[];
   };
@@ -33,8 +33,7 @@ interface UseCopyActionsProps {
 export const useCopyActions = ({
   state,
   dispatch,
-  userId,
-}: UseCopyActionsProps) => {
+  userId}: UseCopyActionsProps) => {
   const { showNotification } = useNotification();
   const { makeCSRFRequest } = useCSRF();
   const { activeClient } = useClient();
@@ -45,7 +44,7 @@ export const useCopyActions = ({
       return;
     }
 
-    const selectedMotivations = state?.motivations?.filter(m => m.selected);
+    const selectedMotivations = state?.motivations?.filter((m: any) => m.selected);
     if (selectedMotivations.length < 1) {
       showNotification('Minimum 1 motivation required to generate copy', 'error');
       return;
@@ -98,7 +97,7 @@ export const useCopyActions = ({
           model: 'gpt-4o-mini',
           estimatedTokens,
           operation: 'generate-copy',
-          operationData: {
+          operationData: {},
             motivations: selectedMotivations,
             briefData: state.briefData,
             platforms: state?.briefData?.platforms
@@ -134,8 +133,7 @@ export const useCopyActions = ({
               briefData: state.briefData,
               model: fallbackModel || 'gpt-4o-mini',
               budgetAware: true
-            }),
-          });
+            })});
         },
         async () => {
           // Fallback: provide generic copy variations
@@ -186,7 +184,7 @@ export const useCopyActions = ({
       } else {
         throw new Error(result.message || 'Failed to generate copy');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating copy:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to generate copy. Please try again.';
       dispatch({ type: 'SET_ERROR', error: errorMessage });
@@ -209,8 +207,7 @@ export const useCopyActions = ({
           selectedCopy,
           briefTitle: state.briefData?.title || 'Untitled Brief',
           clientId: activeClient?.id || 'default-client'
-        }),
-      });
+        })});
 
       if (!response.ok) {
         throw new Error('Failed to store copy assets');
@@ -224,7 +221,7 @@ export const useCopyActions = ({
       } else {
         throw new Error(result.message || 'Failed to store copy assets');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error storing copy assets:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to store copy assets';
       dispatch({ type: 'SET_ERROR', error: errorMessage });
@@ -236,6 +233,5 @@ export const useCopyActions = ({
   return {
     generateCopy,
     selectCopy,
-    storeCopyVariations,
-  };
+    storeCopyVariations};
 };

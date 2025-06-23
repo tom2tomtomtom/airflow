@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -8,8 +9,7 @@ import { z } from 'zod';
 const VersionCreateSchema = z.object({
   content: z.string().min(1, 'Content is required'),
   notes: z.string().optional(),
-  is_major: z.boolean().default(false),
-});
+  is_major: z.boolean().default(false)});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -29,7 +29,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Copy Asset Versions API error:', error);
     return res.status(500).json({ 
@@ -102,13 +102,12 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
   // Calculate version statistics
   const versionStats = {
     total_versions: (count || 0) + 1, // +1 for current version
-    major_versions: versions?.filter(v => v.is_major).length || 0,
-    minor_versions: versions?.filter(v => !v.is_major).length || 0,
+    major_versions: versions?.filter((v: any) => v.is_major).length || 0,
+    minor_versions: versions?.filter((v: any) => !v.is_major).length || 0,
     first_created: versions && versions.length > 0 
       ? versions[versions.length - 1].created_at 
       : currentVersion?.updated_at,
-    last_updated: currentVersion?.updated_at,
-  };
+    last_updated: currentVersion?.updated_at};
 
   // Enrich versions with change analysis
   const enrichedVersions = versions?.map((version, index) => {
@@ -118,8 +117,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
     return {
       ...version,
       change_analysis: changes,
-      is_current: false,
-    };
+      is_current: false};
   }) || [];
 
   // Add current version as the first item
@@ -136,22 +134,19 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
       change_analysis: versions && versions.length > 0 
         ? analyzeContentChanges(versions[0].content, currentVersion.content)
         : null,
-      is_current: true,
-    });
+      is_current: true});
   }
 
   return res.json({
-    data: {
+    data: {},
       asset_title: asset.title,
       versions: enrichedVersions,
-      statistics: versionStats,
-    },
+      statistics: versionStats},
     count: versionStats.total_versions,
-    pagination: {
+    pagination: {},
       limit: parseInt(limit as string),
       offset: parseInt(offset as string),
-      total: versionStats.total_versions,
-    }
+      total: versionStats.total_versions}
   });
 }
 
@@ -218,8 +213,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
       content: asset.content,
       notes: `Previous version (auto-saved before update)`,
       is_major: false,
-      created_by: user.id,
-    });
+      created_by: user.id});
 
   if (versionError) {
     console.error('Error creating version:', versionError);
@@ -232,11 +226,10 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
     character_count: versionData.content.length,
     word_count: versionData.content.split(/\s+/).length,
     updated_at: new Date().toISOString(),
-    metadata: {
+    metadata: {},
       version_notes: versionData.notes,
       is_major_update: versionData.is_major,
-      previous_version: nextVersionNumber,
-    }
+      previous_version: nextVersionNumber}
   };
 
   const { data: updatedAsset, error: updateError } = await supabase
@@ -264,8 +257,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
         content: versionData.content,
         notes: versionData.notes || 'Major version update',
         is_major: true,
-        created_by: user.id,
-      });
+        created_by: user.id});
   }
 
   // Analyze changes
@@ -273,11 +265,10 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
 
   return res.status(201).json({
     message: 'Copy asset version created successfully',
-    data: {
+    data: {},
       asset: updatedAsset,
       version_number: versionData.is_major ? nextVersionNumber + 1 : nextVersionNumber,
-      change_analysis: changeAnalysis,
-    }
+      change_analysis: changeAnalysis}
   });
 }
 
@@ -292,8 +283,7 @@ function analyzeContentChanges(oldContent: string, newContent: string): any {
     word_change: newWords.length - oldWords.length,
     similarity_score: calculateSimilarity(oldContent, newContent),
     change_type: determineChangeType(oldContent, newContent),
-    key_changes: identifyKeyChanges(oldContent, newContent),
-  };
+    key_changes: identifyKeyChanges(oldContent, newContent)};
 
   return changes;
 }
@@ -303,7 +293,7 @@ function calculateSimilarity(text1: string, text2: string): number {
   const words1 = new Set(text1.toLowerCase().split(/\s+/));
   const words2 = new Set(text2.toLowerCase().split(/\s+/));
   
-  const intersection = new Set([...words1].filter(x => words2.has(x)));
+  const intersection = new Set([...words1].filter((x: any) => words2.has(x)));
   const union = new Set([...words1, ...words2]);
   
   return union.size > 0 ? Math.round((intersection.size / union.size) * 100) : 0;
@@ -360,10 +350,10 @@ function analyzeTone(text: string): string {
   const casualWords = ['hey', 'cool', 'nice', 'fun', 'easy'];
   const urgentWords = ['now', 'today', 'immediate', 'urgent', 'limited'];
   
-  const excitementScore = excitementWords.filter(word => lowerText.includes(word)).length;
-  const professionalScore = professionalWords.filter(word => lowerText.includes(word)).length;
-  const casualScore = casualWords.filter(word => lowerText.includes(word)).length;
-  const urgentScore = urgentWords.filter(word => lowerText.includes(word)).length;
+  const excitementScore = excitementWords.filter((word: any) => lowerText.includes(word)).length;
+  const professionalScore = professionalWords.filter((word: any) => lowerText.includes(word)).length;
+  const casualScore = casualWords.filter((word: any) => lowerText.includes(word)).length;
+  const urgentScore = urgentWords.filter((word: any) => lowerText.includes(word)).length;
   
   const scores: Record<string, number> = { excitement: excitementScore, professional: professionalScore, casual: casualScore, urgent: urgentScore };
   const maxTone = Object.entries(scores).reduce((a, b) => (scores[a[0]] || 0) > (scores[b[0]] || 0) ? a : b);

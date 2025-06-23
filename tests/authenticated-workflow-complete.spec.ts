@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { getErrorMessage } from '@/utils/errorUtils';
+import { test } from '@playwright/test';
 import fs from 'fs';
 import path from 'path';
 
@@ -12,6 +13,7 @@ try {
     console.log('✅ Test credentials loaded');
   }
 } catch (error) {
+    const message = getErrorMessage(error);
   console.log('⚠️ Could not load test credentials');
 }
 
@@ -105,6 +107,7 @@ async function tryAlternativeAuth(page: any) {
       return;
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     console.log('⚠️ Debug auth failed');
   }
   
@@ -127,6 +130,7 @@ async function tryAlternativeAuth(page: any) {
       }
     }
   } catch (error) {
+    const message = getErrorMessage(error);
     console.log('⚠️ Manual token auth failed');
   }
 }
@@ -157,7 +161,7 @@ async function testWorkflowFromAuthenticatedDashboard(page: any) {
           console.log('🔧 State tracked:', state.activeStep, 'from', source);
         },
         
-        trackEvent: function(event, data) {
+        trackEvent: function(_event, data) {
           this.events.push({
             timestamp: Date.now(),
             event,
@@ -386,6 +390,7 @@ async function testFileUploadStep(page: any, container: any) {
       await page.screenshot({ path: 'tests/screenshots/after-file-upload.png', fullPage: true });
       
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log('⚠️ File upload failed:', error);
     }
   }
@@ -412,6 +417,7 @@ async function testMotivationsStep(page: any, container: any) {
         await page.waitForTimeout(1000);
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log(`⚠️ Could not click motivation ${i + 1}`);
     }
   }
@@ -436,6 +442,7 @@ async function testCopyGenerationStep(page: any, container: any) {
         await page.waitForTimeout(5000); // Wait longer for API call
       }
     } catch (error) {
+    const message = getErrorMessage(error);
       console.log('⚠️ Generate button click failed');
     }
   }

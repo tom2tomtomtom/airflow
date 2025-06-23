@@ -25,8 +25,7 @@ import {
   Menu,
   MenuItem as MenuItemComponent,
   Divider,
-  Paper,
-} from '@mui/material';
+  Paper} from '@mui/material';
 import {
   Edit as EditIcon,
   Delete as DeleteIcon,
@@ -41,8 +40,7 @@ import {
   Image as ImageIcon,
   VideoLibrary as VideoIcon,
   Link as LinkIcon,
-  Event as EventIcon,
-} from '@mui/icons-material';
+  Event as EventIcon} from '@mui/icons-material';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -51,7 +49,7 @@ import { useNotification } from '@/contexts/NotificationContext';
 
 interface ScheduledPost {
   id: string;
-  content: {
+  content: {},
     text: string;
     images?: string[];
     video?: string;
@@ -77,8 +75,7 @@ interface ScheduledPostsProps {
 
 const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
   clientId,
-  onScheduleUpdate,
-}) => {
+  onScheduleUpdate}) => {
   const { showNotification } = useNotification();
   const [posts, setPosts] = useState<ScheduledPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -101,47 +98,40 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
       const mockPosts: ScheduledPost[] = [
         {
           id: '1',
-          content: {
+          content: {},
             text: 'Exciting news! Our new product launch is just around the corner. Stay tuned for more updates! 🚀 #ProductLaunch #Innovation',
             images: ['/placeholder-image1.jpg'],
-            link: 'https://example.com/product-launch',
-          },
+            link: 'https://example.com/product-launch'},
           platforms: ['facebook', 'twitter', 'linkedin'],
           scheduledAt: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
           status: 'scheduled',
           createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-          updatedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-        },
+          updatedAt: new Date(Date.now() - 30 * 60 * 1000).toISOString()},
         {
           id: '2',
-          content: {
+          content: {},
             text: 'Behind the scenes of our creative process. Here\'s how we bring ideas to life! 💡✨',
-            video: '/placeholder-video.mp4',
-          },
+            video: '/placeholder-video.mp4'},
           platforms: ['instagram', 'youtube'],
           scheduledAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Tomorrow
           status: 'scheduled',
           createdAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
-          updatedAt: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
-        },
+          updatedAt: new Date(Date.now() - 60 * 60 * 1000).toISOString()},
         {
           id: '3',
-          content: {
+          content: {},
             text: 'Weekly industry insights and trends. What are your thoughts on the latest developments?',
-            images: ['/placeholder-chart.jpg'],
-          },
+            images: ['/placeholder-chart.jpg']},
           platforms: ['linkedin', 'twitter'],
           scheduledAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // Next week
           status: 'scheduled',
           createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        },
+          updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()},
         {
           id: '4',
-          content: {
+          content: {},
             text: 'Thank you to everyone who joined our webinar yesterday! The recording is now available.',
-            link: 'https://example.com/webinar-recording',
-          },
+            link: 'https://example.com/webinar-recording'},
           platforms: ['facebook', 'linkedin'],
           scheduledAt: new Date(Date.now() - 30 * 60 * 1000).toISOString(), // 30 minutes ago
           status: 'published',
@@ -150,14 +140,13 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
           publishResults: [
             { platform: 'facebook', success: true, postId: 'fb_123456' },
             { platform: 'linkedin', success: true, postId: 'li_789012' },
-          ],
-        },
+          ]},
       ];
 
-      const filteredPosts = filter === 'all' ? mockPosts : mockPosts.filter(post => post.status === filter);
+      const filteredPosts = filter === 'all' ? mockPosts : mockPosts.filter((post: any) => post.status === filter);
       setPosts(filteredPosts);
-      onScheduleUpdate(mockPosts.filter(p => p.status === 'scheduled').length);
-    } catch (error) {
+      onScheduleUpdate(mockPosts.filter((p: any) => p.status === 'scheduled').length);
+    } catch (error: any) {
       console.error('Error loading scheduled posts:', error);
       showNotification('Failed to load scheduled posts', 'error');
     } finally {
@@ -222,10 +211,10 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
 
     try {
       // Simulate API call
-      setPosts(prev => prev.filter(p => p.id !== postId));
+      setPosts(prev => prev.filter((p: any) => p.id !== postId));
       showNotification('Scheduled post deleted successfully', 'success');
-      onScheduleUpdate(posts.filter(p => p.status === 'scheduled').length - 1);
-    } catch (error) {
+      onScheduleUpdate(posts.filter((p: any) => p.status === 'scheduled').length - 1);
+    } catch (error: any) {
       showNotification('Failed to delete scheduled post', 'error');
     }
   };
@@ -233,7 +222,7 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
   const handlePublishNow = async (postId: string) => {
     try {
       // Simulate immediate publishing
-      setPosts(prev => prev.map(p => 
+      setPosts(prev => prev.map((p: any) => 
         p.id === postId 
           ? { ...p, status: 'publishing' as const }
           : p
@@ -241,36 +230,35 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
 
       // Simulate publishing delay
       setTimeout(() => {
-        setPosts(prev => prev.map(p => 
+        setPosts(prev => prev.map((p: any) => 
           p.id === postId 
             ? { 
                 ...p, 
                 status: 'published' as const,
-                publishResults: p.platforms.map(platform => ({
+                publishResults: p.platforms.map((platform: any) => ({
                   platform,
                   success: Math.random() > 0.2, // 80% success rate
-                  postId: `${platform}_${Math.random().toString(36).substr(2, 9)}`,
-                }))
+                  postId: `${platform}_${Math.random().toString(36).substr(2, 9)}`}))
               }
             : p
         ));
         showNotification('Post published successfully!', 'success');
       }, 2000);
 
-    } catch (error) {
+    } catch (error: any) {
       showNotification('Failed to publish post', 'error');
     }
   };
 
   const handlePausePost = async (postId: string) => {
     try {
-      setPosts(prev => prev.map(p => 
+      setPosts(prev => prev.map((p: any) => 
         p.id === postId 
           ? { ...p, status: 'paused' as const }
           : p
       ));
       showNotification('Post paused successfully', 'success');
-    } catch (error) {
+    } catch (error: any) {
       showNotification('Failed to pause post', 'error');
     }
   };
@@ -283,7 +271,7 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
   const groupPostsByDate = (posts: ScheduledPost[]) => {
     const groups: Record<string, ScheduledPost[]> = {};
     
-    posts.forEach(post => {
+    posts.forEach((post: any) => {
       const date = new Date(post.scheduledAt);
       let key: string;
       
@@ -362,7 +350,7 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
               </Typography>
               
               <Stack spacing={2}>
-                {groupPosts.map((post) => (
+                {groupPosts.map((post: any) => (
                   <Card key={post.id}>
                     <CardContent>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
@@ -416,7 +404,7 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
                             <Typography variant="caption" color="text.secondary">
                               Publishing to:
                             </Typography>
-                            {post.platforms.map((platform) => (
+                            {post.platforms.map((platform: any) => (
                               <Tooltip key={platform} title={platform}>
                                 {getPlatformIcon(platform)}
                               </Tooltip>
@@ -430,7 +418,7 @@ const ScheduledPosts: React.FC<ScheduledPostsProps> = ({
                                 Publish Results:
                               </Typography>
                               <Stack direction="row" spacing={1} flexWrap="wrap" gap={0.5}>
-                                {post.publishResults.map((result) => (
+                                {post.publishResults.map((result: any) => (
                                   <Chip
                                     key={result.platform}
                                     label={`${result.platform}: ${result.success ? 'Success' : 'Failed'}`}

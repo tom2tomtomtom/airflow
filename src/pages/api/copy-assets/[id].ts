@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -16,8 +17,7 @@ const CopyAssetUpdateSchema = z.object({
   tags: z.array(z.string()).optional(),
   metadata: z.any().optional(),
   performance_score: z.number().min(0).max(100).optional(),
-  brand_compliance_score: z.number().min(0).max(100).optional(),
-});
+  brand_compliance_score: z.number().min(0).max(100).optional()});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -39,7 +39,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Copy Asset API error:', error);
     return res.status(500).json({ 
@@ -117,8 +117,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
     readability_score: calculateReadabilityScore(asset.content),
     sentiment: analyzeSentiment(asset.content),
     keyword_density: calculateKeywordDensity(asset.content),
-    platform_compliance: checkPlatformCompliance(asset.content, asset.platform),
-  };
+    platform_compliance: checkPlatformCompliance(asset.content, asset.platform)};
 
   // Get version history (if implemented)
   const { data: versions } = await supabase
@@ -136,13 +135,12 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
     .limit(10);
 
   return res.json({
-    data: {
+    data: {},
       ...asset,
       related_motivations: relatedMotivations,
       usage_in_variations: contentVariations || [],
       analytics,
-      version_history: versions || [],
-    }
+      version_history: versions || []}
   });
 }
 
@@ -191,8 +189,7 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, a
       ...updateData.metadata,
       readability_score: calculateReadabilityScore(updateData.content),
       sentiment: analyzeSentiment(updateData.content),
-      updated_timestamp: new Date().toISOString(),
-    };
+      updated_timestamp: new Date().toISOString()};
 
     // Create version history entry
     await supabase
@@ -201,16 +198,14 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, a
         copy_asset_id: assetId,
         content: existingAsset.content,
         created_by: user.id,
-        version_number: await getNextVersionNumber(assetId),
-      });
+        version_number: await getNextVersionNumber(assetId)});
   }
 
   const { data: asset, error } = await supabase
     .from('copy_assets')
     .update({
       ...updateData,
-      updated_at: new Date().toISOString(),
-    })
+      updated_at: new Date().toISOString()})
     .eq('id', assetId)
     .select(`
       *,
@@ -288,8 +283,8 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
 
 // Helper functions
 function calculateReadabilityScore(text: string): number {
-  const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
-  const words = text.split(/\s+/).filter(w => w.length > 0);
+  const sentences = text.split(/[.!?]+/).filter((s: any) => s.trim().length > 0);
+  const words = text.split(/\s+/).filter((w: any) => w.length > 0);
   
   if (sentences.length === 0 || words.length === 0) return 50;
   
@@ -305,8 +300,8 @@ function analyzeSentiment(text: string): 'positive' | 'neutral' | 'negative' {
   const negativeWords = ['bad', 'terrible', 'awful', 'hate', 'worst', 'horrible', 'disappointing', 'failed'];
   
   const lowerText = text.toLowerCase();
-  const positiveCount = positiveWords.filter(word => lowerText.includes(word)).length;
-  const negativeCount = negativeWords.filter(word => lowerText.includes(word)).length;
+  const positiveCount = positiveWords.filter((word: any) => lowerText.includes(word)).length;
+  const negativeCount = negativeWords.filter((word: any) => lowerText.includes(word)).length;
   
   if (positiveCount > negativeCount) return 'positive';
   if (negativeCount > positiveCount) return 'negative';
@@ -314,10 +309,10 @@ function analyzeSentiment(text: string): 'positive' | 'neutral' | 'negative' {
 }
 
 function calculateKeywordDensity(text: string): Record<string, number> {
-  const words = text.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+  const words = text.toLowerCase().split(/\s+/).filter((w: any) => w.length > 3);
   const frequency: Record<string, number> = {};
   
-  words.forEach(word => {
+  words.forEach((word: any) => {
     frequency[word] = (frequency[word] || 0) + 1;
   });
   

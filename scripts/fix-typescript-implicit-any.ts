@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 #!/usr/bin/env tsx
 
 /**

@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -26,7 +27,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
   try {
     return handleCancel(req, res, user, id);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Execution Cancel API error:', error);
     return res.status(500).json({ 
@@ -107,16 +108,14 @@ async function handleCancel(req: NextApiRequest, res: NextApiResponse, user: any
     .from('executions')
     .update({
       status: 'cancelled',
-      metadata: {
+      metadata: {},
         ...execution.metadata,
         cancelled_at: new Date().toISOString(),
         cancelled_by: user.id,
         cancel_reason: cancelData.reason,
         force_cancelled: cancelData.force,
-        cleanup_results: cleanupResults,
-      },
-      updated_at: new Date().toISOString(),
-    })
+        cleanup_results: cleanupResults},
+      updated_at: new Date().toISOString()})
     .eq('id', executionId)
     .select(`
       *,
@@ -141,12 +140,11 @@ async function handleCancel(req: NextApiRequest, res: NextApiResponse, user: any
 
   return res.json({
     message: 'Execution cancelled successfully',
-    data: {
+    data: {},
       execution: cancelledExecution,
       cleanup_results: cleanupResults,
       related_executions: relatedResults,
-      cancelled_at: new Date().toISOString(),
-    }
+      cancelled_at: new Date().toISOString()}
   });
 }
 
@@ -198,8 +196,7 @@ async function cleanupExternalResources(execution: any): Promise<any> {
     success: false,
     resources_cleaned: [] as any[],
     errors: [] as any[],
-    timestamp: new Date().toISOString(),
-  };
+    timestamp: new Date().toISOString()};
 
   try {
     // Check if this is a Creatomate execution
@@ -245,7 +242,7 @@ async function cleanupExternalResources(execution: any): Promise<any> {
 
     cleanupResult.success = cleanupResult.errors.length === 0;
     return cleanupResult;
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error cleaning up external resources:', error);
     cleanupResult.errors.push({
@@ -265,7 +262,7 @@ async function cancelCreatomateJob(jobId: string): Promise<{ success: boolean; e
     await new Promise(resolve => setTimeout(resolve, 100));
     
     return { success: true };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     return { 
       success: false, 
@@ -287,7 +284,7 @@ async function cancelPendingWebhooks(webhookIds: string[]): Promise<{ cleaned: a
         resource_id: webhookId,
         status: 'cancelled'
       });
-    } catch (error) {
+    } catch (error: any) {
     const message = getErrorMessage(error);
       errors.push({
         type: 'webhook',
@@ -305,7 +302,7 @@ async function cleanupTempFiles(tempFiles: string[]): Promise<{ success: boolean
     // Simulate file cleanup
     process.env.NODE_ENV === 'development' && console.log('Cleaning up temp files:', tempFiles.length);
     return { success: true, files_cleaned: tempFiles.length };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error cleaning up temp files:', error);
     return { success: false, files_cleaned: 0 };
@@ -339,11 +336,10 @@ async function handleRelatedExecutions(execution: any, force: boolean): Promise<
             .from('executions')
             .update({
               status: 'cancelled',
-              metadata: {
+              metadata: {},
                 ...related.metadata,
                 cancelled_due_to_dependency: execution.id,
-                cancelled_at: new Date().toISOString(),
-              }
+                cancelled_at: new Date().toISOString()}
             })
             .eq('id', related.id);
           
@@ -367,7 +363,7 @@ async function handleRelatedExecutions(execution: any, force: boolean): Promise<
       affected_count: relatedExecutions.length,
       actions
     };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error handling related executions:', error);
     return { 
@@ -386,7 +382,7 @@ async function logCancellationEvent(executionId: string, userId: string, reason?
       force,
       timestamp: new Date().toISOString()
     });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error logging cancellation event:', error);
   }
@@ -397,7 +393,7 @@ async function triggerCancellationNotification(execution: any, user: any): Promi
     // In a full implementation, this would trigger real-time notifications
     // via WebSocket or Server-Sent Events to relevant stakeholders
     process.env.NODE_ENV === 'development' && console.log('Triggering cancellation notification for execution:', execution.id);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error triggering cancellation notification:', error);
   }

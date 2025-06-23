@@ -1,8 +1,6 @@
 import { getLogger } from '@/lib/logger';
 import { classifyError } from '@/lib/error-handling/error-classifier';
-import { cached, CacheProfiles } from '@/lib/cache/redis-cache';
-import { PopulatedTemplate, CampaignTemplate } from './templateEngine';
-import { Asset } from './assetManager';
+import { PopulatedTemplate } from './templateEngine';
 import { createClient } from '@/lib/supabase/server';
 
 const logger = getLogger('campaign-renderer');
@@ -17,7 +15,7 @@ export interface RenderedCampaign {
   outputFiles: RenderOutput[];
   metadata: RenderMetadata;
   quality: 'draft' | 'preview' | 'high' | 'print';
-  dimensions: {
+  dimensions: {},
     width: number;
     height: number;
     dpi?: number;
@@ -36,12 +34,12 @@ export interface RenderOutput {
   format: 'png' | 'jpg' | 'webp' | 'svg' | 'pdf' | 'mp4' | 'gif' | 'html';
   url: string;
   fileSize: number;
-  dimensions: {
+  dimensions: {},
     width: number;
     height: number;
   };
   quality: number; // 0-100
-  metadata: {
+  metadata: {},
     colorSpace?: 'sRGB' | 'CMYK' | 'RGB';
     compression?: string;
     layers?: string[];
@@ -61,7 +59,7 @@ export interface RenderMetadata {
   fonts: string[];
   estimatedPrintCost?: number;
   estimatedFileSize: number;
-  optimization: {
+  optimization: {},
     compression: number;
     quality: number;
     webOptimized: boolean;
@@ -173,17 +171,17 @@ export class CampaignRenderer {
         description: `Rendered campaign from ${populatedTemplate.name}`,
         renderFormat: format,
         outputFiles: [],
-        metadata: {
+        metadata: {},
           renderEngine: this.selectRenderEngine(format),
           totalElements: populatedTemplate.populatedComponents.length,
           renderLayers: this.calculateRenderLayers(populatedTemplate),
           assetCount: populatedTemplate.selectedAssets.length,
           textElements: this.countTextElements(populatedTemplate),
-          effects: Object.keys(effects).filter(key => effects[key as keyof typeof effects]),
+          effects: Object.keys(effects).filter((key: any) => effects[key as keyof typeof effects]),
           colorProfile: 'sRGB',
           fonts: this.extractFonts(populatedTemplate),
           estimatedFileSize: 0,
-          optimization: {
+          optimization: {},
             compression: optimization.compress ? 85 : 100,
             quality: this.QUALITY_SETTINGS[quality].quality,
             webOptimized: optimization.webOptimize || false,
@@ -250,7 +248,7 @@ export class CampaignRenderer {
 
       return renderedCampaign;
 
-    } catch (error) {
+    } catch (error: any) {
       const classified = classifyError(error as Error, {
         route: 'campaign-renderer',
         metadata: { 
@@ -298,7 +296,7 @@ export class CampaignRenderer {
           const rendered = await this.renderCampaign(templates[i], options);
           job.results.push(rendered);
           job.progress = Math.round(((i + 1) / templates.length) * 100);
-        } catch (error) {
+        } catch (error: any) {
           const errorMessage = error instanceof Error ? error.message : 'Unknown error';
           job.errors.push(`Template ${templates[i].id}: ${errorMessage}`);
           logger.warn('Batch render item failed', { templateId: templates[i].id, error: errorMessage });
@@ -318,7 +316,7 @@ export class CampaignRenderer {
 
       return job;
 
-    } catch (error) {
+    } catch (error: any) {
       job.status = 'failed';
       job.completedAt = new Date();
       logger.error('Batch render failed', error);
@@ -341,7 +339,7 @@ export class CampaignRenderer {
 
       return this.mapRowToRenderedCampaign(data);
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to get rendered campaign', error);
       throw error;
     }
@@ -380,7 +378,7 @@ export class CampaignRenderer {
 
       logger.info('Render cancelled', { renderId });
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to cancel render', error);
       throw error;
     }
@@ -430,8 +428,8 @@ export class CampaignRenderer {
     // Count z-index layers
     const zIndices = new Set(
       populatedTemplate.populatedComponents
-        .map(c => c.finalStyling.zIndex)
-        .filter(z => z !== undefined)
+        .map((c: any) => c.finalStyling.zIndex)
+        .filter((z: any) => z !== undefined)
     );
     return Math.max(zIndices.size, 1);
   }
@@ -444,7 +442,7 @@ export class CampaignRenderer {
 
   private extractFonts(populatedTemplate: PopulatedTemplate): string[] {
     const fonts = new Set<string>();
-    populatedTemplate.populatedComponents.forEach(component => {
+    populatedTemplate.populatedComponents.forEach((component: any) => {
       // Extract font families from CSS or styling
       if (component.finalStyling) {
         // Would parse font-family from styling
@@ -506,7 +504,7 @@ export class CampaignRenderer {
     let css = populatedTemplate.renderData.css || '';
 
     // Replace asset URLs with local paths
-    assets.forEach(asset => {
+    assets.forEach((asset: any) => {
       html = html.replace(asset.url, asset.local);
       css = css.replace(asset.url, asset.local);
     });
@@ -634,7 +632,7 @@ export class CampaignRenderer {
         fileSize: converted.length,
         dimensions: campaign.dimensions,
         quality: campaign.metadata.optimization.quality,
-        metadata: {
+        metadata: {},
           colorSpace: 'sRGB',
           compression: format === 'jpg' ? 'jpeg' : 'lossless'
         }

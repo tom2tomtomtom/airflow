@@ -12,8 +12,7 @@ import {
   useTheme,
   useMediaQuery,
   CircularProgress,
-  Skeleton,
-} from '@mui/material';
+  Skeleton} from '@mui/material';
 import {
   Close as CloseIcon,
   CloudUpload as CloudUploadIcon,
@@ -22,8 +21,7 @@ import {
   Image as ImageIcon,
   VideoLibrary as VideoLibraryIcon,
   GridView as GridViewIcon,
-  PlayArrow as PlayArrowIcon,
-} from '@mui/icons-material';
+  PlayArrow as PlayArrowIcon} from '@mui/icons-material';
 import { useWorkflow } from './WorkflowProvider';
 
 // Conditional performance tracker import for server-side only
@@ -31,7 +29,7 @@ let performanceTracker: any = null;
 if (typeof window === 'undefined') {
   try {
     performanceTracker = require('@/lib/performance/performance-tracker').performanceTracker;
-  } catch (error) {
+  } catch (error: any) {
     // Performance tracker not available, use noop
     performanceTracker = {
       startTimer: () => {},
@@ -94,7 +92,7 @@ const StepSkeleton: React.FC<{ stepType: string }> = ({ stepType }) => {
       </Box>
 
       <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
-        {[1, 2, 3].map((i) => (
+        {[1, 2, 3].map((i: any) => (
           <Skeleton key={i} variant="rectangular" height={120} sx={{ borderRadius: 1 }} />
         ))}
       </Box>
@@ -113,51 +111,43 @@ const workflowSteps = [
     id: 'upload',
     label: 'Upload Brief',
     description: 'Upload and review your campaign brief',
-    icon: <CloudUploadIcon />,
-  },
+    icon: <CloudUploadIcon />},
   {
     id: 'motivations',
     label: 'Motivations',
     description: 'Generate and select strategic motivations',
-    icon: <AutoAwesomeIcon />,
-  },
+    icon: <AutoAwesomeIcon />},
   {
     id: 'copy',
     label: 'Copy Generation',
     description: 'Create copy variations for your campaign',
-    icon: <ContentCopyIcon />,
-  },
+    icon: <ContentCopyIcon />},
   {
     id: 'assets',
     label: 'Asset Selection',
     description: 'Choose images, videos, and other assets',
-    icon: <ImageIcon />,
-  },
+    icon: <ImageIcon />},
   {
     id: 'template',
     label: 'Template',
     description: 'Select a video template for your campaign',
-    icon: <VideoLibraryIcon />,
-  },
+    icon: <VideoLibraryIcon />},
   {
     id: 'matrix',
     label: 'Campaign Matrix',
     description: 'Review and build your campaign matrix',
-    icon: <GridViewIcon />,
-  },
+    icon: <GridViewIcon />},
   {
     id: 'render',
     label: 'Render Videos',
     description: 'Generate your final campaign videos',
-    icon: <PlayArrowIcon />,
-  },
+    icon: <PlayArrowIcon />},
 ];
 
 export const WorkflowContainer: React.FC<WorkflowContainerProps> = ({
   open,
   onClose,
-  onComplete,
-}) => {
+  onComplete}) => {
   const { state, actions } = useWorkflow();
   const { currentStep } = state;
   
@@ -243,7 +233,7 @@ export const WorkflowContainer: React.FC<WorkflowContainerProps> = ({
         <Suspense fallback={<StepSkeleton stepType="Video Rendering" />}>
           <RenderStep onPrevious={handlePrevious} onComplete={handleWorkflowComplete} />
         </Suspense>
-      ),
+      )
     };
 
     const StepComponent = stepComponents[currentStep as keyof typeof stepComponents];
@@ -287,8 +277,8 @@ export const WorkflowContainer: React.FC<WorkflowContainerProps> = ({
       PaperProps={{
         sx: {
           height: isMobile ? '100vh' : '90vh',
-          maxHeight: isMobile ? '100vh' : '90vh',
-        },
+          maxHeight: isMobile ? '100vh' : '90vh'
+        }
       }}
     >
       <DialogTitle sx={{ 
@@ -296,8 +286,7 @@ export const WorkflowContainer: React.FC<WorkflowContainerProps> = ({
         justifyContent: 'space-between', 
         alignItems: 'center',
         borderBottom: 1,
-        borderColor: 'divider',
-      }}>
+        borderColor: 'divider'}}>
         <Box>
           <Typography variant="h5" component="div">
             AIRWAVE Campaign Builder
@@ -325,19 +314,15 @@ export const WorkflowContainer: React.FC<WorkflowContainerProps> = ({
               sx={{
                 cursor: index <= currentStep + 1 ? 'pointer' : 'default',
                 '& .MuiStepLabel-root': {
-                  cursor: index <= currentStep + 1 ? 'pointer' : 'default',
-                },
-              }}
+                  cursor: index <= currentStep + 1 ? 'pointer' : 'default'}}}
               onClick={() => handleStepClick(index)}
             >
               <StepLabel
                 icon={step.icon}
                 StepIconProps={{
-                  sx: {
+                  sx: {},
                     color: isStepCompleted(index) ? 'success.main' : 
-                           isStepActive(index) ? 'primary.main' : 'grey.400',
-                  },
-                }}
+                           isStepActive(index) ? 'primary.main' : 'grey.400'}}}
               >
                 <Box sx={{ textAlign: isMobile ? 'left' : 'center' }}>
                   <Typography variant="body2" fontWeight="medium">

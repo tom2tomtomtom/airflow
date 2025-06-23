@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import formidable from 'formidable';
 import fs from 'fs';
 import path from 'path';
@@ -8,10 +9,8 @@ import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { withUploadRateLimit } from '@/lib/rate-limiter';
 
 export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+  api: {},
+    bodyParser: false}};
 
 interface UploadResponse {
   success: boolean;
@@ -42,15 +41,14 @@ async function handler(
       maxFileSize: 100 * 1024 * 1024, // 100MB
       maxFiles: 10,
       keepExtensions: true,
-      multiples: true,
-    });
+      multiples: true});
 
     let fields: any;
     let files: any;
 
     try {
       [fields, files] = await form.parse(req);
-          } catch (parseError) {
+          } catch (parseError: any) {
       console.error('❌ Form parsing error:', parseError);
       return res.status(400).json({ 
         success: false, 
@@ -139,12 +137,11 @@ async function handler(
           file_size: file.size,
           client_id: clientId || null,
           created_by: userId,
-          metadata: {
+          metadata: {},
             original_filename: file.originalFilename,
             uploaded_at: new Date().toISOString(),
             storage_path: storagePath,
-            upload_method: 'web_interface',
-          },
+            upload_method: 'web_interface'},
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         };
@@ -195,11 +192,10 @@ async function handler(
           mimeType: assetRecord.mime_type,
           duration: assetRecord.duration,
           width: assetRecord.dimensions?.width,
-          height: assetRecord.dimensions?.height,
-        };
+          height: assetRecord.dimensions?.height};
 
         uploadedAssets.push(asset);
-              } catch (fileError) {
+              } catch (fileError: any) {
         console.error(`❌ File processing error for ${file.originalFilename}:`, fileError);
         errors.push(`${file.originalFilename}: Processing failed - ${fileError instanceof Error ? fileError.message : String(fileError)}`);
       } finally {
@@ -208,7 +204,7 @@ async function handler(
           if (file.filepath && fs.existsSync(file.filepath)) {
             fs.unlinkSync(file.filepath);
           }
-        } catch (cleanupError) {
+        } catch (cleanupError: any) {
           console.warn('⚠️ Failed to clean up temp file:', cleanupError);
         }
       }
@@ -234,7 +230,7 @@ async function handler(
 
         return res.status(200).json(response);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Upload handler error:', error);
     return res.status(500).json({
       success: false,

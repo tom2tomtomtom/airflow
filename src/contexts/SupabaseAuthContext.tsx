@@ -4,17 +4,17 @@ import { User, Session } from '@supabase/supabase-js';
 import { createSupabaseBrowserClient } from '@/utils/supabase-browser';
 
 interface AuthState {
-  user: User | null;
-  session: Session | null;
-  loading: boolean;
-  isAuthenticated: boolean;
+  user: User | null;,
+    session: Session | null;,
+    loading: boolean;,
+    isAuthenticated: boolean;
 }
 
 interface SupabaseAuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   signup: (email: string, password: string, name: string) => Promise<{ success: boolean; error?: string; user?: User }>;
-  logout: () => Promise<void>;
-  refreshSession: () => Promise<{ success: boolean; error?: string }>;
+  logout: () => Promise<void>;,
+    refreshSession: () => Promise<{ success: boolean; error?: string }>;
 }
 
 const SupabaseAuthContext = createContext<SupabaseAuthContextType>({
@@ -25,8 +25,7 @@ const SupabaseAuthContext = createContext<SupabaseAuthContextType>({
   login: async () => ({ success: false }),
   signup: async () => ({ success: false }),
   logout: async () => {},
-  refreshSession: async () => ({ success: false }),
-});
+  refreshSession: async () => ({ success: false })});
 
 export const useSupabaseAuth = () => {
   const context = useContext(SupabaseAuthContext);
@@ -44,8 +43,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
     user: null,
     session: null,
     loading: true,
-    isAuthenticated: false,
-  });
+    isAuthenticated: false});
   const router = useRouter();
 
   useEffect(() => {
@@ -60,8 +58,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
             user: null,
             session: null,
             loading: false,
-            isAuthenticated: false,
-          });
+            isAuthenticated: false});
           return;
         }
 
@@ -70,8 +67,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
             user: session.user,
             session,
             loading: false,
-            isAuthenticated: true,
-          });
+            isAuthenticated: true});
           
           // Store user data in localStorage for compatibility with other parts of the app
           if (typeof window !== 'undefined' && session.user) {
@@ -80,8 +76,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
               email: session.user.email || '',
               name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
               token: session.access_token,
-              role: session.user.user_metadata?.role || 'user',
-            };
+              role: session.user.user_metadata?.role || 'user'};
             localStorage.setItem('airwave_user', JSON.stringify(userData));
           }
         } else {
@@ -89,22 +84,20 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
             user: null,
             session: null,
             loading: false,
-            isAuthenticated: false,
-          });
+            isAuthenticated: false});
           
           // Clear localStorage when logged out
           if (typeof window !== 'undefined') {
             localStorage.removeItem('airwave_user');
           }
         }
-      } catch (error) {
+      } catch (error: unknown) {
         console.error('Session check error:', error);
         setAuthState({
           user: null,
           session: null,
           loading: false,
-          isAuthenticated: false,
-        });
+          isAuthenticated: false});
       }
     };
 
@@ -112,15 +105,14 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
     // Listen for auth state changes
     const { data: { subscription } } = supabaseClient.auth.onAuthStateChange(
-      async (event, session) => {
+      async (_event, session) => {
         process.env.NODE_ENV === 'development' && console.log('Auth state changed:', event);
         if (session) {
           setAuthState({
             user: session.user,
             session,
             loading: false,
-            isAuthenticated: true,
-          });
+            isAuthenticated: true});
           
           // Store user data in localStorage for compatibility with other parts of the app
           if (typeof window !== 'undefined' && session.user) {
@@ -129,8 +121,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
               email: session.user.email || '',
               name: session.user.user_metadata?.name || session.user.email?.split('@')[0] || 'User',
               token: session.access_token,
-              role: session.user.user_metadata?.role || 'user',
-            };
+              role: session.user.user_metadata?.role || 'user'};
             localStorage.setItem('airwave_user', JSON.stringify(userData));
           }
         } else {
@@ -138,8 +129,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
             user: null,
             session: null,
             loading: false,
-            isAuthenticated: false,
-          });
+            isAuthenticated: false});
           
           // Clear localStorage when logged out
           if (typeof window !== 'undefined') {
@@ -176,8 +166,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
       const { data, error } = await supabaseClient.auth.signInWithPassword({
         email: email.trim(),
-        password: password,
-      });
+        password: password});
 
       if (error) {
         console.error('Supabase auth error:', error);
@@ -190,7 +179,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
 
       throw new Error('No session returned from login');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Login error:', error);
       return { 
         success: false, 
@@ -204,18 +193,15 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
       const { data, error } = await supabaseClient.auth.signUp({
         email,
         password,
-        options: {
-          data: {
+        options: {},
+          data: {},
             name,
-            role: 'authenticated',
-          },
-        },
-      });
+            role: 'authenticated' });
 
       if (error) throw error;
 
       return { success: true, user: data.user || undefined };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Signup error:', error);
       return { success: false, error: error.message };
     }
@@ -227,7 +213,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
       if (error) throw error;
       
       // The onAuthStateChange listener will handle the state update and redirect
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Logout error:', error);
     }
   };
@@ -243,7 +229,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
       
       return { success: false };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Session refresh error:', error);
       return { success: false, error: error.message };
     }
@@ -256,8 +242,7 @@ export const SupabaseAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
         login,
         signup,
         logout,
-        refreshSession,
-      }}
+        refreshSession }
     >
       {children}
     </SupabaseAuthContext.Provider>

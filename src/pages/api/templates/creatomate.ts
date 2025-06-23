@@ -21,16 +21,16 @@ async function handler(
       case 'POST':
         return await handleRenderVideo(req, res);
       default:
-        return res.status(405).json({ 
-          success: false, 
-          error: 'Method not allowed' 
+        return res.status(405).json({
+          success: false,
+          error: 'Method not allowed',
         });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Creatomate API error:', error);
     return res.status(500).json({
       success: false,
-      error: 'Internal server error'
+      error: 'Internal server error',
     });
   }
 }
@@ -42,16 +42,16 @@ async function handleGetTemplate(
   try {
     const { templateId } = req.query;
     const template = await creatomateService.getTemplate(templateId as string);
-    
+
     return res.status(200).json({
       success: true,
-      data: template
+      data: template,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching template:', error);
     return res.status(500).json({
       success: false,
-      error: 'Failed to fetch template'
+      error: 'Failed to fetch template',
     });
   }
 }
@@ -66,7 +66,7 @@ async function handleRenderVideo(
     if (!templateId || !modifications) {
       return res.status(400).json({
         success: false,
-        error: 'Template ID and modifications are required'
+        error: 'Template ID and modifications are required',
       });
     }
 
@@ -75,19 +75,19 @@ async function handleRenderVideo(
       return res.status(200).json({
         success: true,
         data: renderResult,
-        message: 'Video render initiated successfully'
+        message: 'Video render initiated successfully',
       });
     } else {
       return res.status(400).json({
         success: false,
-        error: 'Invalid action. Use "render"'
+        error: 'Invalid action. Use "render"',
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error rendering video:', error);
     return res.status(500).json({
       success: false,
-      error: 'Failed to render video'
+      error: 'Failed to render video',
     });
   }
 }

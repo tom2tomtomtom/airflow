@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { NextRequest, NextResponse } from 'next/server';
 import { 
   securityMiddleware,
@@ -76,6 +77,7 @@ export function middleware(request: NextRequest) {
     return securityResponse;
     
   } catch (error) {
+    const message = getErrorMessage(error);
     loggers.general.error('Middleware error', {
       error: error instanceof Error ? error.message : 'Unknown error',
       pathname,

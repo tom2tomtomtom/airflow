@@ -30,14 +30,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             RAISE NOTICE 'brand_guidelines column already exists';
           END IF;
         END $$;
-      `
+      `,
     });
 
     if (columnError) {
       console.error('❌ Migration failed:', columnError);
-      return res.status(500).json({ 
-        error: 'Migration failed', 
-        details: columnError.message 
+      return res.status(500).json({
+        error: 'Migration failed',
+        details: columnError.message,
       });
     }
 
@@ -50,9 +50,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (verifyError) {
       console.error('❌ Verification failed:', verifyError);
-      return res.status(500).json({ 
-        error: 'Verification failed', 
-        details: verifyError.message 
+      return res.status(500).json({
+        error: 'Verification failed',
+        details: verifyError.message,
       });
     }
 
@@ -60,14 +60,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.json({
       success: true,
       message: 'brand_guidelines column added successfully',
-      verification: verification
+      verification: verification,
     });
-
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Unexpected error:', error);
-    return res.status(500).json({ 
-      error: 'Unexpected error', 
-      details: error instanceof Error ? error.message : 'Unknown error' 
+    return res.status(500).json({
+      error: 'Unexpected error',
+      details: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 }

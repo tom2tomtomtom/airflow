@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 
 test.describe('Authenticated Workflow Test', () => {
   test('Login and Test Workflow Functions', async ({ page }) => {
@@ -155,7 +155,7 @@ async function testWorkflowState(page: any) {
           console.log('🔧 State tracked:', state.activeStep, 'from', source);
         },
         
-        trackEvent: function(event, data) {
+        trackEvent: function(_event, data) {
           this.events.push({
             timestamp: Date.now(),
             event,

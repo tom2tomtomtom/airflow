@@ -49,75 +49,75 @@ export function workflowReducer(state: WorkflowState, action: WorkflowAction): W
   switch (action.type) {
     case 'SET_STEP':
       return { ...state, currentStep: action.step };
-    
+
     case 'SET_PROCESSING':
       return { ...state, processing: action.processing };
-    
+
     case 'SET_BRIEF_DATA':
       return {
         ...state,
         briefData: action.briefData,
         originalBriefData: action.originalBriefData,
       };
-    
+
     case 'SET_UPLOADED_FILE':
       return { ...state, uploadedFile: action.file };
-    
+
     case 'SET_SHOW_BRIEF_REVIEW':
       return { ...state, showBriefReview: action.show };
-    
+
     case 'SET_BRIEF_CONFIRMED':
       return { ...state, briefConfirmed: action.confirmed };
-    
+
     case 'SET_MOTIVATIONS':
       return { ...state, motivations: action.motivations };
-    
+
     case 'TOGGLE_MOTIVATION':
       return {
         ...state,
-        motivations: state?.motivations?.map(m =>
+        motivations: state?.motivations?.map((m: any) =>
           m.id === action.id ? { ...m, selected: !m.selected } : m
         ),
       };
-    
+
     case 'SET_COPY_VARIATIONS':
       return { ...state, copyVariations: action.copyVariations };
-    
+
     case 'TOGGLE_COPY':
       return {
         ...state,
-        copyVariations: state?.copyVariations?.map(c =>
+        copyVariations: state?.copyVariations?.map((c: any) =>
           c.id === action.id ? { ...c, selected: !c.selected } : c
         ),
       };
-    
+
     case 'SET_SELECTED_ASSETS':
       return { ...state, selectedAssets: action.assets };
-    
+
     case 'ADD_ASSET':
       return {
         ...state,
         selectedAssets: [...state.selectedAssets, action.asset],
       };
-    
+
     case 'REMOVE_ASSET':
       return {
         ...state,
-        selectedAssets: state?.selectedAssets?.filter(a => a.id !== action.id),
+        selectedAssets: state?.selectedAssets?.filter((a: any) => a.id !== action.id),
       };
-    
+
     case 'SET_SELECTED_TEMPLATE':
       return { ...state, selectedTemplate: action.template };
-    
+
     case 'SET_ERROR':
       return { ...state, lastError: action.error };
-    
+
     case 'SET_CLIENT_ID':
       return { ...state, clientId: action.clientId };
-    
+
     case 'RESET_WORKFLOW':
       return { ...initialWorkflowState, clientId: state.clientId };
-    
+
     default:
       return state;
   }

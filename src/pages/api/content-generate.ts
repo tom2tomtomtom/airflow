@@ -1,3 +1,4 @@
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
 import { env } from '@/lib/env';
@@ -18,11 +19,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
   const parseResult = ContentGenerateSchema.safeParse(req.body);
   if (!parseResult.success) {
-    return res.status(400).json({ success: false, message: 'Invalid input', errors: parseResult.error.errors });
+    return res
+      .status(400)
+      .json({ success: false, message: 'Invalid input', errors: parseResult.error.errors });
   }
   const { selected_motivation_id, content_types, tone, style, user_id } = parseResult.data;
   // Get selected motivations
-  const { data: selection, error } = await supabase.from('selected_motivations').select('*').eq('id', selected_motivation_id).single();
+  const { data: selection, error } = await supabase
+    .from('selected_motivations')
+    .select('*')
+    .eq('id', selected_motivation_id)
+    .single();
   if (error || !selection) {
     return res.status(404).json({ success: false, message: 'Selected motivations not found' });
   }
@@ -43,20 +50,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       temperature: 0.7,
       max_tokens: 1200,
     });
-    
+
     const content = completion.choices[0]?.message?.content;
     // Save generated content
-    const { data: saved, error: saveError } = await supabase.from('generated_content').insert({
-      selected_motivation_id,
-      content_types,
-      tone,
-      style,
-      content,
-      user_id,
-      created_at: new Date().toISOString(),
-    }).select().single();
+    const { data: saved, error: saveError } = await supabase
+      .from('generated_content')
+      .insert({
+        selected_motivation_id,
+        content_types,
+        tone,
+        style,
+        content,
+        user_id,
+        created_at: new Date().toISOString(),
+      })
+      .select()
+      .single();
     if (saveError) {
-      return res.status(500).json({ success: false, message: 'Failed to save content', error: saveError.message });
+      return res
+        .status(500)
+        .json({ success: false, message: 'Failed to save content', error: saveError.message });
     }
     return res.status(200).json({ success: true, content: saved });
   } catch (err: any) {

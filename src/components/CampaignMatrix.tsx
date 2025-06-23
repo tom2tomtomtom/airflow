@@ -26,8 +26,7 @@ import {
   Slider,
   Alert,
   LinearProgress,
-  Stack,
-} from '@mui/material';
+  Stack} from '@mui/material';
 import {
   Add as AddIcon,
   Delete as DeleteIcon,
@@ -40,8 +39,7 @@ import {
   VideoLibrary as VideoIcon,
   MusicNote as MusicIcon,
   TextFields as TextIcon,
-  Palette as ColorIcon,
-} from '@mui/icons-material';
+  Palette as ColorIcon} from '@mui/icons-material';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
 
@@ -50,7 +48,7 @@ interface MatrixRow {
   id: string;
   name: string;
   locked: boolean;
-  cells: {
+  cells: {},
     [fieldId: string]: {
       type: 'asset' | 'text' | 'color';
       value?: string;
@@ -93,8 +91,7 @@ const defaultFields: MatrixField[] = [
 
 export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
   campaignId,
-  onRender,
-}) => {
+  onRender}) => {
   const { activeClient } = useClient();
   const { showNotification } = useNotification();
 
@@ -137,7 +134,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
       if (data.success) {
         setAssets(data.assets || []);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading assets:', error);
       showNotification('Failed to load assets', 'error');
     } finally {
@@ -154,25 +151,23 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
     };
 
     // Initialize cells for all fields
-    fields.forEach(field => {
+    fields.forEach((field: any) => {
       newRow.cells[field.id] = {
-        type: field.type === 'color' ? 'color' : field.type === 'text' ? 'text' : 'asset',
-      };
+        type: field.type === 'color' ? 'color' : field.type === 'text' ? 'text' : 'asset'};
     });
 
     setRows([...rows, newRow]);
   };
 
   const duplicateRow = (rowId: string) => {
-    const row = rows.find(r => r.id === rowId);
+    const row = rows.find((r: any) => r.id === rowId);
     if (!row) return;
 
     const newRow: MatrixRow = {
       ...row,
       id: `row-${Date.now()}`,
       name: `${row.name} (Copy)`,
-      locked: false,
-    };
+      locked: false};
 
     setRows([...rows, newRow]);
     showNotification('Row duplicated successfully', 'success');
@@ -184,12 +179,12 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
       return;
     }
 
-    setRows(rows.filter(r => r.id !== rowId));
+    setRows(rows.filter((r: any) => r.id !== rowId));
     showNotification('Row deleted successfully', 'success');
   };
 
   const toggleRowLock = (rowId: string) => {
-    setRows(rows.map(row => 
+    setRows(rows.map((row: any) => 
       row.id === rowId 
         ? { ...row, locked: !row.locked }
         : row
@@ -197,16 +192,15 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
   };
 
   const toggleCellLock = (rowId: string, fieldId: string) => {
-    setRows(rows.map(row => {
+    setRows(rows.map((row: any) => {
       if (row.id === rowId) {
         return {
           ...row,
-          cells: {
+          cells: {},
             ...row.cells,
             [fieldId]: {
               ...row.cells[fieldId],
-              locked: !row.cells[fieldId]?.locked,
-            }
+              locked: !row.cells[fieldId]?.locked}
           }
         };
       }
@@ -215,16 +209,15 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
   };
 
   const updateCell = (rowId: string, fieldId: string, updates: any) => {
-    setRows(rows.map(row => {
+    setRows(rows.map((row: any) => {
       if (row.id === rowId) {
         return {
           ...row,
-          cells: {
+          cells: {},
             ...row.cells,
             [fieldId]: {
               ...row.cells[fieldId],
-              ...updates,
-            }
+              ...updates}
           }
         };
       }
@@ -242,8 +235,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
     const { rowId, fieldId } = selectedAssetDialog;
     updateCell(rowId, fieldId, {
       assetId: asset.id,
-      value: asset.name,
-    });
+      value: asset.name});
 
     setSelectedAssetDialog(null);
     showNotification('Asset assigned successfully', 'success');
@@ -254,8 +246,8 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
     
     try {
       // Calculate all possible combinations
-      const unlockedRows = rows.filter(row => !row.locked);
-      const lockedRows = rows.filter(row => row.locked);
+      const unlockedRows = rows.filter((row: any) => !row.locked);
+      const lockedRows = rows.filter((row: any) => row.locked);
       
       // Generate combinations logic here
       const newCombinations = [];
@@ -270,7 +262,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
 
         // Copy from a random unlocked row or use locked row data
         const sourceRow = unlockedRows[i % unlockedRows.length] || rows[0];
-        fields.forEach(field => {
+        fields.forEach((field: any) => {
           combination.fields[field.id] = sourceRow.cells[field.id] || { type: field.type, value: '' };
         });
 
@@ -279,7 +271,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
 
       setCombinations(newCombinations);
       showNotification(`Generated ${newCombinations.length} combinations`, 'success');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating combinations:', error);
       showNotification('Failed to generate combinations', 'error');
     } finally {
@@ -358,8 +350,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
               border: '1px solid',
               borderColor: 'divider',
               borderRadius: 1,
-              cursor: 'pointer',
-            }}
+              cursor: 'pointer'}}
             onClick={() => {
               const newColor = prompt('Enter color (hex):', cell?.value || '#000000');
               if (newColor) {
@@ -382,7 +373,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
     }
 
     // Asset types (image, video, audio)
-    const asset = assets.find(a => a.id === cell?.assetId);
+    const asset = assets.find((a: any) => a.id === cell?.assetId);
     
     return (
       <Box display="flex" alignItems="center" gap={1}>
@@ -468,7 +459,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
             <TableRow>
               <TableCell width="40px">#</TableCell>
               <TableCell width="150px">Variation Name</TableCell>
-              {fields.map(field => (
+              {fields.map((field: any) => (
                 <TableCell key={field.id} width="200px">
                   <Box display="flex" alignItems="center" gap={1}>
                     {getFieldIcon(field.type)}
@@ -494,7 +485,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
                     {row.locked && <LockIcon fontSize="small" color="primary" />}
                   </Box>
                 </TableCell>
-                {fields.map(field => (
+                {fields.map((field: any) => (
                   <TableCell key={field.id}>
                     {getCellContent(row, field)}
                   </TableCell>
@@ -564,7 +555,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
           setSelectedRow(null);
         }}>
           <LockIcon sx={{ mr: 1 }} />
-          {selectedRow && rows.find(r => r.id === selectedRow)?.locked ? 'Unlock' : 'Lock'} Row
+          {selectedRow && rows.find((r: any) => r.id === selectedRow)?.locked ? 'Unlock' : 'Lock'} Row
         </MenuItem>
         <MenuItem 
           onClick={() => {
@@ -595,13 +586,13 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
           ) : (
             <Grid container spacing={2} sx={{ mt: 1 }}>
               {assets
-                .filter(asset => 
+                .filter((asset: any) => 
                   selectedAssetDialog?.type === 'image' ? asset.type === 'image' :
                   selectedAssetDialog?.type === 'video' ? asset.type === 'video' :
                   selectedAssetDialog?.type === 'audio' ? asset.type === 'audio' :
                   true
                 )
-                .map(asset => (
+                .map((asset: any) => (
                   <Grid size={{ xs: 6, md: 4 }} key={asset.id}>
                     <Card 
                       sx={{ cursor: 'pointer' }}

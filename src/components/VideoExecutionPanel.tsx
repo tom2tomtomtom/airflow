@@ -38,8 +38,7 @@ import {
   Error as ErrorIcon, 
   Schedule as ScheduleIcon, 
   Delete as DeleteIcon, 
-  RocketLaunch as RocketLaunchIcon,
-} from '@mui/icons-material';
+  RocketLaunch as RocketLaunchIcon} from '@mui/icons-material';
 import { useNotification } from '@/contexts/NotificationContext';
 import { getErrorMessage } from '@/utils/errorUtils';
 
@@ -64,8 +63,7 @@ interface VideoExecution {
 const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
   matrixId,
   combinations,
-  onExecutionComplete,
-}) => {
+  onExecutionComplete}) => {
   const { showNotification } = useNotification();
 
   // State
@@ -80,14 +78,13 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
     variations_per_combination: 2,
     platform_optimization: true,
     save_to_assets: true,
-    include_captions: false,
-  });
+    include_captions: false});
 
   // Auto-refresh active executions
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
-    const activeExecutions = executions.filter(exec => 
+    const activeExecutions = executions.filter((exec: any) => 
       ['pending', 'processing'].includes(exec.status)
     );
 
@@ -111,7 +108,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
     try {
       setLoading(true);
       const response = await fetch(`/api/executions?matrix_id=${matrixId}&content_type=video`, {
-        headers: {
+        headers: {},
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
@@ -120,7 +117,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
         const data = await response.json();
         setExecutions(data.data || []);
       }
-    } catch (error) {
+    } catch (error: any) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Error loading executions:', error);
       }
@@ -131,15 +128,15 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
 
   const checkExecutionStatus = async () => {
     try {
-      const activeExecutions = executions.filter(exec => 
+      const activeExecutions = executions.filter((exec: any) => 
         ['pending', 'processing'].includes(exec.status)
       );
 
       if (activeExecutions.length === 0) return;
 
-      const statusPromises = activeExecutions.map(exec =>
+      const statusPromises = activeExecutions.map((exec: any) =>
         fetch(`/api/executions/${exec.id}`, {
-          headers: {
+          headers: {},
             'Authorization': `Bearer ${localStorage.getItem('token')}`
           }
         }).then(res => res.ok ? res.json() : null)
@@ -148,8 +145,8 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
       const statusResults = await Promise.all(statusPromises);
 
       // Update executions with new status
-      setExecutions(prev => prev.map(exec => {
-        const updatedExec = statusResults.find(result => 
+      setExecutions(prev => prev.map((exec: any) => {
+        const updatedExec = statusResults.find((result: any) => 
           result?.data?.id === exec.id
         );
 
@@ -159,21 +156,20 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
             status: updatedExec.data.status,
             progress: updatedExec.data.progress?.percentage || exec.progress,
             video_url: updatedExec.data.render_url || exec.video_url,
-            error_message: updatedExec.data.metadata?.error || exec.error_message,
-          };
+            error_message: updatedExec.data.metadata?.error || exec.error_message};
         }
         return exec;
       }));
 
       // Check for completions
-      statusResults.forEach(result => {
+      statusResults.forEach((result: any) => {
         if (result?.data?.status === 'completed') {
           showNotification('Video execution completed!', 'success');
         } else if (result?.data?.status === 'failed') {
           showNotification('Video execution failed', 'error');
         }
       });
-    } catch (error) {
+    } catch (error: any) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Error checking execution status:', error);
       }
@@ -194,30 +190,26 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
         platforms: ['youtube', 'instagram', 'tiktok'], // Multi-platform execution
         priority: 'normal',
         schedule_type: 'immediate',
-        execution_settings: {
+        execution_settings: {},
           quality: executionSettings.quality,
           formats: ['mp4'],
           resolutions: ['1920x1080', '1080x1920'], // Horizontal and vertical
           include_previews: true,
           notify_on_completion: true,
-          video_specific: {
+          video_specific: {},
             auto_generate_variations: executionSettings.auto_generate_variations,
             variations_per_combination: executionSettings.variations_per_combination,
             platform_optimization: executionSettings.platform_optimization,
             save_to_assets: executionSettings.save_to_assets,
-            include_captions: executionSettings.include_captions,
-          }
-        },
-      };
+            include_captions: executionSettings.include_captions}
+        }};
 
       const response = await fetch(`/api/matrices/${matrixId}/execute`, {
         method: 'POST',
-        headers: {
+        headers: {},
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify(executeData),
-      });
+          'Authorization': `Bearer ${localStorage.getItem('token')}`},
+        body: JSON.stringify(executeData)});
 
       if (response.ok) {
         const data = await response.json();
@@ -237,7 +229,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
         const error = await response.json();
         showNotification(error.error || 'Failed to start video execution', 'error');
       }
-    } catch (error) {
+    } catch (error: any) {
       const message = getErrorMessage(error);
       showNotification('Error starting video execution', 'error');
     } finally {
@@ -249,7 +241,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
     try {
       const response = await fetch(`/api/executions/${executionId}/retry`, {
         method: 'POST',
-        headers: {
+        headers: {},
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
@@ -261,7 +253,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
         const error = await response.json();
         showNotification(error.error || 'Failed to retry execution', 'error');
       }
-    } catch (error) {
+    } catch (error: any) {
       const message = getErrorMessage(error);
       showNotification('Error retrying execution', 'error');
     }
@@ -271,7 +263,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
     try {
       const response = await fetch(`/api/executions/${executionId}`, {
         method: 'DELETE',
-        headers: {
+        headers: {},
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
@@ -283,7 +275,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
         const error = await response.json();
         showNotification(error.error || 'Failed to delete execution', 'error');
       }
-    } catch (error) {
+    } catch (error: any) {
       const message = getErrorMessage(error);
       showNotification('Error deleting execution', 'error');
     }
@@ -309,11 +301,11 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
     }
   };
 
-  const activeExecutions = executions.filter(exec => 
+  const activeExecutions = executions.filter((exec: any) => 
     ['pending', 'processing'].includes(exec.status)
   );
-  const completedExecutions = executions.filter(exec => exec.status === 'completed');
-  const failedExecutions = executions.filter(exec => exec.status === 'failed');
+  const completedExecutions = executions.filter((exec: any) => exec.status === 'completed');
+  const failedExecutions = executions.filter((exec: any) => exec.status === 'failed');
 
   return (
     <Box>
@@ -403,19 +395,18 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
           </Typography>
 
           <Grid container spacing={2}>
-            {combinations.map((combination) => (
+            {combinations.map((combination: any) => (
               <Grid size={{ xs: 12, sm: 6, md: 4 }} key={combination.id}>
                 <Card
                   variant="outlined"
                   sx={{
                     cursor: 'pointer',
                     border: selectedCombinations.includes(combination.id) ? '2px solid' : '1px solid',
-                    borderColor: selectedCombinations.includes(combination.id) ? 'primary.main' : 'divider',
-                  }}
+                    borderColor: selectedCombinations.includes(combination.id) ? 'primary.main' : 'divider'}}
                   onClick={() => {
                     setSelectedCombinations(prev =>
                       prev.includes(combination.id)
-                        ? prev.filter(id => id !== combination.id)
+                        ? prev.filter((id: any) => id !== combination.id)
                         : [...prev, combination.id]
                     );
                   }}
@@ -466,7 +457,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
               Active Executions
             </Typography>
             <List>
-              {activeExecutions.map((execution) => (
+              {activeExecutions.map((execution: any) => (
                 <ListItem key={execution.id} divider>
                   <ListItemIcon>
                     {getStatusIcon(execution.status)}
@@ -502,7 +493,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
               Execution History
             </Typography>
             <List>
-              {executions.map((execution) => (
+              {executions.map((execution: any) => (
                 <ListItem key={execution.id} divider>
                   <ListItemIcon>
                     {getStatusIcon(execution.status)}

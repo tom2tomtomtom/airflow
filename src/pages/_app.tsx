@@ -31,8 +31,8 @@ export interface MyAppProps extends AppProps {
 
 // Create a client
 const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
+  defaultOptions: {},
+    queries: {},
       staleTime: 1000 * 60 * 5, // 5 minutes
       refetchOnWindowFocus: false,
       retry: (failureCount, error: any) => {
@@ -41,10 +41,7 @@ const queryClient = new QueryClient({
           return false;
         }
         return failureCount < 3;
-      },
-    },
-  },
-});
+      }}}});
 
 // Component that provides all the context providers
 function AppProviders({ children }: { children: React.ReactNode }) {
@@ -105,7 +102,7 @@ function MyApp(props: MyAppProps) {
         'https://fonts.gstatic.com'
       ];
       
-      warmupUrls.forEach(url => {
+      warmupUrls.forEach((url: any) => {
         const link = document.createElement('link');
         link.rel = 'prefetch';
         link.href = url;

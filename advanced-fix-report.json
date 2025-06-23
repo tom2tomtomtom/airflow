@@ -1,0 +1,112 @@
+{
+  "timestamp": "2025-06-23T09:59:21.274Z",
+  "totalFilesProcessed": 21,
+  "totalAdvancedFixesApplied": 92.3,
+  "processedFiles": [
+    {
+      "file": "src/contexts/__tests__/AuthContext.test.tsx",
+      "fixesApplied": 7.3,
+      "status": "fixed"
+    },
+    {
+      "file": "src/hooks/useData.ts",
+      "fixesApplied": 0,
+      "status": "no_advanced_fixes"
+    },
+    {
+      "file": "src/lib/database/seeders/index.ts",
+      "fixesApplied": 12.3,
+      "status": "fixed"
+    },
+    {
+      "file": "src/lib/gdpr/dataExport.ts",
+      "fixesApplied": 5.3,
+      "status": "fixed"
+    },
+    {
+      "file": "src/lib/logger/structured.ts",
+      "fixesApplied": 2.3,
+      "status": "fixed"
+    },
+    {
+      "file": "src/lib/monitoring/metrics.ts",
+      "fixesApplied": 2.3,
+      "status": "fixed"
+    },
+    {
+      "file": "src/lib/monitoring/workflow-metrics.ts",
+      "fixesApplied": 2.3,
+      "status": "fixed"
+    },
+    {
+      "file": "src/pages/api/campaigns/[id].ts",
+      "fixesApplied": 2.3,
+      "status": "fixed"
+    },
+    {
+      "file": "src/pages/api/campaigns/export.ts",
+      "fixesApplied": 2.3,
+      "status": "fixed"
+    },
+    {
+      "file": "src/pages/api/campaigns/index.ts",
+      "fixesApplied": 9.2,
+      "status": "fixed"
+    },
+    {
+      "file": "src/pages/api/matrices/index.ts",
+      "fixesApplied": 6.9,
+      "status": "fixed"
+    },
+    {
+      "file": "src/pages/api/notifications/index.ts",
+      "fixesApplied": 6.9,
+      "status": "fixed"
+    },
+    {
+      "file": "src/pages/api/v2/handlers/assets.ts",
+      "fixesApplied": 6.9,
+      "status": "fixed"
+    },
+    {
+      "file": "src/pages/api/video/generations.ts",
+      "fixesApplied": 2.3,
+      "status": "fixed"
+    },
+    {
+      "file": "src/pages/clients.tsx",
+      "fixesApplied": 7.9,
+      "status": "fixed"
+    },
+    {
+      "file": "src/services/templateEngine.ts",
+      "fixesApplied": 2.3,
+      "status": "fixed"
+    },
+    {
+      "file": "src/test-utils/api-test-utils.ts",
+      "fixesApplied": 4.5,
+      "status": "fixed"
+    },
+    {
+      "file": "src/test-utils/index.tsx",
+      "fixesApplied": 2.3,
+      "status": "fixed"
+    },
+    {
+      "file": "src/test/setup.ts",
+      "fixesApplied": 2.3,
+      "status": "fixed"
+    },
+    {
+      "file": "src/utils/api.ts",
+      "fixesApplied": 0,
+      "status": "no_advanced_fixes"
+    },
+    {
+      "file": "src/utils/dynamicImports.ts",
+      "fixesApplied": 4.4,
+      "status": "fixed"
+    }
+  ]
+}

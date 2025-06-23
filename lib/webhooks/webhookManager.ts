@@ -1,4 +1,3 @@
-import { getErrorMessage } from '@/utils/errorUtils';
 import crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 import { AppError } from '../errors/errorHandler';
@@ -94,7 +93,6 @@ export class WebhookManager {
         Buffer.from(expectedSignature)
       );
     } catch (error) {
-    const message = getErrorMessage(error);
       return false;
     }
   }

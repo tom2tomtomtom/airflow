@@ -1,8 +1,7 @@
 import { createMachine, assign } from 'xstate';
 import {
   WorkflowMachineContext,
-  WorkflowEvent,
-} from './workflow-types';
+  WorkflowEvent} from './workflow-types';
 
 // Initial context
 const initialContext: WorkflowMachineContext = {
@@ -18,8 +17,7 @@ const initialContext: WorkflowMachineContext = {
   showBriefReview: false,
   briefConfirmed: false,
   lastError: null,
-  clientId: null,
-};
+  clientId: null};
 
 // Guards
 const guards = {
@@ -48,8 +46,7 @@ const guards = {
     context.selectedTemplate !== null &&
     context.motivations.some(m => m.selected) &&
     context.copyVariations.some(c => c.selected) &&
-    context.selectedAssets.length > 0,
-};
+    context.selectedAssets.length > 0};
 
 // Actions
 const actions = {
@@ -57,8 +54,7 @@ const actions = {
     processing: (_, event) =>
       event.type === 'UPLOAD_BRIEF' ||
       event.type === 'GENERATE_MOTIVATIONS' ||
-      event.type === 'GENERATE_COPY',
-  }),
+      event.type === 'GENERATE_COPY'}),
 
   setBriefData: assign<WorkflowMachineContext, WorkflowEvent>({
     briefData: (_, event) =>
@@ -67,82 +63,69 @@ const actions = {
       event.type === 'CONFIRM_BRIEF' ? event.briefData : null,
     briefConfirmed: (_, event) => event.type === 'CONFIRM_BRIEF',
     showBriefReview: false,
-    currentStep: 1,
-  }),
+    currentStep: 1}),
 
   setUploadedFile: assign<WorkflowMachineContext, WorkflowEvent>({
     uploadedFile: (_, event) =>
       event.type === 'UPLOAD_BRIEF' ? event.file : null,
-    showBriefReview: true,
-  }),
+    showBriefReview: true}),
 
   selectMotivation: assign<WorkflowMachineContext, WorkflowEvent>({
     motivations: (context, event) => {
       if (event.type === 'SELECT_MOTIVATION') {
-        return context.motivations.map(m =>
+        return context.motivations.map((m: any) =>
           m.id === event.id ? { ...m, selected: !m.selected } : m
         );
       }
       return context.motivations;
-    },
-  }),
+    }}),
 
   selectCopy: assign<WorkflowMachineContext, WorkflowEvent>({
     copyVariations: (context, event) => {
       if (event.type === 'SELECT_COPY') {
-        return context.copyVariations.map(c =>
+        return context.copyVariations.map((c: any) =>
           c.id === event.id ? { ...c, selected: !c.selected } : c
         );
       }
       return context.copyVariations;
-    },
-  }),
+    }}),
 
   selectAsset: assign<WorkflowMachineContext, WorkflowEvent>({
     selectedAssets: (context, event) => {
       if (event.type === 'SELECT_ASSET') {
         const exists = context.selectedAssets.some(a => a.id === event.asset.id);
         if (exists) {
-          return context.selectedAssets.filter(a => a.id !== event.asset.id);
+          return context.selectedAssets.filter((a: any) => a.id !== event.asset.id);
         } else {
           return [...context.selectedAssets, event.asset];
         }
       }
       return context.selectedAssets;
-    },
-  }),
+    }}),
 
   selectTemplate: assign<WorkflowMachineContext, WorkflowEvent>({
     selectedTemplate: (_, event) =>
-      event.type === 'SELECT_TEMPLATE' ? event.template : null,
-  }),
+      event.type === 'SELECT_TEMPLATE' ? event.template : null}),
 
   nextStep: assign<WorkflowMachineContext, WorkflowEvent>({
-    currentStep: (context) => Math.min(context.currentStep + 1, 6),
-  }),
+    currentStep: (context) => Math.min(context.currentStep + 1, 6)}),
 
   previousStep: assign<WorkflowMachineContext, WorkflowEvent>({
-    currentStep: (context) => Math.max(context.currentStep - 1, 0),
-  }),
+    currentStep: (context) => Math.max(context.currentStep - 1, 0)}),
 
   goToStep: assign<WorkflowMachineContext, WorkflowEvent>({
     currentStep: (_, event) =>
-      event.type === 'GO_TO_STEP' ? Math.max(0, Math.min(event.step, 6)) : 0,
-  }),
+      event.type === 'GO_TO_STEP' ? Math.max(0, Math.min(event.step, 6)) : 0}),
 
   setError: assign<WorkflowMachineContext, WorkflowEvent>({
     lastError: (_, event) =>
-      event.type === 'SET_ERROR' ? event.error : null,
-  }),
+      event.type === 'SET_ERROR' ? event.error : null}),
 
   clearError: assign<WorkflowMachineContext, WorkflowEvent>({
-    lastError: null,
-  }),
+    lastError: null}),
 
   resetWorkflow: assign<WorkflowMachineContext, WorkflowEvent>(() => ({
-    ...initialContext,
-  })),
-};
+    ...initialContext}))};
 
 // Workflow machine definition
 export const workflowMachine = createMachine<WorkflowMachineContext, WorkflowEvent>({
@@ -150,223 +133,162 @@ export const workflowMachine = createMachine<WorkflowMachineContext, WorkflowEve
   initial: 'briefUpload',
   context: initialContext,
   predictableActionArguments: true,
-  states: {
-    briefUpload: {
-      on: {
-        UPLOAD_BRIEF: {
-          actions: ['setUploadedFile', 'setProcessing'],
-        },
-        CONFIRM_BRIEF: {
+  states: {},
+    briefUpload: {},
+      on: {},
+        UPLOAD_BRIEF: {},
+          actions: ['setUploadedFile', 'setProcessing']},
+        CONFIRM_BRIEF: {},
           target: 'motivationSelection',
           actions: ['setBriefData'],
-          cond: 'hasBriefData',
-        },
-        SET_ERROR: {
-          actions: ['setError'],
-        },
-        CLEAR_ERROR: {
-          actions: ['clearError'],
-        },
-      },
-    },
+          cond: 'hasBriefData'},
+        SET_ERROR: {},
+          actions: ['setError']},
+        CLEAR_ERROR: {},
+          actions: ['clearError']}}},
     
-    motivationSelection: {
+    motivationSelection: {},
       entry: ['clearError'],
-      on: {
-        GENERATE_MOTIVATIONS: {
-          actions: ['setProcessing'],
-        },
-        SELECT_MOTIVATION: {
-          actions: ['selectMotivation'],
-        },
-        NEXT_STEP: {
+      on: {},
+        GENERATE_MOTIVATIONS: {},
+          actions: ['setProcessing']},
+        SELECT_MOTIVATION: {},
+          actions: ['selectMotivation']},
+        NEXT_STEP: {},
           target: 'copyGeneration',
           cond: 'hasSelectedMotivations',
-          actions: ['nextStep'],
-        },
-        PREVIOUS_STEP: {
+          actions: ['nextStep']},
+        PREVIOUS_STEP: {},
           target: 'briefUpload',
-          actions: ['previousStep'],
-        },
-        SET_ERROR: {
-          actions: ['setError'],
-        },
-        CLEAR_ERROR: {
-          actions: ['clearError'],
-        },
-      },
-    },
+          actions: ['previousStep']},
+        SET_ERROR: {},
+          actions: ['setError']},
+        CLEAR_ERROR: {},
+          actions: ['clearError']}}},
     
-    copyGeneration: {
+    copyGeneration: {},
       entry: ['clearError'],
-      on: {
-        GENERATE_COPY: {
-          actions: ['setProcessing'],
-        },
-        SELECT_COPY: {
-          actions: ['selectCopy'],
-        },
-        NEXT_STEP: {
+      on: {},
+        GENERATE_COPY: {},
+          actions: ['setProcessing']},
+        SELECT_COPY: {},
+          actions: ['selectCopy']},
+        NEXT_STEP: {},
           target: 'assetSelection',
           cond: 'hasSelectedCopy',
-          actions: ['nextStep'],
-        },
-        PREVIOUS_STEP: {
+          actions: ['nextStep']},
+        PREVIOUS_STEP: {},
           target: 'motivationSelection',
-          actions: ['previousStep'],
-        },
-        SET_ERROR: {
-          actions: ['setError'],
-        },
-        CLEAR_ERROR: {
-          actions: ['clearError'],
-        },
-      },
-    },
+          actions: ['previousStep']},
+        SET_ERROR: {},
+          actions: ['setError']},
+        CLEAR_ERROR: {},
+          actions: ['clearError']}}},
     
-    assetSelection: {
+    assetSelection: {},
       entry: ['clearError'],
-      on: {
-        SELECT_ASSET: {
-          actions: ['selectAsset'],
-        },
-        NEXT_STEP: {
+      on: {},
+        SELECT_ASSET: {},
+          actions: ['selectAsset']},
+        NEXT_STEP: {},
           target: 'templateSelection',
           cond: 'hasSelectedAssets',
-          actions: ['nextStep'],
-        },
-        PREVIOUS_STEP: {
+          actions: ['nextStep']},
+        PREVIOUS_STEP: {},
           target: 'copyGeneration',
-          actions: ['previousStep'],
-        },
-        SET_ERROR: {
-          actions: ['setError'],
-        },
-        CLEAR_ERROR: {
-          actions: ['clearError'],
-        },
-      },
-    },
+          actions: ['previousStep']},
+        SET_ERROR: {},
+          actions: ['setError']},
+        CLEAR_ERROR: {},
+          actions: ['clearError']}}},
     
-    templateSelection: {
+    templateSelection: {},
       entry: ['clearError'],
-      on: {
-        SELECT_TEMPLATE: {
-          actions: ['selectTemplate'],
-        },
-        NEXT_STEP: {
+      on: {},
+        SELECT_TEMPLATE: {},
+          actions: ['selectTemplate']},
+        NEXT_STEP: {},
           target: 'matrixBuild',
           cond: 'hasSelectedTemplate',
-          actions: ['nextStep'],
-        },
-        PREVIOUS_STEP: {
+          actions: ['nextStep']},
+        PREVIOUS_STEP: {},
           target: 'assetSelection',
-          actions: ['previousStep'],
-        },
-        SET_ERROR: {
-          actions: ['setError'],
-        },
-        CLEAR_ERROR: {
-          actions: ['clearError'],
-        },
-      },
-    },
+          actions: ['previousStep']},
+        SET_ERROR: {},
+          actions: ['setError']},
+        CLEAR_ERROR: {},
+          actions: ['clearError']}}},
     
-    matrixBuild: {
+    matrixBuild: {},
       entry: ['clearError'],
-      on: {
-        NEXT_STEP: {
+      on: {},
+        NEXT_STEP: {},
           target: 'rendering',
           cond: 'canProceedToRender',
-          actions: ['nextStep'],
-        },
-        PREVIOUS_STEP: {
+          actions: ['nextStep']},
+        PREVIOUS_STEP: {},
           target: 'templateSelection',
-          actions: ['previousStep'],
-        },
-        SET_ERROR: {
-          actions: ['setError'],
-        },
-        CLEAR_ERROR: {
-          actions: ['clearError'],
-        },
-      },
-    },
+          actions: ['previousStep']},
+        SET_ERROR: {},
+          actions: ['setError']},
+        CLEAR_ERROR: {},
+          actions: ['clearError']}}},
     
-    rendering: {
+    rendering: {},
       entry: ['clearError'],
-      on: {
-        PREVIOUS_STEP: {
+      on: {},
+        PREVIOUS_STEP: {},
           target: 'matrixBuild',
-          actions: ['previousStep'],
-        },
-        RESET_WORKFLOW: {
+          actions: ['previousStep']},
+        RESET_WORKFLOW: {},
           target: 'briefUpload',
-          actions: ['resetWorkflow'],
-        },
-        SET_ERROR: {
-          actions: ['setError'],
-        },
-        CLEAR_ERROR: {
-          actions: ['clearError'],
-        },
-      },
-    },
-  },
+          actions: ['resetWorkflow']},
+        SET_ERROR: {},
+          actions: ['setError']},
+        CLEAR_ERROR: {},
+          actions: ['clearError']}}}},
   
   // Global transitions
-  on: {
+  on: {},
     GO_TO_STEP: [
       {
         target: 'briefUpload',
         cond: (_, event) => event.step === 0,
-        actions: ['goToStep'],
-      },
+        actions: ['goToStep']},
       {
         target: 'motivationSelection',
         cond: (context, event) => event.step === 1 && guards.canProceedToMotivations(context),
-        actions: ['goToStep'],
-      },
+        actions: ['goToStep']},
       {
         target: 'copyGeneration',
         cond: (context, event) => event.step === 2 && guards.canProceedToCopy(context),
-        actions: ['goToStep'],
-      },
+        actions: ['goToStep']},
       {
         target: 'assetSelection',
         cond: (context, event) => event.step === 3 && guards.canProceedToAssets(context),
-        actions: ['goToStep'],
-      },
+        actions: ['goToStep']},
       {
         target: 'templateSelection',
         cond: (context, event) => event.step === 4 && guards.canProceedToTemplate(context),
-        actions: ['goToStep'],
-      },
+        actions: ['goToStep']},
       {
         target: 'matrixBuild',
         cond: (context, event) => event.step === 5 && guards.canProceedToMatrix(context),
-        actions: ['goToStep'],
-      },
+        actions: ['goToStep']},
       {
         target: 'rendering',
         cond: (context, event) => event.step === 6 && guards.canProceedToRender(context),
-        actions: ['goToStep'],
-      },
+        actions: ['goToStep']},
     ],
-    RESET_WORKFLOW: {
+    RESET_WORKFLOW: {},
       target: 'briefUpload',
-      actions: ['resetWorkflow'],
-    },
-  },
-}, {
+      actions: ['resetWorkflow']}}}, {
   guards,
-  actions,
-});
+  actions});
 
 // Export machine creator function
 export const createWorkflowMachine = (clientId?: string) => {
   return workflowMachine.withContext({
     ...initialContext,
-    clientId: clientId || null,
-  });
+    clientId: clientId || null});
 };

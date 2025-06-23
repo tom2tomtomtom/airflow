@@ -64,7 +64,7 @@ describe('Basic Monitoring Tests', () => {
       const startTime = Date.now();
       
       // Start all operations
-      operations.forEach(op => {
+      operations.forEach((op: any) => {
         timers.set(`${op}:${userId}`, startTime);
       });
       
@@ -127,8 +127,7 @@ describe('Basic Monitoring Tests', () => {
         averageResponseTime: 120,
         errorRate: 0.02,
         memoryUsage: 85.5,
-        cpuUsage: 45.2,
-      };
+        cpuUsage: 45.2};
       
       // Validate metric structure
       expect(typeof metrics.activeUsers).toBe('number');
@@ -163,8 +162,8 @@ describe('Basic Monitoring Tests', () => {
       
       const total = timeSeriesData.reduce((sum, point) => sum + point.value, 0);
       const average = total / timeSeriesData.length;
-      const max = Math.max(...timeSeriesData.map(p => p.value));
-      const min = Math.min(...timeSeriesData.map(p => p.value));
+      const max = Math.max(...timeSeriesData.map((p: any) => p.value));
+      const min = Math.min(...timeSeriesData.map((p: any) => p.value));
       
       expect(total).toBe(550);
       expect(average).toBe(137.5);
@@ -198,7 +197,7 @@ describe('Basic Monitoring Tests', () => {
       // Simulate multiple operations with some failures
       const operations = Array(10).fill(null).map((_, i) => i < 8 ? 'success' : 'error');
       
-      operations.forEach(result => {
+      operations.forEach((result: any) => {
         if (result === 'success') {
           successCount++;
         } else {
@@ -218,8 +217,7 @@ describe('Basic Monitoring Tests', () => {
         'network': 5,
         'validation': 3,
         'authentication': 2,
-        'server': 1,
-      };
+        'server': 1};
       
       const totalErrors = Object.values(errorCategories).reduce((sum, count) => sum + count, 0);
       
@@ -273,7 +271,7 @@ describe('Basic Monitoring Tests', () => {
       const concurrentOps = new Map();
       
       // Start multiple operations
-      ['op1', 'op2', 'op3'].forEach(op => {
+      ['op1', 'op2', 'op3'].forEach((op: any) => {
         concurrentOps.set(op, Date.now());
       });
       
@@ -321,8 +319,7 @@ describe('Basic Monitoring Tests', () => {
         firstContentfulPaint: 800,
         largestContentfulPaint: 1500,
         cumulativeLayoutShift: 0.05,
-        firstInputDelay: 50,
-      };
+        firstInputDelay: 50};
       
       // Simple scoring algorithm (lower is better for most metrics)
       const loadTimeScore = Math.max(0, 100 - (metrics.loadTime / 20));
@@ -339,8 +336,7 @@ describe('Basic Monitoring Tests', () => {
         'database': { status: 'healthy', responseTime: 45 },
         'redis': { status: 'healthy', responseTime: 12 },
         'openai': { status: 'degraded', responseTime: 2500 },
-        'creatomate': { status: 'healthy', responseTime: 150 },
-      };
+        'creatomate': { status: 'healthy', responseTime: 150 }};
       
       const healthyServices = Object.entries(serviceHealth)
         .filter(([_, health]) => health.status === 'healthy')
@@ -390,8 +386,7 @@ describe('Basic Monitoring Tests', () => {
         'info': 1,
         'warning': 2,
         'critical': 3,
-        'emergency': 4,
-      };
+        'emergency': 4};
       
       const currentAlert = 'critical';
       const alertLevel = alertLevels[currentAlert];

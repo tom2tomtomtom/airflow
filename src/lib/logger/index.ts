@@ -170,7 +170,7 @@ export const setupGracefulShutdown = () => {
     logger.info(`Received ${signal}, starting graceful shutdown`);
     
     // Close all winston transports
-    Object.values(loggers).forEach(logger => {
+    Object.values(loggers).forEach((logger: any) => {
       logger.close();
     });
     
@@ -188,7 +188,7 @@ export const initializeLogging = () => {
   logger.info('Logging system initialized', {
     environment: process.env.NODE_ENV || 'development',
     logLevel: getLoggingConfig().level,
-    transports: {
+    transports: {},
       console: getLoggingConfig().console.enabled,
       file: getLoggingConfig().file.enabled
     }

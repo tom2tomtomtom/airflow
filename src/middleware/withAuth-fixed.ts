@@ -7,11 +7,11 @@ import { createServerClient } from '@supabase/ssr';
 // Extended request with user information
 export interface AuthenticatedRequest extends NextApiRequest {
   user?: {
-    id: string;
-    email: string;
-    role: UserRole;
-    permissions: string[];
-    clientIds: string[];
+    id: string;,
+    email: string;,
+    role: UserRole;,
+    permissions: string[];,
+    clientIds: string[];,
     tenantId: string;
   };
 }
@@ -31,18 +31,15 @@ export function withAuth(handler: AuthenticatedHandler) {
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
-          cookies: {
+          cookies: {},
             get(name: string) {
               return req.cookies[name];
             },
-            set(name: string, value: string, options: any) {
+            set(name: string, value: string, options: unknown) {
               // We don't need to set cookies in API routes
             },
-            remove(name: string, options: any) {
-              // We don't need to remove cookies in API routes
-            },
-          },
-        }
+            remove(name: string, options: unknown) {
+              // We don't need to remove cookies in API routes }
       );
 
       // Get user from Supabase using cookies
@@ -82,8 +79,7 @@ export function withAuth(handler: AuthenticatedHandler) {
               tenant_id: null,
               is_active: true,
               created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            };
+              updated_at: new Date().toISOString()};
 
             const { data: newProfile, error: createError } = await supabase
               .from('profiles')
@@ -102,8 +98,7 @@ export function withAuth(handler: AuthenticatedHandler) {
                 role: 'user',
                 permissions: [],
                 tenant_id: null,
-                is_active: true,
-              };
+                is_active: true};
             } else {
                             profile = newProfile;
             }
@@ -120,13 +115,12 @@ export function withAuth(handler: AuthenticatedHandler) {
               role: 'user',
               permissions: [],
               tenant_id: null,
-              is_active: true,
-            };
+              is_active: true};
           }
         } else {
                     profile = profileData;
         }
-      } catch (profileException) {
+      } catch (profileException: unknown) {
         console.error('💥 withAuth: Profile creation exception:', profileException);
         // Use minimal profile as fallback
         const userName = user.user_metadata?.name || user.email?.split('@')[0] || 'User';
@@ -139,12 +133,11 @@ export function withAuth(handler: AuthenticatedHandler) {
           role: 'user',
           permissions: [],
           tenant_id: null,
-          is_active: true,
-        };
+          is_active: true};
       }
 
       // Get user's client access (don't fail if this errors)
-      let userClients: any[] = [];
+      let userClients: unknown[] = [];
       try {
         const { data: clientsData, error: clientsError } = await supabase
           .from('user_clients')
@@ -156,7 +149,7 @@ export function withAuth(handler: AuthenticatedHandler) {
         } else {
           userClients = clientsData || [];
         }
-      } catch (clientsException) {
+      } catch (clientsException: unknown) {
         console.error('💥 withAuth: Exception fetching user clients:', clientsException);
       }
 
@@ -172,7 +165,7 @@ export function withAuth(handler: AuthenticatedHandler) {
 
             // Call the handler
       return await handler(req as AuthenticatedRequest, res);
-    } catch (error) {
+    } catch (error: unknown) {
       const message = getErrorMessage(error);
       console.error('💥 withAuth: Authentication error:', error);
       console.error('Stack trace:', (error as any)?.stack);

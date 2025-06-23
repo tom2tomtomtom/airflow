@@ -56,10 +56,17 @@
  */
 
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withAPIRateLimit } from '@/lib/rate-limiter';
-import { successResponse, errorResponse, handleApiError, methodNotAllowed, ApiErrorCode } from '@/lib/api-response';
+import {
+  successResponse,
+  errorResponse,
+  handleApiError,
+  methodNotAllowed,
+  ApiErrorCode,
+} from '@/lib/api-response';
 
 interface WorkflowState {
   id: string;
@@ -91,7 +98,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return methodNotAllowed(res, ['GET', 'POST', 'DELETE']);
     }
-  } catch (error) {
+  } catch (error: any) {
     return handleApiError(res, error, 'workflow state handler');
   }
 }
@@ -139,14 +146,13 @@ async function getWorkflowState(
       processing: workflow.processing || false,
       lastError: workflow.last_error,
       createdAt: workflow.created_at,
-      updatedAt: workflow.updated_at
+      updatedAt: workflow.updated_at,
     };
 
     return successResponse(res, workflowState, 200, {
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-
-  } catch (error) {
+  } catch (error: any) {
     return handleApiError(res, error, 'getWorkflowState');
   }
 }
@@ -171,7 +177,7 @@ async function updateWorkflowState(
 
     // Prepare update data
     const updateData: any = {
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     // Map frontend fields to database fields
@@ -180,7 +186,8 @@ async function updateWorkflowState(
     if (updates.motivations !== undefined) updateData.motivations = updates.motivations;
     if (updates.copyVariations !== undefined) updateData.copy_variations = updates.copyVariations;
     if (updates.selectedAssets !== undefined) updateData.selected_assets = updates.selectedAssets;
-    if (updates.selectedTemplate !== undefined) updateData.selected_template = updates.selectedTemplate;
+    if (updates.selectedTemplate !== undefined)
+      updateData.selected_template = updates.selectedTemplate;
     if (updates.processing !== undefined) updateData.processing = updates.processing;
     if (updates.lastError !== undefined) updateData.last_error = updates.lastError;
     if (updates.clientId !== undefined) updateData.client_id = updates.clientId;
@@ -188,13 +195,16 @@ async function updateWorkflowState(
     // Update or create workflow session
     const { data: workflow, error: workflowError } = await supabase
       .from('workflow_sessions')
-      .upsert({
-        id: workflowId,
-        user_id: userId,
-        ...updateData
-      }, {
-        onConflict: 'id'
-      })
+      .upsert(
+        {
+          id: workflowId,
+          user_id: userId,
+          ...updateData,
+        },
+        {
+          onConflict: 'id',
+        }
+      )
       .select('*')
       .single();
 
@@ -215,14 +225,13 @@ async function updateWorkflowState(
       processing: workflow.processing || false,
       lastError: workflow.last_error,
       createdAt: workflow.created_at,
-      updatedAt: workflow.updated_at
+      updatedAt: workflow.updated_at,
     };
 
     return successResponse(res, workflowState, 200, {
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-
-  } catch (error) {
+  } catch (error: any) {
     return handleApiError(res, error, 'updateWorkflowState');
   }
 }
@@ -257,10 +266,9 @@ async function deleteWorkflowState(
     }
 
     return successResponse(res, { deleted: true }, 200, {
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
-
-  } catch (error) {
+  } catch (error: any) {
     return handleApiError(res, error, 'deleteWorkflowState');
   }
 }

@@ -6,10 +6,7 @@ interface LoadingSkeletonProps {
   count?: number;
 }
 
-const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({ 
-  variant = 'card', 
-  count = 1 
-}) => {
+const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({ variant = 'card', count = 1 }) => {
   const renderCardSkeleton = () => (
     <Card>
       <CardContent>

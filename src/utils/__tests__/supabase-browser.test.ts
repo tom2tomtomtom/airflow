@@ -496,7 +496,7 @@ describe('supabase-browser utilities', () => {
     it('should work with realistic Supabase usage pattern', () => {
       const mockClient = {
         from: jest.fn(),
-        auth: {
+        auth: {},
           getSession: jest.fn(),
           signIn: jest.fn(),
           signOut: jest.fn()

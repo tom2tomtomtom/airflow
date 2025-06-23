@@ -7,13 +7,20 @@ import { z } from 'zod';
 
 // File validation schemas
 export const FileValidationSchema = z.object({
-  name: z.string().min(1).max(255).regex(/^[a-zA-Z0-9._-]+$/, 'Invalid file name characters'),
-  size: z.number().min(1).max(10 * 1024 * 1024), // 10MB max
+  name: z
+    .string()
+    .min(1)
+    .max(255)
+    .regex(/^[a-zA-Z0-9._-]+$/, 'Invalid file name characters'),
+  size: z
+    .number()
+    .min(1)
+    .max(10 * 1024 * 1024), // 10MB max
   type: z.enum([
     'application/pdf',
     'application/msword',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'text/plain'
+    'text/plain',
   ]),
 });
 
@@ -81,7 +88,7 @@ function sanitizeText(input: string): string {
   }
 
   // Remove any HTML tags and sanitize
-  const sanitized = DOMPurify.sanitize(input, { 
+  const sanitized = DOMPurify.sanitize(input, {
     ALLOWED_TAGS: [], // No HTML tags allowed
     ALLOWED_ATTR: [],
     KEEP_CONTENT: true,
@@ -95,11 +102,11 @@ function sanitizeText(input: string): string {
     .replace(/vbscript:/gi, '') // Remove vbscript: protocol
     .replace(/on\w+\s*=/gi, '') // Remove event handlers
     .trim();
-  
+
   // First remove SQL comments
   result = result.replace(/\/\*.*?\*\//g, ' '); // Remove /* */ comments
   result = result.replace(/--.*$/gm, ''); // Remove -- comments
-  
+
   // Remove SQL injection patterns
   const sqlPatterns = [
     /\b(DROP\s+TABLE|INSERT\s+INTO|DELETE\s+FROM|UPDATE\s+SET|UNION\s+SELECT|SELECT\s+\*|CREATE\s+TABLE|ALTER\s+TABLE)\b/gi,
@@ -107,11 +114,11 @@ function sanitizeText(input: string): string {
     /1'='1/g,
     /'.*?OR.*?'/gi,
   ];
-  
+
   for (const pattern of sqlPatterns) {
     result = result.replace(pattern, ' '); // Replace with space to preserve length
   }
-  
+
   // Remove template injection patterns
   const templatePatterns = [
     /\{\{.*?\}\}/g, // Mustache/Handlebars
@@ -119,11 +126,11 @@ function sanitizeText(input: string): string {
     /\${.*?}/g, // Template literals
     /#{.*?}/g, // Ruby/OGNL style
   ];
-  
+
   for (const pattern of templatePatterns) {
     result = result.replace(pattern, '[REMOVED]'); // Replace with placeholder to preserve some content
   }
-  
+
   return result.trim();
 }
 
@@ -139,9 +146,9 @@ export function validateFile(file: File): { valid: boolean; errors: string[] } {
       size: file.size,
       type: file.type,
     });
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof z.ZodError) {
-      errors.push(...error.errors.map(e => e.message));
+      errors.push(...error.errors.map((e: any) => e.message));
     } else {
       errors.push('Invalid file format');
     }
@@ -153,7 +160,17 @@ export function validateFile(file: File): { valid: boolean; errors: string[] } {
   }
 
   // Check for suspicious file extensions
-  const suspiciousExtensions = ['.exe', '.bat', '.cmd', '.scr', '.pif', '.com', '.js', '.vbs', '.jar'];
+  const suspiciousExtensions = [
+    '.exe',
+    '.bat',
+    '.cmd',
+    '.scr',
+    '.pif',
+    '.com',
+    '.js',
+    '.vbs',
+    '.jar',
+  ];
   const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
   if (suspiciousExtensions.includes(fileExtension)) {
     errors.push('File type not allowed for security reasons');
@@ -176,11 +193,11 @@ export function validateBriefData(data: any): { valid: boolean; data?: any; erro
       data: validatedData,
       errors: [],
     };
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof z.ZodError) {
       return {
         valid: false,
-        errors: error.errors.map(e => `${e.path.join('.')}: ${e.message}`),
+        errors: error.errors.map((e: any) => `${e.path.join('.')}: ${e.message}`),
       };
     }
     return {
@@ -193,7 +210,11 @@ export function validateBriefData(data: any): { valid: boolean; data?: any; erro
 /**
  * Validate motivations array
  */
-export function validateMotivations(motivations: any[]): { valid: boolean; data?: any[]; errors: string[] } {
+export function validateMotivations(motivations: any[]): {
+  valid: boolean;
+  data?: any[];
+  errors: string[];
+} {
   const errors: string[] = [];
   const validatedMotivations: any[] = [];
 
@@ -201,9 +222,9 @@ export function validateMotivations(motivations: any[]): { valid: boolean; data?
     try {
       const validated = MotivationSchema.parse(motivations[i]);
       validatedMotivations.push(validated);
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof z.ZodError) {
-        errors.push(`Motivation ${i + 1}: ${error.errors.map(e => e.message).join(', ')}`);
+        errors.push(`Motivation ${i + 1}: ${error.errors.map((e: any) => e.message).join(', ')}`);
       } else {
         errors.push(`Motivation ${i + 1}: Invalid format`);
       }
@@ -220,7 +241,11 @@ export function validateMotivations(motivations: any[]): { valid: boolean; data?
 /**
  * Validate copy variations array
  */
-export function validateCopyVariations(copyVariations: any[]): { valid: boolean; data?: any[]; errors: string[] } {
+export function validateCopyVariations(copyVariations: any[]): {
+  valid: boolean;
+  data?: any[];
+  errors: string[];
+} {
   const errors: string[] = [];
   const validatedCopy: any[] = [];
 
@@ -228,9 +253,9 @@ export function validateCopyVariations(copyVariations: any[]): { valid: boolean;
     try {
       const validated = CopyVariationSchema.parse(copyVariations[i]);
       validatedCopy.push(validated);
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof z.ZodError) {
-        errors.push(`Copy ${i + 1}: ${error.errors.map(e => e.message).join(', ')}`);
+        errors.push(`Copy ${i + 1}: ${error.errors.map((e: any) => e.message).join(', ')}`);
       } else {
         errors.push(`Copy ${i + 1}: Invalid format`);
       }
@@ -255,9 +280,9 @@ export function validateAssets(assets: any[]): { valid: boolean; data?: any[]; e
     try {
       const validated = AssetSchema.parse(assets[i]);
       validatedAssets.push(validated);
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof z.ZodError) {
-        errors.push(`Asset ${i + 1}: ${error.errors.map(e => e.message).join(', ')}`);
+        errors.push(`Asset ${i + 1}: ${error.errors.map((e: any) => e.message).join(', ')}`);
       } else {
         errors.push(`Asset ${i + 1}: Invalid format`);
       }
@@ -282,11 +307,11 @@ export function validateTemplate(template: any): { valid: boolean; data?: any; e
       data: validatedTemplate,
       errors: [],
     };
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof z.ZodError) {
       return {
         valid: false,
-        errors: error.errors.map(e => `${e.path.join('.')}: ${e.message}`),
+        errors: error.errors.map((e: any) => `${e.path.join('.')}: ${e.message}`),
       };
     }
     return {
@@ -300,8 +325,8 @@ export function validateTemplate(template: any): { valid: boolean; data?: any; e
  * Rate limiting validation for AI operations
  */
 export function validateAIOperationRate(
-  userId: string, 
-  operation: string, 
+  userId: string,
+  operation: string,
   windowMs: number = 60000, // 1 minute
   maxRequests: number = 10
 ): { allowed: boolean; resetTime?: number } {
@@ -309,7 +334,7 @@ export function validateAIOperationRate(
   // For now, implementing a simple in-memory version
   const key = `${userId}:${operation}`;
   const now = Date.now();
-  
+
   // In production, this should use Redis with sliding window
   // For demonstration purposes, using a simple approach
   return {
@@ -325,11 +350,11 @@ export function sanitizeApiResponse(data: any): any {
   if (typeof data === 'string') {
     return sanitizeText(data);
   }
-  
+
   if (Array.isArray(data)) {
     return data.map(sanitizeApiResponse);
   }
-  
+
   if (data && typeof data === 'object') {
     const sanitized: any = {};
     for (const [key, value] of Object.entries(data)) {
@@ -337,6 +362,6 @@ export function sanitizeApiResponse(data: any): any {
     }
     return sanitized;
   }
-  
+
   return data;
 }

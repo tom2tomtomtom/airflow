@@ -1,29 +1,25 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Slider } from '@/components/ui/slider';
-import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { 
-  CheckCircle2, 
-  Circle, 
-  RefreshCw, 
-  Settings, 
-  TrendingUp, 
-  Users, 
-  Zap, 
+import {
+  CheckCircle2,
+  Circle,
+  RefreshCw,
+  Settings,
+  TrendingUp,
+  Users,
+  Zap,
   Heart,
   Brain,
   Target,
   Star,
   AlertCircle,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
 } from 'lucide-react';
 import { PsychologicalMotivation, MotivationSet } from '@/services/motivationGenerator';
 
@@ -41,20 +37,20 @@ const psychologyTypeIcons = {
   cognitive: Brain,
   emotional: Heart,
   social: Users,
-  behavioral: Zap
+  behavioral: Zap,
 };
 
 const psychologyTypeColors = {
   cognitive: 'bg-blue-100 text-blue-800 border-blue-200',
   emotional: 'bg-red-100 text-red-800 border-red-200',
   social: 'bg-green-100 text-green-800 border-green-200',
-  behavioral: 'bg-purple-100 text-purple-800 border-purple-200'
+  behavioral: 'bg-purple-100 text-purple-800 border-purple-200',
 };
 
 const intensityColors = {
   low: 'bg-gray-100 text-gray-700',
   medium: 'bg-yellow-100 text-yellow-800',
-  high: 'bg-orange-100 text-orange-800'
+  high: 'bg-orange-100 text-orange-800',
 };
 
 export function MotivationSelector({
@@ -64,7 +60,7 @@ export function MotivationSelector({
   onRefine,
   onRegenerate,
   isLoading = false,
-  maxSelections = 6
+  maxSelections = 6,
 }: MotivationSelectorProps) {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [filterType, setFilterType] = useState<string>('all');
@@ -74,18 +70,18 @@ export function MotivationSelector({
 
   const toggleSelection = (motivationId: string) => {
     const newSelection = selectedMotivations.includes(motivationId)
-      ? selectedMotivations.filter(id => id !== motivationId)
+      ? selectedMotivations.filter((id: any) => id !== motivationId)
       : selectedMotivations.length < maxSelections
         ? [...selectedMotivations, motivationId]
         : selectedMotivations;
-    
+
     onSelectionChange(newSelection);
   };
 
   const selectAll = () => {
     const topMotivations = getSortedMotivations()
       .slice(0, maxSelections)
-      .map(m => m.id);
+      .map((m: any) => m.id);
     onSelectionChange(topMotivations);
   };
 
@@ -95,11 +91,11 @@ export function MotivationSelector({
 
   const getSortedMotivations = () => {
     let filtered = motivationSet.motivations;
-    
+
     if (filterType !== 'all') {
-      filtered = filtered.filter(m => m.psychologyType === filterType);
+      filtered = filtered.filter((m: any) => m.psychologyType === filterType);
     }
-    
+
     return filtered.sort((a, b) => {
       switch (sortBy) {
         case 'confidence':
@@ -121,19 +117,20 @@ export function MotivationSelector({
     return 'text-red-600';
   };
 
-  const MotivationCard = ({ motivation, isExpanded }: { 
-    motivation: PsychologicalMotivation; 
+  const MotivationCard = ({
+    motivation,
+    isExpanded,
+  }: {
+    motivation: PsychologicalMotivation;
     isExpanded: boolean;
   }) => {
     const isSelected = selectedMotivations.includes(motivation.id);
     const PsychologyIcon = psychologyTypeIcons[motivation.psychologyType];
-    
+
     return (
-      <Card 
+      <Card
         className={`transition-all duration-200 cursor-pointer hover:shadow-md ${
-          isSelected 
-            ? 'ring-2 ring-blue-500 bg-blue-50' 
-            : 'hover:ring-1 hover:ring-gray-300'
+          isSelected ? 'ring-2 ring-blue-500 bg-blue-50' : 'hover:ring-1 hover:ring-gray-300'
         }`}
         onClick={() => toggleSelection(motivation.id)}
       >
@@ -150,19 +147,15 @@ export function MotivationSelector({
             <Button
               variant="ghost"
               size="sm"
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 setExpandedCard(isExpanded ? null : motivation.id);
               }}
             >
-              {isExpanded ? (
-                <ChevronUp className="h-4 w-4" />
-              ) : (
-                <ChevronDown className="h-4 w-4" />
-              )}
+              {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
             </Button>
           </div>
-          
+
           <div className="flex flex-wrap gap-2 mt-2">
             <Badge className={psychologyTypeColors[motivation.psychologyType]}>
               <PsychologyIcon className="h-3 w-3 mr-1" />
@@ -179,10 +172,10 @@ export function MotivationSelector({
             </Badge>
           </div>
         </CardHeader>
-        
+
         <CardContent>
           <p className="text-sm text-gray-600 mb-3">{motivation.description}</p>
-          
+
           <div className="space-y-2 text-sm">
             <div>
               <span className="font-medium">Target:</span> {motivation.targetSegment}
@@ -191,7 +184,7 @@ export function MotivationSelector({
               <span className="font-medium">Key Message:</span> {motivation.keyMessage}
             </div>
           </div>
-          
+
           {isExpanded && (
             <div className="mt-4 space-y-3 border-t pt-3">
               <div>
@@ -204,12 +197,12 @@ export function MotivationSelector({
                   ))}
                 </div>
               </div>
-              
+
               <div>
                 <span className="font-medium text-sm">Copy Direction:</span>
                 <p className="text-sm text-gray-600 mt-1">{motivation.copyDirection}</p>
               </div>
-              
+
               <div>
                 <span className="font-medium text-sm">Examples:</span>
                 <ul className="text-sm text-gray-600 mt-1 list-disc list-inside">
@@ -233,23 +226,16 @@ export function MotivationSelector({
           <div>
             <h2 className="text-2xl font-bold">Select Motivations</h2>
             <p className="text-gray-600">
-              Choose {maxSelections} motivations that best align with your campaign goals
-              ({selectedMotivations.length}/{maxSelections} selected)
+              Choose {maxSelections} motivations that best align with your campaign goals (
+              {selectedMotivations.length}/{maxSelections} selected)
             </p>
           </div>
           <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              onClick={onRegenerate}
-              disabled={isLoading}
-            >
+            <Button variant="outline" onClick={onRegenerate} disabled={isLoading}>
               <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
               Regenerate
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => setShowAdvanced(!showAdvanced)}
-            >
+            <Button variant="outline" onClick={() => setShowAdvanced(!showAdvanced)}>
               <Settings className="h-4 w-4 mr-2" />
               Advanced
             </Button>
@@ -269,7 +255,7 @@ export function MotivationSelector({
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
@@ -283,7 +269,7 @@ export function MotivationSelector({
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
@@ -297,13 +283,15 @@ export function MotivationSelector({
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Target Segments</p>
-                  <p className="text-2xl font-bold">{motivationSet.metadata.targetCoverage.length}</p>
+                  <p className="text-2xl font-bold">
+                    {motivationSet.metadata.targetCoverage.length}
+                  </p>
                 </div>
                 <Zap className="h-8 w-8 text-orange-600" />
               </div>
@@ -324,7 +312,7 @@ export function MotivationSelector({
                   <select
                     id="filter-type"
                     value={filterType}
-                    onChange={(e) => setFilterType(e.target.value)}
+                    onChange={e => setFilterType(e.target.value)}
                     className="w-full mt-1 p-2 border rounded-md"
                   >
                     <option value="all">All Types</option>
@@ -334,13 +322,13 @@ export function MotivationSelector({
                     <option value="behavioral">Behavioral</option>
                   </select>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="sort-by">Sort By</Label>
                   <select
                     id="sort-by"
                     value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as any)}
+                    onChange={e => setSortBy(e.target.value as any)}
                     className="w-full mt-1 p-2 border rounded-md"
                   >
                     <option value="confidence">Confidence</option>
@@ -348,13 +336,13 @@ export function MotivationSelector({
                     <option value="alphabetical">Alphabetical</option>
                   </select>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="view-mode">View Mode</Label>
                   <select
                     id="view-mode"
                     value={viewMode}
-                    onChange={(e) => setViewMode(e.target.value as any)}
+                    onChange={e => setViewMode(e.target.value as any)}
                     className="w-full mt-1 p-2 border rounded-md"
                   >
                     <option value="grid">Grid</option>
@@ -362,7 +350,7 @@ export function MotivationSelector({
                   </select>
                 </div>
               </div>
-              
+
               <div className="flex justify-between">
                 <div className="flex space-x-2">
                   <Button variant="outline" size="sm" onClick={selectAll}>
@@ -372,13 +360,15 @@ export function MotivationSelector({
                     Clear All
                   </Button>
                 </div>
-                
+
                 <Button
-                  onClick={() => onRefine({
-                    enhanceConfidence: true,
-                    increaseDiversity: true,
-                    balancePsychology: true
-                  })}
+                  onClick={() =>
+                    onRefine({
+                      enhanceConfidence: true,
+                      increaseDiversity: true,
+                      balancePsychology: true,
+                    })
+                  }
                   disabled={isLoading}
                 >
                   Refine Motivations
@@ -400,12 +390,12 @@ export function MotivationSelector({
       )}
 
       {/* Motivations Grid/List */}
-      <div className={
-        viewMode === 'grid' 
-          ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'
-          : 'space-y-4'
-      }>
-        {getSortedMotivations().map((motivation) => (
+      <div
+        className={
+          viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4' : 'space-y-4'
+        }
+      >
+        {getSortedMotivations().map((motivation: any) => (
           <MotivationCard
             key={motivation.id}
             motivation={motivation}
@@ -424,7 +414,7 @@ export function MotivationSelector({
             {Object.entries(motivationSet.metadata.psychologyDistribution).map(([type, count]) => {
               const percentage = (count / motivationSet.motivations.length) * 100;
               const PsychologyIcon = psychologyTypeIcons[type as keyof typeof psychologyTypeIcons];
-              
+
               return (
                 <div key={type} className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
@@ -439,9 +429,7 @@ export function MotivationSelector({
                         style={{ width: `${percentage}%` }}
                       />
                     </div>
-                    <span className="text-sm text-gray-600 w-12">
-                      {Math.round(percentage)}%
-                    </span>
+                    <span className="text-sm text-gray-600 w-12">{Math.round(percentage)}%</span>
                   </div>
                 </div>
               );
@@ -458,12 +446,15 @@ export function MotivationSelector({
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {selectedMotivations.map(id => {
-                const motivation = motivationSet.motivations.find(m => m.id === id);
+              {selectedMotivations.map((id: any) => {
+                const motivation = motivationSet.motivations.find((m: any) => m.id === id);
                 if (!motivation) return null;
-                
+
                 return (
-                  <div key={id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                  <div
+                    key={id}
+                    className="flex items-center justify-between p-2 bg-gray-50 rounded"
+                  >
                     <span className="font-medium">{motivation.title}</span>
                     <div className="flex items-center space-x-2">
                       <Badge className={psychologyTypeColors[motivation.psychologyType]}>

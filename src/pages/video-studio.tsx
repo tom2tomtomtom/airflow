@@ -36,8 +36,7 @@ import {
   FormControlLabel,
   Slider,
   Avatar,
-  Divider,
-} from '@mui/material';
+  Divider} from '@mui/material';
 import {
   VideoLibrary,
   Settings,
@@ -51,8 +50,7 @@ import {
   Error as ErrorIcon,
   AutoAwesome,
   Palette,
-  MusicNote,
-} from '@mui/icons-material';
+  MusicNote} from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
@@ -133,8 +131,7 @@ const VideoStudioPage: React.FC = () => {
     style: 'commercial',
     duration: 15,
     resolution: '1080p',
-    aspect_ratio: '16:9',
-  });
+    aspect_ratio: '16:9'});
 
   const [contentElements, setContentElements] = useState<ContentElements>({
     text_overlays: [],
@@ -142,16 +139,13 @@ const VideoStudioPage: React.FC = () => {
     voice_over: undefined,
     brand_elements: activeClient ? {
       logo_url: activeClient.logo,
-      color_scheme: [activeClient.primaryColor, activeClient.secondaryColor],
-    } : undefined,
-  });
+      color_scheme: [activeClient.primaryColor, activeClient.secondaryColor]} : undefined});
 
   const [generationSettings, setGenerationSettings] = useState({
     variations_count: 1,
     include_captions: false,
     auto_optimize_for_platform: true,
-    save_to_assets: true,
-  });
+    save_to_assets: true});
 
   // Mock templates data
   const mockTemplates: VideoTemplate[] = [
@@ -164,8 +158,7 @@ const VideoStudioPage: React.FC = () => {
       aspect_ratio: '16:9',
       platform: ['instagram', 'facebook', 'youtube'],
       category: 'Social Media',
-      tags: ['promo', 'social', 'dynamic'],
-    },
+      tags: ['promo', 'social', 'dynamic']},
     {
       id: 'template-2',
       name: 'Product Showcase',
@@ -175,8 +168,7 @@ const VideoStudioPage: React.FC = () => {
       aspect_ratio: '16:9',
       platform: ['youtube', 'linkedin', 'facebook'],
       category: 'Product',
-      tags: ['product', 'showcase', 'elegant'],
-    },
+      tags: ['product', 'showcase', 'elegant']},
     {
       id: 'template-3',
       name: 'TikTok Vertical',
@@ -186,8 +178,7 @@ const VideoStudioPage: React.FC = () => {
       aspect_ratio: '9:16',
       platform: ['tiktok', 'instagram'],
       category: 'Vertical',
-      tags: ['vertical', 'tiktok', 'stories'],
-    },
+      tags: ['vertical', 'tiktok', 'stories']},
     {
       id: 'template-4',
       name: 'Corporate Presentation',
@@ -197,8 +188,7 @@ const VideoStudioPage: React.FC = () => {
       aspect_ratio: '16:9',
       platform: ['linkedin', 'youtube'],
       category: 'Corporate',
-      tags: ['corporate', 'professional', 'presentation'],
-    },
+      tags: ['corporate', 'professional', 'presentation']},
   ];
 
   useEffect(() => {
@@ -210,11 +200,9 @@ const VideoStudioPage: React.FC = () => {
     if (activeClient) {
       setContentElements(prev => ({
         ...prev,
-        brand_elements: {
+        brand_elements: {},
           logo_url: activeClient.logo,
-          color_scheme: [activeClient.primaryColor, activeClient.secondaryColor],
-        },
-      }));
+          color_scheme: [activeClient.primaryColor, activeClient.secondaryColor]}}));
     }
   }, [activeClient]);
 
@@ -237,16 +225,13 @@ const VideoStudioPage: React.FC = () => {
         template_id: selectedTemplate?.id,
         video_config: videoConfig,
         content_elements: contentElements,
-        generation_settings: generationSettings,
-      };
+        generation_settings: generationSettings};
 
       const response = await fetch('/api/video/generate', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestData),
-      });
+        headers: {},
+          'Content-Type': 'application/json'},
+        body: JSON.stringify(requestData)});
 
       const result = await response.json();
 
@@ -259,8 +244,7 @@ const VideoStudioPage: React.FC = () => {
           progress: 0,
           render_job_id: job.render_job_id,
           estimated_completion: job.estimated_completion,
-          created_at: new Date().toISOString(),
-        }));
+          created_at: new Date().toISOString()}));
 
         setVideoJobs(prev => [...prev, ...newJobs]);
         setActiveStep(3); // Move to monitoring step
@@ -268,7 +252,7 @@ const VideoStudioPage: React.FC = () => {
       } else {
         throw new Error(result.error || 'Failed to start video generation');
       }
-    } catch (error) {
+    } catch (error: any) {
       showNotification('Failed to generate video. Please try again.', 'error');
       console.error('Video generation error:', error);
     } finally {
@@ -281,7 +265,7 @@ const VideoStudioPage: React.FC = () => {
     if (videoJobs.length === 0) return;
 
     try {
-      const activeJobs = videoJobs.filter(job =>
+      const activeJobs = videoJobs.filter((job: any) =>
         job.status === 'pending' || job.status === 'processing'
       );
 
@@ -290,12 +274,12 @@ const VideoStudioPage: React.FC = () => {
         const result = await response.json();
 
         if (result.success) {
-          setVideoJobs(prev => prev.map(j =>
+          setVideoJobs(prev => prev.map((j: any) =>
             j.id === job.id ? { ...j, ...result.job } : j
           ));
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error refreshing job status:', error);
     }
   };
@@ -395,7 +379,7 @@ const VideoStudioPage: React.FC = () => {
                     </Typography>
 
                     <Grid container spacing={2}>
-                      {templates.map((template) => (
+                      {templates.map((template: any) => (
                         <Grid size={{ xs: 12, sm: 6, md: 6 }} key={template.id}>
                           <Card
                             variant="outlined"
@@ -410,9 +394,7 @@ const VideoStudioPage: React.FC = () => {
                                 : 'divider',
                               '&:hover': {
                                 boxShadow: 2,
-                                transform: 'translateY(-2px)',
-                              },
-                            }}
+                                transform: 'translateY(-2px)'}}}
                             onClick={() => setSelectedTemplate(template)}
                           >
                             <CardMedia
@@ -434,7 +416,7 @@ const VideoStudioPage: React.FC = () => {
                                 <Chip label={`${template.duration}s`} size="small" variant="outlined" />
                               </Box>
                               <Box display="flex" flexWrap="wrap" gap={0.5}>
-                                {template.platform.map((platform) => (
+                                {template.platform.map((platform: any) => (
                                   <Chip
                                     key={platform}
                                     label={platform}
@@ -516,8 +498,7 @@ const VideoStudioPage: React.FC = () => {
                               setVideoConfig({
                                 ...videoConfig,
                                 platform,
-                                aspect_ratio: getAspectRatioForPlatform(platform),
-                              });
+                                aspect_ratio: getAspectRatioForPlatform(platform)});
                             }}
                           >
                             <MenuItem value="">General</MenuItem>
@@ -639,9 +620,7 @@ const VideoStudioPage: React.FC = () => {
                                     ...contentElements,
                                     text_overlays: [...contentElements.text_overlays, {
                                       text: '',
-                                      position: 'center',
-                                    }],
-                                  });
+                                      position: 'center'}]});
                                 }}
                               >
                                 Add Text Overlay
@@ -668,8 +647,7 @@ const VideoStudioPage: React.FC = () => {
                                             updatedOverlays[index] = { ...overlay, text: e.target.value };
                                             setContentElements({
                                               ...contentElements,
-                                              text_overlays: updatedOverlays,
-                                            });
+                                              text_overlays: updatedOverlays});
                                           }}
                                         />
                                       </Grid>
@@ -683,12 +661,10 @@ const VideoStudioPage: React.FC = () => {
                                               const updatedOverlays = [...contentElements.text_overlays];
                                               updatedOverlays[index] = {
                                                 ...overlay,
-                                                position: e.target.value as 'top' | 'center' | 'bottom',
-                                              };
+                                                position: e.target.value as 'top' | 'center' | 'bottom'};
                                               setContentElements({
                                                 ...contentElements,
-                                                text_overlays: updatedOverlays,
-                                              });
+                                                text_overlays: updatedOverlays});
                                             }}
                                           >
                                             <MenuItem value="top">Top</MenuItem>
@@ -704,8 +680,7 @@ const VideoStudioPage: React.FC = () => {
                                             const updatedOverlays = contentElements.text_overlays.filter((_, i) => i !== index);
                                             setContentElements({
                                               ...contentElements,
-                                              text_overlays: updatedOverlays,
-                                            });
+                                              text_overlays: updatedOverlays});
                                           }}
                                         >
                                           Remove Overlay
@@ -723,9 +698,7 @@ const VideoStudioPage: React.FC = () => {
                                     ...contentElements,
                                     text_overlays: [...contentElements.text_overlays, {
                                       text: '',
-                                      position: 'center',
-                                    }],
-                                  });
+                                      position: 'center'}]});
                                 }}
                               >
                                 Add Another Overlay
@@ -745,8 +718,7 @@ const VideoStudioPage: React.FC = () => {
                                   checked={contentElements.background_music}
                                   onChange={(e) => setContentElements({
                                     ...contentElements,
-                                    background_music: e.target.checked,
-                                  })}
+                                    background_music: e.target.checked})}
                                 />
                               }
                               label="Include Background Music"
@@ -762,17 +734,14 @@ const VideoStudioPage: React.FC = () => {
                                     if (e.target.checked) {
                                       setContentElements({
                                         ...contentElements,
-                                        voice_over: {
+                                        voice_over: {},
                                           text: videoConfig.prompt,
                                           voice: 'neural',
-                                          language: 'en',
-                                        },
-                                      });
+                                          language: 'en'}});
                                     } else {
                                       setContentElements({
                                         ...contentElements,
-                                        voice_over: undefined,
-                                      });
+                                        voice_over: undefined});
                                     }
                                   }}
                                 />
@@ -792,11 +761,9 @@ const VideoStudioPage: React.FC = () => {
                                   value={contentElements.voice_over.text}
                                   onChange={(e) => setContentElements({
                                     ...contentElements,
-                                    voice_over: {
+                                    voice_over: {},
                                       ...contentElements.voice_over!,
-                                      text: e.target.value,
-                                    },
-                                  })}
+                                      text: e.target.value}})}
                                 />
                               </Grid>
                               <Grid size={{ xs: 12, md: 6 }}>
@@ -807,11 +774,9 @@ const VideoStudioPage: React.FC = () => {
                                     label="Voice"
                                     onChange={(e) => setContentElements({
                                       ...contentElements,
-                                      voice_over: {
+                                      voice_over: {},
                                         ...contentElements.voice_over!,
-                                        voice: e.target.value,
-                                      },
-                                    })}
+                                        voice: e.target.value}})}
                                   >
                                     <MenuItem value="neural">Neural (Default)</MenuItem>
                                     <MenuItem value="male">Male</MenuItem>
@@ -827,11 +792,9 @@ const VideoStudioPage: React.FC = () => {
                                     label="Language"
                                     onChange={(e) => setContentElements({
                                       ...contentElements,
-                                      voice_over: {
+                                      voice_over: {},
                                         ...contentElements.voice_over!,
-                                        language: e.target.value,
-                                      },
-                                    })}
+                                        language: e.target.value}})}
                                   >
                                     <MenuItem value="en">English</MenuItem>
                                     <MenuItem value="es">Spanish</MenuItem>
@@ -864,11 +827,9 @@ const VideoStudioPage: React.FC = () => {
                               value={contentElements.brand_elements?.logo_url || ''}
                               onChange={(e) => setContentElements({
                                 ...contentElements,
-                                brand_elements: {
+                                brand_elements: {},
                                   ...contentElements.brand_elements,
-                                  logo_url: e.target.value,
-                                },
-                              })}
+                                  logo_url: e.target.value}})}
                               placeholder="https://example.com/logo.png"
                             />
                           </Grid>
@@ -880,11 +841,9 @@ const VideoStudioPage: React.FC = () => {
                               value={contentElements.brand_elements?.font_family || ''}
                               onChange={(e) => setContentElements({
                                 ...contentElements,
-                                brand_elements: {
+                                brand_elements: {},
                                   ...contentElements.brand_elements,
-                                  font_family: e.target.value,
-                                },
-                              })}
+                                  font_family: e.target.value}})}
                               placeholder="Arial, Helvetica, sans-serif"
                             />
                           </Grid>
@@ -900,8 +859,7 @@ const VideoStudioPage: React.FC = () => {
                                     borderRadius: '50%',
                                     bgcolor: activeClient.primaryColor,
                                     border: '1px solid',
-                                    borderColor: 'divider',
-                                  }}
+                                    borderColor: 'divider'}}
                                 />
                                 <Box
                                   sx={{
@@ -910,8 +868,7 @@ const VideoStudioPage: React.FC = () => {
                                     borderRadius: '50%',
                                     bgcolor: activeClient.secondaryColor,
                                     border: '1px solid',
-                                    borderColor: 'divider',
-                                  }}
+                                    borderColor: 'divider'}}
                                 />
                                 <Typography variant="caption" color="text.secondary">
                                   (From client settings)
@@ -940,8 +897,7 @@ const VideoStudioPage: React.FC = () => {
                                 value={generationSettings.variations_count}
                                 onChange={(_, value) => setGenerationSettings({
                                   ...generationSettings,
-                                  variations_count: value as number,
-                                })}
+                                  variations_count: value as number})}
                                 min={1}
                                 max={5}
                                 step={1}
@@ -961,8 +917,7 @@ const VideoStudioPage: React.FC = () => {
                                   checked={generationSettings.include_captions}
                                   onChange={(e) => setGenerationSettings({
                                     ...generationSettings,
-                                    include_captions: e.target.checked,
-                                  })}
+                                    include_captions: e.target.checked})}
                                 />
                               }
                               label="Include Captions"
@@ -976,8 +931,7 @@ const VideoStudioPage: React.FC = () => {
                                   checked={generationSettings.auto_optimize_for_platform}
                                   onChange={(e) => setGenerationSettings({
                                     ...generationSettings,
-                                    auto_optimize_for_platform: e.target.checked,
-                                  })}
+                                    auto_optimize_for_platform: e.target.checked})}
                                 />
                               }
                               label="Auto-optimize for Platform"
@@ -991,8 +945,7 @@ const VideoStudioPage: React.FC = () => {
                                   checked={generationSettings.save_to_assets}
                                   onChange={(e) => setGenerationSettings({
                                     ...generationSettings,
-                                    save_to_assets: e.target.checked,
-                                  })}
+                                    save_to_assets: e.target.checked})}
                                 />
                               }
                               label="Save to Assets Library"
@@ -1046,7 +999,7 @@ const VideoStudioPage: React.FC = () => {
                       </Alert>
                     ) : (
                       <List>
-                        {videoJobs.map((job) => (
+                        {videoJobs.map((job: any) => (
                           <ListItem key={job.id} divider>
                             <ListItemIcon>
                               {getStatusIcon(job.status)}
@@ -1221,8 +1174,7 @@ const getAspectRatioForPlatform = (platform: string): string => {
     tiktok: '9:16',
     facebook: '16:9',
     linkedin: '16:9',
-    twitter: '16:9',
-  };
+    twitter: '16:9'};
   return platformRatios[platform] || '16:9';
 };
 

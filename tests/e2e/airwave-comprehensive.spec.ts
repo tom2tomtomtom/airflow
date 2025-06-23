@@ -2,13 +2,13 @@ import { test, expect, Page } from '@playwright/test';
 
 // Test configuration
 const TEST_CONFIG = {
-  baseURL: 'http://localhost:3000',
-  email: 'tomh@redbaez.com',
-  password: 'Wijlre2010',
+  baseURL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+  email: process.env.TEST_USER_EMAIL || 'test@example.com',
+  password: process.env.TEST_USER_PASSWORD || 'test-password-123',
   timeout: 30000,
   creatomateTemplate: {
-    templateId: '374ee9e3-de75-4feb-bfae-5c5e11d88d80',
-    apiKey: '5ab32660fef044e5b135a646a78cff8ec7e2503b79e201bad7e566f4b24ec111f2fa7e01a824eaa77904c1783e083efa'
+    templateId: process.env.TEST_CREATOMATE_TEMPLATE_ID || 'test-template-id',
+    apiKey: process.env.TEST_CREATOMATE_API_KEY || 'test-api-key'
   }
 };
 

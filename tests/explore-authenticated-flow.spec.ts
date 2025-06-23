@@ -6,8 +6,8 @@ import { test, expect } from '@playwright/test';
  */
 
 const CREDENTIALS = {
-  email: 'tomh@redbaez.com',
-  password: 'Wijlre2010'
+  email: process.env.TEST_USER_EMAIL || 'test@example.com',
+  password: process.env.TEST_USER_PASSWORD || 'test-password-123'
 };
 
 test.describe('Explore Authenticated Flow Interface', () => {

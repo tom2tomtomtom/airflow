@@ -9,19 +9,16 @@ import { jest } from '@jest/globals';
 // Mock Supabase client
 const mockSupabaseClient = {
   from: jest.fn(),
-  auth: {
+  auth: {},
     getUser: jest.fn(),
     signInWithPassword: jest.fn(),
     signOut: jest.fn(),
-    onAuthStateChange: jest.fn(),
-  },
+    onAuthStateChange: jest.fn()},
   rpc: jest.fn(),
-  storage: {
-    from: jest.fn(),
-  },
+  storage: {},
+    from: jest.fn()},
   channel: jest.fn(),
-  removeChannel: jest.fn(),
-};
+  removeChannel: jest.fn()};
 
 // Mock query builder
 const mockQueryBuilder = {
@@ -63,13 +60,11 @@ const mockQueryBuilder = {
   geojson: jest.fn(),
   explain: jest.fn(),
   rollback: jest.fn(),
-  returns: jest.fn().mockReturnThis(),
-};
+  returns: jest.fn().mockReturnThis()};
 
 // Mock Supabase module
 jest.mock('@supabase/supabase-js', () => ({
-  createClient: jest.fn(() => mockSupabaseClient),
-}));
+  createClient: jest.fn(() => mockSupabaseClient)}));
 
 // Import after mocking
 import { supabase } from '@/lib/supabase';
@@ -135,8 +130,7 @@ describe('Database Layer Testing', () => {
         website: 'https://example.com',
         created_by: 'user-123',
         created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z',
-      };
+        updated_at: '2024-01-01T00:00:00Z'};
 
       mockQueryBuilder.single.mockResolvedValue({ data: mockClient, error: null });
 
@@ -172,8 +166,7 @@ describe('Database Layer Testing', () => {
         brand_guidelines: { colors: ['#1976d2'] },
         confidence_scores: { overall: 0.95 },
         created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z',
-      };
+        updated_at: '2024-01-01T00:00:00Z'};
 
       mockQueryBuilder.single.mockResolvedValue({ data: mockBrief, error: null });
 
@@ -195,21 +188,18 @@ describe('Database Layer Testing', () => {
         avatar_url: 'https://example.com/avatar.jpg',
         role: 'admin',
         permissions: ['read', 'write', 'admin'],
-        preferences: {
+        preferences: {},
           theme: 'dark',
-          notifications: {
+          notifications: {},
             email: true,
             inApp: true,
             exports: true,
             comments: true,
-            approvals: true,
-          },
-        },
+            approvals: true}},
         metadata: { department: 'Marketing' },
         tenant_id: 'default',
         created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z',
-      };
+        updated_at: '2024-01-01T00:00:00Z'};
 
       mockQueryBuilder.single.mockResolvedValue({ data: mockProfile, error: null });
 
@@ -232,18 +222,16 @@ describe('Database Layer Testing', () => {
         description: 'Modern story template',
         height: 1920,
         width: 1080,
-        structure: {
+        structure: {},
           layers: [
             { type: 'background', color: '#ffffff' },
             { type: 'text', content: 'Hello World' },
-          ],
-        },
+          ]},
         thumbnail_url: 'https://example.com/thumbnail.jpg',
         created_by: 'user-123',
         client_id: 'client-123',
         created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z',
-      };
+        updated_at: '2024-01-01T00:00:00Z'};
 
       mockQueryBuilder.single.mockResolvedValue({ data: mockTemplate, error: null });
 
@@ -263,13 +251,11 @@ describe('Database Layer Testing', () => {
       const newClient = {
         name: 'New Client',
         description: 'New client description',
-        industry: 'Healthcare',
-      };
+        industry: 'Healthcare'};
 
       const mockResponse = {
         data: { id: 'new-client-123', ...newClient },
-        error: null,
-      };
+        error: null};
 
       mockQueryBuilder.single.mockResolvedValue(mockResponse);
 
@@ -313,13 +299,11 @@ describe('Database Layer Testing', () => {
     it('should handle UPDATE operations', async () => {
       const updateData = {
         name: 'Updated Client Name',
-        updated_at: new Date().toISOString(),
-      };
+        updated_at: new Date().toISOString()};
 
       const mockResponse = {
         data: { id: 'client-123', ...updateData },
-        error: null,
-      };
+        error: null};
 
       mockQueryBuilder.single.mockResolvedValue(mockResponse);
 
@@ -338,8 +322,7 @@ describe('Database Layer Testing', () => {
     it('should handle DELETE operations', async () => {
       const mockResponse = {
         data: { id: 'client-123' },
-        error: null,
-      };
+        error: null};
 
       mockQueryBuilder.single.mockResolvedValue(mockResponse);
 
@@ -359,13 +342,11 @@ describe('Database Layer Testing', () => {
       const upsertData = {
         id: 'client-123',
         name: 'Upserted Client',
-        industry: 'Finance',
-      };
+        industry: 'Finance'};
 
       const mockResponse = {
         data: upsertData,
-        error: null,
-      };
+        error: null};
 
       mockQueryBuilder.single.mockResolvedValue(mockResponse);
 
@@ -386,8 +367,7 @@ describe('Database Layer Testing', () => {
         message: 'Connection failed',
         details: 'Unable to connect to database',
         hint: 'Check your connection',
-        code: 'PGRST301',
-      };
+        code: 'PGRST301'};
 
       mockQueryBuilder.single.mockResolvedValue({ data: null, error: mockError });
 
@@ -405,8 +385,7 @@ describe('Database Layer Testing', () => {
         message: 'duplicate key value violates unique constraint',
         details: 'Key (email)=(test@example.com) already exists.',
         hint: null,
-        code: '23505',
-      };
+        code: '23505'};
 
       mockQueryBuilder.single.mockResolvedValue({ data: null, error: mockError });
 
@@ -424,8 +403,7 @@ describe('Database Layer Testing', () => {
         message: 'insert or update on table violates foreign key constraint',
         details: 'Key (client_id)=(non-existent) is not present in table "clients".',
         hint: null,
-        code: '23503',
-      };
+        code: '23503'};
 
       mockQueryBuilder.single.mockResolvedValue({ data: null, error: mockError });
 
@@ -443,8 +421,7 @@ describe('Database Layer Testing', () => {
         message: 'permission denied for table clients',
         details: null,
         hint: null,
-        code: '42501',
-      };
+        code: '42501'};
 
       mockQueryBuilder.single.mockResolvedValue({ data: null, error: mockError });
 
@@ -462,8 +439,7 @@ describe('Database Layer Testing', () => {
         message: 'new row violates row-level security policy',
         details: null,
         hint: null,
-        code: 'P0001',
-      };
+        code: 'P0001'};
 
       mockQueryBuilder.single.mockResolvedValue({ data: null, error: mockError });
 
@@ -481,24 +457,21 @@ describe('Database Layer Testing', () => {
     it('should handle RPC calls for transactions', async () => {
       const mockTransactionResult = {
         data: { success: true, client_id: 'client-123', brief_id: 'brief-123' },
-        error: null,
-      };
+        error: null};
 
       mockSupabaseClient.rpc.mockResolvedValue(mockTransactionResult);
 
       const { data, error } = await supabase.rpc('create_client_with_brief', {
         client_name: 'New Client',
         brief_name: 'New Brief',
-        brief_description: 'Brief description',
-      });
+        brief_description: 'Brief description'});
 
       expect(error).toBeNull();
       expect(data).toEqual(mockTransactionResult.data);
       expect(mockSupabaseClient.rpc).toHaveBeenCalledWith('create_client_with_brief', {
         client_name: 'New Client',
         brief_name: 'New Brief',
-        brief_description: 'Brief description',
-      });
+        brief_description: 'Brief description'});
     });
 
     it('should handle transaction rollback on error', async () => {
@@ -506,14 +479,12 @@ describe('Database Layer Testing', () => {
         message: 'transaction aborted',
         details: 'Constraint violation in nested operation',
         hint: null,
-        code: 'P0001',
-      };
+        code: 'P0001'};
 
       mockSupabaseClient.rpc.mockResolvedValue({ data: null, error: mockError });
 
       const { data, error } = await supabase.rpc('complex_transaction', {
-        operations: ['create_client', 'create_brief', 'create_campaign'],
-      });
+        operations: ['create_client', 'create_brief', 'create_campaign']});
 
       expect(data).toBeNull();
       expect(error).toEqual(mockError);
@@ -524,15 +495,13 @@ describe('Database Layer Testing', () => {
         message: 'could not serialize access due to concurrent update',
         details: null,
         hint: 'The transaction might succeed if retried.',
-        code: '40001',
-      };
+        code: '40001'};
 
       mockSupabaseClient.rpc.mockResolvedValue({ data: null, error: mockError });
 
       const { data, error } = await supabase.rpc('update_campaign_metrics', {
         campaign_id: 'campaign-123',
-        metrics: { impressions: 1000, clicks: 50 },
-      });
+        metrics: { impressions: 1000, clicks: 50 }});
 
       expect(data).toBeNull();
       expect(error).toEqual(mockError);
@@ -545,16 +514,14 @@ describe('Database Layer Testing', () => {
         {
           id: 'brief-123',
           name: 'Test Brief',
-          client: {
+          client: {},
             id: 'client-123',
             name: 'Test Client',
-            industry: 'Technology',
-          },
+            industry: 'Technology'},
           motivations: [
             { id: 'motivation-1', text: 'Increase brand awareness' },
             { id: 'motivation-2', text: 'Drive conversions' },
-          ],
-        },
+          ]},
       ];
 
       // Mock the final result of the query chain
@@ -603,8 +570,7 @@ describe('Database Layer Testing', () => {
       const mockJsonResults = [
         {
           id: 'brief-123',
-          objectives: { primary: 'Brand awareness', secondary: 'Lead generation' },
-        },
+          objectives: { primary: 'Brand awareness', secondary: 'Lead generation' }},
       ];
 
       // Mock the final result of the query chain
@@ -678,8 +644,7 @@ describe('Database Layer Testing', () => {
       const mockChannel = {
         on: jest.fn().mockReturnThis(),
         subscribe: jest.fn(),
-        unsubscribe: jest.fn(),
-      };
+        unsubscribe: jest.fn()};
 
       mockSupabaseClient.channel.mockReturnValue(mockChannel);
 
@@ -693,8 +658,7 @@ describe('Database Layer Testing', () => {
       const mockChannel = {
         on: jest.fn().mockReturnThis(),
         subscribe: jest.fn(),
-        unsubscribe: jest.fn(),
-      };
+        unsubscribe: jest.fn()};
 
       mockSupabaseClient.channel.mockReturnValue(mockChannel);
 
@@ -718,8 +682,7 @@ describe('Database Layer Testing', () => {
       const mockChannel = {
         on: jest.fn().mockReturnThis(),
         subscribe: jest.fn(),
-        unsubscribe: jest.fn(),
-      };
+        unsubscribe: jest.fn()};
 
       mockSupabaseClient.channel.mockReturnValue(mockChannel);
       mockSupabaseClient.removeChannel.mockReturnValue(true);
@@ -735,27 +698,22 @@ describe('Database Layer Testing', () => {
   describe('Authentication Integration', () => {
     it('should handle user authentication', async () => {
       const mockAuthResponse = {
-        data: {
-          user: {
+        data: {},
+          user: {},
             id: 'user-123',
             email: 'test@example.com',
-            user_metadata: { first_name: 'John', last_name: 'Doe' },
-          },
-          session: {
+            user_metadata: { first_name: 'John', last_name: 'Doe' }},
+          session: {},
             access_token: 'access-token',
             refresh_token: 'refresh-token',
-            expires_at: Date.now() + 3600000,
-          },
-        },
-        error: null,
-      };
+            expires_at: Date.now() + 3600000}},
+        error: null};
 
       mockSupabaseClient.auth.signInWithPassword.mockResolvedValue(mockAuthResponse);
 
       const { data, error } = await supabase.auth.signInWithPassword({
         email: 'test@example.com',
-        password: 'password123',
-      });
+        password: 'password123'});
 
       expect(error).toBeNull();
       expect(data).toEqual(mockAuthResponse.data);
@@ -764,18 +722,15 @@ describe('Database Layer Testing', () => {
     it('should handle authentication errors', async () => {
       const mockAuthError = {
         data: { user: null, session: null },
-        error: {
+        error: {},
           message: 'Invalid login credentials',
-          status: 400,
-        },
-      };
+          status: 400}};
 
       mockSupabaseClient.auth.signInWithPassword.mockResolvedValue(mockAuthError);
 
       const { data, error } = await supabase.auth.signInWithPassword({
         email: 'test@example.com',
-        password: 'wrongpassword',
-      });
+        password: 'wrongpassword'});
 
       expect(data.user).toBeNull();
       expect(error).toEqual(mockAuthError.error);
@@ -783,15 +738,12 @@ describe('Database Layer Testing', () => {
 
     it('should handle user session retrieval', async () => {
       const mockUserResponse = {
-        data: {
-          user: {
+        data: {},
+          user: {},
             id: 'user-123',
             email: 'test@example.com',
-            role: 'authenticated',
-          },
-        },
-        error: null,
-      };
+            role: 'authenticated'}},
+        error: null};
 
       mockSupabaseClient.auth.getUser.mockResolvedValue(mockUserResponse);
 
@@ -806,8 +758,7 @@ describe('Database Layer Testing', () => {
       const mockUnsubscribe = jest.fn();
 
       mockSupabaseClient.auth.onAuthStateChange.mockReturnValue({
-        data: { subscription: { unsubscribe: mockUnsubscribe } },
-      });
+        data: { subscription: { unsubscribe: mockUnsubscribe } }});
 
       const { data } = supabase.auth.onAuthStateChange(mockCallback);
 
@@ -824,8 +775,7 @@ describe('Database Layer Testing', () => {
         remove: jest.fn(),
         list: jest.fn(),
         getPublicUrl: jest.fn(),
-        createSignedUrl: jest.fn(),
-      };
+        createSignedUrl: jest.fn()};
 
       mockSupabaseClient.storage.from.mockReturnValue(mockStorageBucket);
 
@@ -842,9 +792,7 @@ describe('Database Layer Testing', () => {
       const mockStorageBucket = {
         upload: jest.fn().mockResolvedValue({
           data: { path: 'assets/test-file.jpg' },
-          error: null,
-        }),
-      };
+          error: null})};
 
       mockSupabaseClient.storage.from.mockReturnValue(mockStorageBucket);
 
@@ -861,9 +809,7 @@ describe('Database Layer Testing', () => {
     it('should handle public URL generation', () => {
       const mockStorageBucket = {
         getPublicUrl: jest.fn().mockReturnValue({
-          data: { publicUrl: 'https://example.com/storage/assets/test-file.jpg' },
-        }),
-      };
+          data: { publicUrl: 'https://example.com/storage/assets/test-file.jpg' }})};
 
       mockSupabaseClient.storage.from.mockReturnValue(mockStorageBucket);
 

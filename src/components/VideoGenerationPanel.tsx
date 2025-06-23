@@ -21,8 +21,7 @@ import {
   Slider,
   FormControlLabel,
   Switch,
-  Grid,
-} from '@mui/material';
+  Grid} from '@mui/material';
 import {
   PlayArrow as RenderIcon,
   Refresh as RefreshIcon,
@@ -31,8 +30,7 @@ import {
   Stop as StopIcon,
   CheckCircle as CompleteIcon,
   Error as ErrorIcon,
-  Schedule as PendingIcon,
-} from '@mui/icons-material';
+  Schedule as PendingIcon} from '@mui/icons-material';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
 
@@ -81,8 +79,7 @@ const qualities = [
 const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
   combinations = [],
   campaignId,
-  onComplete,
-}) => {
+  onComplete}) => {
   const { activeClient } = useClient();
   const { showNotification } = useNotification();
 
@@ -112,7 +109,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
 
   const fetchJobUpdates = async () => {
     try {
-      const pendingJobs = jobs.filter(job =>
+      const pendingJobs = jobs.filter((job: any) =>
         job.status === 'pending' || job.status === 'processing'
       );
       if (pendingJobs.length === 0) return;
@@ -121,12 +118,12 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
         const response = await fetch(`/api/video/status?job_id=${job.id}`);
         const data = await response.json();
         if (data.success) {
-          setJobs(prev => prev.map(j =>
+          setJobs(prev => prev.map((j: any) =>
             j.id === job.id ? { ...j, ...data.job } : j
           ));
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching job updates:', error);
     }
   };
@@ -150,37 +147,30 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
       const videoConfig = {
         type: campaignId ? 'campaign_based' : 'standalone',
         campaign_id: campaignId,
-        video_config: {
+        video_config: {},
           prompt,
           style,
           duration,
           platform,
           quality,
-          aspect_ratio: getAspectRatioForPlatform(platform),
-        },
-        content_elements: {
+          aspect_ratio: getAspectRatioForPlatform(platform)},
+        content_elements: {},
           voice_over: includeVoiceOver ? {
             text: voiceOverText || prompt,
             voice: 'neural',
-            language: 'en',
-          } : undefined,
-          background_music: true,
-        },
-        generation_settings: {
+            language: 'en'} : undefined,
+          background_music: true},
+        generation_settings: {},
           variations_count: variationsCount,
           include_captions: includeCaptions,
           auto_optimize_for_platform: true,
-          save_to_assets: true,
-        },
-      };
+          save_to_assets: true}};
 
       const response = await fetch('/api/video/generate', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(videoConfig),
-      });
+        headers: {},
+          'Content-Type': 'application/json'},
+        body: JSON.stringify(videoConfig)});
 
       const data = await response.json();
       if (data.data) {
@@ -191,8 +181,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
           status: result.status,
           render_job_id: result.render_job_id,
           estimated_completion: result.estimated_completion,
-          created_at: new Date().toISOString(),
-        }));
+          created_at: new Date().toISOString()}));
         setJobs(newJobs);
         showNotification(`Started generation of ${newJobs.length} videos`, 'success');
       } else {
@@ -208,8 +197,8 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
 
   const createPromptFromCombinations = (combinations: any[]) => {
     // Extract key elements from combinations to create a prompt
-    const headlines = combinations.map(c => c.fields?.headline?.value).filter(Boolean);
-    const copy = combinations.map(c => c.fields?.copy?.value).filter(Boolean);
+    const headlines = combinations.map((c: any) => c.fields?.headline?.value).filter(Boolean);
+    const copy = combinations.map((c: any) => c.fields?.copy?.value).filter(Boolean);
     const prompt = `Create a ${style} video that showcases: ${headlines.slice(0, 3).join(', ')}. Key messaging: ${copy.slice(0, 2).join('. ')}. Style should be professional and engaging for ${platform} platform.`;
     return prompt;
   };
@@ -221,8 +210,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
       tiktok: '9:16',
       facebook: '16:9',
       linkedin: '16:9',
-      twitter: '16:9',
-    };
+      twitter: '16:9'};
     return ratios[platform] || '16:9';
   };
 
@@ -258,9 +246,9 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
     }
   };
 
-  const completedJobs = jobs.filter(job => job.status === 'completed');
-  const failedJobs = jobs.filter(job => job.status === 'failed');
-  const processingJobs = jobs.filter(job => job.status === 'processing' || job.status === 'pending');
+  const completedJobs = jobs.filter((job: any) => job.status === 'completed');
+  const failedJobs = jobs.filter((job: any) => job.status === 'failed');
+  const processingJobs = jobs.filter((job: any) => job.status === 'processing' || job.status === 'pending');
 
   return (
     <Box>
@@ -339,7 +327,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
 
       {jobs.length > 0 && (
         <Grid container spacing={2}>
-          {jobs.map((job) => (
+          {jobs.map((job: any) => (
             <Grid size={{ xs: 12, md: 6, lg: 4 }} key={job.id}>
               <Card>
                 <CardContent>
@@ -434,7 +422,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
                   value={platform}
                   onChange={(e) => setPlatform(e.target.value)}
                 >
-                  {platforms.map((p) => (
+                  {platforms.map((p: any) => (
                     <MenuItem key={p.value} value={p.value}>
                       {p.label}
                     </MenuItem>
@@ -449,7 +437,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
                   value={style}
                   onChange={(e) => setStyle(e.target.value)}
                 >
-                  {styles.map((s) => (
+                  {styles.map((s: any) => (
                     <MenuItem key={s.value} value={s.value}>
                       {s.label}
                     </MenuItem>
@@ -464,7 +452,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
                   value={quality}
                   onChange={(e) => setQuality(e.target.value)}
                 >
-                  {qualities.map((q) => (
+                  {qualities.map((q: any) => (
                     <MenuItem key={q.value} value={q.value}>
                       {q.label}
                     </MenuItem>

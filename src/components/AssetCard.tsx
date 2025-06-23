@@ -5,15 +5,13 @@ import {
   Box,
   Typography,
   Chip,
-  IconButton,
-} from '@mui/material';
+  IconButton} from '@mui/material';
 import {
   Image as ImageIcon,
   Videocam as VideoIcon,
   Audiotrack as AudiotrackIcon,
   ThumbUp as ThumbUpIcon,
-  MoreVert as MoreIcon,
-} from '@mui/icons-material';
+  MoreVert as MoreIcon} from '@mui/icons-material';
 
 export interface Asset {
   id: string;
@@ -26,7 +24,7 @@ export interface Asset {
   dateAdded: string;
   dateModified: string;
   isFavorite: boolean;
-  metadata: {
+  metadata: {},
     fileSize: string;
     dimensions?: string;
     duration?: string;
@@ -60,8 +58,7 @@ const AssetCard: React.FC<AssetCardProps> = ({
   onMenuClick,
   showPerformance = false,
   compact = false,
-  maxTags = 2,
-}) => {
+  maxTags = 2}) => {
   const getTypeIcon = () => {
     switch (asset.type) {
       case 'image':
@@ -118,8 +115,7 @@ const AssetCard: React.FC<AssetCardProps> = ({
           boxShadow: (theme) =>
             theme.palette.mode === 'light'
               ? '0 12px 48px rgba(124, 58, 237, 0.15), 0 4px 12px rgba(0, 0, 0, 0.05)'
-              : '0 12px 48px rgba(167, 139, 250, 0.25), 0 4px 12px rgba(0, 0, 0, 0.3)',
-        } : {}
+              : '0 12px 48px rgba(167, 139, 250, 0.25), 0 4px 12px rgba(0, 0, 0, 0.3)'} : {}
       }}
       onClick={handleCardClick}
     >
@@ -132,8 +128,7 @@ const AssetCard: React.FC<AssetCardProps> = ({
           sx={{
             width: '100%',
             height: compact ? 100 : 140,
-            objectFit: 'cover',
-          }}
+            objectFit: 'cover'}}
           onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
             // Fallback to icon if image fails to load
             e.currentTarget.style.display = 'none';
@@ -147,8 +142,7 @@ const AssetCard: React.FC<AssetCardProps> = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            bgcolor: 'grey.100',
-          }}
+            bgcolor: 'grey.100'}}
         >
           {getTypeIcon()}
         </Box>
@@ -211,7 +205,7 @@ const AssetCard: React.FC<AssetCardProps> = ({
         {/* Tags */}
         {asset.tags && asset.tags.length > 0 && (
           <Box sx={{ mt: 1, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-            {asset.tags.slice(0, maxTags).map(tag => (
+            {asset.tags.slice(0, maxTags).map((tag: any) => (
               <Chip
                 key={tag}
                 label={tag}
@@ -241,8 +235,7 @@ const AssetCard: React.FC<AssetCardProps> = ({
               display: '-webkit-box',
               WebkitLineClamp: 2,
               WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-            }}
+              overflow: 'hidden'}}
           >
             {asset.description}
           </Typography>

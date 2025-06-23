@@ -181,7 +181,11 @@ export const AnimatedLikeButton: React.FC<{
           transform: 'scale(1.1)',
           backgroundColor: liked ? 'error.light' : 'action.hover',
         },
-      }} aria-label="Icon button">      <Box
+      }}
+      aria-label="Icon button"
+    >
+      {' '}
+      <Box
         sx={{
           transform: animating ? 'scale(1.3)' : 'scale(1)',
           transition: 'transform 0.3s ease',
@@ -218,12 +222,12 @@ export const AnimatedUploadZone: React.FC<{
     }}
   >
     <BounceIcon className={isDragActive ? 'bounce' : ''}>
-      <CloudUpload 
-        sx={{ 
-          fontSize: 48, 
+      <CloudUpload
+        sx={{
+          fontSize: 48,
           color: isDragActive ? 'primary.main' : 'text.secondary',
           transition: 'color 0.3s ease',
-        }} 
+        }}
       />
     </BounceIcon>
     <Typography variant="h6" gutterBottom>
@@ -246,15 +250,18 @@ export const AnimatedProgressCard: React.FC<{
       <Box display="flex" alignItems="center" gap={2}>
         <Avatar
           sx={{
-            bgcolor: status === 'completed' ? 'success.main' : 
-                   status === 'error' ? 'error.main' : 
-                   status === 'active' ? 'primary.main' : 'grey.300',
+            bgcolor:
+              status === 'completed'
+                ? 'success.main'
+                : status === 'error'
+                  ? 'error.main'
+                  : status === 'active'
+                    ? 'primary.main'
+                    : 'grey.300',
             transition: 'all 0.3s ease',
           }}
         >
-          {status === 'completed' ? <Check /> : 
-           status === 'active' ? <PlayArrow /> : 
-           <Pause />}
+          {status === 'completed' ? <Check /> : status === 'active' ? <PlayArrow /> : <Pause />}
         </Avatar>
         <Box flex={1}>
           <Typography variant="h6">{title}</Typography>
@@ -296,10 +303,14 @@ export const AnimatedToast: React.FC<{
 }> = ({ open, message, severity, onClose }) => {
   const getColor = () => {
     switch (severity) {
-      case 'success': return 'success.main';
-      case 'error': return 'error.main';
-      case 'warning': return 'warning.main';
-      default: return 'info.main';
+      case 'success':
+        return 'success.main';
+      case 'error':
+        return 'error.main';
+      case 'warning':
+        return 'warning.main';
+      default:
+        return 'info.main';
     }
   };
 
@@ -324,7 +335,14 @@ export const AnimatedToast: React.FC<{
         >
           <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Typography flex={1}>{message}</Typography>
-            <IconButton size="small" onClick={onClose} sx={{ color: 'inherit' }} aria-label="Icon button">              <Add sx={{ transform: 'rotate(45deg)' }} />
+            <IconButton
+              size="small"
+              onClick={onClose}
+              sx={{ color: 'inherit' }}
+              aria-label="Icon button"
+            >
+              {' '}
+              <Add sx={{ transform: 'rotate(45deg)' }} />
             </IconButton>
           </CardContent>
         </Card>
@@ -378,30 +396,24 @@ export const AnimatedStatusChip: React.FC<{
       case 'processing':
         return {
           color: 'primary' as const,
-          sx: { animation: `${pulse} 2s infinite` }
+          sx: { animation: `${pulse} 2s infinite` },
         };
       case 'completed':
         return {
           color: 'success' as const,
-          sx: { animation: `${bounce} 1s ease-in-out` }
+          sx: { animation: `${bounce} 1s ease-in-out` },
         };
       case 'error':
         return {
           color: 'error' as const,
-          sx: { animation: `${shake} 0.5s ease-in-out` }
+          sx: { animation: `${shake} 0.5s ease-in-out` },
         };
       default:
         return { color: 'default' as const };
     }
   };
 
-  return (
-    <Chip
-      label={label}
-      size="small"
-      {...getProps()}
-    />
-  );
+  return <Chip label={label} size="small" {...getProps()} />;
 };
 
 // Loading Skeleton with shimmer effect

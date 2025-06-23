@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { z } from 'zod';
 import OpenAI from 'openai';
@@ -11,12 +12,10 @@ const StrategyGenerateSchema = z.object({
   target_audience: z.string().optional(),
   campaign_objectives: z.string().optional(),
   regenerate: z.boolean().default(false),
-  feedback: z.string().optional(),
-});
+  feedback: z.string().optional()});
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+  apiKey: process.env.OPENAI_API_KEY});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   if (req.method !== 'POST') {
@@ -105,8 +104,7 @@ Generate 8 diverse motivational concepts that would drive this audience to take 
         { role: 'user', content: userPrompt }
       ],
       temperature: 0.7,
-      max_tokens: 2500,
-    });
+      max_tokens: 2500});
 
     const aiResponse = completion.choices[0]?.message?.content;
     if (!aiResponse) {
@@ -117,7 +115,7 @@ Generate 8 diverse motivational concepts that would drive this audience to take 
     let motivationsData;
     try {
       motivationsData = JSON.parse(aiResponse);
-    } catch (parseError) {
+    } catch (parseError: any) {
       console.error('Failed to parse AI response:', aiResponse);
       throw new Error('Invalid response format from AI');
     }
@@ -138,16 +136,14 @@ Generate 8 diverse motivational concepts that would drive this audience to take 
           target_emotions: motivation.target_emotions || [],
           use_cases: motivation.use_cases || [],
           is_ai_generated: true,
-          generation_context: {
+          generation_context: {},
             model: 'gpt-4o',
             temperature: 0.7,
             target_audience,
             campaign_objectives,
             feedback: feedback || null,
-            psychological_rationale: motivation.psychological_rationale,
-          },
-          created_by: user.id,
-        })
+            psychological_rationale: motivation.psychological_rationale},
+          created_by: user.id})
         .select(`
           *,
           clients(name, slug),

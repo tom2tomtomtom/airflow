@@ -1,3 +1,4 @@
+import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
 import { z } from 'zod';
@@ -15,19 +16,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
   const parseResult = MotivationSelectSchema.safeParse(req.body);
   if (!parseResult.success) {
-    return res.status(400).json({ success: false, message: 'Invalid input', errors: parseResult.error.errors });
+    return res
+      .status(400)
+      .json({ success: false, message: 'Invalid input', errors: parseResult.error.errors });
   }
   const { strategy_id, selected, custom = [], user_id } = parseResult.data;
   // Save selected motivations and any custom ones
-  const { data, error } = await supabase.from('selected_motivations').insert({
-    strategy_id,
-    selected,
-    custom,
-    user_id,
-    created_at: new Date().toISOString(),
-  }).select().single();
+  const { data, error } = await supabase
+    .from('selected_motivations')
+    .insert({
+      strategy_id,
+      selected,
+      custom,
+      user_id,
+      created_at: new Date().toISOString(),
+    })
+    .select()
+    .single();
   if (error) {
-    return res.status(500).json({ success: false, message: 'Failed to save selection', error: error.message });
+    return res
+      .status(500)
+      .json({ success: false, message: 'Failed to save selection', error: error.message });
   }
   return res.status(200).json({ success: true, selection: data });
 }

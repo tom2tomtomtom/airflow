@@ -233,7 +233,15 @@ function addMissingImports(filePath) {
   }
   
   if (content.includes('supabase') && !content.includes('import.*supabase')) {
-    imports.push("import { supabase } from '@/lib/supabase/client';");
+    // For API routes, use server module
+    if (filePath.includes('/pages/api/')) {
+      imports.push("import { createClient } from '@/lib/supabase/server';");
+      imports.push("const supabase = createClient();");
+    } else {
+      // For client-side code, use client module  
+      imports.push("import { createClient } from '@/lib/supabase/client';");
+      imports.push("const supabase = createClient();");
+    }
   }
   
   if (imports.length > 0) {

@@ -1,9 +1,7 @@
 import { getLogger } from '@/lib/logger';
-import { classifyError } from '@/lib/error-handling/error-classifier';
-import { cached, CacheProfiles } from '@/lib/cache/redis-cache';
 import { ParsedBrief } from './briefParser';
 import { PsychologicalMotivation } from './motivationGenerator';
-import { CopyVariant, CopySet } from './copyGenerator';
+import { CopyVariant } from './copyGenerator';
 import { Asset } from './assetManager';
 
 const logger = getLogger('template-engine');
@@ -106,10 +104,10 @@ export interface ComponentContent {
 }
 
 export interface ComponentVariation {
-  id: string;
+  id: string;,
   name: string;
-  description: string;
-  changes: {
+  description: string;,
+  changes: {},
     position?: Partial<TemplateComponent['position']>;
     styling?: Partial<TemplateComponent['styling']>;
     content?: Partial<ComponentContent>;
@@ -117,16 +115,16 @@ export interface ComponentVariation {
 }
 
 export interface PopulatedTemplate {
-  id: string;
+  id: string;,
   templateId: string;
-  briefId: string;
+  briefId: string;,
   name: string;
-  populatedComponents: PopulatedComponent[];
+  populatedComponents: PopulatedComponent[];,
   selectedAssets: Asset[];
-  selectedCopy: CopyVariant[];
+  selectedCopy: CopyVariant[];,
   selectedMotivation: PsychologicalMotivation;
-  customizations: TemplateCustomization[];
-  renderData: {
+  customizations: TemplateCustomization[];,
+  renderData: {},
     html?: string;
     css?: string;
     js?: string;
@@ -138,28 +136,28 @@ export interface PopulatedTemplate {
     fullSizeUrl: string;
     interactiveUrl?: string;
   };
-  status: 'draft' | 'ready' | 'approved' | 'published';
+  status: 'draft' | 'ready' | 'approved' | 'published';,
   createdAt: Date;
-  updatedAt: Date;
+  updatedAt: Date;,
   version: number;
 }
 
 export interface PopulatedComponent {
-  componentId: string;
-  content: {
+  componentId: string;,
+  content: {},
     text?: string;
     assetUrl?: string;
     assetId?: string;
     generatedData?: any;
   };
-  finalStyling: TemplateComponent['styling'];
+  finalStyling: TemplateComponent['styling'];,
   finalPosition: TemplateComponent['position'];
 }
 
 export interface TemplateCustomization {
-  componentId: string;
+  componentId: string;,
   property: string;
-  originalValue: any;
+  originalValue: any;,
   customValue: any;
   appliedAt: Date;
 }
@@ -197,11 +195,11 @@ export class TemplateEngine {
   ): Promise<{
     templates: Array<{
       template: CampaignTemplate;
-      matchScore: number;
-      compatibility: {
-        assets: number;
+      matchScore: number;,
+      compatibility: {},
+        assets: number;,
         copy: number;
-        platform: number;
+        platform: number;,
         overall: number;
       };
       missingRequirements: string[];
@@ -209,10 +207,10 @@ export class TemplateEngine {
     recommendations: string[];
   }> {
     const {
-      preferredPlatforms = [],
-      preferredFormats = [],
-      complexity = 'moderate',
-      urgency = 'medium'
+      preferredPlatforms = [],;
+      preferredFormats = [],;
+      complexity = 'moderate',;
+      urgency = 'medium';
     } = options;
 
     try {
@@ -224,9 +222,9 @@ export class TemplateEngine {
       });
 
       const allTemplates = Array.from(this.templateLibrary.values());
-      const scoredTemplates = await Promise.all(
-        allTemplates.map(async template => {
-          const score = await this.calculateTemplateMatchScore(
+      const scoredTemplates = await Promise.all(;
+        allTemplates.map(async template => {;
+          const score = await this.calculateTemplateMatchScore(;
             template,
             brief,
             motivation,
@@ -235,14 +233,14 @@ export class TemplateEngine {
             options
           );
           
-          const compatibility = this.calculateCompatibility(
+          const compatibility = this.calculateCompatibility(;
             template,
             availableCopy,
             availableAssets,
             brief
           );
           
-          const missingRequirements = this.identifyMissingRequirements(
+          const missingRequirements = this.identifyMissingRequirements(;
             template,
             availableCopy,
             availableAssets
@@ -258,12 +256,12 @@ export class TemplateEngine {
       );
 
       // Sort by match score and filter out very low scores
-      const filteredTemplates = scoredTemplates
-        .filter(item => item.matchScore > 0.3)
+      const filteredTemplates = scoredTemplates;
+        .filter((item: any) => item.matchScore > 0.3)
         .sort((a, b) => b.matchScore - a.matchScore);
 
       // Generate recommendations
-      const recommendations = this.generateTemplateRecommendations(
+      const recommendations = this.generateTemplateRecommendations(;
         filteredTemplates,
         brief,
         motivation,
@@ -275,7 +273,7 @@ export class TemplateEngine {
         recommendations
       };
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Template matching failed', error);
       throw error;
     }
@@ -302,7 +300,7 @@ export class TemplateEngine {
       this.validateTemplateRequirements(template, selectedCopy, selectedAssets);
 
       // Create component mapping
-      const componentMapping = await this.createComponentMapping(
+      const componentMapping = await this.createComponentMapping(;
         template.components,
         selectedCopy,
         selectedAssets,
@@ -310,7 +308,7 @@ export class TemplateEngine {
       );
 
       // Apply customizations
-      const finalComponents = this.applyCustomizations(
+      const finalComponents = this.applyCustomizations(;
         componentMapping,
         customizations
       );
@@ -321,7 +319,7 @@ export class TemplateEngine {
       // Generate previews
       const preview = await this.generatePreviews(renderData, template);
 
-      const populatedTemplate: PopulatedTemplate = {
+      const populatedTemplate: PopulatedTemplate = {;
         id: this.generatePopulatedTemplateId(),
         templateId: template.id,
         briefId: brief.id,
@@ -341,7 +339,7 @@ export class TemplateEngine {
 
       return populatedTemplate;
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Template population failed', error);
       throw error;
     }
@@ -360,7 +358,7 @@ export class TemplateEngine {
       }
 
       // Apply all customizations
-      const updatedComponents = this.applyCustomizations(
+      const updatedComponents = this.applyCustomizations(;
         populatedTemplate.populatedComponents,
         allCustomizations
       );
@@ -381,7 +379,7 @@ export class TemplateEngine {
         version: populatedTemplate.version + 1
       };
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Template customization failed', error);
       throw error;
     }
@@ -390,14 +388,14 @@ export class TemplateEngine {
   async createCustomTemplate(
     baseTemplate: CampaignTemplate,
     name: string,
-    modifications: {
+    modifications: {},
       components?: Partial<TemplateComponent>[];
       designSystem?: Partial<CampaignTemplate['designSystem']>;
       requirements?: Partial<CampaignTemplate['requirements']>;
     }
   ): Promise<CampaignTemplate> {
     try {
-      const customTemplate: CampaignTemplate = {
+      const customTemplate: CampaignTemplate = {;
         ...baseTemplate,
         id: this.generateTemplateId(),
         name,
@@ -421,7 +419,7 @@ export class TemplateEngine {
 
       return customTemplate;
 
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Custom template creation failed', error);
       throw error;
     }
@@ -469,12 +467,12 @@ export class TemplateEngine {
 
   private calculateAssetCompatibility(template: CampaignTemplate, assets: Asset[]): number {
     const requiredTypes = template.requirements.requiredAssetTypes;
-    const availableTypes = new Set(assets.map(a => a.fileType));
+    const availableTypes = new Set(assets.map((a: any) => a.fileType));
     
-    const compatibleTypes = requiredTypes.filter(type => availableTypes.has(type));
+    const compatibleTypes = requiredTypes.filter((type: any) => availableTypes.has(type));
     const assetCount = assets.length;
     
-    const typeScore = requiredTypes.length > 0 
+    const typeScore = requiredTypes.length > 0 ;
       ? compatibleTypes.length / requiredTypes.length 
       : 1.0;
     
@@ -485,9 +483,9 @@ export class TemplateEngine {
 
   private calculateCopyCompatibility(template: CampaignTemplate, copy: CopyVariant[]): number {
     const requiredTypes = template.requirements.copyTypes;
-    const availableTypes = new Set(copy.map(c => c.type));
+    const availableTypes = new Set(copy.map((c: any) => c.type));
     
-    const compatibleTypes = requiredTypes.filter(type => availableTypes.has(type));
+    const compatibleTypes = requiredTypes.filter((type: any) => availableTypes.has(type));
     
     return requiredTypes.length > 0 
       ? compatibleTypes.length / requiredTypes.length 
@@ -508,15 +506,15 @@ export class TemplateEngine {
 
   private calculatePsychologyAlignment(template: CampaignTemplate, motivation: PsychologicalMotivation): number {
     // Simple alignment based on template tags and motivation category
-    const motivationKeywords = [
+    const motivationKeywords = [;
       motivation.psychologyType,
       motivation.motivationCategory,
       ...motivation.emotionalTriggers
     ];
     
     const templateTags = template.metadata.tags;
-    const matches = motivationKeywords.filter(keyword => 
-      templateTags.some(tag => tag.toLowerCase().includes(keyword.toLowerCase()))
+    const matches = motivationKeywords.filter((keyword: any) => ;
+      templateTags.some(tag => tag.toLowerCase().includes(keyword.toLowerCase()));
     );
     
     return motivationKeywords.length > 0 
@@ -554,9 +552,9 @@ export class TemplateEngine {
     const missing: string[] = [];
     
     // Check asset requirements
-    const availableAssetTypes = new Set(assets.map(a => a.fileType));
-    const missingAssetTypes = template.requirements.requiredAssetTypes.filter(
-      type => !availableAssetTypes.has(type)
+    const availableAssetTypes = new Set(assets.map((a: any) => a.fileType));
+    const missingAssetTypes = template.requirements.requiredAssetTypes.filter(;
+      type => !availableAssetTypes.has(type);
     );
     
     if (missingAssetTypes.length > 0) {
@@ -568,9 +566,9 @@ export class TemplateEngine {
     }
     
     // Check copy requirements
-    const availableCopyTypes = new Set(copy.map(c => c.type));
-    const missingCopyTypes = template.requirements.copyTypes.filter(
-      type => !availableCopyTypes.has(type)
+    const availableCopyTypes = new Set(copy.map((c: any) => c.type));
+    const missingCopyTypes = template.requirements.copyTypes.filter(;
+      type => !availableCopyTypes.has(type);
     );
     
     if (missingCopyTypes.length > 0) {
@@ -588,18 +586,18 @@ export class TemplateEngine {
   ): string[] {
     const recommendations: string[] = [];
     
-    if (templates.length === 0) {
+    if (templates.length === 0) {;
       recommendations.push('No matching templates found. Consider uploading more assets or generating additional copy variants.');
     } else if (templates.length < 3) {
       recommendations.push('Limited template options available. Additional assets or copy variants would provide more choices.');
     }
     
     const topTemplate = templates[0]?.template;
-    if (topTemplate && topTemplate.metadata.difficulty === 'advanced') {
+    if (topTemplate && topTemplate.metadata.difficulty === 'advanced') {;
       recommendations.push('The best matching template is advanced. Consider review by an experienced designer.');
     }
     
-    const socialTemplates = templates.filter(t => t.template.category === 'social');
+    const socialTemplates = templates.filter((t: any) => t.template.category === 'social');
     if (socialTemplates.length > 0 && brief.platforms?.includes('social')) {
       recommendations.push('Strong social media template matches found. Consider creating multiple platform variants.');
     }
@@ -620,9 +618,9 @@ export class TemplateEngine {
       throw new Error(`Template accepts at most ${template.requirements.maxAssets} assets, but ${assets.length} provided`);
     }
     
-    const availableCopyTypes = new Set(copy.map(c => c.type));
-    const missingCopyTypes = template.requirements.copyTypes.filter(
-      type => !availableCopyTypes.has(type)
+    const availableCopyTypes = new Set(copy.map((c: any) => c.type));
+    const missingCopyTypes = template.requirements.copyTypes.filter(;
+      type => !availableCopyTypes.has(type);
     );
     
     if (missingCopyTypes.length > 0) {
@@ -639,29 +637,29 @@ export class TemplateEngine {
     const populated: PopulatedComponent[] = [];
     
     // Create copy lookup by type
-    const copyByType = copy.reduce((acc, c) => {
+    const copyByType = copy.reduce((acc, c) => {;
       if (!acc[c.type]) acc[c.type] = [];
       acc[c.type].push(c);
       return acc;
     }, {} as Record<string, CopyVariant[]>);
     
     // Create asset lookup by type and category
-    const assetsByType = assets.reduce((acc, a) => {
+    const assetsByType = assets.reduce((acc, a) => {;
       if (!acc[a.fileType]) acc[a.fileType] = [];
       acc[a.fileType].push(a);
       return acc;
     }, {} as Record<string, Asset[]>);
     
     for (const component of components) {
-      const populatedComponent: PopulatedComponent = {
+      const populatedComponent: PopulatedComponent = {;
         componentId: component.id,
-        content: {},
+        content: {}
         finalStyling: { ...component.styling },
         finalPosition: { ...component.position }
       };
       
       // Populate based on component content type
-      if (component.content.type === 'copy' && component.content.copyType) {
+      if (component.content.type === 'copy' && component.content.copyType) {;
         const availableCopy = copyByType[component.content.copyType];
         if (availableCopy && availableCopy.length > 0) {
           // Select best copy variant for this component
@@ -670,7 +668,7 @@ export class TemplateEngine {
         } else {
           populatedComponent.content.text = component.content.placeholder || 'Add your copy here';
         }
-      } else if (component.content.type === 'asset' && component.content.assetType) {
+      } else if (component.content.type === 'asset' && component.content.assetType) {;
         const availableAssets = assetsByType[component.content.assetType];
         if (availableAssets && availableAssets.length > 0) {
           // Select best asset for this component
@@ -692,7 +690,7 @@ export class TemplateEngine {
     motivation: PsychologicalMotivation
   ): CopyVariant {
     // Score copy variants for this component
-    const scored = availableCopy.map(copy => ({
+    const scored = availableCopy.map((copy: any) => ({;
       copy,
       score: this.scoreCopyForComponent(copy, component, motivation)
     }));
@@ -733,7 +731,7 @@ export class TemplateEngine {
     component: TemplateComponent
   ): Asset {
     // Score assets for this component
-    const scored = availableAssets.map(asset => ({
+    const scored = availableAssets.map((asset: any) => ({;
       asset,
       score: this.scoreAssetForComponent(asset, component)
     }));
@@ -754,12 +752,12 @@ export class TemplateEngine {
     }
     
     // Category alignment
-    if (component.content.assetCategory && asset.category === component.content.assetCategory) {
+    if (component.content.assetCategory && asset.category === component.content.assetCategory) {;
       score += 0.2;
     }
     
     // Usage alignment
-    if (component.name.toLowerCase().includes('hero') && asset.usage === 'hero') {
+    if (component.name.toLowerCase().includes('hero') && asset.usage === 'hero') {;
       score += 0.3;
     }
     
@@ -787,7 +785,7 @@ export class TemplateEngine {
     const customized = [...components];
     
     for (const customization of customizations) {
-      const component = customized.find(c => c.componentId === customization.componentId);
+      const component = customized.find((c: any) => c.componentId === customization.componentId);
       if (component) {
         // Apply customization based on property
         if (customization.property.startsWith('styling.')) {
@@ -823,8 +821,8 @@ export class TemplateEngine {
   }
 
   private generateHTML(template: CampaignTemplate, components: PopulatedComponent[]): string {
-    const componentHtml = components.map(component => {
-      const templateComponent = template.components.find(c => c.id === component.componentId);
+    const componentHtml = components.map((component: any) => {;
+      const templateComponent = template.components.find((c: any) => c.id === component.componentId);
       if (!templateComponent) return '';
       
       return this.generateComponentHTML(templateComponent, component);
@@ -834,8 +832,8 @@ export class TemplateEngine {
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">;
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">;
   <title>${template.name}</title>
 </head>
 <body>
@@ -863,21 +861,21 @@ export class TemplateEngine {
   }
 
   private generateCSS(template: CampaignTemplate, components: PopulatedComponent[]): string {
-    const containerCSS = `
+    const containerCSS = `;
 .campaign-container {
-  position: relative;
+  position: relative;,
   width: ${template.dimensions.width}px;
   height: ${template.dimensions.height}px;
   overflow: hidden;
 }`;
     
-    const componentCSS = components.map(component => {
+    const componentCSS = components.map((component: any) => {;
       const styling = component.finalStyling;
       const position = component.finalPosition;
       
       return `
 .component-${component.componentId} {
-  position: absolute;
+  position: absolute;,
   left: ${position.x}${position.unit};
   top: ${position.y}${position.unit};
   width: ${position.width}${position.unit};
@@ -929,7 +927,7 @@ document.addEventListener('DOMContentLoaded', function() {
   ): TemplateComponent[] {
     const merged = [...baseComponents];
     
-    modifications.forEach(mod => {
+    modifications.forEach((mod: any) => {
       if (mod.id) {
         const index = merged.findIndex(c => c.id === mod.id);
         if (index >= 0) {
@@ -947,7 +945,7 @@ document.addEventListener('DOMContentLoaded', function() {
   private initializeTemplateLibrary(): void {
     // Initialize with basic templates
     const templates = this.createBasicTemplates();
-    templates.forEach(template => {
+    templates.forEach((template: any) => {
       this.templateLibrary.set(template.id, template);
     });
   }
@@ -1036,7 +1034,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Singleton instance
 let templateEngineInstance: TemplateEngine | null = null;
 
-export const getTemplateEngine = (): TemplateEngine => {
+export const getTemplateEngine = (): TemplateEngine => {;
   if (!templateEngineInstance) {
     templateEngineInstance = new TemplateEngine();
   }
@@ -1044,7 +1042,7 @@ export const getTemplateEngine = (): TemplateEngine => {
 };
 
 // Convenience functions
-export const findMatchingTemplates = (
+export const findMatchingTemplates = (;
   brief: ParsedBrief,
   motivation: PsychologicalMotivation,
   availableCopy: CopyVariant[],
@@ -1054,7 +1052,7 @@ export const findMatchingTemplates = (
   return getTemplateEngine().findMatchingTemplates(brief, motivation, availableCopy, availableAssets, options);
 };
 
-export const populateTemplate = (
+export const populateTemplate = (;
   template: CampaignTemplate,
   brief: ParsedBrief,
   motivation: PsychologicalMotivation,
@@ -1065,7 +1063,7 @@ export const populateTemplate = (
   return getTemplateEngine().populateTemplate(template, brief, motivation, selectedCopy, selectedAssets, customizations);
 };
 
-export const customizeTemplate = (
+export const customizeTemplate = (;
   populatedTemplate: PopulatedTemplate,
   customizations: TemplateCustomization[]
 ) => {

@@ -4,21 +4,21 @@
 declare global {
   interface Window {
     // Add any window properties used in the app
-    gtag?: (...args: any[]) => void;
-    analytics?: any;
-    __REDUX_DEVTOOLS_EXTENSION__?: any;
+    gtag?: (...args: unknown[]) => void;
+    analytics?: unknown;
+    __REDUX_DEVTOOLS_EXTENSION__?: unknown;
   }
 
   // Environment variables
   namespace NodeJS {
     interface ProcessEnv {
-      NODE_ENV: 'development' | 'test' | 'production';
-      NEXT_PUBLIC_SUPABASE_URL: string;
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: string;
+      NODE_ENV: 'development' | 'test' | 'production';,
+    NEXT_PUBLIC_SUPABASE_URL: string;,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: string;
       SUPABASE_SERVICE_ROLE_KEY?: string;
-      JWT_SECRET: string;
-      NEXTAUTH_SECRET: string;
-      NEXTAUTH_URL: string;
+      JWT_SECRET: string;,
+    NEXTAUTH_SECRET: string;,
+    NEXTAUTH_URL: string;
       OPENAI_API_KEY?: string;
       ELEVENLABS_API_KEY?: string;
       CREATOMATE_API_KEY?: string;
@@ -51,30 +51,30 @@ export interface ApiResponse<T = any> {
   data?: T;
   error?: ApiError;
   meta?: {
-    timestamp: number;
-    duration: number;
+    timestamp: number;,
+    duration: number;,
     requestId: string;
   };
 }
 
 export interface ApiError {
-  code: string;
-  message: string;
-  statusCode: number;
+  code: string;,
+    message: string;,
+    statusCode: number;
 }
 
 // Database types
 export interface BaseEntity {
-  id: string;
-  created_at: string;
-  updated_at: string;
+  id: string;,
+    created_at: string;,
+    updated_at: string;
 }
 
 export interface User extends BaseEntity {
-  email: string;
-  first_name: string;
-  last_name: string;
-  role: 'admin' | 'user' | 'viewer';
+  email: string;,
+    first_name: string;,
+    last_name: string;,
+    role: 'admin' | 'user' | 'viewer';
   avatar_url?: string;
   is_active: boolean;
 }
@@ -89,14 +89,14 @@ export interface Client extends BaseEntity {
 }
 
 export interface Campaign extends BaseEntity {
-  client_id: string;
-  name: string;
+  client_id: string;,
+    name: string;
   description?: string;
   status: 'draft' | 'active' | 'paused' | 'completed';
   start_date?: string;
   end_date?: string;
   budget?: number;
-  goals?: Record<string, any>;
+  goals?: Record<string, unknown>;
 }
 
 export {};

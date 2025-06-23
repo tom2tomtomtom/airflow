@@ -264,14 +264,14 @@ export class CacheMiddleware {
         ...CacheProfiles.API_RESPONSE,
         ttl
       });
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to cache response', error);
     }
   }
   
   private createCachedResponse(
     cached: any,
-    options: {
+    options: {},
       isPrivate: boolean;
       maxAge: number;
       staleWhileRevalidate: number;
@@ -302,7 +302,7 @@ export class CacheMiddleware {
   
   private addCacheHeaders(
     response: NextResponse,
-    options: {
+    options: {},
       isPrivate: boolean;
       maxAge: number;
       staleWhileRevalidate: number;

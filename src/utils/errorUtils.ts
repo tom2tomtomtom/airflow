@@ -6,7 +6,7 @@ export interface AppError {
   message: string;
   code?: string;
   status?: number;
-  details?: any;
+  details?: unknown;
 }
 
 /**
@@ -55,7 +55,7 @@ export function createError(
   message: string,
   code?: string,
   status?: number,
-  details?: any
+  details?: unknown
 ): AppError {
   return {
     message,
@@ -87,7 +87,7 @@ export function isAppError(error: unknown): error is AppError {
 export function logError(error: unknown, context?: string): void {
   const message = getErrorMessage(error);
   const prefix = context ? `[${context}]` : '';
-  
+
   if (process.env.NODE_ENV === 'development') {
     console.error(`${prefix} Error:`, error);
   } else {
@@ -108,7 +108,7 @@ export function formatApiError(error: unknown): { error: string; code?: string }
       code: error.code,
     };
   }
-  
+
   const message = getErrorMessage(error);
   return {
     error: message,
@@ -120,7 +120,7 @@ export function formatApiError(error: unknown): { error: string; code?: string }
  * @param error - The error that occurred
  * @param errorInfo - Additional error information
  */
-export function handleComponentError(error: Error, errorInfo: any): void {
+export function handleComponentError(error: Error, errorInfo: unknown): void {
   logError(error, 'Component Error');
 
   // In production, you might want to send errors to a monitoring service
@@ -149,7 +149,7 @@ export function isNetworkError(error: unknown): boolean {
     'unreachable',
     'offline',
     'dns',
-    'cors'
+    'cors',
   ];
 
   return networkKeywords.some(keyword => message.includes(keyword));
@@ -173,7 +173,7 @@ export function isAuthError(error: unknown): boolean {
     'permission',
     'access denied',
     'invalid credentials',
-    'session expired'
+    'session expired',
   ];
 
   return authKeywords.some(keyword => message.includes(keyword));
@@ -198,7 +198,11 @@ export function formatErrorForUser(error: unknown): string {
     return 'Too many requests. Please wait a moment and try again.';
   }
 
-  if (message.includes('validation') || message.includes('invalid') || message.includes('required')) {
+  if (
+    message.includes('validation') ||
+    message.includes('invalid') ||
+    message.includes('required')
+  ) {
     return 'Please check your input and try again.';
   }
 

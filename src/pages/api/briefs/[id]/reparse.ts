@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 
@@ -71,8 +72,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
         parsing_status: 'processing',
         parsed_at: null,
         confidence_scores: null,
-        updated_at: new Date().toISOString(),
-      })
+        updated_at: new Date().toISOString()})
       .eq('id', id);
 
     if (updateError) {
@@ -88,16 +88,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       try {
         const parseResponse = await fetch(`${req.headers.origin}/api/brief-upload`, {
           method: 'POST',
-          headers: {
+          headers: {},
             'Content-Type': 'application/json',
-            'Authorization': req.headers.authorization || '',
-          },
+            'Authorization': req.headers.authorization || ''},
           body: JSON.stringify({
             document_url: brief.document_url,
             reparse: true,
-            brief_id: id,
-          }),
-        });
+            brief_id: id})});
 
         if (!parseResponse.ok) {
           throw new Error('Failed to re-extract document content');
@@ -105,7 +102,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
         const parseData = await parseResponse.json();
         contentToparse = parseData.raw_content;
-      } catch (extractError) {
+      } catch (extractError: any) {
         console.error('Error re-extracting document:', extractError);
         
         // Revert status on error
@@ -113,8 +110,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
           .from('briefs')
           .update({
             parsing_status: 'error',
-            updated_at: new Date().toISOString(),
-          })
+            updated_at: new Date().toISOString()})
           .eq('id', id);
 
         return res.status(500).json({ 
@@ -128,16 +124,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     try {
       const parseResponse = await fetch(`${req.headers.origin}/api/brief-parse`, {
         method: 'POST',
-        headers: {
+        headers: {},
           'Content-Type': 'application/json',
-          'Authorization': req.headers.authorization || '',
-        },
+          'Authorization': req.headers.authorization || ''},
         body: JSON.stringify({
           brief_id: id,
           content: contentToparse,
-          reparse: true,
-        }),
-      });
+          reparse: true})});
 
       if (!parseResponse.ok) {
         throw new Error('Failed to trigger brief parsing');
@@ -145,7 +138,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
       return res.json({
         message: 'Brief reparsing initiated successfully',
-        data: {
+        data: {},
           brief_id: id,
           name: brief.name,
           status: 'processing',
@@ -153,7 +146,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
         }
       });
 
-    } catch (parseError) {
+    } catch (parseError: any) {
       console.error('Error triggering brief parsing:', parseError);
       
       // Revert status on error
@@ -161,8 +154,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
         .from('briefs')
         .update({
           parsing_status: 'error',
-          updated_at: new Date().toISOString(),
-        })
+          updated_at: new Date().toISOString()})
         .eq('id', id);
 
       return res.status(500).json({ 
@@ -171,7 +163,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       });
     }
 
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Brief reparse API error:', error);
     return res.status(500).json({ 

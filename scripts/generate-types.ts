@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 #!/usr/bin/env tsx
 
 /**
@@ -19,6 +20,7 @@ async function generateDatabaseTypes() {
     try {
       execSync('supabase --version', { stdio: 'pipe' });
     } catch (error) {
+    const message = getErrorMessage(error);
       console.error('❌ Supabase CLI not found. Please install it first:');
       console.error('npm install -g supabase');
       process.exit(1);
@@ -76,6 +78,7 @@ async function generateDatabaseTypes() {
           console.warn('⚠️  Generated types file may be incomplete');
         }
       } catch (error) {
+    const message = getErrorMessage(error);
         console.error('❌ Error validating generated types:', error);
       }
 

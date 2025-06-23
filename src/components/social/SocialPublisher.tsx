@@ -16,8 +16,7 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  LinearProgress,
-} from '@mui/material';
+  LinearProgress} from '@mui/material';
 import {
   Image as ImageIcon,
   VideoLibrary as VideoIcon,
@@ -30,8 +29,7 @@ import {
   LinkedIn as LinkedInIcon,
   Instagram as InstagramIcon,
   YouTube as YouTubeIcon,
-  Close as CloseIcon,
-} from '@mui/icons-material';
+  Close as CloseIcon} from '@mui/icons-material';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -73,8 +71,7 @@ const SocialPublisher: React.FC<SocialPublisherProps> = ({
   onClose,
   clientId,
   dialog = false,
-  initialContent,
-}) => {
+  initialContent}) => {
   const { showNotification } = useNotification();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
@@ -83,11 +80,10 @@ const SocialPublisher: React.FC<SocialPublisherProps> = ({
     text: initialContent?.text || '',
     images: [],
     video: undefined,
-    link: initialContent?.link || '',
-  });
+    link: initialContent?.link || ''});
   
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(
-    platforms.filter(p => p.status === 'active').map(p => p.name)
+    platforms.filter((p: any) => p.status === 'active').map((p: any) => p.name)
   );
   
   const [scheduledAt, setScheduledAt] = useState<Date | null>(null);
@@ -101,8 +97,7 @@ const SocialPublisher: React.FC<SocialPublisherProps> = ({
     facebook: 2000,
     instagram: 2200,
     linkedin: 700,
-    youtube: 1000,
-  };
+    youtube: 1000};
 
   const getPlatformIcon = (platform: string) => {
     switch (platform) {
@@ -145,14 +140,13 @@ const SocialPublisher: React.FC<SocialPublisherProps> = ({
   const handleRemoveImage = (index: number) => {
     setContent(prev => ({
       ...prev,
-      images: prev.images.filter((_, i) => i !== index),
-    }));
+      images: prev.images.filter((_, i) => i !== index)}));
   };
 
   const handlePlatformToggle = (platform: string) => {
     setSelectedPlatforms(prev =>
       prev.includes(platform)
-        ? prev.filter(p => p !== platform)
+        ? prev.filter((p: any) => p !== platform)
         : [...prev, platform]
     );
   };
@@ -169,8 +163,7 @@ const SocialPublisher: React.FC<SocialPublisherProps> = ({
           url,
           title: 'Example Article Title',
           description: 'This is a preview of the linked content...',
-          image: '/placeholder-link.jpg',
-        });
+          image: '/placeholder-link.jpg'});
       }, 1000);
     }
   };
@@ -193,8 +186,7 @@ const SocialPublisher: React.FC<SocialPublisherProps> = ({
       formData.append('platforms', JSON.stringify(selectedPlatforms));
       formData.append('content', JSON.stringify({
         text: content.text,
-        link: content.link,
-      }));
+        link: content.link}));
 
       if (isScheduled && scheduledAt) {
         formData.append('scheduledAt', scheduledAt.toISOString());
@@ -212,12 +204,10 @@ const SocialPublisher: React.FC<SocialPublisherProps> = ({
 
       const response = await fetch('/api/social/publish', {
         method: 'POST',
-        headers: {
+        headers: {},
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          'x-client-id': clientId,
-        },
-        body: formData,
-      });
+          'x-client-id': clientId},
+        body: formData});
 
       const result = await response.json();
 
@@ -243,7 +233,7 @@ const SocialPublisher: React.FC<SocialPublisherProps> = ({
 
         // Reset form
         setContent({ text: '', images: [], video: undefined, link: '' });
-        setSelectedPlatforms(platforms.filter(p => p.status === 'active').map(p => p.name));
+        setSelectedPlatforms(platforms.filter((p: any) => p.status === 'active').map((p: any) => p.name));
         setScheduledAt(null);
         setIsScheduled(false);
         setLinkPreview(null);
@@ -251,7 +241,7 @@ const SocialPublisher: React.FC<SocialPublisherProps> = ({
       } else {
         throw new Error(result.error || 'Failed to publish');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error publishing:', error);
       showNotification(
         error instanceof Error ? error.message : 'Failed to publish post',
@@ -270,7 +260,7 @@ const SocialPublisher: React.FC<SocialPublisherProps> = ({
           Select Platforms
         </Typography>
         <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
-          {platforms.map((platform) => (
+          {platforms.map((platform: any) => (
             <Chip
               key={platform.name}
               icon={getPlatformIcon(platform.name)}
@@ -304,7 +294,7 @@ const SocialPublisher: React.FC<SocialPublisherProps> = ({
         {/* Character counts for selected platforms */}
         {selectedPlatforms.length > 0 && (
           <Stack direction="row" spacing={2} flexWrap="wrap">
-            {selectedPlatforms.map((platform) => {
+            {selectedPlatforms.map((platform: any) => {
               const { limit, remaining, color } = getCharacterCount(platform);
               return (
                 <Chip

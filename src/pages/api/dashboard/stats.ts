@@ -5,32 +5,32 @@ import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 
 interface DashboardStats {
-  totalAssets: {
+  totalAssets: {},
     count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
-  aiGenerated: {
+  aiGenerated: {},
     count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
-  activeCampaigns: {
+  activeCampaigns: {},
     count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
-  templatesUsed: {
+  templatesUsed: {},
     count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
-  totalClients: {
+  totalClients: {},
     count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
-  pendingApprovals: {
+  pendingApprovals: {},
     count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
@@ -44,7 +44,7 @@ interface DashboardStats {
     user: string;
     client?: string;
   }>;
-  performanceMetrics: {
+  performanceMetrics: {},
     totalImpressions: number;
     totalClicks: number;
     averageCTR: number;
@@ -62,7 +62,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   try {
     const stats = await getDashboardStats(user.id);
     return res.json({ success: true, data: stats });
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Dashboard stats API error:', error);
     return res.status(500).json({ 
@@ -79,7 +79,7 @@ async function getDashboardStats(userId: string): Promise<DashboardStats> {
     .select('client_id')
     .eq('user_id', userId);
 
-  const clientIds = userClients?.map(uc => uc.client_id) || [];
+  const clientIds = userClients?.map((uc: any) => uc.client_id) || [];
 
   if (clientIds.length === 0) {
     return getEmptyStats();
@@ -160,25 +160,25 @@ async function getDashboardStats(userId: string): Promise<DashboardStats> {
   const assetChange = calculatePercentageChange(totalAssetsCount, previousAssetsCount);
 
   // Calculate AI generated assets
-  const aiGeneratedCount = currentAssets.data?.filter(asset => 
+  const aiGeneratedCount = currentAssets.data?.filter((asset: any) => 
     asset.metadata?.source === 'ai' || asset.metadata?.generated === true
   ).length || 0;
-  const previousAiCount = previousAssets.data?.filter(asset => 
+  const previousAiCount = previousAssets.data?.filter((asset: any) => 
     asset.metadata?.source === 'ai' || asset.metadata?.generated === true
   ).length || 0;
   const aiChange = calculatePercentageChange(aiGeneratedCount, previousAiCount);
 
   // Calculate campaign stats
-  const activeCampaignsCount = currentCampaigns.data?.filter(c => 
+  const activeCampaignsCount = currentCampaigns.data?.filter((c: any) => 
     ['active', 'running', 'scheduled'].includes(c.status)
   ).length || 0;
-  const previousActiveCampaigns = previousCampaigns.data?.filter(c => 
+  const previousActiveCampaigns = previousCampaigns.data?.filter((c: any) => 
     ['active', 'running', 'scheduled'].includes(c.status)
   ).length || 0;
   const campaignChange = calculatePercentageChange(activeCampaignsCount, previousActiveCampaigns);
 
   // Calculate templates used
-  const uniqueTemplates = new Set(matrices.data?.map(m => m.template_id) || []);
+  const uniqueTemplates = new Set(matrices.data?.map((m: any) => m.template_id) || []);
   const templatesUsedCount = uniqueTemplates.size;
   const templatesChange = '+0%'; // TODO: Calculate based on previous period
 
@@ -191,32 +191,32 @@ async function getDashboardStats(userId: string): Promise<DashboardStats> {
   const approvalsChange = '+0%'; // TODO: Calculate trend
 
   return {
-    totalAssets: {
+    totalAssets: {},
       count: totalAssetsCount,
       change: assetChange,
       trend: getTrend(assetChange)
     },
-    aiGenerated: {
+    aiGenerated: {},
       count: aiGeneratedCount,
       change: aiChange,
       trend: getTrend(aiChange)
     },
-    activeCampaigns: {
+    activeCampaigns: {},
       count: activeCampaignsCount,
       change: campaignChange,
       trend: getTrend(campaignChange)
     },
-    templatesUsed: {
+    templatesUsed: {},
       count: templatesUsedCount,
       change: templatesChange,
       trend: 'neutral'
     },
-    totalClients: {
+    totalClients: {},
       count: totalClientsCount,
       change: clientsChange,
       trend: 'neutral'
     },
-    pendingApprovals: {
+    pendingApprovals: {},
       count: pendingApprovalsCount,
       change: approvalsChange,
       trend: 'neutral'
@@ -263,7 +263,7 @@ async function getRecentActivities(clientIds: string[], userId: string): Promise
     const activities: Array<any> = [];
 
     // Add campaign activities
-    campaigns?.forEach(campaign => {
+    campaigns?.forEach((campaign: any) => {
       activities.push({
         id: `campaign-${campaign.id}`,
         type: 'campaign',
@@ -276,7 +276,7 @@ async function getRecentActivities(clientIds: string[], userId: string): Promise
     });
 
     // Add asset activities
-    assets?.forEach(asset => {
+    assets?.forEach((asset: any) => {
       activities.push({
         id: `asset-${asset.id}`,
         type: 'asset',
@@ -289,7 +289,7 @@ async function getRecentActivities(clientIds: string[], userId: string): Promise
     });
 
     // Add matrix activities
-    matrices?.forEach(matrix => {
+    matrices?.forEach((matrix: any) => {
       activities.push({
         id: `matrix-${matrix.id}`,
         type: 'matrix',
@@ -306,7 +306,7 @@ async function getRecentActivities(clientIds: string[], userId: string): Promise
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
       .slice(0, 10);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching recent activities:', error);
     return [];
   }
@@ -344,7 +344,7 @@ async function getPerformanceMetrics(clientIds: string[]): Promise<any> {
       totalSpend: Math.round(totalSpend * 100) / 100
     };
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching performance metrics:', error);
     return {
       totalImpressions: 0,
@@ -383,7 +383,7 @@ function getEmptyStats(): DashboardStats {
     totalClients: { count: 0, change: '0%', trend: 'neutral' },
     pendingApprovals: { count: 0, change: '0%', trend: 'neutral' },
     recentActivity: [],
-    performanceMetrics: {
+    performanceMetrics: {},
       totalImpressions: 0,
       totalClicks: 0,
       averageCTR: 0,

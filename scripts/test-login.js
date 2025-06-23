@@ -19,8 +19,8 @@ if (!supabaseUrl || !supabaseAnonKey) {
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 async function testLogin() {
-  const email = 'tomh@redbaez.com';
-  const password = 'Wijlre2010';
+  const email = process.env.TEST_USER_EMAIL || 'test@example.com';
+  const password = process.env.TEST_USER_PASSWORD || 'test-password-123';
 
   console.log('🔐 Testing login with:');
   console.log('   Email:', email);

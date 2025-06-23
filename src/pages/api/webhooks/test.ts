@@ -27,7 +27,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   
   // Validate event type
   const validEvents = Object.values(WebhookManager.EVENTS);
-  if (!validEvents.includes(event)) {
+  if (!validEvents.includes(_event)) {
     throw new ValidationError(`Invalid event type. Valid events: ${validEvents.join(', ')}`);
   }
   
@@ -39,21 +39,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
         type: event,
         data: data || {
           test: true,
-          timestamp: new Date().toISOString(),
-        },
-        metadata: {
+          timestamp: new Date().toISOString()},
+        metadata: {},
           source: 'test_endpoint',
-          triggered_at: new Date().toISOString(),
-        },
-      },
+          triggered_at: new Date().toISOString()}},
       client_id
     );
     
     res.status(200).json({
       success: true,
-      message: `Webhook event '${event}' triggered successfully`,
-    });
-  } catch (error) {
+      message: `Webhook event '${event}' triggered successfully`});
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Failed to trigger test webhook:', error);
     throw error;

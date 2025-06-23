@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
@@ -18,8 +19,7 @@ const GenerationsFilterSchema = z.object({
   offset: z.number().min(0).default(0),
   sort_by: z.enum(['created_at', 'updated_at', 'status']).default('created_at'),
   sort_order: z.enum(['asc', 'desc']).default('desc'),
-  include_jobs: z.boolean().default(false),
-});
+  include_jobs: z.boolean().default(false)});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -34,7 +34,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       default:
         return res.status(405).json({ error: 'Method not allowed' });
     }
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Video Generations API error:', error);
     return res.status(500).json({
@@ -66,11 +66,10 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     return res.json({ 
       data: [], 
       count: 0,
-      summary: getEmptySummary(),
-    });
+      summary: getEmptySummary()});
   }
 
-  const clientIds = userClients.map(uc => uc.client_id);
+  const clientIds = userClients.map((uc: any) => uc.client_id);
 
   let query = supabase
     .from('video_generations')
@@ -139,7 +138,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   } else {
     // Return unique generations (one per generation_id)
     const uniqueGenerations = getUniqueGenerations(generations || []);
-    processedData = uniqueGenerations.map(gen => enhanceGenerationData(gen));
+    processedData = uniqueGenerations.map((gen: any) => enhanceGenerationData(gen));
   }
 
   // Calculate summary statistics
@@ -150,7 +149,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     count: processedData.length,
     total_jobs: count || 0,
     summary,
-    pagination: {
+    pagination: {},
       limit: filters.limit,
       offset: filters.offset,
       total: count || 0
@@ -199,7 +198,7 @@ async function deleteGeneration(req: NextApiRequest, res: NextApiResponse, user:
   }
 
   // Check if any jobs are still processing
-  const processingJobs = generations.filter(gen => ['pending', 'processing'].includes(gen.status));
+  const processingJobs = generations.filter((gen: any) => ['pending', 'processing'].includes(gen.status));
   if (processingJobs.length > 0) {
     return res.status(409).json({
       error: 'Cannot delete generation with active jobs',
@@ -284,7 +283,7 @@ async function deleteJob(req: NextApiRequest, res: NextApiResponse, user: any, j
 function groupByGeneration(generations: any[]): any[] {
   const grouped: Record<string, any> = {};
 
-  generations.forEach(gen => {
+  generations.forEach((gen: any) => {
     const genId = gen.generation_id;
     if (!grouped[genId]) {
       grouped[genId] = {
@@ -294,8 +293,7 @@ function groupByGeneration(generations: any[]): any[] {
         created_at: gen.created_at,
         jobs: [],
         status: 'pending',
-        progress: { percentage: 0, completed: 0, total: 0 },
-      };
+        progress: { percentage: 0, completed: 0, total: 0 }};
     }
 
     grouped[genId].jobs.push({
@@ -307,8 +305,7 @@ function groupByGeneration(generations: any[]): any[] {
       error_message: gen.error_message,
       config: gen.config,
       created_at: gen.created_at,
-      updated_at: gen.updated_at,
-    });
+      updated_at: gen.updated_at});
   });
 
   // Calculate progress for each generation
@@ -320,8 +317,7 @@ function groupByGeneration(generations: any[]): any[] {
     gen.progress = {
       percentage: totalJobs > 0 ? Math.round((completedJobs / totalJobs) * 100) : 0,
       completed: completedJobs,
-      total: totalJobs,
-    };
+      total: totalJobs};
 
     // Determine overall status
     if (completedJobs === totalJobs) {
@@ -344,7 +340,7 @@ function groupByGeneration(generations: any[]): any[] {
 function getUniqueGenerations(generations: any[]): any[] {
   const unique: Record<string, any> = {};
 
-  generations.forEach(gen => {
+  generations.forEach((gen: any) => {
     const genId = gen.generation_id;
     if (!unique[genId] || new Date(gen.created_at) > new Date(unique[genId].created_at)) {
       unique[genId] = gen;
@@ -366,8 +362,7 @@ function enhanceGenerationData(generation: any): any {
     error_message: generation.error_message,
     config: generation.config,
     created_at: generation.created_at,
-    updated_at: generation.updated_at,
-  };
+    updated_at: generation.updated_at};
 }
 
 function getContextInfo(generation: any): any {
@@ -376,27 +371,23 @@ function getContextInfo(generation: any): any {
       type: 'brief',
       id: generation.brief_id,
       name: generation.briefs.name,
-      client: generation.briefs.clients,
-    };
+      client: generation.briefs.clients};
   } else if (generation.matrices) {
     return {
       type: 'matrix',
       id: generation.matrix_id,
       name: generation.matrices.name,
-      campaign: generation.matrices.campaigns,
-    };
+      campaign: generation.matrices.campaigns};
   } else if (generation.campaigns) {
     return {
       type: 'campaign',
       id: generation.campaign_id,
       name: generation.campaigns.name,
-      client: generation.campaigns.clients,
-    };
+      client: generation.campaigns.clients};
   } else {
     return {
       type: 'standalone',
-      client_id: generation.client_id,
-    };
+      client_id: generation.client_id};
   }
 }
 
@@ -413,13 +404,13 @@ function calculateSummary(generations: any[]): any {
 
   // Calculate time-based stats
   const today = new Date().toISOString().split('T')[0];
-  const todayGenerations = generations.filter(gen => 
+  const todayGenerations = generations.filter((gen: any) => 
     gen.created_at.startsWith(today)
   ).length;
 
   const thisWeek = new Date();
   thisWeek.setDate(thisWeek.getDate() - 7);
-  const weeklyGenerations = generations.filter(gen => 
+  const weeklyGenerations = generations.filter((gen: any) => 
     new Date(gen.created_at) >= thisWeek
   ).length;
 
@@ -429,19 +420,17 @@ function calculateSummary(generations: any[]): any {
     status_breakdown: byStatus,
     today_count: todayGenerations,
     weekly_count: weeklyGenerations,
-    completion_rate: total > 0 ? Math.round(((byStatus.completed || 0) / total) * 100) : 0,
-  };
+    completion_rate: total > 0 ? Math.round(((byStatus.completed || 0) / total) * 100) : 0};
 }
 
 function getEmptySummary(): any {
   return {
     total_jobs: 0,
     total_generations: 0,
-    status_breakdown: {},
+    status_breakdown: {}
     today_count: 0,
     weekly_count: 0,
-    completion_rate: 0,
-  };
+    completion_rate: 0};
 }
 
 export default withAuth(withSecurityHeaders(handler));

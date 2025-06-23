@@ -37,8 +37,7 @@ const mockRedis = {
   on: jest.fn(),
   off: jest.fn(),
   disconnect: jest.fn(),
-  quit: jest.fn(),
-};
+  quit: jest.fn()};
 
 jest.mock('ioredis', () => {
   return jest.fn().mockImplementation(() => mockRedis);
@@ -231,8 +230,7 @@ describe('Redis Infrastructure Testing', () => {
       const sessionData = {
         userId: 'user-123',
         email: 'test@example.com',
-        loginTime: Date.now(),
-      };
+        loginTime: Date.now()};
       
       mockRedis.setex.mockResolvedValue('OK');
       mockRedis.get.mockResolvedValue(JSON.stringify(sessionData));
@@ -336,7 +334,7 @@ describe('Redis Infrastructure Testing', () => {
       const results = await Promise.all(operations);
       
       // All operations should complete successfully
-      expect(results.filter(r => r === true || r === 'test-value')).toHaveLength(200);
+      expect(results.filter((r: any) => r === true || r === 'test-value')).toHaveLength(200);
     });
 
     it('should measure operation latency', async () => {

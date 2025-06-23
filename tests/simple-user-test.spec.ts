@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 import { test, expect } from '@playwright/test';
 
 /**
@@ -47,6 +48,7 @@ test.describe('AIrWAVE User Experience Tests', () => {
           const text = await links[i].textContent();
           console.log(`Link ${i + 1}: "${text}" -> ${href}`);
         } catch (error) {
+    const message = getErrorMessage(error);
           console.log(`Link ${i + 1}: Could not get details`);
         }
       }

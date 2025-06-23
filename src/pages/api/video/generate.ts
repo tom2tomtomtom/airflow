@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { creatomateService } from '@/services/creatomate';
@@ -19,34 +20,27 @@ const VideoGenerateSchema = z.object({
     resolution: z.enum(['720p', '1080p', '4K']).default('1080p'),
     platform: z.enum(['youtube', 'instagram', 'tiktok', 'facebook', 'linkedin', 'twitter']).optional(),
     aspect_ratio: z.enum(['16:9', '9:16', '1:1', '4:5']).default('16:9'),
-    quality: z.enum(['draft', 'standard', 'high']).default('standard'),
-  }),
+    quality: z.enum(['draft', 'standard', 'high']).default('standard')}),
   content_elements: z.object({
     text_overlays: z.array(z.object({
       text: z.string(),
       position: z.enum(['top', 'center', 'bottom']).default('center'),
       style: z.string().optional(),
-      duration: z.number().optional(),
-    })).optional(),
+      duration: z.number().optional()})).optional(),
     background_music: z.boolean().default(false),
     voice_over: z.object({
       text: z.string(),
       voice: z.string().default('neural'),
-      language: z.string().default('en'),
-    }).optional(),
+      language: z.string().default('en')}).optional(),
     brand_elements: z.object({
       logo_url: z.string().optional(),
       color_scheme: z.array(z.string()).optional(),
-      font_family: z.string().optional(),
-    }).optional(),
-  }).optional(),
+      font_family: z.string().optional()}).optional()}).optional(),
   generation_settings: z.object({
     variations_count: z.number().min(1).max(5).default(1),
     include_captions: z.boolean().default(false),
     auto_optimize_for_platform: z.boolean().default(true),
-    save_to_assets: z.boolean().default(true),
-  }).optional(),
-});
+    save_to_assets: z.boolean().default(true)}).optional()});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -58,7 +52,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
   try {
     return handleGenerate(req, res, user);
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Video Generate API error:', error);
     return res.status(500).json({
@@ -106,12 +100,11 @@ async function handleGenerate(req: NextApiRequest, res: NextApiResponse, user: a
 
   return res.json({
     message: 'Video generation initiated successfully',
-    data: {
+    data: {},
       generation_id: jobs.generation_id,
       job_count: jobs.jobs.length,
       estimated_completion: jobs.estimated_completion,
-      jobs: results,
-    }
+      jobs: results}
   });
 }
 
@@ -212,7 +205,7 @@ async function validateGenerationContext(generateData: any, userId: string): Pro
     }
 
     return { valid: true, client_id: clientId, context };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     return { valid: false, error: 'Error validating generation context' };
   }
@@ -254,7 +247,7 @@ async function checkGenerationLimits(clientId: string, userId: string): Promise<
     }
 
     return { allowed: true };
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error checking generation limits:', error);
     return { 
@@ -299,8 +292,7 @@ async function enhanceVideoConfig(generateData: any, context: any): Promise<any>
       ...enhanced.content_elements.brand_elements,
       color_scheme: brandGuidelines.colors || enhanced.content_elements.brand_elements.color_scheme,
       font_family: brandGuidelines.typography?.primary || enhanced.content_elements.brand_elements.font_family,
-      logo_url: brandGuidelines.logo_url || enhanced.content_elements.brand_elements.logo_url,
-    };
+      logo_url: brandGuidelines.logo_url || enhanced.content_elements.brand_elements.logo_url};
   }
 
   return enhanced;
@@ -327,8 +319,7 @@ async function createVideoGenerationJobs(config: any, context: any, userId: stri
       client_id: context.client_id,
       created_by: userId,
       status: 'pending',
-      estimated_duration: calculateEstimatedDuration(variationConfig),
-    };
+      estimated_duration: calculateEstimatedDuration(variationConfig)};
 
     jobs.push(job);
   }
@@ -341,8 +332,7 @@ async function createVideoGenerationJobs(config: any, context: any, userId: stri
     jobs,
     estimated_completion: estimatedCompletion.toISOString(),
     client_id: context.client_id,
-    total_variations: variationsCount,
-  };
+    total_variations: variationsCount};
 }
 
 async function processVideoGeneration(jobsData: any): Promise<any> {
@@ -363,8 +353,7 @@ async function processVideoGeneration(jobsData: any): Promise<any> {
           variation_index: job.variation_index,
           config: job.config,
           status: 'pending',
-          created_by: job.created_by,
-        })
+          created_by: job.created_by})
         .select()
         .single();
 
@@ -373,8 +362,7 @@ async function processVideoGeneration(jobsData: any): Promise<any> {
         results.push({
           job_id: job.id,
           status: 'failed',
-          error: getErrorMessage(error),
-        });
+          error: getErrorMessage(error)});
         continue;
       }
 
@@ -387,11 +375,10 @@ async function processVideoGeneration(jobsData: any): Promise<any> {
         .update({
           status: renderResult.success ? 'processing' : 'failed',
           render_job_id: renderResult.job_id,
-          metadata: {
+          metadata: {},
             ...job.config,
             render_started_at: new Date().toISOString(),
-            estimated_completion: renderResult.estimated_completion,
-          }
+            estimated_completion: renderResult.estimated_completion}
         })
         .eq('id', job.id);
 
@@ -399,26 +386,23 @@ async function processVideoGeneration(jobsData: any): Promise<any> {
         job_id: job.id,
         status: renderResult.success ? 'processing' : 'failed',
         render_job_id: renderResult.job_id,
-        estimated_completion: renderResult.estimated_completion,
-      });
+        estimated_completion: renderResult.estimated_completion});
 
-    } catch (error) {
+    } catch (error: any) {
       const message = getErrorMessage(error);
       console.error('Error processing video generation job:', error);
       results.push({
         job_id: job.id,
         status: 'failed',
-        error: message,
-      });
+        error: message});
     }
   }
 
   return {
     total_jobs: jobsData.jobs.length,
-    successful: results.filter(r => r.status === 'processing').length,
-    failed: results.filter(r => r.status === 'failed').length,
-    results,
-  };
+    successful: results.filter((r: any) => r.status === 'processing').length,
+    failed: results.filter((r: any) => r.status === 'failed').length,
+    results};
 }
 
 function optimizeForPlatform(videoConfig: any, platform: string): any {
@@ -520,15 +504,13 @@ async function startVideoRender(job: any): Promise<any> {
     return {
       success: true,
       job_id: render.id,
-      estimated_completion: new Date(Date.now() + job.estimated_duration * 1000).toISOString(),
-    };
-  } catch (error) {
+      estimated_completion: new Date(Date.now() + job.estimated_duration * 1000).toISOString()};
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error starting video render:', error);
     return {
       success: false,
-      error: message,
-    };
+      error: message};
   }
 }
 
@@ -547,8 +529,7 @@ function convertToCreatomateFormat(job: any): any {
       modifications[`text_${index + 1}`] = {
         text: overlay.text,
         position: overlay.position,
-        duration: overlay.duration || config.duration,
-      };
+        duration: overlay.duration || config.duration};
     });
   }
 
@@ -557,16 +538,14 @@ function convertToCreatomateFormat(job: any): any {
     modifications.voice_over = {
       text: content.voice_over.text,
       voice: content.voice_over.voice,
-      language: content.voice_over.language,
-    };
+      language: content.voice_over.language};
   }
 
   // Add brand elements
   if (content.brand_elements) {
     if (content.brand_elements.logo_url) {
       modifications.logo = {
-        source: content.brand_elements.logo_url,
-      };
+        source: content.brand_elements.logo_url};
     }
     
     if (content.brand_elements.color_scheme) {
@@ -581,13 +560,11 @@ function convertToCreatomateFormat(job: any): any {
     templateId,
     modifications,
     webhookUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/webhooks/creatomate`,
-    metadata: {
+    metadata: {},
       job_id: job.id,
       generation_id: job.generation_id,
       client_id: job.client_id,
-      variation_index: job.variation_index,
-    },
-  };
+      variation_index: job.variation_index}};
 }
 
 function selectCreatomateTemplate(config: any): string {

@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/utils/errorUtils';
 /**
  * Campaign Matrix Page Object Model
  * Handles interactions with the campaign matrix creation and management interface
@@ -241,6 +242,7 @@ export class MatrixPage {
       const confirmButton = this.page.locator('[data-testid="confirm-remove-row"]');
       await confirmButton.click({ timeout: 2000 });
     } catch (error) {
+    const message = getErrorMessage(error);
       // No confirmation dialog
     }
     

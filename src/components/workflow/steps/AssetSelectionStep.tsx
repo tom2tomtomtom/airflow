@@ -12,15 +12,13 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions,
-} from '@mui/material';
+  DialogActions} from '@mui/material';
 import {
   ArrowForward as ArrowForwardIcon,
   ArrowBack as ArrowBackIcon,
   Remove as RemoveIcon,
   Image as ImageIcon,
-  AutoAwesome as AutoAwesomeIcon,
-} from '@mui/icons-material';
+  AutoAwesome as AutoAwesomeIcon} from '@mui/icons-material';
 import { useWorkflow } from '../WorkflowProvider';
 import { StepComponentProps, Asset as WorkflowAsset } from '@/lib/workflow/workflow-types';
 import AssetBrowser from '@/components/AssetBrowser';
@@ -51,16 +49,14 @@ interface AssetSelectionStepProps extends StepComponentProps {}
 
 export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
   onNext,
-  onPrevious,
-}) => {
+  onPrevious}) => {
   const { state, actions } = useWorkflow();
   const {
     briefData,
     selectedAssets,
     processing,
     lastError,
-    clientId,
-  } = state;
+    clientId} = state;
 
   const [activeTab, setActiveTab] = useState(0);
   const [generatingAssets, setGeneratingAssets] = useState(false);
@@ -82,7 +78,7 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
       type: workflowType,
       url: browserAsset.url,
       content: browserAsset.type === 'text' ? browserAsset.description : undefined,
-      metadata: {
+      metadata: {},
         ...browserAsset.metadata,
         name: browserAsset.name,
         description: browserAsset.description,
@@ -94,10 +90,8 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
         width: browserAsset.width,
         height: browserAsset.height,
         dateCreated: browserAsset.dateCreated,
-        favorite: browserAsset.favorite,
-      },
-      selected: false,
-    };
+        favorite: browserAsset.favorite},
+      selected: false};
   };
 
   // Handle asset selection from AssetBrowser
@@ -119,16 +113,14 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
       id: generatedAsset.id || `ai-${Date.now()}`,
       type: 'image',
       url: generatedAsset.url,
-      metadata: {
+      metadata: {},
         ...generatedAsset.metadata,
         name: generatedAsset.name,
         description: generatedAsset.description || 'AI Generated Image',
         aiGenerated: true,
         ai_prompt: generatedAsset.ai_prompt,
-        tags: generatedAsset.tags || ['ai-generated'],
-      },
-      selected: false,
-    };
+        tags: generatedAsset.tags || ['ai-generated']},
+      selected: false};
 
     // Add to selected assets
     actions.selectAsset({ ...workflowAsset, selected: true });
@@ -149,7 +141,7 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
   const generateSmartPrompts = useCallback(() => {
     if (!briefData) return [];
 
-    const selectedMotivations = state?.motivations?.filter(m => m.selected);
+    const selectedMotivations = state?.motivations?.filter((m: any) => m.selected);
 
     const prompts = [];
 
@@ -157,34 +149,30 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
     const baseContext = `${briefData.product || briefData.service || briefData.title} for ${briefData.targetAudience}`;
 
     // Add prompts based on selected motivations
-    selectedMotivations.forEach(motivation => {
+    selectedMotivations.forEach((motivation: any) => {
       prompts.push({
         title: `${motivation.title} - Hero Image`,
-        prompt: `Professional marketing image for ${baseContext}, focusing on ${motivation.description.toLowerCase()}, modern and clean design, high quality photography style`,
-      });
+        prompt: `Professional marketing image for ${baseContext}, focusing on ${motivation.description.toLowerCase()}, modern and clean design, high quality photography style`});
     });
 
     // Add general prompts based on brief
     if (briefData.platforms?.includes('social')) {
       prompts.push({
         title: 'Social Media Visual',
-        prompt: `Eye-catching social media image for ${baseContext}, vibrant colors, engaging composition, optimized for social platforms`,
-      });
+        prompt: `Eye-catching social media image for ${baseContext}, vibrant colors, engaging composition, optimized for social platforms`});
     }
 
     if (briefData.valueProposition) {
       prompts.push({
         title: 'Value Proposition Visual',
-        prompt: `Visual representation of ${briefData.valueProposition} for ${baseContext}, professional, trustworthy, modern design`,
-      });
+        prompt: `Visual representation of ${briefData.valueProposition} for ${baseContext}, professional, trustworthy, modern design`});
     }
 
     // Add industry-specific prompts
     if (briefData.industry) {
       prompts.push({
         title: `${briefData.industry} Industry Visual`,
-        prompt: `Professional ${briefData.industry} industry image for ${baseContext}, clean, modern, industry-appropriate styling`,
-      });
+        prompt: `Professional ${briefData.industry} industry image for ${baseContext}, clean, modern, industry-appropriate styling`});
     }
 
     return prompts.slice(0, 5); // Limit to 5 suggestions
@@ -221,7 +209,7 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
   // Get asset counts by type
   const getAssetCounts = () => {
     const counts = { image: 0, video: 0, copy: 0, template: 0 };
-    selectedAssets.forEach(asset => {
+    selectedAssets.forEach((asset: any) => {
       counts[asset.type] = (counts[asset.type] || 0) + 1;
     });
     return counts;
@@ -232,15 +220,14 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
   // Render selected assets summary
   const renderSelectedAssets = () => (
     <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
-      {selectedAssets.map((asset) => (
+      {selectedAssets.map((asset: any) => (
         <Box key={asset.id}>
           <Card
             sx={{
               border: 1,
               borderColor: 'primary.main',
               bgcolor: 'primary.50',
-              position: 'relative',
-            }}
+              position: 'relative'}}
           >
             {/* Asset Preview */}
             <Box
@@ -253,8 +240,7 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                position: 'relative',
-              }}
+                position: 'relative'}}
             >
               {!asset.url && (
                 <Typography variant="h6" color="text.secondary">
@@ -271,9 +257,7 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
                   bgcolor: 'error.main',
                   color: 'white',
                   '&:hover': {
-                    bgcolor: 'error.dark',
-                  },
-                }}
+                    bgcolor: 'error.dark'}}}
                 size="small"
                 onClick={() => handleRemoveAsset(asset.id)}
               >
@@ -289,8 +273,7 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
                   sx={{
                     position: 'absolute',
                     bottom: 8,
-                    left: 8,
-                  }}
+                    left: 8}}
                 />
               )}
             </Box>
@@ -463,8 +446,7 @@ export const AssetSelectionStep: React.FC<AssetSelectionStepProps> = ({
                           cursor: 'pointer',
                           '&:hover': { bgcolor: 'action.hover' },
                           border: 1,
-                          borderColor: 'divider',
-                        }}
+                          borderColor: 'divider'}}
                         onClick={() => {
                           // This would need to be passed to AIImageGenerator
                           // For now, we'll show the prompt in the dialog

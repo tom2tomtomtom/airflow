@@ -17,13 +17,7 @@ import {
   Tabs,
   Tab,
 } from '@mui/material';
-import {
-  ArrowBack,
-  Save,
-  Delete,
-  RestartAlt,
-  Warning,
-} from '@mui/icons-material';
+import { ArrowBack, Save, Delete, RestartAlt, Warning } from '@mui/icons-material';
 import DashboardLayout from '../../../components/DashboardLayout';
 import LoadingSpinner from '../../../components/LoadingSpinner';
 import ErrorMessage from '../../../components/ErrorMessage';
@@ -31,41 +25,32 @@ import { useNotification } from '../../../contexts/NotificationContext';
 import { useCampaigns } from '../../../hooks/useData';
 
 // Lazy load heavy components for better performance
-const CampaignBasicInfo = dynamic(
-  () => import('@/components/campaigns/CampaignBasicInfo'),
-  {
-    loading: () => (
-      <Box display="flex" justifyContent="center" py={4}>
-        <CircularProgress />
-      </Box>
-    ),
-    ssr: false,
-  }
-);
+const CampaignBasicInfo = dynamic(() => import('@/components/campaigns/CampaignBasicInfo'), {
+  loading: () => (
+    <Box display="flex" justifyContent="center" py={4}>
+      <CircularProgress />
+    </Box>
+  ),
+  ssr: false,
+});
 
-const PlatformSelection = dynamic(
-  () => import('@/components/campaigns/PlatformSelection'),
-  {
-    loading: () => (
-      <Box display="flex" justifyContent="center" py={4}>
-        <CircularProgress />
-      </Box>
-    ),
-    ssr: false,
-  }
-);
+const PlatformSelection = dynamic(() => import('@/components/campaigns/PlatformSelection'), {
+  loading: () => (
+    <Box display="flex" justifyContent="center" py={4}>
+      <CircularProgress />
+    </Box>
+  ),
+  ssr: false,
+});
 
-const CampaignSchedule = dynamic(
-  () => import('@/components/campaigns/CampaignSchedule'),
-  {
-    loading: () => (
-      <Box display="flex" justifyContent="center" py={4}>
-        <CircularProgress />
-      </Box>
-    ),
-    ssr: false,
-  }
-);
+const CampaignSchedule = dynamic(() => import('@/components/campaigns/CampaignSchedule'), {
+  loading: () => (
+    <Box display="flex" justifyContent="center" py={4}>
+      <CircularProgress />
+    </Box>
+  ),
+  ssr: false,
+});
 
 const EditCampaign: React.FC = () => {
   const router = useRouter();
@@ -129,7 +114,7 @@ const EditCampaign: React.FC = () => {
       });
 
       showNotification('Campaign updated successfully!', 'success');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating campaign:', error);
       showNotification('Failed to update campaign. Please try again.', 'error');
     } finally {
@@ -145,7 +130,7 @@ const EditCampaign: React.FC = () => {
       await deleteCampaign(id as string);
       showNotification('Campaign deleted successfully!', 'success');
       router.push('/campaigns');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting campaign:', error);
       showNotification('Failed to delete campaign. Please try again.', 'error');
     } finally {
@@ -191,8 +176,8 @@ const EditCampaign: React.FC = () => {
       <Container maxWidth="md">
         <Box sx={{ mb: 4 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <ArrowBack 
-              sx={{ mr: 2, cursor: 'pointer' }} 
+            <ArrowBack
+              sx={{ mr: 2, cursor: 'pointer' }}
               onClick={() => router.push('/campaigns')}
             />
             <Typography variant="h4" component="h1" fontWeight={600}>
@@ -254,7 +239,7 @@ const EditCampaign: React.FC = () => {
           >
             Delete Campaign
           </Button>
-          
+
           <Box sx={{ display: 'flex', gap: 2 }}>
             <Button
               variant="outlined"
@@ -289,18 +274,15 @@ const EditCampaign: React.FC = () => {
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="delete-dialog-description">
-              Are you sure you want to delete this campaign? This action cannot be undone.
-              All associated data will be permanently removed.
+              Are you sure you want to delete this campaign? This action cannot be undone. All
+              associated data will be permanently removed.
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button 
-              onClick={() => setDeleteDialogOpen(false)}
-              disabled={isDeleting}
-            >
+            <Button onClick={() => setDeleteDialogOpen(false)} disabled={isDeleting}>
               Cancel
             </Button>
-            <Button 
+            <Button
               onClick={handleDelete}
               color="error"
               variant="contained"

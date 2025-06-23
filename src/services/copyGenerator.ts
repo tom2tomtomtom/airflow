@@ -32,7 +32,7 @@ export interface CopySet {
   variants: CopyVariant[];
   generatedAt: Date;
   version: number;
-  metadata: {
+  metadata: {},
     totalVariants: number;
     typeDistribution: Record<string, number>;
     toneDistribution: Record<string, number>;
@@ -113,7 +113,7 @@ export class CopyGenerator {
         variantsPerMotivation
       });
 
-      const selectedMotivations = motivationSet.motivations.filter(m => 
+      const selectedMotivations = motivationSet.motivations.filter((m: any) => 
         selectedMotivationIds.includes(m.id)
       );
 
@@ -160,7 +160,7 @@ export class CopyGenerator {
 
       return copySet;
 
-    } catch (error) {
+    } catch (error: any) {
       const classified = classifyError(error as Error, {
         route: 'copy-generator',
         metadata: { 
@@ -245,7 +245,7 @@ export class CopyGenerator {
   private buildCopyPrompt(
     brief: ParsedBrief,
     motivation: PsychologicalMotivation,
-    config: {
+    config: {},
       type: CopyVariant['type'];
       tone: CopyVariant['tone'];
       platform: CopyVariant['platform'];
@@ -352,7 +352,7 @@ Do not include explanations or alternatives - just the final copy.
   private async parseCopyResponse(
     response: string,
     motivationId: string,
-    config: {
+    config: {},
       type: CopyVariant['type'];
       tone: CopyVariant['tone'];
       platform: CopyVariant['platform'];
@@ -391,7 +391,7 @@ Do not include explanations or alternatives - just the final copy.
         brandAlignment: scores.brandAlignment,
         generatedAt: new Date()
       };
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Failed to parse copy response', error);
       return null;
     }
@@ -399,7 +399,7 @@ Do not include explanations or alternatives - just the final copy.
 
   private calculateQualityScores(
     content: string,
-    config: {
+    config: {},
       type: CopyVariant['type'];
       tone: CopyVariant['tone'];
       platform: CopyVariant['platform'];
@@ -448,7 +448,7 @@ Do not include explanations or alternatives - just the final copy.
     ];
     
     const words = content.toLowerCase().split(/\s+/);
-    const emotionalWordCount = emotionalWords.filter(word => 
+    const emotionalWordCount = emotionalWords.filter((word: any) => 
       words.some(w => w.includes(word))
     ).length;
     
@@ -457,7 +457,7 @@ Do not include explanations or alternatives - just the final copy.
 
   private analyzeClarity(content: string): number {
     // Simple clarity analysis based on sentence length and word complexity
-    const sentences = content.split(/[.!?]+/).filter(s => s.trim());
+    const sentences = content.split(/[.!?]+/).filter((s: any) => s.trim());
     const avgSentenceLength = sentences.reduce((sum, s) => sum + s.split(' ').length, 0) / sentences.length;
     
     // Prefer moderate sentence lengths (10-20 words)
@@ -472,7 +472,7 @@ Do not include explanations or alternatives - just the final copy.
     options: CopyGenerationOptions
   ): CopyVariant[] {
     // Sort by overall quality score
-    const scored = variants.map(variant => ({
+    const scored = variants.map((variant: any) => ({
       variant,
       qualityScore: this.calculateOverallQualityScore(variant)
     }));
@@ -480,7 +480,7 @@ Do not include explanations or alternatives - just the final copy.
     scored.sort((a, b) => b.qualityScore - a.qualityScore);
 
     // Apply diversity filtering
-    const balanced = this.ensureVariantDiversity(scored.map(s => s.variant));
+    const balanced = this.ensureVariantDiversity(scored.map((s: any) => s.variant));
 
     return balanced;
   }
@@ -533,7 +533,7 @@ Do not include explanations or alternatives - just the final copy.
     const averageConfidence = variants.reduce((sum, v) => sum + v.confidence, 0) / variants.length;
     const averageEmotionalImpact = variants.reduce((sum, v) => sum + v.emotionalImpact, 0) / variants.length;
 
-    const uniqueCombinations = new Set(variants.map(v => `${v.type}_${v.tone}_${v.platform}`));
+    const uniqueCombinations = new Set(variants.map((v: any) => `${v.type}_${v.tone}_${v.platform}`));
     const diversityScore = uniqueCombinations.size / variants.length;
 
     return {
@@ -562,19 +562,19 @@ Do not include explanations or alternatives - just the final copy.
     }
 
     // Check type coverage
-    const types = new Set(copySet.variants.map(v => v.type));
+    const types = new Set(copySet.variants.map((v: any) => v.type));
     if (types.size < 4) {
       suggestions.push('Consider adding more copy types for better coverage');
     }
 
     // Check quality scores
-    const lowQualityCount = copySet.variants.filter(v => v.confidence < 0.6).length;
+    const lowQualityCount = copySet.variants.filter((v: any) => v.confidence < 0.6).length;
     if (lowQualityCount > copySet.variants.length * 0.3) {
       suggestions.push('Some copy variants have low quality scores - consider regenerating');
     }
 
     // Check character limit adherence
-    const overLimitCount = copySet.variants.filter(v => {
+    const overLimitCount = copySet.variants.filter((v: any) => {
       const limit = this.CHARACTER_LIMITS[v.type][v.format];
       return v.characterCount > limit;
     }).length;
@@ -592,7 +592,7 @@ Do not include explanations or alternatives - just the final copy.
 
   async refineCopySet(
     copySet: CopySet,
-    refinements: {
+    refinements: {},
       improveQuality?: boolean;
       adjustTone?: CopyVariant['tone'];
       focusPlatform?: CopyVariant['platform'];

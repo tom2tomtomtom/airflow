@@ -1,6 +1,7 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import axios from 'axios';
 
 interface TokenResponse {
@@ -39,8 +40,7 @@ async function exchangeFacebookToken(code: string, redirectUri: string): Promise
     client_id: process.env.FACEBOOK_CLIENT_ID,
     client_secret: process.env.FACEBOOK_CLIENT_SECRET,
     code,
-    redirect_uri: redirectUri,
-  });
+    redirect_uri: redirectUri});
 
   return response.data;
 }
@@ -61,11 +61,9 @@ async function exchangeTwitterToken(code: string, redirectUri: string): Promise<
       code_verifier: 'challenge', // This should match the code_challenge from auth
     }),
     {
-      headers: {
+      headers: {},
         'Authorization': `Basic ${basicAuth}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    }
+        'Content-Type': 'application/x-www-form-urlencoded'}}
   );
 
   return response.data;
@@ -79,13 +77,10 @@ async function exchangeLinkedInToken(code: string, redirectUri: string): Promise
       code,
       client_id: process.env.LINKEDIN_CLIENT_ID!,
       client_secret: process.env.LINKEDIN_CLIENT_SECRET!,
-      redirect_uri: redirectUri,
-    }),
+      redirect_uri: redirectUri}),
     {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-    }
+      headers: {},
+        'Content-Type': 'application/x-www-form-urlencoded'}}
   );
 
   return response.data;
@@ -137,26 +132,22 @@ async function getInstagramProfile(accessToken: string): Promise<any> {
         instagramAccounts.push({
           ...igAccountResponse.data,
           page_id: page.id,
-          page_access_token: page.access_token,
-        });
+          page_access_token: page.access_token});
       }
-    } catch (error) {
+    } catch (error: any) {
       console.warn('Failed to get Instagram account for page:', page.id);
     }
   }
   
   return {
     accounts: instagramAccounts,
-    primary: instagramAccounts[0] || null,
-  };
+    primary: instagramAccounts[0] || null};
 }
 
 async function getTwitterProfile(accessToken: string): Promise<any> {
   const response = await axios.get('https://api.twitter.com/2/users/me', {
-    headers: {
-      'Authorization': `Bearer ${accessToken}`,
-    },
-  });
+    headers: {},
+      'Authorization': `Bearer ${accessToken}`}});
   return response?.data?.data;
 }
 
@@ -164,10 +155,8 @@ async function getLinkedInProfile(accessToken: string): Promise<any> {
   const response = await axios.get(
     'https://api.linkedin.com/v2/people/~:(id,firstName,lastName,profilePicture(displayImage~:playableStreams))',
     {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      },
-    }
+      headers: {},
+        'Authorization': `Bearer ${accessToken}`}}
   );
   return response.data;
 }
@@ -194,7 +183,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     let stateData;
     try {
       stateData = JSON.parse(atob(state as string));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Invalid state parameter:', error);
       res.redirect('/social-publishing?error=invalid_state');
       return;
@@ -216,8 +205,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       platform,
       code: code as string,
       state: state as string,
-      redirectUri,
-    });
+      redirectUri});
 
     // Get user profile from the platform
     const profile = await getUserProfile(platform, tokenResponse.access_token);
@@ -237,8 +225,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       scope: tokenResponse.scope,
       profile_data: profile,
       is_active: true,
-      connected_at: new Date().toISOString(),
-    };
+      connected_at: new Date().toISOString()};
 
     // Check if connection already exists
     const { data: existingConnection } = await supabase
@@ -266,7 +253,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.redirect(`/social-publishing?success=${platform}&connected=true`);
     return;
 
-  } catch (error) {
+  } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('OAuth callback error:', error);
     res.redirect(`/social-publishing?error=connection_failed&platform=${platform}`);

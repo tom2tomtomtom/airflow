@@ -6,7 +6,7 @@ import { validateFile, validateBriefData } from '@/lib/validation/workflow-valid
 import { performanceTracker } from '@/lib/performance/performance-tracker';
 
 interface UseBriefActionsProps {
-  state: {
+  state: {},
     originalBriefData: BriefData | null;
   };
   dispatch: (action: any) => void;
@@ -22,8 +22,7 @@ export const useBriefActions = ({
   state,
   dispatch,
   nextStep,
-  withErrorHandling,
-}: UseBriefActionsProps) => {
+  withErrorHandling}: UseBriefActionsProps) => {
   const { showNotification } = useNotification();
   const { makeCSRFRequest } = useCSRF();
 
@@ -46,8 +45,7 @@ export const useBriefActions = ({
 
         const response = await makeCSRFRequest('/api/flow/parse-brief', {
           method: 'POST',
-          body: formData,
-        });
+          body: formData});
 
         if (!response.ok) {
           throw new Error(`API returned ${response.status}: ${response.statusText}`);
@@ -65,8 +63,7 @@ export const useBriefActions = ({
           dispatch({
             type: 'SET_BRIEF_DATA',
             briefData: briefValidation.data,
-            originalBriefData: briefValidation.data,
-          });
+            originalBriefData: briefValidation.data});
           dispatch({ type: 'SET_SHOW_BRIEF_REVIEW', show: true });
           showNotification('Brief processed successfully! Please review and edit the parsed content.', 'success');
 
@@ -111,14 +108,12 @@ export const useBriefActions = ({
       dispatch({
         type: 'SET_BRIEF_DATA',
         briefData: state.originalBriefData,
-        originalBriefData: state.originalBriefData,
-      });
+        originalBriefData: state.originalBriefData});
     }
   }, [state.originalBriefData, dispatch]);
 
   return {
     uploadBrief,
     confirmBrief,
-    resetBrief,
-  };
+    resetBrief};
 };

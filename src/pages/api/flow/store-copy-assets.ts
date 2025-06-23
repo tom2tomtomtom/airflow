@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withAuth } from '@/middleware/withAuth';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
+const supabase = createClient();
 import { successResponse, errorResponse, handleApiError, methodNotAllowed, validateRequiredFields, ApiErrorCode } from '@/lib/api-response';
 import { withFlowRateLimit } from '@/lib/rate-limiter';
 
@@ -68,8 +69,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         ],
         client_id: clientId,
         created_by: user.id,
-        metadata: {
-          copyData: {
+        metadata: {},
+          copyData: {},
             text: copy.text,
             platform: copy.platform,
             motivation: copy.motivation,
@@ -109,7 +110,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       message: `${storedAssets.length} copy variations stored in assets library`
     }, 200);
 
-  } catch (error) {
+  } catch (error: any) {
     return handleApiError(res, error, 'store-copy-assets');
   }
 }
