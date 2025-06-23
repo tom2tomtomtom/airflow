@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-06-23T06:43:23.625Z",
+  "timestamp": "2025-06-23T06:52:10.510Z",
   "bundle": {
     "totalBuildSize": 433540112,
     "chunksSize": 4624710,
@@ -7,19 +7,19 @@
     "staticSize": 4649810
   },
   "build": {
-    "timeMs": 466,
-    "timeSeconds": "0.47"
+    "timeMs": 590,
+    "timeSeconds": "0.59"
   },
   "test": {
-    "timeMs": 1246,
-    "timeSeconds": "1.25"
+    "timeMs": 1076,
+    "timeSeconds": "1.08"
   },
   "codebase": {
-    "sourceFiles": 462,
-    "testFiles": 76,
-    "totalFiles": 538,
-    "testCoverage": "16.5",
-    "size": 4368838
+    "sourceFiles": 469,
+    "testFiles": 78,
+    "totalFiles": 547,
+    "testCoverage": "16.6",
+    "size": 4434977
   },
   "dependencies": {
     "production": 98,
