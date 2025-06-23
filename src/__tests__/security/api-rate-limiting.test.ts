@@ -11,20 +11,28 @@ import { sanitizeInput } from '@/utils/sanitization';
 
 // Mock rate limiter
 jest.mock('@/lib/rate-limiter', () => ({
-  rateLimiters: {},
-  auth: {},
-  limit: jest.fn() },
-  api: {},
-  limit: jest.fn() },
-  ai: {},
-  limit: jest.fn() },
-  upload: {},
-  limit: jest.fn() },
-  flow: {},
-  limit: jest.fn() },
-  email: {},
-  limit: jest.fn()}},
-  withRateLimit: jest.fn()}));
+  rateLimiters: {
+    auth: {
+      limit: jest.fn()
+    },
+    api: {
+      limit: jest.fn()
+    },
+    ai: {
+      limit: jest.fn()
+    },
+    upload: {
+      limit: jest.fn()
+    },
+    flow: {
+      limit: jest.fn()
+    },
+    email: {
+      limit: jest.fn()
+    }
+  },
+  withRateLimit: jest.fn()
+}));
 
 // Mock sanitization utility
 jest.mock('@/utils/sanitization', () => ({
@@ -57,8 +65,9 @@ describe('API Security & Rate Limiting Tests', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         headers: {
-        'x-forwarded-for': '127.0.0.1'
-      }});
+          'x-forwarded-for': '127.0.0.1'
+        }
+      });
 
       // Mock withRateLimit to call the handler
       (withRateLimit as jest.Mock).mockImplementation((limiterName) => {
@@ -87,13 +96,15 @@ describe('API Security & Rate Limiting Tests', () => {
         success: false,
         limit: 5,
         remaining: 0,
-        reset: Date.now() + 900000});
+        reset: Date.now() + 900000
+      });
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         headers: {
-        'x-forwarded-for': '127.0.0.1'
-      }});
+          'x-forwarded-for': '127.0.0.1'
+        }
+      });
 
       (withRateLimit as jest.Mock).mockImplementation((limiterName) => {
         return (handler: NextApiHandler) => async (req: NextApiRequest, res: NextApiResponse) => {
@@ -115,18 +126,19 @@ describe('API Security & Rate Limiting Tests', () => {
       expect(res._getStatusCode()).toBe(429);
       expect(JSON.parse(res._getData())).toEqual({
         error: 'Rate limit exceeded',
-        retryAfter: expect.any(Number)});
+        retryAfter: expect.any(Number)
+      });
       expect(mockHandler).not.toHaveBeenCalled();
     });
 
     it('should enforce different limits for different endpoint types', async () => {
       const endpoints = [
-        { limiter: 'auth', expectedLimit: 5  }
-        { limiter: 'api', expectedLimit: 100  }
-        { limiter: 'ai', expectedLimit: 20  }
-        { limiter: 'upload', expectedLimit: 10  }
-        { limiter: 'flow', expectedLimit: 30  }
-        { limiter: 'email', expectedLimit: 5  }
+        { limiter: 'auth', expectedLimit: 5 },
+        { limiter: 'api', expectedLimit: 100 },
+        { limiter: 'ai', expectedLimit: 20 },
+        { limiter: 'upload', expectedLimit: 10 },
+        { limiter: 'flow', expectedLimit: 30 },
+        { limiter: 'email', expectedLimit: 5 }
       ];
 
       for (const endpoint of endpoints) {
@@ -135,7 +147,8 @@ describe('API Security & Rate Limiting Tests', () => {
             success: true,
             limit: endpoint.expectedLimit,
             remaining: endpoint.expectedLimit - 1,
-            reset: Date.now() + 3600000});
+            reset: Date.now() + 3600000
+          });
 
         const result = await rateLimiters[endpoint.limiter as keyof typeof rateLimiters].limit('test-key');
         expect(result.limit).toBe(endpoint.expectedLimit);
@@ -150,14 +163,16 @@ describe('API Security & Rate Limiting Tests', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         headers: {
-        'x-forwarded-for': '192.168.1.100'
-      }});
+          'x-forwarded-for': '192.168.1.100'
+        }
+      });
 
       (rateLimiters.api.limit as jest.Mock).mockResolvedValue({
         success: true,
         limit: 100,
         remaining: 99,
-        reset: Date.now() + 60000});
+        reset: Date.now() + 60000
+      });
 
       (withRateLimit as jest.Mock).mockImplementation((limiterName) => {
         return (handler: NextApiHandler) => async (req: NextApiRequest, res: NextApiResponse) => {
@@ -186,8 +201,9 @@ describe('API Security & Rate Limiting Tests', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
         headers: {
-        'x-forwarded-for': '192.168.1.100'
-      }});
+          'x-forwarded-for': '192.168.1.100'
+        }
+      });
 
       // Mock authenticated request
       (req as NextApiRequest & { user?: { id: string } }).user = { id: 'user123' };
@@ -196,7 +212,8 @@ describe('API Security & Rate Limiting Tests', () => {
         success: true,
         limit: 100,
         remaining: 99,
-        reset: Date.now() + 60000});
+        reset: Date.now() + 60000
+      });
 
       (withRateLimit as jest.Mock).mockImplementation((limiterName) => {
         return (handler: NextApiHandler) => async (req: NextApiRequest, res: NextApiResponse) => {
@@ -332,14 +349,16 @@ describe('API Security & Rate Limiting Tests', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         headers: {
-        'content-type': 'text/plain'
-      }});
+          'content-type': 'text/plain'
+        }
+      });
 
       await mockHandler(req, res);
 
       expect(res._getStatusCode()).toBe(400);
       expect(JSON.parse(res._getData())).toEqual({
-        error: 'Invalid content type'});
+        error: 'Invalid content type'
+      });
     });
 
     it('should limit request body size', async () => {
@@ -358,15 +377,17 @@ describe('API Security & Rate Limiting Tests', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         headers: {
-        'content-length': '20971520', // 20MB
+          'content-length': '20971520', // 20MB
           'content-type': 'application/json'
-      }});
+        }
+      });
 
       await mockHandler(req, res);
 
       expect(res._getStatusCode()).toBe(413);
       expect(JSON.parse(res._getData())).toEqual({
-        error: 'Request entity too large'});
+        error: 'Request entity too large'
+      });
     });
 
     it('should validate required headers', async () => {
@@ -382,14 +403,16 @@ describe('API Security & Rate Limiting Tests', () => {
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'POST',
         headers: {
-        'content-type': 'application/json'
-      }});
+          'content-type': 'application/json'
+        }
+      });
 
       await mockHandler(req, res);
 
       expect(res._getStatusCode()).toBe(400);
       expect(JSON.parse(res._getData())).toEqual({
-        error: 'API version header required'});
+        error: 'API version header required'
+      });
     });
   });
 });

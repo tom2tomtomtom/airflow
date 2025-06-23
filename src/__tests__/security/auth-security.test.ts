@@ -12,24 +12,33 @@ import { supabase } from '@/lib/supabase';
 
 // Mock external dependencies
 jest.mock('@/lib/supabase', () => ({
-  supabase: {},
-  auth: {},
-  getUser: jest.fn(),
+  supabase: {
+    auth: {
+      getUser: jest.fn(),
       signInWithPassword: jest.fn(),
-      signOut: jest.fn() },
-  from: jest.fn(() => ({
+      signOut: jest.fn()
+    },
+    from: jest.fn(() => ({
       select: jest.fn(() => ({
         eq: jest.fn(() => ({
-          single: jest.fn()}))}))}))}}));
+          single: jest.fn()
+        }))
+      }))
+    }))
+  }
+}));
 
 jest.mock('@/lib/session-manager', () => ({
-  SessionManager: {},
-  getInstance: jest.fn(() => ({
+  SessionManager: {
+    getInstance: jest.fn(() => ({
       createSession: jest.fn(),
       getSession: jest.fn(),
       destroySession: jest.fn(),
       validateSession: jest.fn(),
-      cleanupExpiredSessions: jest.fn()}))}}));
+      cleanupExpiredSessions: jest.fn()
+    }))
+  }
+}));
 
 describe('Authentication & Authorization Security Tests', () => {
   beforeEach(() => {
@@ -45,20 +54,24 @@ describe('Authentication & Authorization Security Tests', () => {
       const mockHandler = jest.fn();
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        cookies: {},
-  airwave_token: 'invalid.jwt.token'}});
+        cookies: {
+          airwave_token: 'invalid.jwt.token'
+        }
+      });
 
       // Mock Supabase to return error for invalid token
       (supabase.auth.getUser as jest.Mock).mockResolvedValue({
-        data: { user: null  },
-  error: { message: 'Invalid JWT' }});
+        data: { user: null },
+        error: { message: 'Invalid JWT' }
+      });
 
       const protectedHandler = withAuth(mockHandler);
       await protectedHandler(req as NextApiRequest, res);
 
       expect(res._getStatusCode()).toBe(401);
       expect(JSON.parse(res._getData())).toEqual({
-        error: 'Invalid or expired token'});
+        error: 'Invalid or expired token'
+      });
       expect(mockHandler).not.toHaveBeenCalled();
     });
 
@@ -68,27 +81,37 @@ describe('Authentication & Authorization Security Tests', () => {
       });
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        cookies: {},
-  airwave_token: 'valid.jwt.token'}});
+        cookies: {
+          airwave_token: 'valid.jwt.token'
+        }
+      });
 
       // Mock Supabase to return valid user
       (supabase.auth.getUser as jest.Mock).mockResolvedValue({
-        data: {},
-  user: {},
-  id: 'user123',
-            email: 'test@example.com'}},
-        error: null});
+        data: {
+          user: {
+            id: 'user123',
+            email: 'test@example.com'
+          }
+        },
+        error: null
+      });
 
       // Mock profile lookup
       (supabase.from as jest.Mock).mockReturnValue({
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
             single: jest.fn().mockResolvedValue({
-              data: {},
-  id: 'user123',
+              data: {
+                id: 'user123',
                 email: 'test@example.com',
-                role: 'user' },
-  error: null})})})});
+                role: 'user'
+              },
+              error: null
+            })
+          })
+        })
+      });
 
       const protectedHandler = withAuth(mockHandler);
       await protectedHandler(req as NextApiRequest, res);
@@ -101,54 +124,64 @@ describe('Authentication & Authorization Security Tests', () => {
       const mockHandler = jest.fn();
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        cookies: {},
-  airwave_token: 'expired.jwt.token'}});
+        cookies: {
+          airwave_token: 'expired.jwt.token'
+        }
+      });
 
       // Mock Supabase to return error for expired token
       (supabase.auth.getUser as jest.Mock).mockResolvedValue({
-        data: { user: null  },
-  error: { message: 'JWT expired' }});
+        data: { user: null },
+        error: { message: 'JWT expired' }
+      });
 
       const protectedHandler = withAuth(mockHandler);
       await protectedHandler(req as NextApiRequest, res);
 
       expect(res._getStatusCode()).toBe(401);
       expect(JSON.parse(res._getData())).toEqual({
-        error: 'Invalid or expired token'});
+        error: 'Invalid or expired token'
+      });
     });
 
     it('should reject requests with missing JWT tokens', async () => {
       const mockHandler = jest.fn();
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        cookies: {} as Record<string, string>});
+        cookies: {} as Record<string, string>
+      });
 
       const protectedHandler = withAuth(mockHandler);
       await protectedHandler(req as NextApiRequest, res);
 
       expect(res._getStatusCode()).toBe(401);
       expect(JSON.parse(res._getData())).toEqual({
-        error: 'No authentication token provided'});
+        error: 'No authentication token provided'
+      });
     });
 
     it('should handle malformed JWT tokens gracefully', async () => {
       const mockHandler = jest.fn();
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        cookies: {},
-  airwave_token: 'malformed-token-without-dots'}});
+        cookies: {
+          airwave_token: 'malformed-token-without-dots'
+        }
+      });
 
       // Mock Supabase to return error for malformed token
       (supabase.auth.getUser as jest.Mock).mockResolvedValue({
-        data: { user: null  },
-  error: { message: 'Invalid JWT format' }});
+        data: { user: null },
+        error: { message: 'Invalid JWT format' }
+      });
 
       const protectedHandler = withAuth(mockHandler);
       await protectedHandler(req as NextApiRequest, res);
 
       expect(res._getStatusCode()).toBe(401);
       expect(JSON.parse(res._getData())).toEqual({
-        error: 'Invalid or expired token'});
+        error: 'Invalid or expired token'
+      });
     });
   });
 
@@ -165,14 +198,16 @@ describe('Authentication & Authorization Security Tests', () => {
         createdAt: new Date(),
         lastActivity: new Date(),
         ipAddress: '127.0.0.1',
-        userAgent: 'test-agent'});
+        userAgent: 'test-agent'
+      });
 
       const session = await sessionManager.createSession({
         userId: 'user123',
         email: 'test@example.com',
         role: 'user',
         ipAddress: '127.0.0.1',
-        userAgent: 'test-agent'});
+        userAgent: 'test-agent'
+      });
 
       expect(session).toBeDefined();
       expect(session.userId).toBe('user123');
@@ -183,7 +218,8 @@ describe('Authentication & Authorization Security Tests', () => {
         email: 'test@example.com',
         role: 'user',
         ipAddress: '127.0.0.1',
-        userAgent: 'test-agent'});
+        userAgent: 'test-agent'
+      });
     });
 
     it('should validate session expiration', async () => {
@@ -220,7 +256,8 @@ describe('Authentication & Authorization Security Tests', () => {
         email: 'test@example.com',
         role: 'user',
         ipAddress: '127.0.0.1',
-        userAgent: 'test-agent'})).rejects.toThrow('Maximum concurrent sessions exceeded');
+        userAgent: 'test-agent'
+      })).rejects.toThrow('Maximum concurrent sessions exceeded');
     });
 
     it('should clean up expired sessions', async () => {
@@ -242,23 +279,28 @@ describe('Authentication & Authorization Security Tests', () => {
       });
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        cookies: {},
-  airwave_token: 'admin.jwt.token'}});
+        cookies: {
+  airwave_token: 'admin.jwt.token'
+        }
+      });
 
       // Mock admin user
       (supabase.auth.getUser as jest.Mock).mockResolvedValue({
-        data: {},
-  user: {},
-  id: 'admin123',
-            email: 'admin@example.com'}},
-        error: null});
+        data: {
+  user: {
+  id: 'user123',
+            email: 'admin@example.com'
+          }
+        },
+        error: null
+      });
 
       (supabase.from as jest.Mock).mockReturnValue({
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
             single: jest.fn().mockResolvedValue({
-              data: {},
-  id: 'admin123',
+              data: {
+  id: 'user123',
                 email: 'admin@example.com',
                 role: 'admin' },
   error: null})})})});
@@ -281,22 +323,27 @@ describe('Authentication & Authorization Security Tests', () => {
 
       const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
         method: 'GET',
-        cookies: {},
-  airwave_token: 'user.jwt.token'}});
+        cookies: {
+  airwave_token: 'user.jwt.token'
+        }
+      });
 
       // Mock regular user
       (supabase.auth.getUser as jest.Mock).mockResolvedValue({
-        data: {},
-  user: {},
+        data: {
+  user: {
   id: 'user123',
-            email: 'user@example.com'}},
-        error: null});
+            email: 'admin@example.com'
+          }
+        },
+        error: null
+      });
 
       (supabase.from as jest.Mock).mockReturnValue({
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
             single: jest.fn().mockResolvedValue({
-              data: {},
+              data: {
   id: 'user123',
                 email: 'user@example.com',
                 role: 'user' },
@@ -320,21 +367,26 @@ describe('Authentication & Authorization Security Tests', () => {
 
         const { req, res } = createMocks<NextApiRequest, NextApiResponse>({
           method: 'GET',
-          cookies: {},
-  airwave_token: 'valid.jwt.token'}});
+          cookies: {
+  airwave_token: 'valid.jwt.token'
+        }
+      });
 
         (supabase.auth.getUser as jest.Mock).mockResolvedValue({
-          data: {},
-  user: {},
+          data: {
+  user: {
   id: 'user123',
-              email: 'test@example.com'}},
-          error: null});
+              email: 'admin@example.com'
+          }
+        },
+          error: null
+      });
 
         (supabase.from as jest.Mock).mockReturnValue({
           select: jest.fn().mockReturnValue({
             eq: jest.fn().mockReturnValue({
               single: jest.fn().mockResolvedValue({
-                data: {},
+                data: {
   id: 'user123',
                   email: 'test@example.com',
                   role: role },
@@ -357,11 +409,13 @@ describe('Authentication & Authorization Security Tests', () => {
       // Mock session with different IP
       mockValidateSession.mockResolvedValue({
         valid: false,
-        reason: 'IP address mismatch'});
+        reason: 'IP address mismatch'
+      });
 
       const result = await sessionManager.validateSession('session123', {
         ipAddress: '192.168.1.100', // Different from session creation IP
-        userAgent: 'test-agent'});
+        userAgent: 'test-agent'
+      });
 
       expect(result.valid).toBe(false);
       expect(result.reason).toBe('IP address mismatch');
@@ -374,7 +428,8 @@ describe('Authentication & Authorization Security Tests', () => {
       // Mock session with different user agent
       mockValidateSession.mockResolvedValue({
         valid: false,
-        reason: 'User agent mismatch'});
+        reason: 'IP address mismatch'
+      });
 
       const result = await sessionManager.validateSession('session123', {
         ipAddress: '127.0.0.1',
@@ -392,15 +447,18 @@ describe('Authentication & Authorization Security Tests', () => {
       // Mock valid session
       mockValidateSession.mockResolvedValue({
         valid: true,
-        session: {},
-  id: 'session123',
+        session: {
+          id: 'user123',
           userId: 'user123',
           email: 'test@example.com',
-          role: 'user'}});
+          role: 'user'
+        }
+      });
 
       const result = await sessionManager.validateSession('session123', {
         ipAddress: '127.0.0.1',
-        userAgent: 'test-agent'});
+        userAgent: 'test-agent'
+      });
 
       expect(result.valid).toBe(true);
       expect(result.session).toBeDefined();

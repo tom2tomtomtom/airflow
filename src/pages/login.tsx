@@ -101,7 +101,7 @@ const LoginPage: React.FC = () => {
 
   return (
     <>
-       <Head>
+      <Head>
         <title>Login | AIrFLOW</title>
       </Head>
       <Box
@@ -111,15 +111,20 @@ const LoginPage: React.FC = () => {
           alignItems: 'center',
           justifyContent: 'center',
           backgroundColor: '#030712', // Carbon Black primary background
-          padding: 3 }}
+          padding: 3,
+        }}
       >
         <Paper
           elevation={24}
           sx={{
-            p: 4,
+            p: { xs: 3, sm: 4 },
             maxWidth: 400,
             width: '100%',
-            borderRadius: 3 }}
+            borderRadius: 3,
+            mx: 'auto',
+            my: 2,
+            boxSizing: 'border-box',
+          }}
         >
           <Box sx={{ textAlign: 'center', mb: 4 }}>
             <Typography
@@ -132,11 +137,22 @@ const LoginPage: React.FC = () => {
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                mb: 1 }}
+                mb: 2,
+                lineHeight: 1.2,
+                fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+              }}
             >
               AIrFLOW
             </Typography>
-            <Typography variant="h6" color="text.secondary">
+            <Typography
+              variant="h6"
+              color="text.secondary"
+              sx={{
+                lineHeight: 1.4,
+                fontSize: { xs: '1rem', sm: '1.1rem' },
+                mt: 1,
+              }}
+            >
               AI-Powered Digital Asset Production
             </Typography>
           </Box>
@@ -160,7 +176,18 @@ const LoginPage: React.FC = () => {
               disabled={loading}
               error={!!emailError}
               helperText={emailError}
-              sx={{ mb: 2 }}
+              sx={{
+                mb: 2,
+                '& .MuiInputBase-root': {
+                  height: 'auto',
+                  minHeight: '56px',
+                },
+                '& .MuiFormHelperText-root': {
+                  lineHeight: 1.2,
+                  fontSize: '0.75rem',
+                  mt: 0.5,
+                },
+              }}
               inputProps={{ 'data-testid': 'email-input' }}
               InputProps={{
                 startAdornment: (
@@ -183,7 +210,18 @@ const LoginPage: React.FC = () => {
               disabled={loading}
               error={!!passwordError}
               helperText={passwordError}
-              sx={{ mb: 2 }}
+              sx={{
+                mb: 2,
+                '& .MuiInputBase-root': {
+                  height: 'auto',
+                  minHeight: '56px',
+                },
+                '& .MuiFormHelperText-root': {
+                  lineHeight: 1.2,
+                  fontSize: '0.75rem',
+                  mt: 0.5,
+                },
+              }}
               inputProps={{ 'data-testid': 'password-input' }}
               InputProps={{
                 startAdornment: (
@@ -198,6 +236,7 @@ const LoginPage: React.FC = () => {
                       aria-label="Toggle password visibility"
                       edge="end"
                       data-testid="password-visibility-toggle"
+                      size="small"
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
@@ -216,7 +255,14 @@ const LoginPage: React.FC = () => {
                 />
               }
               label="Remember me"
-              sx={{ mb: 2, alignSelf: 'flex-start' }}
+              sx={{
+                mb: 3,
+                alignSelf: 'flex-start',
+                '& .MuiFormControlLabel-label': {
+                  fontSize: '0.875rem',
+                  lineHeight: 1.4,
+                },
+              }}
             />
 
             <Button
@@ -237,7 +283,8 @@ const LoginPage: React.FC = () => {
                 },
                 '&:disabled': {
                   backgroundColor: '#6B7280',
-                  color: '#9CA3AF' },
+                  color: '#9CA3AF',
+                },
               }}
             >
               {loading ? (
@@ -251,15 +298,44 @@ const LoginPage: React.FC = () => {
             </Button>
           </form>
 
-          <Box sx={{ textAlign: 'center' }}>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              <Link href="/forgot-password" sx={{ color: '#FBBF24', textDecoration: 'none' }}>
+          <Box sx={{ textAlign: 'center', mt: 3 }}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                mb: 2,
+                lineHeight: 1.4,
+                fontSize: '0.875rem',
+              }}
+            >
+              <Link
+                href="/forgot-password"
+                sx={{
+                  color: '#FBBF24',
+                  textDecoration: 'none',
+                  '&:hover': { textDecoration: 'underline' },
+                }}
+              >
                 Forgot your password?
               </Link>
             </Typography>
-            <Typography variant="body2" color="text.secondary">
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                lineHeight: 1.4,
+                fontSize: '0.875rem',
+              }}
+            >
               Don&apos;t have an account?{' '}
-              <Link href="/signup" sx={{ color: '#FBBF24', textDecoration: 'none' }}>
+              <Link
+                href="/signup"
+                sx={{
+                  color: '#FBBF24',
+                  textDecoration: 'none',
+                  '&:hover': { textDecoration: 'underline' },
+                }}
+              >
                 Sign up
               </Link>
             </Typography>

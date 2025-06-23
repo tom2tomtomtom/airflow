@@ -12,29 +12,29 @@ const { execSync } = require('child_process');
 const SECRET_PATTERNS = [
   // API Keys
   /(?:api[_-]?key|apikey|access[_-]?key)[\s]*[:=][\s]*['"]([a-zA-Z0-9_\-]{20,})['"](?![a-zA-Z0-9_\-])/gi,
-  
+
   // AWS
   /(?:AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}/g,
   /aws[_-]?secret[_-]?access[_-]?key[\s]*[:=][\s]*['"]([a-zA-Z0-9/+=]{40})['"](?![a-zA-Z0-9/+=])/gi,
-  
+
   // Generic secrets
   /(?:secret|password|passwd|pwd)[\s]*[:=][\s]*['"]([^'"]{8,})['"](?![a-zA-Z0-9_\-])/gi,
-  
+
   // Bearer tokens (only match actual tokens, not the word "Bearer Token")
   /Bearer\s+[a-zA-Z0-9_\-\.]{20,}/gi,
-  
+
   // Private keys
   /-----BEGIN\s+(?:RSA\s+)?PRIVATE\s+KEY-----/gi,
-  
+
   // Database URLs with credentials
   /(?:postgres|mysql|mongodb):\/\/[^:]+:[^@]+@[^/]+/gi,
-  
+
   // JWT tokens
   /eyJ[a-zA-Z0-9_-]+\.eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+/g,
-  
+
   // Hardcoded IPs (excluding common safe ones)
   /(?:^|\s)(?!(?:127\.0\.0\.1|0\.0\.0\.0|localhost))(?:\d{1,3}\.){3}\d{1,3}(?::\d+)?(?:\s|$)/g,
-  
+
   // Email/password combinations
   /(?:email|username)[\s]*[:=][\s]*['"][^'"]+@[^'"]+['"][\s]*,?\s*(?:password|pwd)[\s]*[:=][\s]*['"][^'"]+['"]/gi,
 ];
@@ -78,7 +78,9 @@ const SAFE_PATTERNS = [
   'Password:', // UI label
   'password:', // Console output context
   'TestPass123!', // Test password in validation tests
+  'TestPass123', // Test password in test files
   'Password123!', // Test password in validation tests
+  'test@example.com', // Test email in test files
   'TEST_JWT_TOKEN_PLACEHOLDER', // Test JWT tokens
   'DEFAULT_JWT_TOKEN_PLACEHOLDER', // Test JWT tokens
   '.test-signature', // Test JWT signatures
@@ -86,40 +88,48 @@ const SAFE_PATTERNS = [
   'eyJpc3MiOiJ0ZXN0Ii', // Test JWT payload
   'too-short', // Test JWT secret for validation
   'short-secret', // Test JWT secret for validation
-  'JWT_SECRET: \'too-short\'', // Test validation context
-  'JWT_SECRET: \'short-secret\'', // Test validation context
+  "JWT_SECRET: 'too-short'", // Test validation context
+  "JWT_SECRET: 'short-secret'", // Test validation context
 ];
 
 function shouldIgnoreFile(filePath) {
   return IGNORE_PATTERNS.some(pattern => pattern.test(filePath));
 }
 
-function isSafeMatch(match) {
+function isSafeMatch(match, filePath = '') {
   const lowerMatch = match.toLowerCase();
+  const isTestFile =
+    filePath.includes('.test.') || filePath.includes('.spec.') || filePath.includes('/tests/');
+
+  // Allow test credentials in test files
+  if (isTestFile && (lowerMatch.includes('testpass') || lowerMatch.includes('test@example'))) {
+    return true;
+  }
+
   return SAFE_PATTERNS.some(safe => lowerMatch.includes(safe));
 }
 
 function scanFile(filePath) {
   const content = fs.readFileSync(filePath, 'utf8');
   const issues = [];
-  
+
   SECRET_PATTERNS.forEach(pattern => {
     let match;
     const regex = new RegExp(pattern);
-    
+
     while ((match = regex.exec(content)) !== null) {
       const matchText = match[0];
-      
+
       // Skip if it's a known safe pattern
-      if (isSafeMatch(matchText)) {
+      if (isSafeMatch(matchText, filePath)) {
         continue;
       }
-      
+
       // Find line number
       const lines = content.substring(0, match.index).split('\n');
       const lineNumber = lines.length;
       const line = content.split('\n')[lineNumber - 1];
-      
+
       issues.push({
         file: filePath,
         line: lineNumber,
@@ -128,23 +138,23 @@ function scanFile(filePath) {
       });
     }
   });
-  
+
   return issues;
 }
 
 function scanDirectory(dir) {
   const issues = [];
-  
+
   function walk(currentPath) {
     const entries = fs.readdirSync(currentPath, { withFileTypes: true });
-    
+
     for (const entry of entries) {
       const fullPath = path.join(currentPath, entry.name);
-      
+
       if (shouldIgnoreFile(fullPath)) {
         continue;
       }
-      
+
       if (entry.isDirectory()) {
         walk(fullPath);
       } else if (entry.isFile()) {
@@ -157,7 +167,7 @@ function scanDirectory(dir) {
       }
     }
   }
-  
+
   walk(dir);
   return issues;
 }
@@ -180,7 +190,7 @@ let issues = [];
 if (stagedFiles.length > 0) {
   // Scan only staged files
   console.log(`Scanning ${stagedFiles.length} staged files...\n`);
-  
+
   for (const file of stagedFiles) {
     if (fs.existsSync(file) && !shouldIgnoreFile(file)) {
       const ext = path.extname(file);
@@ -198,17 +208,19 @@ if (stagedFiles.length > 0) {
 
 if (issues.length > 0) {
   console.error('❌ Found potential secrets in the following locations:\n');
-  
+
   issues.forEach(issue => {
     console.error(`📄 ${issue.file}:${issue.line}`);
     console.error(`   Found: ${issue.match}`);
     console.error(`   Context: ${issue.context}\n`);
   });
-  
+
   console.error(`\n⚠️  Found ${issues.length} potential secret(s)`);
   console.error('\nPlease review and remove any real secrets before committing.');
-  console.error('If these are false positives, you can add them to SAFE_PATTERNS in scripts/check-secrets.js\n');
-  
+  console.error(
+    'If these are false positives, you can add them to SAFE_PATTERNS in scripts/check-secrets.js\n'
+  );
+
   process.exit(1);
 } else {
   console.log('✅ No secrets detected\n');

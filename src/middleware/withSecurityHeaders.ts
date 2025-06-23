@@ -24,13 +24,14 @@ export interface SecurityHeadersOptions {
   hstsPreload?: boolean;
 }
 
-const DEFAULT_OPTIONS: SecurityHeadersOptions = {,
-    enableCSP: true,
+const DEFAULT_OPTIONS: SecurityHeadersOptions = {
+  enableCSP: true,
   enableHSTS: true,
   enablePermissionsPolicy: true,
   hstsMaxAge: 31536000, // 1 year
   hstsIncludeSubDomains: true,
-  hstsPreload: true};
+  hstsPreload: true,
+};
 
 /**
  * Build Content Security Policy based on environment and configuration
@@ -83,7 +84,8 @@ function buildCSP(options: SecurityHeadersOptions): string {
     'base-uri': ["'self'"],
     'form-action': ["'self'"],
     'frame-ancestors': ["'none'"],
-    'upgrade-insecure-requests': []};
+    'upgrade-insecure-requests': [],
+  };
 
   // Add CSP report URI if specified
   if (options.cspReportUri) {
@@ -137,7 +139,8 @@ function buildPermissionsPolicy(): string {
     'wake-lock': '()',
     'screen-wake-lock': '()',
     'web-share': '()',
-    'xr-spatial-tracking': '()'};
+    'xr-spatial-tracking': '()',
+  };
 
   return Object.entries(policies)
     .map(([feature, allowlist]) => `${feature}=${allowlist}`)
@@ -248,29 +251,34 @@ export function withSecurityHeaders(
  * Predefined security configurations for different environments
  */
 export const SecurityConfigs = {
-  development: {},
-  enableCSP: true,
+  development: {
+    enableCSP: true,
     enableHSTS: false, // Disable HSTS in development
     enablePermissionsPolicy: true,
-    cspReportUri: '/api/security/csp-report' },
-  production: {},
-  enableCSP: true,
+    cspReportUri: '/api/security/csp-report',
+  },
+  production: {
+    enableCSP: true,
     enableHSTS: true,
     enablePermissionsPolicy: true,
     hstsMaxAge: 31536000, // 1 year
     hstsIncludeSubDomains: true,
     hstsPreload: true,
-    cspReportUri: '/api/security/csp-report' },
-  strict: {},
-  enableCSP: true,
+    cspReportUri: '/api/security/csp-report',
+  },
+  strict: {
+    enableCSP: true,
     enableHSTS: true,
     enablePermissionsPolicy: true,
     hstsMaxAge: 63072000, // 2 years
     hstsIncludeSubDomains: true,
     hstsPreload: true,
-    customHeaders: { }
+    customHeaders: {
       'Expect-CT': 'max-age=86400, enforce',
-      'Feature-Policy': "camera 'none'; microphone 'none'; geolocation 'none'" };
+      'Feature-Policy': "camera 'none'; microphone 'none'; geolocation 'none'",
+    },
+  },
+};
 
 /**
  * Utility function to get environment-specific security configuration

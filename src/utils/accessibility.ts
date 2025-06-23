@@ -34,15 +34,15 @@ export interface AccessibleFieldProps {
 
 export const createAccessibleField = (
   label: string,
-  options: {},
-  required?: boolean;
+  options: {
+    required?: boolean;
     invalid?: boolean;
     description?: string;
     errorMessage?: string;
   } = {}
 ): {
-  fieldProps: AccessibleFieldProps;,
-    labelProps: { htmlFor: string; id: string };
+  fieldProps: AccessibleFieldProps;
+  labelProps: { htmlFor: string; id: string };
   descriptionProps?: { id: string };
   errorProps?: { id: string; role: string; 'aria-live': 'polite' };
 } => {
@@ -54,22 +54,26 @@ export const createAccessibleField = (
   const describedByIds = [descriptionId, errorId].filter(Boolean).join(' ');
 
   return {
-    fieldProps: {},
-  id: fieldId,
+    fieldProps: {
+      id: fieldId,
       'aria-label': label,
       'aria-describedby': describedByIds || undefined,
       'aria-required': options.required,
-      'aria-invalid': options.invalid},
-    labelProps: {},
-  htmlFor: fieldId,
-      id: labelId },
-  descriptionProps: descriptionId ? { id: descriptionId } : undefined,
+      'aria-invalid': options.invalid,
+    },
+    labelProps: {
+      htmlFor: fieldId,
+      id: labelId,
+    },
+    descriptionProps: descriptionId ? { id: descriptionId } : undefined,
     errorProps: errorId
       ? {
           id: errorId,
           role: 'alert',
-          'aria-live': 'polite' as const}
-      : undefined};
+          'aria-live': 'polite' as const,
+        }
+      : undefined,
+  };
 };
 
 // Focus management utilities
@@ -203,8 +207,8 @@ export const meetsWCAGAAA = (foreground: string, background: string, fontSize = 
 
 // Skip link component props
 export interface SkipLinkProps {
-  href: string;,
-    children: React.ReactNode;
+  href: string;
+  children: React.ReactNode;
   className?: string;
 }
 
@@ -224,7 +228,8 @@ export const createModalProps = (title?: string, description?: string): ModalA11
     'aria-modal': true,
     'aria-labelledby': titleId,
     'aria-describedby': descId,
-    role: 'dialog'};
+    role: 'dialog',
+  };
 };
 
 // Loading state accessibility
@@ -242,7 +247,8 @@ export const createLoadingProps = (
   return {
     'aria-live': 'polite',
     'aria-busy': isLoading,
-    'aria-label': isLoading ? loadingText : completeText};
+    'aria-label': isLoading ? loadingText : completeText,
+  };
 };
 
 // Button accessibility enhancements
@@ -256,8 +262,8 @@ export interface ButtonA11yProps {
 }
 
 export const createButtonProps = (
-  options: {},
-  pressed?: boolean;
+  options: {
+    pressed?: boolean;
     expanded?: boolean;
     controls?: string;
     describedBy?: string;
@@ -271,7 +277,8 @@ export const createButtonProps = (
     'aria-expanded': options.expanded,
     'aria-controls': options.controls,
     'aria-describedby': options.describedBy,
-    disabled: options.disabled};
+    disabled: options.disabled,
+  };
 };
 
 // Navigation accessibility
@@ -288,7 +295,8 @@ export const createNavProps = (
   return {
     role: 'navigation',
     'aria-label': label,
-    'aria-current': current};
+    'aria-current': current,
+  };
 };
 
 // Table accessibility
@@ -313,7 +321,8 @@ export const createTableProps = (
     'aria-label': label,
     'aria-describedby': descId,
     'aria-rowcount': rowCount,
-    'aria-colcount': colCount};
+    'aria-colcount': colCount,
+  };
 };
 
 // Reduced motion detection
@@ -337,11 +346,12 @@ export const usePrefersReducedMotion = (): boolean => {
 
 // Export commonly used ARIA attributes for reuse
 export const commonAriaAttributes = {
-  hidden: { 'aria-hidden': true  },
+  hidden: { 'aria-hidden': true },
   expanded: (isExpanded: boolean) => ({ 'aria-expanded': isExpanded }),
   pressed: (isPressed: boolean) => ({ 'aria-pressed': isPressed }),
   disabled: (isDisabled: boolean) => ({ 'aria-disabled': isDisabled }),
-  required: { 'aria-required': true  },
+  required: { 'aria-required': true },
   invalid: (isInvalid: boolean) => ({ 'aria-invalid': isInvalid }),
   current: (current: string) => ({ 'aria-current': current }),
-  live: (level: 'polite' | 'assertive') => ({ 'aria-live': level })} as const;
+  live: (level: 'polite' | 'assertive') => ({ 'aria-live': level }),
+} as const;

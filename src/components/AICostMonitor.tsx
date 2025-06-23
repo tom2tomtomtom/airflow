@@ -18,7 +18,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper
+  Paper,
 } from '@mui/material';
 import {
   Warning,
@@ -26,13 +26,13 @@ import {
   ExpandMore,
   ExpandLess,
   AttachMoney,
-  Speed
+  Speed,
 } from '@mui/icons-material';
 
 interface UsageStats {
   service: string;
-  usage: {},
-  totalCost: number;
+  usage: {
+    totalCost: number;
     totalTokens: number;
     callCount: number;
     byModel: Record<string, { cost: number; tokens: number; calls: number }>;
@@ -52,7 +52,7 @@ interface CostMonitorProps {
 export const AICostMonitor: React.FC<CostMonitorProps> = ({
   userId,
   showDetails = false,
-  refreshInterval = 30000 // 30 seconds
+  refreshInterval = 30000, // 30 seconds
 }) => {
   const [stats, setStats] = useState<Record<string, UsageStats>>({});
   const [loading, setLoading] = useState(true);
@@ -62,7 +62,7 @@ export const AICostMonitor: React.FC<CostMonitorProps> = ({
 
   useEffect(() => {
     fetchUsageStats();
-    
+
     const interval = setInterval(fetchUsageStats, refreshInterval);
     return () => clearInterval(interval);
   }, [userId, refreshInterval]);
@@ -72,9 +72,9 @@ export const AICostMonitor: React.FC<CostMonitorProps> = ({
       const response = await fetch('/api/ai/usage-report', {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json' 
-      },
-        body: JSON.stringify({ userId })
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId }),
       });
 
       if (!response.ok) {
@@ -114,7 +114,7 @@ export const AICostMonitor: React.FC<CostMonitorProps> = ({
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-      minimumFractionDigits: 2
+      minimumFractionDigits: 2,
     }).format(amount);
   };
 
@@ -140,11 +140,14 @@ export const AICostMonitor: React.FC<CostMonitorProps> = ({
 
   if (error) {
     return (
-      <Alert severity="error" action={
-        <IconButton color="inherit" size="small" onClick={fetchUsageStats}>
-          <Speed />
-        </IconButton>
-      }>
+      <Alert
+        severity="error"
+        action={
+          <IconButton color="inherit" size="small" onClick={fetchUsageStats}>
+            <Speed />
+          </IconButton>
+        }
+      >
         Failed to load cost data: {error}
       </Alert>
     );
@@ -201,7 +204,13 @@ export const AICostMonitor: React.FC<CostMonitorProps> = ({
         </Box>
 
         {/* Service Breakdown */}
-        <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
+        <Box
+          sx={{
+            display: 'grid',
+            gap: 2,
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          }}
+        >
           {Object.entries(stats).map(([service, data]) => (
             <Paper key={service} sx={{ p: 2, bgcolor: 'background.default' }}>
               <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>

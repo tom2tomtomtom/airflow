@@ -19,7 +19,8 @@ import {
   Collapse,
   Stack,
   TextField,
-  InputAdornment} from '@mui/material';
+  InputAdornment,
+} from '@mui/material';
 import {
   Notifications as NotificationsIcon,
   MoreVert as MoreIcon,
@@ -34,7 +35,8 @@ import {
   TrendingUp as AnalyticsIcon,
   Send as SendIcon,
   Circle as OnlineIcon,
-  Refresh as RefreshIcon} from '@mui/icons-material';
+  Refresh as RefreshIcon,
+} from '@mui/icons-material';
 import { formatDistanceToNow } from 'date-fns';
 import { useClient } from '@/contexts/ClientContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -43,17 +45,24 @@ import { useRealTimeUpdates } from '@/hooks/useRealTimeUpdates';
 
 interface Activity {
   id: string;
-  type: 'campaign_created' | 'asset_uploaded' | 'matrix_updated' | 'approval_requested' | 
-        'comment_added' | 'team_joined' | 'analytics_milestone' | 'content_published';
-  user: {},
-  id: string;
+  type:
+    | 'campaign_created'
+    | 'asset_uploaded'
+    | 'matrix_updated'
+    | 'approval_requested'
+    | 'comment_added'
+    | 'team_joined'
+    | 'analytics_milestone'
+    | 'content_published';
+  user: {
+    id: string;
     name: string;
     avatar?: string;
     isOnline?: boolean;
   };
   timestamp: Date;
-  data: {},
-  entityId?: string;
+  data: {
+    entityId?: string;
     entityName?: string;
     message?: string;
     metadata?: any;
@@ -77,11 +86,12 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
   maxHeight = 600,
   showHeader = true,
   filterTypes,
-  realtime = true}) => {
+  realtime = true,
+}) => {
   const { activeClient } = useClient();
   const { user: _user } = useAuth();
   const { showNotification } = useNotification();
-  
+
   const [activities, setActivities] = useState<Activity[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -105,47 +115,55 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
       {
         id: 'act-1',
         type: 'campaign_created',
-        user: { id: 'u1', name: 'Sarah Johnson', isOnline: true  },
-  timestamp: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
-        data: {},
-  entityId: 'camp-1',
+        user: { id: 'u1', name: 'Sarah Johnson', isOnline: true },
+        timestamp: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
+        data: {
+          entityId: 'camp-1',
           entityName: 'Summer Fitness Campaign',
-          message: 'created a new campaign' },
-  reactions: { likes: 3, comments: 1, hasLiked: false  },
-  isRead: false }
+          message: 'created a new campaign',
+        },
+        reactions: { likes: 3, comments: 1, hasLiked: false },
+        isRead: false,
+      },
       {
         id: 'act-2',
         type: 'asset_uploaded',
-        user: { id: 'u2', name: 'Mike Chen', isOnline: true  },
-  timestamp: new Date(Date.now() - 1000 * 60 * 15), // 15 minutes ago
-        data: {},
-  entityId: 'asset-1',
+        user: { id: 'u2', name: 'Mike Chen', isOnline: true },
+        timestamp: new Date(Date.now() - 1000 * 60 * 15), // 15 minutes ago
+        data: {
+          entityId: 'asset-1',
           entityName: 'Hero Banner Image',
           message: 'uploaded 5 new assets',
-          metadata: { count: 5, type: 'image' }},
-        reactions: { likes: 1, comments: 0  },
-  isRead: true }
+          metadata: { count: 5, type: 'image' },
+        },
+        reactions: { likes: 1, comments: 0 },
+        isRead: true,
+      },
       {
         id: 'act-3',
         type: 'approval_requested',
-        user: { id: 'u3', name: 'Emily Davis', isOnline: false  },
-  timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
-        data: {},
-  entityId: 'matrix-1',
+        user: { id: 'u3', name: 'Emily Davis', isOnline: false },
+        timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
+        data: {
+          entityId: 'matrix-1',
           entityName: 'Instagram Story Matrix',
-          message: 'requested approval for' },
-  reactions: { likes: 0, comments: 2  },
-  isRead: false }
+          message: 'requested approval for',
+        },
+        reactions: { likes: 0, comments: 2 },
+        isRead: false,
+      },
       {
         id: 'act-4',
         type: 'analytics_milestone',
-        user: { id: 'system', name: 'AIrFLOW System'  },
-  timestamp: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
-        data: {},
-  message: 'Campaign "Spring Collection" reached 100K views! 🎉',
-          metadata: { milestone: '100K views', campaignId: 'camp-2' }},
-        reactions: { likes: 8, comments: 3, hasLiked: true  },
-  isRead: true }
+        user: { id: 'system', name: 'AIrFLOW System' },
+        timestamp: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
+        data: {
+          message: 'Campaign "Spring Collection" reached 100K views! 🎉',
+          metadata: { milestone: '100K views', campaignId: 'camp-2' },
+        },
+        reactions: { likes: 8, comments: 3, hasLiked: true },
+        isRead: true,
+      },
     ];
 
     setActivities(initialActivities);
@@ -153,44 +171,50 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
     setIsConnected(true);
 
     // Subscribe to real-time activity updates
-    const unsubscribeActivity = realTimeUpdates.subscribe('activity_update', (data) => {
+    const unsubscribeActivity = realTimeUpdates.subscribe('activity_update', data => {
       const newActivity: Activity = {
         id: data.id || `act-${Date.now()}`,
         type: data.type || 'comment_added',
-        user: {},
-  id: data.userId || _user?.id || 'unknown',
+        user: {
+          id: data.userId || _user?.id || 'unknown',
           name: data.userName || _user?.name || 'Unknown User',
-          isOnline: true },
-  timestamp: new Date(data.timestamp || Date.now()),
-        data: {},
-  entityId: data.entityId || '',
+          isOnline: true,
+        },
+        timestamp: new Date(data.timestamp || Date.now()),
+        data: {
+          entityId: data.entityId || '',
           entityName: data.entityName || '',
-          message: data.message || data.description || '' },
-  reactions: { likes: 0, comments: 0, hasLiked: false  },
-  isRead: false};
-      
+          message: data.message || data.description || '',
+        },
+        reactions: { likes: 0, comments: 0, hasLiked: false },
+        isRead: false,
+      };
+
       setActivities(prev => [newActivity, ...prev].slice(0, 50));
       setUnreadCount(prev => prev + 1);
       showNotification(data.description || 'Activity updated', 'info');
     });
 
     // Subscribe to render progress updates
-    const unsubscribeRender = realTimeUpdates.onRenderProgress((data) => {
+    const unsubscribeRender = realTimeUpdates.onRenderProgress(data => {
       const renderActivity: Activity = {
         id: `render-${data.renderId}`,
         type: 'content_published',
-        user: {},
-  id: _user?.id || 'system',
+        user: {
+          id: _user?.id || 'system',
           name: 'Video Generator',
-          isOnline: true },
-  timestamp: new Date(data.timestamp),
-        data: {},
-  entityId: data.renderId,
+          isOnline: true,
+        },
+        timestamp: new Date(data.timestamp),
+        data: {
+          entityId: data.renderId,
           entityName: 'Video Render',
-          message: `render progress: ${data.progress}%`},
-        reactions: { likes: 0, comments: 0, hasLiked: false  },
-  isRead: false};
-      
+          message: `render progress: ${data.progress}%`,
+        },
+        reactions: { likes: 0, comments: 0, hasLiked: false },
+        isRead: false,
+      };
+
       // Update existing render activity or add new one
       setActivities(prev => {
         const existingIndex = prev.findIndex(a => a.id === renderActivity.id);
@@ -204,22 +228,25 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
     });
 
     // Subscribe to render completion
-    const unsubscribeComplete = realTimeUpdates.onRenderComplete((data) => {
+    const unsubscribeComplete = realTimeUpdates.onRenderComplete(data => {
       const completeActivity: Activity = {
         id: `complete-${data.renderId}`,
         type: 'content_published',
-        user: {},
-  id: _user?.id || 'system',
+        user: {
+          id: _user?.id || 'system',
           name: 'Video Generator',
-          isOnline: true },
-  timestamp: new Date(data.timestamp),
-        data: {},
-  entityId: data.assetId,
+          isOnline: true,
+        },
+        timestamp: new Date(data.timestamp),
+        data: {
+          entityId: data.assetId,
           entityName: 'Video Render Complete',
-          message: 'video render completed successfully' },
-  reactions: { likes: 0, comments: 0, hasLiked: false  },
-  isRead: false};
-      
+          message: 'video render completed successfully',
+        },
+        reactions: { likes: 0, comments: 0, hasLiked: false },
+        isRead: false,
+      };
+
       setActivities(prev => [completeActivity, ...prev].slice(0, 50));
       setUnreadCount(prev => prev + 1);
       showNotification('Your video is ready!', 'info');
@@ -234,59 +261,80 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
 
   const getActivityIcon = (type: Activity['type']) => {
     switch (type) {
-      case 'campaign_created': return <CampaignIcon />;
-      case 'asset_uploaded': return <AssetIcon />;
-      case 'matrix_updated': return <EditIcon />;
-      case 'approval_requested': return <ApprovalIcon />;
-      case 'comment_added': return <CommentIcon />;
-      case 'team_joined': return <TeamIcon />;
-      case 'analytics_milestone': return <AnalyticsIcon />;
-      case 'content_published': return <SendIcon />;
-      default: return <NotificationsIcon />;
+      case 'campaign_created':
+        return <CampaignIcon />;
+      case 'asset_uploaded':
+        return <AssetIcon />;
+      case 'matrix_updated':
+        return <EditIcon />;
+      case 'approval_requested':
+        return <ApprovalIcon />;
+      case 'comment_added':
+        return <CommentIcon />;
+      case 'team_joined':
+        return <TeamIcon />;
+      case 'analytics_milestone':
+        return <AnalyticsIcon />;
+      case 'content_published':
+        return <SendIcon />;
+      default:
+        return <NotificationsIcon />;
     }
   };
 
   const getActivityColor = (type: Activity['type']) => {
     switch (type) {
-      case 'campaign_created': return 'primary';
-      case 'asset_uploaded': return 'secondary';
-      case 'approval_requested': return 'warning';
-      case 'analytics_milestone': return 'success';
-      case 'content_published': return 'info';
-      default: return 'default';
+      case 'campaign_created':
+        return 'primary';
+      case 'asset_uploaded':
+        return 'secondary';
+      case 'approval_requested':
+        return 'warning';
+      case 'analytics_milestone':
+        return 'success';
+      case 'content_published':
+        return 'info';
+      default:
+        return 'default';
     }
   };
 
   const handleLike = (activityId: string) => {
-    setActivities(prev => prev.map((activity: any) => 
-      activity.id === activityId
-        ? {
-            ...activity,
-            reactions: { }
-              ...activity.reactions!,
-              likes: activity.reactions!.hasLiked 
-                ? activity.reactions!.likes - 1 
-                : activity.reactions!.likes + 1,
-              hasLiked: !activity.reactions!.hasLiked}
-          }
-        : activity
-    ));
+    setActivities(prev =>
+      prev.map((activity: any) =>
+        activity.id === activityId
+          ? {
+              ...activity,
+              reactions: {
+                ...activity.reactions!,
+                likes: activity.reactions!.hasLiked
+                  ? activity.reactions!.likes - 1
+                  : activity.reactions!.likes + 1,
+                hasLiked: !activity.reactions!.hasLiked,
+              },
+            }
+          : activity
+      )
+    );
   };
 
   const handleComment = (activityId: string) => {
     const comment = commentInputs[activityId];
     if (!comment?.trim()) return;
 
-    setActivities(prev => prev.map((activity: any) => 
-      activity.id === activityId
-        ? {
-            ...activity,
-            reactions: { }
-              ...activity.reactions!,
-              comments: activity.reactions!.comments + 1}
-          }
-        : activity
-    ));
+    setActivities(prev =>
+      prev.map((activity: any) =>
+        activity.id === activityId
+          ? {
+              ...activity,
+              reactions: {
+                ...activity.reactions!,
+                comments: activity.reactions!.comments + 1,
+              },
+            }
+          : activity
+      )
+    );
 
     setCommentInputs(prev => ({ ...prev, [activityId]: '' }));
     showNotification('Comment added', 'success');
@@ -316,9 +364,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
   if (!activeClient) {
     return (
       <Paper sx={{ p: 3, textAlign: 'center' }}>
-        <Typography color="text.secondary">
-          Select a client to view activity
-        </Typography>
+        <Typography color="text.secondary">Select a client to view activity</Typography>
       </Paper>
     );
   }
@@ -327,7 +373,9 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
     <Paper sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       {showHeader && (
         <>
-       <Box sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box
+            sx={{ p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+          >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Badge badgeContent={unreadCount} color="error">
                 <NotificationsIcon />
@@ -340,7 +388,12 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
               )}
             </Box>
             <Box sx={{ display: 'flex', gap: 1 }}>
-              <IconButton size="small" onClick={() => setAutoRefresh(!autoRefresh)} aria-label="Icon button">                <RefreshIcon color={autoRefresh ? 'primary' : 'inherit'} />
+              <IconButton
+                size="small"
+                onClick={() => setAutoRefresh(!autoRefresh)}
+                aria-label="Refresh"
+              >
+                <RefreshIcon color={autoRefresh ? 'primary' : 'inherit'} />
               </IconButton>
               <IconButton
                 size="small"
@@ -357,9 +410,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
       <Box sx={{ flex: 1, overflowY: 'auto', maxHeight }}>
         {filteredActivities.length === 0 ? (
           <Box sx={{ p: 4, textAlign: 'center' }}>
-            <Typography color="text.secondary">
-              No activities yet
-            </Typography>
+            <Typography color="text.secondary">No activities yet</Typography>
           </Box>
         ) : (
           <List sx={{ p: 0 }}>
@@ -369,7 +420,8 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
                 <ListItem
                   sx={{
                     opacity: activity.isRead ? 0.8 : 1,
-                    bgcolor: activity.isRead ? 'transparent' : 'action.hover'}}
+                    bgcolor: activity.isRead ? 'transparent' : 'action.hover',
+                  }}
                 >
                   <ListItemAvatar>
                     <Badge
@@ -392,11 +444,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
                         <Typography variant="body2">
                           <strong>{activity.user.name}</strong> {activity.data.message}{' '}
                           {activity.data.entityName && (
-                            <Chip
-                              label={activity.data.entityName}
-                              size="small"
-                              sx={{ ml: 0.5 }}
-                            />
+                            <Chip label={activity.data.entityName} size="small" sx={{ ml: 0.5 }} />
                           )}
                         </Typography>
                       </Box>
@@ -406,7 +454,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
                         <Typography variant="caption" color="text.secondary">
                           {formatDistanceToNow(activity.timestamp, { addSuffix: true })}
                         </Typography>
-                        
+
                         {activity.reactions && (
                           <Stack direction="row" spacing={2} sx={{ mt: 1 }}>
                             <Button
@@ -437,10 +485,12 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
                               fullWidth
                               placeholder="Add a comment..."
                               value={commentInputs[activity.id] || ''}
-                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCommentInputs(prev => ({
-                                ...prev,
-                                [activity.id]: e.target.value
-                              }))}
+                              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                setCommentInputs(prev => ({
+                                  ...prev,
+                                  [activity.id]: e.target.value,
+                                }))
+                              }
                               onKeyPress={(e: React.KeyboardEvent<HTMLElement>) => {
                                 if (e.key === 'Enter') {
                                   handleComment(activity.id);
@@ -451,11 +501,14 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
                                   <InputAdornment position="end">
                                     <IconButton
                                       size="small"
-                                      onClick={() => handleComment(activity.id)} aria-label="Icon button">
+                                      onClick={() => handleComment(activity.id)}
+                                      aria-label="Send comment"
+                                    >
                                       <SendIcon />
                                     </IconButton>
                                   </InputAdornment>
-                                )}}
+                                ),
+                              }}
                             />
                           </Box>
                         </Collapse>
@@ -469,11 +522,7 @@ export const ActivityFeed: React.FC<ActivityFeedProps> = ({
         )}
       </Box>
 
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={() => setAnchorEl(null)}
-      >
+      <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={() => setAnchorEl(null)}>
         <MenuItem onClick={handleMarkAllRead}>Mark all as read</MenuItem>
         <MenuItem>Filter activities</MenuItem>
         <MenuItem>Settings</MenuItem>
@@ -489,7 +538,7 @@ export const NotificationBadge: React.FC = () => {
 
   return (
     <>
-       <IconButton
+      <IconButton
         color="inherit"
         onClick={(e: React.MouseEvent<HTMLElement>) => setAnchorEl(e.currentTarget)}
       >
@@ -497,24 +546,20 @@ export const NotificationBadge: React.FC = () => {
           <NotificationsIcon />
         </Badge>
       </IconButton>
-      
+
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={() => setAnchorEl(null)}
         PaperProps={{
-          sx: { width: 400, maxHeight: 500 }
+          sx: { width: 400, maxHeight: 500 },
         }}
       >
         <Box sx={{ p: 2 }}>
           <Typography variant="h6" gutterBottom>
             Notifications
           </Typography>
-          <ActivityFeed
-            maxHeight={400}
-            showHeader={false}
-            realtime={false}
-          />
+          <ActivityFeed maxHeight={400} showHeader={false} realtime={false} />
         </Box>
       </Menu>
     </>

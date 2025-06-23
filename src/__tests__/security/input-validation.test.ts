@@ -221,10 +221,10 @@ describe('Input Validation & Sanitization Security Tests', () => {
   describe('File Upload Validation', () => {
     it('should reject executable file types', () => {
       const dangerousFiles = [
-        { name: 'virus.exe', type: 'application/x-executable'  }
-        { name: 'script.bat', type: 'application/x-bat'  }
-        { name: 'malware.scr', type: 'application/x-screensaver'  }
-        { name: 'trojan.com', type: 'application/x-msdos-program'  }
+        { name: 'virus.exe', type: 'application/x-executable' },
+        { name: 'script.bat', type: 'application/x-bat' },
+        { name: 'malware.scr', type: 'application/x-screensaver' },
+        { name: 'trojan.com', type: 'application/x-msdos-program' }
       ];
 
       for (const file of dangerousFiles) {
@@ -236,9 +236,9 @@ describe('Input Validation & Sanitization Security Tests', () => {
 
     it('should reject files with path traversal attempts', () => {
       const pathTraversalFiles = [
-        { name: '../../../etc/passwd', type: 'text/plain'  }
-        { name: '..\\..\\windows\\system32\\config\\sam', type: 'text/plain'  }
-        { name: 'normal/../../../secret.txt', type: 'text/plain'  }
+        { name: '../../../etc/passwd', type: 'text/plain' },
+        { name: '..\\..\\windows\\system32\\config\\sam', type: 'text/plain' },
+        { name: 'normal/../../../secret.txt', type: 'text/plain' }
       ];
 
       for (const file of pathTraversalFiles) {
@@ -262,9 +262,9 @@ describe('Input Validation & Sanitization Security Tests', () => {
 
     it('should accept valid files', () => {
       const validFiles = [
-        { name: 'document.pdf', type: 'application/pdf', size: 1024 * 1024  }
-        { name: 'image.jpg', type: 'image/jpeg', size: 512 * 1024  }
-        { name: 'text.txt', type: 'text/plain', size: 1024  }
+        { name: 'document.pdf', type: 'application/pdf', size: 1024 * 1024 },
+        { name: 'image.jpg', type: 'image/jpeg', size: 512 * 1024 },
+        { name: 'text.txt', type: 'text/plain', size: 1024 }
       ];
 
       for (const file of validFiles) {

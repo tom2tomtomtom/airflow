@@ -13,7 +13,8 @@ import {
   Avatar,
   Divider,
   IconButton,
-  InputAdornment} from '@mui/material';
+  InputAdornment,
+} from '@mui/material';
 import {
   Search,
   Close,
@@ -25,7 +26,8 @@ import {
   Group,
   PlayArrow,
   Folder,
-  AccessTime} from '@mui/icons-material';
+  AccessTime,
+} from '@mui/icons-material';
 import { useRouter } from 'next/router';
 
 interface SearchResult {
@@ -56,43 +58,93 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  // Mock data - in real app, this would come from API
-  const mockData: any[] = []; // Cleaned: was mock data
-
-  const searchData = useCallback((searchQuery: string) => {
+  // Real API integration for search
+  const searchData = useCallback(async (searchQuery: string): Promise<SearchResult[]> => {
     if (!searchQuery.trim()) {
       return [];
     }
 
-    const filtered = mockData.filter((item: any) =>
-      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.metadata?.tags?.some((tag: string) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
+    try {
+      const response = await fetch('/api/v2/search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: searchQuery }),
+      });
 
-    // Sort by relevance (exact matches first, then partial matches)
-    return filtered.sort((a, b) => {
-      const aExact = a.title.toLowerCase().startsWith(searchQuery.toLowerCase());
-      const bExact = b.title.toLowerCase().startsWith(searchQuery.toLowerCase());
-      
-      if (aExact && !bExact) return -1;
-      if (!aExact && bExact) return 1;
-      
-      // Then by type priority (actions first, then pages, then content)
-      const typePriority: Record<string, number> = { action: 0, page: 1, brief: 2, template: 3, asset: 4, campaign: 5, client: 6 };
-      return (typePriority[a.type] || 99) - (typePriority[b.type] || 99);
-    });
+      if (!response.ok) {
+        console.error('Search API error:', response.status);
+        return [];
+      }
+
+      const data = await response.json();
+
+      if (data.success && data.data) {
+        return data.data.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          type: item.type || 'page',
+          icon: getTypeIcon(item.type || 'page'),
+          url: item.url,
+          action: item.action,
+          metadata: item.metadata,
+        }));
+      }
+
+      return [];
+    } catch (error) {
+      console.error('Search error:', error);
+      return [];
+    }
   }, []);
+
+  // Generate quick actions from common tasks
+  const getQuickActions = useCallback((): SearchResult[] => {
+    return [
+      {
+        id: 'quick-new-flow',
+        title: 'Start New Flow',
+        description: 'Begin a new content generation workflow',
+        type: 'action',
+        icon: <PlayArrow />,
+        action: () => router.push('/flow'),
+      },
+      {
+        id: 'quick-create-client',
+        title: 'Create Client',
+        description: 'Add a new client to your workspace',
+        type: 'action',
+        icon: <Group />,
+        action: () => router.push('/clients?action=create'),
+      },
+      {
+        id: 'quick-upload-asset',
+        title: 'Upload Asset',
+        description: 'Upload new media assets',
+        type: 'action',
+        icon: <Image />,
+        action: () => router.push('/assets?action=upload'),
+      },
+    ];
+  }, [router]);
 
   useEffect(() => {
     if (query.trim()) {
       setLoading(true);
-      const timeoutId = setTimeout(() => {
-        const searchResults = searchData(query);
-        setResults(searchResults);
-        setSelectedIndex(0);
-        setLoading(false);
-      }, 200); // Debounce search
+      const timeoutId = setTimeout(async () => {
+        try {
+          const searchResults = await searchData(query);
+          setResults(searchResults);
+          setSelectedIndex(0);
+        } catch (error) {
+          console.error('Search failed:', error);
+          setResults([]);
+        } finally {
+          setLoading(false);
+        }
+      }, 300); // Debounce search
 
       return () => clearTimeout(timeoutId);
     } else {
@@ -139,7 +191,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
     } else if (result.url) {
       router.push(result.url);
     }
-    
+
     onClose();
   };
 
@@ -151,7 +203,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
       template: <VideoLibrary />,
       asset: <Image />,
       campaign: <Campaign />,
-      client: <Group />
+      client: <Group />,
     };
     return icons[type as keyof typeof icons] || <Folder />;
   };
@@ -164,7 +216,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
       template: 'warning',
       asset: 'success',
       campaign: 'error',
-      client: 'default'
+      client: 'default',
     };
     return colors[type as keyof typeof colors] || 'default';
   };
@@ -177,7 +229,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
     }
   }, []);
 
-  const quickActions = mockData.filter((item: any) => item.type === 'action').slice(0, 3);
+  const quickActions = getQuickActions();
   const showQuickActions = !query.trim() && quickActions.length > 0;
   const showRecentSearches = !query.trim() && recentSearches.length > 0;
 
@@ -191,8 +243,8 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
         sx: {
           borderRadius: 3,
           overflow: 'hidden',
-          mt: 8
-        }
+          mt: 8,
+        },
       }}
     >
       <DialogContent sx={{ p: 0 }}>
@@ -202,7 +254,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
             fullWidth
             placeholder="Search everything... (Ctrl+K)"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={e => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             autoFocus
             InputProps={{
@@ -213,13 +265,17 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
               ),
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton onClick={onClose} size="small" aria-label="Close search">                    <Close />
+                  <IconButton onClick={onClose} size="small" aria-label="Close search">
+                    {' '}
+                    <Close />
                   </IconButton>
                 </InputAdornment>
-              )}}
+              ),
+            }}
             sx={{
               '& .MuiOutlinedInput-root': {
-                '& fieldset': { border: 'none' }}
+                '& fieldset': { border: 'none' },
+              },
             }}
           />
         </Box>
@@ -240,7 +296,8 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
                     cursor: 'pointer',
                     backgroundColor: index === selectedIndex ? 'action.selected' : 'transparent',
                     '&:hover': {
-                      backgroundColor: 'action.hover'}
+                      backgroundColor: 'action.hover',
+                    },
                   }}
                 >
                   <ListItemIcon>
@@ -248,7 +305,8 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
                       sx={{
                         bgcolor: `${getTypeColor(result.type)}.light`,
                         width: 32,
-                        height: 32}}
+                        height: 32,
+                      }}
                     >
                       {result.icon}
                     </Avatar>
@@ -285,7 +343,9 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
                               <Chip
                                 label={result.metadata.status}
                                 size="small"
-                                color={result.metadata.status === 'completed' ? 'success' : 'default'}
+                                color={
+                                  result.metadata.status === 'completed' ? 'success' : 'default'
+                                }
                                 sx={{ height: 16, fontSize: '0.6rem' }}
                               />
                             )}
@@ -299,9 +359,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
             </List>
           ) : query.trim() ? (
             <Box sx={{ p: 3, textAlign: 'center' }}>
-              <Typography color="text.secondary">
-                No results found for "{query}"
-              </Typography>
+              <Typography color="text.secondary">No results found for "{query}"</Typography>
               <Typography variant="caption" color="text.secondary">
                 Try different keywords or browse categories
               </Typography>
@@ -326,10 +384,7 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({ open, onClose }) => 
                             {action.icon}
                           </Avatar>
                         </ListItemIcon>
-                        <ListItemText
-                          primary={action.title}
-                          secondary={action.description}
-                        />
+                        <ListItemText primary={action.title} secondary={action.description} />
                       </ListItem>
                     ))}
                   </List>
