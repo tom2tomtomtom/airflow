@@ -13,7 +13,6 @@ import {
   AuthenticatedHandler,
 } from '../withAuth';
 import { UserRole } from '@/types/auth';
-import { ErrorCode } from '@/utils/api';
 
 // Mock Supabase
 const mockGetUser = jest.fn();
@@ -34,7 +33,7 @@ jest.mock('@supabase/ssr', () => ({
 
 // Mock error utils
 jest.mock('@/utils/errorUtils', () => ({
-  getErrorMessage: (error: any) => error.message || 'Unknown error',
+  getErrorMessage: (error: Error) => error.message || 'Unknown error',
 }));
 
 // Mock API utils

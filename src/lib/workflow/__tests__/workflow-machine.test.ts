@@ -5,8 +5,6 @@
 import { interpret } from 'xstate';
 import { workflowMachine, createWorkflowMachine } from '../workflow-machine';
 import {
-  WorkflowMachineContext,
-  WorkflowEvent,
   BriefData,
   Motivation,
   CopyVariation,
@@ -15,7 +13,7 @@ import {
 } from '../workflow-types';
 
 describe('Workflow State Machine', () => {
-  let service: any;
+  let service: ReturnType<typeof interpret>;
 
   beforeEach(() => {
     service = interpret(workflowMachine);

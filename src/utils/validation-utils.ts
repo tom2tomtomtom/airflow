@@ -4,41 +4,49 @@ import { z } from 'zod';
 export const validationSchemas = {
   // ID validation (UUIDs)
   uuid: z.string().uuid('Invalid ID format'),
-  
+
   // Email validation
   email: z.string().email('Invalid email format').toLowerCase(),
-  
+
   // Password validation (minimum security requirements)
-  password: z.string()
+  password: z
+    .string()
     .min(8, 'Password must be at least 8 characters')
     .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
     .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
     .regex(/[0-9]/, 'Password must contain at least one number')
     .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character'),
-  
+
   // Safe string (prevents XSS)
-  safeString: z.string()
+  safeString: z
+    .string()
     .transform(str => str.trim())
     .refine(str => !/<[^>]*>/.test(str), 'HTML tags are not allowed')
     .refine(str => !/[<>'"`;]/.test(str), 'Special characters not allowed'),
-  
+
   // Safe text (allows some formatting but prevents XSS)
-  safeText: z.string()
+  safeText: z
+    .string()
     .transform(str => str.trim())
-    .refine(str => !/<script|<iframe|<object|<embed|javascript:|on\w+=/i.test(str), 'Potentially dangerous content detected'),
-  
+    .refine(
+      str => !/<script|<iframe|<object|<embed|javascript:|on\w+=/i.test(str),
+      'Potentially dangerous content detected'
+    ),
+
   // URL validation
-  url: z.string().url('Invalid URL format').refine(
-    url => url.startsWith('http://') || url.startsWith('https://'),
-    'URL must start with http:// or https://'
-  ),
-  
+  url: z
+    .string()
+    .url('Invalid URL format')
+    .refine(
+      url => url.startsWith('http://') || url.startsWith('https://'),
+      'URL must start with http:// or https://'
+    ),
+
   // File path validation (prevents directory traversal)
-  filePath: z.string().refine(
-    path => !path.includes('..') && !path.includes('~'),
-    'Invalid file path'
-  ),
-  
+  filePath: z
+    .string()
+    .refine(path => !path.includes('..') && !path.includes('~'), 'Invalid file path'),
+
   // Pagination
   pagination: z.object({
     page: z.number().int().min(1).default(1),
@@ -46,15 +54,18 @@ export const validationSchemas = {
     sortBy: z.string().optional(),
     sortOrder: z.enum(['asc', 'desc']).default('desc'),
   }),
-  
+
   // Date range
-  dateRange: z.object({
-    startDate: z.string().datetime().optional(),
-    endDate: z.string().datetime().optional(),
-  }).refine(
-    data => !data.startDate || !data.endDate || new Date(data.startDate) <= new Date(data.endDate),
-    'Start date must be before end date'
-  ),
+  dateRange: z
+    .object({
+      startDate: z.string().datetime().optional(),
+      endDate: z.string().datetime().optional(),
+    })
+    .refine(
+      data =>
+        !data.startDate || !data.endDate || new Date(data.startDate) <= new Date(data.endDate),
+      'Start date must be before end date'
+    ),
 };
 
 // Sanitize string to prevent SQL injection
@@ -70,10 +81,10 @@ export function sanitizeSQLString(input: string): string {
 }
 
 // Sanitize object keys to prevent prototype pollution
-export function sanitizeObject<T extends Record<string, any>>(obj: T): T {
+export function sanitizeObject<T extends Record<string, unknown>>(obj: T): T {
   const dangerous = ['__proto__', 'constructor', 'prototype'];
   const cleaned = {} as Record<string, unknown> & T;
-  
+
   for (const [key, value] of Object.entries(obj)) {
     if (!dangerous.includes(key)) {
       if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
@@ -83,7 +94,7 @@ export function sanitizeObject<T extends Record<string, any>>(obj: T): T {
       }
     }
   }
-  
+
   return cleaned;
 }
 
@@ -92,7 +103,12 @@ const fileAllowedTypes = {
   image: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
   video: ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-ms-wmv', 'video/webm'],
   audio: ['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp4'],
-  document: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'],
+  document: [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'text/plain',
+  ],
 };
 
 const fileMaxSizes = {
@@ -106,29 +122,35 @@ const fileMaxSizes = {
 interface FileValidation {
   allowedTypes: typeof fileAllowedTypes;
   maxSizes: typeof fileMaxSizes;
-  validate(file: { type: string; size: number; name: string }, category: keyof typeof fileAllowedTypes): boolean;
+  validate(
+    file: { type: string; size: number; name: string },
+    category: keyof typeof fileAllowedTypes
+  ): boolean;
 }
 
 export const fileValidation: FileValidation = {
   // Allowed file types by category
   allowedTypes: fileAllowedTypes,
-  
+
   // Maximum file sizes (in bytes)
   maxSizes: fileMaxSizes,
-  
+
   // Validate file
-  validate(file: { type: string; size: number; name: string }, category: keyof typeof fileAllowedTypes) {
+  validate(
+    file: { type: string; size: number; name: string },
+    category: keyof typeof fileAllowedTypes
+  ) {
     const allowedTypes = fileAllowedTypes[category];
     const maxSize = fileMaxSizes[category];
-    
+
     if (!allowedTypes.includes(file.type)) {
       throw new Error(`File type ${file.type} is not allowed for ${category}`);
     }
-    
+
     if (file.size > maxSize) {
       throw new Error(`File size exceeds maximum allowed size of ${maxSize / 1024 / 1024}MB`);
     }
-    
+
     // Check file extension matches MIME type
     const extension = file.name.split('.').pop()?.toLowerCase();
     const expectedExtensions: Record<string, string[]> = {
@@ -151,12 +173,12 @@ export const fileValidation: FileValidation = {
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['docx'],
       'text/plain': ['txt'],
     };
-    
+
     const validExtensions = expectedExtensions[file.type];
     if (validExtensions && extension && !validExtensions.includes(extension)) {
       throw new Error(`File extension .${extension} does not match MIME type ${file.type}`);
     }
-    
+
     return true;
   },
 };
@@ -168,40 +190,49 @@ export const apiValidationSchemas = {
     email: validationSchemas.email,
     password: z.string().min(1, 'Password is required'),
   }),
-  
+
   signup: z.object({
     email: validationSchemas.email,
     password: validationSchemas.password,
-    name: z.string()
+    name: z
+      .string()
       .min(2, 'Name must be at least 2 characters')
       .transform(str => str.trim())
       .refine(str => !/<[^>]*>/.test(str), 'HTML tags are not allowed')
       .refine(str => !/[<>'"`;]/.test(str), 'Special characters not allowed'),
   }),
-  
+
   // Client schemas
   createClient: z.object({
-    name: z.string()
+    name: z
+      .string()
       .min(2, 'Client name is required')
       .transform(str => str.trim())
       .refine(str => !/<[^>]*>/.test(str), 'HTML tags are not allowed')
       .refine(str => !/[<>'"`;]/.test(str), 'Special characters not allowed'),
     description: validationSchemas.safeText.optional(),
-    brandColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid color format').optional(),
-    secondaryColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid color format').optional(),
+    brandColor: z
+      .string()
+      .regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid color format')
+      .optional(),
+    secondaryColor: z
+      .string()
+      .regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid color format')
+      .optional(),
   }),
-  
+
   // Asset schemas
   uploadAsset: z.object({
     clientId: validationSchemas.uuid,
     category: z.enum(['image', 'video', 'audio', 'document']),
     tags: z.array(validationSchemas.safeString).optional(),
   }),
-  
+
   // Brief schemas
   createBrief: z.object({
     clientId: validationSchemas.uuid,
-    title: z.string()
+    title: z
+      .string()
       .min(3, 'Title must be at least 3 characters')
       .transform(str => str.trim())
       .refine(str => !/<[^>]*>/.test(str), 'HTML tags are not allowed')
@@ -226,36 +257,36 @@ export const securityValidation = {
       /vbscript:/i,
       /data:text\/html/i,
     ];
-    
+
     return xssPatterns.some(pattern => pattern.test(input));
   },
-  
+
   // Detect SQL injection patterns
   containsSQLInjection(input: string): boolean {
     const sqlPatterns = [
       /(\b(union|select|insert|update|delete|drop|create|alter|exec|execute)\b.*)+/i,
-      /('|(\\')|(;)|(\\;)|(\\|\|)(\*|\%)|(\-\-)|(\+\+)|(\|\|))/i,
-      /((\b(and|or)\b\s+)|(\b(and|or)\b\s*\(?\s*))?([\w\[\]'".,;:\s\d\(\)\-\*\+\=\>\<\!%@&|\^~`{}]+\s*)?((\s*=\s*[\w\[\]'".,;:\s\d\(\)\-\*\+\=\>\<\!%@&|\^~`{}]*)|((\s+(like|rlike|regexp)\s+[\w\[\]'".,;:\s\d\(\)\-\*\+\=\>\<\!%@&|\^~`{}]*)))/i,
+      /(';|--;|\/\*|\*\/)/i,
+      /(\b(and|or)\b.*=.*)/i,
     ];
-    
+
     return sqlPatterns.some(pattern => pattern.test(input));
   },
-  
+
   // Detect path traversal patterns
   containsPathTraversal(input: string): boolean {
     const pathPatterns = [
       /\.\./,
-      /\~/,
+      /~/,
       /%2e%2e/i,
       /%252e%252e/i,
       /\\.\\./, // Windows style
       /\.\.\\/,
       /\.\.\\\\/,
     ];
-    
+
     return pathPatterns.some(pattern => pattern.test(input));
   },
-  
+
   // Detect prototype pollution patterns
   containsPrototypePollution(input: string): boolean {
     const pollutionPatterns = [
@@ -263,10 +294,10 @@ export const securityValidation = {
       /constructor\s*\.\s*prototype/,
       /prototype\s*\.\s*constructor/,
     ];
-    
+
     return pollutionPatterns.some(pattern => pattern.test(input));
   },
-  
+
   // General malicious pattern detection
   containsMaliciousPattern(input: string): boolean {
     return (

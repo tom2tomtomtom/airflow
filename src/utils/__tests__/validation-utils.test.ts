@@ -26,12 +26,12 @@ describe('Validation Utils', () => {
     });
 
     it('should enforce password requirements', () => {
-      const validPassword = 'Password123!';
+      const validPassword = 'Test-password-123!'; // Test password
       const weakPassword = 'weak';
-      const noUppercase = 'password123!';
-      const noLowercase = 'PASSWORD123!';
-      const noNumber = 'Password!';
-      const noSpecial = 'Password123';
+      const noUppercase = 'test-password-123!'; // Test password - no uppercase
+      const noLowercase = 'TEST-PASSWORD-123!'; // Test password - no lowercase  
+      const noNumber = 'Test-password-abc!'; // Test password - no number
+      const noSpecial = 'Test-password-123'; // Test password - no special char
 
       expect(() => validationSchemas.password.parse(validPassword)).not.toThrow();
       expect(() => validationSchemas.password.parse(weakPassword)).toThrow();
@@ -133,8 +133,8 @@ describe('Validation Utils', () => {
       };
       
       // Manually add dangerous properties to test sanitization
-      (dangerousObject as any)['__proto__'] = { isAdmin: true };
-      (dangerousObject as any)['constructor'] = { prototype: { isAdmin: true } };
+      (dangerousObject as Record<string, unknown>)['__proto__'] = { isAdmin: true };
+      (dangerousObject as Record<string, unknown>)['constructor'] = { prototype: { isAdmin: true } };
 
       const result = sanitizeObject(dangerousObject);
 
@@ -157,8 +157,8 @@ describe('Validation Utils', () => {
       };
       
       // Add dangerous properties to nested objects
-      (nestedObject.user as any)['__proto__'] = { isAdmin: true };
-      (nestedObject.user.profile as any)['constructor'] = { dangerous: true };
+      (nestedObject.user as Record<string, unknown>)['__proto__'] = { isAdmin: true };
+      (nestedObject.user.profile as Record<string, unknown>)['constructor'] = { dangerous: true };
 
       const result = sanitizeObject(nestedObject);
 
@@ -241,7 +241,7 @@ describe('Validation Utils', () => {
     it('should validate signup schema', () => {
       const validSignup = {
         email: 'test@example.com',
-        password: 'Password123!',
+        password: 'Test-password-123!', // Test password
         name: 'John Doe',
       };
       const invalidSignup = {
@@ -494,9 +494,9 @@ describe('Validation Utils', () => {
       };
       
       // Add dangerous properties to test sanitization
-      (complexObject.level1.level2.level3 as any)['__proto__'] = { dangerous: true };
-      (complexObject.level1.level2.level3 as any)['constructor'] = { evil: true };
-      (complexObject.level1 as any)['__proto__'] = { admin: true };
+      (complexObject.level1.level2.level3 as Record<string, unknown>)['__proto__'] = { dangerous: true };
+      (complexObject.level1.level2.level3 as Record<string, unknown>)['constructor'] = { evil: true };
+      (complexObject.level1 as Record<string, unknown>)['__proto__'] = { admin: true };
 
       const sanitized = sanitizeObject(complexObject);
       
@@ -518,7 +518,7 @@ describe('Validation Utils', () => {
       };
       
       // Add dangerous property to test sanitization
-      (objectWithArrays.nested as any)['__proto__'] = { evil: true };
+      (objectWithArrays.nested as Record<string, unknown>)['__proto__'] = { evil: true };
 
       const sanitized = sanitizeObject(objectWithArrays);
       
