@@ -218,35 +218,40 @@ class ThreatDetectionEngine {
       timeWindow: 5 * 60 * 1000, // 5 minutes
       threshold: 10,
       severity: 'HIGH',
-      description: 'Multiple failed authentication attempts from same IP' }
+      description: 'Multiple failed authentication attempts from same IP'
+    },
     {
       name: 'Account Enumeration',
       events: ['AUTHENTICATION_FAILURE'],
       timeWindow: 10 * 60 * 1000, // 10 minutes
       threshold: 50,
       severity: 'MEDIUM',
-      description: 'High volume of failed logins across different accounts' }
+      description: 'High volume of failed logins across different accounts'
+    },
     {
       name: 'Session Hijacking Pattern',
       events: ['SESSION_HIJACK_ATTEMPT'],
       timeWindow: 1 * 60 * 1000, // 1 minute
       threshold: 3,
       severity: 'CRITICAL',
-      description: 'Multiple session hijacking attempts detected' }
+      description: 'Multiple session hijacking attempts detected'
+    },
     {
       name: 'Injection Attack Pattern',
       events: ['XSS_ATTEMPT', 'SQL_INJECTION_ATTEMPT', 'COMMAND_INJECTION_ATTEMPT'],
       timeWindow: 15 * 60 * 1000, // 15 minutes
       threshold: 5,
       severity: 'HIGH',
-      description: 'Multiple injection attack attempts detected' }
+      description: 'Multiple injection attack attempts detected'
+    },
     {
       name: 'Security Scanner',
       events: ['SECURITY_SCAN_DETECTED', 'PATH_TRAVERSAL_ATTEMPT'],
       timeWindow: 5 * 60 * 1000, // 5 minutes
       threshold: 20,
       severity: 'MEDIUM',
-      description: 'Automated security scanning detected' }
+      description: 'Automated security scanning detected'
+    },
     {
       name: 'Privilege Escalation',
       events: ['PRIVILEGE_ESCALATION_ATTEMPT', 'AUTHORIZATION_FAILURE'],
