@@ -15,7 +15,8 @@ export class TestDataFactory {
       role: 'user',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      ...overrides};
+      ...overrides,
+    };
   }
 
   static createClient(overrides: Record<string, unknown> = {}) {
@@ -26,7 +27,8 @@ export class TestDataFactory {
       user_id: 'test-user-123',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      ...overrides};
+      ...overrides,
+    };
   }
 
   static createWorkflow(overrides: Record<string, unknown> = {}) {
@@ -34,16 +36,18 @@ export class TestDataFactory {
       id: 'test-workflow-123',
       user_id: 'test-user-123',
       current_step: 0,
-      brief_data: Record<string, unknown>$1
-  motivations: [],
-      copy_variations: [],
-      selected_assets: [],
-      selected_template: null,
-      processing: false,
-      last_error: null,
+      brief_data: {
+        motivations: [],
+        copy_variations: [],
+        selected_assets: [],
+        selected_template: null,
+        processing: false,
+        last_error: null,
+      },
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      ...overrides};
+      ...overrides,
+    };
   }
 
   static createAsset(overrides: Record<string, unknown> = {}) {
@@ -55,7 +59,8 @@ export class TestDataFactory {
       url: 'https://example.com/test-image.jpg',
       user_id: 'test-user-123',
       created_at: new Date().toISOString(),
-      ...overrides};
+      ...overrides,
+    };
   }
 
   static createCampaign(overrides: Record<string, unknown> = {}) {
@@ -68,7 +73,8 @@ export class TestDataFactory {
       status: 'draft',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      ...overrides};
+      ...overrides,
+    };
   }
 }
 
@@ -128,12 +134,12 @@ export class APIRequestBuilder {
     return this;
   }
 
-  withAuth(token: string = 'Bearer test-token') {;
+  withAuth(token: string = 'Bearer test-token') {
     this.headers.authorization = token;
     return this;
   }
 
-  withCSRF(token: string = 'test-csrf-token') {;
+  withCSRF(token: string = 'test-csrf-token') {
     this.headers['x-csrf-token'] = token;
     return this;
   }
@@ -153,7 +159,8 @@ export class APIRequestBuilder {
       method: this.method,
       body: this.body,
       query: this.query,
-      headers: this.headers});
+      headers: this.headers,
+    });
 
     return { req: req as NextApiRequest, res: res as NextApiResponse };
   }
@@ -168,9 +175,9 @@ export class DatabaseMockManager {
   }
 
   static resetMocks() {
-    this.supabaseMocks = {;
-      from: jest.fn(() => ({,
-    select: jest.fn().mockReturnThis(),
+    this.supabaseMocks = {
+      from: jest.fn(() => ({
+        select: jest.fn().mockReturnThis(),
         insert: jest.fn().mockReturnThis(),
         update: jest.fn().mockReturnThis(),
         delete: jest.fn().mockReturnThis(),
@@ -189,16 +196,20 @@ export class DatabaseMockManager {
         order: jest.fn().mockReturnThis(),
         limit: jest.fn().mockReturnThis(),
         single: jest.fn(() => Promise.resolve({ data: null, error: null })),
-        maybeSingle: jest.fn(() => Promise.resolve({ data: null, error: null }))})),
-      auth: Record<string, unknown>$1
-  getUser: jest.fn(() =>
+        maybeSingle: jest.fn(() => Promise.resolve({ data: null, error: null })),
+      })),
+      auth: {
+        getUser: jest.fn(() =>
           Promise.resolve({
-            data: { user: TestDataFactory.createUser()  },
-  error: null})
+            data: { user: TestDataFactory.createUser() },
+            error: null,
+          })
         ),
         signIn: jest.fn(() => Promise.resolve({ data: null, error: null })),
         signOut: jest.fn(() => Promise.resolve({ error: null })),
-        signUp: jest.fn(() => Promise.resolve({ data: null, error: null })) };
+        signUp: jest.fn(() => Promise.resolve({ data: null, error: null })),
+      },
+    };
 
     return this.supabaseMocks;
   }
@@ -206,19 +217,22 @@ export class DatabaseMockManager {
   static mockSuccessfulQuery(data: unknown) {
     this.supabaseMocks.from.mockReturnValue({
       ...this.supabaseMocks.from(),
-      single: jest.fn(() => Promise.resolve({ data, error: null }))});
+      single: jest.fn(() => Promise.resolve({ data, error: null })),
+    });
   }
 
   static mockFailedQuery(error: unknown) {
     this.supabaseMocks.from.mockReturnValue({
       ...this.supabaseMocks.from(),
-      single: jest.fn(() => Promise.resolve({ data: null, error }))});
+      single: jest.fn(() => Promise.resolve({ data: null, error })),
+    });
   }
 
   static mockArrayQuery(data: unknown[]) {
     this.supabaseMocks.from.mockReturnValue({
       ...this.supabaseMocks.from(),
-      then: jest.fn(() => Promise.resolve({ data, error: null }))});
+      then: jest.fn(() => Promise.resolve({ data, error: null })),
+    });
   }
 
   static getMocks() {
@@ -228,7 +242,7 @@ export class DatabaseMockManager {
 
 // API test runner with common patterns
 export class APITestRunner {
-  static async testAuthRequired(handler: unknown, method: string = 'GET') {;
+  static async testAuthRequired(handler: unknown, method: string = 'GET') {
     const { req, res } = APIRequestBuilder.create().setMethod(method).build();
 
     await handler(req, res);
@@ -236,11 +250,13 @@ export class APITestRunner {
     expect(res._getStatusCode()).toBe(401);
     expect(JSON.parse(res._getData())).toMatchObject({
       success: false,
-      error: expect.objectContaining({,
-    message: expect.stringContaining('Authentication required')})});
+      error: expect.objectContaining({
+        message: expect.stringContaining('Authentication required'),
+      }),
+    });
   }
 
-  static async testValidInput(handler: unknown, validData: unknown, method: string = 'POST') {;
+  static async testValidInput(handler: unknown, validData: unknown, method: string = 'POST') {
     const { req, res } = APIRequestBuilder.create()
       .setMethod(method)
       .setBody(validData)
@@ -251,10 +267,11 @@ export class APITestRunner {
 
     expect(res._getStatusCode()).toBe(200);
     expect(JSON.parse(res._getData())).toMatchObject({
-      success: true});
+      success: true,
+    });
   }
 
-  static async testInvalidInput(handler: unknown, invalidData: unknown, method: string = 'POST') {;
+  static async testInvalidInput(handler: unknown, invalidData: unknown, method: string = 'POST') {
     const { req, res } = APIRequestBuilder.create()
       .setMethod(method)
       .setBody(invalidData)
@@ -266,11 +283,13 @@ export class APITestRunner {
     expect(res._getStatusCode()).toBe(400);
     expect(JSON.parse(res._getData())).toMatchObject({
       success: false,
-      error: expect.objectContaining({,
-    message: expect.any(String)})});
+      error: expect.objectContaining({
+        message: expect.any(String),
+      }),
+    });
   }
 
-  static async testMethodNotAllowed(handler: unknown, disallowedMethod: string = 'DELETE') {;
+  static async testMethodNotAllowed(handler: unknown, disallowedMethod: string = 'DELETE') {
     const { req, res } = APIRequestBuilder.create().setMethod(disallowedMethod).withAuth().build();
 
     await handler(req, res);
@@ -278,10 +297,11 @@ export class APITestRunner {
     expect(res._getStatusCode()).toBe(405);
   }
 
-  static async testDatabaseError(handler: unknown, method: string = 'GET') {;
+  static async testDatabaseError(handler: unknown, method: string = 'GET') {
     DatabaseMockManager.mockFailedQuery({
       message: 'Database connection failed',
-      code: 'PGRST301'});
+      code: 'PGRST301',
+    });
 
     const { req, res } = APIRequestBuilder.create().setMethod(method).withAuth().build();
 
@@ -290,11 +310,13 @@ export class APITestRunner {
     expect(res._getStatusCode()).toBe(500);
     expect(JSON.parse(res._getData())).toMatchObject({
       success: false,
-      error: expect.objectContaining({,
-    message: expect.stringContaining('Database')})});
+      error: expect.objectContaining({
+        message: expect.stringContaining('Database'),
+      }),
+    });
   }
 
-  static async testRateLimit(handler: unknown, attempts: number = 6) {;
+  static async testRateLimit(handler: unknown, attempts: number = 6) {
     const requests = [];
 
     for (let i = 0; i < attempts; i++) {
@@ -319,7 +341,7 @@ export class APITestRunner {
     }
   }
 
-  static expectErrorResponse(res: unknown, expectedStatus: number = 400, expectedMessage?: string) {;
+  static expectErrorResponse(res: unknown, expectedStatus: number = 400, expectedMessage?: string) {
     expect(res._getStatusCode()).toBe(expectedStatus);
     const data = JSON.parse(res._getData());
     expect(data.success).toBe(false);
@@ -344,50 +366,62 @@ export class APITestRunner {
 }
 
 // Mock implementations for external services
-export const mockExternalServices = () => {;
+export const mockExternalServices = () => {
   // Mock OpenAI
   jest.mock('openai', () => ({
-    OpenAI: jest.fn().mockImplementation(() => ({,
-    chat: Record<string, unknown>$1
-  completions: Record<string, unknown>$1
-  create: jest.fn().mockResolvedValue({,
-    choices: [{ message: { content: 'Mock AI response' } }],
-            usage: { total_tokens: 100, prompt_tokens: 50, completion_tokens: 50 })) }))}));
+    OpenAI: jest.fn().mockImplementation(() => ({
+      chat: {
+        completions: {
+          create: jest.fn().mockResolvedValue({
+            choices: [{ message: { content: 'Mock AI response' } }],
+            usage: { total_tokens: 100, prompt_tokens: 50, completion_tokens: 50 },
+          }),
+        },
+      },
+    })),
+  }));
 
   // Mock Redis
   jest.mock('ioredis', () => ({
     __esModule: true,
-    default: jest.fn().mockImplementation(() => ({,
-    get: jest.fn().mockResolvedValue(null),
+    default: jest.fn().mockImplementation(() => ({
+      get: jest.fn().mockResolvedValue(null),
       set: jest.fn().mockResolvedValue('OK'),
       del: jest.fn().mockResolvedValue(1),
       incr: jest.fn().mockResolvedValue(1),
       expire: jest.fn().mockResolvedValue(1),
       connect: jest.fn().mockResolvedValue(undefined),
-      disconnect: jest.fn().mockResolvedValue(undefined)}))}));
+      disconnect: jest.fn().mockResolvedValue(undefined),
+    })),
+  }));
 
   // Mock file upload
   jest.mock('formidable', () => ({
-    IncomingForm: jest.fn().mockImplementation(() => ({,
-    parse: jest.fn().mockImplementation((req, callback) => {
+    IncomingForm: jest.fn().mockImplementation(() => ({
+      parse: jest.fn().mockImplementation((req, callback) => {
         callback(
           null,
           {},
           {
-            file: Record<string, unknown>$1
-  filepath: '/tmp/test-file',
+            file: {
+              filepath: '/tmp/test-file',
               originalFilename: 'test.jpg',
               mimetype: 'image/jpeg',
-              size: 1024000 }
+              size: 1024000,
+            },
+          }
         );
-      })}))}));
+      }),
+    })),
+  }));
 };
 
 // Security test helpers
-export const SecurityTestHelpers = {;
+export const SecurityTestHelpers = {
   testSQLInjection: async (handler: unknown, field: string) => {
-    const maliciousData = {;
-      [field]: "'; DROP TABLE users; --"};
+    const maliciousData = {
+      [field]: "'; DROP TABLE users; --",
+    };
 
     const { req, res } = APIRequestBuilder.create()
       .setMethod('POST')
@@ -402,8 +436,9 @@ export const SecurityTestHelpers = {;
   },
 
   testXSSPrevention: async (handler: unknown, field: string) => {
-    const maliciousData = {;
-      [field]: "<script>alert('xss')</script>"};
+    const maliciousData = {
+      [field]: "<script>alert('xss')</script>",
+    };
 
     const { req, res } = APIRequestBuilder.create()
       .setMethod('POST')
@@ -430,26 +465,28 @@ export const SecurityTestHelpers = {;
     await handler(req, res);
 
     // Should require CSRF token for state-changing operations
-    // This is dependent on actual CSRF middleware implementation };
+    // This is dependent on actual CSRF middleware implementation
+  },
+};
 
 // Performance test helpers
-export const PerformanceTestHelpers = {;
+export const PerformanceTestHelpers = {
   measureExecutionTime: async (asyncFunction: () => Promise<any>) => {
     const start = Date.now();
     await asyncFunction();
     const end = Date.now();
     return end - start;
-  ,
-
   },
-  testResponseTime: async (handler: unknown, maxTime: number = 1000) => {;
+  testResponseTime: async (handler: unknown, maxTime: number = 1000) => {
     const { req, res } = APIRequestBuilder.create().withAuth().build();
 
-    const executionTime = await PerformanceTestHelpers.measureExecutionTime(() =>;
+    const executionTime = await PerformanceTestHelpers.measureExecutionTime(() =>
       handler(req, res)
     );
 
-    expect(executionTime).toBeLessThan(maxTime); };
+    expect(executionTime).toBeLessThan(maxTime);
+  },
+};
 
 // Export commonly used test utilities
 export const createMockUser = TestDataFactory.createUser;
@@ -459,7 +496,7 @@ export const createMockAsset = TestDataFactory.createAsset;
 export const createMockCampaign = TestDataFactory.createCampaign;
 
 // Setup function for test suites
-export const setupApiTests = () => {;
+export const setupApiTests = () => {
   beforeEach(() => {
     DatabaseMockManager.resetMocks();
     jest.clearAllMocks();
@@ -471,5 +508,6 @@ export const setupApiTests = () => {;
     DatabaseMockManager,
     APITestRunner,
     SecurityTestHelpers,
-    PerformanceTestHelpers};
+    PerformanceTestHelpers,
+  };
 };
