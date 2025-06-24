@@ -23,9 +23,11 @@ export const errorResponse = (
 ) => {
   return res.status(statusCode).json({
     success: false,
-    error: Record<string, unknown>$1
-  code,
-      message });
+    error: {
+      code,
+      message
+    }
+  });
 };
 
 // Get the authentication token from localStorage
@@ -56,7 +58,7 @@ export const apiRequest = async <T>(
     // Set default headers - include credentials for cookie-based auth
     const headers = {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : Record<string, unknown>$1,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(options.headers || {})};
     
     // Make the request with credentials to include cookies
@@ -90,30 +92,33 @@ export const apiRequest = async <T>(
 export const authApi = {
   login: async (email: string, password: string) => {
     return apiRequest<{
-      success: boolean;,
-    user: Record<string, unknown>$1
-  id: string;,
-    email: string;,
-    name: string;,
-    token: string;
+      success: boolean;
+      user: {
+        id: string;
+        email: string;
+        name: string;
+        token: string;
       };
     }>('/api/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ email, password })});
+      body: JSON.stringify({ email, password })
+    });
   },
   
   signup: async (email: string, password: string, name: string) => {
     return apiRequest<{
-      success: boolean;,
-    user: Record<string, unknown>$1
-  id: string;,
-    email: string;,
-    name: string;,
-    token: string;
+      success: boolean;
+      user: {
+        id: string;
+        email: string;
+        name: string;
+        token: string;
       };
     }>('/api/auth/signup', {
       method: 'POST',
-      body: JSON.stringify({ email, password, name })}); };
+      body: JSON.stringify({ email, password, name })
+    });
+  },
 
 // Client API
 export interface Client {
