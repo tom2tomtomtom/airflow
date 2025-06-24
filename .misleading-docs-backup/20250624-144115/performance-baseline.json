@@ -1,0 +1,96 @@
+{
+  "timestamp": "2025-06-23T07:15:42.230Z",
+  "bundle": {
+    "totalBuildSize": 433540112,
+    "chunksSize": 4624710,
+    "jsFileCount": 155,
+    "staticSize": 4649810
+  },
+  "build": {
+    "timeMs": 590,
+    "timeSeconds": "0.59"
+  },
+  "test": {
+    "timeMs": 1043,
+    "timeSeconds": "1.04"
+  },
+  "codebase": {
+    "sourceFiles": 471,
+    "testFiles": 78,
+    "totalFiles": 549,
+    "testCoverage": "16.8",
+    "size": 4447289
+  },
+  "dependencies": {
+    "production": 98,
+    "development": 26,
+    "total": 124,
+    "nodeModulesSize": 1031554021
+  },
+  "database": {
+    "optimizations": {
+      "indexes": 15,
+      "functions": 6,
+      "views": 3,
+      "materialized_views": 2
+    },
+    "performance": {
+      "n1_queries_eliminated": 3,
+      "full_text_search_enabled": true,
+      "cursor_pagination_ready": true,
+      "analytics_aggregation_optimized": true
+    }
+  },
+  "load_testing": {
+    "infrastructure": {
+      "scenarios": 3,
+      "k6_integration": true,
+      "automated_runner": true,
+      "result_reporting": true
+    },
+    "scenarios": {
+      "database_optimization": {
+        "duration": "4m",
+        "targets": {
+          "client_stats_p95": "300ms",
+          "analytics_p95": "1000ms",
+          "error_rate": "<1%"
+        }
+      },
+      "api_performance": {
+        "duration": "9m",
+        "targets": {
+          "response_time_p95": "1000ms",
+          "error_rate": "<10%",
+          "throughput": ">50rps"
+        }
+      },
+      "endurance": {
+        "duration": "20m",
+        "targets": {
+          "performance_degradation": "<50%",
+          "connection_errors": "<100",
+          "memory_stability": "stable"
+        }
+      }
+    }
+  },
+  "assessment": {
+    "grade": "B+",
+    "issues": ["Too many JavaScript files", "Low test coverage"],
+    "recommendations": [
+      "Optimize chunk splitting strategy",
+      "Increase test coverage to 40%+",
+      "Apply database optimizations to production"
+    ],
+    "improvements": [
+      "Database query optimization implemented",
+      "N+1 query problems eliminated",
+      "Performance monitoring infrastructure added",
+      "Full-text search indexes created",
+      "Comprehensive load testing infrastructure implemented",
+      "k6-based performance validation suite",
+      "Automated regression detection system"
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "phase1": "Enable noUnusedLocals and noUnusedParameters",
+  "phase2": "Replace any types with proper types",
+  "phase3": "Add explicit return types",
+  "phase4": "Enable advanced strict settings",
+  "estimatedDuration": "5 days"
+}

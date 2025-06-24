@@ -1,0 +1,144 @@
+{
+  "timestamp": "2025-06-23T09:57:44.777Z",
+  "totalErrors": 448,
+  "categories": {
+    "syntax": {
+      "count": 448,
+      "priority": 1,
+      "percentage": "100.0"
+    },
+    "imports": {
+      "count": 0,
+      "priority": 2,
+      "percentage": "0.0"
+    },
+    "types": {
+      "count": 0,
+      "priority": 3,
+      "percentage": "0.0"
+    },
+    "unused": {
+      "count": 0,
+      "priority": 4,
+      "percentage": "0.0"
+    },
+    "other": {
+      "count": 0,
+      "priority": 5,
+      "percentage": "0.0"
+    }
+  },
+  "criticalFiles": [
+    {
+      "file": "src/services/templateEngine.ts",
+      "errorCount": 115,
+      "types": ["TS1005", "TS1128", "TS1068", "TS1011", "TS1434"]
+    },
+    {
+      "file": "src/lib/monitoring/metrics.ts",
+      "errorCount": 108,
+      "types": ["TS1005", "TS1128", "TS1003", "TS1136", "TS1434"]
+    },
+    {
+      "file": "src/lib/monitoring/workflow-metrics.ts",
+      "errorCount": 33,
+      "types": ["TS1005", "TS1359", "TS1128", "TS1434", "TS1136"]
+    },
+    {
+      "file": "src/pages/api/campaigns/[id].ts",
+      "errorCount": 30,
+      "types": ["TS1005", "TS1128"]
+    },
+    {
+      "file": "src/pages/api/v2/handlers/assets.ts",
+      "errorCount": 29,
+      "types": ["TS1005", "TS1137", "TS1128", "TS1109"]
+    },
+    {
+      "file": "src/utils/dynamicImports.ts",
+      "errorCount": 24,
+      "types": ["TS1005", "TS1134", "TS1110", "TS1161", "TS1128"]
+    },
+    {
+      "file": "src/test-utils/api-test-utils.ts",
+      "errorCount": 17,
+      "types": ["TS1005", "TS1109", "TS1128"]
+    },
+    {
+      "file": "src/test-utils/index.tsx",
+      "errorCount": 16,
+      "types": ["TS1005", "TS1109", "TS1128"]
+    },
+    {
+      "file": "src/pages/clients.tsx",
+      "errorCount": 14,
+      "types": ["TS1005", "TS1135", "TS1128"]
+    },
+    {
+      "file": "src/pages/api/campaigns/index.ts",
+      "errorCount": 13,
+      "types": ["TS1005", "TS1109", "TS1128"]
+    }
+  ],
+  "quickWins": [
+    {
+      "file": "src/hooks/useData.ts",
+      "error": "TS1109",
+      "message": "Expression expected."
+    },
+    {
+      "file": "src/utils/api.ts",
+      "error": "TS1109",
+      "message": "Expression expected."
+    }
+  ],
+  "automationTargets": [
+    {
+      "code": "TS1005",
+      "count": 299
+    },
+    {
+      "code": "TS1128",
+      "count": 72
+    },
+    {
+      "code": "TS1434",
+      "count": 20
+    },
+    {
+      "code": "TS1109",
+      "count": 14
+    },
+    {
+      "code": "TS1011",
+      "count": 13
+    },
+    {
+      "code": "TS1136",
+      "count": 5
+    },
+    {
+      "code": "TS1161",
+      "count": 5
+    },
+    {
+      "code": "TS1135",
+      "count": 4
+    },
+    {
+      "code": "TS1359",
+      "count": 3
+    },
+    {
+      "code": "TS1110",
+      "count": 3
+    }
+  ],
+  "recommendations": [
+    "1. CRITICAL: Fix 10 files with highest error density",
+    "2. QUICK WINS: Address 2 single-error files first",
+    "3. AUTOMATION: Create fixers for top 10 error patterns",
+    "4. SYNTAX PRIORITY: 448 syntax errors (100.0%)",
+    "5. IMPORT ISSUES: 0 import errors (0.0%)"
+  ]
+}
