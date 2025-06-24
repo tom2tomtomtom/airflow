@@ -207,72 +207,99 @@ export const workflowMachine = createMachine<WorkflowMachineContext, WorkflowEve
       }
     },
     
-    assetSelection: Record<string, unknown>$1
-  entry: ['clearError'],
-      on: Record<string, unknown>$1
-  SELECT_ASSET: Record<string, unknown>$1
-  actions: ['selectAsset'] },
-  NEXT_STEP: Record<string, unknown>$1
-  target: 'templateSelection',
+    assetSelection: {
+      entry: ['clearError'],
+      on: {
+        SELECT_ASSET: {
+          actions: ['selectAsset']
+        },
+        NEXT_STEP: {
+          target: 'templateSelection',
           cond: 'hasSelectedAssets',
-          actions: ['nextStep'] },
-  PREVIOUS_STEP: Record<string, unknown>$1
-  target: 'copyGeneration',
-          actions: ['previousStep'] },
-  SET_ERROR: Record<string, unknown>$1
-  actions: ['setError'] },
-  CLEAR_ERROR: Record<string, unknown>$1
-  actions: ['clearError']}}},
+          actions: ['nextStep']
+        },
+        PREVIOUS_STEP: {
+          target: 'copyGeneration',
+          actions: ['previousStep']
+        },
+        SET_ERROR: {
+          actions: ['setError']
+        },
+        CLEAR_ERROR: {
+          actions: ['clearError']
+        }
+      }
+    },
     
-    templateSelection: Record<string, unknown>$1
-  entry: ['clearError'],
-      on: Record<string, unknown>$1
-  SELECT_TEMPLATE: Record<string, unknown>$1
-  actions: ['selectTemplate'] },
-  NEXT_STEP: Record<string, unknown>$1
-  target: 'matrixBuild',
+    templateSelection: {
+      entry: ['clearError'],
+      on: {
+        SELECT_TEMPLATE: {
+          actions: ['selectTemplate']
+        },
+        NEXT_STEP: {
+          target: 'matrixBuild',
           cond: 'hasSelectedTemplate',
-          actions: ['nextStep'] },
-  PREVIOUS_STEP: Record<string, unknown>$1
-  target: 'assetSelection',
-          actions: ['previousStep'] },
-  SET_ERROR: Record<string, unknown>$1
-  actions: ['setError'] },
-  CLEAR_ERROR: Record<string, unknown>$1
-  actions: ['clearError']}}},
+          actions: ['nextStep']
+        },
+        PREVIOUS_STEP: {
+          target: 'assetSelection',
+          actions: ['previousStep']
+        },
+        SET_ERROR: {
+          actions: ['setError']
+        },
+        CLEAR_ERROR: {
+          actions: ['clearError']
+        }
+      }
+    },
     
-    matrixBuild: Record<string, unknown>$1
-  entry: ['clearError'],
-      on: Record<string, unknown>$1
-  NEXT_STEP: Record<string, unknown>$1
-  target: 'rendering',
+    matrixBuild: {
+      entry: ['clearError'],
+      on: {
+        NEXT_STEP: {
+          target: 'rendering',
           cond: 'canProceedToRender',
-          actions: ['nextStep'] },
-  PREVIOUS_STEP: Record<string, unknown>$1
-  target: 'templateSelection',
-          actions: ['previousStep'] },
-  SET_ERROR: Record<string, unknown>$1
-  actions: ['setError'] },
-  CLEAR_ERROR: Record<string, unknown>$1
-  actions: ['clearError']}}},
+          actions: ['nextStep']
+        },
+        PREVIOUS_STEP: {
+          target: 'templateSelection',
+          actions: ['previousStep']
+        },
+        SET_ERROR: {
+          actions: ['setError']
+        },
+        CLEAR_ERROR: {
+          actions: ['clearError']
+        }
+      }
+    },
     
-    rendering: Record<string, unknown>$1
-  entry: ['clearError'],
-      on: Record<string, unknown>$1
-  PREVIOUS_STEP: Record<string, unknown>$1
-  target: 'matrixBuild',
-          actions: ['previousStep'] },
-  RESET_WORKFLOW: Record<string, unknown>$1
-  target: 'briefUpload',
-          actions: ['resetWorkflow'] },
-  SET_ERROR: Record<string, unknown>$1
-  actions: ['setError'] },
-  CLEAR_ERROR: Record<string, unknown>$1
-  actions: ['clearError']}}}},
+    rendering: {
+      entry: ['clearError'],
+      on: {
+        PREVIOUS_STEP: {
+          target: 'matrixBuild',
+          actions: ['previousStep']
+        },
+        RESET_WORKFLOW: {
+          target: 'briefUpload',
+          actions: ['resetWorkflow']
+        },
+        SET_ERROR: {
+          actions: ['setError']
+        },
+        CLEAR_ERROR: {
+          actions: ['clearError']
+        }
+      }
+    }
+  },
   
   // Global transitions
-  on: Record<string, unknown>$1
-  GO_TO_STEP: [
+  on: {
+    GO_TO_STEP: [
       {
         target: 'briefUpload',
         cond: (_, event) => event.step === 0,
