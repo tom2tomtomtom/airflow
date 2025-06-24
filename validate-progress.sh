@@ -59,11 +59,11 @@ count_errors() {
     echo "$count"
 }
 
-echo -e "${BLUE}🏗️  PHASE 1: Foundation Validation${NC}"
-echo "=================================="
+echo -e "${BLUE}🔧  PHASE 2: Syntax Recovery Validation${NC}"
+echo "====================================="
 
 # Git setup validation
-run_check "Git branch is recovery-foundation" "[ \$(git branch --show-current) = 'recovery-foundation' ]" "pass"
+run_check "Git branch is recovery-syntax" "[ \$(git branch --show-current) = 'recovery-syntax' ]" "pass"
 run_check "Git remote is correct repository" "git remote get-url origin | grep -q 'tom2tomtomtom/AIRWAVE_0525_CODEX'" "pass"
 run_check "Git working directory is clean" "git diff --quiet" "pass"
 
@@ -94,7 +94,7 @@ echo "  📦 Files with broken objects: $BROKEN_OBJECTS"
 # Create baseline file for tracking progress
 cat > .recovery-baseline.json << EOF
 {
-  "phase": "foundation",
+  "phase": "syntax-recovery",
   "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
   "git_branch": "$(git branch --show-current)",
   "git_commit": "$(git rev-parse HEAD)",
@@ -123,7 +123,7 @@ echo "    ✅ Git setup and branch creation"
 echo "    ✅ Misleading documentation removed"
 echo "    ✅ Validation pipeline established"
 
-echo "  Phase 2 (Syntax Recovery): 🔄 Next"
+echo "  Phase 2 (Syntax Recovery): 🔄 In Progress"
 echo "    🎯 Target: Reduce syntax errors by 80%"
 echo "    🎯 Fix all broken object literals"
 echo "    🎯 Get basic TypeScript compilation working"
