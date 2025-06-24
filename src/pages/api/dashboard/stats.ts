@@ -5,33 +5,33 @@ import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 
 interface DashboardStats {
-  totalAssets: Record<string, unknown>$1
-  count: number;
+  totalAssets: {
+    count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
-  aiGenerated: Record<string, unknown>$1
-  count: number;
+  aiGenerated: {
+    count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
-  activeCampaigns: Record<string, unknown>$1
-  count: number;
+  activeCampaigns: {
+    count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
-  templatesUsed: Record<string, unknown>$1
-  count: number;
+  templatesUsed: {
+    count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
-  totalClients: Record<string, unknown>$1
-  count: number;
+  totalClients: {
+    count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
-  pendingApprovals: Record<string, unknown>$1
-  count: number;
+  pendingApprovals: {
+    count: number;
     change: string;
     trend: 'up' | 'down' | 'neutral';
   };
@@ -44,8 +44,8 @@ interface DashboardStats {
     user: string;
     client?: string;
   }>;
-  performanceMetrics: Record<string, unknown>$1
-  totalImpressions: number;
+  performanceMetrics: {
+    totalImpressions: number;
     totalClicks: number;
     averageCTR: number;
     totalSpend: number;
@@ -65,9 +65,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Dashboard stats API error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? message : undefined
+      details: process.env.NODE_ENV === 'development' ? message : undefined,
     });
   }
 }
@@ -103,7 +103,7 @@ async function getDashboardStats(userId: string): Promise<DashboardStats> {
     matrices,
     approvals,
     recentActivities,
-    analytics
+    analytics,
   ] = await Promise.all([
     // Current assets (last 30 days)
     supabase
@@ -142,16 +142,13 @@ async function getDashboardStats(userId: string): Promise<DashboardStats> {
       .gte('created_at', thirtyDaysAgoStr),
 
     // Pending approvals
-    supabase
-      .from('approvals')
-      .select('id, status, created_at')
-      .eq('status', 'pending'),
+    supabase.from('approvals').select('id, status, created_at').eq('status', 'pending'),
 
     // Recent activities
     getRecentActivities(clientIds, userId),
 
     // Performance analytics
-    getPerformanceMetrics(clientIds)
+    getPerformanceMetrics(clientIds),
   ]);
 
   // Calculate asset stats
@@ -160,21 +157,24 @@ async function getDashboardStats(userId: string): Promise<DashboardStats> {
   const assetChange = calculatePercentageChange(totalAssetsCount, previousAssetsCount);
 
   // Calculate AI generated assets
-  const aiGeneratedCount = currentAssets.data?.filter((asset: any) => 
-    asset.metadata?.source === 'ai' || asset.metadata?.generated === true
-  ).length || 0;
-  const previousAiCount = previousAssets.data?.filter((asset: any) => 
-    asset.metadata?.source === 'ai' || asset.metadata?.generated === true
-  ).length || 0;
+  const aiGeneratedCount =
+    currentAssets.data?.filter(
+      (asset: any) => asset.metadata?.source === 'ai' || asset.metadata?.generated === true
+    ).length || 0;
+  const previousAiCount =
+    previousAssets.data?.filter(
+      (asset: any) => asset.metadata?.source === 'ai' || asset.metadata?.generated === true
+    ).length || 0;
   const aiChange = calculatePercentageChange(aiGeneratedCount, previousAiCount);
 
   // Calculate campaign stats
-  const activeCampaignsCount = currentCampaigns.data?.filter((c: any) => 
-    ['active', 'running', 'scheduled'].includes(c.status)
-  ).length || 0;
-  const previousActiveCampaigns = previousCampaigns.data?.filter((c: any) => 
-    ['active', 'running', 'scheduled'].includes(c.status)
-  ).length || 0;
+  const activeCampaignsCount =
+    currentCampaigns.data?.filter((c: any) => ['active', 'running', 'scheduled'].includes(c.status))
+      .length || 0;
+  const previousActiveCampaigns =
+    previousCampaigns.data?.filter((c: any) =>
+      ['active', 'running', 'scheduled'].includes(c.status)
+    ).length || 0;
   const campaignChange = calculatePercentageChange(activeCampaignsCount, previousActiveCampaigns);
 
   // Calculate templates used
@@ -191,32 +191,38 @@ async function getDashboardStats(userId: string): Promise<DashboardStats> {
   const approvalsChange = '+0%'; // TODO: Calculate trend
 
   return {
-    totalAssets: Record<string, unknown>$1
-  count: totalAssetsCount,
+    totalAssets: {
+      count: totalAssetsCount,
       change: assetChange,
-      trend: getTrend(assetChange) },
-  aiGenerated: Record<string, unknown>$1
-  count: aiGeneratedCount,
+      trend: getTrend(assetChange),
+    },
+    aiGenerated: {
+      count: aiGeneratedCount,
       change: aiChange,
-      trend: getTrend(aiChange) },
-  activeCampaigns: Record<string, unknown>$1
-  count: activeCampaignsCount,
+      trend: getTrend(aiChange),
+    },
+    activeCampaigns: {
+      count: activeCampaignsCount,
       change: campaignChange,
-      trend: getTrend(campaignChange) },
-  templatesUsed: Record<string, unknown>$1
-  count: templatesUsedCount,
+      trend: getTrend(campaignChange),
+    },
+    templatesUsed: {
+      count: templatesUsedCount,
       change: templatesChange,
-      trend: 'neutral' },
-  totalClients: Record<string, unknown>$1
-  count: totalClientsCount,
+      trend: 'neutral',
+    },
+    totalClients: {
+      count: totalClientsCount,
       change: clientsChange,
-      trend: 'neutral' },
-  pendingApprovals: Record<string, unknown>$1
-  count: pendingApprovalsCount,
+      trend: 'neutral',
+    },
+    pendingApprovals: {
+      count: pendingApprovalsCount,
       change: approvalsChange,
-      trend: 'neutral' },
-  recentActivity: recentActivities,
-    performanceMetrics: analytics
+      trend: 'neutral',
+    },
+    recentActivity: recentActivities,
+    performanceMetrics: analytics,
   };
 }
 
@@ -225,10 +231,12 @@ async function getRecentActivities(clientIds: string[], userId: string): Promise
     // Get recent campaigns
     const { data: campaigns } = await supabase
       .from('campaigns')
-      .select(`
+      .select(
+        `
         id, name, created_at, updated_at,
         clients(name)
-      `)
+      `
+      )
       .in('client_id', clientIds)
       .order('created_at', { ascending: false })
       .limit(5);
@@ -236,10 +244,12 @@ async function getRecentActivities(clientIds: string[], userId: string): Promise
     // Get recent assets
     const { data: assets } = await supabase
       .from('assets')
-      .select(`
+      .select(
+        `
         id, name, created_at, type,
         clients(name)
-      `)
+      `
+      )
       .in('client_id', clientIds)
       .order('created_at', { ascending: false })
       .limit(5);
@@ -247,10 +257,12 @@ async function getRecentActivities(clientIds: string[], userId: string): Promise
     // Get recent matrices
     const { data: matrices } = await supabase
       .from('matrices')
-      .select(`
+      .select(
+        `
         id, name, created_at,
         campaigns(name, clients(name))
-      `)
+      `
+      )
       .order('created_at', { ascending: false })
       .limit(5);
 
@@ -265,7 +277,7 @@ async function getRecentActivities(clientIds: string[], userId: string): Promise
         description: `New campaign created for ${(campaign as any).clients?.name}`,
         timestamp: campaign.created_at,
         user: 'User', // TODO: Get actual user name
-        client: (campaign as any).clients?.name
+        client: (campaign as any).clients?.name,
       });
     });
 
@@ -278,7 +290,7 @@ async function getRecentActivities(clientIds: string[], userId: string): Promise
         description: `New ${asset.type} asset added`,
         timestamp: asset.created_at,
         user: 'User',
-        client: (asset as any).clients?.name
+        client: (asset as any).clients?.name,
       });
     });
 
@@ -291,7 +303,7 @@ async function getRecentActivities(clientIds: string[], userId: string): Promise
         description: `New matrix for ${(matrix as any).campaigns?.clients?.name}`,
         timestamp: matrix.created_at,
         user: 'User',
-        client: (matrix as any).campaigns?.clients?.name
+        client: (matrix as any).campaigns?.clients?.name,
       });
     });
 
@@ -299,7 +311,6 @@ async function getRecentActivities(clientIds: string[], userId: string): Promise
     return activities
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
       .slice(0, 10);
-
   } catch (error: any) {
     console.error('Error fetching recent activities:', error);
     return [];
@@ -311,10 +322,12 @@ async function getPerformanceMetrics(clientIds: string[]): Promise<any> {
     // Get campaign analytics for accessible clients
     const { data: analytics } = await supabase
       .from('campaign_analytics')
-      .select(`
+      .select(
+        `
         impressions, clicks, spend,
         campaigns(client_id)
-      `)
+      `
+      )
       .in('campaigns.client_id', clientIds);
 
     if (!analytics || analytics.length === 0) {
@@ -322,7 +335,7 @@ async function getPerformanceMetrics(clientIds: string[]): Promise<any> {
         totalImpressions: 0,
         totalClicks: 0,
         averageCTR: 0,
-        totalSpend: 0
+        totalSpend: 0,
       };
     }
 
@@ -335,16 +348,15 @@ async function getPerformanceMetrics(clientIds: string[]): Promise<any> {
       totalImpressions,
       totalClicks,
       averageCTR: Math.round(averageCTR * 100) / 100,
-      totalSpend: Math.round(totalSpend * 100) / 100
+      totalSpend: Math.round(totalSpend * 100) / 100,
     };
-
   } catch (error: any) {
     console.error('Error fetching performance metrics:', error);
     return {
       totalImpressions: 0,
       totalClicks: 0,
       averageCTR: 0,
-      totalSpend: 0
+      totalSpend: 0,
     };
   }
 }
@@ -353,7 +365,7 @@ function calculatePercentageChange(current: number, previous: number): string {
   if (previous === 0) {
     return current > 0 ? '+100%' : '0%';
   }
-  
+
   const change = ((current - previous) / previous) * 100;
   const sign = change >= 0 ? '+' : '';
   return `${sign}${Math.round(change)}%`;
@@ -370,19 +382,19 @@ function getTrend(change: string): 'up' | 'down' | 'neutral' {
 
 function getEmptyStats(): DashboardStats {
   return {
-    totalAssets: { count: 0, change: '0%', trend: 'neutral'  },
-  aiGenerated: { count: 0, change: '0%', trend: 'neutral'  },
-  activeCampaigns: { count: 0, change: '0%', trend: 'neutral'  },
-  templatesUsed: { count: 0, change: '0%', trend: 'neutral'  },
-  totalClients: { count: 0, change: '0%', trend: 'neutral'  },
-  pendingApprovals: { count: 0, change: '0%', trend: 'neutral'  },
-  recentActivity: [],
-    performanceMetrics: Record<string, unknown>$1
-  totalImpressions: 0,
+    totalAssets: { count: 0, change: '0%', trend: 'neutral' },
+    aiGenerated: { count: 0, change: '0%', trend: 'neutral' },
+    activeCampaigns: { count: 0, change: '0%', trend: 'neutral' },
+    templatesUsed: { count: 0, change: '0%', trend: 'neutral' },
+    totalClients: { count: 0, change: '0%', trend: 'neutral' },
+    pendingApprovals: { count: 0, change: '0%', trend: 'neutral' },
+    recentActivity: [],
+    performanceMetrics: {
+      totalImpressions: 0,
       totalClicks: 0,
       averageCTR: 0,
-      totalSpend: 0
-    }
+      totalSpend: 0,
+    },
   };
 }
 
