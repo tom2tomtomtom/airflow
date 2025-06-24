@@ -769,9 +769,9 @@ const ClientsPage: React.FC = () => {
                               <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField
                                   fullWidth
-                                  label="Name";
+                                  label="Name"
                                   value={contact.name}
-                                  onChange={(e) => {;
+                                  onChange={(e) => {
                                     const updatedContacts = [...formData.contacts];
                                     updatedContacts[index] = { ...contact, name: e.target.value };
                                     setFormData({ ...formData, contacts: updatedContacts });
@@ -781,9 +781,9 @@ const ClientsPage: React.FC = () => {
                               <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField
                                   fullWidth
-                                  label="Role";
+                                  label="Role"
                                   value={contact.role}
-                                  onChange={(e) => {;
+                                  onChange={(e) => {
                                     const updatedContacts = [...formData.contacts];
                                     updatedContacts[index] = { ...contact, role: e.target.value };
                                     setFormData({ ...formData, contacts: updatedContacts });
@@ -793,10 +793,10 @@ const ClientsPage: React.FC = () => {
                               <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField
                                   fullWidth
-                                  label="Email";
-                                  type="email";
+                                  label="Email"
+                                  type="email"
                                   value={contact.email}
-                                  onChange={(e) => {;
+                                  onChange={(e) => {
                                     const updatedContacts = [...formData.contacts];
                                     updatedContacts[index] = { ...contact, email: e.target.value };
                                     setFormData({ ...formData, contacts: updatedContacts });
@@ -806,9 +806,9 @@ const ClientsPage: React.FC = () => {
                               <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField
                                   fullWidth
-                                  label="Phone";
+                                  label="Phone"
                                   value={contact.phone || ''}
-                                  onChange={(e) => {;
+                                  onChange={(e) => {
                                     const updatedContacts = [...formData.contacts];
                                     updatedContacts[index] = { ...contact, phone: e.target.value };
                                     setFormData({ ...formData, contacts: updatedContacts });
@@ -817,8 +817,8 @@ const ClientsPage: React.FC = () => {
                               </Grid>
                               <Grid size={{ xs: 12 }}>
                                 <Button
-                                  color="error";
-                                  onClick={() => {;
+                                  color="error"
+                                  onClick={() => {
                                     const updatedContacts = formData.contacts.filter((_, i) => i !== index);
                                     setFormData({ ...formData, contacts: updatedContacts });
                                   }}
