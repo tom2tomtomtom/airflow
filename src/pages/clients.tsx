@@ -544,10 +544,10 @@ const ClientsPage: React.FC = () => {
                   <Grid size={{ xs: 12, md: 6 }}>
                     <TextField
                       fullWidth
-                      label="Logo URL";
+                      label="Logo URL"
                       value={formData.logo}
                       onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
-                      placeholder="https://example.com/logo.png";
+                      placeholder="https://example.com/logo.png"
                     />
                   </Grid>
                 </Grid>
@@ -559,8 +559,8 @@ const ClientsPage: React.FC = () => {
                   <Grid size={{ xs: 12, md: 6 }}>
                     <TextField
                       fullWidth
-                      label="Primary Color";
-                      type="color";
+                      label="Primary Color"
+                      type="color"
                       value={formData.primaryColor}
                       onChange={(e) => setFormData({ ...formData, primaryColor: e.target.value })}
                       InputProps={{
