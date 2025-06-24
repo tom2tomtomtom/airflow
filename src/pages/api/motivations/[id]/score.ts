@@ -10,13 +10,17 @@ const ScoreUpdateSchema = z.object({
   relevance_score: z.number().min(0).max(100).optional(),
   effectiveness_rating: z.number().min(1).max(5).optional(),
   manual_override: z.boolean().default(false),
-  scoring_context: z.object({
-    brief_alignment: z.number().min(0).max(100).optional(),
-    audience_relevance: z.number().min(0).max(100).optional(),
-    emotional_impact: z.number().min(0).max(100).optional(),
-    brand_fit: z.number().min(0).max(100).optional(),
-    market_differentiation: z.number().min(0).max(100).optional()}).optional(),
-  notes: z.string().optional()});
+  scoring_context: z
+    .object({
+      brief_alignment: z.number().min(0).max(100).optional(),
+      audience_relevance: z.number().min(0).max(100).optional(),
+      emotional_impact: z.number().min(0).max(100).optional(),
+      brand_fit: z.number().min(0).max(100).optional(),
+      market_differentiation: z.number().min(0).max(100).optional(),
+    })
+    .optional(),
+  notes: z.string().optional(),
+});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -43,16 +47,22 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Motivation Score API error:', error);
     return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? message : undefined
+      details: process.env.NODE_ENV === 'development' ? message : undefined,
     });
   }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, motivationId: string): Promise<void> {
+async function handleGet(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  motivationId: string
+): Promise<void> {
   // Verify user has access to this motivation
   const { data: motivation, error } = await supabase
     .from('motivations')
-    .select(`
+    .select(
+      `
       id,
       title,
       description,
@@ -68,7 +78,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, m
         key_messaging,
         brand_guidelines
       )
-    `)
+    `
+    )
     .eq('id', motivationId)
     .single();
 
@@ -95,34 +106,50 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, m
   }
 
   // Get comparative scoring (vs other motivations in same brief/client)
-  const comparativeScoring = await getComparativeScoring(motivationId, motivation.client_id, motivation.brief_id);
+  const comparativeScoring = await getComparativeScoring(
+    motivationId,
+    motivation.client_id,
+    motivation.brief_id
+  );
 
   // Get scoring history
   const scoringHistory = await getScoringHistory(motivationId);
 
   // Generate scoring recommendations
-  const recommendations = generateScoringRecommendations(motivation, detailedScoring, comparativeScoring);
+  const recommendations = generateScoringRecommendations(
+    motivation,
+    detailedScoring,
+    comparativeScoring
+  );
 
   return res.json({
-    data: Record<string, unknown>$1
-  motivation_id: motivationId,
-      current_scores: Record<string, unknown>$1
-  relevance_score: motivation.relevance_score,
-        effectiveness_rating: motivation.effectiveness_rating },
-  detailed_scoring: detailedScoring,
+    data: {
+      motivation_id: motivationId,
+      current_scores: {
+        relevance_score: motivation.relevance_score,
+        effectiveness_rating: motivation.effectiveness_rating,
+      },
+      detailed_scoring: detailedScoring,
       comparative_scoring: comparativeScoring,
       scoring_history: scoringHistory,
-      recommendations}
+      recommendations,
+    },
   });
 }
 
-async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, motivationId: string): Promise<void> {
+async function handlePost(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  motivationId: string
+): Promise<void> {
   // AUTO-CALCULATE scoring based on brief and context
-  
+
   // Verify user has access to this motivation
   const { data: motivation } = await supabase
     .from('motivations')
-    .select(`
+    .select(
+      `
       id,
       title,
       description,
@@ -135,7 +162,8 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
         key_messaging,
         brand_guidelines
       )
-    `)
+    `
+    )
     .eq('id', motivationId)
     .single();
 
@@ -163,14 +191,16 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
     .update({
       relevance_score: autoScoring.overall_score,
       effectiveness_rating: autoScoring.effectiveness_rating,
-      generation_context: { }
+      generation_context: {
         ...(motivation as any).generation_context,
-        auto_scoring: Record<string, unknown>$1
-  timestamp: new Date().toISOString(),
+        auto_scoring: {
+          timestamp: new Date().toISOString(),
           scores: autoScoring.detailed_scores,
-          calculated_by: user.id}
+          calculated_by: user.id,
+        },
       },
-      updated_at: new Date().toISOString()})
+      updated_at: new Date().toISOString(),
+    })
     .eq('id', motivationId)
     .select()
     .single();
@@ -182,20 +212,26 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
 
   return res.json({
     message: 'Motivation scoring calculated successfully',
-    data: Record<string, unknown>$1
-  motivation: updatedMotivation,
-      scoring_details: autoScoring}
+    data: {
+      motivation: updatedMotivation,
+      scoring_details: autoScoring,
+    },
   });
 }
 
-async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, motivationId: string): Promise<void> {
+async function handlePut(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  motivationId: string
+): Promise<void> {
   // MANUAL scoring update
   const validationResult = ScoreUpdateSchema.safeParse(req.body);
-  
+
   if (!validationResult.success) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Validation failed',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
@@ -225,7 +261,8 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, m
 
   // Build update object
   const updateData: any = {
-    updated_at: new Date().toISOString()};
+    updated_at: new Date().toISOString(),
+  };
 
   if (scoreData.relevance_score !== undefined) {
     updateData.relevance_score = scoreData.relevance_score;
@@ -238,12 +275,13 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, m
   // Update generation context with manual scoring info
   updateData.generation_context = {
     ...motivation.generation_context,
-    manual_scoring: Record<string, unknown>$1
-  timestamp: new Date().toISOString(),
+    manual_scoring: {
+      timestamp: new Date().toISOString(),
       scored_by: user.id,
       manual_override: scoreData.manual_override,
       scoring_context: scoreData.scoring_context,
-      notes: scoreData.notes}
+      notes: scoreData.notes,
+    },
   };
 
   const { data: updatedMotivation, error } = await supabase
@@ -260,7 +298,7 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, m
 
   return res.json({
     message: 'Motivation scores updated successfully',
-    data: updatedMotivation
+    data: updatedMotivation,
   });
 }
 
@@ -271,7 +309,8 @@ async function calculateDetailedScoring(motivation: any, brief: any): Promise<an
     audience_relevance: 0,
     emotional_impact: 0,
     brand_fit: 0,
-    market_differentiation: 0};
+    market_differentiation: 0,
+  };
 
   // Brief alignment scoring
   if (brief.objectives) {
@@ -284,7 +323,11 @@ async function calculateDetailedScoring(motivation: any, brief: any): Promise<an
   if (brief.target_audience) {
     const audienceText = brief.target_audience.toLowerCase();
     const motivationText = `${motivation.title} ${motivation.description}`.toLowerCase();
-    scores.audience_relevance = calculateAudienceRelevance(audienceText, motivationText, motivation.category);
+    scores.audience_relevance = calculateAudienceRelevance(
+      audienceText,
+      motivationText,
+      motivation.category
+    );
   }
 
   // Emotional impact scoring based on category
@@ -299,13 +342,15 @@ async function calculateDetailedScoring(motivation: any, brief: any): Promise<an
   scores.market_differentiation = await calculateMarketDifferentiation(motivation);
 
   // Calculate overall score
-  const overall = Object.values(scores).reduce((sum, score) => sum + score, 0) / Object.keys(scores).length;
+  const overall =
+    Object.values(scores).reduce((sum, score) => sum + score, 0) / Object.keys(scores).length;
 
   return {
     detailed_scores: scores,
     overall_score: Math.round(overall),
     scoring_method: 'algorithm_v1',
-    calculated_at: new Date().toISOString()};
+    calculated_at: new Date().toISOString(),
+  };
 }
 
 async function calculateComprehensiveScoring(motivation: any): Promise<any> {
@@ -313,17 +358,19 @@ async function calculateComprehensiveScoring(motivation: any): Promise<any> {
     keyword_relevance: calculateKeywordRelevance(motivation),
     category_effectiveness: getCategoryEffectiveness(motivation.category),
     content_quality: calculateContentQuality(motivation.description),
-    uniqueness: await calculateUniqueness(motivation)};
+    uniqueness: await calculateUniqueness(motivation),
+  };
 
   // Calculate overall score
   const weights: Record<string, number> = {
     keyword_relevance: 0.3,
     category_effectiveness: 0.25,
     content_quality: 0.25,
-    uniqueness: 0.2};
+    uniqueness: 0.2,
+  };
 
   const overall = Object.entries(scores).reduce((sum, [key, score]) => {
-    return sum + (score * (weights[key] || 0));
+    return sum + score * (weights[key] || 0);
   }, 0);
 
   // Calculate effectiveness rating (1-5 scale)
@@ -333,10 +380,15 @@ async function calculateComprehensiveScoring(motivation: any): Promise<any> {
     overall_score: Math.round(overall),
     effectiveness_rating,
     detailed_scores: scores,
-    weights_used: weights};
+    weights_used: weights,
+  };
 }
 
-async function getComparativeScoring(motivationId: string, clientId: string, briefId?: string): Promise<any> {
+async function getComparativeScoring(
+  motivationId: string,
+  clientId: string,
+  briefId?: string
+): Promise<any> {
   try {
     let query = supabase
       .from('motivations')
@@ -354,14 +406,18 @@ async function getComparativeScoring(motivationId: string, clientId: string, bri
     if (!similarMotivations || similarMotivations.length === 0) {
       return {
         has_comparison_data: false,
-        message: 'No comparable motivations found'};
+        message: 'No comparable motivations found',
+      };
     }
 
     const scores = similarMotivations.map((m: any) => m.relevance_score);
-    const ratings = similarMotivations.filter((m: any) => m.effectiveness_rating).map((m: any) => m.effectiveness_rating);
+    const ratings = similarMotivations
+      .filter((m: any) => m.effectiveness_rating)
+      .map((m: any) => m.effectiveness_rating);
 
     const avgScore = scores.reduce((sum, score) => sum + score, 0) / scores.length;
-    const avgRating = ratings.length > 0 ? ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length : null;
+    const avgRating =
+      ratings.length > 0 ? ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length : null;
 
     return {
       has_comparison_data: true,
@@ -375,7 +431,8 @@ async function getComparativeScoring(motivationId: string, clientId: string, bri
     console.error('Error getting comparative scoring:', error);
     return {
       has_comparison_data: false,
-      message: 'Error retrieving comparison data'};
+      message: 'Error retrieving comparison data',
+    };
   }
 }
 
@@ -391,7 +448,11 @@ async function getScoringHistory(motivationId: string): Promise<any[]> {
   }
 }
 
-function generateScoringRecommendations(motivation: any, detailedScoring: any, comparativeScoring: any): string[] {
+function generateScoringRecommendations(
+  motivation: any,
+  detailedScoring: any,
+  comparativeScoring: any
+): string[] {
   const recommendations: string[] = [];
 
   const currentScore = motivation.relevance_score || 0;
@@ -409,7 +470,8 @@ function generateScoringRecommendations(motivation: any, detailedScoring: any, c
     rational: 'Support with data and logical arguments',
     social: 'Leverage social proof and community elements',
     fear: 'Balance with positive outcomes and solutions',
-    aspiration: 'Connect to future-state visioning'};
+    aspiration: 'Connect to future-state visioning',
+  };
 
   if (categoryRecommendations[motivation.category]) {
     recommendations.push(categoryRecommendations[motivation.category]);
@@ -418,7 +480,9 @@ function generateScoringRecommendations(motivation: any, detailedScoring: any, c
   // Comparative recommendations
   if (comparativeScoring.has_comparison_data) {
     if (currentScore < comparativeScoring.average_relevance_score - 10) {
-      recommendations.push('Below-average performance compared to similar motivations - consider revision');
+      recommendations.push(
+        'Below-average performance compared to similar motivations - consider revision'
+      );
     } else if (currentScore > comparativeScoring.average_relevance_score + 10) {
       recommendations.push('Above-average performance - good candidate for A/B testing');
     }
@@ -427,15 +491,15 @@ function generateScoringRecommendations(motivation: any, detailedScoring: any, c
   // Detailed scoring recommendations
   if (detailedScoring) {
     const scores = detailedScoring.detailed_scores;
-    
+
     if (scores.brief_alignment < 60) {
       recommendations.push('Improve alignment with brief objectives');
     }
-    
+
     if (scores.emotional_impact < 50) {
       recommendations.push('Consider strengthening emotional appeal');
     }
-    
+
     if (scores.brand_fit < 70) {
       recommendations.push('Review brand guidelines compatibility');
     }
@@ -448,31 +512,47 @@ function generateScoringRecommendations(motivation: any, detailedScoring: any, c
 function calculateTextAlignment(text1: string, text2: string): number {
   const words1 = new Set(text1.split(/\s+/).filter((w: any) => w.length > 3));
   const words2 = new Set(text2.split(/\s+/).filter((w: any) => w.length > 3));
-  
+
   const intersection = new Set([...words1].filter((x: any) => words2.has(x)));
   const union = new Set([...words1, ...words2]);
-  
+
   return union.size > 0 ? Math.round((intersection.size / union.size) * 100) : 0;
 }
 
-function calculateAudienceRelevance(audienceText: string, motivationText: string, category: string): number {
+function calculateAudienceRelevance(
+  audienceText: string,
+  motivationText: string,
+  category: string
+): number {
   // Basic audience relevance scoring
   let score = calculateTextAlignment(audienceText, motivationText);
-  
+
   // Category bonuses for specific audiences
   if (audienceText.includes('young') && ['social', 'aspiration'].includes(category)) score += 10;
-  if (audienceText.includes('professional') && ['rational', 'status'].includes(category)) score += 10;
+  if (audienceText.includes('professional') && ['rational', 'status'].includes(category))
+    score += 10;
   if (audienceText.includes('family') && ['safety', 'emotional'].includes(category)) score += 10;
-  
+
   return Math.min(100, score);
 }
 
 function calculateEmotionalImpact(category: string, description: string): number {
-  const emotionalWords = ['feel', 'emotion', 'heart', 'passion', 'love', 'fear', 'hope', 'dream', 'worry', 'excited'];
+  const emotionalWords = [
+    'feel',
+    'emotion',
+    'heart',
+    'passion',
+    'love',
+    'fear',
+    'hope',
+    'dream',
+    'worry',
+    'excited',
+  ];
   const lowerDesc = description.toLowerCase();
-  
+
   const base = emotionalWords.filter((word: any) => lowerDesc.includes(word)).length * 10;
-  
+
   // Category-based emotional impact
   const categoryImpact: Record<string, number> = {
     emotional: 80,
@@ -482,8 +562,9 @@ function calculateEmotionalImpact(category: string, description: string): number
     status: 60,
     rational: 40,
     convenience: 30,
-    safety: 50};
-  
+    safety: 50,
+  };
+
   return Math.min(100, base + (categoryImpact[category] || 50));
 }
 
@@ -504,7 +585,7 @@ function calculateKeywordRelevance(motivation: any): number {
   const text = `${motivation.title} ${motivation.description}`;
   const wordCount = text.split(/\s+/).length;
   const uniqueWords = new Set(text.toLowerCase().split(/\s+/)).size;
-  
+
   return Math.min(100, (uniqueWords / wordCount) * 100 + wordCount * 2);
 }
 
@@ -519,30 +600,31 @@ function getCategoryEffectiveness(category: string): number {
     status: 60,
     convenience: 55,
     safety: 75,
-    other: 50};
-  
+    other: 50,
+  };
+
   return effectiveness[category] || 50;
 }
 
 function calculateContentQuality(description: string): number {
   const wordCount = description.split(/\s+/).length;
   const sentenceCount = description.split(/[.!?]+/).filter((s: any) => s.trim().length > 0).length;
-  
+
   let score = 50;
-  
+
   // Length scoring
   if (wordCount >= 10 && wordCount <= 50) score += 20;
   if (wordCount > 50) score += 10;
-  
+
   // Structure scoring
   if (sentenceCount >= 2) score += 15;
   if (sentenceCount >= 3) score += 10;
-  
+
   // Quality indicators
   if (description.includes('because')) score += 5;
   if (description.includes('that')) score += 5;
   if (description.includes('when')) score += 5;
-  
+
   return Math.min(100, score);
 }
 
