@@ -12,14 +12,16 @@ export enum AlertSeverity {
   HIGH = 'high',
   MEDIUM = 'medium',
   LOW = 'low',
-  INFO = 'info'}
+  INFO = 'info',
+}
 
 // Alert states
 export enum AlertState {
   FIRING = 'firing',
   RESOLVED = 'resolved',
   ACKNOWLEDGED = 'acknowledged',
-  SILENCED = 'silenced'}
+  SILENCED = 'silenced',
+}
 
 // Alert rule configuration
 export interface AlertRule {
@@ -28,8 +30,8 @@ export interface AlertRule {
   description: string;
   severity: AlertSeverity;
   condition: AlertCondition;
-  evaluation: Record<string, unknown>$1
-  intervalSeconds: number;
+  evaluation: {
+    intervalSeconds: number;
     forDuration: number; // How long condition must be true
   };
   notifications: NotificationConfig[];
@@ -94,10 +96,10 @@ class EmailNotificationChannel extends NotificationChannel {
     try {
       // Implementation would integrate with your email service
       const emailContent = this.formatEmailContent(alert);
-      
+
       // Mock implementation - replace with actual email service
       console.log(`[EMAIL] Sending alert to ${config.target}:`, emailContent);
-      
+
       return true;
     } catch (error) {
       console.error('Failed to send email alert:', error);
@@ -112,15 +114,14 @@ class EmailNotificationChannel extends NotificationChannel {
 
   private formatEmailContent(alert: Alert): string {
     return `
-      Subject: [AIRWAVE ${alert.severity.toUpperCase()}] ${alert.name}
-      ,
-  Alert: ${alert.name},
-  Severity: ${alert.severity},
-  Description: ${alert.description}
-      Current Value: ${alert.value},
-  Threshold: ${alert.threshold}
-      ,
-  Time: ${alert.lastSeen.toISOString()}
+Subject: [AIRWAVE ${alert.severity.toUpperCase()}] ${alert.name}
+
+Alert: ${alert.name}
+Severity: ${alert.severity}
+Description: ${alert.description}
+Current Value: ${alert.value}
+Threshold: ${alert.threshold}
+Time: ${alert.lastSeen.toISOString()}
       
       ${alert.annotations.runbook ? `Runbook: ${alert.annotations.runbook}` : ''}
     `;
@@ -134,13 +135,14 @@ class SlackNotificationChannel extends NotificationChannel {
   async send(alert: Alert, config: NotificationConfig): Promise<boolean> {
     try {
       const slackPayload = this.formatSlackPayload(alert);
-      
+
       const response = await fetch(config.target, {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json' 
-      },
-        body: JSON.stringify(slackPayload)});
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(slackPayload),
+      });
 
       return response.ok;
     } catch (error) {
@@ -155,7 +157,7 @@ class SlackNotificationChannel extends NotificationChannel {
 
   private formatSlackPayload(alert: Alert) {
     const color = this.getSeverityColor(alert.severity);
-    
+
     return {
       attachments: [
         {
@@ -166,19 +168,24 @@ class SlackNotificationChannel extends NotificationChannel {
             {
               title: 'Current Value',
               value: alert.value.toString(),
-              short: true }
+              short: true,
+            },
             {
               title: 'Threshold',
               value: alert.threshold.toString(),
-              short: true }
+              short: true,
+            },
             {
               title: 'Time',
               value: alert.lastSeen.toISOString(),
-              short: false }
+              short: false,
+            },
           ],
           footer: 'AIRWAVE Monitoring',
-          ts: Math.floor(alert.lastSeen.getTime() / 1000) }
-      ]};
+          ts: Math.floor(alert.lastSeen.getTime() / 1000),
+        },
+      ],
+    };
   }
 
   private getSeverityColor(severity: AlertSeverity): string {
@@ -208,14 +215,16 @@ class WebhookNotificationChannel extends NotificationChannel {
       const payload = {
         alert,
         timestamp: new Date().toISOString(),
-        service: 'airwave-web'};
+        service: 'airwave-web',
+      };
 
       const response = await fetch(config.target, {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json' 
-      },
-        body: JSON.stringify(payload)});
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
 
       return response.ok;
     } catch (error) {
@@ -264,125 +273,148 @@ export class AlertingSystem {
       name: 'High API Error Rate',
       description: 'API error rate exceeds 5% over 5 minutes',
       severity: AlertSeverity.HIGH,
-      condition: Record<string, unknown>$1
-  type: 'threshold',
+      condition: {
+        type: 'threshold',
         metric: 'api.requests.error_rate',
         operator: '>',
         value: 0.05,
         timeWindow: 300,
-        aggregation: 'avg' },
-  evaluation: Record<string, unknown>$1
-  intervalSeconds: 60,
-        forDuration: 300 },
-  notifications: [
+        aggregation: 'avg',
+      },
+      evaluation: {
+        intervalSeconds: 60,
+        forDuration: 300,
+      },
+      notifications: [
         {
           channel: 'email',
-          target: process.env.ALERT_EMAIL || 'admin@airwave.com' }
+          target: process.env.ALERT_EMAIL || 'admin@airwave.com',
+        },
         {
           channel: 'slack',
           target: process.env.SLACK_WEBHOOK_URL || '',
-          conditions: { severity: [AlertSeverity.HIGH, AlertSeverity.CRITICAL] }},
+          conditions: { severity: [AlertSeverity.HIGH, AlertSeverity.CRITICAL] },
+        },
       ],
       runbook: 'https://docs.airwave.com/runbooks/high-error-rate',
-      enabled: true});
+      enabled: true,
+    });
 
     this.addRule({
       id: 'database-connection-failure',
       name: 'Database Connection Failure',
       description: 'Database connection health check failing',
       severity: AlertSeverity.CRITICAL,
-      condition: Record<string, unknown>$1
-  type: 'threshold',
+      condition: {
+        type: 'threshold',
         metric: 'system.health.database',
         operator: '<',
         value: 1,
         timeWindow: 60,
-        aggregation: 'avg' },
-  evaluation: Record<string, unknown>$1
-  intervalSeconds: 30,
-        forDuration: 60 },
-  notifications: [
+        aggregation: 'avg',
+      },
+      evaluation: {
+        intervalSeconds: 30,
+        forDuration: 60,
+      },
+      notifications: [
         {
           channel: 'email',
-          target: process.env.ALERT_EMAIL || 'admin@airwave.com' }
+          target: process.env.ALERT_EMAIL || 'admin@airwave.com',
+        },
         {
           channel: 'slack',
-          target: process.env.SLACK_WEBHOOK_URL || '' }
+          target: process.env.SLACK_WEBHOOK_URL || '',
+        },
       ],
       runbook: 'https://docs.airwave.com/runbooks/database-failure',
-      enabled: true});
+      enabled: true,
+    });
 
     this.addRule({
       id: 'ai-budget-threshold',
       name: 'AI Budget Threshold Exceeded',
       description: 'Monthly AI budget usage exceeds 80%',
       severity: AlertSeverity.MEDIUM,
-      condition: Record<string, unknown>$1
-  type: 'threshold',
+      condition: {
+        type: 'threshold',
         metric: 'ai.budget.usage_percent',
         operator: '>',
         value: 0.8,
         timeWindow: 3600,
-        aggregation: 'max' },
-  evaluation: Record<string, unknown>$1
-  intervalSeconds: 300,
-        forDuration: 0 },
-  notifications: [
+        aggregation: 'max',
+      },
+      evaluation: {
+        intervalSeconds: 300,
+        forDuration: 0,
+      },
+      notifications: [
         {
           channel: 'email',
-          target: process.env.ALERT_EMAIL || 'admin@airwave.com' }
+          target: process.env.ALERT_EMAIL || 'admin@airwave.com',
+        },
       ],
       runbook: 'https://docs.airwave.com/runbooks/ai-budget',
-      enabled: true});
+      enabled: true,
+    });
 
     this.addRule({
       id: 'slow-api-response',
       name: 'Slow API Response Time',
       description: 'API response time exceeds 2 seconds',
       severity: AlertSeverity.MEDIUM,
-      condition: Record<string, unknown>$1
-  type: 'threshold',
+      condition: {
+        type: 'threshold',
         metric: 'api.requests.duration',
         operator: '>',
         value: 2000,
         timeWindow: 600,
-        aggregation: 'avg' },
-  evaluation: Record<string, unknown>$1
-  intervalSeconds: 120,
-        forDuration: 600 },
-  notifications: [
+        aggregation: 'avg',
+      },
+      evaluation: {
+        intervalSeconds: 120,
+        forDuration: 600,
+      },
+      notifications: [
         {
           channel: 'email',
-          target: process.env.ALERT_EMAIL || 'admin@airwave.com' }
+          target: process.env.ALERT_EMAIL || 'admin@airwave.com',
+        },
       ],
       runbook: 'https://docs.airwave.com/runbooks/slow-response',
-      enabled: true});
+      enabled: true,
+    });
 
     this.addRule({
       id: 'video-generation-failure',
       name: 'Video Generation Failure Rate High',
       description: 'Video generation failure rate exceeds 10%',
       severity: AlertSeverity.HIGH,
-      condition: Record<string, unknown>$1
-  type: 'threshold',
+      condition: {
+        type: 'threshold',
         metric: 'video.generation.failure_rate',
         operator: '>',
         value: 0.1,
         timeWindow: 900,
-        aggregation: 'avg' },
-  evaluation: Record<string, unknown>$1
-  intervalSeconds: 180,
-        forDuration: 300 },
-  notifications: [
+        aggregation: 'avg',
+      },
+      evaluation: {
+        intervalSeconds: 180,
+        forDuration: 300,
+      },
+      notifications: [
         {
           channel: 'email',
-          target: process.env.ALERT_EMAIL || 'admin@airwave.com' }
+          target: process.env.ALERT_EMAIL || 'admin@airwave.com',
+        },
         {
           channel: 'slack',
-          target: process.env.SLACK_WEBHOOK_URL || '' }
+          target: process.env.SLACK_WEBHOOK_URL || '',
+        },
       ],
       runbook: 'https://docs.airwave.com/runbooks/video-generation',
-      enabled: true});
+      enabled: true,
+    });
   }
 
   private startEvaluation(): void {
@@ -405,7 +437,7 @@ export class AlertingSystem {
 
   private async evaluateRule(rule: AlertRule): Promise<void> {
     const currentValue = await this.getMetricValue(rule.condition);
-    
+
     if (currentValue === null) return;
 
     const isConditionMet = this.evaluateCondition(rule.condition, currentValue);
@@ -425,35 +457,37 @@ export class AlertingSystem {
         threshold: rule.condition.value,
         firstSeen: new Date(),
         lastSeen: new Date(),
-        labels: rule.tags || { },
-  annotations: Record<string, unknown>$1
-  runbook: rule.runbook || ''}};
+        labels: rule.tags || {},
+        annotations: {
+          runbook: rule.runbook || '',
+        },
+      };
 
       this.activeAlerts.set(alertId, alert);
       await this.sendNotifications(alert, rule);
-      
+
       // Track alert metrics
       metrics.counter('alerts.fired', 1, {
         rule_id: rule.id,
-        severity: rule.severity});
-
+        severity: rule.severity,
+      });
     } else if (isConditionMet && existingAlert) {
       // Update existing alert
       existingAlert.lastSeen = new Date();
       existingAlert.value = currentValue;
-
     } else if (!isConditionMet && existingAlert) {
       // Resolve alert
       existingAlert.state = AlertState.RESOLVED;
       existingAlert.resolvedAt = new Date();
-      
+
       await this.sendResolutionNotifications(existingAlert, rule);
       this.activeAlerts.delete(existingAlert.id);
 
       // Track resolution metrics
       metrics.counter('alerts.resolved', 1, {
         rule_id: rule.id,
-        severity: rule.severity});
+        severity: rule.severity,
+      });
     }
   }
 
@@ -479,13 +513,13 @@ export class AlertingSystem {
   private async getMetricValue(condition: AlertCondition): Promise<number | null> {
     // In a real implementation, this would query your metrics backend
     // For now, we'll use a mock implementation
-    
+
     const history = this.metricHistory.get(condition.metric) || [];
     const now = Date.now();
-    const windowStart = now - (condition.timeWindow * 1000);
-    
+    const windowStart = now - condition.timeWindow * 1000;
+
     const relevantMetrics = history.filter(m => m.timestamp >= windowStart);
-    
+
     if (relevantMetrics.length === 0) return null;
 
     switch (condition.aggregation) {
@@ -525,17 +559,20 @@ export class AlertingSystem {
         if (success) {
           metrics.counter('alerts.notifications.sent', 1, {
             channel: notification.channel,
-            severity: alert.severity});
+            severity: alert.severity,
+          });
         } else {
           metrics.counter('alerts.notifications.failed', 1, {
             channel: notification.channel,
-            severity: alert.severity});
+            severity: alert.severity,
+          });
         }
       } catch (error) {
         console.error(`Failed to send notification via ${notification.channel}:`, error);
         metrics.counter('alerts.notifications.failed', 1, {
           channel: notification.channel,
-          severity: alert.severity});
+          severity: alert.severity,
+        });
       }
     }
   }
@@ -545,15 +582,18 @@ export class AlertingSystem {
     const resolutionAlert = {
       ...alert,
       description: `RESOLVED: ${alert.description}`,
-      state: AlertState.RESOLVED};
+      state: AlertState.RESOLVED,
+    };
 
     await this.sendNotifications(resolutionAlert, rule);
   }
 
   private shouldSendNotification(alert: Alert, notification: NotificationConfig): boolean {
     // Check severity conditions
-    if (notification.conditions?.severity && 
-        !notification.conditions.severity.includes(alert.severity)) {
+    if (
+      notification.conditions?.severity &&
+      !notification.conditions.severity.includes(alert.severity)
+    ) {
       return false;
     }
 
@@ -562,7 +602,7 @@ export class AlertingSystem {
       const now = new Date();
       const currentTime = now.toTimeString().slice(0, 5);
       const { start, end } = notification.conditions.timeRange;
-      
+
       if (currentTime >= start && currentTime <= end) {
         return false;
       }
@@ -612,7 +652,7 @@ export class AlertingSystem {
     const alert = this.activeAlerts.get(alertId);
     if (alert) {
       alert.state = AlertState.SILENCED;
-      
+
       // Auto-unsilence after duration
       setTimeout(() => {
         if (alert.state === AlertState.SILENCED) {
@@ -626,25 +666,25 @@ export class AlertingSystem {
   public updateMetric(metricName: string, value: number): void {
     const history = this.metricHistory.get(metricName) || [];
     history.push({ value, timestamp: Date.now() });
-    
+
     // Keep only last 1000 data points
     if (history.length > 1000) {
       history.splice(0, history.length - 1000);
     }
-    
+
     this.metricHistory.set(metricName, history);
   }
 
   public async healthCheck(): Promise<Record<string, boolean>> {
     const health: Record<string, boolean> = {};
-    
+
     for (const [name, channel] of [...this.channels.entries()]) {
       health[`channel_${name}`] = await channel.healthCheck();
     }
-    
+
     health.rules_loaded = this.rules.size > 0;
     health.evaluation_running = this.evaluationInterval !== null;
-    
+
     return health;
   }
 
