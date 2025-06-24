@@ -734,11 +734,11 @@ const ClientsPage: React.FC = () => {
                         No contacts added yet
                       </Typography>
                       <Button
-                        variant="outlined";
+                        variant="outlined"
                         startIcon={<AddIcon />}
                         sx={{ mt: 2 }}
-                        onClick={() => {;
-                          const newContact: Contact = {;
+                        onClick={() => {
+                          const newContact: Contact = {
                             id: `contact_${Date.now()}`,
                             name: '',
                             email: '',
@@ -831,11 +831,11 @@ const ClientsPage: React.FC = () => {
                         </Accordion>
                       ))}
                       <Button
-                        variant="outlined";
+                        variant="outlined"
                         startIcon={<AddIcon />}
                         sx={{ mt: 2 }}
-                        onClick={() => {;
-                          const newContact: Contact = {;
+                        onClick={() => {
+                          const newContact: Contact = {
                             id: `contact_${Date.now()}`,
                             name: '',
                             email: '',
