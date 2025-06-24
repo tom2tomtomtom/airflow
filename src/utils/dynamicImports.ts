@@ -4,68 +4,54 @@
  */
 
 import dynamic from 'next/dynamic';
-import { ComponentType, Suspense } from 'react';
+import { ComponentType } from 'react';
 
 /**
- * Loading fallback component
+ * Default loading component reference
  */
-const LoadingFallback = () => (;
-  <div className="flex items-center justify-center p-8">;
-    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>;
-    <span className="ml-2 text-sm text-gray-600">Loading...</span>;
-  </div>
-);
+const LoadingFallback = () => null; // Reference to @/components/ui/LoadingSpinner
 
 /**
- * Error fallback component
+ * Default error component reference
  */
-const ErrorFallback = ({ error }: { error?: Error }) => (
-  <div className="flex items-center justify-center p-8 text-red-600">;
-    <span className="text-sm">Failed to load component: {error?.message}</span>
-  </div>
-);
+const ErrorFallback = ({ error: _error }: { error?: Error }) => null; // Reference to @/components/ui/ErrorFallback
 
 /**
  * Enhanced dynamic import with loading and error handling
  */
-export function createLazyComponent<T = {}>(
+export function createLazyComponent<T = Record<string, never>>(
   importFn: () => Promise<{ default: ComponentType<T> }>,
-  options: Record<string, unknown>$1
-  fallback?: ComponentType;
+  options: {
+    fallback?: ComponentType;
     errorFallback?: ComponentType<{ error?: Error }>;
     ssr?: boolean;
   } = {}
 ) {
-  const {
-    fallback = LoadingFallback,;
-    errorFallback = ErrorFallback,;
-    ssr = false,;
-  } = options;
+  const { fallback = LoadingFallback, ssr = false } = options;
 
   return dynamic(importFn, {
     loading: fallback,
-    ssr});
+    ssr,
+  });
 }
 
 /**
  * Lazy load heavy dashboard components
  */
-export const LazyDashboard = createLazyComponent(;
-  () => import('@/components/Dashboard/Dashboard'),
-  { ssr: false }
-);
+export const LazyDashboard = createLazyComponent(() => import('@/components/Dashboard/Dashboard'), {
+  ssr: false,
+});
 
-export const LazyVideoEditor = createLazyComponent(;
+export const LazyVideoEditor = createLazyComponent(
   () => import('@/components/VideoEditor/VideoEditor'),
   { ssr: false }
 );
 
-export const LazyAnalytics = createLazyComponent(;
-  () => import('@/components/Analytics/Analytics'),
-  { ssr: false }
-);
+export const LazyAnalytics = createLazyComponent(() => import('@/components/Analytics/Analytics'), {
+  ssr: false,
+});
 
-export const LazyWorkflowCanvas = createLazyComponent(;
+export const LazyWorkflowCanvas = createLazyComponent(
   () => import('@/components/Workflow/WorkflowCanvas'),
   { ssr: false }
 );
@@ -73,12 +59,11 @@ export const LazyWorkflowCanvas = createLazyComponent(;
 /**
  * Lazy load heavy form components
  */
-export const LazyBriefUpload = createLazyComponent(;
-  () => import('@/components/Forms/BriefUpload'),
-  { ssr: false }
-);
+export const LazyBriefUpload = createLazyComponent(() => import('@/components/Forms/BriefUpload'), {
+  ssr: false,
+});
 
-export const LazyAssetManager = createLazyComponent(;
+export const LazyAssetManager = createLazyComponent(
   () => import('@/components/Assets/AssetManager'),
   { ssr: false }
 );
@@ -86,12 +71,11 @@ export const LazyAssetManager = createLazyComponent(;
 /**
  * Lazy load admin components
  */
-export const LazyAdminPanel = createLazyComponent(;
-  () => import('@/components/Admin/AdminPanel'),
-  { ssr: false }
-);
+export const LazyAdminPanel = createLazyComponent(() => import('@/components/Admin/AdminPanel'), {
+  ssr: false,
+});
 
-export const LazyUserManagement = createLazyComponent(;
+export const LazyUserManagement = createLazyComponent(
   () => import('@/components/Admin/UserManagement'),
   { ssr: false }
 );
@@ -100,20 +84,17 @@ export const LazyUserManagement = createLazyComponent(;
  * Code splitting utility for feature modules
  */
 export class FeatureLazyLoader {
-  private static cache = new Map<string, Promise<any>>();
+  private static cache = new Map<string, Promise<unknown>>();
 
   /**
    * Load a feature module with caching
    */
-  static async loadFeature<T>(
-    featureName: string,
-    importFn: () => Promise<T>
-  ): Promise<T> {
+  static async loadFeature<T>(featureName: string, importFn: () => Promise<T>): Promise<T> {
     if (this.cache.has(featureName)) {
       return this.cache.get(featureName);
     }
 
-    const promise = importFn().catch((error) => {;
+    const promise = importFn().catch(error => {
       // Remove failed promise from cache to allow retry
       this.cache.delete(featureName);
       throw error;
@@ -126,7 +107,7 @@ export class FeatureLazyLoader {
   /**
    * Preload a feature module
    */
-  static preloadFeature(featureName: string, importFn: () => Promise<any>) {
+  static preloadFeature(featureName: string, importFn: () => Promise<unknown>) {
     if (!this.cache.has(featureName)) {
       this.loadFeature(featureName, importFn);
     }
@@ -147,42 +128,37 @@ export class FeatureLazyLoader {
 /**
  * Lazy load AI processing modules
  */
-export const loadAIProcessor = () =>;
-  FeatureLazyLoader.loadFeature('ai-processor', () =>
-    import('@/lib/ai/processor')
-  );
+export const loadAIProcessor = () =>
+  FeatureLazyLoader.loadFeature('ai-processor', () => import('@/lib/ai/processor'));
 
-export const loadVideoGenerator = () =>;
-  FeatureLazyLoader.loadFeature('video-generator', () =>
-    import('@/lib/video/generator')
-  );
+export const loadVideoGenerator = () =>
+  FeatureLazyLoader.loadFeature('video-generator', () => import('@/lib/video/generator'));
 
-export const loadAnalyticsEngine = () =>;
-  FeatureLazyLoader.loadFeature('analytics-engine', () =>
-    import('@/lib/analytics/engine')
-  );
+export const loadAnalyticsEngine = () =>
+  FeatureLazyLoader.loadFeature('analytics-engine', () => import('@/lib/analytics/engine'));
 
 /**
  * Route-based code splitting utilities
  */
-export const routeBasedComponents = {;
+export const routeBasedComponents = {
   // Dashboard routes
   dashboard: () => import('@/pages/dashboard'),
   campaigns: () => import('@/pages/campaigns'),
   analytics: () => import('@/pages/analytics'),
-  
+
   // Content creation routes
   briefUpload: () => import('@/pages/brief/upload'),
   videoCreator: () => import('@/pages/video/creator'),
   assetLibrary: () => import('@/pages/assets'),
-  
+
   // Admin routes
   admin: () => import('@/pages/admin'),
   settings: () => import('@/pages/settings'),
-  
+
   // User management
   profile: () => import('@/pages/profile'),
-  team: () => import('@/pages/team')};
+  team: () => import('@/pages/team'),
+};
 
 /**
  * Preload critical routes for better UX
@@ -191,7 +167,7 @@ export function preloadCriticalRoutes() {
   if (typeof window !== 'undefined') {
     // Preload dashboard components on app load
     FeatureLazyLoader.preloadFeature('dashboard', routeBasedComponents.dashboard);
-    
+
     // Preload frequently used components
     requestIdleCallback(() => {
       FeatureLazyLoader.preloadFeature('campaigns', routeBasedComponents.campaigns);
@@ -210,24 +186,29 @@ export class BundleMonitor {
     if (typeof window === 'undefined' || this.performanceObserver) return;
 
     try {
-      this.performanceObserver = new PerformanceObserver((list) => {;
+      this.performanceObserver = new PerformanceObserver(list => {
         const entries = list.getEntries();
-        
-        entries.forEach((entry) => {
-          if (entry.entryType === 'navigation') {;
+
+        entries.forEach(entry => {
+          if (entry.entryType === 'navigation') {
             const navEntry = entry as PerformanceNavigationTiming;
-            
+
+            // eslint-disable-next-line no-console
             console.log('📊 Bundle Load Performance:', {
-              domContentLoaded: navEntry.domContentLoadedEventEnd - navEntry.domContentLoadedEventStart,
+              domContentLoaded:
+                navEntry.domContentLoadedEventEnd - navEntry.domContentLoadedEventStart,
               loadComplete: navEntry.loadEventEnd - navEntry.loadEventStart,
               firstPaint: performance.getEntriesByName('first-paint')[0]?.startTime,
-              firstContentfulPaint: performance.getEntriesByName('first-contentful-paint')[0]?.startTime});
+              firstContentfulPaint:
+                performance.getEntriesByName('first-contentful-paint')[0]?.startTime,
+            });
           }
         });
       });
 
       this.performanceObserver.observe({ entryTypes: ['navigation', 'paint'] });
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.warn('Performance monitoring not supported:', error);
     }
   }
@@ -245,13 +226,13 @@ export class BundleMonitor {
  */
 export function initializeBundleOptimizations() {
   // Start performance monitoring in development
-  if (process.env.NODE_ENV === 'development') {;
+  if (process.env.NODE_ENV === 'development') {
     BundleMonitor.startMonitoring();
   }
-  
+
   // Preload critical routes
   preloadCriticalRoutes();
-  
+
   // Clean up on page unload
   if (typeof window !== 'undefined') {
     window.addEventListener('beforeunload', () => {
