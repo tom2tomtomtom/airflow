@@ -164,20 +164,22 @@ export const clientApi = {
     message: string;
     client: Client;
     }>(`/api/clients/${id}`, {
-      method: 'DELETE'}); };
+      method: 'DELETE'
+    });
+  },
 
 // Assets API
 export interface Asset {
   id: string;
-    name: string;
-    type: 'image' | 'video' | 'text' | 'voice';
-    url: string;
+  name: string;
+  type: 'image' | 'video' | 'text' | 'voice';
+  url: string;
   thumbnailUrl?: string;
   description?: string;
   tags: string[];
-    dateCreated: string;
-    clientId: string;
-    userId: string;
+  dateCreated: string;
+  clientId: string;
+  userId: string;
 }
 
 export const assetApi = {
@@ -210,26 +212,28 @@ export const assetApi = {
   deleteAsset: async (id: string) => {
     return apiRequest<{
       success: boolean;
-    message: string;
+      message: string;
     }>(`/api/assets/${id}`, {
-      method: 'DELETE'}); };
+      method: 'DELETE'
+    });
+  },
 
 // AI Generation API
 export interface GenerationPrompt {
   prompt: string;
-    type: 'text' | 'image' | 'video' | 'voice';
+  type: 'text' | 'image' | 'video' | 'voice';
   parameters?: Record<string, unknown>;
   clientId: string;
 }
 
 export interface GenerationResult {
   id: string;
-    type: 'text' | 'image' | 'video' | 'voice';
-    content: string | string[]; // URL for media, text content for text
+  type: 'text' | 'image' | 'video' | 'voice';
+  content: string | string[]; // URL for media, text content for text
   prompt: string;
-    dateCreated: string;
-    clientId: string;
-    userId: string;
+  dateCreated: string;
+  clientId: string;
+  userId: string;
 }
 
 export const aiApi = {
@@ -246,13 +250,15 @@ export const aiApi = {
     const url = clientId ? `/api/ai/generations?clientId=${clientId}` : '/api/ai/generations';
     return apiRequest<{
       success: boolean;
-    generations: GenerationResult[];
-    }>(url); };
+      generations: GenerationResult[];
+    }>(url);
+  }
 
 const api = {
   auth: authApi,
   client: clientApi,
   asset: assetApi,
-  ai: aiApi};
+  ai: aiApi
+};
 
 export default api;
