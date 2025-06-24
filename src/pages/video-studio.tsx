@@ -36,7 +36,8 @@ import {
   FormControlLabel,
   Slider,
   Avatar,
-  Divider} from '@mui/material';
+  Divider,
+} from '@mui/material';
 import {
   VideoLibrary,
   Settings,
@@ -50,7 +51,8 @@ import {
   Error as ErrorIcon,
   AutoAwesome,
   Palette,
-  MusicNote} from '@mui/icons-material';
+  MusicNote,
+} from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
@@ -131,21 +133,27 @@ const VideoStudioPage: React.FC = () => {
     style: 'commercial',
     duration: 15,
     resolution: '1080p',
-    aspect_ratio: '16:9'});
+    aspect_ratio: '16:9',
+  });
 
   const [contentElements, setContentElements] = useState<ContentElements>({
     text_overlays: [],
     background_music: true,
     voice_over: undefined,
-    brand_elements: activeClient ? {
-      logo_url: activeClient.logo,
-      color_scheme: [activeClient.primaryColor, activeClient.secondaryColor]} : undefined});
+    brand_elements: activeClient
+      ? {
+          logo_url: activeClient.logo,
+          color_scheme: [activeClient.primaryColor, activeClient.secondaryColor],
+        }
+      : undefined,
+  });
 
   const [generationSettings, setGenerationSettings] = useState({
     variations_count: 1,
     include_captions: false,
     auto_optimize_for_platform: true,
-    save_to_assets: true});
+    save_to_assets: true,
+  });
 
   // Mock templates data
   const mockTemplates: VideoTemplate[] = [
@@ -158,7 +166,8 @@ const VideoStudioPage: React.FC = () => {
       aspect_ratio: '16:9',
       platform: ['instagram', 'facebook', 'youtube'],
       category: 'Social Media',
-      tags: ['promo', 'social', 'dynamic']},
+      tags: ['promo', 'social', 'dynamic'],
+    },
     {
       id: 'template-2',
       name: 'Product Showcase',
@@ -168,7 +177,8 @@ const VideoStudioPage: React.FC = () => {
       aspect_ratio: '16:9',
       platform: ['youtube', 'linkedin', 'facebook'],
       category: 'Product',
-      tags: ['product', 'showcase', 'elegant']},
+      tags: ['product', 'showcase', 'elegant'],
+    },
     {
       id: 'template-3',
       name: 'TikTok Vertical',
@@ -178,7 +188,8 @@ const VideoStudioPage: React.FC = () => {
       aspect_ratio: '9:16',
       platform: ['tiktok', 'instagram'],
       category: 'Vertical',
-      tags: ['vertical', 'tiktok', 'stories']},
+      tags: ['vertical', 'tiktok', 'stories'],
+    },
     {
       id: 'template-4',
       name: 'Corporate Presentation',
@@ -188,7 +199,8 @@ const VideoStudioPage: React.FC = () => {
       aspect_ratio: '16:9',
       platform: ['linkedin', 'youtube'],
       category: 'Corporate',
-      tags: ['corporate', 'professional', 'presentation']},
+      tags: ['corporate', 'professional', 'presentation'],
+    },
   ];
 
   useEffect(() => {
@@ -200,9 +212,11 @@ const VideoStudioPage: React.FC = () => {
     if (activeClient) {
       setContentElements(prev => ({
         ...prev,
-        brand_elements: Record<string, unknown>$1
-  logo_url: activeClient.logo,
-          color_scheme: [activeClient.primaryColor, activeClient.secondaryColor]}}));
+        brand_elements: {
+          logo_url: activeClient.logo,
+          color_scheme: [activeClient.primaryColor, activeClient.secondaryColor],
+        },
+      }));
     }
   }, [activeClient]);
 
@@ -225,15 +239,16 @@ const VideoStudioPage: React.FC = () => {
         template_id: selectedTemplate?.id,
         video_config: videoConfig,
         content_elements: contentElements,
-        generation_settings: generationSettings};
+        generation_settings: generationSettings,
+      };
 
       const response = await fetch('/api/video/generate', {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json'
-      
-      },
-        body: JSON.stringify(requestData)});
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData),
+      });
 
       const result = await response.json();
 
@@ -246,7 +261,8 @@ const VideoStudioPage: React.FC = () => {
           progress: 0,
           render_job_id: job.render_job_id,
           estimated_completion: job.estimated_completion,
-          created_at: new Date().toISOString()}));
+          created_at: new Date().toISOString(),
+        }));
 
         setVideoJobs(prev => [...prev, ...newJobs]);
         setActiveStep(3); // Move to monitoring step
@@ -267,8 +283,8 @@ const VideoStudioPage: React.FC = () => {
     if (videoJobs.length === 0) return;
 
     try {
-      const activeJobs = videoJobs.filter((job: any) =>
-        job.status === 'pending' || job.status === 'processing'
+      const activeJobs = videoJobs.filter(
+        (job: any) => job.status === 'pending' || job.status === 'processing'
       );
 
       for (const job of activeJobs) {
@@ -276,9 +292,9 @@ const VideoStudioPage: React.FC = () => {
         const result = await response.json();
 
         if (result.success) {
-          setVideoJobs(prev => prev.map((j: any) =>
-            j.id === job.id ? { ...j, ...result.job } : j
-          ));
+          setVideoJobs(prev =>
+            prev.map((j: any) => (j.id === job.id ? { ...j, ...result.job } : j))
+          );
         }
       }
     } catch (error: any) {
@@ -295,12 +311,7 @@ const VideoStudioPage: React.FC = () => {
     return () => clearInterval(interval);
   }, [videoJobs]);
 
-  const steps = [
-    'Select Template',
-    'Configure Video',
-    'Customize Content',
-    'Generate & Monitor',
-  ];
+  const steps = ['Select Template', 'Configure Video', 'Customize Content', 'Generate & Monitor'];
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -330,7 +341,7 @@ const VideoStudioPage: React.FC = () => {
 
   return (
     <>
-       <Head>
+      <Head>
         <title>Video Studio | AIRFLOW</title>
       </Head>
       <DashboardLayout title="Video Studio">
@@ -388,15 +399,15 @@ const VideoStudioPage: React.FC = () => {
                             sx={{
                               cursor: 'pointer',
                               transition: 'all 0.2s',
-                              border: selectedTemplate?.id === template.id
-                                ? '2px solid'
-                                : '1px solid',
-                              borderColor: selectedTemplate?.id === template.id
-                                ? 'primary.main'
-                                : 'divider',
+                              border:
+                                selectedTemplate?.id === template.id ? '2px solid' : '1px solid',
+                              borderColor:
+                                selectedTemplate?.id === template.id ? 'primary.main' : 'divider',
                               '&:hover': {
                                 boxShadow: 2,
-                                transform: 'translateY(-2px)'}}}
+                                transform: 'translateY(-2px)',
+                              },
+                            }}
                             onClick={() => setSelectedTemplate(template)}
                           >
                             <CardMedia
@@ -414,8 +425,16 @@ const VideoStudioPage: React.FC = () => {
                               </Typography>
                               <Box display="flex" gap={0.5} mb={1}>
                                 <Chip label={template.category} size="small" />
-                                <Chip label={template.aspect_ratio} size="small" variant="outlined" />
-                                <Chip label={`${template.duration}s`} size="small" variant="outlined" />
+                                <Chip
+                                  label={template.aspect_ratio}
+                                  size="small"
+                                  variant="outlined"
+                                />
+                                <Chip
+                                  label={`${template.duration}s`}
+                                  size="small"
+                                  variant="outlined"
+                                />
                               </Box>
                               <Box display="flex" flexWrap="wrap" gap={0.5}>
                                 {template.platform.map((platform: any) => (
@@ -467,7 +486,7 @@ const VideoStudioPage: React.FC = () => {
                           label="Video Prompt"
                           placeholder="Describe what you want your video to show. Be specific about scenes, actions, and visual elements..."
                           value={videoConfig.prompt}
-                          onChange={(e) => setVideoConfig({ ...videoConfig, prompt: e.target.value })}
+                          onChange={e => setVideoConfig({ ...videoConfig, prompt: e.target.value })}
                           required
                         />
                       </Grid>
@@ -478,7 +497,9 @@ const VideoStudioPage: React.FC = () => {
                           <Select
                             value={videoConfig.style}
                             label="Video Style"
-                            onChange={(e) => setVideoConfig({ ...videoConfig, style: e.target.value })}
+                            onChange={e =>
+                              setVideoConfig({ ...videoConfig, style: e.target.value })
+                            }
                           >
                             <MenuItem value="commercial">Commercial</MenuItem>
                             <MenuItem value="cinematic">Cinematic</MenuItem>
@@ -495,12 +516,13 @@ const VideoStudioPage: React.FC = () => {
                           <Select
                             value={videoConfig.platform || ''}
                             label="Platform"
-                            onChange={(e) => {
+                            onChange={e => {
                               const platform = e.target.value;
                               setVideoConfig({
                                 ...videoConfig,
                                 platform,
-                                aspect_ratio: getAspectRatioForPlatform(platform)});
+                                aspect_ratio: getAspectRatioForPlatform(platform),
+                              });
                             }}
                           >
                             <MenuItem value="">General</MenuItem>
@@ -520,7 +542,9 @@ const VideoStudioPage: React.FC = () => {
                           <Select
                             value={videoConfig.resolution}
                             label="Resolution"
-                            onChange={(e) => setVideoConfig({ ...videoConfig, resolution: e.target.value })}
+                            onChange={e =>
+                              setVideoConfig({ ...videoConfig, resolution: e.target.value })
+                            }
                           >
                             <MenuItem value="720p">720p (HD)</MenuItem>
                             <MenuItem value="1080p">1080p (Full HD)</MenuItem>
@@ -535,7 +559,9 @@ const VideoStudioPage: React.FC = () => {
                           <Select
                             value={videoConfig.aspect_ratio}
                             label="Aspect Ratio"
-                            onChange={(e) => setVideoConfig({ ...videoConfig, aspect_ratio: e.target.value })}
+                            onChange={e =>
+                              setVideoConfig({ ...videoConfig, aspect_ratio: e.target.value })
+                            }
                           >
                             <MenuItem value="16:9">16:9 (Landscape)</MenuItem>
                             <MenuItem value="9:16">9:16 (Portrait)</MenuItem>
@@ -550,15 +576,17 @@ const VideoStudioPage: React.FC = () => {
                           <Typography gutterBottom>Duration: {videoConfig.duration}s</Typography>
                           <Slider
                             value={videoConfig.duration}
-                            onChange={(_, value) => setVideoConfig({ ...videoConfig, duration: value as number })}
+                            onChange={(_, value) =>
+                              setVideoConfig({ ...videoConfig, duration: value as number })
+                            }
                             min={5}
                             max={60}
                             step={5}
                             marks={[
-                              { value: 5, label: '5s'  }
-                              { value: 15, label: '15s'  }
-                              { value: 30, label: '30s'  }
-                              { value: 60, label: '60s'  }
+                              { value: 5, label: '5s' },
+                              { value: 15, label: '15s' },
+                              { value: 30, label: '30s' },
+                              { value: 60, label: '60s' },
                             ]}
                           />
                         </Box>
@@ -573,10 +601,7 @@ const VideoStudioPage: React.FC = () => {
                       >
                         Continue to Customization
                       </Button>
-                      <Button
-                        variant="outlined"
-                        onClick={() => setActiveStep(0)}
-                      >
+                      <Button variant="outlined" onClick={() => setActiveStep(0)}>
                         Back to Templates
                       </Button>
                     </Box>
@@ -620,9 +645,14 @@ const VideoStudioPage: React.FC = () => {
                                 onClick={() => {
                                   setContentElements({
                                     ...contentElements,
-                                    text_overlays: [...contentElements.text_overlays, {
-                                      text: '',
-                                      position: 'center'}]});
+                                    text_overlays: [
+                                      ...contentElements.text_overlays,
+                                      {
+                                        text: '',
+                                        position: 'center',
+                                      },
+                                    ],
+                                  });
                                 }}
                               >
                                 Add Text Overlay
@@ -644,12 +674,18 @@ const VideoStudioPage: React.FC = () => {
                                           fullWidth
                                           label="Text"
                                           value={overlay.text}
-                                          onChange={(e) => {
-                                            const updatedOverlays = [...contentElements.text_overlays];
-                                            updatedOverlays[index] = { ...overlay, text: e.target.value };
+                                          onChange={e => {
+                                            const updatedOverlays = [
+                                              ...contentElements.text_overlays,
+                                            ];
+                                            updatedOverlays[index] = {
+                                              ...overlay,
+                                              text: e.target.value,
+                                            };
                                             setContentElements({
                                               ...contentElements,
-                                              text_overlays: updatedOverlays});
+                                              text_overlays: updatedOverlays,
+                                            });
                                           }}
                                         />
                                       </Grid>
@@ -659,14 +695,21 @@ const VideoStudioPage: React.FC = () => {
                                           <Select
                                             value={overlay.position}
                                             label="Position"
-                                            onChange={(e) => {
-                                              const updatedOverlays = [...contentElements.text_overlays];
+                                            onChange={e => {
+                                              const updatedOverlays = [
+                                                ...contentElements.text_overlays,
+                                              ];
                                               updatedOverlays[index] = {
                                                 ...overlay,
-                                                position: e.target.value as 'top' | 'center' | 'bottom'};
+                                                position: e.target.value as
+                                                  | 'top'
+                                                  | 'center'
+                                                  | 'bottom',
+                                              };
                                               setContentElements({
                                                 ...contentElements,
-                                                text_overlays: updatedOverlays});
+                                                text_overlays: updatedOverlays,
+                                              });
                                             }}
                                           >
                                             <MenuItem value="top">Top</MenuItem>
@@ -679,10 +722,14 @@ const VideoStudioPage: React.FC = () => {
                                         <Button
                                           color="error"
                                           onClick={() => {
-                                            const updatedOverlays = contentElements.text_overlays.filter((_, i) => i !== index);
+                                            const updatedOverlays =
+                                              contentElements.text_overlays.filter(
+                                                (_, i) => i !== index
+                                              );
                                             setContentElements({
                                               ...contentElements,
-                                              text_overlays: updatedOverlays});
+                                              text_overlays: updatedOverlays,
+                                            });
                                           }}
                                         >
                                           Remove Overlay
@@ -698,9 +745,14 @@ const VideoStudioPage: React.FC = () => {
                                 onClick={() => {
                                   setContentElements({
                                     ...contentElements,
-                                    text_overlays: [...contentElements.text_overlays, {
-                                      text: '',
-                                      position: 'center'}]});
+                                    text_overlays: [
+                                      ...contentElements.text_overlays,
+                                      {
+                                        text: '',
+                                        position: 'center',
+                                      },
+                                    ],
+                                  });
                                 }}
                               >
                                 Add Another Overlay
@@ -718,9 +770,12 @@ const VideoStudioPage: React.FC = () => {
                               control={
                                 <Switch
                                   checked={contentElements.background_music}
-                                  onChange={(e) => setContentElements({
-                                    ...contentElements,
-                                    background_music: e.target.checked})}
+                                  onChange={e =>
+                                    setContentElements({
+                                      ...contentElements,
+                                      background_music: e.target.checked,
+                                    })
+                                  }
                                 />
                               }
                               label="Include Background Music"
@@ -732,18 +787,21 @@ const VideoStudioPage: React.FC = () => {
                               control={
                                 <Switch
                                   checked={!!contentElements.voice_over}
-                                  onChange={(e) => {
+                                  onChange={e => {
                                     if (e.target.checked) {
                                       setContentElements({
                                         ...contentElements,
-                                        voice_over: Record<string, unknown>$1
-  text: videoConfig.prompt,
+                                        voice_over: {
+                                          text: videoConfig.prompt,
                                           voice: 'neural',
-                                          language: 'en'}});
+                                          language: 'en',
+                                        },
+                                      });
                                     } else {
                                       setContentElements({
                                         ...contentElements,
-                                        voice_over: undefined});
+                                        voice_over: undefined,
+                                      });
                                     }
                                   }}
                                 />
@@ -754,18 +812,22 @@ const VideoStudioPage: React.FC = () => {
 
                           {contentElements.voice_over && (
                             <>
-       <Grid size={{ xs: 12 }}>
+                              <Grid size={{ xs: 12 }}>
                                 <TextField
                                   fullWidth
                                   multiline
                                   rows={3}
                                   label="Voice Over Text"
                                   value={contentElements.voice_over.text}
-                                  onChange={(e) => setContentElements({
-                                    ...contentElements,
-                                    voice_over: { }
-                                      ...contentElements.voice_over!,
-                                      text: e.target.value}})}
+                                  onChange={e =>
+                                    setContentElements({
+                                      ...contentElements,
+                                      voice_over: {
+                                        ...contentElements.voice_over!,
+                                        text: e.target.value,
+                                      },
+                                    })
+                                  }
                                 />
                               </Grid>
                               <Grid size={{ xs: 12, md: 6 }}>
@@ -774,11 +836,15 @@ const VideoStudioPage: React.FC = () => {
                                   <Select
                                     value={contentElements.voice_over.voice}
                                     label="Voice"
-                                    onChange={(e) => setContentElements({
-                                      ...contentElements,
-                                      voice_over: { }
-                                        ...contentElements.voice_over!,
-                                        voice: e.target.value}})}
+                                    onChange={e =>
+                                      setContentElements({
+                                        ...contentElements,
+                                        voice_over: {
+                                          ...contentElements.voice_over!,
+                                          voice: e.target.value,
+                                        },
+                                      })
+                                    }
                                   >
                                     <MenuItem value="neural">Neural (Default)</MenuItem>
                                     <MenuItem value="male">Male</MenuItem>
@@ -792,11 +858,15 @@ const VideoStudioPage: React.FC = () => {
                                   <Select
                                     value={contentElements.voice_over.language}
                                     label="Language"
-                                    onChange={(e) => setContentElements({
-                                      ...contentElements,
-                                      voice_over: { }
-                                        ...contentElements.voice_over!,
-                                        language: e.target.value}})}
+                                    onChange={e =>
+                                      setContentElements({
+                                        ...contentElements,
+                                        voice_over: {
+                                          ...contentElements.voice_over!,
+                                          language: e.target.value,
+                                        },
+                                      })
+                                    }
                                   >
                                     <MenuItem value="en">English</MenuItem>
                                     <MenuItem value="es">Spanish</MenuItem>
@@ -827,11 +897,15 @@ const VideoStudioPage: React.FC = () => {
                               fullWidth
                               label="Logo URL"
                               value={contentElements.brand_elements?.logo_url || ''}
-                              onChange={(e) => setContentElements({
-                                ...contentElements,
-                                brand_elements: { }
-                                  ...contentElements.brand_elements,
-                                  logo_url: e.target.value}})}
+                              onChange={e =>
+                                setContentElements({
+                                  ...contentElements,
+                                  brand_elements: {
+                                    ...contentElements.brand_elements,
+                                    logo_url: e.target.value,
+                                  },
+                                })
+                              }
                               placeholder="https://example.com/logo.png"
                             />
                           </Grid>
@@ -841,11 +915,15 @@ const VideoStudioPage: React.FC = () => {
                               fullWidth
                               label="Font Family"
                               value={contentElements.brand_elements?.font_family || ''}
-                              onChange={(e) => setContentElements({
-                                ...contentElements,
-                                brand_elements: { }
-                                  ...contentElements.brand_elements,
-                                  font_family: e.target.value}})}
+                              onChange={e =>
+                                setContentElements({
+                                  ...contentElements,
+                                  brand_elements: {
+                                    ...contentElements.brand_elements,
+                                    font_family: e.target.value,
+                                  },
+                                })
+                              }
                               placeholder="Arial, Helvetica, sans-serif"
                             />
                           </Grid>
@@ -861,7 +939,8 @@ const VideoStudioPage: React.FC = () => {
                                     borderRadius: '50%',
                                     bgcolor: activeClient.primaryColor,
                                     border: '1px solid',
-                                    borderColor: 'divider'}}
+                                    borderColor: 'divider',
+                                  }}
                                 />
                                 <Box
                                   sx={{
@@ -870,7 +949,8 @@ const VideoStudioPage: React.FC = () => {
                                     borderRadius: '50%',
                                     bgcolor: activeClient.secondaryColor,
                                     border: '1px solid',
-                                    borderColor: 'divider'}}
+                                    borderColor: 'divider',
+                                  }}
                                 />
                                 <Typography variant="caption" color="text.secondary">
                                   (From client settings)
@@ -897,16 +977,19 @@ const VideoStudioPage: React.FC = () => {
                               </Typography>
                               <Slider
                                 value={generationSettings.variations_count}
-                                onChange={(_, value) => setGenerationSettings({
-                                  ...generationSettings,
-                                  variations_count: value as number})}
+                                onChange={(_, value) =>
+                                  setGenerationSettings({
+                                    ...generationSettings,
+                                    variations_count: value as number,
+                                  })
+                                }
                                 min={1}
                                 max={5}
                                 step={1}
                                 marks={[
-                                  { value: 1, label: '1'  }
-                                  { value: 3, label: '3'  }
-                                  { value: 5, label: '5'  }
+                                  { value: 1, label: '1' },
+                                  { value: 3, label: '3' },
+                                  { value: 5, label: '5' },
                                 ]}
                               />
                             </Box>
@@ -917,9 +1000,12 @@ const VideoStudioPage: React.FC = () => {
                               control={
                                 <Switch
                                   checked={generationSettings.include_captions}
-                                  onChange={(e) => setGenerationSettings({
-                                    ...generationSettings,
-                                    include_captions: e.target.checked})}
+                                  onChange={e =>
+                                    setGenerationSettings({
+                                      ...generationSettings,
+                                      include_captions: e.target.checked,
+                                    })
+                                  }
                                 />
                               }
                               label="Include Captions"
@@ -931,9 +1017,12 @@ const VideoStudioPage: React.FC = () => {
                               control={
                                 <Switch
                                   checked={generationSettings.auto_optimize_for_platform}
-                                  onChange={(e) => setGenerationSettings({
-                                    ...generationSettings,
-                                    auto_optimize_for_platform: e.target.checked})}
+                                  onChange={e =>
+                                    setGenerationSettings({
+                                      ...generationSettings,
+                                      auto_optimize_for_platform: e.target.checked,
+                                    })
+                                  }
                                 />
                               }
                               label="Auto-optimize for Platform"
@@ -945,9 +1034,12 @@ const VideoStudioPage: React.FC = () => {
                               control={
                                 <Switch
                                   checked={generationSettings.save_to_assets}
-                                  onChange={(e) => setGenerationSettings({
-                                    ...generationSettings,
-                                    save_to_assets: e.target.checked})}
+                                  onChange={e =>
+                                    setGenerationSettings({
+                                      ...generationSettings,
+                                      save_to_assets: e.target.checked,
+                                    })
+                                  }
                                 />
                               }
                               label="Save to Assets Library"
@@ -966,10 +1058,7 @@ const VideoStudioPage: React.FC = () => {
                       >
                         {generating ? 'Generating...' : 'Generate Video'}
                       </Button>
-                      <Button
-                        variant="outlined"
-                        onClick={() => setActiveStep(1)}
-                      >
+                      <Button variant="outlined" onClick={() => setActiveStep(1)}>
                         Back to Configuration
                       </Button>
                     </Box>
@@ -982,9 +1071,7 @@ const VideoStudioPage: React.FC = () => {
                 <Card>
                   <CardContent>
                     <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
-                      <Typography variant="h6">
-                        Video Generation Progress
-                      </Typography>
+                      <Typography variant="h6">Video Generation Progress</Typography>
                       <Button
                         variant="outlined"
                         startIcon={<Refresh />}
@@ -997,15 +1084,14 @@ const VideoStudioPage: React.FC = () => {
 
                     {videoJobs.length === 0 ? (
                       <Alert severity="info">
-                        No video generation jobs yet. Go back to configure and generate your first video.
+                        No video generation jobs yet. Go back to configure and generate your first
+                        video.
                       </Alert>
                     ) : (
                       <List>
                         {videoJobs.map((job: any) => (
                           <ListItem key={job.id} divider>
-                            <ListItemIcon>
-                              {getStatusIcon(job.status)}
-                            </ListItemIcon>
+                            <ListItemIcon>{getStatusIcon(job.status)}</ListItemIcon>
                             <ListItemText
                               primary={`Video ${job.variation_index} (${job.generation_id})`}
                               secondary={
@@ -1041,7 +1127,7 @@ const VideoStudioPage: React.FC = () => {
                               />
                               {job.output_url && (
                                 <>
-       <Tooltip title="Download">
+                                  <Tooltip title="Download">
                                     <IconButton size="small" href={job.output_url} target="_blank">
                                       <Download />
                                     </IconButton>
@@ -1060,10 +1146,7 @@ const VideoStudioPage: React.FC = () => {
                     )}
 
                     <Box mt={3}>
-                      <Button
-                        variant="outlined"
-                        onClick={() => setActiveStep(0)}
-                      >
+                      <Button variant="outlined" onClick={() => setActiveStep(0)}>
                         Create Another Video
                       </Button>
                     </Box>
@@ -1092,9 +1175,7 @@ const VideoStudioPage: React.FC = () => {
                         >
                           {activeClient.name.charAt(0)}
                         </Avatar>
-                        <Typography variant="body1">
-                          {activeClient.name}
-                        </Typography>
+                        <Typography variant="body1">{activeClient.name}</Typography>
                       </Box>
                     </Box>
                   )}
@@ -1104,9 +1185,7 @@ const VideoStudioPage: React.FC = () => {
                       <Typography variant="subtitle2" color="text.secondary">
                         Template
                       </Typography>
-                      <Typography variant="body1">
-                        {selectedTemplate.name}
-                      </Typography>
+                      <Typography variant="body1">{selectedTemplate.name}</Typography>
                       <Typography variant="caption" color="text.secondary">
                         {selectedTemplate.category} • {selectedTemplate.duration}s
                       </Typography>
@@ -1131,15 +1210,9 @@ const VideoStudioPage: React.FC = () => {
                     <Typography variant="subtitle2" color="text.secondary">
                       Configuration
                     </Typography>
-                    <Typography variant="body2">
-                      Style: {videoConfig.style}
-                    </Typography>
-                    <Typography variant="body2">
-                      Duration: {videoConfig.duration}s
-                    </Typography>
-                    <Typography variant="body2">
-                      Resolution: {videoConfig.resolution}
-                    </Typography>
+                    <Typography variant="body2">Style: {videoConfig.style}</Typography>
+                    <Typography variant="body2">Duration: {videoConfig.duration}s</Typography>
+                    <Typography variant="body2">Resolution: {videoConfig.resolution}</Typography>
                     <Typography variant="body2">
                       Aspect Ratio: {videoConfig.aspect_ratio}
                     </Typography>
@@ -1176,7 +1249,8 @@ const getAspectRatioForPlatform = (platform: string): string => {
     tiktok: '9:16',
     facebook: '16:9',
     linkedin: '16:9',
-    twitter: '16:9'};
+    twitter: '16:9',
+  };
   return platformRatios[platform] || '16:9';
 };
 
