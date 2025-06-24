@@ -14,16 +14,15 @@ import {
   errorResponse,
   handleApiError,
   methodNotAllowed,
-  ApiErrorCode} from '@/lib/api-response';
-import { securityLogger, SecurityEvents } from '@/lib/security/security-logger';
-import { securityValidation, sanitization } from '@/utils/validation-utils';
+  ApiErrorCode,
+} from '@/lib/api-response';
 // Simple AICostController stub
 class AICostController {
   static getInstance() {
     return new AICostController();
   }
 
-  async checkBudget(service: string, model: string, tokens: number, userId: string) : Promise<void> {
+  async checkBudget(service: string, model: string, tokens: number, userId: string) {
     // Calculate estimated cost based on tokens
     const estimatedCost = this.calculateCost(service, model, tokens);
 
@@ -35,58 +34,65 @@ class AICostController {
       allowed,
       estimatedCost,
       budgetRemaining,
-      reason: allowed ? 'Budget check passed' : 'Budget would be exceeded'};
+      reason: allowed ? 'Budget check passed' : 'Budget would be exceeded',
+    };
   }
 
   calculateCost(service: string, model: string, tokens: number): number {
     // Mock cost calculation
     const rates: Record<string, Record<string, number>> = {
       openai: { 'gpt-4': 0.03, 'gpt-3.5-turbo': 0.001 },
-      anthropic: { 'claude-3-opus': 0.015  },
-  elevenlabs: { eleven_multilingual_v2: 0.18 }};
+      anthropic: { 'claude-3-opus': 0.015 },
+      elevenlabs: { eleven_multilingual_v2: 0.18 },
+    };
 
     const rate = rates[service]?.[model] || 0.001;
     return (tokens / 1000) * rate;
   }
 
-  async getTotalSpent() : Promise<void> {
+  async getTotalSpent() {
     return 0;
   }
 
-  async getBudgetStatus() : Promise<void> {
+  async getBudgetStatus() {
     return { status: 'healthy', remaining: 1000 };
   }
 
-  async getMonthlyUsage(userId: string) : Promise<void> {
+  async getMonthlyUsage(userId: string) {
     return { totalCost: 0, totalTokens: 0, callCount: 0 };
   }
 
-  async getUsageBreakdown(userId: string, type: 'operation' | 'model') : Promise<void> {
+  async getUsageBreakdown(userId: string, type: 'operation' | 'model') {
     if (type === 'operation') {
       return {
-        operationBreakdown: Record<string, unknown>$1
-  copy_generation: { count: 5, cost: 0.15, tokens: 1500  },
-  image_generation: { count: 2, cost: 0.08, tokens: 0  },
-  motivation_analysis: { count: 3, cost: 0.09, tokens: 900 }}};
+        operationBreakdown: {
+          copy_generation: { count: 5, cost: 0.15, tokens: 1500 },
+          image_generation: { count: 2, cost: 0.08, tokens: 0 },
+          motivation_analysis: { count: 3, cost: 0.09, tokens: 900 },
+        },
+      };
     } else {
       return {
-        modelBreakdown: { }
-          'gpt-4': { count: 3, cost: 0.18, tokens: 1200  }
-          'gpt-3.5-turbo': { count: 5, cost: 0.05, tokens: 1000  }
-          'dall-e-3': { count: 2, cost: 0.08, tokens: 0 }}};
+        modelBreakdown: {
+          'gpt-4': { count: 3, cost: 0.18, tokens: 1200 },
+          'gpt-3.5-turbo': { count: 5, cost: 0.05, tokens: 1000 },
+          'dall-e-3': { count: 2, cost: 0.08, tokens: 0 },
+        },
+      };
     }
   }
 
-  async getDailyUsage(userId: string) : Promise<void> {
+  async getDailyUsage(userId: string) {
     return {
       dailyUsage: [
-        { date: '2025-01-01', cost: 0.15, tokens: 500, operations: 3  }
-        { date: '2025-01-02', cost: 0.22, tokens: 750, operations: 5  }
-        { date: '2025-01-03', cost: 0.18, tokens: 600, operations: 4  }
-      ]};
+        { date: '2025-01-01', cost: 0.15, tokens: 500, operations: 3 },
+        { date: '2025-01-02', cost: 0.22, tokens: 750, operations: 5 },
+        { date: '2025-01-03', cost: 0.18, tokens: 600, operations: 4 },
+      ],
+    };
   }
 
-  async getRecentOperations(userId: string, limit: number) : Promise<void> {
+  async getRecentOperations(userId: string, limit: number) {
     return [];
   }
 }
@@ -185,7 +191,8 @@ async function handleGenerate(
   const validModels: Record<string, string[]> = {
     openai: ['gpt-4', 'gpt-3.5-turbo', 'dall-e-3'],
     anthropic: ['claude-3-opus'],
-    elevenlabs: ['eleven_multilingual_v2']};
+    elevenlabs: ['eleven_multilingual_v2'],
+  };
 
   if (
     actualService &&
@@ -217,11 +224,12 @@ async function handleGenerate(
         generationId,
         content: `Generated copy for: ${actualPrompt}`,
         copyVariations: [
-          { id: 'copy_1', text: `Generated copy variation 1 for: ${actualPrompt}`, score: 0.9  }
-          { id: 'copy_2', text: `Generated copy variation 2 for: ${actualPrompt}`, score: 0.8  }
-          { id: 'copy_3', text: `Generated copy variation 3 for: ${actualPrompt}`, score: 0.85  }
+          { id: 'copy_1', text: `Generated copy variation 1 for: ${actualPrompt}`, score: 0.9 },
+          { id: 'copy_2', text: `Generated copy variation 2 for: ${actualPrompt}`, score: 0.8 },
+          { id: 'copy_3', text: `Generated copy variation 3 for: ${actualPrompt}`, score: 0.85 },
         ],
-        metadata: { tokens: 150, cost: 0.003, duration: 1200 }};
+        metadata: { tokens: 150, cost: 0.003, duration: 1200 },
+      };
       break;
 
     case 'motivations':
@@ -232,19 +240,23 @@ async function handleGenerate(
             id: 'mot_1',
             title: 'Innovation Drive',
             description: 'Motivation based on innovation',
-            score: 0.9 }
+            score: 0.9,
+          },
           {
             id: 'mot_2',
             title: 'Efficiency Focus',
             description: 'Motivation based on efficiency',
-            score: 0.8 }
+            score: 0.8,
+          },
           {
             id: 'mot_3',
             title: 'Quality Excellence',
             description: 'Motivation based on quality',
-            score: 0.85 }
+            score: 0.85,
+          },
         ],
-        metadata: { tokens: 120, cost: 0.002, duration: 1000 }};
+        metadata: { tokens: 120, cost: 0.002, duration: 1000 },
+      };
       break;
 
     case 'image':
@@ -252,19 +264,22 @@ async function handleGenerate(
         generationId,
         imageUrl: `https://example.com/generated/${generationId}.jpg`,
         thumbnailUrl: `https://example.com/generated/${generationId}_thumb.jpg`,
-        metadata: { cost: 0.04, duration: 15000, size: '1024x1024' }};
+        metadata: { cost: 0.04, duration: 15000, size: '1024x1024' },
+      };
       break;
 
     default:
       response = {
         generationId,
         content: `Generated content for: ${actualPrompt}`,
-        metadata: { tokens: 150, cost: 0.003, duration: 1200 }};
+        metadata: { tokens: 150, cost: 0.003, duration: 1200 },
+      };
   }
 
   return successResponse(res, response, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()});
+    timestamp: new Date().toISOString(),
+  });
 }
 
 // Cost checking
@@ -299,7 +314,8 @@ async function handleCostCheck(
 
   return successResponse(res, costCheck, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()});
+    timestamp: new Date().toISOString(),
+  });
 }
 
 // Usage statistics
@@ -332,7 +348,8 @@ async function handleUsage(
     totalTokens: 2400, // Add missing totalTokens field
     budgetStatus: await costController.getBudgetStatus(),
     monthlyUsage: await costController.getMonthlyUsage(context.user.id),
-    recentOperations: await costController.getRecentOperations(context.user.id, 10)};
+    recentOperations: await costController.getRecentOperations(context.user.id, 10),
+  };
 
   // Add breakdown data based on query parameters
   if (type === 'operation' || groupBy === 'operation') {
@@ -354,7 +371,8 @@ async function handleUsage(
 
   return successResponse(res, usage, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()});
+    timestamp: new Date().toISOString(),
+  });
 }
 
 // Available models
@@ -370,7 +388,7 @@ async function handleModels(
   const { service, capability } = context.query;
 
   const allModels = {
-    openai: { }
+    openai: {
       'gpt-4': {
         name: 'GPT-4',
         description: 'Most capable model, best for complex tasks',
@@ -378,7 +396,8 @@ async function handleModels(
         outputCost: 0.06,
         maxTokens: 8192,
         capabilities: ['text', 'reasoning', 'code'],
-        pricing: { input: 0.03, output: 0.06 }},
+        pricing: { input: 0.03, output: 0.06 },
+      },
       'gpt-3.5-turbo': {
         name: 'GPT-3.5 Turbo',
         description: 'Fast and efficient for most tasks',
@@ -386,15 +405,18 @@ async function handleModels(
         outputCost: 0.002,
         maxTokens: 4096,
         capabilities: ['text', 'reasoning'],
-        pricing: { input: 0.001, output: 0.002 }},
+        pricing: { input: 0.001, output: 0.002 },
+      },
       'dall-e-3': {
         name: 'DALL-E 3',
         description: 'Advanced image generation',
         cost: 0.04,
         sizes: ['1024x1024', '1792x1024', '1024x1792'],
         capabilities: ['image_generation'],
-        pricing: { perImage: 0.04 }}},
-    anthropic: { }
+        pricing: { perImage: 0.04 },
+      },
+    },
+    anthropic: {
       'claude-3-opus': {
         name: 'Claude 3 Opus',
         description: 'Most powerful model for complex reasoning',
@@ -402,15 +424,20 @@ async function handleModels(
         outputCost: 0.075,
         maxTokens: 200000,
         capabilities: ['text', 'reasoning', 'analysis'],
-        pricing: { input: 0.015, output: 0.075 }}},
-    elevenlabs: Record<string, unknown>$1
-  eleven_multilingual_v2: Record<string, unknown>$1
-  name: 'Multilingual v2',
+        pricing: { input: 0.015, output: 0.075 },
+      },
+    },
+    elevenlabs: {
+      eleven_multilingual_v2: {
+        name: 'Multilingual v2',
         description: 'High-quality voice synthesis',
         cost: 0.18,
         languages: ['en', 'es', 'fr', 'de', 'it'],
         capabilities: ['voice_synthesis'],
-        pricing: { perCharacter: 0.18 }}}};
+        pricing: { perCharacter: 0.18 },
+      },
+    },
+  };
 
   let responseData: any;
 
@@ -445,5 +472,6 @@ async function handleModels(
 
   return successResponse(res, responseData, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()});
+    timestamp: new Date().toISOString(),
+  });
 }
