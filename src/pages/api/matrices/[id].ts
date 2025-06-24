@@ -15,7 +15,8 @@ const MatrixUpdateSchema = z.object({
   lock_fields: z.array(z.string()).optional(),
   status: z.enum(['draft', 'pending', 'approved', 'rejected', 'active', 'completed']).optional(),
   approval_comments: z.string().optional(),
-  generation_settings: z.any().optional()});
+  generation_settings: z.any().optional(),
+});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -42,21 +43,24 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Matrix API error:', error);
     return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? message : undefined
+      details: process.env.NODE_ENV === 'development' ? message : undefined,
     });
   }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, matrixId: string): Promise<void> {
-  const { 
-    include_executions = true,
-    include_assets = true,
-    include_analytics = false} = req.query;
+async function handleGet(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  matrixId: string
+): Promise<void> {
+  const { include_executions = true, include_assets = true, include_analytics = false } = req.query;
 
   // First verify user has access to this matrix
   const { data: matrix, error } = await supabase
     .from('matrices')
-    .select(`
+    .select(
+      `
       *,
       campaigns(
         id, name, status, objective, 
@@ -68,7 +72,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, m
       ),
       profiles!matrices_created_by_fkey(full_name, avatar_url),
       profiles!matrices_approved_by_fkey(full_name, avatar_url)
-    `)
+    `
+    )
     .eq('id', matrixId)
     .single();
 
@@ -94,7 +99,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, m
   if (include_executions === 'true') {
     const { data: executions } = await supabase
       .from('executions')
-      .select(`
+      .select(
+        `
         id,
         combination_id,
         content_type,
@@ -104,7 +110,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, m
         metadata,
         created_at,
         updated_at
-      `)
+      `
+      )
       .eq('matrix_id', matrixId)
       .order('created_at', { ascending: false });
 
@@ -117,10 +124,12 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, m
     if (assetIds.length > 0) {
       const { data: assets } = await supabase
         .from('assets')
-        .select(`
+        .select(
+          `
           id, name, type, file_url, thumbnail_url, 
           dimensions, tags, metadata
-        `)
+        `
+        )
         .in('id', assetIds);
 
       enrichedMatrix.related_assets = assets || [];
@@ -148,26 +157,33 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, m
   enrichedMatrix.version_history = versionHistory;
 
   return res.json({
-    data: enrichedMatrix
+    data: enrichedMatrix,
   });
 }
 
-async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, matrixId: string): Promise<void> {
+async function handlePut(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  matrixId: string
+): Promise<void> {
   const validationResult = MatrixUpdateSchema.safeParse(req.body);
-  
+
   if (!validationResult.success) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Validation failed',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
   // First verify user has access to this matrix
   const { data: existingMatrix } = await supabase
     .from('matrices')
-    .select(`
+    .select(
+      `
       campaigns(clients(id))
-    `)
+    `
+    )
     .eq('id', matrixId)
     .single();
 
@@ -192,12 +208,12 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, m
   // Handle status changes (approvals, etc.)
   if (updateData.status) {
     const statusChangeResult = await handleMatrixStatusChange(
-      matrixId, 
-      updateData.status, 
-      user.id, 
+      matrixId,
+      updateData.status,
+      user.id,
       updateData.approval_comments
     );
-    
+
     if (!statusChangeResult.success) {
       return res.status(400).json({ error: statusChangeResult.error });
     }
@@ -218,15 +234,18 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, m
     .from('matrices')
     .update({
       ...updateData,
-      updated_at: new Date().toISOString()})
+      updated_at: new Date().toISOString(),
+    })
     .eq('id', matrixId)
-    .select(`
+    .select(
+      `
       *,
       campaigns(id, name, clients(name, slug)),
       templates(id, name, platform),
       profiles!matrices_created_by_fkey(full_name),
       profiles!matrices_approved_by_fkey(full_name)
-    `)
+    `
+    )
     .single();
 
   if (error) {
@@ -237,14 +256,21 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, m
   return res.json({ data: matrix });
 }
 
-async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any, matrixId: string): Promise<void> {
+async function handleDelete(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  matrixId: string
+): Promise<void> {
   // First verify user has access to this matrix
   const { data: existingMatrix } = await supabase
     .from('matrices')
-    .select(`
+    .select(
+      `
       status,
       campaigns(clients(id))
-    `)
+    `
+    )
     .eq('id', matrixId)
     .single();
 
@@ -266,9 +292,9 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
 
   // Check if matrix can be deleted
   if (existingMatrix.status === 'active') {
-    return res.status(409).json({ 
+    return res.status(409).json({
       error: 'Cannot delete active matrix',
-      details: 'Please pause or complete the matrix before deleting'
+      details: 'Please pause or complete the matrix before deleting',
     });
   }
 
@@ -281,9 +307,9 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
     .limit(1);
 
   if (activeExecutions && activeExecutions.length > 0) {
-    return res.status(409).json({ 
+    return res.status(409).json({
       error: 'Cannot delete matrix with active executions',
-      details: 'Please cancel or complete executions first'
+      details: 'Please cancel or complete executions first',
     });
   }
 
@@ -293,7 +319,8 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
     .update({
       status: 'archived',
       archived_at: new Date().toISOString(),
-      archived_by: user.id})
+      archived_by: user.id,
+    })
     .eq('id', matrixId);
 
   if (error) {
@@ -301,16 +328,16 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
     return res.status(500).json({ error: 'Failed to archive matrix' });
   }
 
-  return res.status(200).json({ 
+  return res.status(200).json({
     message: 'Matrix archived successfully',
-    note: 'Matrix data has been archived and can be restored if needed'
+    note: 'Matrix data has been archived and can be restored if needed',
   });
 }
 
 // Helper functions
 function extractAssetIdsFromMatrix(matrix: any): string[] {
   const assetIds: string[] = [];
-  
+
   try {
     // Extract from field assignments
     if (matrix.field_assignments) {
@@ -349,66 +376,80 @@ async function getMatrixAnalytics(matrixId: string): Promise<any> {
     // Get execution performance data
     const { data: executions } = await supabase
       .from('executions')
-      .select(`
+      .select(
+        `
         id, status, platform, content_type, created_at,
         campaign_analytics(
           impressions, clicks, conversions, spend, ctr, cpc
         )
-      `)
+      `
+      )
       .eq('matrix_id', matrixId);
 
     if (!executions || executions.length === 0) {
       return {
         has_data: false,
-        message: 'No execution data available'};
+        message: 'No execution data available',
+      };
     }
 
     // Aggregate performance metrics
-    const totalMetrics = executions.reduce((acc, execution) => {
-      execution.campaign_analytics?.forEach((analytics: any) => {
-        acc.impressions += analytics.impressions || 0;
-        acc.clicks += analytics.clicks || 0;
-        acc.conversions += analytics.conversions || 0;
-        acc.spend += parseFloat(analytics.spend) || 0;
-      });
-      return acc;
-    }, { impressions: 0, clicks: 0, conversions: 0, spend: 0 });
+    const totalMetrics = executions.reduce(
+      (acc, execution) => {
+        execution.campaign_analytics?.forEach((analytics: any) => {
+          acc.impressions += analytics.impressions || 0;
+          acc.clicks += analytics.clicks || 0;
+          acc.conversions += analytics.conversions || 0;
+          acc.spend += parseFloat(analytics.spend) || 0;
+        });
+        return acc;
+      },
+      { impressions: 0, clicks: 0, conversions: 0, spend: 0 }
+    );
 
     // Calculate derived metrics
-    const ctr = totalMetrics.impressions > 0 ? (totalMetrics.clicks / totalMetrics.impressions) * 100 : 0;
+    const ctr =
+      totalMetrics.impressions > 0 ? (totalMetrics.clicks / totalMetrics.impressions) * 100 : 0;
     const cpc = totalMetrics.clicks > 0 ? totalMetrics.spend / totalMetrics.clicks : 0;
-    const conversionRate = totalMetrics.clicks > 0 ? (totalMetrics.conversions / totalMetrics.clicks) * 100 : 0;
+    const conversionRate =
+      totalMetrics.clicks > 0 ? (totalMetrics.conversions / totalMetrics.clicks) * 100 : 0;
 
     // Platform breakdown
-    const platformBreakdown = executions.reduce((acc, execution) => {
-      if (!acc[execution.platform]) {
-        acc[execution.platform] = { executions: 0, impressions: 0, clicks: 0 };
-      }
-      acc[execution.platform].executions += 1;
-      
-      execution.campaign_analytics?.forEach((analytics: any) => {
-        acc[execution.platform].impressions += analytics.impressions || 0;
-        acc[execution.platform].clicks += analytics.clicks || 0;
-      });
-      
-      return acc;
-    }, {} as Record<string, any>);
+    const platformBreakdown = executions.reduce(
+      (acc, execution) => {
+        if (!acc[execution.platform]) {
+          acc[execution.platform] = { executions: 0, impressions: 0, clicks: 0 };
+        }
+        acc[execution.platform].executions += 1;
+
+        execution.campaign_analytics?.forEach((analytics: any) => {
+          acc[execution.platform].impressions += analytics.impressions || 0;
+          acc[execution.platform].clicks += analytics.clicks || 0;
+        });
+
+        return acc;
+      },
+      {} as Record<string, any>
+    );
 
     return {
       has_data: true,
-      summary: { }
+      summary: {
         ...totalMetrics,
         ctr: Math.round(ctr * 100) / 100,
         cpc: Math.round(cpc * 100) / 100,
         conversion_rate: Math.round(conversionRate * 100) / 100,
-        total_executions: executions.length },
-  platform_breakdown: platformBreakdown};
+        total_executions: executions.length,
+      },
+      platform_breakdown: platformBreakdown,
+    };
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting matrix analytics:', error);
     return {
       has_data: false,
-      error: 'Failed to retrieve analytics data'};
+      error: 'Failed to retrieve analytics data',
+    };
   }
 }
 
@@ -472,14 +513,25 @@ function calculateMatrixQuality(matrix: any): any {
 
   return {
     score: Math.max(0, qualityScore),
-    grade: qualityScore >= 90 ? 'A' : qualityScore >= 80 ? 'B' : qualityScore >= 70 ? 'C' : qualityScore >= 60 ? 'D' : 'F',
-    completeness: Record<string, unknown>$1
-  variations: variationsCount > 0,
+    grade:
+      qualityScore >= 90
+        ? 'A'
+        : qualityScore >= 80
+          ? 'B'
+          : qualityScore >= 70
+            ? 'C'
+            : qualityScore >= 60
+              ? 'D'
+              : 'F',
+    completeness: {
+      variations: variationsCount > 0,
       combinations: combinationsCount > 0,
       field_assignments: assignedFields > 0,
-      assets: relatedAssets > 0 }
+      assets: relatedAssets > 0,
+    },
     issues,
-    recommendations};
+    recommendations,
+  };
 }
 
 function generateMatrixInsights(matrix: any): string[] {
@@ -537,9 +589,9 @@ async function getMatrixVersionHistory(matrixId: string): Promise<any[]> {
 }
 
 async function handleMatrixStatusChange(
-  matrixId: string, 
-  newStatus: string, 
-  userId: string, 
+  matrixId: string,
+  newStatus: string,
+  userId: string,
   comments?: string
 ): Promise<{ success: boolean; error?: string }> {
   // Define valid status transitions
@@ -569,7 +621,7 @@ async function handleMatrixStatusChange(
   if (!validTransitions[currentStatus]?.includes(newStatus)) {
     return {
       success: false,
-      error: `Invalid status transition from ${currentStatus} to ${newStatus}`
+      error: `Invalid status transition from ${currentStatus} to ${newStatus}`,
     };
   }
 
@@ -585,7 +637,7 @@ async function handleMatrixStatusChange(
     if (!matrixData?.combinations || matrixData.combinations.length === 0) {
       return {
         success: false,
-        error: 'Cannot activate matrix without valid combinations'
+        error: 'Cannot activate matrix without valid combinations',
       };
     }
   }
@@ -593,11 +645,16 @@ async function handleMatrixStatusChange(
   return { success: true };
 }
 
-async function createMatrixVersionEntry(matrixId: string, changes: any, userId: string): Promise<void> {
+async function createMatrixVersionEntry(
+  matrixId: string,
+  changes: any,
+  userId: string
+): Promise<void> {
   try {
     // In a full implementation, this would create entries in a matrix_versions table
     // For now, we'll just log the change
-    process.env.NODE_ENV === 'development' && console.log('Creating matrix version entry for:', matrixId);
+    process.env.NODE_ENV === 'development' &&
+      console.log('Creating matrix version entry for:', matrixId);
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error creating matrix version entry:', error);
