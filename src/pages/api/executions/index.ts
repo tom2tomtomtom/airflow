@@ -9,7 +9,9 @@ import { z } from 'zod';
 const ExecutionFilterSchema = z.object({
   campaign_id: z.string().uuid().optional(),
   matrix_id: z.string().uuid().optional(),
-  status: z.enum(['pending', 'processing', 'completed', 'failed', 'cancelled', 'scheduled']).optional(),
+  status: z
+    .enum(['pending', 'processing', 'completed', 'failed', 'cancelled', 'scheduled'])
+    .optional(),
   platform: z.string().optional(),
   content_type: z.string().optional(),
   priority: z.enum(['low', 'normal', 'high', 'urgent']).optional(),
@@ -19,7 +21,8 @@ const ExecutionFilterSchema = z.object({
   offset: z.number().min(0).default(0),
   sort_by: z.enum(['created_at', 'updated_at', 'status', 'priority']).default('created_at'),
   sort_order: z.enum(['asc', 'desc']).default('desc'),
-  include_analytics: z.boolean().default(false)});
+  include_analytics: z.boolean().default(false),
+});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -37,18 +40,18 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Executions API error:', error);
     return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? getErrorMessage(error) : undefined
+      details: process.env.NODE_ENV === 'development' ? getErrorMessage(error) : undefined,
     });
   }
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const validationResult = ExecutionFilterSchema.safeParse(req.query);
-  
+
   if (!validationResult.success) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Invalid query parameters',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
@@ -56,14 +59,16 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
 
   let query = supabase
     .from('executions')
-    .select(`
+    .select(
+      `
       *,
       matrices(
         id, name, 
         campaigns(id, name, clients(id, name, slug))
       ),
       profiles!executions_created_by_fkey(full_name)
-    `)
+    `
+    )
     .order(filters.sort_by, { ascending: filters.sort_order === 'asc' });
 
   // Filter by client access for the user
@@ -71,7 +76,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     .from('user_clients')
     .select('client_id')
     .eq('user_id', user.id);
-  
+
   if (!userClients || userClients.length === 0) {
     return res.json({ data: [], count: 0 });
   }
@@ -126,34 +131,38 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   }
 
   // Filter out executions where user doesn't have access
-  const accessibleExecutions = (data || []).filter((execution: any) => 
-    execution.matrices?.campaigns?.clients?.id && 
-    clientIds.includes(execution.matrices.campaigns.clients.id)
+  const accessibleExecutions = (data || []).filter(
+    (execution: any) =>
+      execution.matrices?.campaigns?.clients?.id &&
+      clientIds.includes(execution.matrices.campaigns.clients.id)
   );
 
   // Include analytics if requested
   let enrichedData = accessibleExecutions;
   if (filters.include_analytics) {
-    enrichedData = await Promise.all(accessibleExecutions.map(async (execution) => {
-      const analytics = await getExecutionAnalytics(execution.id);
-      return {
-        ...execution,
-        analytics};
-    }));
+    enrichedData = await Promise.all(
+      accessibleExecutions.map(async execution => {
+        const analytics = await getExecutionAnalytics(execution.id);
+        return {
+          ...execution,
+          analytics,
+        };
+      })
+    );
   }
 
   // Calculate execution statistics
   const statistics = calculateExecutionStatistics(accessibleExecutions);
 
-  return res.json({ 
+  return res.json({
     data: enrichedData,
     count: accessibleExecutions.length,
     statistics,
-    pagination: Record<string, unknown>$1
-  limit: filters.limit,
+    pagination: {
+      limit: filters.limit,
       offset: filters.offset,
-      total: count || 0
-    }
+      total: count || 0,
+    },
   });
 }
 
@@ -171,17 +180,21 @@ async function getExecutionAnalytics(executionId: string): Promise<any> {
     if (!analytics || analytics.length === 0) {
       return {
         has_data: false,
-        message: 'No analytics data available'};
+        message: 'No analytics data available',
+      };
     }
 
     // Aggregate metrics
-    const totals = analytics.reduce((acc, record) => {
-      acc.impressions += record.impressions || 0;
-      acc.clicks += record.clicks || 0;
-      acc.conversions += record.conversions || 0;
-      acc.spend += parseFloat(record.spend) || 0;
-      return acc;
-    }, { impressions: 0, clicks: 0, conversions: 0, spend: 0 });
+    const totals = analytics.reduce(
+      (acc, record) => {
+        acc.impressions += record.impressions || 0;
+        acc.clicks += record.clicks || 0;
+        acc.conversions += record.conversions || 0;
+        acc.spend += parseFloat(record.spend) || 0;
+        return acc;
+      },
+      { impressions: 0, clicks: 0, conversions: 0, spend: 0 }
+    );
 
     // Calculate derived metrics
     const ctr = totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0;
@@ -190,41 +203,54 @@ async function getExecutionAnalytics(executionId: string): Promise<any> {
 
     return {
       has_data: true,
-      summary: { }
+      summary: {
         ...totals,
         ctr: Math.round(ctr * 100) / 100,
         cpc: Math.round(cpc * 100) / 100,
-        conversion_rate: Math.round(conversionRate * 100) / 100 },
-  daily_data: analytics.map((record: any) => ({
+        conversion_rate: Math.round(conversionRate * 100) / 100,
+      },
+      daily_data: analytics.map((record: any) => ({
         date: record.date,
         impressions: record.impressions || 0,
         clicks: record.clicks || 0,
         conversions: record.conversions || 0,
-        spend: parseFloat(record.spend) || 0}))};
+        spend: parseFloat(record.spend) || 0,
+      })),
+    };
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting execution analytics:', error);
     return {
       has_data: false,
-      error: 'Failed to retrieve analytics'};
+      error: 'Failed to retrieve analytics',
+    };
   }
 }
 
 function calculateExecutionStatistics(executions: any[]): any {
-  const statusCount = executions.reduce((acc, execution) => {
-    acc[execution.status] = (acc[execution.status] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const statusCount = executions.reduce(
+    (acc, execution) => {
+      acc[execution.status] = (acc[execution.status] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
-  const platformCount = executions.reduce((acc, execution) => {
-    acc[execution.platform] = (acc[execution.platform] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const platformCount = executions.reduce(
+    (acc, execution) => {
+      acc[execution.platform] = (acc[execution.platform] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
-  const contentTypeCount = executions.reduce((acc, execution) => {
-    acc[execution.content_type] = (acc[execution.content_type] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const contentTypeCount = executions.reduce(
+    (acc, execution) => {
+      acc[execution.content_type] = (acc[execution.content_type] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
   // Calculate success rate
   const completedCount = statusCount.completed || 0;
@@ -234,13 +260,17 @@ function calculateExecutionStatistics(executions: any[]): any {
 
   // Calculate average execution time for completed executions
   const completedExecutions = executions.filter((e: any) => e.status === 'completed');
-  const avgExecutionTime = completedExecutions.length > 0 
-    ? completedExecutions.reduce((sum, execution) => {
-        const start = new Date(execution.created_at).getTime();
-        const end = new Date(execution.updated_at).getTime();
-        return sum + (end - start);
-      }, 0) / completedExecutions.length / 1000 / 60 // Convert to minutes
-    : 0;
+  const avgExecutionTime =
+    completedExecutions.length > 0
+      ? completedExecutions.reduce((sum, execution) => {
+          const start = new Date(execution.created_at).getTime();
+          const end = new Date(execution.updated_at).getTime();
+          return sum + (end - start);
+        }, 0) /
+        completedExecutions.length /
+        1000 /
+        60 // Convert to minutes
+      : 0;
 
   return {
     total_executions: executions.length,
@@ -249,7 +279,8 @@ function calculateExecutionStatistics(executions: any[]): any {
     content_type_distribution: contentTypeCount,
     success_rate: Math.round(successRate * 100) / 100,
     average_execution_time_minutes: Math.round(avgExecutionTime * 100) / 100,
-    active_executions: (statusCount.pending || 0) + (statusCount.processing || 0)};
+    active_executions: (statusCount.pending || 0) + (statusCount.processing || 0),
+  };
 }
 
 export default withAuth(withSecurityHeaders(handler));
