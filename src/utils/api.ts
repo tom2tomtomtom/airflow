@@ -122,11 +122,11 @@ export const authApi = {
 
 // Client API
 export interface Client {
-  id: string;,
-    name: string;,
-    description: string;,
-    primaryColor: string;,
-    secondaryColor: string;
+  id: string;
+  name: string;
+  description: string;
+  primaryColor: string;
+  secondaryColor: string;
   logoUrl?: string;
   userId: string;
 }
@@ -134,23 +134,24 @@ export interface Client {
 export const clientApi = {
   getClients: async () => {
     return apiRequest<{
-      success: boolean;,
-    clients: Client[];
+      success: boolean;
+      clients: Client[];
     }>('/api/clients');
   },
   
   createClient: async (clientData: Omit<Client, 'id' | 'userId'>) => {
     return apiRequest<{
-      success: boolean;,
-    client: Client;
+      success: boolean;
+      client: Client;
     }>('/api/clients', {
       method: 'POST',
-      body: JSON.stringify(clientData)});
+      body: JSON.stringify(clientData)
+    });
   },
   
   updateClient: async (id: string, clientData: Partial<Omit<Client, 'id' | 'userId'>>) => {
     return apiRequest<{
-      success: boolean;,
+      success: boolean;
     client: Client;
     }>(`/api/clients/${id}`, {
       method: 'PUT',
@@ -159,23 +160,23 @@ export const clientApi = {
   
   deleteClient: async (id: string) => {
     return apiRequest<{
-      success: boolean;,
-    message: string;,
+      success: boolean;
+    message: string;
     client: Client;
     }>(`/api/clients/${id}`, {
       method: 'DELETE'}); };
 
 // Assets API
 export interface Asset {
-  id: string;,
-    name: string;,
-    type: 'image' | 'video' | 'text' | 'voice';,
+  id: string;
+    name: string;
+    type: 'image' | 'video' | 'text' | 'voice';
     url: string;
   thumbnailUrl?: string;
   description?: string;
-  tags: string[];,
-    dateCreated: string;,
-    clientId: string;,
+  tags: string[];
+    dateCreated: string;
+    clientId: string;
     userId: string;
 }
 
@@ -183,14 +184,14 @@ export const assetApi = {
   getAssets: async (clientId?: string) => {
     const url = clientId ? `/api/assets?clientId=${clientId}` : '/api/assets';
     return apiRequest<{
-      success: boolean;,
+      success: boolean;
     assets: Asset[];
     }>(url);
   },
   
   createAsset: async (assetData: Omit<Asset, 'id' | 'dateCreated' | 'userId'>) => {
     return apiRequest<{
-      success: boolean;,
+      success: boolean;
     asset: Asset;
     }>('/api/assets', {
       method: 'POST',
@@ -199,7 +200,7 @@ export const assetApi = {
   
   updateAsset: async (id: string, assetData: Partial<Omit<Asset, 'id' | 'userId'>>) => {
     return apiRequest<{
-      success: boolean;,
+      success: boolean;
     asset: Asset;
     }>(`/api/assets/${id}`, {
       method: 'PUT',
@@ -208,33 +209,33 @@ export const assetApi = {
   
   deleteAsset: async (id: string) => {
     return apiRequest<{
-      success: boolean;,
+      success: boolean;
     message: string;
     }>(`/api/assets/${id}`, {
       method: 'DELETE'}); };
 
 // AI Generation API
 export interface GenerationPrompt {
-  prompt: string;,
+  prompt: string;
     type: 'text' | 'image' | 'video' | 'voice';
   parameters?: Record<string, unknown>;
   clientId: string;
 }
 
 export interface GenerationResult {
-  id: string;,
-    type: 'text' | 'image' | 'video' | 'voice';,
+  id: string;
+    type: 'text' | 'image' | 'video' | 'voice';
     content: string | string[]; // URL for media, text content for text
-  prompt: string;,
-    dateCreated: string;,
-    clientId: string;,
+  prompt: string;
+    dateCreated: string;
+    clientId: string;
     userId: string;
 }
 
 export const aiApi = {
   generate: async (promptData: GenerationPrompt) => {
     return apiRequest<{
-      success: boolean;,
+      success: boolean;
     result: GenerationResult;
     }>('/api/ai/generate', {
       method: 'POST',
@@ -244,7 +245,7 @@ export const aiApi = {
   getGenerations: async (clientId?: string) => {
     const url = clientId ? `/api/ai/generations?clientId=${clientId}` : '/api/ai/generations';
     return apiRequest<{
-      success: boolean;,
+      success: boolean;
     generations: GenerationResult[];
     }>(url); };
 
