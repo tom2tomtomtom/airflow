@@ -7,11 +7,11 @@ import { createServerClient } from '@supabase/ssr';
 // Extended request with user information
 export interface AuthenticatedRequest extends NextApiRequest {
   user?: {
-    id: string;,
-    email: string;,
-    role: UserRole;,
-    permissions: string[];,
-    clientIds: string[];,
+    id: string;
+    email: string;
+    role: UserRole;
+    permissions: string[];
+    clientIds: string[];
     tenantId: string;
   };
 }
@@ -34,26 +34,29 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
-        cookies: Record<string, unknown>$1
-  get(name: string) {
+        cookies: {
+          get(name: string) {
             return req.cookies[name];
           },
           set(name: string, value: string, options: unknown) {
             // We don't need to set cookies in API routes
-          ,
- }
+          },
           remove(name: string, options: unknown) {
-            // We don't need to remove cookies in API routes }
+            // We don't need to remove cookies in API routes
+          },
+        },
+      }
     );
 
     const {
-      data: { user: cookieUser  },
-  error: cookieError} = await supabase.auth.getUser();
+      data: { user: cookieUser },
+      error: cookieError,
+    } = await supabase.auth.getUser();
 
     if (cookieUser && !cookieError) {
       return { user: cookieUser, supabase };
     }
-  } catch ($1) {
+  } catch (error) {
     // Handle error silently
   }
 
@@ -67,21 +70,24 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
-          cookies: Record<string, unknown>$1
-  get: () => undefined,
-            set: () => { },
-  remove: () => { }
+          cookies: {
+            get: () => undefined,
+            set: () => {},
+            remove: () => {},
+          },
+        }
       );
 
       const {
-        data: { user: headerUser  },
-  error: headerError} = await supabase.auth.getUser(token);
+        data: { user: headerUser },
+        error: headerError,
+      } = await supabase.auth.getUser(token);
 
       if (headerUser && !headerError) {
         return { user: headerUser, supabase };
       }
     }
-  } catch ($1) {
+  } catch (error) {
     // Handle error silently
   }
 
@@ -93,21 +99,24 @@ async function validateUserToken(req: NextApiRequest): Promise<any> {
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
-          cookies: Record<string, unknown>$1
-  get: () => undefined,
-            set: () => { },
-  remove: () => { }
+          cookies: {
+            get: () => undefined,
+            set: () => {},
+            remove: () => {},
+          },
+        }
       );
 
       const {
-        data: { user: customUser  },
-  error: customError} = await supabase.auth.getUser(customToken);
+        data: { user: customUser },
+        error: customError,
+      } = await supabase.auth.getUser(customToken);
 
       if (customUser && !customError) {
         return { user: customUser, supabase };
       }
     }
-  } catch ($1) {
+  } catch (error) {
     // Handle error silently
   }
 
@@ -139,7 +148,8 @@ async function getUserProfile(supabase: unknown, user: unknown): Promise<any> {
             role: 'user',
             email: user.email,
             created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()})
+            updated_at: new Date().toISOString(),
+          })
           .select()
           .single();
 
@@ -173,7 +183,8 @@ function createFallbackProfile(user: unknown): unknown {
     permissions: [],
     tenant_id: null,
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()};
+    updated_at: new Date().toISOString(),
+  };
 }
 
 // Enhanced client access fetching with error handling
@@ -222,7 +233,8 @@ export function withAuth(handler: AuthenticatedHandler) {
         role: (profile?.role as UserRole) || UserRole.VIEWER,
         permissions: profile?.permissions || [],
         clientIds,
-        tenantId: profile?.tenant_id || ''};
+        tenantId: profile?.tenant_id || '',
+      };
 
       console.log(`✅ Request authenticated for user: ${user.email} (${profile?.role})`);
 
