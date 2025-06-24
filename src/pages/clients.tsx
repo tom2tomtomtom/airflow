@@ -645,7 +645,7 @@ const ClientsPage: React.FC = () => {
                   <Grid size={{ xs: 12, md: 6 }}>
                     <TextField
                       fullWidth
-                      label="Twitter";
+                      label="Twitter"
                       value={formData.socialMedia.twitter || ''}
                       onChange={(e) => setFormData({;
                         ...formData,
@@ -662,7 +662,7 @@ const ClientsPage: React.FC = () => {
                   <Grid size={{ xs: 12, md: 6 }}>
                     <TextField
                       fullWidth
-                      label="Instagram";
+                      label="Instagram"
                       value={formData.socialMedia.instagram || ''}
                       onChange={(e) => setFormData({;
                         ...formData,
@@ -679,7 +679,7 @@ const ClientsPage: React.FC = () => {
                   <Grid size={{ xs: 12, md: 6 }}>
                     <TextField
                       fullWidth
-                      label="LinkedIn";
+                      label="LinkedIn"
                       value={formData.socialMedia.linkedin || ''}
                       onChange={(e) => setFormData({;
                         ...formData,
@@ -690,7 +690,7 @@ const ClientsPage: React.FC = () => {
                             <LinkedIn />
                           </InputAdornment>
                         )
-                  }
+                      }}
                     />
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
@@ -707,7 +707,7 @@ const ClientsPage: React.FC = () => {
                             <YouTube />
                           </InputAdornment>
                         )
-                  }
+                      }}
                     />
                   </Grid>
                 </Grid>
