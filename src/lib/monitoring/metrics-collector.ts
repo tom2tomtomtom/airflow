@@ -38,14 +38,17 @@ class StatsDBackend implements MetricsBackend {
     // Conditional import for server-side only
     if (typeof window === 'undefined') {
       try {
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         const StatsD = require('hot-shots');
         this.client = new StatsD({
           host: process.env.STATSD_HOST || 'localhost',
           port: parseInt(process.env.STATSD_PORT || '8125'),
           prefix: 'airwave.',
-          globalTags: Record<string, unknown>$1
-  env: process.env.NODE_ENV || 'development',
-            service: 'airwave-web'}});
+          globalTags: {
+            env: process.env.NODE_ENV || 'development',
+            service: 'airwave-web',
+          },
+        });
       } catch (error) {
         console.warn('StatsD client not available:', error.message);
       }
@@ -57,7 +60,7 @@ class StatsDBackend implements MetricsBackend {
 
     try {
       const tags = this.formatTags(metric.tags);
-      
+
       switch (metric.type) {
         case 'counter':
           this.client.increment(metric.name, metric.value, tags);
@@ -99,7 +102,10 @@ class ConsoleBackend implements MetricsBackend {
 
   async send(metric: Metric): Promise<void> {
     if (process.env.NODE_ENV === 'development') {
-      console.log(`[METRIC] ${metric.type.toUpperCase()}: ${metric.name} = ${metric.value}`, metric.tags);
+      console.log(
+        `[METRIC] ${metric.type.toUpperCase()}: ${metric.name} = ${metric.value}`,
+        metric.tags
+      );
     }
   }
 
@@ -128,12 +134,14 @@ class WebhookBackend implements MetricsBackend {
       await fetch(this.webhookUrl, {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json' 
-      },
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           metrics: [metric],
           timestamp: new Date().toISOString(),
-          service: 'airwave-web'})});
+          service: 'airwave-web',
+        }),
+      });
     } catch (error) {
       console.error('Failed to send metric to webhook:', error);
     }
@@ -144,12 +152,14 @@ class WebhookBackend implements MetricsBackend {
       await fetch(this.webhookUrl, {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json' 
-      },
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           metrics,
           timestamp: new Date().toISOString(),
-          service: 'airwave-web'})});
+          service: 'airwave-web',
+        }),
+      });
     } catch (error) {
       console.error('Failed to send metrics batch to webhook:', error);
     }
@@ -229,7 +239,8 @@ export class MetricsCollector {
       value,
       type: 'counter',
       tags,
-      timestamp: Date.now()});
+      timestamp: Date.now(),
+    });
   }
 
   public gauge(name: string, value: number, tags?: Record<string, string>): void {
@@ -238,7 +249,8 @@ export class MetricsCollector {
       value,
       type: 'gauge',
       tags,
-      timestamp: Date.now()});
+      timestamp: Date.now(),
+    });
   }
 
   public histogram(name: string, value: number, tags?: Record<string, string>): void {
@@ -247,7 +259,8 @@ export class MetricsCollector {
       value,
       type: 'histogram',
       tags,
-      timestamp: Date.now()});
+      timestamp: Date.now(),
+    });
   }
 
   public timer(name: string, value: number, tags?: Record<string, string>): void {
@@ -256,7 +269,8 @@ export class MetricsCollector {
       value,
       type: 'timer',
       tags,
-      timestamp: Date.now()});
+      timestamp: Date.now(),
+    });
   }
 
   // Timer helpers
@@ -264,7 +278,8 @@ export class MetricsCollector {
     return {
       name,
       startTime: performance.now(),
-      tags};
+      tags,
+    };
   }
 
   public endTimer(timerMetric: TimerMetric): void {
@@ -273,12 +288,18 @@ export class MetricsCollector {
   }
 
   // Business metrics helpers
-  public trackAPIRequest(method: string, endpoint: string, statusCode: number, duration: number): void {
+  public trackAPIRequest(
+    method: string,
+    endpoint: string,
+    statusCode: number,
+    duration: number
+  ): void {
     const tags = {
       method,
       endpoint: this.sanitizeEndpoint(endpoint),
       status_code: statusCode.toString(),
-      status_class: `${Math.floor(statusCode / 100)}xx`};
+      status_class: `${Math.floor(statusCode / 100)}xx`,
+    };
 
     this.counter('api.requests.total', 1, tags);
     this.timer('api.requests.duration', duration, tags);
@@ -288,7 +309,13 @@ export class MetricsCollector {
     }
   }
 
-  public trackAIUsage(provider: string, model: string, tokens: number, cost: number, operation: string): void {
+  public trackAIUsage(
+    provider: string,
+    model: string,
+    tokens: number,
+    cost: number,
+    operation: string
+  ): void {
     const tags = { provider, model, operation };
 
     this.counter('ai.requests.total', 1, tags);
@@ -297,7 +324,12 @@ export class MetricsCollector {
     this.histogram('ai.tokens.per_request', tokens, tags);
   }
 
-  public trackDatabaseQuery(table: string, operation: string, duration: number, rows?: number): void {
+  public trackDatabaseQuery(
+    table: string,
+    operation: string,
+    duration: number,
+    rows?: number
+  ): void {
     const tags = { table, operation };
 
     this.counter('database.queries.total', 1, tags);
@@ -308,7 +340,11 @@ export class MetricsCollector {
     }
   }
 
-  public trackCacheOperation(key: string, operation: 'hit' | 'miss' | 'set' | 'delete', duration?: number): void {
+  public trackCacheOperation(
+    key: string,
+    operation: 'hit' | 'miss' | 'set' | 'delete',
+    duration?: number
+  ): void {
     const tags = { operation, key_type: this.getCacheKeyType(key) };
 
     this.counter(`cache.operations.${operation}`, 1, tags);
@@ -318,7 +354,11 @@ export class MetricsCollector {
     }
   }
 
-  public trackVideoGeneration(status: 'started' | 'completed' | 'failed', duration?: number, templateId?: string): void {
+  public trackVideoGeneration(
+    status: 'started' | 'completed' | 'failed',
+    duration?: number,
+    templateId?: string
+  ): void {
     const tags: Record<string, string> = { status };
     if (templateId) tags.template_id = templateId;
 
@@ -344,7 +384,11 @@ export class MetricsCollector {
     this.histogram('uploads.file_size', fileSize, tags);
   }
 
-  public trackSystemHealth(component: string, status: 'healthy' | 'unhealthy', responseTime?: number): void {
+  public trackSystemHealth(
+    component: string,
+    status: 'healthy' | 'unhealthy',
+    responseTime?: number
+  ): void {
     const tags = { component, status };
 
     this.gauge(`system.health.${component}`, status === 'healthy' ? 1 : 0, tags);
