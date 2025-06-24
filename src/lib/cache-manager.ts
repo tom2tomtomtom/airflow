@@ -39,7 +39,8 @@ export const CACHE_TTL = {
   DB_QUERY: 5 * 60,
 
   // API responses - cache for 10 minutes
-  API_RESPONSE: 10 * 60 } as const;
+  API_RESPONSE: 10 * 60,
+} as const;
 
 // Initialize Redis client for caching
 const redis = env.REDIS_URL
@@ -50,7 +51,8 @@ const redis = env.REDIS_URL
         return delay;
       },
       maxRetriesPerRequest: 3,
-      lazyConnect: true })
+      lazyConnect: true,
+    })
   : null;
 
 export interface CacheOptions {
@@ -80,7 +82,8 @@ class CacheManager {
       misses: 0,
       sets: 0,
       deletes: 0,
-      errors: 0 };
+      errors: 0,
+    };
 
     if (this.useMemoryFallback) {
       loggers.general.warn('Using in-memory cache storage - not recommended for production');
@@ -144,7 +147,7 @@ class CacheManager {
   async set<T = any>(
     key: string,
     value: T,
-    options: CacheOptions = { }
+    options: CacheOptions = {},
     namespace?: string
   ): Promise<boolean> {
     const cacheKey = this.generateKey(key, namespace);
@@ -155,7 +158,8 @@ class CacheManager {
         this.memoryCache.set(cacheKey, {
           data: value,
           expires: Date.now() + ttl * 1000,
-          tags: options.tags });
+          tags: options.tags,
+        });
         this.stats.sets++;
         return true;
       }
@@ -305,7 +309,7 @@ class CacheManager {
   async wrap<T>(
     key: string,
     fn: () => Promise<T>,
-    options: CacheOptions = { }
+    options: CacheOptions = {},
     namespace?: string
   ): Promise<T> {
     const cached = await this.get<T>(key, namespace);
