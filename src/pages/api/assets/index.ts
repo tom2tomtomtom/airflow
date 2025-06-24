@@ -233,12 +233,13 @@ function mapDatabaseRowToAsset(row: any): Asset {
     clientId: row.client_id,
     userId: row.created_by,
     favorite: row.is_favorite || false,
-    metadata: row.metadata || { },
-  size: row.file_size,
+    metadata: row.metadata || {},
+    size: row.file_size,
     mimeType: row.mime_type,
     duration: row.duration,
     width: row.dimensions?.width,
-    height: row.dimensions?.height };
+    height: row.dimensions?.height,
+  };
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
@@ -325,7 +326,8 @@ async function getAssets(req: NextApiRequest, res: NextApiResponse, user: any): 
         const paginationMeta = createPaginationMeta(pageNum, limitNum, 0);
         return successResponse(res, [], 200, {
           pagination: paginationMeta,
-          timestamp: new Date().toISOString() });
+          timestamp: new Date().toISOString(),
+        });
       }
     }
 
@@ -359,7 +361,8 @@ async function getAssets(req: NextApiRequest, res: NextApiResponse, user: any): 
 
     return successResponse(res, assets, 200, {
       pagination: paginationMeta,
-      timestamp: new Date().toISOString() });
+      timestamp: new Date().toISOString(),
+    });
   } catch (error: any) {
     return handleApiError(res, error, 'getAssets');
   }
@@ -418,13 +421,14 @@ async function createAsset(req: NextApiRequest, res: NextApiResponse, user: any)
       tags: Array.isArray(tags) ? tags : [],
       client_id: clientId,
       created_by: userId,
-      metadata: metadata || { },
-  file_size: size,
+      metadata: metadata || {},
+      file_size: size,
       mime_type: mimeType,
       duration,
       dimensions: width && height ? { width, height } : null,
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString() };
+      updated_at: new Date().toISOString(),
+    };
 
     const { data, error } = await supabase
       .from('assets')
@@ -454,7 +458,8 @@ async function createAsset(req: NextApiRequest, res: NextApiResponse, user: any)
       console.error('Database error creating asset:', error);
       return res.status(500).json({
         success: false,
-        message: 'Failed to create asset' });
+        message: 'Failed to create asset',
+      });
     }
 
     // Map database row to Asset interface
@@ -470,7 +475,8 @@ async function createAsset(req: NextApiRequest, res: NextApiResponse, user: any)
     console.error('Create asset error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to create asset' });
+      message: 'Failed to create asset',
+    });
   }
 }
 
@@ -491,7 +497,8 @@ async function updateAsset(req: NextApiRequest, res: NextApiResponse, user: any)
 
     // Map frontend fields to database fields
     const dbUpdates: any = {
-      updated_at: new Date().toISOString() };
+      updated_at: new Date().toISOString(),
+    };
 
     if (updates.name) dbUpdates.name = updates.name;
     if (updates.type) dbUpdates.type = updates.type;
@@ -532,13 +539,15 @@ async function updateAsset(req: NextApiRequest, res: NextApiResponse, user: any)
       console.error('Database error updating asset:', error);
       return res.status(500).json({
         success: false,
-        message: 'Failed to update asset' });
+        message: 'Failed to update asset',
+      });
     }
 
     if (!data) {
       return res.status(404).json({
         success: false,
-        message: 'Asset not found or access denied' });
+        message: 'Asset not found or access denied',
+      });
     }
 
     // Map database row to Asset interface
@@ -554,7 +563,8 @@ async function updateAsset(req: NextApiRequest, res: NextApiResponse, user: any)
     console.error('Update asset error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to update asset' });
+      message: 'Failed to update asset',
+    });
   }
 }
 
@@ -583,7 +593,8 @@ async function deleteAsset(req: NextApiRequest, res: NextApiResponse, user: any)
     if (fetchError || !asset) {
       return res.status(404).json({
         success: false,
-        message: 'Asset not found or access denied' });
+        message: 'Asset not found or access denied',
+      });
     }
 
     // Delete from database
@@ -597,18 +608,21 @@ async function deleteAsset(req: NextApiRequest, res: NextApiResponse, user: any)
       console.error('Database error deleting asset:', deleteError);
       return res.status(500).json({
         success: false,
-        message: 'Failed to delete asset' });
+        message: 'Failed to delete asset',
+      });
     }
 
     return res.status(200).json({
       success: true,
-      message: 'Asset deleted successfully' });
+      message: 'Asset deleted successfully',
+    });
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Delete asset error:', error);
     return res.status(500).json({
       success: false,
-      message: 'Failed to delete asset' });
+      message: 'Failed to delete asset',
+    });
   }
 }
 
