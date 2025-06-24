@@ -495,7 +495,7 @@ const ClientsPage: React.FC = () => {
                   <Grid size={{ xs: 12, md: 6 }}>
                     <TextField
                       fullWidth
-                      label="Client Name";
+                      label="Client Name"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       error={!!formErrors.name}
@@ -508,17 +508,17 @@ const ClientsPage: React.FC = () => {
                       <InputLabel required>Industry</InputLabel>
                       <Select
                         value={formData.industry}
-                        label="Industry";
+                        label="Industry"
                         onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
                       >
-                        <MenuItem value="Technology">Technology</MenuItem>;
-                        <MenuItem value="Healthcare">Healthcare</MenuItem>;
-                        <MenuItem value="Finance">Finance</MenuItem>;
-                        <MenuItem value="Retail">Retail</MenuItem>;
-                        <MenuItem value="Education">Education</MenuItem>;
-                        <MenuItem value="Manufacturing">Manufacturing</MenuItem>;
-                        <MenuItem value="Marketing">Marketing</MenuItem>;
-                        <MenuItem value="Other">Other</MenuItem>;
+                        <MenuItem value="Technology">Technology</MenuItem>
+                        <MenuItem value="Healthcare">Healthcare</MenuItem>
+                        <MenuItem value="Finance">Finance</MenuItem>
+                        <MenuItem value="Retail">Retail</MenuItem>
+                        <MenuItem value="Education">Education</MenuItem>
+                        <MenuItem value="Manufacturing">Manufacturing</MenuItem>
+                        <MenuItem value="Marketing">Marketing</MenuItem>
+                        <MenuItem value="Other">Other</MenuItem>
                       </Select>
                     </FormControl>
                   </Grid>
