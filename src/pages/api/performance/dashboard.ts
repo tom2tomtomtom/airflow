@@ -4,21 +4,24 @@
  */
 
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getAPIPerformanceStats, clearPerformanceData } from '@/middleware/performance/apiOptimization';
+import {
+  getAPIPerformanceStats,
+  clearPerformanceData,
+} from '@/middleware/performance/apiOptimization';
 import { cacheManager } from '@/lib/cache/strategy';
 
 interface PerformanceDashboard {
   success: true;
-  data: Record<string, unknown>$1
-  overview: Record<string, unknown>$1
-  total_requests: number;
+  data: {
+    overview: {
+      total_requests: number;
       average_response_time: number;
       cache_hit_rate: number;
       total_endpoints: number;
       slow_endpoints: string[];
       error_rate: number;
     };
-    endpoints: { }
+    endpoints: {
       [endpoint: string]: {
         request_count: number;
         average_response_time: number;
@@ -31,8 +34,8 @@ interface PerformanceDashboard {
         performance_grade: 'A' | 'B' | 'C' | 'D' | 'F';
       };
     };
-    cache: Record<string, unknown>$1
-  memory_usage: any;
+    cache: {
+      memory_usage: any;
       total_cached_items: number;
       cache_efficiency: number;
       top_cached_items: Array<{
@@ -42,8 +45,8 @@ interface PerformanceDashboard {
         last_accessed: string;
       }>;
     };
-    system: Record<string, unknown>$1
-  memory_usage: NodeJS.MemoryUsage;
+    system: {
+      memory_usage: NodeJS.MemoryUsage;
       uptime: number;
       cpu_usage?: number;
       active_connections?: number;
@@ -56,8 +59,8 @@ interface PerformanceDashboard {
       action: string;
     }>;
   };
-  meta: Record<string, unknown>$1
-  generated_at: string;
+  meta: {
+    generated_at: string;
     data_window: string;
     auto_refresh_interval: number;
   };
@@ -86,7 +89,8 @@ class PerformanceAnalyzer {
       endpoints: endpointAnalysis,
       cache,
       system,
-      recommendations};
+      recommendations,
+    };
   }
 
   /**
@@ -99,24 +103,24 @@ class PerformanceAnalyzer {
       const metricArray = metrics as any[];
       if (!metricArray || metricArray.length === 0) continue;
 
-      const responseTimes = metricArray
-        .filter(m => m.duration)
-        .map(m => m.duration);
+      const responseTimes = metricArray.filter(m => m.duration).map(m => m.duration);
 
       const cacheHits = metricArray.filter(m => m.cacheHit).length;
       const cacheMisses = metricArray.length - cacheHits;
       const errors = metricArray.filter(m => m.error).length;
 
-      const avgResponseTime = responseTimes.length > 0
-        ? responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length
-        : 0;
+      const avgResponseTime =
+        responseTimes.length > 0
+          ? responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length
+          : 0;
 
       const minResponseTime = responseTimes.length > 0 ? Math.min(...responseTimes) : 0;
       const maxResponseTime = responseTimes.length > 0 ? Math.max(...responseTimes) : 0;
 
-      const lastAccessed = metricArray.length > 0
-        ? new Date(Math.max(...metricArray.map(m => m.startTime))).toISOString()
-        : new Date().toISOString();
+      const lastAccessed =
+        metricArray.length > 0
+          ? new Date(Math.max(...metricArray.map(m => m.startTime))).toISOString()
+          : new Date().toISOString();
 
       const performanceGrade = this.calculatePerformanceGrade(
         avgResponseTime,
@@ -133,7 +137,8 @@ class PerformanceAnalyzer {
         cache_misses: cacheMisses,
         error_count: errors,
         last_accessed: lastAccessed,
-        performance_grade: performanceGrade};
+        performance_grade: performanceGrade,
+      };
     }
 
     return endpoints;
@@ -142,18 +147,24 @@ class PerformanceAnalyzer {
   /**
    * Build overview statistics
    */
-  private buildOverview(endpointAnalysis: PerformanceDashboard['data']['endpoints']): PerformanceDashboard['data']['overview'] {
+  private buildOverview(
+    endpointAnalysis: PerformanceDashboard['data']['endpoints']
+  ): PerformanceDashboard['data']['overview'] {
     const endpoints = Object.entries(endpointAnalysis);
     const totalRequests = endpoints.reduce((sum, [_, data]) => sum + data.request_count, 0);
-    const totalResponseTime = endpoints.reduce((sum, [_, data]) => sum + (data.average_response_time * data.request_count), 0);
+    const totalResponseTime = endpoints.reduce(
+      (sum, [_, data]) => sum + data.average_response_time * data.request_count,
+      0
+    );
     const totalCacheHits = endpoints.reduce((sum, [_, data]) => sum + data.cache_hits, 0);
     const totalCacheMisses = endpoints.reduce((sum, [_, data]) => sum + data.cache_misses, 0);
     const totalErrors = endpoints.reduce((sum, [_, data]) => sum + data.error_count, 0);
 
     const avgResponseTime = totalRequests > 0 ? totalResponseTime / totalRequests : 0;
-    const cacheHitRate = (totalCacheHits + totalCacheMisses) > 0
-      ? (totalCacheHits / (totalCacheHits + totalCacheMisses)) * 100
-      : 0;
+    const cacheHitRate =
+      totalCacheHits + totalCacheMisses > 0
+        ? (totalCacheHits / (totalCacheHits + totalCacheMisses)) * 100
+        : 0;
     const errorRate = totalRequests > 0 ? (totalErrors / totalRequests) * 100 : 0;
 
     // Identify slow endpoints (> 1 second average)
@@ -168,15 +179,21 @@ class PerformanceAnalyzer {
       cache_hit_rate: Math.round(cacheHitRate * 100) / 100,
       total_endpoints: endpoints.length,
       slow_endpoints: slowEndpoints,
-      error_rate: Math.round(errorRate * 100) / 100};
+      error_rate: Math.round(errorRate * 100) / 100,
+    };
   }
 
   /**
    * Analyze cache performance
    */
-  private analyzeCachePerformance(cacheStats: any, queryOptimizerStats: any): PerformanceDashboard['data']['cache'] {
-    const totalCachedItems = Object.values(cacheStats.memoryStats || {})
-      .reduce((sum: number, stats: any) => sum + (stats?.size || 0), 0);
+  private analyzeCachePerformance(
+    cacheStats: any,
+    queryOptimizerStats: any
+  ): PerformanceDashboard['data']['cache'] {
+    const totalCachedItems = Object.values(cacheStats.memoryStats || {}).reduce(
+      (sum: number, stats: any) => sum + (stats?.size || 0),
+      0
+    );
 
     // Calculate cache efficiency (simplified)
     const cacheEfficiency = totalCachedItems > 0 ? 85 : 0; // Mock calculation
@@ -187,19 +204,22 @@ class PerformanceAnalyzer {
         key: 'api-responses:clients',
         namespace: 'api-responses',
         access_count: 45,
-        last_accessed: new Date().toISOString() }
+        last_accessed: new Date().toISOString(),
+      },
       {
         key: 'api-responses:analytics',
-        namespace: 'api-responses', 
+        namespace: 'api-responses',
         access_count: 32,
-        last_accessed: new Date().toISOString() }
+        last_accessed: new Date().toISOString(),
+      },
     ];
 
     return {
       memory_usage: cacheStats.memoryStats,
       total_cached_items: totalCachedItems,
       cache_efficiency: cacheEfficiency,
-      top_cached_items: topCachedItems};
+      top_cached_items: topCachedItems,
+    };
   }
 
   /**
@@ -231,16 +251,21 @@ class PerformanceAnalyzer {
           severity: 'high',
           message: `Endpoint ${endpoint} has slow response time (${data.average_response_time}ms)`,
           endpoint,
-          action: 'Optimize database queries, add caching, or implement pagination'});
+          action: 'Optimize database queries, add caching, or implement pagination',
+        });
       }
 
-      if (data.cache_hits / (data.cache_hits + data.cache_misses) < 0.3 && data.request_count > 10) {
+      if (
+        data.cache_hits / (data.cache_hits + data.cache_misses) < 0.3 &&
+        data.request_count > 10
+      ) {
         recommendations.push({
           type: 'cache',
           severity: 'medium',
           message: `Low cache hit rate for ${endpoint} (${((data.cache_hits / (data.cache_hits + data.cache_misses)) * 100).toFixed(1)}%)`,
           endpoint,
-          action: 'Increase cache TTL or improve cache key strategy'});
+          action: 'Increase cache TTL or improve cache key strategy',
+        });
       }
 
       if (data.error_count / data.request_count > 0.05) {
@@ -249,7 +274,8 @@ class PerformanceAnalyzer {
           severity: 'high',
           message: `High error rate for ${endpoint} (${((data.error_count / data.request_count) * 100).toFixed(1)}%)`,
           endpoint,
-          action: 'Investigate error causes and improve error handling'});
+          action: 'Investigate error causes and improve error handling',
+        });
       }
     });
 
@@ -259,7 +285,8 @@ class PerformanceAnalyzer {
         type: 'cache',
         severity: 'medium',
         message: `Cache efficiency is below optimal (${cache.cache_efficiency}%)`,
-        action: 'Review cache strategy and increase cache hit rate'});
+        action: 'Review cache strategy and increase cache hit rate',
+      });
     }
 
     // Check memory usage
@@ -269,7 +296,8 @@ class PerformanceAnalyzer {
         type: 'system',
         severity: 'high',
         message: `High memory usage (${memoryUsagePercent.toFixed(1)}%)`,
-        action: 'Investigate memory leaks or increase available memory'});
+        action: 'Investigate memory leaks or increase available memory',
+      });
     }
 
     return recommendations;
@@ -321,10 +349,12 @@ export default async function handler(
       res.status(200).json({
         success: true,
         data: {} as any,
-        meta: Record<string, unknown>$1
-  generated_at: new Date().toISOString(),
+        meta: {
+          generated_at: new Date().toISOString(),
           data_window: 'cleared',
-          auto_refresh_interval: 30}});
+          auto_refresh_interval: 30,
+        },
+      });
       return;
     }
 
@@ -341,11 +371,12 @@ export default async function handler(
     const response: PerformanceDashboard = {
       success: true,
       data,
-      meta: Record<string, unknown>$1
-  generated_at: new Date().toISOString(),
+      meta: {
+        generated_at: new Date().toISOString(),
         data_window: 'last_hour', // Could be configurable
         auto_refresh_interval: 30, // seconds
-      }};
+      },
+    };
 
     // Set cache headers (short cache for real-time data)
     res.setHeader('Cache-Control', 'public, max-age=30');
@@ -356,6 +387,7 @@ export default async function handler(
     console.error('Performance dashboard error:', error);
     res.status(500).json({
       success: false,
-      error: error instanceof Error ? error.message : 'Internal server error'});
+      error: error instanceof Error ? error.message : 'Internal server error',
+    });
   }
 }

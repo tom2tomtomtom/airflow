@@ -17,11 +17,13 @@ const CampaignUpdateSchema = z.object({
   platforms: z.array(z.string()).optional(),
   tags: z.array(z.string()).optional(),
   priority: z.enum(['low', 'medium', 'high', 'urgent']).optional(),
-  campaign_type: z.enum(['awareness', 'consideration', 'conversion', 'retention', 'mixed']).optional(),
+  campaign_type: z
+    .enum(['awareness', 'consideration', 'conversion', 'retention', 'mixed'])
+    .optional(),
   kpis: z.array(z.string()).optional(),
   creative_requirements: z.any().optional(),
   status: z.enum(['draft', 'active', 'paused', 'completed', 'archived']).optional(),
-  approval_status: z.enum(['pending', 'approved', 'rejected']).optional()
+  approval_status: z.enum(['pending', 'approved', 'rejected']).optional(),
 });
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
@@ -47,17 +49,27 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Campaign API error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined;
+      details:
+        process.env.NODE_ENV === 'development'
+          ? error instanceof Error
+            ? error.message
+            : 'Unknown error'
+          : undefined,
     });
   }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, campaignId: string): Promise<void> {
-    // For now, return mock campaign data since campaigns table doesn't exist yet
+async function handleGet(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  campaignId: string
+): Promise<void> {
+  // For now, return mock campaign data since campaigns table doesn't exist yet
   // TODO: Implement actual database queries when campaigns table is ready
-  
+
   const mockCampaign = {
     id: campaignId,
     name: campaignId.includes('test') ? 'Test Campaign' : 'Execute at the speed of AI',
@@ -72,21 +84,24 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, c
     end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
     budget: {
       total: 5000,
-      spent: 1250 },
-  spent: 1250,
+      spent: 1250,
+    },
+    spent: 1250,
     platforms: ['facebook', 'instagram', 'twitter'],
     targeting: {
       platforms: ['facebook', 'instagram', 'twitter'],
       audience: 'Marketing professionals',
       frequency: 'daily',
-      estimatedPosts: '10' },
-  schedule: {
+      estimatedPosts: '10',
+    },
+    schedule: {
       startDate: new Date().toISOString(),
-      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() },
-  kpis: ['impressions', 'clicks', 'conversions'],
+      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+    kpis: ['impressions', 'clicks', 'conversions'],
     tags: ['ai', 'marketing', 'automation'],
-    creative_requirements: Record<string, unknown>$1
-  approval_status: 'pending',
+    creative_requirements: {},
+    approval_status: 'pending',
     created_by: user.id,
     dateCreated: new Date().toISOString(),
     lastModified: new Date().toISOString(),
@@ -101,8 +116,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, c
       brand_guidelines: {
         voiceTone: 'Friendly',
         targetAudience: 'Marketers',
-        keyMessages: ['creative at the speed of ai']
-      }
+        keyMessages: ['creative at the speed of ai'],
+      },
     },
     // Add mock matrices and executions without database queries
     matrices: [],
@@ -116,30 +131,36 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, c
         spend: 0,
         ctr: 0,
         cpc: 0,
-        roas: 0
-      }
+        roas: 0,
+      },
     },
     health_score: {
       score: 75,
       grade: 'B',
       issues: ['Missing campaign description'],
-      recommendations: ['Add detailed campaign description'] },
-  timeline: [],
-    insights: ['Campaign ready for launch']
+      recommendations: ['Add detailed campaign description'],
+    },
+    timeline: [],
+    insights: ['Campaign ready for launch'],
   };
 
-    return res.json({
-    data: mockCampaign
+  return res.json({
+    data: mockCampaign,
   });
 }
 
-async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, campaignId: string): Promise<void> {
+async function handlePut(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  campaignId: string
+): Promise<void> {
   const validationResult = CampaignUpdateSchema.safeParse(req.body);
-  
+
   if (!validationResult.success) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Validation failed',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
@@ -170,14 +191,22 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, c
 
   // Handle status transitions
   if (updateData.status && updateData.status !== existingCampaign.status) {
-    const transitionResult = await handleStatusTransition(campaignId, existingCampaign.status, updateData.status, user.id);
+    const transitionResult = await handleStatusTransition(
+      campaignId,
+      existingCampaign.status,
+      updateData.status,
+      user.id
+    );
     if (!transitionResult.success) {
       return res.status(400).json({ error: transitionResult.error });
     }
   }
 
   // Handle approval status changes
-  if (updateData.approval_status && updateData.approval_status !== existingCampaign.approval_status) {
+  if (
+    updateData.approval_status &&
+    updateData.approval_status !== existingCampaign.approval_status
+  ) {
     if (updateData.approval_status === 'approved') {
       (updateData as any).approved_by = user.id;
       (updateData as any).approval_date = new Date().toISOString();
@@ -188,15 +217,18 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, c
     .from('campaigns')
     .update({
       ...updateData,
-      updated_at: new Date().toISOString()})
+      updated_at: new Date().toISOString(),
+    })
     .eq('id', campaignId)
-    .select(`
+    .select(
+      `
       *,
       clients(name, slug),
       briefs(id, name),
       profiles!campaigns_created_by_fkey(full_name),
       profiles!campaigns_approved_by_fkey(full_name)
-    `)
+    `
+    )
     .single();
 
   if (error) {
@@ -207,7 +239,12 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, c
   return res.json({ data: campaign });
 }
 
-async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any, campaignId: string): Promise<void> {
+async function handleDelete(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  campaignId: string
+): Promise<void> {
   // First verify user has access to this campaign
   const { data: existingCampaign } = await supabase
     .from('campaigns')
@@ -233,18 +270,18 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
 
   // Check if campaign can be deleted
   if (existingCampaign.status === 'active') {
-    return res.status(409).json({ 
+    return res.status(409).json({
       error: 'Cannot delete active campaign',
-      details: 'Please pause or complete the campaign before deleting'
+      details: 'Please pause or complete the campaign before deleting',
     });
   }
 
   // Check for dependencies
   const dependencies = await checkCampaignDependencies(campaignId);
   if (dependencies.hasActiveExecutions) {
-    return res.status(409).json({ 
+    return res.status(409).json({
       error: 'Cannot delete campaign with active executions',
-      details: dependencies.details
+      details: dependencies.details,
     });
   }
 
@@ -254,7 +291,8 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
     .update({
       status: 'archived',
       archived_at: new Date().toISOString(),
-      archived_by: user.id})
+      archived_by: user.id,
+    })
     .eq('id', campaignId);
 
   if (error) {
@@ -262,9 +300,9 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
     return res.status(500).json({ error: 'Failed to archive campaign' });
   }
 
-  return res.status(200).json({ 
+  return res.status(200).json({
     message: 'Campaign archived successfully',
-    note: 'Campaign data has been archived and can be restored if needed'
+    note: 'Campaign data has been archived and can be restored if needed',
   });
 }
 
@@ -274,7 +312,7 @@ async function getCampaignAnalytics(campaignId: string, period: string): Promise
     // Calculate date range
     const endDate = new Date();
     const startDate = new Date();
-    
+
     switch (period) {
       case '7d':
         startDate.setDate(endDate.getDate() - 7);
@@ -297,7 +335,7 @@ async function getCampaignAnalytics(campaignId: string, period: string): Promise
       .lte('date', endDate.toISOString().split('T')[0])
       .order('date', { ascending: true });
 
-    if (!analytics || analytics.length === 0) {;
+    if (!analytics || analytics.length === 0) {
       return {
         has_data: false,
         period,
@@ -308,18 +346,22 @@ async function getCampaignAnalytics(campaignId: string, period: string): Promise
           spend: 0,
           ctr: 0,
           cpc: 0,
-          roas: 0}
+          roas: 0,
+        },
       };
     }
 
     // Aggregate totals
-    const totals = analytics.reduce((acc, record) => {;
-      acc.impressions += record.impressions || 0;
-      acc.clicks += record.clicks || 0;
-      acc.conversions += record.conversions || 0;
-      acc.spend += parseFloat(record.spend) || 0;
-      return acc;
-    }, { impressions: 0, clicks: 0, conversions: 0, spend: 0 });
+    const totals = analytics.reduce(
+      (acc, record) => {
+        acc.impressions += record.impressions || 0;
+        acc.clicks += record.clicks || 0;
+        acc.conversions += record.conversions || 0;
+        acc.spend += parseFloat(record.spend) || 0;
+        return acc;
+      },
+      { impressions: 0, clicks: 0, conversions: 0, spend: 0 }
+    );
 
     // Calculate derived metrics
     const ctr = totals.impressions > 0 ? (totals.clicks / totals.impressions) * 100 : 0;
@@ -327,39 +369,45 @@ async function getCampaignAnalytics(campaignId: string, period: string): Promise
     const roas = totals.spend > 0 ? (totals.conversions * 50) / totals.spend : 0; // Assuming $50 avg order value
 
     // Platform breakdown
-    const platformBreakdown = analytics.reduce((acc, record) => {;
-      if (!acc[record.platform]) {
-        acc[record.platform] = { impressions: 0, clicks: 0, conversions: 0, spend: 0 };
-      }
-      acc[record.platform].impressions += record.impressions || 0;
-      acc[record.platform].clicks += record.clicks || 0;
-      acc[record.platform].conversions += record.conversions || 0;
-      acc[record.platform].spend += parseFloat(record.spend) || 0;
-      return acc;
-    }, {} as Record<string, any>);
+    const platformBreakdown = analytics.reduce(
+      (acc, record) => {
+        if (!acc[record.platform]) {
+          acc[record.platform] = { impressions: 0, clicks: 0, conversions: 0, spend: 0 };
+        }
+        acc[record.platform].impressions += record.impressions || 0;
+        acc[record.platform].clicks += record.clicks || 0;
+        acc[record.platform].conversions += record.conversions || 0;
+        acc[record.platform].spend += parseFloat(record.spend) || 0;
+        return acc;
+      },
+      {} as Record<string, any>
+    );
 
     // Daily performance
-    const dailyPerformance = analytics.map((record: any) => ({;
+    const dailyPerformance = analytics.map((record: any) => ({
       date: record.date,
       impressions: record.impressions || 0,
       clicks: record.clicks || 0,
       conversions: record.conversions || 0,
       spend: parseFloat(record.spend) || 0,
-      ctr: record.impressions > 0 ? (record.clicks / record.impressions) * 100 : 0}));
+      ctr: record.impressions > 0 ? (record.clicks / record.impressions) * 100 : 0,
+    }));
 
     return {
       has_data: true,
       period,
-      summary: { }
+      summary: {
         ...totals,
         ctr: Math.round(ctr * 100) / 100,
         cpc: Math.round(cpc * 100) / 100,
-        roas: Math.round(roas * 100) / 100 },
-  platform_breakdown: platformBreakdown,
+        roas: Math.round(roas * 100) / 100,
+      },
+      platform_breakdown: platformBreakdown,
       daily_performance: dailyPerformance,
       date_range: {
         start: startDate.toISOString().split('T')[0],
-        end: endDate.toISOString().split('T')[0]}
+        end: endDate.toISOString().split('T')[0],
+      },
     };
   } catch (error: any) {
     const message = getErrorMessage(error);
@@ -367,7 +415,8 @@ async function getCampaignAnalytics(campaignId: string, period: string): Promise
     return {
       has_data: false,
       period,
-      error: 'Failed to retrieve analytics data'};
+      error: 'Failed to retrieve analytics data',
+    };
   }
 }
 
@@ -432,9 +481,19 @@ function calculateCampaignHealth(campaign: any): any {
 
   return {
     score: Math.max(0, healthScore),
-    grade: healthScore >= 90 ? 'A' : healthScore >= 80 ? 'B' : healthScore >= 70 ? 'C' : healthScore >= 60 ? 'D' : 'F',
+    grade:
+      healthScore >= 90
+        ? 'A'
+        : healthScore >= 80
+          ? 'B'
+          : healthScore >= 70
+            ? 'C'
+            : healthScore >= 60
+              ? 'D'
+              : 'F',
     issues,
-    recommendations};
+    recommendations,
+  };
 }
 
 async function getCampaignTimeline(campaignId: string): Promise<any[]> {
@@ -444,7 +503,9 @@ async function getCampaignTimeline(campaignId: string): Promise<any[]> {
     // Get campaign creation
     const { data: campaign } = await supabase
       .from('campaigns')
-      .select('created_at, created_by, approval_date, approved_by, profiles!campaigns_created_by_fkey(full_name)')
+      .select(
+        'created_at, created_by, approval_date, approved_by, profiles!campaigns_created_by_fkey(full_name)'
+      )
       .eq('id', campaignId)
       .single();
 
@@ -454,7 +515,8 @@ async function getCampaignTimeline(campaignId: string): Promise<any[]> {
         event: 'Campaign Created',
         description: 'Campaign was created',
         user: (campaign.profiles as any)?.[0]?.full_name,
-        type: 'creation'});
+        type: 'creation',
+      });
 
       if (campaign.approval_date) {
         timeline.push({
@@ -462,7 +524,8 @@ async function getCampaignTimeline(campaignId: string): Promise<any[]> {
           event: 'Campaign Approved',
           description: 'Campaign was approved for execution',
           user: campaign.approved_by,
-          type: 'approval'});
+          type: 'approval',
+        });
       }
     }
 
@@ -479,7 +542,8 @@ async function getCampaignTimeline(campaignId: string): Promise<any[]> {
         event: 'Matrix Created',
         description: `Matrix "${matrix.name}" was created`,
         user: (matrix.profiles as any)?.[0]?.full_name,
-        type: 'matrix'});
+        type: 'matrix',
+      });
     });
 
     // Get executions
@@ -495,7 +559,8 @@ async function getCampaignTimeline(campaignId: string): Promise<any[]> {
         event: 'Execution Started',
         description: `${execution.content_type} execution for ${execution.platform}`,
         type: 'execution',
-        status: execution.status});
+        status: execution.status,
+      });
     });
 
     // Sort timeline by date
@@ -515,7 +580,7 @@ async function generateCampaignInsights(campaign: any): Promise<string[]> {
   // Performance insights
   if (campaign.analytics?.has_data) {
     const summary = campaign.analytics.summary;
-    
+
     if (summary.ctr > 2) {
       insights.push('Excellent click-through rate indicates strong creative performance');
     } else if (summary.ctr < 0.5) {
@@ -530,17 +595,18 @@ async function generateCampaignInsights(campaign: any): Promise<string[]> {
   }
 
   // Timeline insights
-  const daysRunning = campaign.start_date ? ;
-    Math.floor((Date.now() - new Date(campaign.start_date).getTime()) / (1000 * 60 * 60 * 24)) : 0;
+  const daysRunning = campaign.start_date
+    ? Math.floor((Date.now() - new Date(campaign.start_date).getTime()) / (1000 * 60 * 60 * 24))
+    : 0;
 
-  if (daysRunning > 30 && campaign.status === 'active') {;
+  if (daysRunning > 30 && campaign.status === 'active') {
     insights.push('Long-running campaign may benefit from creative refresh');
   }
 
   // Budget insights
   if (campaign.budget && campaign.spent) {
     const utilization = (campaign.spent / campaign.budget) * 100;
-    
+
     if (utilization > 90) {
       insights.push('Campaign approaching budget limit');
     } else if (utilization < 50 && daysRunning > 7) {
@@ -552,7 +618,7 @@ async function generateCampaignInsights(campaign: any): Promise<string[]> {
   const matricesCount = campaign.matrices?.length || 0;
   const executionsCount = campaign.executions?.length || 0;
 
-  if (matricesCount > 0 && executionsCount === 0) {;
+  if (matricesCount > 0 && executionsCount === 0) {
     insights.push('Matrices ready for execution - consider launching campaign');
   }
 
@@ -563,7 +629,12 @@ async function generateCampaignInsights(campaign: any): Promise<string[]> {
   return insights;
 }
 
-async function handleStatusTransition(campaignId: string, currentStatus: string, newStatus: string, userId: string): Promise<{ success: boolean; error?: string }> {
+async function handleStatusTransition(
+  campaignId: string,
+  currentStatus: string,
+  newStatus: string,
+  userId: string
+): Promise<{ success: boolean; error?: string }> {
   // Define valid status transitions
   const validTransitions: Record<string, string[]> = {
     draft: ['active', 'archived'],
@@ -576,22 +647,22 @@ async function handleStatusTransition(campaignId: string, currentStatus: string,
   if (!validTransitions[currentStatus]?.includes(newStatus)) {
     return {
       success: false,
-      error: `Invalid status transition from ${currentStatus} to ${newStatus}`
+      error: `Invalid status transition from ${currentStatus} to ${newStatus}`,
     };
   }
 
   // Additional validation for specific transitions
-  if (newStatus === 'active') {;
+  if (newStatus === 'active') {
     // Check if campaign has matrices
     const { count: matricesCount } = await supabase
       .from('matrices')
       .select('id', { count: 'exact' })
       .eq('campaign_id', campaignId);
 
-    if (!matricesCount || matricesCount === 0) {;
+    if (!matricesCount || matricesCount === 0) {
       return {
         success: false,
-        error: 'Cannot activate campaign without matrices'
+        error: 'Cannot activate campaign without matrices',
       };
     }
   }
@@ -599,7 +670,9 @@ async function handleStatusTransition(campaignId: string, currentStatus: string,
   return { success: true };
 }
 
-async function checkCampaignDependencies(campaignId: string): Promise<{ hasActiveExecutions: boolean; details: string[] }> {
+async function checkCampaignDependencies(
+  campaignId: string
+): Promise<{ hasActiveExecutions: boolean; details: string[] }> {
   const details: string[] = [];
 
   try {
@@ -616,13 +689,15 @@ async function checkCampaignDependencies(campaignId: string): Promise<{ hasActiv
 
     return {
       hasActiveExecutions: (activeExecutions?.length || 0) > 0,
-      details};
+      details,
+    };
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error checking campaign dependencies:', error);
     return {
       hasActiveExecutions: false,
-      details: ['Error checking dependencies']};
+      details: ['Error checking dependencies'],
+    };
   }
 }
 
