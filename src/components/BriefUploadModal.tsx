@@ -18,7 +18,8 @@ import {
   Stepper,
   Step,
   StepLabel,
-  StepContent} from '@mui/material';
+  StepContent,
+} from '@mui/material';
 import {
   CloudUpload,
   Close,
@@ -27,7 +28,8 @@ import {
   PictureAsPdf,
   Article,
   CheckCircle,
-  AutoAwesome} from '@mui/icons-material';
+  AutoAwesome,
+} from '@mui/icons-material';
 import { useDropzone } from 'react-dropzone';
 import { useNotification } from '@/contexts/NotificationContext';
 
@@ -44,16 +46,13 @@ interface FilePreview {
   size: string;
 }
 
-const steps = [
-  'Upload Brief Document',
-  'AI Processing',
-  'Review & Confirm'
-];
+const steps = ['Upload Brief Document', 'AI Processing', 'Review & Confirm'];
 
 export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
   open,
   onClose,
-  onUploadComplete}) => {
+  onUploadComplete,
+}) => {
   const [files, setFiles] = useState<FilePreview[]>([]);
   const [uploading, setUploading] = useState(false);
   const [processing, setProcessing] = useState(false);
@@ -81,19 +80,21 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
     const newFiles = acceptedFiles.map((file: any) => ({
       file,
       type: file.type,
-      size: formatFileSize(file.size)}));
+      size: formatFileSize(file.size),
+    }));
     setFiles(newFiles);
     setActiveStep(0);
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { }
+    accept: {
       'application/pdf': ['.pdf'],
       'application/msword': ['.doc'],
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
       'text/plain': ['.txt'],
-      'text/markdown': ['.md']},
+      'text/markdown': ['.md'],
+    },
     multiple: false,
     maxSize: 10 * 1024 * 1024, // 10MB
   });
@@ -123,7 +124,8 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
 
       const response = await fetch('/api/flow/parse-brief', {
         method: 'POST',
-        body: formData});
+        body: formData,
+      });
 
       clearInterval(progressInterval);
       setUploadProgress(100);
@@ -135,7 +137,11 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
         setExtractedData(result.data);
         showNotification('Brief processed successfully!', 'success');
       } else {
-        throw new Error(result.message || result.errorId ? `Upload failed (Error ID: ${result.errorId})` : 'Upload failed');
+        throw new Error(
+          result.message || result.errorId
+            ? `Upload failed (Error ID: ${result.errorId})`
+            : 'Upload failed'
+        );
       }
     } catch (error: any) {
       console.error('Upload error:', error);
@@ -155,8 +161,6 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
       setProcessing(false);
     }
   };
-
-
 
   const handleConfirm = () => {
     if (extractedData && onUploadComplete) {
@@ -190,10 +194,14 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
         <IconButton
           onClick={handleClose}
           disabled={uploading || processing}
-          sx={{ position: 'absolute', right: 8, top: 8 }} aria-label="Icon button">          <Close />
+          sx={{ position: 'absolute', right: 8, top: 8 }}
+          aria-label="Icon button"
+        >
+          {' '}
+          <Close />
         </IconButton>
       </DialogTitle>
-      
+
       <DialogContent>
         <Stepper activeStep={activeStep} orientation="vertical">
           <Step>
@@ -213,7 +221,9 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
                     transition: 'all 0.2s',
                     '&:hover': {
                       borderColor: 'primary.main',
-                      backgroundColor: 'action.hover'}}}
+                      backgroundColor: 'action.hover',
+                    },
+                  }}
                 >
                   <input {...getInputProps()} />
                   <CloudUpload sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
@@ -231,21 +241,23 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
                 <List>
                   {files.map((file, index) => (
                     <ListItem key={index}>
-                      <ListItemIcon>
-                        {getFileIcon(file.type)}
-                      </ListItemIcon>
+                      <ListItemIcon>{getFileIcon(file.type)}</ListItemIcon>
                       <ListItemText
                         primary={file.file.name}
                         secondary={`${file.size} • ${file.type}`}
                       />
-                      <IconButton onClick={() => removeFile(index)} aria-label="Icon button" size="small">
+                      <IconButton
+                        onClick={() => removeFile(index)}
+                        aria-label="Icon button"
+                        size="small"
+                      >
                         <Close />
                       </IconButton>
                     </ListItem>
                   ))}
                 </List>
               )}
-              
+
               {files.length > 0 && (
                 <Box mt={2}>
                   <Button
@@ -253,7 +265,8 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
                     onClick={handleUpload}
                     disabled={uploading}
                     fullWidth
-                   data-testid="upload-button">
+                    data-testid="upload-button"
+                  >
                     {uploading ? 'Uploading...' : 'Upload & Process'}
                   </Button>
                   {uploading && (
@@ -296,12 +309,18 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
                     Extracted Information
                   </Typography>
                   <Box display="flex" flexWrap="wrap" gap={1} mb={2}>
-                    <Chip label={`Objective: ${extractedData.objective?.substring(0, 30) || 'Not specified'}...`} />
-                    <Chip label={`Audience: ${extractedData.targetAudience?.substring(0, 30) || 'Not specified'}...`} />
+                    <Chip
+                      label={`Objective: ${extractedData.objective?.substring(0, 30) || 'Not specified'}...`}
+                    />
+                    <Chip
+                      label={`Audience: ${extractedData.targetAudience?.substring(0, 30) || 'Not specified'}...`}
+                    />
                     <Chip label={`Budget: ${extractedData.budget || 'Not specified'}`} />
                     <Chip label={`Timeline: ${extractedData.timeline || 'Not specified'}`} />
                     {extractedData.platforms && extractedData.platforms.length > 0 && (
-                      <Chip label={`Platforms: ${extractedData.platforms.slice(0, 2).join(', ')}${extractedData.platforms.length > 2 ? '...' : ''}`} />
+                      <Chip
+                        label={`Platforms: ${extractedData.platforms.slice(0, 2).join(', ')}${extractedData.platforms.length > 2 ? '...' : ''}`}
+                      />
                     )}
                   </Box>
                   <Alert severity="info">
