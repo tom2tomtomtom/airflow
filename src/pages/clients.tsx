@@ -647,9 +647,10 @@ const ClientsPage: React.FC = () => {
                       fullWidth
                       label="Twitter"
                       value={formData.socialMedia.twitter || ''}
-                      onChange={(e) => setFormData({;
+                      onChange={(e) => setFormData({
                         ...formData,
-                        socialMedia: { ...formData.socialMedia, twitter: e.target.value }})}
+                        socialMedia: { ...formData.socialMedia, twitter: e.target.value }
+                      })}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -664,9 +665,10 @@ const ClientsPage: React.FC = () => {
                       fullWidth
                       label="Instagram"
                       value={formData.socialMedia.instagram || ''}
-                      onChange={(e) => setFormData({;
+                      onChange={(e) => setFormData({
                         ...formData,
-                        socialMedia: { ...formData.socialMedia, instagram: e.target.value }})}
+                        socialMedia: { ...formData.socialMedia, instagram: e.target.value }
+                      })}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -681,9 +683,10 @@ const ClientsPage: React.FC = () => {
                       fullWidth
                       label="LinkedIn"
                       value={formData.socialMedia.linkedin || ''}
-                      onChange={(e) => setFormData({;
+                      onChange={(e) => setFormData({
                         ...formData,
-                        socialMedia: { ...formData.socialMedia, linkedin: e.target.value }})}
+                        socialMedia: { ...formData.socialMedia, linkedin: e.target.value }
+                      })}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -696,11 +699,12 @@ const ClientsPage: React.FC = () => {
                   <Grid size={{ xs: 12, md: 6 }}>
                     <TextField
                       fullWidth
-                      label="YouTube";
+                      label="YouTube"
                       value={formData.socialMedia.youtube || ''}
-                      onChange={(e) => setFormData({;
+                      onChange={(e) => setFormData({
                         ...formData,
-                        socialMedia: { ...formData.socialMedia, youtube: e.target.value }})}
+                        socialMedia: { ...formData.socialMedia, youtube: e.target.value }
+                      })}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
@@ -726,7 +730,7 @@ const ClientsPage: React.FC = () => {
                   {formData.contacts.length === 0 ? (
                     <Paper sx={{ p: 3, textAlign: 'center' }}>
                       <PersonIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 1 }} />
-                      <Typography variant="body2" color="text.secondary">;
+                      <Typography variant="body2" color="text.secondary">
                         No contacts added yet
                       </Typography>
                       <Button
