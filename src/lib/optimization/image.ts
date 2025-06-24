@@ -333,8 +333,8 @@ export class ImageOptimizer {
       if (opacity < 1) {
         await overlaySharp.composite([{
           input: Buffer.from([255, 255, 255, Math.round(255 * opacity)]),
-          raw: { width: 1, height: 1, channels: 4  },
-  tile: true,
+          raw: { width: 1, height: 1, channels: 4 },
+          tile: true,
           blend: 'dest-in'
         }]);
       }
@@ -487,6 +487,6 @@ export const generatePlaceholder = (
 
 export const analyzeImage = (
   input: Buffer | string
-): Promise<ReturnType<ImageOptimizer['analyzeImage']>> => {
+): Promise<Awaited<ReturnType<ImageOptimizer['analyzeImage']>>> => {
   return getImageOptimizer().analyzeImage(input);
 };
