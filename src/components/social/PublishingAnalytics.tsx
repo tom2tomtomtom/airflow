@@ -19,7 +19,7 @@ import {
   Stack,
   CircularProgress,
   Button,
-  Grid} from '@mui/material';
+  Grid } from '@mui/material';
 import {
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
@@ -32,7 +32,7 @@ import {
   ThumbUp as LikesIcon,
   Share as SharesIcon,
   Download as DownloadIcon,
-  Refresh as RefreshIcon} from '@mui/icons-material';
+  Refresh as RefreshIcon } from '@mui/icons-material';
 import {
   AreaChart,
   Area,
@@ -44,7 +44,7 @@ import {
   CartesianGrid,
   Tooltip as ChartTooltip,
   Legend,
-  ResponsiveContainer} from 'recharts';
+  ResponsiveContainer } from 'recharts';
 import { format, subDays } from 'date-fns';
 import { useNotification } from '@/contexts/NotificationContext';
 
@@ -61,13 +61,13 @@ interface PublishingAnalyticsProps {
 }
 
 interface AnalyticsData {
-  overview: Record<string, unknown>$1
-  totalPosts: number;
+  overview: {
+    totalPosts: number;
     totalReach: number;
     totalEngagement: number;
     avgEngagementRate: number;
-    trends: Record<string, unknown>$1
-  posts: number;
+    trends: {
+      posts: number;
       reach: number;
       engagement: number;
       engagementRate: number;
@@ -97,8 +97,8 @@ interface AnalyticsData {
     content: string;
     platform: string;
     publishedAt: string;
-    metrics: Record<string, unknown>$1
-  reach: number;
+    metrics: {
+      reach: number;
       likes: number;
       comments: number;
       shares: number;
@@ -116,7 +116,7 @@ interface AnalyticsData {
 
 const PublishingAnalytics: React.FC<PublishingAnalyticsProps> = ({
   clientId,
-  platforms}) => {
+  platforms }) => {
   const { showNotification } = useNotification();
   const [timeRange, setTimeRange] = useState('30d');
   const [selectedMetric, setSelectedMetric] = useState('engagement');
@@ -128,7 +128,7 @@ const PublishingAnalytics: React.FC<PublishingAnalyticsProps> = ({
     twitter: '#1DA1F2',
     linkedin: '#0A66C2',
     instagram: '#E4405F',
-    youtube: '#FF0000'};
+    youtube: '#FF0000' };
 
   const getPlatformIcon = (platform: string) => {
     switch (platform) {
@@ -170,7 +170,7 @@ const PublishingAnalytics: React.FC<PublishingAnalyticsProps> = ({
           twitter: Math.floor(baseReach * 0.25),
           linkedin: Math.floor(baseReach * 0.15),
           instagram: Math.floor(baseReach * 0.15),
-          youtube: Math.floor(baseReach * 0.05)};
+          youtube: Math.floor(baseReach * 0.05) };
       });
 
       const totalPosts = timeSeriesData.reduce((sum, day) => sum + day.posts, 0);
@@ -178,17 +178,18 @@ const PublishingAnalytics: React.FC<PublishingAnalyticsProps> = ({
       const totalEngagement = timeSeriesData.reduce((sum, day) => sum + day.engagement, 0);
 
       const analyticsData: AnalyticsData = {
-        overview: Record<string, unknown>$1
-  totalPosts,
+        overview: {
+          totalPosts,
           totalReach,
           totalEngagement,
           avgEngagementRate: totalReach > 0 ? (totalEngagement / totalReach) * 100 : 0,
-          trends: Record<string, unknown>$1
-  posts: Math.floor(Math.random() * 40) - 20, // -20% to +20%
+          trends: {
+            posts: Math.floor(Math.random() * 40) - 20, // -20% to +20%
             reach: Math.floor(Math.random() * 60) - 30, // -30% to +30%
             engagement: Math.floor(Math.random() * 50) - 25, // -25% to +25%
-            engagementRate: Math.floor(Math.random() * 30) - 15, // -15% to +15%
-          }},
+            engagementRate: Math.floor(Math.random() * 30) - 15 // -15% to +15%
+          }
+        },
         platformMetrics: [
           {
             platform: 'Facebook',
@@ -196,28 +197,28 @@ const PublishingAnalytics: React.FC<PublishingAnalyticsProps> = ({
             reach: Math.floor(totalReach * 0.4),
             engagement: Math.floor(totalEngagement * 0.35),
             engagementRate: 4.2,
-            color: platformColors.facebook }
+            color: platformColors.facebook },
           {
             platform: 'Twitter',
             posts: Math.floor(totalPosts * 0.25),
             reach: Math.floor(totalReach * 0.25),
             engagement: Math.floor(totalEngagement * 0.3),
             engagementRate: 2.8,
-            color: platformColors.twitter }
+            color: platformColors.twitter },
           {
             platform: 'LinkedIn',
             posts: Math.floor(totalPosts * 0.2),
             reach: Math.floor(totalReach * 0.15),
             engagement: Math.floor(totalEngagement * 0.2),
             engagementRate: 5.1,
-            color: platformColors.linkedin }
+            color: platformColors.linkedin },
           {
             platform: 'Instagram',
             posts: Math.floor(totalPosts * 0.2),
             reach: Math.floor(totalReach * 0.15),
             engagement: Math.floor(totalEngagement * 0.12),
             engagementRate: 3.6,
-            color: platformColors.instagram }
+            color: platformColors.instagram },
           {
             platform: 'YouTube',
             posts: Math.floor(totalPosts * 0.05),
@@ -233,42 +234,48 @@ const PublishingAnalytics: React.FC<PublishingAnalyticsProps> = ({
             content: 'Exciting news! Our new product launch is just around the corner...',
             platform: 'Facebook',
             publishedAt: '2024-01-15T10:00:00Z',
-            metrics: Record<string, unknown>$1
-  reach: 12500,
+            metrics: {
+              reach: 12500,
               likes: 340,
               comments: 67,
               shares: 89,
-              engagementRate: 4.8}},
+              engagementRate: 4.8
+            }
+          },
           {
             id: '2',
             content: 'Behind the scenes of our creative process. Here\'s how we bring ideas to life!',
             platform: 'Instagram',
             publishedAt: '2024-01-14T14:30:00Z',
-            metrics: Record<string, unknown>$1
-  reach: 8900,
+            metrics: {
+              reach: 8900,
               likes: 520,
               comments: 43,
               shares: 76,
-              engagementRate: 7.2}},
+              engagementRate: 7.2
+            }
+          },
           {
             id: '3',
             content: 'Weekly industry insights and trends. What are your thoughts?',
             platform: 'LinkedIn',
             publishedAt: '2024-01-13T09:15:00Z',
-            metrics: Record<string, unknown>$1
-  reach: 5600,
+            metrics: {
+              reach: 5600,
               likes: 180,
               comments: 34,
               shares: 45,
-              engagementRate: 4.6}},
+              engagementRate: 4.6
+            }
+          },
         ],
         engagementBreakdown: [
-          { platform: 'Facebook', likes: 1240, comments: 340, shares: 180, color: platformColors.facebook  }
-          { platform: 'Twitter', likes: 890, comments: 120, shares: 450, color: platformColors.twitter  }
-          { platform: 'LinkedIn', likes: 670, comments: 230, shares: 120, color: platformColors.linkedin  }
-          { platform: 'Instagram', likes: 1560, comments: 180, shares: 90, color: platformColors.instagram  }
-          { platform: 'YouTube', likes: 340, comments: 45, shares: 23, color: platformColors.youtube  }
-        ]};
+          { platform: 'Facebook', likes: 1240, comments: 340, shares: 180, color: platformColors.facebook },
+          { platform: 'Twitter', likes: 890, comments: 120, shares: 450, color: platformColors.twitter },
+          { platform: 'LinkedIn', likes: 670, comments: 230, shares: 120, color: platformColors.linkedin },
+          { platform: 'Instagram', likes: 1560, comments: 180, shares: 90, color: platformColors.instagram },
+          { platform: 'YouTube', likes: 340, comments: 45, shares: 23, color: platformColors.youtube }
+        ] };
 
       setAnalyticsData(analyticsData);
     } catch (error: any) {

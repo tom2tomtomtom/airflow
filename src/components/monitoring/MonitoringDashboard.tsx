@@ -91,8 +91,8 @@ interface Alert {
 }
 
 interface DashboardData {
-  overview: Record<string, unknown>$1
-  health: 'healthy' | 'degraded' | 'critical';
+  overview: {
+    health: 'healthy' | 'degraded' | 'critical';
     uptime: number;
     activeAlerts: number;
     lastUpdated: string;
@@ -278,19 +278,28 @@ const MonitoringDashboard: React.FC = () => {
     const options = {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: Record<string, unknown>$1
-  legend: Record<string, unknown>$1
-  display: false },
-  title: Record<string, unknown>$1
-  display: false}},
-      scales: Record<string, unknown>$1
-  y: Record<string, unknown>$1
-  beginAtZero: true,
-          grid: Record<string, unknown>$1
-  color: theme.palette.divider}},
-        x: Record<string, unknown>$1
-  grid: Record<string, unknown>$1
-  color: theme.palette.divider}}}};
+      plugins: {
+        legend: {
+          display: false
+        },
+        title: {
+          display: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: {
+            color: theme.palette.divider
+          }
+        },
+        x: {
+          grid: {
+            color: theme.palette.divider
+          }
+        }
+      }
+    };
 
     switch (chart.type) {
       case 'line':
