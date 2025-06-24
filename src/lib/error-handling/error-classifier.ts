@@ -133,8 +133,8 @@ export class ErrorClassifier {
       // Network errors
       {
         condition: (error) => this.isNetworkError(error),
-        classification: Record<string, unknown>$1
-  type: ErrorType.NETWORK,
+        classification: {
+          type: ErrorType.NETWORK,
           category: ErrorCategory.INFRASTRUCTURE,
           severity: ErrorSeverity.MEDIUM,
           retryable: true,
@@ -145,8 +145,8 @@ export class ErrorClassifier {
       // Database errors
       {
         condition: (error) => this.isDatabaseError(error),
-        classification: Record<string, unknown>$1
-  type: ErrorType.DATABASE,
+        classification: {
+          type: ErrorType.DATABASE,
           category: ErrorCategory.INFRASTRUCTURE,
           severity: ErrorSeverity.HIGH,
           retryable: true,
@@ -157,8 +157,8 @@ export class ErrorClassifier {
       // Authentication errors
       {
         condition: (error) => this.isAuthenticationError(error),
-        classification: Record<string, unknown>$1
-  type: ErrorType.AUTHENTICATION,
+        classification: {
+          type: ErrorType.AUTHENTICATION,
           category: ErrorCategory.CLIENT,
           severity: ErrorSeverity.MEDIUM,
           retryable: false,
@@ -169,8 +169,8 @@ export class ErrorClassifier {
       // Authorization errors
       {
         condition: (error) => this.isAuthorizationError(error),
-        classification: Record<string, unknown>$1
-  type: ErrorType.AUTHORIZATION,
+        classification: {
+          type: ErrorType.AUTHORIZATION,
           category: ErrorCategory.CLIENT,
           severity: ErrorSeverity.MEDIUM,
           retryable: false,
@@ -181,8 +181,8 @@ export class ErrorClassifier {
       // Validation errors
       {
         condition: (error) => this.isValidationError(error),
-        classification: Record<string, unknown>$1
-  type: ErrorType.VALIDATION,
+        classification: {
+          type: ErrorType.VALIDATION,
           category: ErrorCategory.CLIENT,
           severity: ErrorSeverity.LOW,
           retryable: false,
@@ -193,8 +193,8 @@ export class ErrorClassifier {
       // Rate limit errors
       {
         condition: (error) => this.isRateLimitError(error),
-        classification: Record<string, unknown>$1
-  type: ErrorType.RATE_LIMIT,
+        classification: {
+          type: ErrorType.RATE_LIMIT,
           category: ErrorCategory.CLIENT,
           severity: ErrorSeverity.MEDIUM,
           retryable: true,
@@ -205,8 +205,8 @@ export class ErrorClassifier {
       // Timeout errors
       {
         condition: (error) => this.isTimeoutError(error),
-        classification: Record<string, unknown>$1
-  type: ErrorType.TIMEOUT,
+        classification: {
+          type: ErrorType.TIMEOUT,
           category: ErrorCategory.INFRASTRUCTURE,
           severity: ErrorSeverity.MEDIUM,
           retryable: true,
@@ -217,8 +217,8 @@ export class ErrorClassifier {
       // External service errors
       {
         condition: (error) => this.isExternalServiceError(error),
-        classification: Record<string, unknown>$1
-  type: ErrorType.EXTERNAL_SERVICE,
+        classification: {
+          type: ErrorType.EXTERNAL_SERVICE,
           category: ErrorCategory.INTEGRATION,
           severity: ErrorSeverity.MEDIUM,
           retryable: true,
@@ -229,8 +229,8 @@ export class ErrorClassifier {
       // Configuration errors
       {
         condition: (error) => this.isConfigurationError(error),
-        classification: Record<string, unknown>$1
-  type: ErrorType.CONFIGURATION,
+        classification: {
+          type: ErrorType.CONFIGURATION,
           category: ErrorCategory.SERVER,
           severity: ErrorSeverity.CRITICAL,
           retryable: false,
@@ -241,8 +241,8 @@ export class ErrorClassifier {
       // System errors (fallback)
       {
         condition: () => true,
-        classification: Record<string, unknown>$1
-  type: ErrorType.UNKNOWN,
+        classification: {
+          type: ErrorType.UNKNOWN,
           category: ErrorCategory.SERVER,
           severity: ErrorSeverity.MEDIUM,
           retryable: false,
@@ -421,22 +421,25 @@ export class ErrorClassifier {
   
   private sendToAPM(error: ClassifiedError): void {
     captureError(error.originalError, {
-      tags: Record<string, unknown>$1
-  errorType: error.type,
+      tags: {
+        errorType: error.type,
         errorCategory: error.category,
         errorSeverity: error.severity,
         errorId: error.id,
-        fingerprint: error.fingerprint },
-  extra: Record<string, unknown>$1
-  classification: Record<string, unknown>$1
-  type: error.type,
+        fingerprint: error.fingerprint
+      },
+      extra: {
+        classification: {
+          type: error.type,
           category: error.category,
           severity: error.severity,
-          retryable: error.retryable },
-  context: error.context,
+          retryable: error.retryable
+        },
+        context: error.context,
         metadata: error.metadata,
-        recoveryActions: error.recoveryActions },
-  user: error.context.userId ? {
+        recoveryActions: error.recoveryActions
+      },
+      user: error.context.userId ? {
         id: error.context.userId,
         clientId: error.context.clientId
       } : undefined

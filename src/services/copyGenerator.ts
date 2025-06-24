@@ -246,11 +246,12 @@ export class CopyGenerator {
   private buildCopyPrompt(
     brief: ParsedBrief,
     motivation: PsychologicalMotivation,
-    config: Record<string, unknown>$1
-  type: CopyVariant['type'];
+    config: {
+      type: CopyVariant['type'];
       tone: CopyVariant['tone'];
       platform: CopyVariant['platform'];
-      format: CopyVariant['format']; }
+      format: CopyVariant['format'];
+    },
     brandVoice?: CopyGenerationOptions['brandVoice']
   ): string {
     const characterLimit = this.CHARACTER_LIMITS[config.type][config.format];
@@ -352,8 +353,8 @@ Do not include explanations or alternatives - just the final copy.
   private async parseCopyResponse(
     response: string,
     motivationId: string,
-    config: Record<string, unknown>$1
-  type: CopyVariant['type'];
+    config: {
+      type: CopyVariant['type'];
       tone: CopyVariant['tone'];
       platform: CopyVariant['platform'];
       format: CopyVariant['format'];
@@ -399,11 +400,12 @@ Do not include explanations or alternatives - just the final copy.
 
   private calculateQualityScores(
     content: string,
-    config: Record<string, unknown>$1
-  type: CopyVariant['type'];
+    config: {
+      type: CopyVariant['type'];
       tone: CopyVariant['tone'];
       platform: CopyVariant['platform'];
-      format: CopyVariant['format']; },
+      format: CopyVariant['format'];
+    },
   characterLimit: number
   ): {
     confidence: number;
@@ -591,8 +593,8 @@ Do not include explanations or alternatives - just the final copy.
 
   async refineCopySet(
     copySet: CopySet,
-    refinements: Record<string, unknown>$1
-  improveQuality?: boolean;
+    refinements: {
+      improveQuality?: boolean;
       adjustTone?: CopyVariant['tone'];
       focusPlatform?: CopyVariant['platform'];
       enhanceEmotionalImpact?: boolean;

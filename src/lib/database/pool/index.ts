@@ -115,8 +115,8 @@ export class DatabaseConnectionPool {
       
       loggers.general.info('Database pool stats', {
         ...stats,
-        queryStats: Record<string, unknown>$1
-  total: this.stats.totalQueries,
+        queryStats: {
+          total: this.stats.totalQueries,
           avgDuration: this.stats.totalQueries > 0 ? this.stats.totalDuration / this.stats.totalQueries : 0,
           slowQueries: this.stats.slowQueries,
           errors: this.stats.errors
@@ -137,8 +137,8 @@ export class DatabaseConnectionPool {
       loggers.general.info('Database connection pool initialized', {
         timestamp: result.rows[0].timestamp,
         version: result.rows[0].version.split(' ')[0],
-        poolConfig: Record<string, unknown>$1
-  min: this.config.min,
+        poolConfig: {
+          min: this.config.min,
           max: this.config.max,
           idleTimeout: this.config.idleTimeoutMillis,
           connectionTimeout: this.config.connectionTimeoutMillis
