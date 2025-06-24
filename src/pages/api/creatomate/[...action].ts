@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 
 interface CreatomateTestResponse {
@@ -20,10 +19,10 @@ export default async function handler(
   try {
     // Check if API key is configured
     if (!process.env.CREATOMATE_API_KEY) {
-      return res.status(500).json({ 
-        success: false, 
+      return res.status(500).json({
+        success: false,
         error: 'Creatomate API key not configured',
-        action: actionPath
+        action: actionPath,
       });
     }
 
@@ -39,19 +38,21 @@ export default async function handler(
         // Simple connectivity test
         const testResponse = await axios.get(`${baseUrl}/templates`, {
           headers: {
-        'Authorization': `Bearer ${apiKey
-      }`},
-          params: { limit: 1 }
+            Authorization: `Bearer ${apiKey}`,
+          },
+          params: { limit: 1 },
         });
 
-        return res.status(200).json({ 
-          success: true, 
-          data: Record<string, unknown>$1
-  message: 'Creatomate integration is working perfectly! Ready for AIrFLOW video generation.',
+        return res.status(200).json({
+          success: true,
+          data: {
+            message:
+              'Creatomate integration is working perfectly! Ready for AIrFLOW video generation.',
             templateCount: testResponse.data.length,
-            rateLimitRemaining: testResponse.headers['x-ratelimit-remaining'] || 'Unknown' },
-  action: actionPath,
-          timestamp: new Date().toISOString()
+            rateLimitRemaining: testResponse.headers['x-ratelimit-remaining'] || 'Unknown',
+          },
+          action: actionPath,
+          timestamp: new Date().toISOString(),
         });
 
       case 'templates':
@@ -59,20 +60,20 @@ export default async function handler(
         if (req.method === 'GET') {
           const templatesResponse = await axios.get(`${baseUrl}/templates`, {
             headers: {
-        'Authorization': `Bearer ${apiKey
-      }`},
-            params: Record<string, unknown>$1
-  limit: req.query.limit || 10,
+              Authorization: `Bearer ${apiKey}`,
+            },
+            params: {
+              limit: req.query.limit || 10,
               offset: req.query.offset || 0,
-              tags: req.query.tags
-            }
+              tags: req.query.tags,
+            },
           });
 
-          return res.status(200).json({ 
-            success: true, 
+          return res.status(200).json({
+            success: true,
             data: templatesResponse.data,
             action: actionPath,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           });
         }
         break;
@@ -83,37 +84,39 @@ export default async function handler(
           // Create new render
           const renderResponse = await axios.post(`${baseUrl}/renders`, req.body, {
             headers: {
-        'Authorization': `Bearer ${apiKey
-      }`,
-              'Content-Type': 'application/json'}});
+              Authorization: `Bearer ${apiKey}`,
+              'Content-Type': 'application/json',
+            },
+          });
 
-          return res.status(200).json({ 
-            success: true, 
+          return res.status(200).json({
+            success: true,
             data: renderResponse.data,
             action: actionPath,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           });
         } else if (req.method === 'GET') {
           // Get render status
           const renderId = req.query.id;
           if (!renderId) {
-            return res.status(400).json({ 
-              success: false, 
+            return res.status(400).json({
+              success: false,
               error: 'Render ID is required for status check',
-              action: actionPath
+              action: actionPath,
             });
           }
 
           const statusResponse = await axios.get(`${baseUrl}/renders/${renderId}`, {
             headers: {
-        'Authorization': `Bearer ${apiKey
-      }`}});
+              Authorization: `Bearer ${apiKey}`,
+            },
+          });
 
-          return res.status(200).json({ 
-            success: true, 
+          return res.status(200).json({
+            success: true,
             data: statusResponse.data,
             action: actionPath,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           });
         }
         break;
@@ -123,40 +126,41 @@ export default async function handler(
         if (req.method === 'GET') {
           const accountResponse = await axios.get(`${baseUrl}/account`, {
             headers: {
-        'Authorization': `Bearer ${apiKey
-      }`}});
+              Authorization: `Bearer ${apiKey}`,
+            },
+          });
 
-          return res.status(200).json({ 
-            success: true, 
-            data: Record<string, unknown>$1
-  plan: accountResponse.data.plan,
+          return res.status(200).json({
+            success: true,
+            data: {
+              plan: accountResponse.data.plan,
               creditsRemaining: accountResponse.data.credits_remaining,
               creditsUsed: accountResponse.data.credits_used,
-              rateLimitRemaining: accountResponse.headers['x-ratelimit-remaining'] || 'Unknown' },
-  action: actionPath,
-            timestamp: new Date().toISOString()
+              rateLimitRemaining: accountResponse.headers['x-ratelimit-remaining'] || 'Unknown',
+            },
+            action: actionPath,
+            timestamp: new Date().toISOString(),
           });
         }
         break;
 
       default:
-        return res.status(404).json({ 
-          success: false, 
+        return res.status(404).json({
+          success: false,
           error: `Unknown action: ${actionPath}. Available actions: test, templates, renders, account`,
-          action: actionPath
+          action: actionPath,
         });
     }
 
     // If we get here, method was not allowed for the action
-    return res.status(405).json({ 
-      success: false, 
+    return res.status(405).json({
+      success: false,
       error: `Method ${req.method} not allowed for action ${actionPath}`,
-      action: actionPath
+      action: actionPath,
     });
-
   } catch (error: any) {
     console.error(`Creatomate ${actionPath} test failed:`, error);
-    
+
     // Handle specific Creatomate errors
     let errorMessage = 'Unknown error';
     let statusCode = 500;
@@ -180,17 +184,18 @@ export default async function handler(
       errorMessage = error.message;
     }
 
-    return res.status(statusCode).json({ 
-      success: false, 
+    return res.status(statusCode).json({
+      success: false,
       error: errorMessage,
       action: actionPath,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 }
 
 export const config = {
-  api: Record<string, unknown>$1
-  externalResolver: true },
+  api: {
+    externalResolver: true,
+  },
   maxDuration: 60, // Longer timeout for video rendering operations
 };
