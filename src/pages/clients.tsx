@@ -527,7 +527,7 @@ const ClientsPage: React.FC = () => {
                       fullWidth
                       multiline
                       rows={3}
-                      label="Description";
+                      label="Description"
                       value={formData.description}
                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     />
