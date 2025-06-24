@@ -18,17 +18,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
   const { id } = query;
   const user = (req as any).user;
 
-    if (method !== 'GET') {
-    return res.status(405).json({ 
-      success: false, 
-      message: 'Method not allowed' 
+  if (method !== 'GET') {
+    return res.status(405).json({
+      success: false,
+      message: 'Method not allowed',
     });
   }
 
   if (!id || typeof id !== 'string') {
     return res.status(400).json({
       success: false,
-      message: 'Client ID is required'
+      message: 'Client ID is required',
     });
   }
 
@@ -37,34 +37,36 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
-      cookies: Record<string, unknown>$1
-  get(name: string) {
+      cookies: {
+        get(name: string) {
           return req.cookies[name];
         },
         set(name: string, value: string, options: any) {
           // We don't need to set cookies in API routes
-        ,
- }
+        },
         remove(name: string, options: any) {
           // We don't need to remove cookies in API routes
-        }}}
+        },
+      },
+    }
   );
 
   try {
     if (!user) {
       console.error('No user found in request');
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Authentication required' 
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required',
       });
     }
 
     const serviceSupabase = getServiceSupabase();
 
     // Use service role directly since we know RLS is blocking regular queries
-        const { data: client, error } = await serviceSupabase
+    const { data: client, error } = await serviceSupabase
       .from('clients')
-      .select(`
+      .select(
+        `
         id,
         name,
         slug,
@@ -80,7 +82,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
         created_at,
         updated_at,
         created_by
-      `)
+      `
+      )
       .eq('id', id)
       .eq('created_by', user.id)
       .single();
@@ -90,7 +93,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
       if (error.code === 'PGRST116') {
         return res.status(404).json({
           success: false,
-          message: 'Client not found'
+          message: 'Client not found',
         });
       }
       throw error;
@@ -99,7 +102,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
     if (!client) {
       return res.status(404).json({
         success: false,
-        message: 'Client not found'
+        message: 'Client not found',
       });
     }
 
@@ -121,23 +124,25 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
       logo: client.logo_url,
       primaryColor: client.primary_color || '#1976d2',
       secondaryColor: client.secondary_color || '#dc004e',
-      socialMedia: client.social_media || { },
-  brand_guidelines: client.brand_guidelines || { },
-  isActive: client.is_active !== false,
+      socialMedia: client.social_media || {},
+      brand_guidelines: client.brand_guidelines || {},
+      isActive: client.is_active !== false,
       dateCreated: client.created_at,
       lastModified: client.updated_at,
-      contacts: contacts || []} as unknown as Client;
+      contacts: contacts || [],
+    } as unknown as Client;
 
-        return res.json({
+    return res.json({
       success: true,
-      client: transformedClient});
-
+      client: transformedClient,
+    });
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Individual client API error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       success: false,
-      message: 'Internal server error'});
+      message: 'Internal server error',
+    });
   }
 }
 
