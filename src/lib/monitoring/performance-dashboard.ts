@@ -335,14 +335,15 @@ export class PerformanceDashboardGenerator {
           title: 'Database Query Performance',
           type: 'line',
           data: this.calculator.getChartData('database.queries.duration', '1h'),
-          config: Record<string, unknown>$1
-  yAxis: { label: 'Query Time (ms)', min: 0  },
-  xAxis: { label: 'Time', format: 'time'  },
-  colors: ['#4caf50'],
+          config: {
+            yAxis: { label: 'Query Time (ms)', min: 0 },
+            xAxis: { label: 'Time', format: 'time' },
+            colors: ['#4caf50'],
             thresholds: [
-              { value: 200, color: '#ffeb3b', label: 'Slow'  }
-              { value: 500, color: '#f44336', label: 'Very Slow'  }
-            ]}},
+              { value: 200, color: '#ffeb3b', label: 'Slow' },
+              { value: 500, color: '#f44336', label: 'Very Slow' }
+            ]
+          },
       ],
       alerts: 0};
   }
@@ -378,10 +379,11 @@ export class PerformanceDashboardGenerator {
           title: 'AI Service Usage',
           type: 'line',
           data: this.calculator.getChartData('ai.requests.total', '1h'),
-          config: Record<string, unknown>$1
-  yAxis: { label: 'Requests', min: 0  },
-  xAxis: { label: 'Time', format: 'time'  },
-  colors: ['#9c27b0']}},
+          config: {
+            yAxis: { label: 'Requests', min: 0 },
+            xAxis: { label: 'Time', format: 'time' },
+            colors: ['#9c27b0']
+          },
       ],
       alerts: 0};
   }
@@ -420,10 +422,11 @@ export class PerformanceDashboardGenerator {
             ...this.calculator.getChartData('system.memory.usage', '1h').map(d => ({ ...d, category: 'Memory' })),
             ...this.calculator.getChartData('system.cpu.usage', '1h').map(d => ({ ...d, category: 'CPU' })),
           ],
-          config: Record<string, unknown>$1
-  yAxis: { label: 'Usage (%)', min: 0, max: 100  },
-  xAxis: { label: 'Time', format: 'time'  },
-  colors: ['#ff5722', '#795548']}},
+          config: {
+            yAxis: { label: 'Usage (%)', min: 0, max: 100 },
+            xAxis: { label: 'Time', format: 'time' },
+            colors: ['#ff5722', '#795548']
+          },
       ],
       alerts: 0};
   }
@@ -450,10 +453,11 @@ export class PerformanceDashboardGenerator {
           title: 'Video Generation Activity',
           type: 'bar',
           data: this.calculator.getChartData('video.generation.total', '24h', 24),
-          config: Record<string, unknown>$1
-  yAxis: { label: 'Videos Generated', min: 0  },
-  xAxis: { label: 'Hour', format: 'time'  },
-  colors: ['#00bcd4']}},
+          config: {
+            yAxis: { label: 'Videos Generated', min: 0 },
+            xAxis: { label: 'Hour', format: 'time' },
+            colors: ['#00bcd4']
+          },
       ],
       alerts: 0};
   }
