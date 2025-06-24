@@ -12,18 +12,18 @@ export class APITestPatterns {
    * Complete CRUD test suite for an API endpoint
    */
   static createCRUDTestSuite(
-    handlers: Record<string, unknown>$1
-  create?: NextApiHandler;
+    handlers: {
+      create?: NextApiHandler;
       read?: NextApiHandler;
       update?: NextApiHandler;
       delete?: NextApiHandler;
       list?: NextApiHandler;
     },
-    testData: Record<string, unknown>$1
-  validCreateData: unknown;,
-    validUpdateData: unknown;,
-    invalidData: unknown;,
-    resourceName: string;
+    testData: {
+      validCreateData: unknown;
+      validUpdateData: unknown;
+      invalidData: unknown;
+      resourceName: string;
     }
   ) {
     const { validCreateData, validUpdateData, invalidData, resourceName } = testData;
@@ -158,13 +158,15 @@ export class APITestPatterns {
           it('should require authentication', async () => {
             await APITestRunner.testAuthRequired(handlers.list!, 'GET');
           });
-        }); };
+        });
+      },
+    };
   }
 
   /**
    * Authentication endpoint test patterns
    */
-  static createAuthTestSuite(handlers: Record<string, unknown>$1
+  static createAuthTestSuite(handlers: {
     login?: NextApiHandler;
     logout?: NextApiHandler;
     signup?: NextApiHandler;
@@ -178,7 +180,8 @@ export class APITestPatterns {
           it('should authenticate with valid credentials', async () => {
             const validCredentials = {
               email: 'test@example.com',
-              password: 'validPassword123!'};
+              password: 'validPassword123!',
+            };
 
             await APITestRunner.testValidInput(handlers.login!, validCredentials, 'POST');
           });
@@ -186,7 +189,8 @@ export class APITestPatterns {
           it('should reject invalid credentials', async () => {
             const invalidCredentials = {
               email: 'test@example.com',
-              password: 'wrongPassword'};
+              password: 'wrongPassword',
+            };
 
             await APITestRunner.testInvalidInput(handlers.login!, invalidCredentials, 'POST');
           });
@@ -226,7 +230,8 @@ export class APITestPatterns {
             const validSignupData = {
               email: 'newuser@example.com',
               password: 'SecurePassword123!',
-              confirmPassword: 'SecurePassword123!'};
+              confirmPassword: 'SecurePassword123!',
+            };
 
             await APITestRunner.testValidInput(handlers.signup!, validSignupData, 'POST');
           });
@@ -235,7 +240,8 @@ export class APITestPatterns {
             const weakPasswordData = {
               email: 'newuser@example.com',
               password: '123',
-              confirmPassword: '123'};
+              confirmPassword: '123',
+            };
 
             await APITestRunner.testInvalidInput(handlers.signup!, weakPasswordData, 'POST');
           });
@@ -244,7 +250,8 @@ export class APITestPatterns {
             const mismatchedData = {
               email: 'newuser@example.com',
               password: 'SecurePassword123!',
-              confirmPassword: 'DifferentPassword123!'};
+              confirmPassword: 'DifferentPassword123!',
+            };
 
             await APITestRunner.testInvalidInput(handlers.signup!, mismatchedData, 'POST');
           });
@@ -270,7 +277,9 @@ export class APITestPatterns {
             const data = JSON.parse(res._getData());
             expect(data.data.session).toBeNull();
           });
-        }); };
+        });
+      },
+    };
   }
 
   /**
@@ -285,7 +294,8 @@ export class APITestPatterns {
             .setBody({
               fileName: 'test-image.jpg',
               fileType: 'image/jpeg',
-              fileSize: 1024000})
+              fileSize: 1024000,
+            })
             .withAuth()
             .build();
 
@@ -301,7 +311,8 @@ export class APITestPatterns {
             .setBody({
               fileName: 'malicious.exe',
               fileType: 'application/exe',
-              fileSize: 1024000})
+              fileSize: 1024000,
+            })
             .withAuth()
             .build();
 
@@ -330,13 +341,15 @@ export class APITestPatterns {
       testAuthRequired: () => {
         it('should require authentication', async () => {
           await APITestRunner.testAuthRequired(handler, 'POST');
-        }); };
+        });
+      },
+    };
   }
 
   /**
    * Workflow endpoint test patterns
    */
-  static createWorkflowTestSuite(handlers: Record<string, unknown>$1
+  static createWorkflowTestSuite(handlers: {
     state?: NextApiHandler;
     brief?: NextApiHandler;
     motivations?: NextApiHandler;
@@ -383,7 +396,8 @@ export class APITestPatterns {
             const briefData = {
               workflowId: 'test-workflow-123',
               briefContent: 'Test campaign brief content',
-              briefType: 'text'};
+              briefType: 'text',
+            };
 
             await APITestRunner.testValidInput(handlers.brief!, briefData, 'POST');
           });
@@ -392,17 +406,20 @@ export class APITestPatterns {
             const emptyBrief = {
               workflowId: 'test-workflow-123',
               briefContent: '',
-              briefType: 'text'};
+              briefType: 'text',
+            };
 
             await APITestRunner.testInvalidInput(handlers.brief!, emptyBrief, 'POST');
           });
-        }); };
+        });
+      },
+    };
   }
 
   /**
    * AI service endpoint test patterns
    */
-  static createAIServiceTestSuite(handlers: Record<string, unknown>$1
+  static createAIServiceTestSuite(handlers: {
     costCheck?: NextApiHandler;
     usage?: NextApiHandler;
     models?: NextApiHandler;
@@ -416,7 +433,8 @@ export class APITestPatterns {
             const costData = {
               service: 'openai',
               model: 'gpt-4',
-              estimatedTokens: 1000};
+              estimatedTokens: 1000,
+            };
 
             await APITestRunner.testValidInput(handlers.costCheck!, costData, 'POST');
           });
@@ -456,7 +474,9 @@ export class APITestPatterns {
             expect(data.data).toHaveProperty('monthlyUsage');
             expect(data.data).toHaveProperty('budgetRemaining');
           });
-        }); };
+        });
+      },
+    };
   }
 
   /**
@@ -566,9 +586,9 @@ export class APITestPatterns {
   static testInputValidation(
     handler: NextApiHandler,
     endpoint: string,
-    testCases: Record<string, unknown>$1
-  valid: unknown;,
-    invalid: Array<{ data: unknown; expectedError: string }>;
+    testCases: {
+      valid: unknown;
+      invalid: Array<{ data: unknown; expectedError: string }>;
     }
   ) {
     describe(`✅ Input Validation Tests for ${endpoint}`, () => {
@@ -609,7 +629,8 @@ export class APITestPatterns {
         const xssData = {
           ...testCases.valid,
           name: "<script>alert('xss')</script>",
-          description: "<img src=x onerror=alert('xss')>"};
+          description: "<img src=x onerror=alert('xss')>",
+        };
 
         const { req, res } = APIRequestBuilder.create()
           .setMethod('POST')
@@ -632,7 +653,8 @@ export class APITestPatterns {
         const sqlInjectionData = {
           ...testCases.valid,
           id: "1'; DROP TABLE assets; --",
-          name: "'; SELECT * FROM users; --"};
+          name: "'; SELECT * FROM users; --",
+        };
 
         const { req, res } = APIRequestBuilder.create()
           .setMethod('POST')
@@ -657,7 +679,8 @@ export class APITestPatterns {
         it('should prevent SQL injection', async () => {
           const maliciousData = {
             query: "'; DROP TABLE users; --",
-            filter: '1=1 OR 1=1'};
+            filter: '1=1 OR 1=1',
+          };
 
           const { req, res } = APIRequestBuilder.create()
             .setMethod('POST')
@@ -676,7 +699,8 @@ export class APITestPatterns {
         it('should sanitize user input', async () => {
           const xssData = {
             content: "<script>alert('xss')</script>",
-            name: "<img src=x onerror=alert('xss')>"};
+            name: "<img src=x onerror=alert('xss')>",
+          };
 
           const { req, res } = APIRequestBuilder.create()
             .setMethod('POST')
@@ -712,7 +736,9 @@ export class APITestPatterns {
 
           // Check if any responses were rate limited
           // Implementation depends on rate limiting strategy
-        }); };
+        });
+      },
+    };
   }
 }
 
@@ -735,7 +761,8 @@ export const CommonTestData = {
     "<script>alert('xss')</script>",
     "<img src=x onerror=alert('xss')>",
     "javascript:alert('xss')",
-  ]};
+  ],
+};
 
 // Performance benchmarks
 export const PerformanceBenchmarks = {
@@ -750,4 +777,5 @@ export const TestEnvironment = {
   isRunningInCI: () => process.env.CI === 'true',
   isRunningLocally: () => !process.env.CI,
   shouldSkipSlowTests: () => process.env.SKIP_SLOW_TESTS === 'true',
-  shouldRunE2ETests: () => process.env.RUN_E2E_TESTS === 'true'};
+  shouldRunE2ETests: () => process.env.RUN_E2E_TESTS === 'true',
+};
