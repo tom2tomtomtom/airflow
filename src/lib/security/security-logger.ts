@@ -55,8 +55,8 @@ export interface SecurityEvent {
     city?: string;
     timezone?: string;
   };
-  threat: Record<string, unknown>$1
-  score: number; // 0-100
+  threat: {
+    score: number; // 0-100
     category: string;
     indicators: string[];
   };
@@ -76,8 +76,8 @@ export interface SecurityAlert {
   title: string;
   description: string;
   events: string[]; // Event IDs related to this alert
-  metrics: Record<string, unknown>$1
-  eventCount: number;
+  metrics: {
+    eventCount: number;
     timeWindow: string;
     affectedUsers: number;
     affectedIPs: number;
@@ -298,12 +298,14 @@ class ThreatDetectionEngine {
           title: `${pattern.name} detected from ${ip}`,
           description: `${pattern.description}. ${ipEvents.length} events in ${pattern.timeWindow / 60000} minutes.`,
           events: ipEvents.map(e => e.id),
-          metrics: Record<string, unknown>$1
-  eventCount: ipEvents.length,
+          metrics: {
+            eventCount: ipEvents.length,
             timeWindow: `${pattern.timeWindow / 60000} minutes`,
             affectedUsers: new Set(ipEvents.map(e => e.userId).filter(Boolean)).size,
-            affectedIPs: 1 },
-  status: 'OPEN'};
+            affectedIPs: 1
+          },
+          status: 'OPEN'
+        };
 
         alerts.push(alert);
       }
@@ -378,7 +380,7 @@ export class SecurityLogger {
   /**
    * Get security events with filtering
    */
-  getEvents(filters: Record<string, unknown>$1
+  getEvents(filters: {
     userId?: string;
     ip?: string;
     type?: SecurityEventType;
