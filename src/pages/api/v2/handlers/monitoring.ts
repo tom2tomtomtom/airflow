@@ -163,25 +163,29 @@ async function handleHealth(
     timestamp: new Date().toISOString(),
     version: '2.0.0',
     uptime: process.uptime(),
-    memory: Record<string, unknown>$1
-  used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
+    memory: {
+      used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
       total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
       external: Math.round(process.memoryUsage().external / 1024 / 1024),
-      rss: Math.round(process.memoryUsage().rss / 1024 / 1024) },
-  performance: Record<string, unknown>$1
-  averageResponseTime: performanceTracker.getAverageResponseTime(),
+      rss: Math.round(process.memoryUsage().rss / 1024 / 1024)
+    },
+    performance: {
+      averageResponseTime: performanceTracker.getAverageResponseTime(),
       totalRequests: performanceTracker.getTotalRequests(),
       errorRate: performanceTracker.getErrorRate(),
-      slowOperations: performanceTracker.getSlowOperations() },
-  ai: Record<string, unknown>$1
-  budgetStatus: await costController.getBudgetStatus(),
+      slowOperations: performanceTracker.getSlowOperations()
+    },
+    ai: {
+      budgetStatus: await costController.getBudgetStatus(),
       totalSpent: await costController.getTotalSpent(),
-      activeOperations: costController.getActiveOperations() },
-  database: Record<string, unknown>$1
-  status: 'connected', // TODO: Add actual DB health check
-      connectionPool: 'healthy' },
-  services: Record<string, unknown>$1
-  openai: process.env.NEXT_PUBLIC_OPENAI_API_KEY ? 'configured' : 'not_configured',
+      activeOperations: costController.getActiveOperations()
+    },
+    database: {
+      status: 'connected', // TODO: Add actual DB health check
+      connectionPool: 'healthy'
+    },
+    services: {
+      openai: process.env.NEXT_PUBLIC_OPENAI_API_KEY ? 'configured' : 'not_configured',
       anthropic: process.env.ANTHROPIC_API_KEY ? 'configured' : 'not_configured',
       elevenlabs: process.env.ELEVENLABS_API_KEY ? 'configured' : 'not_configured',
       creatomate: process.env.CREATOMATE_API_KEY ? 'configured' : 'not_configured'
