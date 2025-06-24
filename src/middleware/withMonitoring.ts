@@ -25,16 +25,18 @@ interface MonitoringConfig {
 }
 
 // Default configuration
-const DEFAULT_CONFIG: Required<MonitoringConfig> = {,
-    collectMetrics: true,
+const DEFAULT_CONFIG: Required<MonitoringConfig> = {
+  collectMetrics: true,
   trackPerformance: true,
   enableAlerting: true,
-  customTags: Record<string, unknown>$1
+  customTags: {},
   samplingRate: 1.0,
-  performanceThresholds: Record<string, unknown>$1
-  responseTime: 2000, // 2 seconds
+  performanceThresholds: {
+    responseTime: 2000, // 2 seconds
     errorRate: 0.05, // 5%
-    memoryUsage: 0.8, // 80% };
+    memoryUsage: 0.8, // 80%
+  },
+};
 
 /**
  * Comprehensive monitoring middleware that provides:
@@ -52,11 +54,12 @@ export function withMonitoring(config: MonitoringConfig = {}) {
   ) {
     // First apply metrics collection if enabled
     let wrappedHandler = handler;
-    
+
     if (finalConfig.collectMetrics) {
       wrappedHandler = withMetrics({
         customTags: finalConfig.customTags,
-        samplingRate: finalConfig.samplingRate})(wrappedHandler);
+        samplingRate: finalConfig.samplingRate,
+      })(wrappedHandler);
     }
 
     return async function (req: NextApiRequest, res: NextApiResponse) {
@@ -88,11 +91,15 @@ export function withMonitoring(config: MonitoringConfig = {}) {
 
         // Check performance thresholds and trigger alerts if needed
         if (finalConfig.enableAlerting) {
-          await checkPerformanceThresholds(endpoint, duration, statusCode, finalConfig.performanceThresholds);
+          await checkPerformanceThresholds(
+            endpoint,
+            duration,
+            statusCode,
+            finalConfig.performanceThresholds
+          );
         }
-
       } catch (error) {
-        const duration = Date.now() - startTime;
+        const _duration = Date.now() - startTime;
 
         // Track error metrics
         if (finalConfig.collectMetrics) {
@@ -113,11 +120,16 @@ export function withMonitoring(config: MonitoringConfig = {}) {
 /**
  * Track request initiation for performance monitoring
  */
-function trackRequestStart(endpoint: string, method: string, customTags: Record<string, string>): void {
-  const tags = {
+function trackRequestStart(
+  endpoint: string,
+  method: string,
+  customTags: Record<string, string>
+): void {
+  const _tags = {
     endpoint: sanitizeEndpoint(endpoint),
     method,
-    ...customTags};
+    ...customTags,
+  };
 
   // Update dashboard with real-time data
   performanceDashboard.updateMetric('api.requests.active', 1);
@@ -142,7 +154,8 @@ function trackRequestCompletion(
     endpoint: sanitizedEndpoint,
     method,
     status_code: statusCode.toString(),
-    ...config.customTags};
+    ...config.customTags,
+  };
 
   // Update performance dashboard
   performanceDashboard.updateMetric('api.requests.duration', duration);
@@ -169,7 +182,10 @@ function trackRequestCompletion(
 
   // Track slow requests
   if (duration > config.performanceThresholds.responseTime) {
-    metrics.counter('api.requests.slow', 1, { ...tags, threshold: config.performanceThresholds.responseTime.toString() });
+    metrics.counter('api.requests.slow', 1, {
+      ...tags,
+      threshold: config.performanceThresholds.responseTime.toString(),
+    });
   }
 
   // Track by endpoint category
@@ -190,7 +206,8 @@ function trackError(
     method,
     error_type: error.constructor.name,
     error_code: error.code || 'unknown',
-    ...customTags};
+    ...customTags,
+  };
 
   // Update dashboard and alerting
   performanceDashboard.updateMetric('api.errors.total', 1);
@@ -209,7 +226,9 @@ function trackError(
 /**
  * Monitor system health proactively
  */
-async function monitorSystemHealth(thresholds: Required<MonitoringConfig>['performanceThresholds']): Promise<void> {
+async function monitorSystemHealth(
+  thresholds: Required<MonitoringConfig>['performanceThresholds']
+): Promise<void> {
   try {
     // Check memory usage (simplified - in production use actual system metrics)
     const memoryUsage = process.memoryUsage();
@@ -227,7 +246,8 @@ async function monitorSystemHealth(thresholds: Required<MonitoringConfig>['perfo
     if (heapUsedPercent > thresholds.memoryUsage) {
       metrics.counter('system.memory.threshold_exceeded', 1, {
         threshold: thresholds.memoryUsage.toString(),
-        current: heapUsedPercent.toString()});
+        current: heapUsedPercent.toString(),
+      });
     }
 
     // Monitor event loop lag (simplified)
@@ -235,12 +255,12 @@ async function monitorSystemHealth(thresholds: Required<MonitoringConfig>['perfo
     setImmediate(() => {
       const eventLoopLag = process.hrtime(eventLoopStart);
       const lagMs = eventLoopLag[0] * 1000 + eventLoopLag[1] / 1e6;
-      
+
       performanceDashboard.updateMetric('system.event_loop.lag', lagMs);
       alerting.updateMetric('system.event_loop.lag', lagMs);
     });
-
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('System health monitoring error:', error);
   }
 }
@@ -261,7 +281,8 @@ async function checkPerformanceThresholds(
     metrics.counter('alerts.performance.slow_response', 1, {
       endpoint: sanitizedEndpoint,
       duration: duration.toString(),
-      threshold: thresholds.responseTime.toString()});
+      threshold: thresholds.responseTime.toString(),
+    });
   }
 
   // Update endpoint-specific error rates for alerting
@@ -280,7 +301,8 @@ async function triggerErrorAlert(endpoint: string, error: unknown): Promise<void
   metrics.counter('alerts.errors.triggered', 1, {
     endpoint: sanitizedEndpoint,
     error_type: error.constructor.name,
-    severity});
+    severity,
+  });
 
   // For critical errors, immediately update alerting system
   if (severity === 'critical') {
@@ -292,8 +314,8 @@ async function triggerErrorAlert(endpoint: string, error: unknown): Promise<void
  * Update rolling error rate for an endpoint
  */
 function updateErrorRate(endpoint: string, isError: boolean): void {
-  const errorRateKey = `error_rate:${endpoint}`;
-  
+  const _errorRateKey = `error_rate:${endpoint}`;
+
   // In a real implementation, this would use a sliding window
   // For now, we'll update the metrics for alerting
   const value = isError ? 1 : 0;
@@ -311,10 +333,11 @@ function trackEndpointCategory(
   baseTags: Record<string, string>
 ): void {
   const category = categorizeEndpoint(endpoint);
-  
+
   const categoryTags = {
     ...baseTags,
-    category};
+    category,
+  };
 
   metrics.timer(`api.categories.${category}.duration`, duration, categoryTags);
   metrics.counter(`api.categories.${category}.requests`, 1, categoryTags);
@@ -342,7 +365,7 @@ function categorizeEndpoint(endpoint: string): string {
   if (path.includes('/campaigns/')) return 'campaign_management';
   if (path.includes('/monitoring/') || path.includes('/health/')) return 'system_monitoring';
   if (path.includes('/v2/')) return 'api_v2';
-  
+
   return 'other';
 }
 
@@ -356,11 +379,12 @@ function categorizeError(errorMessage: string): string {
   if (message.includes('auth') || message.includes('permission')) return 'authentication';
   if (message.includes('database') || message.includes('sql')) return 'database';
   if (message.includes('network') || message.includes('timeout')) return 'network';
-  if (message.includes('ai') || message.includes('openai') || message.includes('anthropic')) return 'ai_service';
+  if (message.includes('ai') || message.includes('openai') || message.includes('anthropic'))
+    return 'ai_service';
   if (message.includes('video') || message.includes('render')) return 'video_processing';
   if (message.includes('file') || message.includes('upload')) return 'file_processing';
   if (message.includes('rate limit')) return 'rate_limiting';
-  
+
   return 'unknown';
 }
 
@@ -395,7 +419,7 @@ function sanitizeEndpoint(url: string): string {
     .replace(/\/\d+/g, '/:id') // Replace numeric IDs
     .replace(/\/[a-f0-9-]{36}/g, '/:uuid') // Replace UUIDs
     .replace(/\/[a-zA-Z0-9_-]{20}/g, '/:token') // Replace long tokens
-    .replace(/[^a-zA-Z0-9\/._-]/g, '_') // Replace special characters
+    .replace(/[^a-zA-Z0-9/._-]/g, '_') // Replace special characters
     .toLowerCase();
 }
 
@@ -405,40 +429,49 @@ function sanitizeEndpoint(url: string): string {
 export function withAIMonitoring(config: MonitoringConfig = {}) {
   return withMonitoring({
     ...config,
-    customTags: { }
+    customTags: {
       ...config.customTags,
-      service_type: 'ai' },
-  performanceThresholds: Record<string, unknown>$1
-  responseTime: 30000, // AI operations can take longer
+      service_type: 'ai',
+    },
+    performanceThresholds: {
+      responseTime: 30000, // AI operations can take longer
       errorRate: 0.1, // Higher error tolerance for AI
       memoryUsage: 0.9, // AI operations are memory intensive
-      ...config.performanceThresholds });
+      ...config.performanceThresholds,
+    },
+  });
 }
 
 export function withVideoMonitoring(config: MonitoringConfig = {}) {
   return withMonitoring({
     ...config,
-    customTags: { }
+    customTags: {
       ...config.customTags,
-      service_type: 'video' },
-  performanceThresholds: Record<string, unknown>$1
-  responseTime: 60000, // Video operations take longer
+      service_type: 'video',
+    },
+    performanceThresholds: {
+      responseTime: 60000, // Video operations take longer
       errorRate: 0.05,
       memoryUsage: 0.85,
-      ...config.performanceThresholds });
+      ...config.performanceThresholds,
+    },
+  });
 }
 
 export function withDatabaseMonitoring(config: MonitoringConfig = {}) {
   return withMonitoring({
     ...config,
-    customTags: { }
+    customTags: {
       ...config.customTags,
-      service_type: 'database' },
-  performanceThresholds: Record<string, unknown>$1
-  responseTime: 1000, // Database operations should be fast
+      service_type: 'database',
+    },
+    performanceThresholds: {
+      responseTime: 1000, // Database operations should be fast
       errorRate: 0.01, // Very low error tolerance
       memoryUsage: 0.8,
-      ...config.performanceThresholds });
+      ...config.performanceThresholds,
+    },
+  });
 }
 
 export default withMonitoring;
