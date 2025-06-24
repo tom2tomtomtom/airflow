@@ -32,8 +32,8 @@ interface AnalyticsOverview {
     campaignId: string;
     matrixId?: string;
   }>;
-  kpiSummary: Record<string, unknown>$1
-  totalImpressions: number;
+  kpiSummary: {
+    totalImpressions: number;
     totalClicks: number;
     totalConversions: number;
     totalSpend: number;
@@ -42,14 +42,14 @@ interface AnalyticsOverview {
     averageCPC: number;
     roas: number;
   };
-  trends: Record<string, unknown>$1
-  impressions: { value: number; change: number };
+  trends: {
+    impressions: { value: number; change: number };
     clicks: { value: number; change: number };
     conversions: { value: number; change: number };
     spend: { value: number; change: number };
   };
-  dateRange: Record<string, unknown>$1
-  start: string;
+  dateRange: {
+    start: string;
     end: string;
   };
 }
@@ -60,40 +60,32 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   }
 
   const user = (req as any).user;
-  const { 
-    clientId, 
-    startDate, 
-    endDate, 
-    platform,
-    campaignId
-  } = req.query;
+  const { clientId, startDate, endDate, platform, campaignId } = req.query;
 
   try {
-    const analytics = await getAnalyticsOverview(
-      user.id,
-      {
-        clientId: clientId as string,
-        startDate: startDate as string,
-        endDate: endDate as string,
-        platform: platform as string,
-        campaignId: campaignId as string}
-    );
-    
+    const analytics = await getAnalyticsOverview(user.id, {
+      clientId: clientId as string,
+      startDate: startDate as string,
+      endDate: endDate as string,
+      platform: platform as string,
+      campaignId: campaignId as string,
+    });
+
     return res.json({ success: true, data: analytics });
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Analytics overview API error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? message : undefined
+      details: process.env.NODE_ENV === 'development' ? message : undefined,
     });
   }
 }
 
 async function getAnalyticsOverview(
-  userId: string, 
-  filters: Record<string, unknown>$1
-  clientId?: string;
+  userId: string,
+  filters: {
+    clientId?: string;
     startDate?: string;
     endDate?: string;
     platform?: string;
@@ -102,8 +94,10 @@ async function getAnalyticsOverview(
 ): Promise<AnalyticsOverview> {
   // Set default date range (last 30 days)
   const endDate = filters.endDate ? new Date(filters.endDate) : new Date();
-  const startDate = filters.startDate ? new Date(filters.startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-  
+  const startDate = filters.startDate
+    ? new Date(filters.startDate)
+    : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
   // Get user's accessible clients
   const { data: userClients } = await supabase
     .from('user_clients')
@@ -111,7 +105,7 @@ async function getAnalyticsOverview(
     .eq('user_id', userId);
 
   const clientIds = userClients?.map((uc: any) => uc.client_id) || [];
-  
+
   if (clientIds.length === 0) {
     return getEmptyAnalytics(startDate, endDate);
   }
@@ -122,13 +116,15 @@ async function getAnalyticsOverview(
   // Build base query for campaigns
   let campaignQuery = supabase
     .from('campaigns')
-    .select(`
+    .select(
+      `
       id, name, platform, client_id,
       campaign_analytics(
         date, impressions, clicks, conversions, spend,
         ctr, conversion_rate, cpc, created_at
       )
-    `)
+    `
+    )
     .in('client_id', targetClientIds)
     .gte('created_at', startDate.toISOString())
     .lte('created_at', endDate.toISOString());
@@ -137,7 +133,7 @@ async function getAnalyticsOverview(
   if (filters.platform) {
     campaignQuery = campaignQuery.eq('platform', filters.platform);
   }
-  
+
   if (filters.campaignId) {
     campaignQuery = campaignQuery.eq('id', filters.campaignId);
   }
@@ -146,16 +142,16 @@ async function getAnalyticsOverview(
 
   // Calculate performance data by date
   const performanceData = calculateDailyPerformance(campaigns || [], startDate, endDate);
-  
+
   // Calculate platform distribution
   const platformData = calculatePlatformDistribution(campaigns || []);
-  
+
   // Get top performing content
   const topPerformingContent = await getTopPerformingContent(targetClientIds, startDate, endDate);
-  
+
   // Calculate KPI summary
   const kpiSummary = calculateKPISummary(campaigns || []);
-  
+
   // Calculate trends (compare with previous period)
   const trends = await calculateTrends(targetClientIds, startDate, endDate);
 
@@ -165,18 +161,16 @@ async function getAnalyticsOverview(
     topPerformingContent,
     kpiSummary,
     trends,
-    dateRange: Record<string, unknown>$1
-  start: startDate.toISOString(),
-      end: endDate.toISOString()}};
+    dateRange: {
+      start: startDate.toISOString(),
+      end: endDate.toISOString(),
+    },
+  };
 }
 
-function calculateDailyPerformance(
-  campaigns: any[], 
-  startDate: Date, 
-  endDate: Date
-): Array<any> {
+function calculateDailyPerformance(campaigns: any[], startDate: Date, endDate: Date): Array<any> {
   const dailyData: Record<string, any> = {};
-  
+
   // Initialize all dates in range
   for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
     const dateStr = d.toISOString().split('T')[0];
@@ -187,7 +181,8 @@ function calculateDailyPerformance(
       conversions: 0,
       impressions: 0,
       clicks: 0,
-      spend: 0};
+      spend: 0,
+    };
   }
 
   // Aggregate analytics data by date
@@ -206,8 +201,8 @@ function calculateDailyPerformance(
     });
   });
 
-  return Object.values(dailyData).sort((a: any, b: any) => 
-    new Date(a.date).getTime() - new Date(b.date).getTime()
+  return Object.values(dailyData).sort(
+    (a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 }
 
@@ -219,7 +214,8 @@ function calculatePlatformDistribution(campaigns: any[]): Array<any> {
     LinkedIn: '#0A66C2',
     YouTube: '#FF0000',
     TikTok: '#000000',
-    Pinterest: '#BD081C'};
+    Pinterest: '#BD081C',
+  };
 
   const platformStats: Record<string, any> = {};
   let totalImpressions = 0;
@@ -232,11 +228,12 @@ function calculatePlatformDistribution(campaigns: any[]): Array<any> {
         color: platformColors[platform] || '#666666',
         campaigns: 0,
         impressions: 0,
-        spend: 0};
+        spend: 0,
+      };
     }
 
     platformStats[platform].campaigns += 1;
-    
+
     campaign.campaign_analytics?.forEach((analytics: any) => {
       platformStats[platform].impressions += analytics.impressions || 0;
       platformStats[platform].spend += parseFloat(analytics.spend) || 0;
@@ -247,49 +244,64 @@ function calculatePlatformDistribution(campaigns: any[]): Array<any> {
   // Calculate percentages
   return Object.values(platformStats).map((platform: any) => ({
     ...platform,
-    value: totalImpressions > 0 ? Math.round((platform.impressions / totalImpressions) * 100) : 0}));
+    value: totalImpressions > 0 ? Math.round((platform.impressions / totalImpressions) * 100) : 0,
+  }));
 }
 
 async function getTopPerformingContent(
-  clientIds: string[], 
-  startDate: Date, 
+  clientIds: string[],
+  startDate: Date,
   endDate: Date
 ): Promise<Array<any>> {
   try {
     // Get campaigns with their analytics, ordered by performance
     const { data: campaigns } = await supabase
       .from('campaigns')
-      .select(`
+      .select(
+        `
         id, name, platform, client_id,
         campaign_analytics(impressions, clicks, conversions, ctr),
         matrices(id, name)
-      `)
+      `
+      )
       .in('client_id', clientIds)
       .gte('created_at', startDate.toISOString())
       .lte('created_at', endDate.toISOString())
       .order('created_at', { ascending: false })
       .limit(10);
 
-    return (campaigns || []).map((campaign: any) => {
-      const totalImpressions = campaign.campaign_analytics?.reduce((sum: number, a: any) => sum + (a.impressions || 0), 0) || 0;
-      const totalClicks = campaign.campaign_analytics?.reduce((sum: number, a: any) => sum + (a.clicks || 0), 0) || 0;
-      const totalConversions = campaign.campaign_analytics?.reduce((sum: number, a: any) => sum + (a.conversions || 0), 0) || 0;
-      
-      const engagementRate = totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0;
-      const conversionRate = totalClicks > 0 ? (totalConversions / totalClicks) * 100 : 0;
+    return (campaigns || [])
+      .map((campaign: any) => {
+        const totalImpressions =
+          campaign.campaign_analytics?.reduce(
+            (sum: number, a: any) => sum + (a.impressions || 0),
+            0
+          ) || 0;
+        const totalClicks =
+          campaign.campaign_analytics?.reduce((sum: number, a: any) => sum + (a.clicks || 0), 0) ||
+          0;
+        const totalConversions =
+          campaign.campaign_analytics?.reduce(
+            (sum: number, a: any) => sum + (a.conversions || 0),
+            0
+          ) || 0;
 
-      return {
-        id: campaign.id,
-        title: campaign.name,
-        platform: campaign.platform || 'Unknown',
-        views: totalImpressions,
-        engagement: Math.round(engagementRate * 100) / 100,
-        conversion: Math.round(conversionRate * 100) / 100,
-        trend: engagementRate > 5 ? 'up' : engagementRate < 2 ? 'down' : 'neutral',
-        campaignId: campaign.id,
-        matrixId: campaign.matrices?.[0]?.id};
-    }).sort((a, b) => b.views - a.views);
+        const engagementRate = totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0;
+        const conversionRate = totalClicks > 0 ? (totalConversions / totalClicks) * 100 : 0;
 
+        return {
+          id: campaign.id,
+          title: campaign.name,
+          platform: campaign.platform || 'Unknown',
+          views: totalImpressions,
+          engagement: Math.round(engagementRate * 100) / 100,
+          conversion: Math.round(conversionRate * 100) / 100,
+          trend: engagementRate > 5 ? 'up' : engagementRate < 2 ? 'down' : 'neutral',
+          campaignId: campaign.id,
+          matrixId: campaign.matrices?.[0]?.id,
+        };
+      })
+      .sort((a, b) => b.views - a.views);
   } catch (error: any) {
     console.error('Error fetching top performing content:', error);
     return [];
@@ -324,14 +336,11 @@ function calculateKPISummary(campaigns: any[]): any {
     averageCTR: Math.round(averageCTR * 100) / 100,
     averageConversionRate: Math.round(averageConversionRate * 100) / 100,
     averageCPC: Math.round(averageCPC * 100) / 100,
-    roas: Math.round(roas * 100) / 100};
+    roas: Math.round(roas * 100) / 100,
+  };
 }
 
-async function calculateTrends(
-  clientIds: string[], 
-  startDate: Date, 
-  endDate: Date
-): Promise<any> {
+async function calculateTrends(clientIds: string[], startDate: Date, endDate: Date): Promise<any> {
   // Calculate previous period for comparison
   const periodLength = endDate.getTime() - startDate.getTime();
   const previousStartDate = new Date(startDate.getTime() - periodLength);
@@ -358,26 +367,31 @@ async function calculateTrends(
     const previousMetrics = calculatePeriodMetrics(previousCampaigns || []);
 
     return {
-      impressions: Record<string, unknown>$1
-  value: currentMetrics.impressions,
-        change: calculatePercentageChange(currentMetrics.impressions, previousMetrics.impressions)},
-      clicks: Record<string, unknown>$1
-  value: currentMetrics.clicks,
-        change: calculatePercentageChange(currentMetrics.clicks, previousMetrics.clicks)},
-      conversions: Record<string, unknown>$1
-  value: currentMetrics.conversions,
-        change: calculatePercentageChange(currentMetrics.conversions, previousMetrics.conversions)},
-      spend: Record<string, unknown>$1
-  value: currentMetrics.spend,
-        change: calculatePercentageChange(currentMetrics.spend, previousMetrics.spend)}};
-
+      impressions: {
+        value: currentMetrics.impressions,
+        change: calculatePercentageChange(currentMetrics.impressions, previousMetrics.impressions),
+      },
+      clicks: {
+        value: currentMetrics.clicks,
+        change: calculatePercentageChange(currentMetrics.clicks, previousMetrics.clicks),
+      },
+      conversions: {
+        value: currentMetrics.conversions,
+        change: calculatePercentageChange(currentMetrics.conversions, previousMetrics.conversions),
+      },
+      spend: {
+        value: currentMetrics.spend,
+        change: calculatePercentageChange(currentMetrics.spend, previousMetrics.spend),
+      },
+    };
   } catch (error: any) {
     console.error('Error calculating trends:', error);
     return {
-      impressions: { value: 0, change: 0  },
-  clicks: { value: 0, change: 0  },
-  conversions: { value: 0, change: 0  },
-  spend: { value: 0, change: 0 }};
+      impressions: { value: 0, change: 0 },
+      clicks: { value: 0, change: 0 },
+      conversions: { value: 0, change: 0 },
+      spend: { value: 0, change: 0 },
+    };
   }
 }
 
@@ -409,23 +423,27 @@ function getEmptyAnalytics(startDate: Date, endDate: Date): AnalyticsOverview {
     performanceData: [],
     platformData: [],
     topPerformingContent: [],
-    kpiSummary: Record<string, unknown>$1
-  totalImpressions: 0,
+    kpiSummary: {
+      totalImpressions: 0,
       totalClicks: 0,
       totalConversions: 0,
       totalSpend: 0,
       averageCTR: 0,
       averageConversionRate: 0,
       averageCPC: 0,
-      roas: 0 },
-  trends: Record<string, unknown>$1
-  impressions: { value: 0, change: 0  },
-  clicks: { value: 0, change: 0  },
-  conversions: { value: 0, change: 0  },
-  spend: { value: 0, change: 0 }},
-    dateRange: Record<string, unknown>$1
-  start: startDate.toISOString(),
-      end: endDate.toISOString()}};
+      roas: 0,
+    },
+    trends: {
+      impressions: { value: 0, change: 0 },
+      clicks: { value: 0, change: 0 },
+      conversions: { value: 0, change: 0 },
+      spend: { value: 0, change: 0 },
+    },
+    dateRange: {
+      start: startDate.toISOString(),
+      end: endDate.toISOString(),
+    },
+  };
 }
 
 export default withAuth(withSecurityHeaders(handler));
