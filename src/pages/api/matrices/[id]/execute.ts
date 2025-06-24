@@ -8,17 +8,21 @@ import { z } from 'zod';
 
 const ExecuteRequestSchema = z.object({
   combinations: z.array(z.string()).optional(), // Specific combination IDs to execute
-  platforms: z.array(z.string()).optional(),    // Specific platforms to target
+  platforms: z.array(z.string()).optional(), // Specific platforms to target
   priority: z.enum(['low', 'normal', 'high', 'urgent']).default('normal'),
   schedule_type: z.enum(['immediate', 'scheduled', 'batch']).default('immediate'),
-  scheduled_for: z.string().optional(),          // ISO timestamp for scheduled execution
+  scheduled_for: z.string().optional(), // ISO timestamp for scheduled execution
   batch_size: z.number().min(1).max(50).default(5), // For batch processing
-  execution_settings: z.object({
-    quality: z.enum(['draft', 'standard', 'high']).default('standard'),
-    formats: z.array(z.string()).default(['mp4', 'jpg']),
-    resolutions: z.array(z.string()).default(['1920x1080']),
-    include_previews: z.boolean().default(true),
-    notify_on_completion: z.boolean().default(true)}).optional()});
+  execution_settings: z
+    .object({
+      quality: z.enum(['draft', 'standard', 'high']).default('standard'),
+      formats: z.array(z.string()).default(['mp4', 'jpg']),
+      resolutions: z.array(z.string()).default(['1920x1080']),
+      include_previews: z.boolean().default(true),
+      notify_on_completion: z.boolean().default(true),
+    })
+    .optional(),
+});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -40,18 +44,23 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Matrix Execute API error:', error);
     return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? message : undefined
+      details: process.env.NODE_ENV === 'development' ? message : undefined,
     });
   }
 }
 
-async function handleExecute(req: NextApiRequest, res: NextApiResponse, user: any, matrixId: string): Promise<void> {
+async function handleExecute(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  matrixId: string
+): Promise<void> {
   const validationResult = ExecuteRequestSchema.safeParse(req.body);
-  
+
   if (!validationResult.success) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Validation failed',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
@@ -60,7 +69,8 @@ async function handleExecute(req: NextApiRequest, res: NextApiResponse, user: an
   // First verify user has access to this matrix
   const { data: matrix, error } = await supabase
     .from('matrices')
-    .select(`
+    .select(
+      `
       *,
       campaigns(
         id, name, status, client_id,
@@ -70,7 +80,8 @@ async function handleExecute(req: NextApiRequest, res: NextApiResponse, user: an
         id, name, platform, dimensions, dynamic_fields,
         is_creatomate, creatomate_id
       )
-    `)
+    `
+    )
     .eq('id', matrixId)
     .single();
 
@@ -92,43 +103,45 @@ async function handleExecute(req: NextApiRequest, res: NextApiResponse, user: an
 
   // Check matrix status
   if (matrix.status !== 'approved') {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Matrix must be approved before execution',
-      current_status: matrix.status
+      current_status: matrix.status,
     });
   }
 
   // Check campaign status
   if (matrix.campaigns.status !== 'active') {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Campaign must be active for matrix execution',
-      campaign_status: matrix.campaigns.status
+      campaign_status: matrix.campaigns.status,
     });
   }
 
   // Validate combinations
-  const combinationsToExecute = (executeData.combinations?.length ?? 0) > 0
-    ? matrix.combinations.filter((combo: any) => executeData.combinations?.includes(combo.id))
-    : matrix.combinations.filter((combo: any) => combo.isSelected);
+  const combinationsToExecute =
+    (executeData.combinations?.length ?? 0) > 0
+      ? matrix.combinations.filter((combo: any) => executeData.combinations?.includes(combo.id))
+      : matrix.combinations.filter((combo: any) => combo.isSelected);
 
   if (combinationsToExecute.length === 0) {
     return res.status(400).json({
       error: 'No valid combinations found for execution',
-      details: 'Select combinations or ensure matrix has active combinations'
+      details: 'Select combinations or ensure matrix has active combinations',
     });
   }
 
   // Validate platforms
-  const platformsToExecute: string[] = (executeData.platforms?.length ?? 0) > 0
-    ? executeData.platforms || []
-    : [matrix.templates.platform];
+  const platformsToExecute: string[] =
+    (executeData.platforms?.length ?? 0) > 0
+      ? executeData.platforms || []
+      : [matrix.templates.platform];
 
   // Check execution limits
   const executionLimit = await checkExecutionLimits(matrix.campaigns.client_id, user.id);
   if (!executionLimit.allowed) {
-    return res.status(429).json({ 
+    return res.status(429).json({
       error: 'Execution limit exceeded',
-      details: executionLimit.details
+      details: executionLimit.details,
     });
   }
 
@@ -163,24 +176,29 @@ async function handleExecute(req: NextApiRequest, res: NextApiResponse, user: an
     .update({
       status: 'active',
       last_executed_at: new Date().toISOString(),
-      last_executed_by: user.id})
+      last_executed_by: user.id,
+    })
     .eq('id', matrixId);
 
   return res.json({
     message: 'Matrix execution initiated successfully',
-    data: Record<string, unknown>$1
-  execution_plan: executionPlan,
+    data: {
+      execution_plan: executionPlan,
       execution_result: executionResult,
-      estimated_completion: calculateEstimatedCompletion(executionPlan)}
+      estimated_completion: calculateEstimatedCompletion(executionPlan),
+    },
   });
 }
 
 // Helper functions
-async function checkExecutionLimits(clientId: string, userId: string): Promise<{ allowed: boolean; details?: string }> {
+async function checkExecutionLimits(
+  clientId: string,
+  userId: string
+): Promise<{ allowed: boolean; details?: string }> {
   try {
     // Check daily execution limit
     const today = new Date().toISOString().split('T')[0];
-    
+
     const { count: todayExecutions } = await supabase
       .from('executions')
       .select('id', { count: 'exact' })
@@ -192,7 +210,7 @@ async function checkExecutionLimits(clientId: string, userId: string): Promise<{
     if (todayExecutions && todayExecutions >= dailyLimit) {
       return {
         allowed: false,
-        details: `Daily execution limit (${dailyLimit}) exceeded. Current: ${todayExecutions}`
+        details: `Daily execution limit (${dailyLimit}) exceeded. Current: ${todayExecutions}`,
       };
     }
 
@@ -207,7 +225,7 @@ async function checkExecutionLimits(clientId: string, userId: string): Promise<{
     if (activeExecutions && activeExecutions >= concurrentLimit) {
       return {
         allowed: false,
-        details: `Concurrent execution limit (${concurrentLimit}) exceeded. Wait for current executions to complete.`
+        details: `Concurrent execution limit (${concurrentLimit}) exceeded. Wait for current executions to complete.`,
       };
     }
 
@@ -215,9 +233,9 @@ async function checkExecutionLimits(clientId: string, userId: string): Promise<{
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error checking execution limits:', error);
-    return { 
-      allowed: false, 
-      details: 'Error checking execution limits' 
+    return {
+      allowed: false,
+      details: 'Error checking execution limits',
     };
   }
 }
@@ -235,7 +253,7 @@ async function createExecutionPlan(
     for (const platform of platforms) {
       // Generate execution for each combination-platform pair
       const executionId = `exec-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      
+
       const execution = {
         id: executionId,
         matrix_id: matrix.id,
@@ -245,18 +263,20 @@ async function createExecutionPlan(
         platform,
         content_type: determineContentType(matrix.templates, platform),
         priority: executeData.priority,
-        settings: executeData.execution_settings || { },
-  variations: combination.variationIds.map((varId: string) => 
-          matrix.variations.find((v: any) => v.id === varId)
-        ).filter(Boolean),
+        settings: executeData.execution_settings || {},
+        variations: combination.variationIds
+          .map((varId: string) => matrix.variations.find((v: any) => v.id === varId))
+          .filter(Boolean),
         field_data: extractFieldDataForCombination(matrix, combination),
-        template_data: Record<string, unknown>$1
-  id: matrix.templates.id,
+        template_data: {
+          id: matrix.templates.id,
           name: matrix.templates.name,
           is_creatomate: matrix.templates.is_creatomate,
-          creatomate_id: matrix.templates.creatomate_id },
-  estimated_duration: calculateExecutionDuration(matrix.templates, platform),
-        created_by: userId};
+          creatomate_id: matrix.templates.creatomate_id,
+        },
+        estimated_duration: calculateExecutionDuration(matrix.templates, platform),
+        created_by: userId,
+      };
 
       executions.push(execution);
     }
@@ -270,7 +290,8 @@ async function createExecutionPlan(
     schedule_type: executeData.schedule_type,
     batch_size: executeData.batch_size,
     created_at: new Date().toISOString(),
-    created_by: userId};
+    created_by: userId,
+  };
 }
 
 async function executeImmediate(executionPlan: any): Promise<any> {
@@ -290,12 +311,14 @@ async function executeImmediate(executionPlan: any): Promise<any> {
           platform: execution.platform,
           status: 'pending',
           metadata: {
-        combination_name: execution.combination_name,
+            combination_name: execution.combination_name,
             template_data: execution.template_data,
             field_data: execution.field_data,
             settings: execution.settings,
-            priority: execution.priority },
-  created_by: execution.created_by})
+            priority: execution.priority,
+          },
+          created_by: execution.created_by,
+        })
         .select()
         .single();
 
@@ -304,13 +327,14 @@ async function executeImmediate(executionPlan: any): Promise<any> {
         results.push({
           execution_id: execution.id,
           status: 'failed',
-          error: error.message});
+          error: error.message,
+        });
         continue;
       }
 
       // Trigger render job (depending on template type)
       const renderResult = await triggerRenderJob(execution);
-      
+
       // Update execution with render info
       await supabase
         .from('executions')
@@ -318,10 +342,10 @@ async function executeImmediate(executionPlan: any): Promise<any> {
           status: renderResult.success ? 'processing' : 'failed',
           render_url: renderResult.render_url,
           metadata: {
-        ...executionRecord.metadata,
+            ...executionRecord.metadata,
             render_job_id: renderResult.job_id,
-            render_started_at: new Date().toISOString()
-      }
+            render_started_at: new Date().toISOString(),
+          },
         })
         .eq('id', execution.id);
 
@@ -329,15 +353,16 @@ async function executeImmediate(executionPlan: any): Promise<any> {
         execution_id: execution.id,
         status: renderResult.success ? 'processing' : 'failed',
         render_job_id: renderResult.job_id,
-        estimated_completion: renderResult.estimated_completion});
-
+        estimated_completion: renderResult.estimated_completion,
+      });
     } catch (error: any) {
       const message = getErrorMessage(error);
       console.error('Error executing:', error);
       results.push({
         execution_id: execution.id,
         status: 'failed',
-        error: message});
+        error: message,
+      });
     }
   }
 
@@ -346,36 +371,44 @@ async function executeImmediate(executionPlan: any): Promise<any> {
     total_executions: executionPlan.executions.length,
     successful: results.filter((r: any) => r.status === 'processing').length,
     failed: results.filter((r: any) => r.status === 'failed').length,
-    results};
+    results,
+  };
 }
 
 async function scheduleExecution(executionPlan: any, scheduledFor?: string): Promise<any> {
-  const scheduledTime = scheduledFor ? new Date(scheduledFor) : new Date(Date.now() + 5 * 60 * 1000); // Default 5 min delay
+  const scheduledTime = scheduledFor
+    ? new Date(scheduledFor)
+    : new Date(Date.now() + 5 * 60 * 1000); // Default 5 min delay
 
   // Create scheduled executions
   const scheduledExecutions = executionPlan.executions.map((execution: any) => ({
     ...execution,
     status: 'scheduled',
-    scheduled_for: scheduledTime.toISOString()}));
+    scheduled_for: scheduledTime.toISOString(),
+  }));
 
   // Save to database with scheduled status
   const { data: executionRecords, error } = await supabase
     .from('executions')
-    .insert(scheduledExecutions.map((exec: any) => ({
-      id: exec.id,
-      matrix_id: exec.matrix_id,
-      campaign_id: exec.campaign_id,
-      combination_id: exec.combination_id,
-      content_type: exec.content_type,
-      platform: exec.platform,
-      status: 'scheduled',
-      metadata: {
-        combination_name: exec.combination_name,
-        template_data: exec.template_data,
-        field_data: exec.field_data,
-        settings: exec.settings,
-        scheduled_for: scheduledTime.toISOString() },
-  created_by: exec.created_by})))
+    .insert(
+      scheduledExecutions.map((exec: any) => ({
+        id: exec.id,
+        matrix_id: exec.matrix_id,
+        campaign_id: exec.campaign_id,
+        combination_id: exec.combination_id,
+        content_type: exec.content_type,
+        platform: exec.platform,
+        status: 'scheduled',
+        metadata: {
+          combination_name: exec.combination_name,
+          template_data: exec.template_data,
+          field_data: exec.field_data,
+          settings: exec.settings,
+          scheduled_for: scheduledTime.toISOString(),
+        },
+        created_by: exec.created_by,
+      }))
+    )
     .select();
 
   if (error) {
@@ -387,7 +420,8 @@ async function scheduleExecution(executionPlan: any, scheduledFor?: string): Pro
     type: 'scheduled',
     scheduled_for: scheduledTime.toISOString(),
     total_executions: executionPlan.executions.length,
-    execution_ids: executionRecords?.map((r: any) => r.id) || []};
+    execution_ids: executionRecords?.map((r: any) => r.id) || [],
+  };
 }
 
 async function executeBatch(executionPlan: any, batchSize: number): Promise<any> {
@@ -405,21 +439,26 @@ async function executeBatch(executionPlan: any, batchSize: number): Promise<any>
   for (let i = 0; i < batches.length; i++) {
     const batch = batches[i];
     const delay = i * 30 * 1000; // 30 second delay between batches
-    
+
     // Schedule each batch
     const batchScheduleTime = new Date(Date.now() + delay);
-    
+
     const batchExecutionPlan = {
       ...executionPlan,
-      executions: batch};
+      executions: batch,
+    };
 
-    const batchResult = await scheduleExecution(batchExecutionPlan, batchScheduleTime.toISOString());
-    
+    const batchResult = await scheduleExecution(
+      batchExecutionPlan,
+      batchScheduleTime.toISOString()
+    );
+
     batchResults.push({
       batch_number: i + 1,
       execution_count: batch.length,
       scheduled_for: batchScheduleTime.toISOString(),
-      execution_ids: batchResult.execution_ids});
+      execution_ids: batchResult.execution_ids,
+    });
   }
 
   return {
@@ -427,7 +466,8 @@ async function executeBatch(executionPlan: any, batchSize: number): Promise<any>
     total_batches: batches.length,
     batch_size: batchSize,
     total_executions: executions.length,
-    batches: batchResults};
+    batches: batchResults,
+  };
 }
 
 async function triggerRenderJob(execution: any): Promise<any> {
@@ -443,23 +483,25 @@ async function triggerRenderJob(execution: any): Promise<any> {
     console.error('Error triggering render job:', error);
     return {
       success: false,
-      error: message};
+      error: message,
+    };
   }
 }
 
 async function triggerCreatomateRender(execution: any): Promise<any> {
   // Integration with Creatomate API
   // This would call the actual Creatomate service
-  
+
   const renderJob = {
     template_id: execution.template_data.creatomate_id,
     modifications: convertFieldDataToCreatomateFormat(execution.field_data),
     output_format: execution.settings.formats || ['mp4'],
-    quality: execution.settings.quality || 'standard'};
+    quality: execution.settings.quality || 'standard',
+  };
 
   // Simulate API call
   const jobId = `creatomate-${Date.now()}`;
-  
+
   return {
     success: true,
     job_id: jobId,
@@ -471,7 +513,7 @@ async function triggerCreatomateRender(execution: any): Promise<any> {
 async function triggerCustomRender(execution: any): Promise<any> {
   // Custom render pipeline
   const jobId = `custom-${Date.now()}`;
-  
+
   return {
     success: true,
     job_id: jobId,
@@ -493,7 +535,7 @@ function determineContentType(template: any, platform: string): string {
 
 function extractFieldDataForCombination(matrix: any, combination: any): any {
   const fieldData: any = {};
-  
+
   // Extract field assignments for the variations in this combination
   if (matrix.field_assignments && combination.variationIds) {
     Object.entries(matrix.field_assignments).forEach(([fieldId, fieldInfo]: [string, any]) => {
@@ -501,42 +543,44 @@ function extractFieldDataForCombination(matrix: any, combination: any): any {
       const variationId = combination.variationIds[0];
       const content = fieldInfo.content?.find((c: any) => c.variationId === variationId);
       const asset = fieldInfo.assets?.find((a: any) => a.variationId === variationId);
-      
+
       fieldData[fieldId] = {
         content: content?.content || '',
-        asset_id: asset?.assetId};
+        asset_id: asset?.assetId,
+      };
     });
   }
-  
+
   return fieldData;
 }
 
 function calculateExecutionDuration(template: any, platform: string): number {
   // Estimate execution duration in seconds
   let baseDuration = 60; // 1 minute base
-  
+
   if (template.is_creatomate) {
     baseDuration = 120; // 2 minutes for Creatomate
   }
-  
+
   if (platform === 'youtube') {
     baseDuration += 60; // Additional time for video processing
   }
-  
+
   return baseDuration;
 }
 
 function calculateEstimatedCompletion(executionPlan: any): string {
-  const avgDuration = executionPlan.executions.reduce((sum: number, exec: any) => 
-    sum + exec.estimated_duration, 0) / executionPlan.executions.length;
-  
+  const avgDuration =
+    executionPlan.executions.reduce((sum: number, exec: any) => sum + exec.estimated_duration, 0) /
+    executionPlan.executions.length;
+
   return new Date(Date.now() + avgDuration * 1000).toISOString();
 }
 
 function convertFieldDataToCreatomateFormat(fieldData: any): any {
   // Convert internal field data format to Creatomate API format
   const modifications: any = {};
-  
+
   Object.entries(fieldData).forEach(([fieldId, data]: [string, any]) => {
     if (data.content) {
       modifications[fieldId] = data.content;
@@ -545,7 +589,7 @@ function convertFieldDataToCreatomateFormat(fieldData: any): any {
       modifications[`${fieldId}_image`] = data.asset_id; // Assuming asset mapping
     }
   });
-  
+
   return modifications;
 }
 
