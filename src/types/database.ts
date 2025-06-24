@@ -2,27 +2,27 @@
 // This file contains all database types for AIrFLOW
 
 export interface Database {
-  public: Record<string, unknown>$1
-  Tables: Record<string, unknown>$1
-  analytics: Record<string, unknown>$1
-  Row: Record<string, unknown>$1
-  id: string;,
-    campaign_id: string;,
-    variation_id: string | null;,
-    metrics: Record<string, unknown> | null;
+  public: {
+    Tables: {
+      analytics: {
+        Row: {
+          id: string;
+          campaign_id: string;
+          variation_id: string | null;
+          metrics: Record<string, unknown> | null;
           insights: Record<string, unknown> | null;
           created_at: string | null;
         };
-        Insert: Record<string, unknown>$1
-  id?: string;
+        Insert: {
+          id?: string;
           campaign_id: string;
           variation_id?: string | null;
           metrics?: Record<string, unknown> | null;
           insights?: Record<string, unknown> | null;
           created_at?: string | null;
         };
-        Update: Record<string, unknown>$1
-  id?: string;
+        Update: {
+          id?: string;
           campaign_id?: string;
           variation_id?: string | null;
           metrics?: Record<string, unknown> | null;
@@ -30,20 +30,20 @@ export interface Database {
           created_at?: string | null;
         };
       };
-      approval_comments: Record<string, unknown>$1
-  Row: Record<string, unknown>$1
-  id: string;,
-    workflow_id: string | null;,
-    asset_id: string | null;,
-    comment: string;,
-    comment_type: string | null;,
-    position_data: Record<string, unknown> | null;
-          created_by: string | null;,
-    created_at: string | null;,
-    updated_at: string | null;
+      approval_comments: {
+        Row: {
+          id: string;
+          workflow_id: string | null;
+          asset_id: string | null;
+          comment: string;
+          comment_type: string | null;
+          position_data: Record<string, unknown> | null;
+          created_by: string | null;
+          created_at: string | null;
+          updated_at: string | null;
         };
-        Insert: Record<string, unknown>$1
-  id?: string;
+        Insert: {
+          id?: string;
           workflow_id?: string | null;
           asset_id?: string | null;
           comment: string;
@@ -53,8 +53,8 @@ export interface Database {
           created_at?: string | null;
           updated_at?: string | null;
         };
-        Update: Record<string, unknown>$1
-  id?: string;
+        Update: {
+          id?: string;
           workflow_id?: string | null;
           asset_id?: string | null;
           comment?: string;
@@ -65,22 +65,22 @@ export interface Database {
           updated_at?: string | null;
         };
       };
-      approval_workflows: Record<string, unknown>$1
-  Row: Record<string, unknown>$1
-  id: string;,
-    execution_id: string | null;,
-    client_id: string | null;,
-    status: string | null;,
-    submitted_at: string | null;,
-    submitted_by: string | null;,
-    reviewed_at: string | null;,
-    reviewed_by: string | null;,
-    approved_at: string | null;,
-    created_at: string | null;,
-    updated_at: string | null;
+      approval_workflows: {
+        Row: {
+          id: string;
+          execution_id: string | null;
+          client_id: string | null;
+          status: string | null;
+          submitted_at: string | null;
+          submitted_by: string | null;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
+          approved_at: string | null;
+          created_at: string | null;
+          updated_at: string | null;
         };
-        Insert: Record<string, unknown>$1
-  id?: string;
+        Insert: {
+          id?: string;
           execution_id?: string | null;
           client_id?: string | null;
           status?: string | null;
@@ -92,8 +92,8 @@ export interface Database {
           created_at?: string | null;
           updated_at?: string | null;
         };
-        Update: Record<string, unknown>$1
-  id?: string;
+        Update: {
+          id?: string;
           execution_id?: string | null;
           client_id?: string | null;
           status?: string | null;
@@ -106,18 +106,18 @@ export interface Database {
           updated_at?: string | null;
         };
       };
-      approvals: Record<string, unknown>$1
-  Row: Record<string, unknown>$1
-  id: string;,
-    execution_id: string | null;,
-    user_id: string | null;,
-    action: string;,
-    comment: string | null;,
-    version: number | null;,
-    created_at: string | null;
+      approvals: {
+        Row: {
+          id: string;
+          execution_id: string | null;
+          user_id: string | null;
+          action: string;
+          comment: string | null;
+          version: number | null;
+          created_at: string | null;
         };
-        Insert: Record<string, unknown>$1
-  id?: string;
+        Insert: {
+          id?: string;
           execution_id?: string | null;
           user_id?: string | null;
           action: string;
@@ -125,8 +125,8 @@ export interface Database {
           version?: number | null;
           created_at?: string | null;
         };
-        Update: Record<string, unknown>$1
-  id?: string;
+        Update: {
+          id?: string;
           execution_id?: string | null;
           user_id?: string | null;
           action?: string;
@@ -135,30 +135,30 @@ export interface Database {
           created_at?: string | null;
         };
       };
-      assets: Record<string, unknown>$1
-  Row: Record<string, unknown>$1
-  id: string;,
-    name: string;,
-    type: string;,
-    url: string;,
-    thumbnail_url: string | null;,
-    mime_type: string | null;,
-    size_bytes: number | null;,
-    width: number | null;,
-    height: number | null;,
-    duration_seconds: number | null;,
-    tags: string[] | null;,
-    metadata: Record<string, unknown> | null;
-          client_id: string | null;,
-    created_by: string | null;,
-    created_at: string | null;,
-    updated_at: string | null;
+      assets: {
+        Row: {
+          id: string;
+          name: string;
+          type: string;
+          url: string;
+          thumbnail_url: string | null;
+          mime_type: string | null;
+          size_bytes: number | null;
+          width: number | null;
+          height: number | null;
+          duration_seconds: number | null;
+          tags: string[] | null;
+          metadata: Record<string, unknown> | null;
+          client_id: string | null;
+          created_by: string | null;
+          created_at: string | null;
+          updated_at: string | null;
         };
-        Insert: Record<string, unknown>$1
-  id?: string;
-          name: string;,
-    type: string;,
-    url: string;
+        Insert: {
+          id?: string;
+          name: string;
+          type: string;
+          url: string;
           thumbnail_url?: string | null;
           mime_type?: string | null;
           size_bytes?: number | null;
@@ -172,8 +172,8 @@ export interface Database {
           created_at?: string | null;
           updated_at?: string | null;
         };
-        Update: Record<string, unknown>$1
-  id?: string;
+        Update: {
+          id?: string;
           name?: string;
           type?: string;
           url?: string;
@@ -191,31 +191,31 @@ export interface Database {
           updated_at?: string | null;
         };
       };
-      briefs: Record<string, unknown>$1
-  Row: Record<string, unknown>$1
-  id: string;,
-    name: string;,
-    description: string | null;,
-    document_url: string | null;,
-    document_type: string | null;,
-    raw_content: string | null;,
-    parsing_status: string | null;,
-    parsed_at: string | null;,
-    objectives: Record<string, unknown> | null;
-          target_audience: string | null;,
-    key_messaging: Record<string, unknown> | null;
+      briefs: {
+        Row: {
+          id: string;
+          name: string;
+          description: string | null;
+          document_url: string | null;
+          document_type: string | null;
+          raw_content: string | null;
+          parsing_status: string | null;
+          parsed_at: string | null;
+          objectives: Record<string, unknown> | null;
+          target_audience: string | null;
+          key_messaging: Record<string, unknown> | null;
           brand_guidelines: Record<string, unknown> | null;
-          platforms: string[] | null;,
-    budget: number | null;,
-    timeline: Record<string, unknown> | null;
+          platforms: string[] | null;
+          budget: number | null;
+          timeline: Record<string, unknown> | null;
           confidence_scores: Record<string, unknown> | null;
-          client_id: string | null;,
-    created_by: string | null;,
-    created_at: string | null;,
-    updated_at: string | null;
+          client_id: string | null;
+          created_by: string | null;
+          created_at: string | null;
+          updated_at: string | null;
         };
-        Insert: Record<string, unknown>$1
-  id?: string;
+        Insert: {
+          id?: string;
           name: string;
           description?: string | null;
           document_url?: string | null;
@@ -236,8 +236,8 @@ export interface Database {
           created_at?: string | null;
           updated_at?: string | null;
         };
-        Update: Record<string, unknown>$1
-  id?: string;
+        Update: {
+          id?: string;
           name?: string;
           description?: string | null;
           document_url?: string | null;
@@ -259,31 +259,31 @@ export interface Database {
           updated_at?: string | null;
         };
       };
-      campaign_analytics: Record<string, unknown>$1
-  Row: Record<string, unknown>$1
-  id: string;,
-    execution_id: string | null;,
-    platform: string;,
-    date: string;,
-    hour: number | null;,
-    impressions: number | null;,
-    clicks: number | null;,
-    conversions: number | null;,
-    spend: number | null;,
-    ctr: number | null;,
-    cpc: number | null;,
-    cpm: number | null;,
-    roas: number | null;,
-    raw_data: Record<string, unknown> | null;
-          client_id: string | null;,
-    created_at: string | null;,
-    updated_at: string | null;
+      campaign_analytics: {
+        Row: {
+          id: string;
+          execution_id: string | null;
+          platform: string;
+          date: string;
+          hour: number | null;
+          impressions: number | null;
+          clicks: number | null;
+          conversions: number | null;
+          spend: number | null;
+          ctr: number | null;
+          cpc: number | null;
+          cpm: number | null;
+          roas: number | null;
+          raw_data: Record<string, unknown> | null;
+          client_id: string | null;
+          created_at: string | null;
+          updated_at: string | null;
         };
-        Insert: Record<string, unknown>$1
-  id?: string;
+        Insert: {
+          id?: string;
           execution_id?: string | null;
-          platform: string;,
-    date: string;
+          platform: string;
+          date: string;
           hour?: number | null;
           impressions?: number | null;
           clicks?: number | null;
@@ -298,8 +298,8 @@ export interface Database {
           created_at?: string | null;
           updated_at?: string | null;
         };
-        Update: Record<string, unknown>$1
-  id?: string;
+        Update: {
+          id?: string;
           execution_id?: string | null;
           platform?: string;
           date?: string;
@@ -318,28 +318,28 @@ export interface Database {
           updated_at?: string | null;
         };
       };
-      clients: Record<string, unknown>$1
-  Row: Record<string, unknown>$1
-  id: string;,
-    name: string;,
-    slug: string;,
-    description: string | null;,
-    industry: string | null;,
-    logo_url: string | null;,
-    primary_color: string | null;,
-    secondary_color: string | null;,
-    website: string | null;,
-    social_media: Record<string, unknown> | null;
+      clients: {
+        Row: {
+          id: string;
+          name: string;
+          slug: string;
+          description: string | null;
+          industry: string | null;
+          logo_url: string | null;
+          primary_color: string | null;
+          secondary_color: string | null;
+          website: string | null;
+          social_media: Record<string, unknown> | null;
           brand_guidelines: Record<string, unknown> | null;
-          is_active: boolean;,
-    created_by: string | null;,
-    created_at: string | null;,
-    updated_at: string | null;
+          is_active: boolean;
+          created_by: string | null;
+          created_at: string | null;
+          updated_at: string | null;
         };
-        Insert: Record<string, unknown>$1
-  id?: string;
-          name: string;,
-    slug: string;
+        Insert: {
+          id?: string;
+          name: string;
+          slug: string;
           description?: string | null;
           industry?: string | null;
           logo_url?: string | null;
@@ -353,8 +353,8 @@ export interface Database {
           created_at?: string | null;
           updated_at?: string | null;
         };
-        Update: Record<string, unknown>$1
-  id?: string;
+        Update: {
+          id?: string;
           name?: string;
           slug?: string;
           description?: string | null;
@@ -371,23 +371,23 @@ export interface Database {
           updated_at?: string | null;
         };
       };
-      client_contacts: Record<string, unknown>$1
-  Row: Record<string, unknown>$1
-  id: string;,
-    client_id: string;,
-    name: string;,
-    role: string | null;,
-    email: string | null;,
-    phone: string | null;,
-    is_primary: boolean;,
-    is_active: boolean;,
-    created_at: string | null;,
-    updated_at: string | null;
+      client_contacts: {
+        Row: {
+          id: string;
+          client_id: string;
+          name: string;
+          role: string | null;
+          email: string | null;
+          phone: string | null;
+          is_primary: boolean;
+          is_active: boolean;
+          created_at: string | null;
+          updated_at: string | null;
         };
-        Insert: Record<string, unknown>$1
-  id?: string;
-          client_id: string;,
-    name: string;
+        Insert: {
+          id?: string;
+          client_id: string;
+          name: string;
           role?: string | null;
           email?: string | null;
           phone?: string | null;
@@ -396,8 +396,8 @@ export interface Database {
           created_at?: string | null;
           updated_at?: string | null;
         };
-        Update: Record<string, unknown>$1
-  id?: string;
+        Update: {
+          id?: string;
           client_id?: string;
           name?: string;
           role?: string | null;
@@ -410,36 +410,36 @@ export interface Database {
         };
         Relationships: [
           {
-            foreignKeyName: "client_contacts_client_id_fkey";,
-    columns: ["client_id"];,
-    referencedRelation: "clients";,
-    referencedColumns: ["id"];
+            foreignKeyName: "client_contacts_client_id_fkey";
+            columns: ["client_id"];
+            referencedRelation: "clients";
+            referencedColumns: ["id"];
           }
         ];
       };
-      content_variations: Record<string, unknown>$1
-  Row: Record<string, unknown>$1
-  id: string;,
-    content: string;,
-    content_type: string;,
-    platform: string | null;,
-    tone: string | null;,
-    style: string | null;,
-    brief_id: string | null;,
-    motivation_ids: string[] | null;,
-    generation_prompt: string | null;,
-    performance_score: number | null;,
-    brand_compliance_score: number | null;,
-    compliance_notes: Record<string, unknown> | null;
-          client_id: string | null;,
-    created_by: string | null;,
-    created_at: string | null;,
-    updated_at: string | null;
+      content_variations: {
+        Row: {
+          id: string;
+          content: string;
+          content_type: string;
+          platform: string | null;
+          tone: string | null;
+          style: string | null;
+          brief_id: string | null;
+          motivation_ids: string[] | null;
+          generation_prompt: string | null;
+          performance_score: number | null;
+          brand_compliance_score: number | null;
+          compliance_notes: Record<string, unknown> | null;
+          client_id: string | null;
+          created_by: string | null;
+          created_at: string | null;
+          updated_at: string | null;
         };
-        Insert: Record<string, unknown>$1
-  id?: string;
-          content: string;,
-    content_type: string;
+        Insert: {
+          id?: string;
+          content: string;
+          content_type: string;
           platform?: string | null;
           tone?: string | null;
           style?: string | null;
@@ -454,8 +454,8 @@ export interface Database {
           created_at?: string | null;
           updated_at?: string | null;
         };
-        Update: Record<string, unknown>$1
-  id?: string;
+        Update: {
+          id?: string;
           content?: string;
           content_type?: string;
           platform?: string | null;
@@ -473,20 +473,20 @@ export interface Database {
           updated_at?: string | null;
         };
       };
-      copy_assets: Record<string, unknown>$1
-  Row: Record<string, unknown>$1
-  id: string;,
-    content: string | null;,
-    type: string | null;,
-    tags: string[] | null;,
-    metadata: Record<string, unknown> | null;
-          client_id: string | null;,
-    created_by: string | null;,
-    created_at: string | null;,
-    updated_at: string | null;
+      copy_assets: {
+        Row: {
+          id: string;
+          content: string | null;
+          type: string | null;
+          tags: string[] | null;
+          metadata: Record<string, unknown> | null;
+          client_id: string | null;
+          created_by: string | null;
+          created_at: string | null;
+          updated_at: string | null;
         };
-        Insert: Record<string, unknown>$1
-  id?: string;
+        Insert: {
+          id?: string;
           content?: string | null;
           type?: string | null;
           tags?: string[] | null;
@@ -496,8 +496,8 @@ export interface Database {
           created_at?: string | null;
           updated_at?: string | null;
         };
-        Update: Record<string, unknown>$1
-  id?: string;
+        Update: {
+          id?: string;
           content?: string | null;
           type?: string | null;
           tags?: string[] | null;
@@ -508,22 +508,22 @@ export interface Database {
           updated_at?: string | null;
         };
       };
-      copy_texts: Record<string, unknown>$1
-  Row: Record<string, unknown>$1
-  id: string;,
-    type: string;,
-    content: string;,
-    metadata: Record<string, unknown> | null;
-          tags: string[] | null;,
-    client_id: string | null;,
-    created_by: string | null;,
-    created_at: string | null;,
-    updated_at: string | null;
+      copy_texts: {
+        Row: {
+          id: string;
+          type: string;
+          content: string;
+          metadata: Record<string, unknown> | null;
+          tags: string[] | null;
+          client_id: string | null;
+          created_by: string | null;
+          created_at: string | null;
+          updated_at: string | null;
         };
-        Insert: Record<string, unknown>$1
-  id?: string;
-          type: string;,
-    content: string;
+        Insert: {
+          id?: string;
+          type: string;
+          content: string;
           metadata?: Record<string, unknown> | null;
           tags?: string[] | null;
           client_id?: string | null;
@@ -531,8 +531,8 @@ export interface Database {
           created_at?: string | null;
           updated_at?: string | null;
         };
-        Update: Record<string, unknown>$1
-  id?: string;
+        Update: {
+          id?: string;
           type?: string;
           content?: string;
           metadata?: Record<string, unknown> | null;
@@ -543,24 +543,24 @@ export interface Database {
           updated_at?: string | null;
         };
       };
-      executions: Record<string, unknown>$1
-  Row: Record<string, unknown>$1
-  id: string;,
-    name: string;,
-    description: string | null;,
-    status: string;,
-    matrix_id: string | null;,
-    output_url: string | null;,
-    metadata: Record<string, unknown> | null;
-          client_id: string | null;,
-    created_by: string | null;,
-    approved_at: string | null;,
-    approved_by: string | null;,
-    created_at: string | null;,
-    updated_at: string | null;
+      executions: {
+        Row: {
+          id: string;
+          name: string;
+          description: string | null;
+          status: string;
+          matrix_id: string | null;
+          output_url: string | null;
+          metadata: Record<string, unknown> | null;
+          client_id: string | null;
+          created_by: string | null;
+          approved_at: string | null;
+          approved_by: string | null;
+          created_at: string | null;
+          updated_at: string | null;
         };
-        Insert: Record<string, unknown>$1
-  id?: string;
+        Insert: {
+          id?: string;
           name: string;
           description?: string | null;
           status: string;
@@ -574,8 +574,8 @@ export interface Database {
           created_at?: string | null;
           updated_at?: string | null;
         };
-        Update: Record<string, unknown>$1
-  id?: string;
+        Update: {
+          id?: string;
           name?: string;
           description?: string | null;
           status?: string;
@@ -590,19 +590,19 @@ export interface Database {
           updated_at?: string | null;
         };
       };
-      generated_content: Record<string, unknown>$1
-  Row: Record<string, unknown>$1
-  id: string;,
-    selected_motivation_id: string | null;,
-    content: Record<string, unknown> | null;
-          content_types: string[] | null;,
-    tone: string | null;,
-    style: string | null;,
-    user_id: string | null;,
-    created_at: string | null;
+      generated_content: {
+        Row: {
+          id: string;
+          selected_motivation_id: string | null;
+          content: Record<string, unknown> | null;
+          content_types: string[] | null;
+          tone: string | null;
+          style: string | null;
+          user_id: string | null;
+          created_at: string | null;
         };
-        Insert: Record<string, unknown>$1
-  id?: string;
+        Insert: {
+          id?: string;
           selected_motivation_id?: string | null;
           content?: Record<string, unknown> | null;
           content_types?: string[] | null;
@@ -611,8 +611,8 @@ export interface Database {
           user_id?: string | null;
           created_at?: string | null;
         };
-        Update: Record<string, unknown>$1
-  id?: string;
+        Update: {
+          id?: string;
           selected_motivation_id?: string | null;
           content?: Record<string, unknown> | null;
           content_types?: string[] | null;
@@ -622,20 +622,20 @@ export interface Database {
           created_at?: string | null;
         };
       };
-      matrices: Record<string, unknown>$1
-  Row: Record<string, unknown>$1
-  id: string;,
-    name: string;,
-    description: string | null;,
-    structure: Record<string, unknown>;
-          template_id: string | null;,
-    client_id: string | null;,
-    created_by: string | null;,
-    created_at: string | null;,
-    updated_at: string | null;
+      matrices: {
+        Row: {
+          id: string;
+          name: string;
+          description: string | null;
+          structure: Record<string, unknown>;
+          template_id: string | null;
+          client_id: string | null;
+          created_by: string | null;
+          created_at: string | null;
+          updated_at: string | null;
         };
-        Insert: Record<string, unknown>$1
-  id?: string;
+        Insert: {
+          id?: string;
           name: string;
           description?: string | null;
           structure: Record<string, unknown>;
@@ -645,8 +645,8 @@ export interface Database {
           created_at?: string | null;
           updated_at?: string | null;
         };
-        Update: Record<string, unknown>$1
-  id?: string;
+        Update: {
+          id?: string;
           name?: string;
           description?: string | null;
           structure?: Record<string, unknown>;
@@ -657,23 +657,23 @@ export interface Database {
           updated_at?: string | null;
         };
       };
-      motivations: Record<string, unknown>$1
-  Row: Record<string, unknown>$1
-  id: string;,
-    title: string;,
-    description: string | null;,
-    category: string | null;,
-    brief_id: string | null;,
-    relevance_score: number | null;,
-    is_ai_generated: boolean | null;,
-    generation_context: Record<string, unknown> | null;
-          client_id: string | null;,
-    created_by: string | null;,
-    created_at: string | null;,
-    updated_at: string | null;
+      motivations: {
+        Row: {
+          id: string;
+          title: string;
+          description: string | null;
+          category: string | null;
+          brief_id: string | null;
+          relevance_score: number | null;
+          is_ai_generated: boolean | null;
+          generation_context: Record<string, unknown> | null;
+          client_id: string | null;
+          created_by: string | null;
+          created_at: string | null;
+          updated_at: string | null;
         };
-        Insert: Record<string, unknown>$1
-  id?: string;
+        Insert: {
+          id?: string;
           title: string;
           description?: string | null;
           category?: string | null;
@@ -686,8 +686,8 @@ export interface Database {
           created_at?: string | null;
           updated_at?: string | null;
         };
-        Update: Record<string, unknown>$1
-  id?: string;
+        Update: {
+          id?: string;
           title?: string;
           description?: string | null;
           category?: string | null;
@@ -701,25 +701,25 @@ export interface Database {
           updated_at?: string | null;
         };
       };
-      platform_integrations: Record<string, unknown>$1
-  Row: Record<string, unknown>$1
-  id: string;,
-    platform: string;,
-    account_id: string | null;,
-    account_name: string | null;,
-    access_token: string | null;,
-    refresh_token: string | null;,
-    token_expires_at: string | null;,
-    permissions: Record<string, unknown> | null;
-          status: string | null;,
-    last_sync_at: string | null;,
-    client_id: string | null;,
-    created_by: string | null;,
-    created_at: string | null;,
-    updated_at: string | null;
+      platform_integrations: {
+        Row: {
+          id: string;
+          platform: string;
+          account_id: string | null;
+          account_name: string | null;
+          access_token: string | null;
+          refresh_token: string | null;
+          token_expires_at: string | null;
+          permissions: Record<string, unknown> | null;
+          status: string | null;
+          last_sync_at: string | null;
+          client_id: string | null;
+          created_by: string | null;
+          created_at: string | null;
+          updated_at: string | null;
         };
-        Insert: Record<string, unknown>$1
-  id?: string;
+        Insert: {
+          id?: string;
           platform: string;
           account_id?: string | null;
           account_name?: string | null;
@@ -734,8 +734,8 @@ export interface Database {
           created_at?: string | null;
           updated_at?: string | null;
         };
-        Update: Record<string, unknown>$1
-  id?: string;
+        Update: {
+          id?: string;
           platform?: string;
           account_id?: string | null;
           account_name?: string | null;
@@ -751,22 +751,22 @@ export interface Database {
           updated_at?: string | null;
         };
       };
-      profiles: Record<string, unknown>$1
-  Row: Record<string, unknown>$1
-  id: string;,
-    first_name: string | null;,
-    last_name: string | null;,
-    avatar_url: string | null;,
-    role: string;,
-    permissions: Record<string, unknown> | null;
+      profiles: {
+        Row: {
+          id: string;
+          first_name: string | null;
+          last_name: string | null;
+          avatar_url: string | null;
+          role: string;
+          permissions: Record<string, unknown> | null;
           preferences: Record<string, unknown> | null;
           metadata: Record<string, unknown> | null;
-          tenant_id: string | null;,
-    created_at: string | null;,
-    updated_at: string | null;
+          tenant_id: string | null;
+          created_at: string | null;
+          updated_at: string | null;
         };
-        Insert: Record<string, unknown>$1
-  id: string;
+        Insert: {
+          id: string;
           first_name?: string | null;
           last_name?: string | null;
           avatar_url?: string | null;
@@ -778,8 +778,8 @@ export interface Database {
           created_at?: string | null;
           updated_at?: string | null;
         };
-        Update: Record<string, unknown>$1
-  id?: string;
+        Update: {
+          id?: string;
           first_name?: string | null;
           last_name?: string | null;
           avatar_url?: string | null;
@@ -792,25 +792,25 @@ export interface Database {
           updated_at?: string | null;
         };
       };
-      selected_motivations: Record<string, unknown>$1
-  Row: Record<string, unknown>$1
-  id: string;,
-    strategy_id: string | null;,
-    selected: string[] | null;,
-    custom: string[] | null;,
-    user_id: string | null;,
-    created_at: string | null;
+      selected_motivations: {
+        Row: {
+          id: string;
+          strategy_id: string | null;
+          selected: string[] | null;
+          custom: string[] | null;
+          user_id: string | null;
+          created_at: string | null;
         };
-        Insert: Record<string, unknown>$1
-  id?: string;
+        Insert: {
+          id?: string;
           strategy_id?: string | null;
           selected?: string[] | null;
           custom?: string[] | null;
           user_id?: string | null;
           created_at?: string | null;
         };
-        Update: Record<string, unknown>$1
-  id?: string;
+        Update: {
+          id?: string;
           strategy_id?: string | null;
           selected?: string[] | null;
           custom?: string[] | null;
@@ -818,21 +818,21 @@ export interface Database {
           created_at?: string | null;
         };
       };
-      strategies: Record<string, unknown>$1
-  Row: Record<string, unknown>$1
-  id: string;,
-    name: string;,
-    description: string | null;,
-    target_audience: string | null;,
-    goals: Record<string, unknown> | null;
+      strategies: {
+        Row: {
+          id: string;
+          name: string;
+          description: string | null;
+          target_audience: string | null;
+          goals: Record<string, unknown> | null;
           key_messages: Record<string, unknown> | null;
-          created_by: string | null;,
-    client_id: string | null;,
-    created_at: string | null;,
-    updated_at: string | null;
+          created_by: string | null;
+          client_id: string | null;
+          created_at: string | null;
+          updated_at: string | null;
         };
-        Insert: Record<string, unknown>$1
-  id?: string;
+        Insert: {
+          id?: string;
           name: string;
           description?: string | null;
           target_audience?: string | null;
@@ -843,8 +843,8 @@ export interface Database {
           created_at?: string | null;
           updated_at?: string | null;
         };
-        Update: Record<string, unknown>$1
-  id?: string;
+        Update: {
+          id?: string;
           name?: string;
           description?: string | null;
           target_audience?: string | null;
@@ -856,62 +856,62 @@ export interface Database {
           updated_at?: string | null;
         };
       };
-      strategy_motivations: Record<string, unknown>$1
-  Row: Record<string, unknown>$1
-  id: string;,
-    strategy_id: string | null;,
-    motivation_id: string | null;,
-    order_position: number | null;,
-    created_at: string | null;
+      strategy_motivations: {
+        Row: {
+          id: string;
+          strategy_id: string | null;
+          motivation_id: string | null;
+          order_position: number | null;
+          created_at: string | null;
         };
-        Insert: Record<string, unknown>$1
-  id?: string;
+        Insert: {
+          id?: string;
           strategy_id?: string | null;
           motivation_id?: string | null;
           order_position?: number | null;
           created_at?: string | null;
         };
-        Update: Record<string, unknown>$1
-  id?: string;
+        Update: {
+          id?: string;
           strategy_id?: string | null;
           motivation_id?: string | null;
           order_position?: number | null;
           created_at?: string | null;
         };
       };
-      templates: Record<string, unknown>$1
-  Row: Record<string, unknown>$1
-  id: string;,
-    name: string;,
-    aspect_ratio: string;,
-    platform: string;,
-    description: string | null;,
-    height: number;,
-    width: number;,
-    structure: Record<string, unknown>;
-          thumbnail_url: string | null;,
-    created_by: string | null;,
-    client_id: string | null;,
-    created_at: string | null;,
-    updated_at: string | null;
+      templates: {
+        Row: {
+          id: string;
+          name: string;
+          aspect_ratio: string;
+          platform: string;
+          description: string | null;
+          height: number;
+          width: number;
+          structure: Record<string, unknown>;
+          thumbnail_url: string | null;
+          created_by: string | null;
+          client_id: string | null;
+          created_at: string | null;
+          updated_at: string | null;
         };
-        Insert: Record<string, unknown>$1
-  id?: string;
-          name: string;,
-    aspect_ratio: string;,
-    platform: string;
+        Insert: {
+          id?: string;
+          name: string;
+          aspect_ratio: string;
+          platform: string;
           description?: string | null;
-          height: number;,
-    width: number;,
-    structure: Record<string, unknown>;
+          height: number;
+          width: number;
+          structure: Record<string, unknown>;
           thumbnail_url?: string | null;
           created_by?: string | null;
           client_id?: string | null;
           created_at?: string | null;
           updated_at?: string | null;
         };
-        Update: Record<string, unknown>$1
-  id?: string;
+        Update: {
+          id?: string;
           name?: string;
           aspect_ratio?: string;
           platform?: string;
@@ -926,34 +926,34 @@ export interface Database {
           updated_at?: string | null;
         };
       };
-      user_clients: Record<string, unknown>$1
-  Row: Record<string, unknown>$1
-  id: string;,
-    user_id: string;,
-    client_id: string;,
-    created_at: string | null;
+      user_clients: {
+        Row: {
+          id: string;
+          user_id: string;
+          client_id: string;
+          created_at: string | null;
         };
-        Insert: Record<string, unknown>$1
-  id?: string;
-          user_id: string;,
-    client_id: string;
+        Insert: {
+          id?: string;
+          user_id: string;
+          client_id: string;
           created_at?: string | null;
         };
-        Update: Record<string, unknown>$1
-  id?: string;
+        Update: {
+          id?: string;
           user_id?: string;
           client_id?: string;
           created_at?: string | null;
         };
       };
     };
-    Views: { }
+    Views: {
       [_ in never]: never;
     };
-    Functions: { }
+    Functions: {
       [_ in never]: never;
     };
-    Enums: { }
+    Enums: {
       [_ in never]: never;
     };
   };

@@ -1,5 +1,5 @@
-import fs from 'fs/promises';
-import path from 'path';
+import { promises as fs } from 'fs';
+import * as path from 'path';
 import { getLogger } from '@/lib/logger';
 
 const logger = getLogger('bundle-analyzer');
@@ -51,8 +51,8 @@ export interface BundleAnalysis {
     version?: string;
   }>;
   recommendations: BundleRecommendation[];
-  treeshaking: Record<string, unknown>$1
-  eliminatedModules: string[];
+  treeshaking: {
+    eliminatedModules: string[];
     unusedExports: Array<{
       module: string;
       exports: string[];
@@ -173,8 +173,8 @@ export class BundleAnalyzer {
     currentAnalysis: BundleAnalysis,
     previousAnalysis: BundleAnalysis
   ): Promise<{
-    sizeChange: Record<string, unknown>$1
-  total: number;
+    sizeChange: {
+      total: number;
       chunks: Array<{ name: string; change: number }>;
       assets: Array<{ name: string; change: number }>;
     };
@@ -191,8 +191,8 @@ export class BundleAnalyzer {
     const currentChunkNames = new Set(currentAnalysis.chunks.map((c: any) => c.name));
     const previousChunkNames = new Set(previousAnalysis.chunks.map((c: any) => c.name));
     
-    const newChunks = [...currentChunkNames].filter((name: any) => !previousChunkNames.has(name));
-    const removedChunks = [...previousChunkNames].filter((name: any) => !currentChunkNames.has(name));
+    const newChunks = Array.from(currentChunkNames).filter((name: any) => !previousChunkNames.has(name));
+    const removedChunks = Array.from(previousChunkNames).filter((name: any) => !currentChunkNames.has(name));
     
     const recommendations = this.generateComparisonRecommendations(
       sizeChange,
@@ -330,10 +330,10 @@ export class BundleAnalyzer {
     
     // Add common modules that are likely present
     const commonModules = [
-      { name: 'react', estimatedSize: 45 * 1024  }
-      { name: 'react-dom', estimatedSize: 120 * 1024  }
-      { name: 'next', estimatedSize: 200 * 1024  }
-      { name: '@babel/runtime', estimatedSize: 30 * 1024  }
+      { name: 'react', estimatedSize: 45 * 1024 },
+      { name: 'react-dom', estimatedSize: 120 * 1024 },
+      { name: 'next', estimatedSize: 200 * 1024 },
+      { name: '@babel/runtime', estimatedSize: 30 * 1024 },
       { name: 'regenerator-runtime', estimatedSize: 15 * 1024 }
     ];
     
