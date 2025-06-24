@@ -535,10 +535,10 @@ const ClientsPage: React.FC = () => {
                   <Grid size={{ xs: 12, md: 6 }}>
                     <TextField
                       fullWidth
-                      label="Website";
+                      label="Website"
                       value={formData.website}
                       onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                      placeholder="https://example.com";
+                      placeholder="https://example.com"
                     />
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
