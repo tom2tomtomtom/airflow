@@ -6,16 +6,16 @@ import { getLogger } from '@/lib/logger';
 const logger = getLogger('apm');
 
 export interface APMConfig {
-  sentry: Record<string, unknown>$1
-  enabled: boolean;
+  sentry: {
+    enabled: boolean;
     dsn: string;
     environment: string;
     release?: string;
     tracesSampleRate: number;
     profilesSampleRate: number;
   };
-  datadog: Record<string, unknown>$1
-  enabled: boolean;
+  datadog: {
+    enabled: boolean;
     host: string;
     port: number;
     prefix: string;
@@ -58,15 +58,16 @@ export class APMManager {
     const monitoring = getMonitoringConfig();
     
     return {
-      sentry: Record<string, unknown>$1
-  enabled: monitoring.sentry?.enabled || false,
+      sentry: {
+        enabled: monitoring.sentry?.enabled || false,
         dsn: monitoring.sentry?.dsn || '',
         environment: process.env.NODE_ENV || 'development',
         release: process.env.VERCEL_GIT_COMMIT_SHA || process.env.APP_VERSION,
         tracesSampleRate: monitoring.sentry?.tracesSampleRate || 0.1,
-        profilesSampleRate: monitoring.sentry?.profilesSampleRate || 0.1 },
-  datadog: Record<string, unknown>$1
-  enabled: monitoring.datadog?.enabled || false,
+        profilesSampleRate: monitoring.sentry?.profilesSampleRate || 0.1
+      },
+      datadog: {
+        enabled: monitoring.datadog?.enabled || false,
         host: monitoring.datadog?.host || 'localhost',
         port: monitoring.datadog?.port || 8125,
         prefix: monitoring.datadog?.prefix || 'airwave.',
@@ -95,7 +96,7 @@ export class APMManager {
           ],
           
           // Filter sensitive data
-          beforeSend: (_event) => {
+          beforeSend: (event) => {
             // Remove sensitive headers
             if (event.request?.headers) {
               delete event.request.headers.authorization;
@@ -111,7 +112,7 @@ export class APMManager {
           },
           
           // Custom error filtering
-          beforeSendTransaction: (_event) => {
+          beforeSendTransaction: (event) => {
             // Don't send health check transactions
             if (event.transaction?.includes('/health')) {
               return null;
@@ -330,8 +331,8 @@ export class APMManager {
     datadog: { enabled: boolean; healthy: boolean };
   }> {
     const result = {
-      sentry: { enabled: this.config.sentry.enabled, healthy: false  },
-  datadog: { enabled: this.config.datadog.enabled, healthy: false }
+      sentry: { enabled: this.config.sentry.enabled, healthy: false },
+      datadog: { enabled: this.config.datadog.enabled, healthy: false }
     };
     
     // Check Sentry
@@ -452,11 +453,12 @@ export const createAPMMiddleware = () => {
       
       trace.finish({
         success: res.statusCode < 400,
-        tags: Record<string, unknown>$1
-  method: req.method,
+        tags: {
+          method: req.method,
           status_code: res.statusCode.toString(),
-          route: req.route?.path || req.path },
-  user: req.user ? {
+          route: req.route?.path || req.path
+        },
+        user: req.user ? {
           id: req.user.id,
           email: req.user.email,
           clientId: req.user.clientId

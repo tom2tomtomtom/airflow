@@ -474,7 +474,7 @@ const ClientsPage: React.FC = () => {
         <Dialog
           open={dialogOpen}
           onClose={handleCloseDialog}
-          maxWidth="md";
+          maxWidth="md"
           fullWidth
         >
           <DialogTitle>
