@@ -19,8 +19,8 @@ export interface ValidationSchema {
 }
 
 export interface ValidationResult {
-  isValid: boolean;,
-    errors: { [key: string]: string };
+  isValid: boolean;
+  errors: { [key: string]: string };
   sanitizedData: { [key: string]: unknown };
 }
 
@@ -30,7 +30,8 @@ export interface ValidationResult {
 export function sanitizeHtml(html: string): string {
   return DOMPurify.sanitize(html, {
     ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'p', 'br', 'ul', 'ol', 'li', 'a'],
-    ALLOWED_ATTR: ['href']});
+    ALLOWED_ATTR: ['href'],
+  });
 }
 
 /**
@@ -49,7 +50,7 @@ export function sanitizeString(input: string): string {
  */
 export function isValidEmail(email: string): boolean {
   if (!email || typeof email !== 'string') return false;
-  
+
   // Security checks - reject dangerous patterns
   const dangerousPatterns = [
     /<script/i,
@@ -65,30 +66,30 @@ export function isValidEmail(email: string): boolean {
     /\x00/,
     /<>/,
   ];
-  
+
   if (dangerousPatterns.some(pattern => pattern.test(email))) {
     return false;
   }
-  
+
   // More comprehensive email validation
   // Must have exactly one @ symbol
   const atSymbols = email.split('@').length - 1;
   if (atSymbols !== 1) return false;
-  
+
   // Split into local and domain parts
   const [localPart, domainPart] = email.split('@');
-  
+
   // Check local part
   if (!localPart || localPart.length === 0) return false;
   if (localPart.includes(' ')) return false;
-  
+
   // Check domain part
   if (!domainPart || domainPart.length === 0) return false;
   if (domainPart.includes(' ')) return false;
   if (!domainPart.includes('.')) return false;
   if (domainPart.startsWith('.') || domainPart.endsWith('.')) return false;
   if (domainPart.includes('..')) return false;
-  
+
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
@@ -122,7 +123,7 @@ export function validateFileType(filename: string, allowedTypes: string[]): bool
 /**
  * Validate file size
  */
-export function validateFileSize(_sizeInBytes: number, maxSizeMB: number): boolean {
+export function validateFileSize(sizeInBytes: number, maxSizeMB: number): boolean {
   const maxSizeBytes = maxSizeMB * 1024 * 1024;
   return sizeInBytes <= maxSizeBytes;
 }
@@ -169,37 +170,46 @@ export function isPasswordValid(password: string): boolean {
  */
 export function validatePassword(password: string): { isValid: boolean; errors: string[] } {
   const errors: string[] = [];
-  
+
   if (password.length < 8) {
     errors.push('Password must be at least 8 characters long');
   }
-  
+
   if (!/[a-z]/.test(password)) {
     errors.push('Password must contain at least one lowercase letter');
   }
-  
+
   if (!/[A-Z]/.test(password)) {
     errors.push('Password must contain at least one uppercase letter');
   }
-  
+
   if (!/\d/.test(password)) {
     errors.push('Password must contain at least one digit');
   }
-  
+
   if (!/[@$!%*?&#]/.test(password)) {
     errors.push('Password must contain at least one special character');
   }
-  
+
   // Check if password is exactly a common weak password
-  const commonWeakPasswords = ['password', 'admin', 'qwerty', '123456', 'password123', 'admin123', 'qwerty123'];
+  const commonWeakPasswords = [
+    'password',
+    'admin',
+    'qwerty',
+    '123456',
+    'password123',
+    'admin123',
+    'qwerty123',
+  ];
   const lowerPassword = password.toLowerCase();
   if (commonWeakPasswords.includes(lowerPassword)) {
     errors.push('Password contains common patterns');
   }
-  
+
   return {
     isValid: errors.length === 0,
-    errors};
+    errors,
+  };
 }
 
 /**
@@ -237,12 +247,12 @@ export function validateField(value: unknown, rule: ValidationRule): string | nu
   if (rule.required && (value === undefined || value === null || value === '')) {
     return 'This field is required';
   }
-  
+
   // Skip other validations if value is empty and not required
   if (!rule.required && (value === undefined || value === null || value === '')) {
     return null;
   }
-  
+
   // Type validation
   if (rule.type) {
     switch (rule.type) {
@@ -278,22 +288,22 @@ export function validateField(value: unknown, rule: ValidationRule): string | nu
         break;
     }
   }
-  
+
   // Length validation
   const stringValue = String(value);
   if (rule.minLength && stringValue.length < rule.minLength) {
     return `Must be at least ${rule.minLength} characters long`;
   }
-  
+
   if (rule.maxLength && stringValue.length > rule.maxLength) {
     return `Must be no more than ${rule.maxLength} characters long`;
   }
-  
+
   // Pattern validation
   if (rule.pattern && !rule.pattern.test(stringValue)) {
     return 'Invalid format';
   }
-  
+
   // Custom validation
   if (rule.custom) {
     const result = rule.custom(value);
@@ -301,7 +311,7 @@ export function validateField(value: unknown, rule: ValidationRule): string | nu
       return typeof result === 'string' ? result : 'Invalid value';
     }
   }
-  
+
   return null;
 }
 
@@ -311,9 +321,9 @@ export function validateField(value: unknown, rule: ValidationRule): string | nu
 export function validateData(data: unknown, schema: ValidationSchema): ValidationResult {
   const errors: { [key: string]: string } = {};
   const sanitizedData: { [key: string]: unknown } = {};
-  
+
   // Validate each field in schema
-  Object.keys(schema).forEach((key: unknown) => {
+  Object.keys(schema).forEach((key: string) => {
     const value = data[key];
     const rule = schema[key];
 
@@ -323,7 +333,7 @@ export function validateData(data: unknown, schema: ValidationSchema): Validatio
         errors[key] = error;
       }
     }
-    
+
     // Sanitize the value
     if (value !== undefined && value !== null) {
       if (typeof value === 'string') {
@@ -333,11 +343,12 @@ export function validateData(data: unknown, schema: ValidationSchema): Validatio
       }
     }
   });
-  
+
   return {
     isValid: Object.keys(errors).length === 0,
     errors,
-    sanitizedData};
+    sanitizedData,
+  };
 }
 
 /**
@@ -345,99 +356,124 @@ export function validateData(data: unknown, schema: ValidationSchema): Validatio
  */
 export const validationSchemas = {
   // User registration
-  userRegistration: Record<string, unknown>$1
-  email: Record<string, unknown>$1
-  required: true,
+  userRegistration: {
+    email: {
+      required: true,
       type: 'email' as const,
-      maxLength: 255 },
-  password: Record<string, unknown>$1
-  required: true,
+      maxLength: 255,
+    },
+    password: {
+      required: true,
       type: 'string' as const,
       minLength: 8,
       maxLength: 128,
-      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/ },
-  name: Record<string, unknown>$1
-  required: true,
+      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+    },
+    name: {
+      required: true,
       type: 'string' as const,
       minLength: 2,
-      maxLength: 100  }
+      maxLength: 100,
+    },
+  },
   // User login
-  login: Record<string, unknown>$1
-  email: Record<string, unknown>$1
-  required: true,
+  login: {
+    email: {
+      required: true,
       type: 'email' as const,
-      maxLength: 255 },
-  password: Record<string, unknown>$1
-  required: true,
+      maxLength: 255,
+    },
+    password: {
+      required: true,
       type: 'string' as const,
       minLength: 1,
-      maxLength: 128  }
+      maxLength: 128,
+    },
+  },
   // User signup
-  signup: Record<string, unknown>$1
-  email: Record<string, unknown>$1
-  required: true,
+  signup: {
+    email: {
+      required: true,
       type: 'email' as const,
-      maxLength: 255 },
-  password: Record<string, unknown>$1
-  required: true,
+      maxLength: 255,
+    },
+    password: {
+      required: true,
       type: 'string' as const,
       minLength: 8,
       maxLength: 128,
-      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/ },
-  name: Record<string, unknown>$1
-  required: true,
+      pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+    },
+    name: {
+      required: true,
       type: 'string' as const,
       minLength: 2,
-      maxLength: 100  }
+      maxLength: 100,
+    },
+  },
   // Client creation
-  clientCreation: Record<string, unknown>$1
-  name: Record<string, unknown>$1
-  required: true,
+  clientCreation: {
+    name: {
+      required: true,
       type: 'string' as const,
       minLength: 2,
-      maxLength: 100 },
-  industry: Record<string, unknown>$1
-  required: false,
+      maxLength: 100,
+    },
+    industry: {
+      required: false,
       type: 'string' as const,
-      maxLength: 100 },
-  description: Record<string, unknown>$1
-  required: false,
+      maxLength: 100,
+    },
+    description: {
+      required: false,
       type: 'string' as const,
-      maxLength: 1000  }
+      maxLength: 1000,
+    },
+  },
   // Campaign creation
-  campaignCreation: Record<string, unknown>$1
-  name: Record<string, unknown>$1
-  required: true,
+  campaignCreation: {
+    name: {
+      required: true,
       type: 'string' as const,
       minLength: 2,
-      maxLength: 200 },
-  description: Record<string, unknown>$1
-  required: false,
+      maxLength: 200,
+    },
+    description: {
+      required: false,
       type: 'string' as const,
-      maxLength: 2000 },
-  budget: Record<string, unknown>$1
-  required: false,
+      maxLength: 2000,
+    },
+    budget: {
+      required: false,
       type: 'number' as const,
-      custom: (value: number) => value >= 0 || 'Budget must be positive'  }
+      custom: (value: number) => value >= 0 || 'Budget must be positive',
+    },
+  },
   // AI generation request
-  aiGeneration: Record<string, unknown>$1
-  prompt: Record<string, unknown>$1
-  required: true,
+  aiGeneration: {
+    prompt: {
+      required: true,
       type: 'string' as const,
       minLength: 10,
-      maxLength: 2000 },
-  type: Record<string, unknown>$1
-  required: true,
+      maxLength: 2000,
+    },
+    type: {
+      required: true,
       type: 'string' as const,
-      pattern: /^(text|image|video|voice)$/ },
-  clientId: Record<string, unknown>$1
-  required: true,
+      pattern: /^(text|image|video|voice)$/,
+    },
+    clientId: {
+      required: true,
       type: 'string' as const,
-      minLength: 1 },
-  style: Record<string, unknown>$1
-  required: false,
+      minLength: 1,
+    },
+    style: {
+      required: false,
       type: 'string' as const,
-      maxLength: 100 };
+      maxLength: 100,
+    },
+  },
+};
 
 /**
  * Middleware for request validation
@@ -448,17 +484,18 @@ export function withValidation(
 ) {
   return async (req: unknown, res: unknown) => {
     const validation = validateData(req.body, schema);
-    
+
     if (!validation.isValid) {
       return res.status(400).json({
         error: 'Validation failed',
         code: 'VALIDATION_ERROR',
-        details: validation.errors});
+        details: validation.errors,
+      });
     }
-    
+
     // Replace request body with sanitized data
     req.body = validation.sanitizedData;
-    
+
     return handler(req, res);
   };
 }
@@ -466,20 +503,20 @@ export function withValidation(
 /**
  * Sanitize file upload data
  */
-export function sanitizeFileData(file: unknown): {,
-    isValid: boolean;
+export function sanitizeFileData(file: unknown): {
+  isValid: boolean;
   error?: string;
   sanitizedFile?: unknown;
 } {
   if (!file) {
     return { isValid: false, error: 'No file provided' };
   }
-  
+
   // Check file size (10MB max)
   if (file.size > 10 * 1024 * 1024) {
     return { isValid: false, error: 'File too large (max 10MB)' };
   }
-  
+
   // Check file type
   const allowedTypes = [
     'image/jpeg',
@@ -492,22 +529,24 @@ export function sanitizeFileData(file: unknown): {,
     'audio/wav',
     'application/pdf',
   ];
-  
+
   if (!allowedTypes.includes(file.type)) {
     return { isValid: false, error: 'File type not allowed' };
   }
-  
+
   // Sanitize filename
   const sanitizedName = file.name
     .replace(/[^a-zA-Z0-9.-]/g, '_')
     .replace(/_{2}/g, '_')
     .toLowerCase();
-  
+
   return {
     isValid: true,
-    sanitizedFile: { }
+    sanitizedFile: {
       ...file,
-      name: sanitizedName };
+      name: sanitizedName,
+    },
+  };
 }
 
 /**
@@ -521,18 +560,30 @@ export function validateUUID(uuid: string | null | undefined): boolean {
 /**
  * Validate file upload for security
  */
-export function validateFileUpload(file: { name: string; type: string; size: number }): { 
-  isValid: boolean; 
-  errors?: string[] 
+export function validateFileUpload(file: { name: string; type: string; size: number }): {
+  isValid: boolean;
+  errors?: string[];
 } {
   const errors: string[] = [];
-  
+
   // Check for executable file types
   const dangerousExtensions = [
-    '.exe', '.bat', '.cmd', '.com', '.pif', '.scr', '.vbs', '.js',
-    '.jar', '.app', '.dmg', '.pkg', '.deb', '.rpm'
+    '.exe',
+    '.bat',
+    '.cmd',
+    '.com',
+    '.pif',
+    '.scr',
+    '.vbs',
+    '.js',
+    '.jar',
+    '.app',
+    '.dmg',
+    '.pkg',
+    '.deb',
+    '.rpm',
   ];
-  
+
   const fileName = file.name.toLowerCase();
   for (const ext of dangerousExtensions) {
     if (fileName.endsWith(ext)) {
@@ -540,33 +591,42 @@ export function validateFileUpload(file: { name: string; type: string; size: num
       break;
     }
   }
-  
+
   // Check for path traversal attempts
   if (file.name.includes('..') || file.name.includes('/') || file.name.includes('\\')) {
     errors.push('File name contains invalid path characters');
   }
-  
+
   // Check file size (10MB limit)
   const maxSize = 10 * 1024 * 1024;
   if (file.size > maxSize) {
     errors.push('File size exceeds maximum limit');
   }
-  
+
   // Check MIME type
   const allowedTypes = [
-    'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
-    'video/mp4', 'video/webm',
-    'audio/mp3', 'audio/mpeg', 'audio/wav',
-    'application/pdf', 'text/plain', 'text/csv'
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/gif',
+    'image/webp',
+    'video/mp4',
+    'video/webm',
+    'audio/mp3',
+    'audio/mpeg',
+    'audio/wav',
+    'application/pdf',
+    'text/plain',
+    'text/csv',
   ];
-  
+
   if (!allowedTypes.includes(file.type)) {
     errors.push('File type not allowed for security reasons');
   }
-  
-  return { 
+
+  return {
     isValid: errors.length === 0,
-    errors: errors.length > 0 ? errors : []
+    errors: errors.length > 0 ? errors : [],
   };
 }
 
@@ -579,23 +639,23 @@ export function detectMaliciousPatterns(input: string): boolean {
     /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|CREATE|ALTER)\b)/i,
     /'.*OR.*'/i,
     /1'='1/,
-    
+
     // NoSQL injection patterns
     /\$where|\$ne|\$gt|\$lt|\$gte|\$lte|\$in|\$nin/,
-    
+
     // LDAP injection patterns
     /[()&|*]/,
-    
+
     // Template injection patterns
     /\{\{.*\}\}/,
     /<%.*%>/,
     /\${.*}/,
-    
+
     // Command injection patterns
     /;.*&&|;.*\|\|/,
     /`.*`/,
     /\$\(.*\)/,
   ];
-  
+
   return patterns.some(pattern => pattern.test(input));
 }
