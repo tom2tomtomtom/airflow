@@ -78,10 +78,12 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({
       label: config.label,
       color: config.color,
       size: size,
-      sx: Record<string, unknown>$1
-  fontWeight: 500,
+      sx: {
+        fontWeight: 500,
         '& .MuiChip-icon': {
-          fontSize: size === 'small' ? '16px' : '20px'}},
+          fontSize: size === 'small' ? '16px' : '20px'
+        }
+      },
       ...(showIcon && { icon: config.icon }), // Only include icon prop if showIcon is true
     };
 
@@ -102,7 +104,8 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({
           bgcolor: config.bgColor,
           color: config.textColor,
           fontSize: size === 'small' ? '0.75rem' : '0.875rem',
-          fontWeight: 500}}
+          fontWeight: 500
+        }}
       >
         {showIcon && React.cloneElement(config.icon, { 
           fontSize: size === 'small' ? 'small' : 'medium' 
@@ -125,7 +128,8 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({
         variant={size === 'small' ? 'caption' : 'body2'}
         sx={{ 
           color: config.textColor,
-          fontWeight: 500}}
+          fontWeight: 500
+        }}
       >
         {config.label}
       </Typography>
@@ -182,7 +186,8 @@ export const CompletionStatus: React.FC<CompletionStatusProps> = ({
             sx={{
               width: 100,
               height: size === 'small' ? 4 : 6,
-              borderRadius: 2}}
+              borderRadius: 2
+            }}
           />
           <Typography variant="caption" color="text.secondary">
             {completed}/{total}

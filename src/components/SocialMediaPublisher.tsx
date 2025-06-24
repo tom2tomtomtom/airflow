@@ -14,7 +14,8 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemIcon} from '@mui/material';
+  ListItemIcon,
+} from '@mui/material';
 import {
   Facebook,
   Twitter,
@@ -46,7 +47,8 @@ const platformIcons: Record<string, React.ReactElement> = {
   facebook: <Facebook />,
   twitter: <Twitter />,
   linkedin: <LinkedIn />,
-  instagram: <Instagram />};
+  instagram: <Instagram />,
+};
 
 export default function SocialMediaPublisher() {
   const [platforms, setPlatforms] = useState<Platform[]>([]);
@@ -109,14 +111,15 @@ export default function SocialMediaPublisher() {
       const response = await fetch('/api/social/publish', {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json'
-      
-      },
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           platforms: selectedPlatforms,
-          content: Record<string, unknown>$1
-  text: content,
-            link: link || undefined}})});
+          content: {
+            text: content,
+            link: link || undefined,
+          },
+        })});
 
       const data = await response.json();
 
@@ -237,7 +240,8 @@ export default function SocialMediaPublisher() {
           value={link}
           onChange={(e) => setLink(e.target.value)}
           InputProps={{
-            startAdornment: <LinkIcon sx={{ mr: 1, color: 'text.secondary' }} />}}
+            startAdornment: <LinkIcon sx={{ mr: 1, color: 'text.secondary' }} />,
+          }}
         />
       </Box>
 
