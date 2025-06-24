@@ -615,7 +615,7 @@ const ClientsPage: React.FC = () => {
                           targetAudience: e.target.value
                         }
                       })}
-                      placeholder="e.g., Young professionals aged 25-35";
+                      placeholder="e.g., Young professionals aged 25-35"
                     />
                   </Grid>
                 </Grid>
@@ -627,11 +627,12 @@ const ClientsPage: React.FC = () => {
                   <Grid size={{ xs: 12, md: 6 }}>
                     <TextField
                       fullWidth
-                      label="Facebook";
+                      label="Facebook"
                       value={formData.socialMedia.facebook || ''}
-                      onChange={(e) => setFormData({;
+                      onChange={(e) => setFormData({
                         ...formData,
-                        socialMedia: { ...formData.socialMedia, facebook: e.target.value }})}
+                        socialMedia: { ...formData.socialMedia, facebook: e.target.value }
+                      })}}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
