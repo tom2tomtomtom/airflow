@@ -600,15 +600,15 @@ const ClientsPage: React.FC = () => {
                           voiceTone: e.target.value
                         }
                       })}
-                      placeholder="e.g., Professional and friendly";
+                      placeholder="e.g., Professional and friendly"
                     />
                   </Grid>
                   <Grid size={{ xs: 12 }}>
                     <TextField
                       fullWidth
-                      label="Target Audience";
+                      label="Target Audience"
                       value={formData.brand_guidelines.targetAudience}
-                      onChange={(e) => setFormData({;
+                      onChange={(e) => setFormData({
                         ...formData,
                         brand_guidelines: {
                           ...formData.brand_guidelines,
