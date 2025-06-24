@@ -26,7 +26,8 @@ import {
   Slider,
   Alert,
   LinearProgress,
-  Stack} from '@mui/material';
+  Stack,
+} from '@mui/material';
 import {
   Add as AddIcon,
   Delete as DeleteIcon,
@@ -39,7 +40,8 @@ import {
   VideoLibrary as VideoIcon,
   MusicNote as MusicIcon,
   TextFields as TextIcon,
-  Palette as ColorIcon} from '@mui/icons-material';
+  Palette as ColorIcon,
+} from '@mui/icons-material';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
 
@@ -48,7 +50,7 @@ interface MatrixRow {
   id: string;
   name: string;
   locked: boolean;
-  cells: { }
+  cells: {
     [fieldId: string]: {
       type: 'asset' | 'text' | 'color';
       value?: string;
@@ -80,18 +82,40 @@ interface CampaignMatrixProps {
 }
 
 const defaultFields: MatrixField[] = [
-  { id: 'background', name: 'Background', type: 'image', required: true, description: 'Background image or video'  }
-  { id: 'headline', name: 'Headline', type: 'text', required: true, description: 'Main headline text'  }
-  { id: 'copy', name: 'Copy', type: 'text', required: true, description: 'Body copy text'  }
-  { id: 'logo', name: 'Logo', type: 'image', required: false, description: 'Brand logo'  }
-  { id: 'music', name: 'Music', type: 'audio', required: false, description: 'Background music'  }
-  { id: 'voice', name: 'Voice Over', type: 'audio', required: false, description: 'Voice over audio'  }
-  { id: 'color', name: 'Brand Color', type: 'color', required: false, description: 'Primary brand color'  }
+  {
+    id: 'background',
+    name: 'Background',
+    type: 'image',
+    required: true,
+    description: 'Background image or video',
+  },
+  {
+    id: 'headline',
+    name: 'Headline',
+    type: 'text',
+    required: true,
+    description: 'Main headline text',
+  },
+  { id: 'copy', name: 'Copy', type: 'text', required: true, description: 'Body copy text' },
+  { id: 'logo', name: 'Logo', type: 'image', required: false, description: 'Brand logo' },
+  { id: 'music', name: 'Music', type: 'audio', required: false, description: 'Background music' },
+  {
+    id: 'voice',
+    name: 'Voice Over',
+    type: 'audio',
+    required: false,
+    description: 'Voice over audio',
+  },
+  {
+    id: 'color',
+    name: 'Brand Color',
+    type: 'color',
+    required: false,
+    description: 'Primary brand color',
+  },
 ];
 
-export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
-  campaignId,
-  onRender}) => {
+export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({ campaignId, onRender }) => {
   const { activeClient } = useClient();
   const { showNotification } = useNotification();
 
@@ -125,12 +149,12 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
 
   const loadAssets = async () => {
     if (!activeClient) return;
-    
+
     setLoadingAssets(true);
     try {
       const response = await fetch(`/api/assets?client_id=${activeClient.id}`);
       const data = await response.json();
-      
+
       if (data.success) {
         setAssets(data.assets || []);
       }
@@ -147,13 +171,14 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
       id: `row-${Date.now()}`,
       name: `Variation ${rows.length + 1}`,
       locked: false,
-      cells: {}
+      cells: {},
     };
 
     // Initialize cells for all fields
     fields.forEach((field: any) => {
       newRow.cells[field.id] = {
-        type: field.type === 'color' ? 'color' : field.type === 'text' ? 'text' : 'asset'};
+        type: field.type === 'color' ? 'color' : field.type === 'text' ? 'text' : 'asset',
+      };
     });
 
     setRows([...rows, newRow]);
@@ -167,7 +192,8 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
       ...row,
       id: `row-${Date.now()}`,
       name: `${row.name} (Copy)`,
-      locked: false};
+      locked: false,
+    };
 
     setRows([...rows, newRow]);
     showNotification('Row duplicated successfully', 'success');
@@ -184,45 +210,47 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
   };
 
   const toggleRowLock = (rowId: string) => {
-    setRows(rows.map((row: any) => 
-      row.id === rowId 
-        ? { ...row, locked: !row.locked }
-        : row
-    ));
+    setRows(rows.map((row: any) => (row.id === rowId ? { ...row, locked: !row.locked } : row)));
   };
 
   const toggleCellLock = (rowId: string, fieldId: string) => {
-    setRows(rows.map((row: any) => {
-      if (row.id === rowId) {
-        return {
-          ...row,
-          cells: { }
-            ...row.cells,
-            [fieldId]: {
-              ...row.cells[fieldId],
-              locked: !row.cells[fieldId]?.locked}
-          }
-        };
-      }
-      return row;
-    }));
+    setRows(
+      rows.map((row: any) => {
+        if (row.id === rowId) {
+          return {
+            ...row,
+            cells: {
+              ...row.cells,
+              [fieldId]: {
+                ...row.cells[fieldId],
+                locked: !row.cells[fieldId]?.locked,
+              },
+            },
+          };
+        }
+        return row;
+      })
+    );
   };
 
   const updateCell = (rowId: string, fieldId: string, updates: any) => {
-    setRows(rows.map((row: any) => {
-      if (row.id === rowId) {
-        return {
-          ...row,
-          cells: { }
-            ...row.cells,
-            [fieldId]: {
-              ...row.cells[fieldId],
-              ...updates}
-          }
-        };
-      }
-      return row;
-    }));
+    setRows(
+      rows.map((row: any) => {
+        if (row.id === rowId) {
+          return {
+            ...row,
+            cells: {
+              ...row.cells,
+              [fieldId]: {
+                ...row.cells[fieldId],
+                ...updates,
+              },
+            },
+          };
+        }
+        return row;
+      })
+    );
   };
 
   const openAssetDialog = (rowId: string, fieldId: string, type: string) => {
@@ -235,7 +263,8 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
     const { rowId, fieldId } = selectedAssetDialog;
     updateCell(rowId, fieldId, {
       assetId: asset.id,
-      value: asset.name});
+      value: asset.name,
+    });
 
     setSelectedAssetDialog(null);
     showNotification('Asset assigned successfully', 'success');
@@ -243,27 +272,30 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
 
   const generateCombinations = async () => {
     setGenerating(true);
-    
+
     try {
       // Calculate all possible combinations
       const unlockedRows = rows.filter((row: any) => !row.locked);
       const lockedRows = rows.filter((row: any) => row.locked);
-      
+
       // Generate combinations logic here
       const newCombinations = [];
-      
+
       // For now, create variations based on different assets
       for (let i = 0; i < Math.min(maxCombinations, unlockedRows.length * 3); i++) {
         const combination: { id: string; name: string; fields: Record<string, any> } = {
           id: `combo-${Date.now()}-${i}`,
           name: `Combination ${i + 1}`,
-          fields: {}
+          fields: {},
         };
 
         // Copy from a random unlocked row or use locked row data
         const sourceRow = unlockedRows[i % unlockedRows.length] || rows[0];
         fields.forEach((field: any) => {
-          combination.fields[field.id] = sourceRow.cells[field.id] || { type: field.type, value: '' };
+          combination.fields[field.id] = sourceRow.cells[field.id] || {
+            type: field.type,
+            value: '',
+          };
         });
 
         newCombinations.push(combination);
@@ -294,12 +326,18 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
 
   const getFieldIcon = (type: string) => {
     switch (type) {
-      case 'image': return <ImageIcon />;
-      case 'video': return <VideoIcon />;
-      case 'audio': return <MusicIcon />;
-      case 'text': return <TextIcon />;
-      case 'color': return <ColorIcon />;
-      default: return <ImageIcon />;
+      case 'image':
+        return <ImageIcon />;
+      case 'video':
+        return <VideoIcon />;
+      case 'audio':
+        return <MusicIcon />;
+      case 'text':
+        return <TextIcon />;
+      case 'color':
+        return <ColorIcon />;
+      default:
+        return <ImageIcon />;
     }
   };
 
@@ -310,14 +348,14 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
     if (field.type === 'text') {
       return (
         <Box display="flex" alignItems="center" gap={1}>
-          <Typography 
-            variant="body2" 
-            sx={{ 
+          <Typography
+            variant="body2"
+            sx={{
               flexGrow: 1,
               cursor: 'pointer',
               p: 1,
               border: '1px dashed transparent',
-              '&:hover': { borderColor: 'divider' }
+              '&:hover': { borderColor: 'divider' },
             }}
             onClick={() => {
               const newValue = prompt('Enter text:', cell?.value || '');
@@ -328,8 +366,8 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
           >
             {cell?.value || 'Click to enter text'}
           </Typography>
-          <IconButton 
-            size="small" 
+          <IconButton
+            size="small"
             onClick={() => toggleCellLock(row.id, field.id)}
             color={isLocked ? 'primary' : 'default'}
           >
@@ -350,7 +388,8 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
               border: '1px solid',
               borderColor: 'divider',
               borderRadius: 1,
-              cursor: 'pointer'}}
+              cursor: 'pointer',
+            }}
             onClick={() => {
               const newColor = prompt('Enter color (hex):', cell?.value || '#000000');
               if (newColor) {
@@ -358,11 +397,9 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
               }
             }}
           />
-          <Typography variant="body2">
-            {cell?.value || 'Click to set color'}
-          </Typography>
-          <IconButton 
-            size="small" 
+          <Typography variant="body2">{cell?.value || 'Click to set color'}</Typography>
+          <IconButton
+            size="small"
             onClick={() => toggleCellLock(row.id, field.id)}
             color={isLocked ? 'primary' : 'default'}
           >
@@ -374,15 +411,12 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
 
     // Asset types (image, video, audio)
     const asset = assets.find((a: any) => a.id === cell?.assetId);
-    
+
     return (
       <Box display="flex" alignItems="center" gap={1}>
         {asset ? (
           <>
-       <Avatar 
-              src={asset.thumbnail || asset.url} 
-              sx={{ width: 32, height: 32 }}
-            >
+            <Avatar src={asset.thumbnail || asset.url} sx={{ width: 32, height: 32 }}>
               {getFieldIcon(field.type)}
             </Avatar>
             <Typography variant="body2" sx={{ flexGrow: 1 }}>
@@ -400,8 +434,8 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
             Select {field.name}
           </Button>
         )}
-        <IconButton 
-          size="small" 
+        <IconButton
+          size="small"
           onClick={() => toggleCellLock(row.id, field.id)}
           color={isLocked ? 'primary' : 'default'}
         >
@@ -414,15 +448,9 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
   return (
     <Box>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h5">
-          Campaign Matrix
-        </Typography>
+        <Typography variant="h5">Campaign Matrix</Typography>
         <Stack direction="row" spacing={2}>
-          <Button
-            variant="outlined"
-            startIcon={<AddIcon />}
-            onClick={addRow}
-          >
+          <Button variant="outlined" startIcon={<AddIcon />} onClick={addRow}>
             Add Row
           </Button>
           <Button
@@ -464,9 +492,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
                   <Box display="flex" alignItems="center" gap={1}>
                     {getFieldIcon(field.type)}
                     {field.name}
-                    {field.required && (
-                      <Chip label="Required" size="small" color="primary" />
-                    )}
+                    {field.required && <Chip label="Required" size="small" color="primary" />}
                   </Box>
                 </TableCell>
               ))}
@@ -475,9 +501,12 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
           </TableHead>
           <TableBody>
             {rows.map((row, index) => (
-              <TableRow key={row.id} sx={{ 
-                backgroundColor: row.locked ? 'action.hover' : 'inherit' 
-              }}>
+              <TableRow
+                key={row.id}
+                sx={{
+                  backgroundColor: row.locked ? 'action.hover' : 'inherit',
+                }}
+              >
                 <TableCell>{index + 1}</TableCell>
                 <TableCell>
                   <Box display="flex" alignItems="center" gap={1}>
@@ -486,14 +515,12 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
                   </Box>
                 </TableCell>
                 {fields.map((field: any) => (
-                  <TableCell key={field.id}>
-                    {getCellContent(row, field)}
-                  </TableCell>
+                  <TableCell key={field.id}>{getCellContent(row, field)}</TableCell>
                 ))}
                 <TableCell>
                   <IconButton
                     size="small"
-                    onClick={(e) => {
+                    onClick={e => {
                       setMenuAnchor(e.currentTarget);
                       setSelectedRow(row.id);
                     }}
@@ -541,23 +568,30 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
           setSelectedRow(null);
         }}
       >
-        <MenuItem onClick={() => {
-          if (selectedRow) duplicateRow(selectedRow);
-          setMenuAnchor(null);
-          setSelectedRow(null);
-        }}>
+        <MenuItem
+          onClick={() => {
+            if (selectedRow) duplicateRow(selectedRow);
+            setMenuAnchor(null);
+            setSelectedRow(null);
+          }}
+        >
           <DuplicateIcon sx={{ mr: 1 }} />
           Duplicate Row
         </MenuItem>
-        <MenuItem onClick={() => {
-          if (selectedRow) toggleRowLock(selectedRow);
-          setMenuAnchor(null);
-          setSelectedRow(null);
-        }}>
+        <MenuItem
+          onClick={() => {
+            if (selectedRow) toggleRowLock(selectedRow);
+            setMenuAnchor(null);
+            setSelectedRow(null);
+          }}
+        >
           <LockIcon sx={{ mr: 1 }} />
-          {selectedRow && rows.find((r: any) => r.id === selectedRow)?.locked ? 'Unlock' : 'Lock'} Row
+          {selectedRow && rows.find((r: any) => r.id === selectedRow)?.locked
+            ? 'Unlock'
+            : 'Lock'}{' '}
+          Row
         </MenuItem>
-        <MenuItem 
+        <MenuItem
           onClick={() => {
             if (selectedRow) deleteRow(selectedRow);
             setMenuAnchor(null);
@@ -577,27 +611,25 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>
-          Select {selectedAssetDialog?.type} Asset
-        </DialogTitle>
+        <DialogTitle>Select {selectedAssetDialog?.type} Asset</DialogTitle>
         <DialogContent>
           {loadingAssets ? (
             <LinearProgress />
           ) : (
             <Grid container spacing={2} sx={{ mt: 1 }}>
               {assets
-                .filter((asset: any) => 
-                  selectedAssetDialog?.type === 'image' ? asset.type === 'image' :
-                  selectedAssetDialog?.type === 'video' ? asset.type === 'video' :
-                  selectedAssetDialog?.type === 'audio' ? asset.type === 'audio' :
-                  true
+                .filter((asset: any) =>
+                  selectedAssetDialog?.type === 'image'
+                    ? asset.type === 'image'
+                    : selectedAssetDialog?.type === 'video'
+                      ? asset.type === 'video'
+                      : selectedAssetDialog?.type === 'audio'
+                        ? asset.type === 'audio'
+                        : true
                 )
                 .map((asset: any) => (
                   <Grid size={{ xs: 6, md: 4 }} key={asset.id}>
-                    <Card 
-                      sx={{ cursor: 'pointer' }}
-                      onClick={() => selectAsset(asset)}
-                    >
+                    <Card sx={{ cursor: 'pointer' }} onClick={() => selectAsset(asset)}>
                       <CardMedia
                         component="img"
                         height="140"
@@ -606,9 +638,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
                         sx={{ objectFit: 'cover' }}
                       />
                       <CardContent>
-                        <Typography variant="body2">
-                          {asset.name}
-                        </Typography>
+                        <Typography variant="body2">{asset.name}</Typography>
                         <Chip label={asset.type} size="small" />
                       </CardContent>
                     </Card>
@@ -618,9 +648,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setSelectedAssetDialog(null)}>
-            Cancel
-          </Button>
+          <Button onClick={() => setSelectedAssetDialog(null)}>Cancel</Button>
         </DialogActions>
       </Dialog>
     </Box>
