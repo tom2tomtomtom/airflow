@@ -15,8 +15,8 @@ export interface RenderedCampaign {
   outputFiles: RenderOutput[];
   metadata: RenderMetadata;
   quality: 'draft' | 'preview' | 'high' | 'print';
-  dimensions: Record<string, unknown>$1
-  width: number;
+  dimensions: {
+    width: number;
     height: number;
     dpi?: number;
     aspectRatio: string;
@@ -34,8 +34,8 @@ export interface RenderOutput {
   format: 'png' | 'jpg' | 'webp' | 'svg' | 'pdf' | 'mp4' | 'gif' | 'html';
   url: string;
   fileSize: number;
-  dimensions: Record<string, unknown>$1
-  width: number;
+  dimensions: {
+    width: number;
     height: number;
   };
   quality: number; // 0-100
@@ -60,8 +60,8 @@ export interface RenderMetadata {
   fonts: string[];
   estimatedPrintCost?: number;
   estimatedFileSize: number;
-  optimization: Record<string, unknown>$1
-  compression: number;
+  optimization: {
+    compression: number;
     quality: number;
     webOptimized: boolean;
     printReady: boolean;
@@ -122,10 +122,10 @@ export class CampaignRenderer {
   private readonly STORAGE_BUCKET = 'rendered-campaigns';
   private readonly MAX_RENDER_TIME = 300000; // 5 minutes
   private readonly QUALITY_SETTINGS = {
-    draft: { scale: 0.5, quality: 60, dpi: 72  },
-  preview: { scale: 0.8, quality: 80, dpi: 96  },
-  high: { scale: 1.0, quality: 95, dpi: 150  },
-  print: { scale: 1.0, quality: 100, dpi: 300 }
+    draft: { scale: 0.5, quality: 60, dpi: 72 },
+    preview: { scale: 0.8, quality: 80, dpi: 96 },
+    high: { scale: 1.0, quality: 95, dpi: 150 },
+    print: { scale: 1.0, quality: 100, dpi: 300 }
   };
 
   private readonly DEFAULT_FORMATS: Record<string, RenderOutput['format'][]> = {
@@ -182,8 +182,8 @@ export class CampaignRenderer {
           colorProfile: 'sRGB',
           fonts: this.extractFonts(populatedTemplate),
           estimatedFileSize: 0,
-          optimization: Record<string, unknown>$1
-  compression: optimization.compress ? 85 : 100,
+          optimization: {
+            compression: optimization.compress ? 85 : 100,
             quality: this.QUALITY_SETTINGS[quality].quality,
             webOptimized: optimization.webOptimize || false,
             printReady: optimization.printOptimize || false
@@ -567,8 +567,8 @@ export class CampaignRenderer {
 
   private async applyEffectsAndOptimizations(
     baseRender: Buffer,
-    effects: RenderOptions['effects'] = { },
-  optimization: RenderOptions['optimization'] = {}
+    effects: RenderOptions['effects'] = {},
+    optimization: RenderOptions['optimization'] = {}
   ): Promise<Buffer> {
     let processed = baseRender;
 
@@ -651,8 +651,8 @@ export class CampaignRenderer {
       format: 'jpg',
       url: '',
       fileSize: thumbnail.length,
-      dimensions: { width: 300, height: Math.round(300 * campaign.dimensions.height / campaign.dimensions.width)  },
-  quality: 80,
+      dimensions: { width: 300, height: Math.round(300 * campaign.dimensions.height / campaign.dimensions.width) },
+      quality: 80,
       metadata: { colorSpace: 'sRGB', compression: 'jpeg' }
     });
 
@@ -718,10 +718,10 @@ export class CampaignRenderer {
       description: row.description,
       renderFormat: row.render_format,
       outputFiles: row.output_files || [],
-      metadata: row.metadata || { },
-  quality: row.quality,
-      dimensions: row.dimensions || { },
-  status: row.status,
+      metadata: row.metadata || {},
+      quality: row.quality,
+      dimensions: row.dimensions || {},
+      status: row.status,
       progress: row.progress || 0,
       renderedAt: new Date(row.rendered_at),
       renderTime: row.render_time || 0,
