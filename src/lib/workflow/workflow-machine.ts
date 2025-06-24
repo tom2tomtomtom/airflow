@@ -303,35 +303,45 @@ export const workflowMachine = createMachine<WorkflowMachineContext, WorkflowEve
       {
         target: 'briefUpload',
         cond: (_, event) => event.step === 0,
-        actions: ['goToStep'] }
+        actions: ['goToStep']
+      },
       {
         target: 'motivationSelection',
         cond: (context, event) => event.step === 1 && guards.canProceedToMotivations(context),
-        actions: ['goToStep'] }
+        actions: ['goToStep']
+      },
       {
         target: 'copyGeneration',
         cond: (context, event) => event.step === 2 && guards.canProceedToCopy(context),
-        actions: ['goToStep'] }
+        actions: ['goToStep']
+      },
       {
         target: 'assetSelection',
         cond: (context, event) => event.step === 3 && guards.canProceedToAssets(context),
-        actions: ['goToStep'] }
+        actions: ['goToStep']
+      },
       {
         target: 'templateSelection',
         cond: (context, event) => event.step === 4 && guards.canProceedToTemplate(context),
-        actions: ['goToStep'] }
+        actions: ['goToStep']
+      },
       {
         target: 'matrixBuild',
         cond: (context, event) => event.step === 5 && guards.canProceedToMatrix(context),
-        actions: ['goToStep'] }
+        actions: ['goToStep']
+      },
       {
         target: 'rendering',
         cond: (context, event) => event.step === 6 && guards.canProceedToRender(context),
-        actions: ['goToStep'] }
+        actions: ['goToStep']
+      }
     ],
-    RESET_WORKFLOW: Record<string, unknown>$1
-  target: 'briefUpload',
-      actions: ['resetWorkflow']}}}, {
+    RESET_WORKFLOW: {
+      target: 'briefUpload',
+      actions: ['resetWorkflow']
+    }
+  }
+}, {
   guards,
   actions});
 
@@ -339,5 +349,6 @@ export const workflowMachine = createMachine<WorkflowMachineContext, WorkflowEve
 export const createWorkflowMachine = (clientId?: string) => {
   return workflowMachine.withContext({
     ...initialContext,
-    clientId: clientId || null});
+    clientId: clientId || null
+  });
 };
