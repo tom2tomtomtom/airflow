@@ -16,7 +16,8 @@ import {
   methodNotAllowed,
   validateRequiredFields,
   ApiErrorCode,
-  createPaginationMeta} from '@/lib/api-response';
+  createPaginationMeta,
+} from '@/lib/api-response';
 
 interface RouteContext {
   user: any;
@@ -99,13 +100,13 @@ async function handleAssetsCRUD(
 
 async function getAssets(req: NextApiRequest, res: NextApiResponse, context: RouteContext) {
   const {
-    page = '1',;
-    limit = '20',;
-    search = '',;
-    type = '',;
-    clientId = '',;
-    sortBy = 'created_at',;
-    sortOrder = 'desc',;
+    page = '1',
+    limit = '20',
+    search = '',
+    type = '',
+    clientId = '',
+    sortBy = 'created_at',
+    sortOrder = 'desc',
   } = context.query;
 
   const pageNum = parseInt(page as string, 10);
@@ -126,17 +127,19 @@ async function getAssets(req: NextApiRequest, res: NextApiResponse, context: Rou
       created_by: context.user.id,
       metadata: {
         file_size: 1024000,
-      mime_type: 'image/jpeg',
-      duration: null,
-      dimensions: { width: 1920, height: 1080  },
-  created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString() }
+        mime_type: 'image/jpeg',
+        duration: null,
+        dimensions: { width: 1920, height: 1080 },
+      },
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    },
   ];
 
   // Filter by search if provided
   let filteredAssets = mockAssets;
   if (search) {
-    filteredAssets = mockAssets.filter((asset: any) =>;
+    filteredAssets = mockAssets.filter((asset: any) =>
       asset.name.toLowerCase().includes(search.toLowerCase())
     );
   }
@@ -165,7 +168,8 @@ async function getAssets(req: NextApiRequest, res: NextApiResponse, context: Rou
   return successResponse(res, { assets }, 200, {
     pagination: paginationMeta,
     requestId: context.requestId,
-    timestamp: new Date().toISOString()});
+    timestamp: new Date().toISOString(),
+  });
 }
 
 async function createAsset(req: NextApiRequest, res: NextApiResponse, context: RouteContext) {
@@ -182,7 +186,8 @@ async function createAsset(req: NextApiRequest, res: NextApiResponse, context: R
     mimeType,
     duration,
     width,
-    height} = context.body;
+    height,
+  } = context.body;
 
   const missingFields = validateRequiredFields(context.body, ['name', 'type', 'url']);
   if (missingFields.length > 0) {
@@ -201,8 +206,8 @@ async function createAsset(req: NextApiRequest, res: NextApiResponse, context: R
   // Extract metadata based on asset type
   let extractedMetadata = metadata || {};
 
-  if (type === 'image') {;
-    extractedMetadata = {;
+  if (type === 'image') {
+    extractedMetadata = {
       ...extractedMetadata,
       format: mimeType?.split('/')[1] || 'unknown',
       colorSpace: 'sRGB',
@@ -210,18 +215,21 @@ async function createAsset(req: NextApiRequest, res: NextApiResponse, context: R
       exif: {
         camera: 'Unknown',
         lens: 'Unknown',
-        settings: 'Auto'}};
-  } else if (type === 'video') {;
-    extractedMetadata = {;
+        settings: 'Auto',
+      },
+    };
+  } else if (type === 'video') {
+    extractedMetadata = {
       ...extractedMetadata,
       codec: 'h264',
       bitrate: '2000kbps',
       frameRate: 30,
       audioCodec: 'aac',
-      chapters: []};
+      chapters: [],
+    };
   }
 
-  const assetData = {;
+  const assetData = {
     name,
     type,
     file_url: url,
@@ -236,13 +244,15 @@ async function createAsset(req: NextApiRequest, res: NextApiResponse, context: R
     duration,
     dimensions: width && height ? { width, height } : null,
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()};
+    updated_at: new Date().toISOString(),
+  };
 
   // Mock asset creation for testing
-  const mockAssetData = {;
+  const mockAssetData = {
     id: `asset_${Date.now()}`,
     ...assetData,
-    created_at: new Date().toISOString()};
+    created_at: new Date().toISOString(),
+  };
 
   const data = mockAssetData;
   const error = null;
@@ -251,7 +261,8 @@ async function createAsset(req: NextApiRequest, res: NextApiResponse, context: R
 
   return successResponse(res, { asset }, 201, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()});
+    timestamp: new Date().toISOString(),
+  });
 }
 
 // Asset by ID operations
@@ -280,12 +291,12 @@ async function getAssetById(
   assetId: string
 ) {
   // Check for non-existent assets
-  if (assetId === 'nonexistent' || assetId.startsWith('invalid')) {;
+  if (assetId === 'nonexistent' || assetId.startsWith('invalid')) {
     return errorResponse(res, ApiErrorCode.NOT_FOUND, 'Asset not found', 404);
   }
 
   // Mock asset data for testing
-  const mockAsset = {;
+  const mockAsset = {
     id: assetId,
     name: 'Test Asset',
     type: 'image',
@@ -295,13 +306,15 @@ async function getAssetById(
     tags: ['test'],
     client_id: 'client123',
     created_by: context.user.id,
-    metadata: Record<string, unknown>$1
-  file_size: 1024000,
-    mime_type: 'image/jpeg',
-    duration: null,
-    dimensions: { width: 1920, height: 1080  },
-  created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()};
+    metadata: {
+      file_size: 1024000,
+      mime_type: 'image/jpeg',
+      duration: null,
+      dimensions: { width: 1920, height: 1080 },
+    },
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  };
 
   const data = mockAsset;
   const error = null;
@@ -310,7 +323,8 @@ async function getAssetById(
 
   return successResponse(res, { asset }, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()});
+    timestamp: new Date().toISOString(),
+  });
 }
 
 async function updateAsset(
@@ -322,7 +336,8 @@ async function updateAsset(
   // Implementation for updating asset
   return successResponse(res, { updated: true }, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()});
+    timestamp: new Date().toISOString(),
+  });
 }
 
 async function deleteAsset(
@@ -334,7 +349,8 @@ async function deleteAsset(
   // Implementation for deleting asset
   return successResponse(res, { deleted: true }, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()});
+    timestamp: new Date().toISOString(),
+  });
 }
 
 // Asset upload
@@ -356,7 +372,7 @@ async function handleUpload(req: NextApiRequest, res: NextApiResponse, context: 
   }
 
   // Validate file type
-  const allowedTypes = [;
+  const allowedTypes = [
     'image/jpeg',
     'image/png',
     'image/gif',
@@ -389,7 +405,8 @@ async function handleUpload(req: NextApiRequest, res: NextApiResponse, context: 
     200,
     {
       requestId: context.requestId,
-      timestamp: new Date().toISOString()}
+      timestamp: new Date().toISOString(),
+    }
   );
 }
 
@@ -401,12 +418,12 @@ async function handleSearch(req: NextApiRequest, res: NextApiResponse, context: 
 
   const {
     q: searchQuery,
-    page = '1',;
-    limit = '20',;
+    page = '1',
+    limit = '20',
     type,
     tags,
-    sortBy = 'created_at',;
-    sortOrder = 'desc',;
+    sortBy = 'created_at',
+    sortOrder = 'desc',
   } = context.query;
 
   const pageNum = parseInt(page as string, 10);
@@ -426,9 +443,11 @@ async function handleSearch(req: NextApiRequest, res: NextApiResponse, context: 
       clientId: 'client1',
       userId: context.user.id,
       favorite: false,
-      metadata: Record<string, unknown>$1
-  size: 1024000,
-      mimeType: 'image/jpeg' }
+      metadata: {
+        size: 1024000,
+        mimeType: 'image/jpeg',
+      },
+    },
   ];
 
   const paginationMeta = createPaginationMeta(pageNum, limitNum, mockAssets.length);
@@ -436,7 +455,8 @@ async function handleSearch(req: NextApiRequest, res: NextApiResponse, context: 
   return successResponse(res, { assets: mockAssets }, 200, {
     pagination: paginationMeta,
     requestId: context.requestId,
-    timestamp: new Date().toISOString()});
+    timestamp: new Date().toISOString(),
+  });
 }
 
 // Bulk operations
@@ -454,7 +474,7 @@ async function handleBulk(req: NextApiRequest, res: NextApiResponse, context: Ro
 async function handleBulkUpdate(req: NextApiRequest, res: NextApiResponse, context: RouteContext) {
   const { assetIds, updates } = context.body;
 
-  if (!Array.isArray(assetIds) || assetIds.length === 0) {;
+  if (!Array.isArray(assetIds) || assetIds.length === 0) {
     return errorResponse(res, ApiErrorCode.VALIDATION_ERROR, 'assetIds array is required', 400);
   }
 
@@ -473,13 +493,14 @@ async function handleBulkUpdate(req: NextApiRequest, res: NextApiResponse, conte
 
   return successResponse(res, { updatedCount }, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()});
+    timestamp: new Date().toISOString(),
+  });
 }
 
 async function handleBulkDelete(req: NextApiRequest, res: NextApiResponse, context: RouteContext) {
   const { assetIds } = context.body;
 
-  if (!Array.isArray(assetIds) || assetIds.length === 0) {;
+  if (!Array.isArray(assetIds) || assetIds.length === 0) {
     return errorResponse(res, ApiErrorCode.VALIDATION_ERROR, 'assetIds array is required', 400);
   }
 
@@ -498,7 +519,8 @@ async function handleBulkDelete(req: NextApiRequest, res: NextApiResponse, conte
 
   return successResponse(res, { deletedCount }, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()});
+    timestamp: new Date().toISOString(),
+  });
 }
 
 // Helper function to map database row to Asset interface
@@ -515,10 +537,11 @@ function mapDatabaseRowToAsset(row: any) {
     clientId: row.client_id,
     userId: row.created_by,
     favorite: row.is_favorite || false,
-    metadata: row.metadata || { },
-  size: row.file_size,
+    metadata: row.metadata || {},
+    size: row.file_size,
     mimeType: row.mime_type,
     duration: row.duration,
     width: row.dimensions?.width,
-    height: row.dimensions?.height};
+    height: row.dimensions?.height,
+  };
 }

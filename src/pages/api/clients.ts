@@ -255,7 +255,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
         if (useFullTextSearch) {
           query = query.textSearch('name_description_fts', search, {
             type: 'websearch',
-            config: 'english' });
+            config: 'english',
+          });
         } else {
           query = query.or(
             `name.ilike.%${search}%,description.ilike.%${search}%,industry.ilike.%${search}%`
@@ -318,7 +319,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       pagination: paginationMeta,
       timestamp: new Date().toISOString(),
       optimized: true,
-      query_type: include_stats === 'true' ? 'with_stats' : 'basic' });
+      query_type: include_stats === 'true' ? 'with_stats' : 'basic',
+    });
   } catch (error: any) {
     return handleApiError(res, error, 'handleGet');
   }
@@ -381,12 +383,14 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
       logo_url: logo || null,
       primary_color: primaryColor || '#1976d2',
       secondary_color: secondaryColor || '#dc004e',
-      social_media: socialMedia || { },
-  brand_guidelines: brand_guidelines || {
+      social_media: socialMedia || {},
+      brand_guidelines: brand_guidelines || {
         voiceTone: '',
         targetAudience: '',
-        keyMessages: [] },
-      is_active: true };
+        keyMessages: [],
+      },
+      is_active: true,
+    };
 
     // Create client in Supabase
     const { data: client, error } = await supabase
@@ -406,7 +410,8 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
         name: contact.name,
         email: contact.email,
         role: contact.role || null,
-        phone: contact.phone || null }));
+        phone: contact.phone || null,
+      }));
 
       const { error: contactsError } = await supabase.from('client_contacts').insert(contactsData);
 
