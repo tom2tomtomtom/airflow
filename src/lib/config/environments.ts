@@ -2,7 +2,7 @@ import { AppConfig } from './index';
 
 // Environment-specific configuration overrides
 export const environmentConfigs = {
-  development: { }
+  development: {
     // Development-specific settings
     COOKIE_SECURE: false, // Allow HTTP in development
     ENABLE_DEBUG_LOGS: true,
@@ -11,8 +11,9 @@ export const environmentConfigs = {
     DEV_BYPASS_AUTH: false, // Can be overridden per developer
     DEV_MOCK_APIS: false,
     ENABLE_SECURITY_HEADERS: false, // Relaxed for development
-    SENTRY_ENVIRONMENT: 'development' },
-  test: { }
+    SENTRY_ENVIRONMENT: 'development',
+  },
+  test: {
     // Test environment settings
     NODE_ENV: 'test' as const,
     LOG_LEVEL: 'error' as const, // Minimal logging in tests
@@ -27,8 +28,8 @@ export const environmentConfigs = {
     // Use in-memory cache for tests
     CACHE_TTL: 60, // Short TTL for tests
   },
-  
-  staging: { }
+
+  staging: {
     // Staging environment (production-like but with relaxed monitoring)
     NODE_ENV: 'production' as const,
     LOG_LEVEL: 'debug' as const, // More verbose logging for debugging
@@ -39,8 +40,9 @@ export const environmentConfigs = {
     SENTRY_ENVIRONMENT: 'staging',
     // Relaxed rate limits for testing
     RATE_LIMIT_MAX: 500,
-    API_RATE_LIMIT_MAX: 5000 },
-  production: { }
+    API_RATE_LIMIT_MAX: 5000,
+  },
+  production: {
     // Production environment settings
     NODE_ENV: 'production' as const,
     LOG_LEVEL: 'info' as const,
@@ -58,7 +60,8 @@ export const environmentConfigs = {
     ENABLE_PERFORMANCE_MONITORING: true,
     // Security settings
     HSTS_MAX_AGE: 31536000, // 1 year
-    COOKIE_SAME_SITE: 'strict' as const}
+    COOKIE_SAME_SITE: 'strict' as const,
+  },
 };
 
 export type Environment = keyof typeof environmentConfigs;
@@ -70,27 +73,19 @@ export const getEnvironmentConfig = (env: Environment): Partial<AppConfig> => {
 
 // Environment validation rules
 export const environmentValidationRules = {
-  development: { }
+  development: {
     // Development can be more lenient
     requiredSecrets: ['JWT_SECRET', 'NEXTAUTH_SECRET'],
     optionalSecrets: ['OPENAI_API_KEY', 'SUPABASE_SERVICE_ROLE_KEY'],
-    warnings: [
-      'Development environment detected - some security features are disabled'
-    ]
-  ,
-
-    },
-  test: { }
+    warnings: ['Development environment detected - some security features are disabled'],
+  },
+  test: {
     // Test environment minimal requirements
     requiredSecrets: ['JWT_SECRET'],
     optionalSecrets: ['TEST_DATABASE_URL'],
-    warnings: [
-      'Test environment - analytics and monitoring disabled'
-    ]
-  ,
-
-    },
-  staging: { }
+    warnings: ['Test environment - analytics and monitoring disabled'],
+  },
+  staging: {
     // Staging should be close to production
     requiredSecrets: [
       'JWT_SECRET',
@@ -99,37 +94,28 @@ export const environmentValidationRules = {
       'COOKIE_SECRET',
       'CSRF_SECRET',
       'NEXT_PUBLIC_SUPABASE_URL',
-      'SUPABASE_SERVICE_ROLE_KEY'
+      'SUPABASE_SERVICE_ROLE_KEY',
     ],
     optionalSecrets: ['SENTRY_DSN', 'OPENAI_API_KEY'],
-    warnings: [
-      'Staging environment - ensure all production secrets are tested'
-    ]
-  ,
-
-    },
-  production: { }
+    warnings: ['Staging environment - ensure all production secrets are tested'],
+  },
+  production: {
     // Production requires all security measures
     requiredSecrets: [
       'JWT_SECRET',
-      'NEXTAUTH_SECRET', 
+      'NEXTAUTH_SECRET',
       'ENCRYPTION_KEY',
       'COOKIE_SECRET',
       'CSRF_SECRET',
       'NEXT_PUBLIC_SUPABASE_URL',
       'SUPABASE_SERVICE_ROLE_KEY',
-      'REDIS_URL'
+      'REDIS_URL',
     ],
-    recommendedSecrets: [
-      'SENTRY_DSN',
-      'OPENAI_API_KEY',
-      'RESEND_API_KEY',
-      'REDIS_PASSWORD'
-    ],
+    recommendedSecrets: ['SENTRY_DSN', 'OPENAI_API_KEY', 'RESEND_API_KEY', 'REDIS_PASSWORD'],
     errors: [
       // Will throw errors if these conditions aren't met
-    ]
-  }
+    ],
+  },
 };
 
 // Validate environment-specific requirements
@@ -137,14 +123,14 @@ export const validateEnvironmentRequirements = (env: Environment, config: Partia
   const rules = environmentValidationRules[env];
   const errors: string[] = [];
   const warnings: string[] = [];
-  
+
   // Check required secrets
   rules.requiredSecrets.forEach((secret: any) => {
     if (!config[secret as keyof AppConfig]) {
       errors.push(`Missing required secret for ${env}: ${secret}`);
     }
   });
-  
+
   // Check recommended secrets for production
   if (env === 'production' && rules.recommendedSecrets) {
     rules.recommendedSecrets.forEach((secret: any) => {
@@ -153,33 +139,33 @@ export const validateEnvironmentRequirements = (env: Environment, config: Partia
       }
     });
   }
-  
+
   // Add environment-specific warnings
   warnings.push(...(rules.warnings || []));
-  
+
   // Production-specific validations
   if (env === 'production') {
     if (!config.PRODUCTION_READY) {
       errors.push('PRODUCTION_READY must be set to true for production deployment');
     }
-    
+
     if (config.ENABLE_DEBUG_LOGS) {
       warnings.push('Debug logging is enabled in production - consider disabling for security');
     }
-    
+
     if (!config.ENABLE_SECURITY_HEADERS) {
       errors.push('Security headers must be enabled in production');
     }
-    
+
     if (!config.COOKIE_SECURE) {
       errors.push('Secure cookies must be enabled in production');
     }
-    
+
     if (config.COOKIE_SAME_SITE !== 'strict') {
       warnings.push('Consider using strict SameSite cookie policy in production');
     }
   }
-  
+
   return { errors, warnings };
 };
 
@@ -189,29 +175,29 @@ export const detectEnvironment = (): Environment => {
   const isVercel = process.env.VERCEL;
   const isNetlify = process.env.NETLIFY;
   const deploymentEnv = process.env.DEPLOYMENT_ENV;
-  
+
   // Explicit environment override
   if (deploymentEnv && deploymentEnv in environmentConfigs) {
     return deploymentEnv as Environment;
   }
-  
+
   // Platform-specific detection
   if (isVercel && process.env.VERCEL_ENV === 'production') {
     return 'production';
   }
-  
+
   if (isVercel && process.env.VERCEL_ENV === 'preview') {
     return 'staging';
   }
-  
+
   if (isNetlify && process.env.CONTEXT === 'production') {
     return 'production';
   }
-  
+
   if (isNetlify && process.env.CONTEXT === 'deploy-preview') {
     return 'staging';
   }
-  
+
   // Default to NODE_ENV
   switch (nodeEnv) {
     case 'production':
@@ -225,7 +211,10 @@ export const detectEnvironment = (): Environment => {
 };
 
 // Environment configuration merger
-export const mergeEnvironmentConfig = (baseConfig: Partial<AppConfig>, env: Environment): Partial<AppConfig> => {
+export const mergeEnvironmentConfig = (
+  baseConfig: Partial<AppConfig>,
+  env: Environment
+): Partial<AppConfig> => {
   const envConfig = getEnvironmentConfig(env);
   return { ...baseConfig, ...envConfig };
 };
