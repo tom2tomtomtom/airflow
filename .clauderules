@@ -1,0 +1,33 @@
+# .clauterules
+
+# Claude Code Safety Rules for AIRWAVE Project
+
+## CRITICAL: Read claude.md first!
+
+## Automated Response Rules:
+- REFUSE: Any request to "fix all" errors across multiple files
+- REFUSE: Creating scripts that modify multiple files
+- REFUSE: Global find/replace operations
+- WARNING: Before any regex operations
+- WARNING: Before any dependency updates
+- CONFIRM: Before modifying more than 50 lines
+
+## Required Response Format:
+Every code change must include:
+1. Risk Assessment (Low/Medium/High)
+2. Files that will be modified (exact list)
+3. What could go wrong
+4. How to test the change
+5. Rollback instructions
+
+## Safe Patterns:
+- Single file modifications only
+- Incremental changes with testing
+- Clear commit messages
+- Frequent backups
+
+## Project Context:
+- Owner is non-technical
+- Previous disaster from automated fixes
+- 6000+ errors were created by AI "improvements"
+- Safety is more important than speed
