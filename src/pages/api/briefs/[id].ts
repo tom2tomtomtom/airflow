@@ -16,7 +16,8 @@ const BriefUpdateSchema = z.object({
   platforms: z.array(z.string()).optional(),
   budget: z.number().optional(),
   timeline: z.any().optional(),
-  parsing_status: z.enum(['pending', 'processing', 'completed', 'error']).optional()});
+  parsing_status: z.enum(['pending', 'processing', 'completed', 'error']).optional(),
+});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -41,18 +42,29 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Brief API error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
+      details:
+        process.env.NODE_ENV === 'development'
+          ? error instanceof Error
+            ? error.message
+            : 'Unknown error'
+          : undefined,
     });
   }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, briefId: string): Promise<void> {
+async function handleGet(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  briefId: string
+): Promise<void> {
   // First verify user has access to this brief
   const { data: brief, error } = await supabase
     .from('briefs')
-    .select(`
+    .select(
+      `
       *,
       clients(name, slug, primary_color, secondary_color),
       profiles!briefs_created_by_fkey(full_name, avatar_url),
@@ -65,7 +77,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, b
         is_ai_generated,
         created_at
       )
-    `)
+    `
+    )
     .eq('id', briefId)
     .single();
 
@@ -95,7 +108,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, b
   // Get related strategies
   const { data: strategies } = await supabase
     .from('strategies')
-    .select(`
+    .select(
+      `
       id,
       title,
       description,
@@ -103,25 +117,32 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, b
       key_messages,
       target_audience,
       created_at
-    `)
+    `
+    )
     .eq('client_id', brief.client_id)
     .order('created_at', { ascending: false });
 
   return res.json({
-    data: { }
+    data: {
       ...brief,
       content_variations: contentVariations || [],
-      related_strategies: strategies || []}
+      related_strategies: strategies || [],
+    },
   });
 }
 
-async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, briefId: string): Promise<void> {
+async function handlePut(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  briefId: string
+): Promise<void> {
   const validationResult = BriefUpdateSchema.safeParse(req.body);
-  
+
   if (!validationResult.success) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Validation failed',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
@@ -150,17 +171,20 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, b
 
   const updateData = {
     ...validationResult.data,
-    updated_at: new Date().toISOString()};
+    updated_at: new Date().toISOString(),
+  };
 
   const { data: brief, error } = await supabase
     .from('briefs')
     .update(updateData)
     .eq('id', briefId)
-    .select(`
+    .select(
+      `
       *,
       clients(name, slug),
       profiles!briefs_created_by_fkey(full_name)
-    `)
+    `
+    )
     .single();
 
   if (error) {
@@ -171,7 +195,12 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, b
   return res.json({ data: brief });
 }
 
-async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any, briefId: string): Promise<void> {
+async function handleDelete(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  briefId: string
+): Promise<void> {
   // First verify user has access to this brief
   const { data: existingBrief } = await supabase
     .from('briefs')
@@ -208,17 +237,17 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
     .eq('brief_id', briefId)
     .limit(1);
 
-  if ((motivations && motivations.length > 0) || (contentVariations && contentVariations.length > 0)) {
-    return res.status(409).json({ 
+  if (
+    (motivations && motivations.length > 0) ||
+    (contentVariations && contentVariations.length > 0)
+  ) {
+    return res.status(409).json({
       error: 'Cannot delete brief with associated motivations or content variations',
-      details: 'Please remove related content first'
+      details: 'Please remove related content first',
     });
   }
 
-  const { error } = await supabase
-    .from('briefs')
-    .delete()
-    .eq('id', briefId);
+  const { error } = await supabase.from('briefs').delete().eq('id', briefId);
 
   if (error) {
     console.error('Error deleting brief:', error);
