@@ -133,57 +133,79 @@ export const workflowMachine = createMachine<WorkflowMachineContext, WorkflowEve
   initial: 'briefUpload',
   context: initialContext,
   predictableActionArguments: true,
-  states: Record<string, unknown>$1
-  briefUpload: Record<string, unknown>$1
-  on: Record<string, unknown>$1
-  UPLOAD_BRIEF: Record<string, unknown>$1
-  actions: ['setUploadedFile', 'setProcessing']},
-        CONFIRM_BRIEF: Record<string, unknown>$1
-  target: 'motivationSelection',
+  states: {
+    briefUpload: {
+      on: {
+        UPLOAD_BRIEF: {
+          actions: ['setUploadedFile', 'setProcessing']
+        },
+        CONFIRM_BRIEF: {
+          target: 'motivationSelection',
           actions: ['setBriefData'],
-          cond: 'hasBriefData' },
-  SET_ERROR: Record<string, unknown>$1
-  actions: ['setError'] },
-  CLEAR_ERROR: Record<string, unknown>$1
-  actions: ['clearError']}}},
+          cond: 'hasBriefData'
+        },
+        SET_ERROR: {
+          actions: ['setError']
+        },
+        CLEAR_ERROR: {
+          actions: ['clearError']
+        }
+      }
+    },
     
-    motivationSelection: Record<string, unknown>$1
-  entry: ['clearError'],
-      on: Record<string, unknown>$1
-  GENERATE_MOTIVATIONS: Record<string, unknown>$1
-  actions: ['setProcessing'] },
-  SELECT_MOTIVATION: Record<string, unknown>$1
-  actions: ['selectMotivation'] },
-  NEXT_STEP: Record<string, unknown>$1
-  target: 'copyGeneration',
+    motivationSelection: {
+      entry: ['clearError'],
+      on: {
+        GENERATE_MOTIVATIONS: {
+          actions: ['setProcessing']
+        },
+        SELECT_MOTIVATION: {
+          actions: ['selectMotivation']
+        },
+        NEXT_STEP: {
+          target: 'copyGeneration',
           cond: 'hasSelectedMotivations',
-          actions: ['nextStep'] },
-  PREVIOUS_STEP: Record<string, unknown>$1
-  target: 'briefUpload',
-          actions: ['previousStep'] },
-  SET_ERROR: Record<string, unknown>$1
-  actions: ['setError'] },
-  CLEAR_ERROR: Record<string, unknown>$1
-  actions: ['clearError']}}},
+          actions: ['nextStep']
+        },
+        PREVIOUS_STEP: {
+          target: 'briefUpload',
+          actions: ['previousStep']
+        },
+        SET_ERROR: {
+          actions: ['setError']
+        },
+        CLEAR_ERROR: {
+          actions: ['clearError']
+        }
+      }
+    },
     
-    copyGeneration: Record<string, unknown>$1
-  entry: ['clearError'],
-      on: Record<string, unknown>$1
-  GENERATE_COPY: Record<string, unknown>$1
-  actions: ['setProcessing'] },
-  SELECT_COPY: Record<string, unknown>$1
-  actions: ['selectCopy'] },
-  NEXT_STEP: Record<string, unknown>$1
-  target: 'assetSelection',
+    copyGeneration: {
+      entry: ['clearError'],
+      on: {
+        GENERATE_COPY: {
+          actions: ['setProcessing']
+        },
+        SELECT_COPY: {
+          actions: ['selectCopy']
+        },
+        NEXT_STEP: {
+          target: 'assetSelection',
           cond: 'hasSelectedCopy',
-          actions: ['nextStep'] },
-  PREVIOUS_STEP: Record<string, unknown>$1
-  target: 'motivationSelection',
-          actions: ['previousStep'] },
-  SET_ERROR: Record<string, unknown>$1
-  actions: ['setError'] },
-  CLEAR_ERROR: Record<string, unknown>$1
-  actions: ['clearError']}}},
+          actions: ['nextStep']
+        },
+        PREVIOUS_STEP: {
+          target: 'motivationSelection',
+          actions: ['previousStep']
+        },
+        SET_ERROR: {
+          actions: ['setError']
+        },
+        CLEAR_ERROR: {
+          actions: ['clearError']
+        }
+      }
+    },
     
     assetSelection: Record<string, unknown>$1
   entry: ['clearError'],
