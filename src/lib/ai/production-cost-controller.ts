@@ -33,9 +33,9 @@ interface MonthlyUsage {
 export class ProductionAICostController {
   private static instance: ProductionAICostController;
   private budgetConfig: BudgetConfig = {
-    openai: 1000,    // $1000/month
-    anthropic: 500,  // $500/month
-    elevenlabs: 300  // $300/month
+    openai: 1000, // $1000/month
+    anthropic: 500, // $500/month
+    elevenlabs: 300, // $300/month
   };
 
   static getInstance(): ProductionAICostController {
@@ -65,7 +65,7 @@ export class ProductionAICostController {
       const monthlyUsage = await this.getMonthlyUsage(service, userId);
       const budget = this.budgetConfig[service as keyof BudgetConfig] || 1000;
       const estimatedCost = estimateCost(service as any, model, tokens);
-      
+
       const budgetRemaining = budget - monthlyUsage.totalCost;
       const wouldExceedBudget = estimatedCost > budgetRemaining;
 
@@ -76,7 +76,7 @@ export class ProductionAICostController {
           allowed: false,
           budgetRemaining,
           currentUsage: monthlyUsage.totalCost,
-          reason: 'Monthly budget 95% exhausted - emergency shutdown activated'
+          reason: 'Monthly budget 95% exhausted - emergency shutdown activated',
         };
       }
 
@@ -91,7 +91,7 @@ export class ProductionAICostController {
               budgetRemaining,
               currentUsage: monthlyUsage.totalCost,
               reason: 'Using fallback model to stay within budget',
-              fallbackModel
+              fallbackModel,
             };
           }
         }
@@ -100,7 +100,7 @@ export class ProductionAICostController {
           allowed: false,
           budgetRemaining,
           currentUsage: monthlyUsage.totalCost,
-          reason: `Operation would exceed monthly budget. Estimated cost: $${estimatedCost.toFixed(2)}, Remaining: $${budgetRemaining.toFixed(2)}`
+          reason: `Operation would exceed monthly budget. Estimated cost: $${estimatedCost.toFixed(2)}, Remaining: $${budgetRemaining.toFixed(2)}`,
         };
       }
 
@@ -109,16 +109,15 @@ export class ProductionAICostController {
         allowed: true,
         budgetRemaining,
         currentUsage: monthlyUsage.totalCost,
-        reason: 'Budget check passed'
+        reason: 'Budget check passed',
       };
-
     } catch (error: any) {
       console.error('Budget check failed:', error);
       return {
         allowed: false,
         budgetRemaining: 0,
         currentUsage: 0,
-        reason: 'Budget check service unavailable'
+        reason: 'Budget check service unavailable',
       };
     }
   }
@@ -168,25 +167,25 @@ export class ProductionAICostController {
     metadata?: Record<string, any>
   ): Promise<boolean> {
     try {
-      const { error } = await supabase
-        .from('ai_usage_tracking')
-        .insert({
-          user_id: userId,
-          service,
-          model,
-          operation,
-          tokens_used: tokens,
-          cost,
-          metadata: metadata || { },
-  created_at: new Date().toISOString()
-        });
+      const { error } = await supabase.from('ai_usage_tracking').insert({
+        user_id: userId,
+        service,
+        model,
+        operation,
+        tokens_used: tokens,
+        cost,
+        metadata: metadata || {},
+        created_at: new Date().toISOString(),
+      });
 
       if (error) {
         console.error('Failed to track usage:', error);
         return false;
       }
 
-      console.log(`✅ Tracked AI usage: ${service}/${model} - ${tokens} tokens, $${cost.toFixed(4)}`);
+      console.log(
+        `✅ Tracked AI usage: ${service}/${model} - ${tokens} tokens, $${cost.toFixed(4)}`
+      );
       return true;
     } catch (error: any) {
       console.error('Error tracking usage:', error);
@@ -197,21 +196,21 @@ export class ProductionAICostController {
   /**
    * Get full budget report for user
    */
-  async getFullReport(userId: string) : Promise<void> {
+  async getFullReport(userId: string): Promise<void> {
     const services = ['openai', 'anthropic', 'elevenlabs'] as const;
     const report: any = { services: {} };
 
     for (const service of services) {
       const usage = await this.getMonthlyUsage(service, userId);
       const budget = this.budgetConfig[service];
-      
+
       report.services[service] = {
         budget,
         used: usage.totalCost,
         remaining: budget - usage.totalCost,
         percentUsed: (usage.totalCost / budget) * 100,
         callCount: usage.callCount,
-        totalTokens: usage.totalTokens
+        totalTokens: usage.totalTokens,
       };
     }
 
@@ -223,15 +222,15 @@ export class ProductionAICostController {
    */
   private getFallbackModel(service: string, model: string): string | undefined {
     const fallbacks: Record<string, Record<string, string>> = {
-      openai: { }
+      openai: {
         'gpt-4': 'gpt-4o-mini',
         'gpt-4o': 'gpt-4o-mini',
-        'gpt-4-turbo': 'gpt-4o-mini'
+        'gpt-4-turbo': 'gpt-4o-mini',
       },
-      anthropic: { }
+      anthropic: {
         'claude-3-opus': 'claude-3-sonnet',
-        'claude-3-sonnet': 'claude-3-haiku'
-      }
+        'claude-3-sonnet': 'claude-3-haiku',
+      },
     };
 
     return fallbacks[service]?.[model];
@@ -242,11 +241,13 @@ export class ProductionAICostController {
    */
   async checkEmergencyShutdown(userId: string): Promise<boolean> {
     const report = await this.getFullReport(userId);
-    
+
     // Check if any service has exceeded 95% of budget
     for (const [service, stats] of Object.entries(report.services)) {
       if ((stats as any).percentUsed >= 95) {
-        console.warn(`🚨 Emergency shutdown triggered for ${service}: ${(stats as any).percentUsed.toFixed(1)}% budget used`);
+        console.warn(
+          `🚨 Emergency shutdown triggered for ${service}: ${(stats as any).percentUsed.toFixed(1)}% budget used`
+        );
         return true;
       }
     }
