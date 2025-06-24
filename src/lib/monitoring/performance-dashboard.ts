@@ -257,7 +257,8 @@ export class PerformanceDashboardGenerator {
           trend: requestTrend.trend,
           change: requestTrend.change,
           timestamp: new Date(),
-          status: requestRate < 10 ? 'warning' : 'good' }
+          status: requestRate < 10 ? 'warning' : 'good'
+        },
         {
           name: 'Avg Response Time',
           value: avgResponseTime,
@@ -265,7 +266,8 @@ export class PerformanceDashboardGenerator {
           trend: responseTrend.trend,
           change: responseTrend.change,
           timestamp: new Date(),
-          status: avgResponseTime > 1000 ? 'critical' : avgResponseTime > 500 ? 'warning' : 'good' }
+          status: avgResponseTime > 1000 ? 'critical' : avgResponseTime > 500 ? 'warning' : 'good'
+        },
         {
           name: 'Error Rate',
           value: errorRate * 100,
@@ -285,7 +287,8 @@ export class PerformanceDashboardGenerator {
             yAxis: { label: 'Requests/min', min: 0 },
             xAxis: { label: 'Time', format: 'time' },
             colors: ['#2196f3']
-          },
+          }
+        },
         {
           id: 'api-response-time',
           title: 'Response Time Distribution',
@@ -299,7 +302,8 @@ export class PerformanceDashboardGenerator {
               { value: 500, color: '#ffeb3b', label: 'Warning' },
               { value: 1000, color: '#f44336', label: 'Critical' }
             ]
-          },
+          }
+        }
       ],
       alerts: 0};
   }
@@ -319,7 +323,8 @@ export class PerformanceDashboardGenerator {
           trend: 'stable',
           change: 0,
           timestamp: new Date(),
-          status: queryDuration > 300 ? 'warning' : 'good' }
+          status: queryDuration > 300 ? 'warning' : 'good'
+        },
         {
           name: 'Connection Health',
           value: connectionHealth,
