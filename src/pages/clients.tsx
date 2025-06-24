@@ -632,14 +632,14 @@ const ClientsPage: React.FC = () => {
                       onChange={(e) => setFormData({
                         ...formData,
                         socialMedia: { ...formData.socialMedia, facebook: e.target.value }
-                      })}}
+                      })}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
                             <Facebook />
                           </InputAdornment>
                         )
-                  }
+                      }}
                     />
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
@@ -656,7 +656,7 @@ const ClientsPage: React.FC = () => {
                             <Twitter />
                           </InputAdornment>
                         )
-                  }
+                      }}
                     />
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
@@ -673,7 +673,7 @@ const ClientsPage: React.FC = () => {
                             <Instagram />
                           </InputAdornment>
                         )
-                  }
+                      }}
                     />
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
