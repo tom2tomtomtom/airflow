@@ -1,6 +1,6 @@
 /**
  * API v2 Monitoring Route Handler
- * 
+ *
  * Handles all monitoring and observability endpoints:
  * - /api/v2/monitoring/health - System health check
  * - /api/v2/monitoring/metrics - Performance metrics
@@ -9,7 +9,13 @@
  */
 
 import { NextApiRequest, NextApiResponse } from 'next';
-import { successResponse, errorResponse, handleApiError, methodNotAllowed, ApiErrorCode } from '@/lib/api-response';
+import {
+  successResponse,
+  errorResponse,
+  handleApiError,
+  methodNotAllowed,
+  ApiErrorCode,
+} from '@/lib/api-response';
 // Simple stubs for missing modules
 class PerformanceTracker {
   static getInstance() {
@@ -86,11 +92,11 @@ class AICostController {
     return new AICostController();
   }
 
-  async getBudgetStatus() : Promise<void> {
+  async getBudgetStatus(): Promise<void> {
     return { status: 'healthy', remaining: 1000 };
   }
 
-  async getTotalSpent() : Promise<void> {
+  async getTotalSpent(): Promise<void> {
     return 0;
   }
 
@@ -121,24 +127,29 @@ export async function handleMonitoringRoutes(
     switch (endpoint) {
       case 'health':
         return await handleHealth(req, res, context);
-      
+
       case 'metrics':
         return await handleMetrics(req, res, context);
-      
+
       case 'logs':
         return await handleLogs(req, res, context);
-      
+
       case 'alerts':
         return await handleAlerts(req, res, context, params);
-      
+
       case 'performance':
         return await handlePerformance(req, res, context);
-      
+
       case 'system':
         return await handleSystem(req, res, context);
-      
+
       default:
-        return errorResponse(res, ApiErrorCode.NOT_FOUND, `Monitoring endpoint '${endpoint}' not found`, 404);
+        return errorResponse(
+          res,
+          ApiErrorCode.NOT_FOUND,
+          `Monitoring endpoint '${endpoint}' not found`,
+          404
+        );
     }
   } catch (error: any) {
     return handleApiError(res, error, 'monitoring routes');
@@ -167,29 +178,29 @@ async function handleHealth(
       used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
       total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
       external: Math.round(process.memoryUsage().external / 1024 / 1024),
-      rss: Math.round(process.memoryUsage().rss / 1024 / 1024)
+      rss: Math.round(process.memoryUsage().rss / 1024 / 1024),
     },
     performance: {
       averageResponseTime: performanceTracker.getAverageResponseTime(),
       totalRequests: performanceTracker.getTotalRequests(),
       errorRate: performanceTracker.getErrorRate(),
-      slowOperations: performanceTracker.getSlowOperations()
+      slowOperations: performanceTracker.getSlowOperations(),
     },
     ai: {
       budgetStatus: await costController.getBudgetStatus(),
       totalSpent: await costController.getTotalSpent(),
-      activeOperations: costController.getActiveOperations()
+      activeOperations: costController.getActiveOperations(),
     },
     database: {
       status: 'connected', // TODO: Add actual DB health check
-      connectionPool: 'healthy'
+      connectionPool: 'healthy',
     },
     services: {
       openai: process.env.NEXT_PUBLIC_OPENAI_API_KEY ? 'configured' : 'not_configured',
       anthropic: process.env.ANTHROPIC_API_KEY ? 'configured' : 'not_configured',
       elevenlabs: process.env.ELEVENLABS_API_KEY ? 'configured' : 'not_configured',
-      creatomate: process.env.CREATOMATE_API_KEY ? 'configured' : 'not_configured'
-    }
+      creatomate: process.env.CREATOMATE_API_KEY ? 'configured' : 'not_configured',
+    },
   };
 
   // Determine overall status
@@ -202,7 +213,7 @@ async function handleHealth(
 
   return successResponse(res, health, statusCode, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 }
 
@@ -228,37 +239,38 @@ async function handleMetrics(
   const metricsData = {
     timeRange,
     timestamp: new Date().toISOString(),
-    overall: Record<string, unknown>$1
-  totalRequests: performanceTracker.getTotalRequests(),
+    overall: {
+      totalRequests: performanceTracker.getTotalRequests(),
       averageResponseTime: performanceTracker.getAverageResponseTime(),
       errorRate: performanceTracker.getErrorRate(),
-      throughput: performanceTracker.getThroughput() },
-  operations: operation
+      throughput: performanceTracker.getThroughput(),
+    },
+    operations: operation
       ? performanceTracker.getOperationMetrics(operation as string)
       : performanceTracker.getAllOperationMetrics(),
     slowOperations: performanceTracker.getSlowOperations(),
     errors: performanceTracker.getRecentErrors(50),
-    trends: Record<string, unknown>$1
-  responseTime: performanceTracker.getResponseTimeTrend(),
+    trends: {
+      responseTime: performanceTracker.getResponseTimeTrend(),
       errorRate: performanceTracker.getErrorRateTrend(),
-      throughput: performanceTracker.getThroughputTrend()
-    }
+      throughput: performanceTracker.getThroughputTrend(),
+    },
   };
 
   // Handle real-time metrics request
   if (realtime === 'true') {
     const realtimeData = {
       ...metricsData,
-      realtime: Record<string, unknown>$1
-  currentRequests: 5,
+      realtime: {
+        currentRequests: 5,
         activeConnections: 12,
         queueLength: 0,
-        lastUpdate: new Date().toISOString()
-      }
+        lastUpdate: new Date().toISOString(),
+      },
     };
     return successResponse(res, realtimeData, 200, {
       requestId: context.requestId,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 
@@ -267,7 +279,7 @@ async function handleMetrics(
 
   return successResponse(res, response, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 }
 
@@ -310,11 +322,10 @@ async function handleLogs(
         requestId: context.requestId,
         userId: context.user?.id || 'anonymous',
         metadata: {
-        route: Array.isArray(context.route) ? context.route.join('/') : 'unknown',
+          route: Array.isArray(context.route) ? context.route.join('/') : 'unknown',
           method: context.method,
-          responseTime: Date.now() - (context.startTime || Date.now())
-        
-      }
+          responseTime: Date.now() - (context.startTime || Date.now()),
+        },
       },
       {
         id: 'log-2',
@@ -323,11 +334,10 @@ async function handleLogs(
         message: 'Database connection timeout',
         requestId: 'req-123',
         metadata: {
-        error: 'Connection timeout after 5000ms',
-          database: 'primary'
-        
-      }
-      }
+          error: 'Connection timeout after 5000ms',
+          database: 'primary',
+        },
+      },
     ];
 
     // Apply filters
@@ -339,9 +349,10 @@ async function handleLogs(
 
     if (search) {
       const searchTerm = (search as string).toLowerCase();
-      filteredLogs = filteredLogs.filter((log: any) =>
-        log.message.toLowerCase().includes(searchTerm) ||
-        log.level.toLowerCase().includes(searchTerm)
+      filteredLogs = filteredLogs.filter(
+        (log: any) =>
+          log.message.toLowerCase().includes(searchTerm) ||
+          log.level.toLowerCase().includes(searchTerm)
       );
     }
 
@@ -349,9 +360,7 @@ async function handleLogs(
     if (since) {
       try {
         const sinceDate = new Date(since as string);
-        filteredLogs = filteredLogs.filter((log: any) =>
-          new Date(log.timestamp) >= sinceDate
-        );
+        filteredLogs = filteredLogs.filter((log: any) => new Date(log.timestamp) >= sinceDate);
       } catch (error: any) {
         // Ignore invalid date
       }
@@ -373,14 +382,19 @@ async function handleLogs(
     // Apply limit
     const logs = filteredLogs.slice(0, limitNum);
 
-    return successResponse(res, {
-      logs,
-      total: filteredLogs.length,
-      filters: { level, limit: limitNum, since, search, startTime, endTime }
-    }, 200, {
-      requestId: context.requestId,
-      timestamp: new Date().toISOString()
-    });
+    return successResponse(
+      res,
+      {
+        logs,
+        total: filteredLogs.length,
+        filters: { level, limit: limitNum, since, search, startTime, endTime },
+      },
+      200,
+      {
+        requestId: context.requestId,
+        timestamp: new Date().toISOString(),
+      }
+    );
   } catch (error: any) {
     return errorResponse(res, ApiErrorCode.INTERNAL_ERROR, 'Failed to retrieve logs', 500);
   }
@@ -425,22 +439,26 @@ async function getAlerts(req: NextApiRequest, res: NextApiResponse, context: Rou
       metadata: {
         currentValue: 87,
         threshold: 85,
-        metric: 'memory_usage'
-      
-      }
-    }
+        metric: 'memory_usage',
+      },
+    },
   ];
 
-  return successResponse(res, {
-    alerts: alerts.filter((alert: any) => 
-      (!status || alert.status === status) &&
-      (!severity || alert.severity === severity)
-    ),
-    total: alerts.length
-  }, 200, {
-    requestId: context.requestId,
-    timestamp: new Date().toISOString()
-  });
+  return successResponse(
+    res,
+    {
+      alerts: alerts.filter(
+        (alert: any) =>
+          (!status || alert.status === status) && (!severity || alert.severity === severity)
+      ),
+      total: alerts.length,
+    },
+    200,
+    {
+      requestId: context.requestId,
+      timestamp: new Date().toISOString(),
+    }
+  );
 }
 
 async function createAlert(req: NextApiRequest, res: NextApiResponse, context: RouteContext) {
@@ -451,7 +469,12 @@ async function createAlert(req: NextApiRequest, res: NextApiResponse, context: R
   const alertDescription = description || condition;
 
   if (!alertTitle || !alertDescription || !severity) {
-    return errorResponse(res, ApiErrorCode.VALIDATION_ERROR, 'Title/name, description/condition, and severity are required', 400);
+    return errorResponse(
+      res,
+      ApiErrorCode.VALIDATION_ERROR,
+      'Title/name, description/condition, and severity are required',
+      400
+    );
   }
 
   const alert = {
@@ -462,16 +485,21 @@ async function createAlert(req: NextApiRequest, res: NextApiResponse, context: R
     status: 'active',
     createdAt: new Date().toISOString(),
     createdBy: context.user.id,
-    metadata: { threshold, metric }
+    metadata: { threshold, metric },
   };
 
   return successResponse(res, { alert }, 201, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 }
 
-async function updateAlert(req: NextApiRequest, res: NextApiResponse, context: RouteContext, alertId: string) {
+async function updateAlert(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  context: RouteContext,
+  alertId: string
+) {
   const { status, acknowledged } = context.body;
 
   // Mock alert update - in production, this would update the database
@@ -485,16 +513,15 @@ async function updateAlert(req: NextApiRequest, res: NextApiResponse, context: R
     acknowledgedBy: acknowledged ? context.user.id : undefined,
     createdAt: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
     metadata: {
-        currentValue: 87,
+      currentValue: 87,
       threshold: 85,
-      metric: 'memory_usage'
-    
-      }
+      metric: 'memory_usage',
+    },
   };
 
   return successResponse(res, { alert: updatedAlert }, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 }
 
@@ -511,23 +538,24 @@ async function handlePerformance(
   const performanceTracker = PerformanceTracker.getInstance();
 
   const analysis = {
-    summary: Record<string, unknown>$1
-  totalOperations: performanceTracker.getTotalRequests(),
+    summary: {
+      totalOperations: performanceTracker.getTotalRequests(),
       averageResponseTime: performanceTracker.getAverageResponseTime(),
       p95ResponseTime: performanceTracker.getPercentileResponseTime(95),
       p99ResponseTime: performanceTracker.getPercentileResponseTime(99),
-      errorRate: performanceTracker.getErrorRate() },
-  bottlenecks: performanceTracker.getBottlenecks(),
+      errorRate: performanceTracker.getErrorRate(),
+    },
+    bottlenecks: performanceTracker.getBottlenecks(),
     recommendations: performanceTracker.getPerformanceRecommendations(),
-    trends: Record<string, unknown>$1
-  hourly: performanceTracker.getHourlyTrends(),
-      daily: performanceTracker.getDailyTrends()
-    }
+    trends: {
+      hourly: performanceTracker.getHourlyTrends(),
+      daily: performanceTracker.getDailyTrends(),
+    },
   };
 
   return successResponse(res, analysis, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 }
 
@@ -545,51 +573,59 @@ async function handleSystem(
   const cpuUsage = process.cpuUsage();
 
   const system = {
-    cpu: Record<string, unknown>$1
-  usage: Record<string, unknown>$1
-  user: cpuUsage.user,
-        system: cpuUsage.system },
-  loadAverage: [0.5, 0.3, 0.2], // Mock load average
-      cores: 8 // Mock CPU cores },
-  memory: Record<string, unknown>$1
-  total: memoryUsage.heapTotal,
+    cpu: {
+      usage: {
+        user: cpuUsage.user,
+        system: cpuUsage.system,
+      },
+      loadAverage: [0.5, 0.3, 0.2], // Mock load average
+      cores: 8, // Mock CPU cores
+    },
+    memory: {
+      total: memoryUsage.heapTotal,
       used: memoryUsage.heapUsed,
       free: memoryUsage.heapTotal - memoryUsage.heapUsed,
       external: memoryUsage.external,
       rss: memoryUsage.rss,
-      arrayBuffers: memoryUsage.arrayBuffers },
-  disk: Record<string, unknown>$1
-  total: 500 * 1024 * 1024 * 1024, // 500GB mock
-      used: 250 * 1024 * 1024 * 1024,  // 250GB mock
-      free: 250 * 1024 * 1024 * 1024,  // 250GB mock
-      usage: 50 // 50% usage },
-  network: Record<string, unknown>$1
-  bytesReceived: 1024 * 1024 * 100, // 100MB mock
-      bytesSent: 1024 * 1024 * 50,      // 50MB mock
+      arrayBuffers: memoryUsage.arrayBuffers,
+    },
+    disk: {
+      total: 500 * 1024 * 1024 * 1024, // 500GB mock
+      used: 250 * 1024 * 1024 * 1024, // 250GB mock
+      free: 250 * 1024 * 1024 * 1024, // 250GB mock
+      usage: 50, // 50% usage
+    },
+    network: {
+      bytesReceived: 1024 * 1024 * 100, // 100MB mock
+      bytesSent: 1024 * 1024 * 50, // 50MB mock
       packetsReceived: 10000,
-      packetsSent: 8000 },
-  node: Record<string, unknown>$1
-  version: process.version,
+      packetsSent: 8000,
+    },
+    node: {
+      version: process.version,
       platform: process.platform,
       arch: process.arch,
-      uptime: process.uptime() },
-  environment: Record<string, unknown>$1
-  nodeEnv: process.env.NODE_ENV,
+      uptime: process.uptime(),
+    },
+    environment: {
+      nodeEnv: process.env.NODE_ENV,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      locale: Intl.DateTimeFormat().resolvedOptions().locale },
-  resources: Record<string, unknown>$1
-  memory: memoryUsage,
-      cpu: cpuUsage },
-  features: Record<string, unknown>$1
-  apiV2: true,
+      locale: Intl.DateTimeFormat().resolvedOptions().locale,
+    },
+    resources: {
+      memory: memoryUsage,
+      cpu: cpuUsage,
+    },
+    features: {
+      apiV2: true,
       costTracking: true,
       performanceMonitoring: true,
-      errorTracking: true
-    }
+      errorTracking: true,
+    },
   };
 
   return successResponse(res, system, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 }
