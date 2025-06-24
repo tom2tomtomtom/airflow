@@ -585,15 +585,15 @@ const ClientsPage: React.FC = () => {
                             <PaletteIcon />
                           </InputAdornment>
                         )
-                  }
+                      }}
                     />
                   </Grid>
                   <Grid size={{ xs: 12 }}>
                     <TextField
                       fullWidth
-                      label="Voice & Tone";
+                      label="Voice & Tone"
                       value={formData.brand_guidelines.voiceTone}
-                      onChange={(e) => setFormData({;
+                      onChange={(e) => setFormData({
                         ...formData,
                         brand_guidelines: {
                           ...formData.brand_guidelines,
