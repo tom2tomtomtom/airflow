@@ -56,8 +56,8 @@ export interface DashboardSection {
 }
 
 export interface PerformanceDashboard {
-  overview: Record<string, unknown>$1
-  health: 'healthy' | 'degraded' | 'critical';
+  overview: {
+    health: 'healthy' | 'degraded' | 'critical';
     uptime: number;
     activeAlerts: number;
     lastUpdated: Date;
@@ -223,11 +223,12 @@ export class PerformanceDashboardGenerator {
     }
 
     return {
-      overview: Record<string, unknown>$1
-  health,
+      overview: {
+        health,
         uptime: this.calculateUptime(),
         activeAlerts: activeAlerts.length,
-        lastUpdated: new Date() },
+        lastUpdated: new Date()
+      },
   sections: [
         this.generateAPISection(),
         this.generateDatabaseSection(),
@@ -280,23 +281,25 @@ export class PerformanceDashboardGenerator {
           title: 'API Requests Over Time',
           type: 'line',
           data: this.calculator.getChartData('api.requests.total', '1h'),
-          config: Record<string, unknown>$1
-  yAxis: { label: 'Requests/min', min: 0  },
-  xAxis: { label: 'Time', format: 'time'  },
-  colors: ['#2196f3']}},
+          config: {
+            yAxis: { label: 'Requests/min', min: 0 },
+            xAxis: { label: 'Time', format: 'time' },
+            colors: ['#2196f3']
+          },
         {
           id: 'api-response-time',
           title: 'Response Time Distribution',
           type: 'line',
           data: this.calculator.getChartData('api.requests.duration', '1h'),
-          config: Record<string, unknown>$1
-  yAxis: { label: 'Response Time (ms)', min: 0  },
-  xAxis: { label: 'Time', format: 'time'  },
-  colors: ['#ff9800'],
+          config: {
+            yAxis: { label: 'Response Time (ms)', min: 0 },
+            xAxis: { label: 'Time', format: 'time' },
+            colors: ['#ff9800'],
             thresholds: [
-              { value: 500, color: '#ffeb3b', label: 'Warning'  }
-              { value: 1000, color: '#f44336', label: 'Critical'  }
-            ]}},
+              { value: 500, color: '#ffeb3b', label: 'Warning' },
+              { value: 1000, color: '#f44336', label: 'Critical' }
+            ]
+          },
       ],
       alerts: 0};
   }
