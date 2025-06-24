@@ -16,14 +16,14 @@ export interface CacheMiddlewareOptions {
 
 export interface CacheHeaders {
   'Cache-Control': string;
-  'ETag'?: string;
+  ETag?: string;
   'Last-Modified'?: string;
-  'Vary'?: string;
+  Vary?: string;
 }
 
 export class CacheMiddleware {
   private cache = getCache();
-  
+
   // Create cache middleware for API routes
   createAPIMiddleware(options: CacheMiddlewareOptions = {}) {
     const {
@@ -33,28 +33,28 @@ export class CacheMiddleware {
       invalidateOn = ['POST', 'PUT', 'PATCH', 'DELETE'],
       varyBy = ['Authorization', 'Accept-Language'],
       private: isPrivate = false,
-      staleWhileRevalidate = 60
+      staleWhileRevalidate = 60,
     } = options;
-    
+
     return async (
       req: NextRequest,
       handler: (req: NextRequest) => Promise<NextResponse>
     ): Promise<NextResponse> => {
       const method = req.method;
       const cacheKeyStr = keyGenerator(req);
-      
+
       // Handle cache invalidation
       if (invalidateOn.includes(method)) {
         await this.invalidatePattern(`api:${req.nextUrl.pathname}*`);
         logger.debug(`Cache invalidated for ${req.nextUrl.pathname} due to ${method} request`);
       }
-      
+
       // Skip caching if condition is not met
       if (!condition(req)) {
         logger.debug(`Cache skipped for ${cacheKeyStr} due to condition`);
         return handler(req);
       }
-      
+
       // Try to get cached response for GET requests
       if (method === 'GET') {
         const cached = await this.getCachedResponse(cacheKeyStr);
@@ -64,32 +64,32 @@ export class CacheMiddleware {
             isPrivate,
             maxAge: ttl,
             staleWhileRevalidate,
-            varyBy
+            varyBy,
           });
         }
       }
-      
+
       // Execute handler
       const response = await handler(req);
-      
+
       // Cache successful GET responses
       if (method === 'GET' && response.status === 200) {
         await this.cacheResponse(cacheKeyStr, response, ttl);
         logger.debug(`Cache SET for API: ${cacheKeyStr}`);
       }
-      
+
       // Add cache headers
       this.addCacheHeaders(response, {
         isPrivate,
         maxAge: ttl,
         staleWhileRevalidate,
-        varyBy
+        varyBy,
       });
-      
+
       return response;
     };
   }
-  
+
   // Create cache middleware for pages
   createPageMiddleware(options: CacheMiddlewareOptions = {}) {
     const {
@@ -98,20 +98,20 @@ export class CacheMiddleware {
       condition = this.defaultPageCondition,
       varyBy = ['Accept-Language', 'Accept-Encoding'],
       private: isPrivate = false,
-      staleWhileRevalidate = 300
+      staleWhileRevalidate = 300,
     } = options;
-    
+
     return async (
       req: NextRequest,
       handler: (req: NextRequest) => Promise<NextResponse>
     ): Promise<NextResponse> => {
       const cacheKeyStr = keyGenerator(req);
-      
+
       // Skip caching if condition is not met
       if (!condition(req)) {
         return handler(req);
       }
-      
+
       // Try to get cached page
       const cached = await this.getCachedResponse(cacheKeyStr);
       if (cached) {
@@ -120,31 +120,31 @@ export class CacheMiddleware {
           isPrivate,
           maxAge: ttl,
           staleWhileRevalidate,
-          varyBy
+          varyBy,
         });
       }
-      
+
       // Execute handler
       const response = await handler(req);
-      
+
       // Cache successful responses
       if (response.status === 200) {
         await this.cacheResponse(cacheKeyStr, response, ttl);
         logger.debug(`Cache SET for page: ${cacheKeyStr}`);
       }
-      
+
       // Add cache headers
       this.addCacheHeaders(response, {
         isPrivate,
         maxAge: ttl,
         staleWhileRevalidate,
-        varyBy
+        varyBy,
       });
-      
+
       return response;
     };
   }
-  
+
   // Database query caching
   async cacheQuery<T>(
     queryKey: string,
@@ -152,27 +152,27 @@ export class CacheMiddleware {
     ttl: number = CacheProfiles.DATABASE_QUERY.ttl
   ): Promise<T> {
     const key = cacheKey(['db', queryKey]);
-    
+
     // Try to get from cache
     const cached = await this.cache.get<T>(key, CacheProfiles.DATABASE_QUERY);
     if (cached !== null) {
       logger.debug(`Database cache HIT: ${queryKey}`);
       return cached;
     }
-    
+
     // Execute query
     const result = await queryFn();
-    
+
     // Cache result
     await this.cache.set(key, result, {
       ...CacheProfiles.DATABASE_QUERY,
-      ttl
+      ttl,
     });
-    
+
     logger.debug(`Database cache SET: ${queryKey}`);
     return result;
   }
-  
+
   // AI generation caching
   async cacheAIGeneration<T>(
     prompt: string,
@@ -182,27 +182,27 @@ export class CacheMiddleware {
   ): Promise<T> {
     const promptHash = this.hashString(prompt);
     const key = cacheKey(['ai', model, promptHash]);
-    
+
     // Try to get from cache
     const cached = await this.cache.get<T>(key, CacheProfiles.AI_GENERATION);
     if (cached !== null) {
       logger.debug(`AI generation cache HIT: ${model}:${promptHash.substring(0, 8)}`);
       return cached;
     }
-    
+
     // Execute generation
     const result = await generationFn();
-    
+
     // Cache result
     await this.cache.set(key, result, {
       ...CacheProfiles.AI_GENERATION,
-      ttl
+      ttl,
     });
-    
+
     logger.debug(`AI generation cache SET: ${model}:${promptHash.substring(0, 8)}`);
     return result;
   }
-  
+
   // Session caching
   async cacheUserSession(
     userId: string,
@@ -212,44 +212,40 @@ export class CacheMiddleware {
     const key = cacheKey(['session', userId]);
     await this.cache.set(key, sessionData, {
       ...CacheProfiles.USER_SESSION,
-      ttl
+      ttl,
     });
   }
-  
+
   async getUserSession(userId: string): Promise<any | null> {
     const key = cacheKey(['session', userId]);
     return this.cache.get(key, CacheProfiles.USER_SESSION);
   }
-  
+
   async invalidateUserSession(userId: string): Promise<void> {
     const key = cacheKey(['session', userId]);
     await this.cache.del(key, CacheProfiles.USER_SESSION);
   }
-  
+
   // Cache invalidation
   async invalidatePattern(pattern: string): Promise<number> {
     return this.cache.clear(pattern);
   }
-  
+
   async invalidateUserCache(userId: string): Promise<void> {
     await this.invalidatePattern(`*:user:${userId}:*`);
     await this.invalidatePattern(`session:${userId}*`);
   }
-  
+
   async invalidateClientCache(clientId: string): Promise<void> {
     await this.invalidatePattern(`*:client:${clientId}:*`);
   }
-  
+
   // Helper methods
   private async getCachedResponse(key: string): Promise<any | null> {
     return this.cache.get(key, CacheProfiles.API_RESPONSE);
   }
-  
-  private async cacheResponse(
-    key: string, 
-    response: NextResponse, 
-    ttl: number
-  ): Promise<void> {
+
+  private async cacheResponse(key: string, response: NextResponse, ttl: number): Promise<void> {
     try {
       const body = await response.text();
       const cachedData = {
@@ -257,22 +253,22 @@ export class CacheMiddleware {
         statusText: response.statusText,
         headers: Object.fromEntries(response.headers.entries()),
         body,
-        timestamp: Date.now()
+        timestamp: Date.now(),
       };
-      
+
       await this.cache.set(key, cachedData, {
         ...CacheProfiles.API_RESPONSE,
-        ttl
+        ttl,
       });
     } catch (error: any) {
       logger.error('Failed to cache response', error);
     }
   }
-  
+
   private createCachedResponse(
     cached: any,
-    options: Record<string, unknown>$1
-  isPrivate: boolean;
+    options: {
+      isPrivate: boolean;
       maxAge: number;
       staleWhileRevalidate: number;
       varyBy: string[];
@@ -280,62 +276,62 @@ export class CacheMiddleware {
   ): NextResponse {
     const response = new NextResponse(cached.body, {
       status: cached.status,
-      statusText: cached.statusText
+      statusText: cached.statusText,
     });
-    
+
     // Restore original headers
     Object.entries(cached.headers).forEach(([key, value]) => {
       if (typeof value === 'string') {
         response.headers.set(key, value);
       }
     });
-    
+
     // Add cache hit indicator
     response.headers.set('X-Cache', 'HIT');
     response.headers.set('X-Cache-Time', new Date(cached.timestamp).toISOString());
-    
+
     // Add cache control headers
     this.addCacheHeaders(response, options);
-    
+
     return response;
   }
-  
+
   private addCacheHeaders(
     response: NextResponse,
-    options: Record<string, unknown>$1
-  isPrivate: boolean;
+    options: {
+      isPrivate: boolean;
       maxAge: number;
       staleWhileRevalidate: number;
       varyBy: string[];
     }
   ): void {
     const cacheControl = [];
-    
+
     if (options.isPrivate) {
       cacheControl.push('private');
     } else {
       cacheControl.push('public');
     }
-    
+
     cacheControl.push(`max-age=${options.maxAge}`);
-    
+
     if (options.staleWhileRevalidate > 0) {
       cacheControl.push(`stale-while-revalidate=${options.staleWhileRevalidate}`);
     }
-    
+
     response.headers.set('Cache-Control', cacheControl.join(', '));
-    
+
     if (options.varyBy.length > 0) {
       response.headers.set('Vary', options.varyBy.join(', '));
     }
-    
+
     // Add ETag for better caching
     if (!response.headers.has('ETag')) {
       const etag = this.generateETag(response);
       response.headers.set('ETag', etag);
     }
   }
-  
+
   private defaultKeyGenerator(req: NextRequest): string {
     const url = req.nextUrl;
     const searchParams = url.searchParams.toString();
@@ -343,10 +339,10 @@ export class CacheMiddleware {
       'api',
       url.pathname,
       searchParams || 'no-params',
-      req.headers.get('Authorization')?.substring(0, 10) || 'no-auth'
+      req.headers.get('Authorization')?.substring(0, 10) || 'no-auth',
     ]);
   }
-  
+
   private defaultPageKeyGenerator(req: NextRequest): string {
     const url = req.nextUrl;
     const searchParams = url.searchParams.toString();
@@ -354,30 +350,30 @@ export class CacheMiddleware {
       'page',
       url.pathname,
       searchParams || 'no-params',
-      req.headers.get('Accept-Language') || 'no-lang'
+      req.headers.get('Accept-Language') || 'no-lang',
     ]);
   }
-  
+
   private defaultCondition(req: NextRequest): boolean {
     // Don't cache requests with authentication by default
     return !req.headers.has('Authorization');
   }
-  
+
   private defaultPageCondition(req: NextRequest): boolean {
     // Cache pages for anonymous users
     return !req.headers.has('Authorization') && req.method === 'GET';
   }
-  
+
   private hashString(str: string): string {
     let hash = 0;
     for (let i = 0; i < str.length; i++) {
       const char = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
     return Math.abs(hash).toString(36);
   }
-  
+
   private generateETag(response: NextResponse): string {
     const content = response.body?.toString() || '';
     const hash = this.hashString(content);
