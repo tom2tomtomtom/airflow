@@ -13,7 +13,8 @@ const ApprovalCreateSchema = z.object({
   priority: z.enum(['low', 'normal', 'high', 'urgent']).default('normal'),
   due_date: z.string().optional(),
   notes: z.string().optional(),
-  metadata: z.any().optional()});
+  metadata: z.any().optional(),
+});
 
 const ApprovalFilterSchema = z.object({
   client_id: z.string().uuid().optional(),
@@ -27,7 +28,8 @@ const ApprovalFilterSchema = z.object({
   limit: z.number().min(1).max(100).default(50),
   offset: z.number().min(0).default(0),
   sort_by: z.enum(['created_at', 'due_date', 'priority', 'status']).default('created_at'),
-  sort_order: z.enum(['asc', 'desc']).default('desc')});
+  sort_order: z.enum(['asc', 'desc']).default('desc'),
+});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -45,20 +47,25 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Approvals API error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
+      details:
+        process.env.NODE_ENV === 'development'
+          ? error instanceof Error
+            ? error.message
+            : 'Unknown error'
+          : undefined,
     });
   }
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const validationResult = ApprovalFilterSchema.safeParse(req.query);
-  
+
   if (!validationResult.success) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Invalid query parameters',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
@@ -69,7 +76,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     .from('user_clients')
     .select('client_id')
     .eq('user_id', user.id);
-  
+
   if (!userClients || userClients.length === 0) {
     return res.json({ data: [], count: 0 });
   }
@@ -78,12 +85,14 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
 
   let query = supabase
     .from('approvals')
-    .select(`
+    .select(
+      `
       *,
       profiles!approvals_created_by_fkey(full_name, avatar_url),
       profiles!approvals_assigned_to_fkey(full_name, avatar_url),
       clients(id, name, slug)
-    `)
+    `
+    )
     .order(filters.sort_by, { ascending: filters.sort_order === 'asc' });
 
   // Filter by client access
@@ -138,35 +147,38 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   }
 
   // Enrich approval data with item details
-  const enrichedData = await Promise.all((data || []).map(async (approval) => {
-    const itemDetails = await getApprovalItemDetails(approval.item_type, approval.item_id);
-    return {
-      ...approval,
-      item_details: itemDetails};
-  }));
+  const enrichedData = await Promise.all(
+    (data || []).map(async approval => {
+      const itemDetails = await getApprovalItemDetails(approval.item_type, approval.item_id);
+      return {
+        ...approval,
+        item_details: itemDetails,
+      };
+    })
+  );
 
   // Calculate approval statistics
   const statistics = calculateApprovalStatistics(data || []);
 
-  return res.json({ 
+  return res.json({
     data: enrichedData,
     count: data?.length || 0,
     statistics,
-    pagination: Record<string, unknown>$1
-  limit: filters.limit,
+    pagination: {
+      limit: filters.limit,
       offset: filters.offset,
-      total: count || 0
-    }
+      total: count || 0,
+    },
   });
 }
 
 async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const validationResult = ApprovalCreateSchema.safeParse(req.body);
-  
+
   if (!validationResult.success) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Validation failed',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
@@ -200,16 +212,16 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
     .single();
 
   if (existingApproval) {
-    return res.status(409).json({ 
+    return res.status(409).json({
       error: 'Pending approval already exists for this item',
-      existing_approval_id: existingApproval.id
+      existing_approval_id: existingApproval.id,
     });
   }
 
   // Determine assignee based on approval workflow rules
   const assignedTo = await determineApprovalAssignee(
-    itemDetails.client_id, 
-    approvalData.approval_type, 
+    itemDetails.client_id,
+    approvalData.approval_type,
     user.id
   );
 
@@ -221,13 +233,16 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
       client_id: itemDetails.client_id,
       assigned_to: assignedTo,
       created_by: user.id,
-      status: 'pending'})
-    .select(`
+      status: 'pending',
+    })
+    .select(
+      `
       *,
       profiles!approvals_created_by_fkey(full_name, avatar_url),
       profiles!approvals_assigned_to_fkey(full_name, avatar_url),
       clients(id, name, slug)
-    `)
+    `
+    )
     .single();
 
   if (error) {
@@ -241,10 +256,11 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
   // Update item status to reflect pending approval
   await updateItemApprovalStatus(approvalData.item_type, approvalData.item_id, 'pending_approval');
 
-  return res.status(201).json({ 
-    data: { }
+  return res.status(201).json({
+    data: {
       ...approval,
-      item_details: itemDetails}
+      item_details: itemDetails,
+    },
   });
 }
 
@@ -253,62 +269,70 @@ async function getApprovalItemDetails(itemType: string, itemId: string): Promise
   try {
     let query;
     let table;
-    
+
     switch (itemType) {
       case 'motivation':
         table = 'motivations';
         query = supabase
           .from(table)
-          .select(`
+          .select(
+            `
             id, title, description, category,
             briefs(client_id, name)
-          `)
+          `
+          )
           .eq('id', itemId)
           .single();
         break;
-      
+
       case 'content_variation':
         table = 'content_variations';
         query = supabase
           .from(table)
-          .select(`
+          .select(
+            `
             id, title, content, platform, content_type,
             briefs(client_id, name)
-          `)
+          `
+          )
           .eq('id', itemId)
           .single();
         break;
-      
+
       case 'execution':
         table = 'executions';
         query = supabase
           .from(table)
-          .select(`
+          .select(
+            `
             id, status, platform, content_type, render_url,
             matrices(campaigns(client_id, name))
-          `)
+          `
+          )
           .eq('id', itemId)
           .single();
         break;
-      
+
       case 'campaign':
         table = 'campaigns';
         query = supabase
           .from(table)
-          .select(`
+          .select(
+            `
             id, name, description, status,
             client_id, clients(name)
-          `)
+          `
+          )
           .eq('id', itemId)
           .single();
         break;
-      
+
       default:
         return null;
     }
 
     const { data, error } = await query;
-    
+
     if (error || !data) {
       return null;
     }
@@ -331,7 +355,8 @@ async function getApprovalItemDetails(itemType: string, itemId: string): Promise
     return {
       ...data,
       client_id: clientId,
-      item_type: itemType};
+      item_type: itemType,
+    };
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting approval item details:', error);
@@ -339,7 +364,11 @@ async function getApprovalItemDetails(itemType: string, itemId: string): Promise
   }
 }
 
-async function determineApprovalAssignee(clientId: string, approvalType: string, requesterId: string): Promise<string | null> {
+async function determineApprovalAssignee(
+  clientId: string,
+  approvalType: string,
+  requesterId: string
+): Promise<string | null> {
   try {
     // Get client approval workflow settings
     const { data: client } = await supabase
@@ -349,7 +378,7 @@ async function determineApprovalAssignee(clientId: string, approvalType: string,
       .single();
 
     const workflowSettings = client?.approval_workflow_settings || {};
-    
+
     // Check if there's a specific assignee for this approval type
     const assigneeConfig = workflowSettings[approvalType];
     if (assigneeConfig?.assigned_to) {
@@ -361,16 +390,19 @@ async function determineApprovalAssignee(clientId: string, approvalType: string,
       content: ['content_reviewer', 'manager'],
       legal: ['legal_reviewer', 'manager'],
       brand: ['brand_manager', 'manager'],
-      final: ['manager', 'director']};
+      final: ['manager', 'director'],
+    };
 
     const roles = roleMapping[approvalType] || ['manager'];
 
     const { data: approvers } = await supabase
       .from('user_clients')
-      .select(`
+      .select(
+        `
         user_id,
         profiles(full_name, avatar_url)
-      `)
+      `
+      )
       .eq('client_id', clientId)
       .in('role', roles)
       .neq('user_id', requesterId) // Don't assign to the requester
@@ -396,15 +428,20 @@ async function determineApprovalAssignee(clientId: string, approvalType: string,
   }
 }
 
-async function updateItemApprovalStatus(itemType: string, itemId: string, status: string): Promise<void> {
+async function updateItemApprovalStatus(
+  itemType: string,
+  itemId: string,
+  status: string
+): Promise<void> {
   try {
     const table = itemType === 'content_variation' ? 'content_variations' : `${itemType}s`;
-    
+
     await supabase
       .from(table)
       .update({
         approval_status: status,
-        updated_at: new Date().toISOString()})
+        updated_at: new Date().toISOString(),
+      })
       .eq('id', itemId);
   } catch (error: any) {
     const message = getErrorMessage(error);
@@ -416,7 +453,8 @@ async function triggerApprovalNotification(approval: any, action: string): Promi
   try {
     // In a full implementation, this would trigger real-time notifications
     // via WebSocket, email, or push notifications
-    process.env.NODE_ENV === 'development' && console.log(`Triggering approval notification for action: ${action}`);
+    process.env.NODE_ENV === 'development' &&
+      console.log(`Triggering approval notification for action: ${action}`);
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error triggering approval notification:', error);
@@ -424,38 +462,53 @@ async function triggerApprovalNotification(approval: any, action: string): Promi
 }
 
 function calculateApprovalStatistics(approvals: any[]): any {
-  const statusCount = approvals.reduce((acc, approval) => {
-    acc[approval.status] = (acc[approval.status] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const statusCount = approvals.reduce(
+    (acc, approval) => {
+      acc[approval.status] = (acc[approval.status] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
-  const typeCount = approvals.reduce((acc, approval) => {
-    acc[approval.approval_type] = (acc[approval.approval_type] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const typeCount = approvals.reduce(
+    (acc, approval) => {
+      acc[approval.approval_type] = (acc[approval.approval_type] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
-  const priorityCount = approvals.reduce((acc, approval) => {
-    acc[approval.priority] = (acc[approval.priority] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const priorityCount = approvals.reduce(
+    (acc, approval) => {
+      acc[approval.priority] = (acc[approval.priority] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
   // Calculate overdue approvals
   const now = new Date();
-  const overdueCount = approvals.filter((approval: any) => 
-    approval.status === 'pending' && 
-    approval.due_date && 
-    new Date(approval.due_date) < now
+  const overdueCount = approvals.filter(
+    (approval: any) =>
+      approval.status === 'pending' && approval.due_date && new Date(approval.due_date) < now
   ).length;
 
   // Calculate average approval time for completed approvals
-  const completedApprovals = approvals.filter((a: any) => ['approved', 'rejected'].includes(a.status));
-  const avgApprovalTime = completedApprovals.length > 0 
-    ? completedApprovals.reduce((sum, approval) => {
-        const start = new Date(approval.created_at).getTime();
-        const end = new Date(approval.updated_at).getTime();
-        return sum + (end - start);
-      }, 0) / completedApprovals.length / 1000 / 60 / 60 // Convert to hours
-    : 0;
+  const completedApprovals = approvals.filter((a: any) =>
+    ['approved', 'rejected'].includes(a.status)
+  );
+  const avgApprovalTime =
+    completedApprovals.length > 0
+      ? completedApprovals.reduce((sum, approval) => {
+          const start = new Date(approval.created_at).getTime();
+          const end = new Date(approval.updated_at).getTime();
+          return sum + (end - start);
+        }, 0) /
+        completedApprovals.length /
+        1000 /
+        60 /
+        60 // Convert to hours
+      : 0;
 
   return {
     total_approvals: approvals.length,
@@ -464,7 +517,8 @@ function calculateApprovalStatistics(approvals: any[]): any {
     priority_distribution: priorityCount,
     overdue_count: overdueCount,
     pending_count: statusCount.pending || 0,
-    average_approval_time_hours: Math.round(avgApprovalTime * 100) / 100};
+    average_approval_time_hours: Math.round(avgApprovalTime * 100) / 100,
+  };
 }
 
 export default withAuth(withSecurityHeaders(handler));

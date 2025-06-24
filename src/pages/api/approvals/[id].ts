@@ -10,11 +10,16 @@ import { z } from 'zod';
 const ApprovalDecisionSchema = z.object({
   action: z.enum(['approve', 'reject', 'request_changes']),
   comments: z.string().optional(),
-  changes_requested: z.array(z.object({
-    field: z.string(),
-    current_value: z.string().optional(),
-    requested_value: z.string().optional(),
-    reason: z.string().optional()})).optional(),
+  changes_requested: z
+    .array(
+      z.object({
+        field: z.string(),
+        current_value: z.string().optional(),
+        requested_value: z.string().optional(),
+        reason: z.string().optional(),
+      })
+    )
+    .optional(),
   conditions: z.array(z.string()).optional(), // Approval conditions
   due_date: z.string().optional(), // For changes requested
 });
@@ -24,7 +29,8 @@ const ApprovalUpdateSchema = z.object({
   priority: z.enum(['low', 'normal', 'high', 'urgent']).optional(),
   due_date: z.string().optional(),
   notes: z.string().optional(),
-  metadata: z.any().optional()});
+  metadata: z.any().optional(),
+});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -49,23 +55,35 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Approval API error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
+      details:
+        process.env.NODE_ENV === 'development'
+          ? error instanceof Error
+            ? error.message
+            : 'Unknown error'
+          : undefined,
     });
   }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, approvalId: string): Promise<void> {
+async function handleGet(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  approvalId: string
+): Promise<void> {
   // Get the approval with full details
   const { data: approval, error } = await supabase
     .from('approvals')
-    .select(`
+    .select(
+      `
       *,
       profiles!approvals_created_by_fkey(full_name, avatar_url),
       profiles!approvals_assigned_to_fkey(full_name, avatar_url),
       clients(id, name, slug, primary_color)
-    `)
+    `
+    )
     .eq('id', approvalId)
     .single();
 
@@ -92,25 +110,36 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
   const approvalHistory = await getApprovalHistory(approvalId);
 
   // Get related approvals (for the same item or client)
-  const relatedApprovals = await getRelatedApprovals(approval.item_type, approval.item_id, approvalId);
+  const relatedApprovals = await getRelatedApprovals(
+    approval.item_type,
+    approval.item_id,
+    approvalId
+  );
 
   // Check user permissions for this approval
   const permissions = calculateUserPermissions(approval, user.id, clientAccess.role);
 
   return res.json({
-    data: { }
+    data: {
       ...approval,
       item_details: itemDetails,
       history: approvalHistory,
       related_approvals: relatedApprovals,
-      permissions}
+      permissions,
+    },
   });
 }
 
-async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, approvalId: string): Promise<void> {
+async function handlePut(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  approvalId: string
+): Promise<void> {
   // Check if this is a decision or an update
-  const isDecision = req.body.action && ['approve', 'reject', 'request_changes'].includes(req.body.action);
-  
+  const isDecision =
+    req.body.action && ['approve', 'reject', 'request_changes'].includes(req.body.action);
+
   if (isDecision) {
     return handleDecision(req, res, user, approvalId);
   } else {
@@ -118,13 +147,18 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, a
   }
 }
 
-async function handleDecision(req: NextApiRequest, res: NextApiResponse, user: any, approvalId: string): Promise<void> {
+async function handleDecision(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  approvalId: string
+): Promise<void> {
   const validationResult = ApprovalDecisionSchema.safeParse(req.body);
-  
+
   if (!validationResult.success) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Validation failed',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
@@ -133,10 +167,12 @@ async function handleDecision(req: NextApiRequest, res: NextApiResponse, user: a
   // Get the approval
   const { data: approval, error } = await supabase
     .from('approvals')
-    .select(`
+    .select(
+      `
       *,
       clients(id, name)
-    `)
+    `
+    )
     .eq('id', approvalId)
     .single();
 
@@ -147,14 +183,16 @@ async function handleDecision(req: NextApiRequest, res: NextApiResponse, user: a
   // Verify user has permission to make this decision
   const hasPermission = await verifyApprovalPermission(approval, user.id, 'decide');
   if (!hasPermission) {
-    return res.status(403).json({ error: 'Access denied - insufficient permissions for approval decision' });
+    return res
+      .status(403)
+      .json({ error: 'Access denied - insufficient permissions for approval decision' });
   }
 
   // Check if approval is still pending
   if (approval.status !== 'pending') {
-    return res.status(409).json({ 
+    return res.status(409).json({
       error: 'Approval is not in pending state',
-      current_status: approval.status
+      current_status: approval.status,
     });
   }
 
@@ -162,7 +200,7 @@ async function handleDecision(req: NextApiRequest, res: NextApiResponse, user: a
   const statusMapping = {
     approve: 'approved',
     reject: 'rejected',
-    request_changes: 'changes_requested'
+    request_changes: 'changes_requested',
   };
 
   const newStatus = statusMapping[decision.action];
@@ -174,7 +212,8 @@ async function handleDecision(req: NextApiRequest, res: NextApiResponse, user: a
     changes_requested: decision.changes_requested,
     conditions: decision.conditions,
     decided_by: user.id,
-    decided_at: new Date().toISOString()};
+    decided_at: new Date().toISOString(),
+  };
 
   // Update approval
   const { data: updatedApproval, error: updateError } = await supabase
@@ -183,14 +222,17 @@ async function handleDecision(req: NextApiRequest, res: NextApiResponse, user: a
       status: newStatus,
       decision_data: decisionData,
       updated_at: new Date().toISOString(),
-      ...(decision.due_date && { due_date: decision.due_date })})
+      ...(decision.due_date && { due_date: decision.due_date }),
+    })
     .eq('id', approvalId)
-    .select(`
+    .select(
+      `
       *,
       profiles!approvals_created_by_fkey(full_name),
       profiles!approvals_assigned_to_fkey(full_name),
       clients(name)
-    `)
+    `
+    )
     .single();
 
   if (updateError) {
@@ -213,18 +255,24 @@ async function handleDecision(req: NextApiRequest, res: NextApiResponse, user: a
   // Trigger webhooks
   await triggerApprovalWebhooks(updatedApproval, decision.action, user);
 
-  return res.json({ 
+  return res.json({
     data: updatedApproval,
-    decision: decisionData});
+    decision: decisionData,
+  });
 }
 
-async function handleUpdate(req: NextApiRequest, res: NextApiResponse, user: any, approvalId: string): Promise<void> {
+async function handleUpdate(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  approvalId: string
+): Promise<void> {
   const validationResult = ApprovalUpdateSchema.safeParse(req.body);
-  
+
   if (!validationResult.success) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Validation failed',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
@@ -252,14 +300,17 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse, user: any
     .from('approvals')
     .update({
       ...updateData,
-      updated_at: new Date().toISOString()})
+      updated_at: new Date().toISOString(),
+    })
     .eq('id', approvalId)
-    .select(`
+    .select(
+      `
       *,
       profiles!approvals_created_by_fkey(full_name),
       profiles!approvals_assigned_to_fkey(full_name),
       clients(name)
-    `)
+    `
+    )
     .single();
 
   if (error) {
@@ -278,7 +329,12 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse, user: any
   return res.json({ data: updatedApproval });
 }
 
-async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any, approvalId: string): Promise<void> {
+async function handleDelete(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  approvalId: string
+): Promise<void> {
   // Get the approval
   const { data: approval } = await supabase
     .from('approvals')
@@ -298,9 +354,9 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
 
   // Check if approval can be deleted
   if (!['pending', 'changes_requested'].includes(approval.status)) {
-    return res.status(409).json({ 
+    return res.status(409).json({
       error: 'Cannot delete completed approval',
-      status: approval.status
+      status: approval.status,
     });
   }
 
@@ -311,7 +367,8 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
       status: 'cancelled',
       cancelled_by: user.id,
       cancelled_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()})
+      updated_at: new Date().toISOString(),
+    })
     .eq('id', approvalId);
 
   if (error) {
@@ -330,51 +387,59 @@ async function getApprovalItemDetails(itemType: string, itemId: string): Promise
   // Reuse the function from index.ts
   try {
     let query;
-    
+
     switch (itemType) {
       case 'motivation':
         query = supabase
           .from('motivations')
-          .select(`
+          .select(
+            `
             id, title, description, category, relevance_score,
             briefs(id, name, client_id)
-          `)
+          `
+          )
           .eq('id', itemId)
           .single();
         break;
-      
+
       case 'content_variation':
         query = supabase
           .from('content_variations')
-          .select(`
+          .select(
+            `
             id, title, content, platform, content_type,
             briefs(id, name, client_id)
-          `)
+          `
+          )
           .eq('id', itemId)
           .single();
         break;
-      
+
       case 'execution':
         query = supabase
           .from('executions')
-          .select(`
+          .select(
+            `
             id, status, platform, content_type, render_url,
             matrices(id, name, campaigns(id, name, client_id))
-          `)
+          `
+          )
           .eq('id', itemId)
           .single();
         break;
-      
+
       case 'campaign':
         query = supabase
           .from('campaigns')
-          .select(`
+          .select(
+            `
             id, name, description, status, client_id
-          `)
+          `
+          )
           .eq('id', itemId)
           .single();
         break;
-      
+
       default:
         return null;
     }
@@ -404,7 +469,8 @@ async function getApprovalHistory(approvalId: string): Promise<any[]> {
       {
         timestamp: approval.created_at,
         action: 'created',
-        description: 'Approval request created'}
+        description: 'Approval request created',
+      },
     ];
 
     if (approval.decision_data) {
@@ -412,9 +478,10 @@ async function getApprovalHistory(approvalId: string): Promise<any[]> {
         timestamp: approval.decision_data.decided_at,
         action: approval.decision_data.action,
         description: `Approval ${approval.decision_data.action}`,
-        details: Record<string, unknown>$1
-  comments: approval.decision_data.comments,
-          decided_by: approval.decision_data.decided_by}
+        details: {
+          comments: approval.decision_data.comments,
+          decided_by: approval.decision_data.decided_by,
+        },
       });
     }
 
@@ -426,14 +493,20 @@ async function getApprovalHistory(approvalId: string): Promise<any[]> {
   }
 }
 
-async function getRelatedApprovals(itemType: string, itemId: string, excludeId: string): Promise<any[]> {
+async function getRelatedApprovals(
+  itemType: string,
+  itemId: string,
+  excludeId: string
+): Promise<any[]> {
   try {
     const { data: related } = await supabase
       .from('approvals')
-      .select(`
+      .select(
+        `
         id, status, approval_type, created_at,
         profiles!approvals_assigned_to_fkey(full_name)
-      `)
+      `
+      )
       .eq('item_type', itemType)
       .eq('item_id', itemId)
       .neq('id', excludeId)
@@ -452,12 +525,20 @@ function calculateUserPermissions(approval: any, userId: string, userRole: strin
   return {
     can_view: true, // Already verified in handleGet
     can_decide: approval.assigned_to === userId || ['manager', 'director'].includes(userRole),
-    can_update: approval.created_by === userId || approval.assigned_to === userId || ['manager', 'director'].includes(userRole),
+    can_update:
+      approval.created_by === userId ||
+      approval.assigned_to === userId ||
+      ['manager', 'director'].includes(userRole),
     can_delete: approval.created_by === userId || ['manager', 'director'].includes(userRole),
-    can_reassign: ['manager', 'director'].includes(userRole)};
+    can_reassign: ['manager', 'director'].includes(userRole),
+  };
 }
 
-async function verifyApprovalPermission(approval: any, userId: string, action: string): Promise<boolean> {
+async function verifyApprovalPermission(
+  approval: any,
+  userId: string,
+  action: string
+): Promise<boolean> {
   try {
     // Get user's role for this client
     const { data: userClient } = await supabase
@@ -472,8 +553,12 @@ async function verifyApprovalPermission(approval: any, userId: string, action: s
     const permissions: Record<string, boolean> = {
       view: true,
       decide: approval.assigned_to === userId || ['manager', 'director'].includes(userClient.role),
-      update: approval.created_by === userId || approval.assigned_to === userId || ['manager', 'director'].includes(userClient.role),
-      delete: approval.created_by === userId || ['manager', 'director'].includes(userClient.role)};
+      update:
+        approval.created_by === userId ||
+        approval.assigned_to === userId ||
+        ['manager', 'director'].includes(userClient.role),
+      delete: approval.created_by === userId || ['manager', 'director'].includes(userClient.role),
+    };
 
     return permissions[action] || false;
   } catch (error: any) {
@@ -483,22 +568,27 @@ async function verifyApprovalPermission(approval: any, userId: string, action: s
   }
 }
 
-async function updateItemStatusAfterDecision(itemType: string, itemId: string, decision: string): Promise<void> {
+async function updateItemStatusAfterDecision(
+  itemType: string,
+  itemId: string,
+  decision: string
+): Promise<void> {
   try {
     const statusMapping: Record<string, string> = {
       approve: 'approved',
       reject: 'rejected',
-      request_changes: 'changes_requested'
+      request_changes: 'changes_requested',
     };
 
     const newStatus = statusMapping[decision];
     const table = itemType === 'content_variation' ? 'content_variations' : `${itemType}s`;
-    
+
     await supabase
       .from(table)
       .update({
         approval_status: newStatus,
-        updated_at: new Date().toISOString()})
+        updated_at: new Date().toISOString(),
+      })
       .eq('id', itemId);
   } catch (error: any) {
     const message = getErrorMessage(error);
@@ -513,16 +603,18 @@ async function triggerPostDecisionWorkflow(approval: any, decision: any): Promis
       // For executions, trigger the actual execution
       if (approval.item_type === 'execution') {
         // This would integrate with the execution pipeline
-        process.env.NODE_ENV === 'development' && console.log('Triggering execution pipeline for:', approval.item_id);
+        process.env.NODE_ENV === 'development' &&
+          console.log('Triggering execution pipeline for:', approval.item_id);
       }
-      
+
       // For campaigns, activate them
       if (approval.item_type === 'campaign') {
         await supabase
           .from('campaigns')
           .update({
             status: 'active',
-            activated_at: new Date().toISOString()})
+            activated_at: new Date().toISOString(),
+          })
           .eq('id', approval.item_id);
       }
     }
@@ -532,20 +624,31 @@ async function triggerPostDecisionWorkflow(approval: any, decision: any): Promis
   }
 }
 
-async function logApprovalDecision(approvalId: string, action: string, userId: string, comments?: string): Promise<void> {
+async function logApprovalDecision(
+  approvalId: string,
+  action: string,
+  userId: string,
+  comments?: string
+): Promise<void> {
   try {
     // In a full implementation, this would log to an approval_events table
-    process.env.NODE_ENV === 'development' && console.log('Logging approval decision:', action, 'for approval:', approvalId);
+    process.env.NODE_ENV === 'development' &&
+      console.log('Logging approval decision:', action, 'for approval:', approvalId);
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error logging approval decision:', error);
   }
 }
 
-async function logApprovalUpdate(approvalId: string, updateData: any, userId: string): Promise<void> {
+async function logApprovalUpdate(
+  approvalId: string,
+  updateData: any,
+  userId: string
+): Promise<void> {
   try {
     // In a full implementation, this would log to an approval_events table
-    process.env.NODE_ENV === 'development' && console.log('Logging approval update for:', approvalId);
+    process.env.NODE_ENV === 'development' &&
+      console.log('Logging approval update for:', approvalId);
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error logging approval update:', error);
@@ -555,7 +658,8 @@ async function logApprovalUpdate(approvalId: string, updateData: any, userId: st
 async function triggerApprovalNotification(approval: any, action: string): Promise<void> {
   try {
     // In a full implementation, this would trigger real-time notifications
-    process.env.NODE_ENV === 'development' && console.log('Triggering approval notification for:', approval.id);
+    process.env.NODE_ENV === 'development' &&
+      console.log('Triggering approval notification for:', approval.id);
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error triggering approval notification:', error);
@@ -568,7 +672,8 @@ async function triggerApprovalWebhooks(approval: any, action: string, user: any)
     const eventMapping = {
       approve: WEBHOOK_EVENTS.APPROVAL_APPROVED,
       reject: WEBHOOK_EVENTS.APPROVAL_REJECTED,
-      request_changes: WEBHOOK_EVENTS.APPROVAL_CHANGES_REQUESTED};
+      request_changes: WEBHOOK_EVENTS.APPROVAL_CHANGES_REQUESTED,
+    };
 
     const eventType = eventMapping[action as keyof typeof eventMapping];
     if (!eventType) return;
@@ -581,14 +686,17 @@ async function triggerApprovalWebhooks(approval: any, action: string, user: any)
       type: approval.type,
       status: approval.status,
       action,
-      decided_by: Record<string, unknown>$1
-  id: user.id,
-        name: user.full_name || user.email },
-  decision_data: approval.decision_data,
-      client: Record<string, unknown>$1
-  id: approval.client_id,
-        name: approval.clients?.name },
-  timestamp: new Date().toISOString()};
+      decided_by: {
+        id: user.id,
+        name: user.full_name || user.email,
+      },
+      decision_data: approval.decision_data,
+      client: {
+        id: approval.client_id,
+        name: approval.clients?.name,
+      },
+      timestamp: new Date().toISOString(),
+    };
 
     // Trigger the webhook
     await triggerWebhookEvent(eventType, webhookData, approval.client_id);
