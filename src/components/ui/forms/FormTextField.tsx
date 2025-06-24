@@ -34,7 +34,7 @@ export const FormTextField: React.FC<FormTextFieldProps> = ({
 }) => {
   const {
     control,
-    formState: { errors  }
+    formState: { errors },
     watch,
   } = useFormContext();
 

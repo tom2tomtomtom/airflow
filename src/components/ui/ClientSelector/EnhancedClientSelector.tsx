@@ -354,10 +354,12 @@ export const EnhancedClientSelector: React.FC<EnhancedClientSelectorProps> = ({
         open={isOpen}
         onClose={handleClose}
         PaperProps={{
-          sx: Record<string, unknown>$1
-  maxHeight: maxMenuHeight,
+          sx: {
+            maxHeight: maxMenuHeight,
             width: Math.max(anchorEl?.getBoundingClientRect().width || 0, 300),
-            mt: 1}}}
+            mt: 1
+          }
+        }}
         transformOrigin={{ horizontal: 'left', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
       >
@@ -381,7 +383,7 @@ export const EnhancedClientSelector: React.FC<EnhancedClientSelectorProps> = ({
 
         {showRecentClients && recentClients.length > 0 && !searchTerm && (
           <>
-       <Box sx={{ px: 2, py: 1 }}>
+            <Box sx={{ px: 2, py: 1 }}>
               <Typography variant="caption" color="text.secondary">
                 Recent Clients
               </Typography>
@@ -435,7 +437,7 @@ export const EnhancedClientSelector: React.FC<EnhancedClientSelectorProps> = ({
 
         {showAddOption && (
           <>
-       <Divider />
+            <Divider />
             <MenuItem onClick={handleCreateNew} sx={{ px: 2 }}>
               <ListItemIcon>
                 <AddIcon color="primary" />

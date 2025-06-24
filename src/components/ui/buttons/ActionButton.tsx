@@ -177,7 +177,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
         ...sizeStyles,
         ...variantStyles.sx,
         ...props.sx
-      }
+      }}
     >
       <Box
         sx={{
@@ -185,7 +185,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
           alignItems: 'center',
           justifyContent: 'center',
           gap: 1
-        }
+        }}
       >
         {loading && loadingText ? loadingText : children}
       </Box>

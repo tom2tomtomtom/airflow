@@ -49,7 +49,7 @@ export const FormSelect: React.FC<FormSelectProps> = ({
 }) => {
   const {
     control,
-    formState: { errors  }
+    formState: { errors },
     watch,
   } = useFormContext();
 
