@@ -569,14 +569,14 @@ const ClientsPage: React.FC = () => {
                             <PaletteIcon />
                           </InputAdornment>
                         )
-                  }
+                      }}
                     />
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
                     <TextField
                       fullWidth
-                      label="Secondary Color";
-                      type="color";
+                      label="Secondary Color"
+                      type="color"
                       value={formData.secondaryColor}
                       onChange={(e) => setFormData({ ...formData, secondaryColor: e.target.value })}
                       InputProps={{
