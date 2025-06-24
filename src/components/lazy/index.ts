@@ -3,20 +3,23 @@ import dynamic from 'next/dynamic';
 
 // Lazy load heavy components
 const LazyDashboard = dynamic(() => import('./Dashboard'), {
-  loading: () => <div>Loading dashboard...</div>,
-  ssr: false });
+  loading: () => null,
+  ssr: false
+});
 
 const LazyChart = dynamic(() => import('./Chart'), {
-  loading: () => <div>Loading chart...</div> });
+  loading: () => null
+});
 
 // Route-based code splitting
 const LazyClientPage = dynamic(() => import('../pages/clients'), {
-  loading: () => <div>Loading clients...</div> });
+  loading: () => null
+});
 
 // Conditional imports
 const ConditionalComponent = dynamic(
   () => import('./ConditionalComponent'),
-  { ssr: false  }
+  { ssr: false }
 );
 
 export { LazyDashboard, LazyChart, LazyClientPage, ConditionalComponent };

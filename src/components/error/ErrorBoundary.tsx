@@ -227,10 +227,11 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       },
           body: JSON.stringify({
             eventId,
-            error: Record<string, unknown>$1
-  name: error.name,
+            error: {
+              name: error.name,
               message: error.message,
-              stack: error.stack }
+              stack: error.stack
+            },
             errorInfo,
             timestamp: new Date().toISOString(),
             userAgent: navigator.userAgent,
@@ -312,10 +313,11 @@ export function FeatureErrorBoundary({ children, feature }: { children: ReactNod
       },
       body: JSON.stringify({
         feature,
-        error: Record<string, unknown>$1
-  name: error.name,
+        error: {
+          name: error.name,
           message: error.message,
-          stack: error.stack }
+          stack: error.stack
+        },
         errorInfo,
         timestamp: new Date().toISOString()})}).catch(console.error);
   };

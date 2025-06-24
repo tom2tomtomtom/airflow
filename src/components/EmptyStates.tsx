@@ -232,9 +232,9 @@ export const LoadingState: React.FC<{ message?: string }> = ({ message = 'Loadin
         mb: 3,
         animation: 'pulse 2s infinite',
         '@keyframes pulse': {
-          '0%': { transform: 'scale(1)', opacity: 1  }
-          '50%': { transform: 'scale(1.1)', opacity: 0.7  }
-          '100%': { transform: 'scale(1)', opacity: 1  }
+          '0%': { transform: 'scale(1)', opacity: 1 },
+          '50%': { transform: 'scale(1.1)', opacity: 0.7 },
+          '100%': { transform: 'scale(1)', opacity: 1 }
         },
       }}
     >
@@ -276,9 +276,9 @@ export const SuccessState: React.FC<{
         mb: 3,
         animation: 'bounce 1s ease-in-out',
         '@keyframes bounce': {
-          '0%, 20%, 60%, 100%': { transform: 'translateY(0)'  }
-          '40%': { transform: 'translateY(-10px)'  }
-          '80%': { transform: 'translateY(-5px)'  }
+          '0%, 20%, 60%, 100%': { transform: 'translateY(0)' },
+          '40%': { transform: 'translateY(-10px)' },
+          '80%': { transform: 'translateY(-5px)' }
         },
       }}
     >

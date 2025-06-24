@@ -314,10 +314,10 @@ const ExecutionMonitor: React.FC<ExecutionMonitorProps> = ({
       {/* Quick Stats */}
       <Grid container spacing={2} sx={{ mb: 2 }}>
         {[
-          { label: 'Total', count: executions.length, color: 'default'  }
-          { label: 'Processing', count: executions.filter((e: any) => e.status === 'processing').length, color: 'info'  }
-          { label: 'Completed', count: executions.filter((e: any) => e.status === 'completed').length, color: 'success'  }
-          { label: 'Failed', count: executions.filter((e: any) => e.status === 'failed').length, color: 'error'  }
+          { label: 'Total', count: executions.length, color: 'default' },
+          { label: 'Processing', count: executions.filter((e: any) => e.status === 'processing').length, color: 'info' },
+          { label: 'Completed', count: executions.filter((e: any) => e.status === 'completed').length, color: 'success' },
+          { label: 'Failed', count: executions.filter((e: any) => e.status === 'failed').length, color: 'error' }
         ].map((stat: any) => (
           <Grid size={{ xs: 3 }} key={stat.label}>
             <Card variant="outlined" sx={{ textAlign: 'center', py: 1 }}>

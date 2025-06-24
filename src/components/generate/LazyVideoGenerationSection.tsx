@@ -120,10 +120,10 @@ const LazyVideoGenerationSection: React.FC<LazyVideoGenerationSectionProps> = ({
                   max={120}
                   step={15}
                   marks={[
-                    { value: 15, label: '15s'  }
-                    { value: 30, label: '30s'  }
-                    { value: 60, label: '60s'  }
-                    { value: 120, label: '2m'  }
+                    { value: 15, label: '15s' },
+                    { value: 30, label: '30s' },
+                    { value: 60, label: '60s' },
+                    { value: 120, label: '2m' }
                   ]}
                   valueLabelDisplay="auto"
                 />
