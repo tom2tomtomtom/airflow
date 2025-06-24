@@ -348,7 +348,8 @@ export class PerformanceDashboardGenerator {
               { value: 200, color: '#ffeb3b', label: 'Slow' },
               { value: 500, color: '#f44336', label: 'Very Slow' }
             ]
-          },
+          }
+        }
       ],
       alerts: 0};
   }
@@ -368,7 +369,8 @@ export class PerformanceDashboardGenerator {
           trend: 'stable',
           change: 0,
           timestamp: new Date(),
-          status: 'good' }
+          status: 'good'
+        },
         {
           name: 'Estimated Cost',
           value: estimatedCost,
@@ -388,7 +390,8 @@ export class PerformanceDashboardGenerator {
             yAxis: { label: 'Requests', min: 0 },
             xAxis: { label: 'Time', format: 'time' },
             colors: ['#9c27b0']
-          },
+          }
+        }
       ],
       alerts: 0};
   }
@@ -408,7 +411,8 @@ export class PerformanceDashboardGenerator {
           trend: 'stable',
           change: 0,
           timestamp: new Date(),
-          status: memoryUsage > 0.8 ? 'critical' : memoryUsage > 0.7 ? 'warning' : 'good' }
+          status: memoryUsage > 0.8 ? 'critical' : memoryUsage > 0.7 ? 'warning' : 'good'
+        },
         {
           name: 'CPU Usage',
           value: cpuUsage * 100,
@@ -431,7 +435,8 @@ export class PerformanceDashboardGenerator {
             yAxis: { label: 'Usage (%)', min: 0, max: 100 },
             xAxis: { label: 'Time', format: 'time' },
             colors: ['#ff5722', '#795548']
-          },
+          }
+        }
       ],
       alerts: 0};
   }
@@ -462,7 +467,8 @@ export class PerformanceDashboardGenerator {
             yAxis: { label: 'Videos Generated', min: 0 },
             xAxis: { label: 'Hour', format: 'time' },
             colors: ['#00bcd4']
-          },
+          }
+        }
       ],
       alerts: 0};
   }
