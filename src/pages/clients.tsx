@@ -30,7 +30,8 @@ import {
   Tabs,
   Accordion,
   AccordionSummary,
-  AccordionDetails} from '@mui/material';
+  AccordionDetails
+} from '@mui/material';
 import {
   Add as AddIcon,
   Search as SearchIcon,
@@ -46,7 +47,8 @@ import {
   Twitter,
   Instagram,
   LinkedIn,
-  YouTube} from '@mui/icons-material';
+  YouTube
+} from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
@@ -99,7 +101,7 @@ const ClientsPage: React.FC = () => {
     logo: '',
     primaryColor: '#2196F3',
     secondaryColor: '#FF9800',
-    socialMedia: Record<string, unknown>$1
+    socialMedia: {},
     contacts: [],
     brand_guidelines: {
       voiceTone: '',
@@ -195,8 +197,8 @@ const ClientsPage: React.FC = () => {
         logo: '',
         primaryColor: '#2196F3',
         secondaryColor: '#FF9800',
-        socialMedia: Record<string, unknown>$1
-  contacts: [],
+        socialMedia: {},
+        contacts: [],
         brand_guidelines: {
           voiceTone: '',
           targetAudience: '',
@@ -234,7 +236,8 @@ const ClientsPage: React.FC = () => {
       twitter: <Twitter />,
       instagram: <Instagram />,
       linkedin: <LinkedIn />,
-      youtube: <YouTube />};
+      youtube: <YouTube />
+    };
     return icons[platform] || <WebsiteIcon />;
   };
 
@@ -250,12 +253,12 @@ const ClientsPage: React.FC = () => {
               <Typography variant="h4" component="h1" gutterBottom fontWeight={600}>
                 Client Management
               </Typography>
-              <Typography variant="body1" color="text.secondary">;
+              <Typography variant="body1" color="text.secondary">
                 Manage your clients and their brand information
               </Typography>
             </Box>
             <Button
-              variant="contained";
+              variant="contained"
               startIcon={<AddIcon />}
               onClick={() => handleOpenDialog()}
             >
@@ -265,19 +268,20 @@ const ClientsPage: React.FC = () => {
 
           {/* Search and Filter Bar */}
           <Paper sx={{ p: 2, mb: 3 }}>
-            <Grid container spacing={2} alignItems="center">;
+            <Grid container spacing={2} alignItems="center">
               <Grid size={{ xs: 12, md: 6 }}>
                 <TextField
                   fullWidth
-                  placeholder="Search clients...";
+                  placeholder="Search clients..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  InputProps={{;
+                  InputProps={{
                     startAdornment: (
-                      <InputAdornment position="start">;
+                      <InputAdornment position="start">
                         <SearchIcon />
                       </InputAdornment>
-                    )}}
+                    )
+                  }}
                 />
               </Grid>
               <Grid size={{ xs: 12, md: 4 }}>
@@ -285,7 +289,7 @@ const ClientsPage: React.FC = () => {
                   <InputLabel>Filter by Industry</InputLabel>
                   <Select
                     value={industryFilter}
-                    label="Filter by Industry";
+                    label="Filter by Industry"
                     onChange={(e) => setIndustryFilter(e.target.value)}
                   >
                     <MenuItem value="">All Industries</MenuItem>;
@@ -314,17 +318,17 @@ const ClientsPage: React.FC = () => {
         )}
 
         {/* Empty State */}
-        {!loading && clients.length === 0 && (;
+        {!loading && clients.length === 0 && (
           <Paper sx={{ p: 6, textAlign: 'center' }}>
             <BusinessIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
-            <Typography variant="h6" gutterBottom>;
+            <Typography variant="h6" gutterBottom>
               No clients yet
             </Typography>
-            <Typography variant="body2" color="text.secondary" paragraph>;
+            <Typography variant="body2" color="text.secondary" paragraph>
               Get started by adding your first client
             </Typography>
             <Button
-              variant="contained";
+              variant="contained"
               startIcon={<AddIcon />}
               onClick={() => handleOpenDialog()}
             >
@@ -339,7 +343,7 @@ const ClientsPage: React.FC = () => {
             {filteredClients.map((client: any) => (
               <Grid size={{ xs: 12, sm: 6, md: 4 }} key={client.id}>
                 <Card
-                  sx={{;
+                  sx={{
                     height: '100%',
                     cursor: 'pointer',
                     transition: 'all 0.2s',
@@ -353,7 +357,7 @@ const ClientsPage: React.FC = () => {
                       <Box display="flex" alignItems="center" gap={2}>
                         <Avatar
                           src={client.logo}
-                          sx={{;
+                          sx={{
                             bgcolor: client.primaryColor,
                             width: 48,
                             height: 48}}
@@ -361,27 +365,27 @@ const ClientsPage: React.FC = () => {
                           <BusinessIcon />
                         </Avatar>
                         <Box>
-                          <Typography variant="h6" gutterBottom>;
+                          <Typography variant="h6" gutterBottom>
                             {client.name}
                           </Typography>
                           <Chip
                             label={client.industry}
-                            size="small";
-                            sx={{;
+                            size="small"
+                            sx={{
                               bgcolor: client.primaryColor,
                               color: 'white'}}
                           />
                         </Box>
                       </Box>
                       <IconButton
-                        size="small";
+                        size="small"
                         onClick={(e) => handleMenuOpen(e, client)}
                       >
                         <MoreVertIcon />
                       </IconButton>
                     </Box>
 
-                    <Typography variant="body2" color="text.secondary" paragraph>;
+                    <Typography variant="body2" color="text.secondary" paragraph>
                       {client.description || 'No description provided'}
                     </Typography>
 
@@ -410,14 +414,14 @@ const ClientsPage: React.FC = () => {
                       </Typography>
                       <Box display="flex" gap={0.5}>
                         <Box
-                          sx={{;
+                          sx={{
                             width: 12,
                             height: 12,
                             borderRadius: '50%',
                             bgcolor: client.primaryColor}}
                         />
                         <Box
-                          sx={{;
+                          sx={{
                             width: 12,
                             height: 12,
                             borderRadius: '50%',
@@ -478,15 +482,15 @@ const ClientsPage: React.FC = () => {
           </DialogTitle>
           <DialogContent>
             <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)}>
-              <Tab label="Basic Info" />;
-              <Tab label="Brand & Colors" />;
-              <Tab label="Social Media" />;
-              <Tab label="Contacts" />;
+              <Tab label="Basic Info" />
+              <Tab label="Brand & Colors" />
+              <Tab label="Social Media" />
+              <Tab label="Contacts" />
             </Tabs>
 
             <Box sx={{ mt: 3 }}>
               {/* Tab 0: Basic Info */}
-              {activeTab === 0 && (;
+              {activeTab === 0 && (
                 <Grid container spacing={3}>
                   <Grid size={{ xs: 12, md: 6 }}>
                     <TextField
@@ -550,7 +554,7 @@ const ClientsPage: React.FC = () => {
               )}
 
               {/* Tab 1: Brand & Colors */}
-              {activeTab === 1 && (;
+              {activeTab === 1 && (
                 <Grid container spacing={3}>
                   <Grid size={{ xs: 12, md: 6 }}>
                     <TextField
@@ -559,12 +563,13 @@ const ClientsPage: React.FC = () => {
                       type="color";
                       value={formData.primaryColor}
                       onChange={(e) => setFormData({ ...formData, primaryColor: e.target.value })}
-                      InputProps={{;
+                      InputProps={{
                         startAdornment: (
-                          <InputAdornment position="start">;
+                          <InputAdornment position="start">
                             <PaletteIcon />
                           </InputAdornment>
-                        )}}
+                        )
+                  }
                     />
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
@@ -574,12 +579,13 @@ const ClientsPage: React.FC = () => {
                       type="color";
                       value={formData.secondaryColor}
                       onChange={(e) => setFormData({ ...formData, secondaryColor: e.target.value })}
-                      InputProps={{;
+                      InputProps={{
                         startAdornment: (
-                          <InputAdornment position="start">;
+                          <InputAdornment position="start">
                             <PaletteIcon />
                           </InputAdornment>
-                        )}}
+                        )
+                  }
                     />
                   </Grid>
                   <Grid size={{ xs: 12 }}>
@@ -589,9 +595,11 @@ const ClientsPage: React.FC = () => {
                       value={formData.brand_guidelines.voiceTone}
                       onChange={(e) => setFormData({;
                         ...formData,
-                        brand_guidelines: { }
+                        brand_guidelines: {
                           ...formData.brand_guidelines,
-                          voiceTone: e.target.value}})}
+                          voiceTone: e.target.value
+                        }
+                      })}
                       placeholder="e.g., Professional and friendly";
                     />
                   </Grid>
@@ -602,9 +610,11 @@ const ClientsPage: React.FC = () => {
                       value={formData.brand_guidelines.targetAudience}
                       onChange={(e) => setFormData({;
                         ...formData,
-                        brand_guidelines: { }
+                        brand_guidelines: {
                           ...formData.brand_guidelines,
-                          targetAudience: e.target.value}})}
+                          targetAudience: e.target.value
+                        }
+                      })}
                       placeholder="e.g., Young professionals aged 25-35";
                     />
                   </Grid>
@@ -612,7 +622,7 @@ const ClientsPage: React.FC = () => {
               )}
 
               {/* Tab 2: Social Media */}
-              {activeTab === 2 && (;
+              {activeTab === 2 && (
                 <Grid container spacing={3}>
                   <Grid size={{ xs: 12, md: 6 }}>
                     <TextField
@@ -622,12 +632,13 @@ const ClientsPage: React.FC = () => {
                       onChange={(e) => setFormData({;
                         ...formData,
                         socialMedia: { ...formData.socialMedia, facebook: e.target.value }})}
-                      InputProps={{;
+                      InputProps={{
                         startAdornment: (
-                          <InputAdornment position="start">;
+                          <InputAdornment position="start">
                             <Facebook />
                           </InputAdornment>
-                        )}}
+                        )
+                  }
                     />
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
@@ -638,12 +649,13 @@ const ClientsPage: React.FC = () => {
                       onChange={(e) => setFormData({;
                         ...formData,
                         socialMedia: { ...formData.socialMedia, twitter: e.target.value }})}
-                      InputProps={{;
+                      InputProps={{
                         startAdornment: (
-                          <InputAdornment position="start">;
+                          <InputAdornment position="start">
                             <Twitter />
                           </InputAdornment>
-                        )}}
+                        )
+                  }
                     />
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
@@ -654,12 +666,13 @@ const ClientsPage: React.FC = () => {
                       onChange={(e) => setFormData({;
                         ...formData,
                         socialMedia: { ...formData.socialMedia, instagram: e.target.value }})}
-                      InputProps={{;
+                      InputProps={{
                         startAdornment: (
-                          <InputAdornment position="start">;
+                          <InputAdornment position="start">
                             <Instagram />
                           </InputAdornment>
-                        )}}
+                        )
+                  }
                     />
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
@@ -670,12 +683,13 @@ const ClientsPage: React.FC = () => {
                       onChange={(e) => setFormData({;
                         ...formData,
                         socialMedia: { ...formData.socialMedia, linkedin: e.target.value }})}
-                      InputProps={{;
+                      InputProps={{
                         startAdornment: (
-                          <InputAdornment position="start">;
+                          <InputAdornment position="start">
                             <LinkedIn />
                           </InputAdornment>
-                        )}}
+                        )
+                  }
                     />
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
@@ -686,28 +700,29 @@ const ClientsPage: React.FC = () => {
                       onChange={(e) => setFormData({;
                         ...formData,
                         socialMedia: { ...formData.socialMedia, youtube: e.target.value }})}
-                      InputProps={{;
+                      InputProps={{
                         startAdornment: (
-                          <InputAdornment position="start">;
+                          <InputAdornment position="start">
                             <YouTube />
                           </InputAdornment>
-                        )}}
+                        )
+                  }
                     />
                   </Grid>
                 </Grid>
               )}
 
               {/* Tab 3: Contacts */}
-              {activeTab === 3 && (;
+              {activeTab === 3 && (
                 <Box>
-                  <Typography variant="h6" gutterBottom>;
+                  <Typography variant="h6" gutterBottom>
                     Contact Information
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" paragraph>;
+                  <Typography variant="body2" color="text.secondary" paragraph>
                     Add key contacts for this client
                   </Typography>
 
-                  {formData.contacts.length === 0 ? (;
+                  {formData.contacts.length === 0 ? (
                     <Paper sx={{ p: 3, textAlign: 'center' }}>
                       <PersonIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 1 }} />
                       <Typography variant="body2" color="text.secondary">;
@@ -724,10 +739,12 @@ const ClientsPage: React.FC = () => {
                             email: '',
                             role: '',
                             phone: '',
-                            isActive: true};
+                            isActive: true
+                          };
                           setFormData({
                             ...formData,
-                            contacts: [...formData.contacts, newContact]});
+                            contacts: [...formData.contacts, newContact]
+                          });
                         }}
                       >
                         Add Contact
@@ -819,10 +836,12 @@ const ClientsPage: React.FC = () => {
                             email: '',
                             role: '',
                             phone: '',
-                            isActive: true};
+                            isActive: true
+                          };
                           setFormData({
                             ...formData,
-                            contacts: [...formData.contacts, newContact]});
+                            contacts: [...formData.contacts, newContact]
+                          });
                         }}
                       >
                         Add Another Contact
@@ -836,7 +855,7 @@ const ClientsPage: React.FC = () => {
           <DialogActions>
             <Button onClick={handleCloseDialog}>Cancel</Button>
             <Button
-              variant="contained";
+              variant="contained"
               onClick={handleSubmit}
               disabled={submitting}
               startIcon={submitting ? <CircularProgress size={20} /> : undefined}
