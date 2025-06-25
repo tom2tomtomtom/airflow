@@ -7,14 +7,13 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Grid,
+  Grid2 as Grid,
   Card,
   CardContent,
   Typography,
   Chip,
   Alert,
   AlertTitle,
-  LinearProgress,
   CircularProgress,
   Button,
   IconButton,
@@ -30,7 +29,8 @@ import {
   Tabs,
   Tab,
   Paper,
-  useTheme} from '@mui/material';
+  useTheme,
+} from '@mui/material';
 import {
   Refresh as RefreshIcon,
   Warning as WarningIcon,
@@ -38,11 +38,11 @@ import {
   CheckCircle as CheckCircleIcon,
   Info as InfoIcon,
   Notifications as NotificationsIcon,
-  Settings as SettingsIcon,
   TrendingUp as TrendingUpIcon,
   TrendingDown as TrendingDownIcon,
-  TrendingFlat as TrendingFlatIcon} from '@mui/icons-material';
-import { Line, Bar, Doughnut } from 'react-chartjs-2';
+  TrendingFlat as TrendingFlatIcon,
+} from '@mui/icons-material';
+import { Line, Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -53,7 +53,8 @@ import {
   Title,
   Tooltip as ChartTooltip,
   Legend,
-  ArcElement} from 'chart.js';
+  ArcElement,
+} from 'chart.js';
 
 // Register Chart.js components
 ChartJS.register(
@@ -204,12 +205,13 @@ const MonitoringDashboard: React.FC = () => {
       const response = await fetch('/api/monitoring/alerts?action=acknowledge', {
         method: 'PATCH',
         headers: {
-        'Content-Type': 'application/json' 
-      },
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           alertId,
           acknowledgedBy: 'current-user', // In real app, get from auth context
-        })});
+        }),
+      });
 
       if (response.ok) {
         fetchDashboardData(); // Refresh data
@@ -253,7 +255,8 @@ const MonitoringDashboard: React.FC = () => {
             label={metric.status}
             sx={{
               backgroundColor: getStatusColor(metric.status),
-              color: 'white'}}
+              color: 'white',
+            }}
           />
         </Box>
       </CardContent>
@@ -263,7 +266,7 @@ const MonitoringDashboard: React.FC = () => {
   // Render chart
   const renderChart = (chart: any) => {
     const chartData = {
-      labels: chart.data.map((d: any) => 
+      labels: chart.data.map((d: any) =>
         d.timestamp ? new Date(d.timestamp).toLocaleTimeString() : d.label || ''
       ),
       datasets: [
@@ -272,33 +275,35 @@ const MonitoringDashboard: React.FC = () => {
           data: chart.data.map((d: any) => d.value),
           borderColor: chart.config.colors?.[0] || theme.palette.primary.main,
           backgroundColor: `${chart.config.colors?.[0] || theme.palette.primary.main}20`,
-          tension: 0.4 }
-      ]};
+          tension: 0.4,
+        },
+      ],
+    };
 
     const options = {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          display: false
+          display: false,
         },
         title: {
-          display: false
-        }
+          display: false,
+        },
       },
       scales: {
         y: {
           beginAtZero: true,
           grid: {
-            color: theme.palette.divider
-          }
+            color: theme.palette.divider,
+          },
         },
         x: {
           grid: {
-            color: theme.palette.divider
-          }
-        }
-      }
+            color: theme.palette.divider,
+          },
+        },
+      },
     };
 
     switch (chart.type) {
@@ -360,14 +365,18 @@ const MonitoringDashboard: React.FC = () => {
       {/* System Health Overview */}
       <Alert
         severity={
-          dashboardData.overview.health === 'healthy' ? 'success' :
-          dashboardData.overview.health === 'degraded' ? 'warning' : 'error'
+          dashboardData.overview.health === 'healthy'
+            ? 'success'
+            : dashboardData.overview.health === 'degraded'
+              ? 'warning'
+              : 'error'
         }
         sx={{ mb: 3 }}
       >
         <AlertTitle>System Health: {dashboardData.overview.health.toUpperCase()}</AlertTitle>
-        Uptime: {dashboardData.overview.uptime}% | Active Alerts: {dashboardData.overview.activeAlerts} | 
-        Last Updated: {new Date(dashboardData.overview.lastUpdated).toLocaleString()}
+        Uptime: {dashboardData.overview.uptime}% | Active Alerts:{' '}
+        {dashboardData.overview.activeAlerts} | Last Updated:{' '}
+        {new Date(dashboardData.overview.lastUpdated).toLocaleString()}
       </Alert>
 
       {/* Tabs */}
@@ -407,14 +416,14 @@ const MonitoringDashboard: React.FC = () => {
       {selectedTab === 0 && (
         /* Overview Tab */
         <Grid container spacing={3}>
-          {dashboardData.sections.map((section) => (
-            <Grid item xs={12} key={section.id}>
+          {dashboardData.sections.map(section => (
+            <Grid xs={12} key={section.id}>
               <Typography variant="h5" gutterBottom>
                 {section.title}
               </Typography>
               <Grid container spacing={2}>
                 {section.metrics.slice(0, 3).map((metric, index) => (
-                  <Grid item xs={12} sm={6} md={4} key={index}>
+                  <Grid xs={12} sm={6} md={4} key={index}>
                     <MetricCard metric={metric} />
                   </Grid>
                 ))}
@@ -424,7 +433,8 @@ const MonitoringDashboard: React.FC = () => {
         </Grid>
       )}
 
-      {selectedTab > 0 && selectedTab < tabLabels.length - 1 && (
+      {selectedTab > 0 &&
+        selectedTab < tabLabels.length - 1 &&
         /* Section-specific Tab */
         (() => {
           const section = dashboardData.sections[selectedTab - 1];
@@ -433,22 +443,20 @@ const MonitoringDashboard: React.FC = () => {
               <Grid container spacing={3}>
                 {/* Metrics */}
                 {section.metrics.map((metric, index) => (
-                  <Grid item xs={12} sm={6} md={4} key={index}>
+                  <Grid xs={12} sm={6} md={4} key={index}>
                     <MetricCard metric={metric} />
                   </Grid>
                 ))}
 
                 {/* Charts */}
-                {section.charts.map((chart) => (
-                  <Grid item xs={12} md={6} key={chart.id}>
+                {section.charts.map(chart => (
+                  <Grid xs={12} md={6} key={chart.id}>
                     <Card>
                       <CardContent>
                         <Typography variant="h6" gutterBottom>
                           {chart.title}
                         </Typography>
-                        <Box height={300}>
-                          {renderChart(chart)}
-                        </Box>
+                        <Box height={300}>{renderChart(chart)}</Box>
                       </CardContent>
                     </Card>
                   </Grid>
@@ -456,8 +464,7 @@ const MonitoringDashboard: React.FC = () => {
               </Grid>
             </Box>
           );
-        })()
-      )}
+        })()}
 
       {selectedTab === tabLabels.length - 1 && (
         /* Alerts Tab */
@@ -472,7 +479,7 @@ const MonitoringDashboard: React.FC = () => {
             </Alert>
           ) : (
             <List>
-              {alerts.map((alert) => (
+              {alerts.map(alert => (
                 <ListItem
                   key={alert.id}
                   sx={{
@@ -480,11 +487,10 @@ const MonitoringDashboard: React.FC = () => {
                     borderColor: 'divider',
                     borderRadius: 1,
                     mb: 1,
-                    backgroundColor: 'background.paper'}}
+                    backgroundColor: 'background.paper',
+                  }}
                 >
-                  <ListItemIcon>
-                    {getSeverityIcon(alert.severity)}
-                  </ListItemIcon>
+                  <ListItemIcon>{getSeverityIcon(alert.severity)}</ListItemIcon>
                   <ListItemText
                     primary={
                       <Box display="flex" alignItems="center" gap={1}>
@@ -493,15 +499,14 @@ const MonitoringDashboard: React.FC = () => {
                           size="small"
                           label={alert.severity}
                           color={
-                            alert.severity === 'critical' ? 'error' :
-                            alert.severity === 'high' ? 'warning' : 'info'
+                            alert.severity === 'critical'
+                              ? 'error'
+                              : alert.severity === 'high'
+                                ? 'warning'
+                                : 'info'
                           }
                         />
-                        <Chip
-                          size="small"
-                          label={alert.state}
-                          variant="outlined"
-                        />
+                        <Chip size="small" label={alert.state} variant="outlined" />
                       </Box>
                     }
                     secondary={
@@ -555,35 +560,38 @@ const MonitoringDashboard: React.FC = () => {
           {selectedAlert && (
             <Box>
               <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <Typography variant="subtitle2">Name</Typography>
                   <Typography variant="body1">{selectedAlert.name}</Typography>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <Typography variant="subtitle2">Severity</Typography>
                   <Chip
                     label={selectedAlert.severity}
                     color={
-                      selectedAlert.severity === 'critical' ? 'error' :
-                      selectedAlert.severity === 'high' ? 'warning' : 'info'
+                      selectedAlert.severity === 'critical'
+                        ? 'error'
+                        : selectedAlert.severity === 'high'
+                          ? 'warning'
+                          : 'info'
                     }
                   />
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <Typography variant="subtitle2">Current Value</Typography>
                   <Typography variant="body1">{selectedAlert.value}</Typography>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <Typography variant="subtitle2">Threshold</Typography>
                   <Typography variant="body1">{selectedAlert.threshold}</Typography>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <Typography variant="subtitle2">First Seen</Typography>
                   <Typography variant="body1">
                     {new Date(selectedAlert.firstSeen).toLocaleString()}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid xs={12} sm={6}>
                   <Typography variant="subtitle2">Last Seen</Typography>
                   <Typography variant="body1">
                     {new Date(selectedAlert.lastSeen).toLocaleString()}
