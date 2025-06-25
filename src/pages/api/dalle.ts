@@ -8,28 +8,43 @@ import { z } from 'zod';
 import axios from 'axios';
 
 // Initialize OpenAI only if we have a key
-const openai = hasOpenAI ? new OpenAI({
-  apiKey: env.OPENAI_API_KEY}) : null;
+const openai = hasOpenAI
+  ? new OpenAI({
+      apiKey: env.OPENAI_API_KEY,
+    })
+  : null;
 
 // Define brand guidelines schema
-const BrandGuidelinesSchema = z.object({
-  voiceTone: z.string().optional(),
-  targetAudience: z.string().optional(),
-  keyMessages: z.array(z.string()).optional(),
-  colors: z.object({
-    primary: z.string().optional(),
-    secondary: z.string().optional(),
-    accent: z.string().optional(),
-    background: z.string().optional(),
-    text: z.string().optional()}).optional(),
-  typography: z.object({
-    headingFont: z.string().optional(),
-    bodyFont: z.string().optional(),
-    sizes: z.record(z.string()).optional()}).optional(),
-  logoUsage: z.string().optional(),
-  dosDonts: z.object({
-    dos: z.array(z.string()).optional(),
-    donts: z.array(z.string()).optional()}).optional()}).optional();
+const BrandGuidelinesSchema = z
+  .object({
+    voiceTone: z.string().optional(),
+    targetAudience: z.string().optional(),
+    keyMessages: z.array(z.string()).optional(),
+    colors: z
+      .object({
+        primary: z.string().optional(),
+        secondary: z.string().optional(),
+        accent: z.string().optional(),
+        background: z.string().optional(),
+        text: z.string().optional(),
+      })
+      .optional(),
+    typography: z
+      .object({
+        headingFont: z.string().optional(),
+        bodyFont: z.string().optional(),
+        sizes: z.record(z.string()).optional(),
+      })
+      .optional(),
+    logoUsage: z.string().optional(),
+    dosDonts: z
+      .object({
+        dos: z.array(z.string()).optional(),
+        donts: z.array(z.string()).optional(),
+      })
+      .optional(),
+  })
+  .optional();
 
 // Request schema
 const GenerateImageSchema = z.object({
@@ -46,16 +61,14 @@ const GenerateImageSchema = z.object({
   tags: z.array(z.string()).optional(),
   // Optional enhancement
   enhance_prompt: z.boolean().default(true), // Use AI to enhance the prompt
-  brand_guidelines: BrandGuidelinesSchema});
+  brand_guidelines: BrandGuidelinesSchema,
+});
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-): Promise<void> {
+export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   if (req.method !== 'POST') {
-    return res.status(405).json({ 
-      success: false, 
-      message: 'Method not allowed' 
+    return res.status(405).json({
+      success: false,
+      message: 'Method not allowed',
     });
   }
 
@@ -65,16 +78,17 @@ export default async function handler(
   try {
     // Validate request
     const validationResult = GenerateImageSchema.safeParse(req.body);
-    
+
     if (!validationResult.success) {
       return res.status(400).json({
         success: false,
         message: 'Invalid input',
-        errors: validationResult.error.errors});
+        errors: validationResult.error.errors,
+      });
     }
 
-    const { 
-      prompt, 
+    const {
+      prompt,
       client_id,
       model,
       size,
@@ -84,34 +98,36 @@ export default async function handler(
       purpose,
       tags = [],
       enhance_prompt,
-      brand_guidelines
+      brand_guidelines,
     } = validationResult.data;
 
     // Check if AI service is available
     if (!hasOpenAI || !openai) {
       return res.status(503).json({
         success: false,
-        message: 'AI service not available. Please configure OpenAI API key.'});
+        message: 'AI service not available. Please configure OpenAI API key.',
+      });
     }
 
     // Enhance prompt if requested
     let finalPrompt = prompt;
-    
+
     if (enhance_prompt) {
       const enhancementResponse = await openai.chat.completions.create({
         model: 'gpt-4-turbo-preview',
         messages: [
           {
             role: 'system',
-            content: `You are an expert at crafting DALL-E 3 prompts. \nEnhance the user's prompt to get better results by adding:\n- Specific visual style details\n- Lighting and composition\n- Color palette\n- Medium (photo, illustration, 3D render, etc.)\n${brand_guidelines ? `- Ensure it aligns with these brand guidelines: ${JSON.stringify(brand_guidelines)}` : ''}\nKeep the core concept but make it more visually specific.`
+            content: `You are an expert at crafting DALL-E 3 prompts. \nEnhance the user's prompt to get better results by adding:\n- Specific visual style details\n- Lighting and composition\n- Color palette\n- Medium (photo, illustration, 3D render, etc.)\n${brand_guidelines ? `- Ensure it aligns with these brand guidelines: ${JSON.stringify(brand_guidelines)}` : ''}\nKeep the core concept but make it more visually specific.`,
           },
           {
             role: 'user',
-            content: `Enhance this image prompt for ${purpose || 'general'} use: ${prompt}`
-          }
+            content: `Enhance this image prompt for ${purpose || 'general'} use: ${prompt}`,
+          },
         ],
         max_tokens: 500,
-        temperature: 0.7});
+        temperature: 0.7,
+      });
 
       // Use optional chaining for cleaner TypeScript handling
       const enhancedContent = enhancementResponse.choices?.[0]?.message?.content;
@@ -121,7 +137,7 @@ export default async function handler(
     }
 
     // Add safety prefix for brand safety
-    const safetyPrefix = "Professional, brand-safe, high-quality";
+    const safetyPrefix = 'Professional, brand-safe, high-quality';
     finalPrompt = `${safetyPrefix} ${finalPrompt}`;
 
     if (process.env.NODE_ENV === 'development') {
@@ -136,13 +152,14 @@ export default async function handler(
       size,
       quality,
       style,
-      response_format: 'url'});
+      response_format: 'url',
+    });
 
     const generatedImage = imageResponse.data?.[0];
     if (!generatedImage) {
       throw new Error('No image generated');
     }
-    
+
     // Download the image to upload to Supabase
     const imageUrl = generatedImage.url;
     if (!imageUrl) {
@@ -151,21 +168,23 @@ export default async function handler(
 
     // Download image
     const imageData = await axios.get(imageUrl, {
-      responseType: 'arraybuffer'});
-    
+      responseType: 'arraybuffer',
+    });
+
     const buffer = Buffer.from(imageData.data);
-    
+
     // Generate filename
     const timestamp = Date.now();
     const filename = `dalle-${purpose || 'image'}-${timestamp}.png`;
-    
+
     // Upload to Supabase storage using service role (bypasses RLS)
     const serviceSupabase = getServiceSupabase();
     const { data: _uploadData, error: uploadError } = await serviceSupabase.storage
       .from('assets')
       .upload(`${client_id}/ai-generated/${filename}`, buffer, {
         contentType: 'image/png',
-        cacheControl: '3600'});
+        cacheControl: '3600',
+      });
 
     if (uploadError) {
       console.error('Storage upload error:', uploadError);
@@ -196,17 +215,20 @@ export default async function handler(
         client_id,
         tags: [...tags, 'ai-generated', 'dalle-3', purpose].filter(Boolean),
         metadata: {
-        ai_model: model,
+          ai_model: model,
           original_prompt: prompt,
           enhanced_prompt: finalPrompt,
-          generation_settings: Record<string, unknown>$1
-  size,
+          generation_settings: {
+            size,
             quality,
-            style},
+            style,
+          },
           revised_prompt: generatedImage.revised_prompt, // DALL-E 3 may revise prompts
           purpose,
-          generated_at: new Date().toISOString() },
-  created_by: userId})
+          generated_at: new Date().toISOString(),
+        },
+        created_by: userId,
+      })
       .select()
       .single();
 
@@ -219,34 +241,38 @@ export default async function handler(
       success: true,
       message: 'Image generated successfully',
       asset,
-      generation_details: Record<string, unknown>$1
-  original_prompt: prompt,
+      generation_details: {
+        original_prompt: prompt,
         enhanced_prompt: enhance_prompt ? finalPrompt : undefined,
         revised_prompt: generatedImage.revised_prompt,
         model,
-        settings: { size, quality, style }}});
-
+        settings: { size, quality, style },
+      },
+    });
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Image generation error:', error);
-    
+
     if (error instanceof OpenAI.APIError) {
       if (error.status === 400) {
         return res.status(400).json({
           success: false,
           message: 'Invalid prompt or parameters',
-          error: error.message});
+          error: error.message,
+        });
       }
       if (error.status === 429) {
         return res.status(429).json({
           success: false,
-          message: 'Rate limit exceeded. Please try again later.'});
+          message: 'Rate limit exceeded. Please try again later.',
+        });
       }
     }
-    
+
     return res.status(500).json({
       success: false,
       message: 'Failed to generate image',
-      error: error instanceof Error ? error.message : 'Unknown error'});
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
   }
 }
