@@ -15,7 +15,8 @@ const ClientQuerySchema = z.object({
   limit: z.coerce.number().min(1).max(100).default(20),
   offset: z.coerce.number().min(0).default(0),
   sort_by: z.enum(['name', 'industry', 'created_at', 'updated_at']).default('name'),
-  sort_order: z.enum(['asc', 'desc']).default('asc')});
+  sort_order: z.enum(['asc', 'desc']).default('asc'),
+});
 
 interface Client {
   id: string;
@@ -30,8 +31,8 @@ interface Client {
 interface ClientsResponse {
   success: true;
   data: Client[];
-  meta: Record<string, unknown>$1
-  total: number;
+  meta: {
+    total: number;
     limit: number;
     offset: number;
     has_more: boolean;
@@ -59,9 +60,8 @@ async function getOptimizedClients(
   );
 
   // Build optimized query
-  let query = supabase
-    .from('clients')
-    .select(`
+  let query = supabase.from('clients').select(
+    `
       id,
       name,
       industry,
@@ -69,11 +69,15 @@ async function getOptimizedClients(
       created_at,
       updated_at,
       campaigns!inner(count)
-    `, { count: 'exact' });
+    `,
+    { count: 'exact' }
+  );
 
   // Add filters
   if (params.search) {
-    query = query.or(`name.ilike.%${params.search}%,description.ilike.%${params.search}%,industry.ilike.%${params.search}%`);
+    query = query.or(
+      `name.ilike.%${params.search}%,description.ilike.%${params.search}%,industry.ilike.%${params.search}%`
+    );
   }
 
   if (params.industry) {
@@ -89,13 +93,13 @@ async function getOptimizedClients(
   // Execute query with performance tracking
   const queryString = query.toString();
   const cached = QueryOptimizer.getCachedQuery(req.url || '', queryString);
-  
+
   let result;
   if (cached) {
     result = cached;
   } else {
     const { data, error, count } = await query;
-    
+
     if (error) {
       throw new Error(`Database query failed: ${error.message}`);
     }
@@ -112,7 +116,8 @@ async function getOptimizedClients(
     description: client.description,
     created_at: client.created_at,
     updated_at: client.updated_at,
-    campaign_count: client.campaigns?.length || 0}));
+    campaign_count: client.campaigns?.length || 0,
+  }));
 
   const total = result.count || 0;
   const queryTime = Date.now() - startTime;
@@ -120,12 +125,14 @@ async function getOptimizedClients(
   return {
     success: true,
     data: clients,
-    meta: Record<string, unknown>$1
-  total,
+    meta: {
+      total,
       limit: params.limit,
       offset: params.offset,
       has_more: params.offset + params.limit < total,
-      query_time: queryTime}};
+      query_time: queryTime,
+    },
+  };
 }
 
 /**
@@ -140,7 +147,8 @@ async function handler(
     res.setHeader('Allow', ['GET']);
     res.status(405).json({
       success: false,
-      error: 'Method not allowed'});
+      error: 'Method not allowed',
+    });
     return;
   }
 
@@ -164,11 +172,13 @@ async function handler(
       res.status(400).json({
         success: false,
         error: 'Invalid query parameters',
-        details: error.errors});
+        details: error.errors,
+      });
     } else {
       res.status(500).json({
         success: false,
-        error: error instanceof Error ? error.message : 'Internal server error'});
+        error: error instanceof Error ? error.message : 'Internal server error',
+      });
     }
   }
 }
@@ -179,4 +189,5 @@ export default withAPIOptimization(handler, {
   cacheTTL: 5 * 60 * 1000, // 5 minutes
   enableCompression: true,
   enableMetrics: true,
-  enableQueryOptimization: true});
+  enableQueryOptimization: true,
+});
