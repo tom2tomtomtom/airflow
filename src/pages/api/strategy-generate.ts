@@ -12,10 +12,12 @@ const StrategyGenerateSchema = z.object({
   target_audience: z.string().optional(),
   campaign_objectives: z.string().optional(),
   regenerate: z.boolean().default(false),
-  feedback: z.string().optional()});
+  feedback: z.string().optional(),
+});
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY});
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   if (req.method !== 'POST') {
@@ -28,11 +30,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   if (!validationResult.success) {
     return res.status(400).json({
       error: 'Invalid input',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
-  const { brief_id, client_id, brief_content, target_audience, campaign_objectives, regenerate, feedback } = validationResult.data;
+  const {
+    brief_id,
+    client_id,
+    brief_content,
+    target_audience,
+    campaign_objectives,
+    regenerate,
+    feedback,
+  } = validationResult.data;
 
   try {
     // Verify user has access to the client
@@ -56,10 +66,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
         .eq('is_ai_generated', true);
 
       if (existingMotivations && existingMotivations.length > 0) {
-        return res.json({ 
+        return res.json({
           success: true,
           motivations: existingMotivations,
-          message: 'Retrieved existing motivations'
+          message: 'Retrieved existing motivations',
         });
       }
     }
@@ -100,11 +110,12 @@ Generate 8 diverse motivational concepts that would drive this audience to take 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
-        { role: 'system', content: systemPrompt  }
-        { role: 'user', content: userPrompt }
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
       ],
       temperature: 0.7,
-      max_tokens: 2500});
+      max_tokens: 2500,
+    });
 
     const aiResponse = completion.choices[0]?.message?.content;
     if (!aiResponse) {
@@ -122,7 +133,7 @@ Generate 8 diverse motivational concepts that would drive this audience to take 
 
     // Validate and create motivations in database
     const createdMotivations = [];
-    
+
     for (const motivation of motivationsData) {
       const { data: created, error } = await supabase
         .from('motivations')
@@ -136,19 +147,23 @@ Generate 8 diverse motivational concepts that would drive this audience to take 
           target_emotions: motivation.target_emotions || [],
           use_cases: motivation.use_cases || [],
           is_ai_generated: true,
-          generation_context: Record<string, unknown>$1
-  model: 'gpt-4o',
+          generation_context: {
+            model: 'gpt-4o',
             temperature: 0.7,
             target_audience,
             campaign_objectives,
             feedback: feedback || null,
-            psychological_rationale: motivation.psychological_rationale },
-  created_by: user.id})
-        .select(`
+            psychological_rationale: motivation.psychological_rationale,
+          },
+          created_by: user.id,
+        })
+        .select(
+          `
           *,
           clients(name, slug),
           briefs(name, title)
-        `)
+        `
+        )
         .single();
 
       if (error) {
@@ -163,10 +178,10 @@ Generate 8 diverse motivational concepts that would drive this audience to take 
     if (brief_id) {
       await supabase
         .from('briefs')
-        .update({ 
+        .update({
           parsing_status: 'motivations_generated',
           motivations_count: createdMotivations.length,
-          last_generation_at: new Date().toISOString()
+          last_generation_at: new Date().toISOString(),
         })
         .eq('id', brief_id);
     }
@@ -175,14 +190,13 @@ Generate 8 diverse motivational concepts that would drive this audience to take 
       success: true,
       motivations: createdMotivations,
       count: createdMotivations.length,
-      message: `Generated ${createdMotivations.length} strategic motivations`
+      message: `Generated ${createdMotivations.length} strategic motivations`,
     });
-
   } catch (error: any) {
     console.error('Strategy generation error:', error);
     return res.status(500).json({
       error: 'Failed to generate strategy',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined,
     });
   }
 }
