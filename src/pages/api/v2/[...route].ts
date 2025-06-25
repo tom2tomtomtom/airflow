@@ -26,29 +26,30 @@ import { withRateLimit } from '@/middleware/withRateLimit';
 import { withSecurityHeaders, getSecurityConfig } from '@/middleware/withSecurityHeaders';
 import { withCsrfProtection, getCsrfConfig } from '@/middleware/withCsrfProtection';
 import { withSessionSecurity } from '@/middleware/withSessionSecurity';
-import { securityLogger, SecurityEvents } from '@/lib/security/security-logger';
+import { securityLogger } from '@/lib/security/security-logger';
 import { securityValidation, sanitization } from '@/utils/validation-utils';
 import {
   successResponse,
   errorResponse,
   handleApiError,
   methodNotAllowed,
-  ApiErrorCode} from '@/lib/api-response';
+  ApiErrorCode,
+} from '@/lib/api-response';
 // Simple stubs for missing modules
 class AICostController {
   static getInstance() {
     return new AICostController();
   }
 
-  async getBudgetStatus() : Promise<void> {
+  async getBudgetStatus(): Promise<void> {
     return { status: 'healthy', remaining: 1000 };
   }
 
-  async getTotalSpent() : Promise<void> {
+  async getTotalSpent(): Promise<void> {
     return 0;
   }
 
-  async checkBudget(service: string, model: string, tokens: number, userId: string) : Promise<void> {
+  async checkBudget(service: string, model: string, tokens: number, userId: string): Promise<void> {
     return { allowed: true, budgetRemaining: 1000, reason: 'Budget check passed' };
   }
 
@@ -59,7 +60,7 @@ class AICostController {
     cost: number,
     userId: string,
     metadata: any
-  ) : Promise<void> {
+  ): Promise<void> {
     // Stub implementation
     console.log(`Tracked usage: ${service}/${model} - ${tokens} tokens, $${cost}`, metadata);
   }
@@ -106,7 +107,7 @@ interface RouteContext {
 // Security validation and sanitization functions
 async function validateAndSanitizeInput(req: NextApiRequest, body: any): Promise<any> {
   const sanitized: any = {};
-  
+
   for (const [key, value] of Object.entries(body)) {
     if (typeof value === 'string') {
       // Check for malicious patterns
@@ -114,16 +115,18 @@ async function validateAndSanitizeInput(req: NextApiRequest, body: any): Promise
         securityLogger.logEvent('MALICIOUS_INPUT_DETECTED', req, {
           field: key,
           pattern_type: 'multiple',
-          value_preview: value.slice(0, 100)});
+          value_preview: value.slice(0, 100),
+        });
         throw new Error(`Malicious content detected in field: ${key}`);
       }
-      
+
       // Sanitize the input
       sanitized[key] = sanitization.sanitizeInput(value, {
         allowHTML: false,
         maxLength: 10000,
         removeControlChars: true,
-        normalizeUnicode: true});
+        normalizeUnicode: true,
+      });
     } else if (typeof value === 'object' && value !== null) {
       // Recursively sanitize nested objects
       sanitized[key] = await validateAndSanitizeInput(req, value);
@@ -132,39 +135,41 @@ async function validateAndSanitizeInput(req: NextApiRequest, body: any): Promise
       sanitized[key] = value;
     }
   }
-  
+
   return sanitized;
 }
 
 async function validateAndSanitizeQuery(req: NextApiRequest, query: any): Promise<any> {
   const sanitized: any = {};
-  
+
   for (const [key, value] of Object.entries(query)) {
     if (typeof value === 'string') {
       // Check for malicious patterns in query parameters
       if (securityValidation.containsMaliciousPattern(value)) {
         securityLogger.logEvent('MALICIOUS_QUERY_DETECTED', req, {
           parameter: key,
-          value_preview: value.slice(0, 100)});
+          value_preview: value.slice(0, 100),
+        });
         // For query parameters, we'll sanitize rather than reject
         sanitized[key] = sanitization.sanitizeInput(value, {
           allowHTML: false,
           maxLength: 1000,
           removeControlChars: true,
-          normalizeUnicode: true});
+          normalizeUnicode: true,
+        });
       } else {
         sanitized[key] = value;
       }
     } else if (Array.isArray(value)) {
       // Handle array query parameters
-      sanitized[key] = value.map(v => 
+      sanitized[key] = value.map(v =>
         typeof v === 'string' ? sanitization.sanitizeInput(v, { maxLength: 1000 }) : v
       );
     } else {
       sanitized[key] = value;
     }
   }
-  
+
   return sanitized;
 }
 
@@ -187,7 +192,8 @@ async function universalHandler(req: NextApiRequest, res: NextApiResponse): Prom
     body: req.body,
     query: req.query,
     startTime,
-    requestId};
+    requestId,
+  };
 
   // Start performance tracking
   const performanceTracker = PerformanceTracker.getInstance();
@@ -196,10 +202,17 @@ async function universalHandler(req: NextApiRequest, res: NextApiResponse): Prom
   try {
     // Security: Log API access
     if (user?.id) {
-      securityLogger.logEvent('API_USAGE', req, {
-        route: route.join('/'),
-        requestId,
-        authenticated: true}, user.id, sessionId);
+      securityLogger.logEvent(
+        'API_USAGE',
+        req,
+        {
+          route: route.join('/'),
+          requestId,
+          authenticated: true,
+        },
+        user.id,
+        sessionId
+      );
     }
 
     // Security: Validate and sanitize input data
@@ -213,7 +226,9 @@ async function universalHandler(req: NextApiRequest, res: NextApiResponse): Prom
     }
 
     // Log request with security context
-    console.log(`[API v2] ${context.method} /${route.join('/')} - ${requestId} - User: ${user?.id || 'anonymous'}`);
+    console.log(
+      `[API v2] ${context.method} /${route.join('/')} - ${requestId} - User: ${user?.id || 'anonymous'}`
+    );
 
     // Validate route
     if (!route || route.length === 0) {
@@ -250,11 +265,18 @@ async function universalHandler(req: NextApiRequest, res: NextApiResponse): Prom
     }
   } catch (error: any) {
     // Security: Log API errors for monitoring
-    securityLogger.logEvent('API_ERROR', req, {
-      route: route.join('/'),
-      error: error.message,
-      stack: error.stack?.slice(0, 500),
-      requestId}, user?.id, sessionId);
+    securityLogger.logEvent(
+      'API_ERROR',
+      req,
+      {
+        route: route.join('/'),
+        error: error.message,
+        stack: error.stack?.slice(0, 500),
+        requestId,
+      },
+      user?.id,
+      sessionId
+    );
 
     console.error(`[API v2] Error in ${context.method} /${route.join('/')}:`, error);
     return handleApiError(res, error, `api_v2_${route.join('_')}`);
@@ -289,17 +311,21 @@ async function handleHealthCheck(
     version: '2.0.0',
     uptime: process.uptime(),
     memory: process.memoryUsage(),
-    performance: Record<string, unknown>$1
-  averageResponseTime: performanceTracker.getAverageResponseTime(),
+    performance: {
+      averageResponseTime: performanceTracker.getAverageResponseTime(),
       totalRequests: performanceTracker.getTotalRequests(),
-      errorRate: performanceTracker.getErrorRate() },
-  ai: Record<string, unknown>$1
-  budgetStatus: await costController.getBudgetStatus(),
-      totalSpent: await costController.getTotalSpent()}};
+      errorRate: performanceTracker.getErrorRate(),
+    },
+    ai: {
+      budgetStatus: await costController.getBudgetStatus(),
+      totalSpent: await costController.getTotalSpent(),
+    },
+  };
 
   return successResponse(res, health, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()});
+    timestamp: new Date().toISOString(),
+  });
 }
 
 // Middleware pipeline wrapper
@@ -363,7 +389,8 @@ export async function withCostTracking(
       await costController.trackUsage('openai', 'gpt-4', 1000, actualCost, context.user.id, {
         operation,
         route: context.route.join('/'),
-        requestId: context.requestId});
+        requestId: context.requestId,
+      });
     };
 
     return true;
@@ -391,14 +418,7 @@ export function validateInput(schema: any) {
 // Order: Security Headers → Auth → CSRF → Session → Rate Limiting → Handler
 const securityEnhancedHandler = withSecurityHeaders(
   withAuth(
-    withCsrfProtection(
-      withSessionSecurity(
-        withRateLimit('api')(
-          universalHandler
-        )
-      ),
-      getCsrfConfig()
-    )
+    withCsrfProtection(withSessionSecurity(withRateLimit('api')(universalHandler)), getCsrfConfig())
   ),
   getSecurityConfig()
 );
