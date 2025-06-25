@@ -7,11 +7,11 @@ import { createServerClient } from '@supabase/ssr';
 // Extended request with user information
 export interface AuthenticatedRequest extends NextApiRequest {
   user?: {
-    id: string;,
-    email: string;,
-    role: UserRole;,
-    permissions: string[];,
-    clientIds: string[];,
+    id: string;
+    email: string;
+    role: UserRole;
+    permissions: string[];
+    clientIds: string[];
     tenantId: string;
   };
 }
@@ -26,36 +26,36 @@ export type AuthenticatedHandler = (
 export function withAuth(handler: AuthenticatedHandler) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     try {
-            // Create Supabase server client with proper cookie handling
+      // Create Supabase server client with proper cookie handling
       const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
-          cookies: Record<string, unknown>$1
-  get(name: string) {
+          cookies: {
+            get(name: string) {
               return req.cookies[name];
             },
             set(name: string, value: string, options: unknown) {
               // We don't need to set cookies in API routes
-            ,
- }
+            },
             remove(name: string, options: unknown) {
-              // We don't need to remove cookies in API routes }
+              // We don't need to remove cookies in API routes
+            },
+          },
+        }
       );
 
       // Get user from Supabase using cookies
-      const { data: { user }, error } = await supabase.auth.getUser();
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
 
       if (error || !user) {
-                return errorResponse(
-          res,
-          ErrorCode.UNAUTHORIZED,
-          'Authentication required',
-          401
-        );
+        return errorResponse(res, ErrorCode.UNAUTHORIZED, 'Authentication required', 401);
       }
 
-            // Try to get user profile from Supabase
+      // Try to get user profile from Supabase
       let profile = null;
       try {
         const { data: profileData, error: profileError } = await supabase
@@ -65,11 +65,11 @@ export function withAuth(handler: AuthenticatedHandler) {
           .single();
 
         if (profileError) {
-                    // If profile doesn't exist, create a basic one
+          // If profile doesn't exist, create a basic one
           if (profileError.code === 'PGRST116') {
-                        const userName = user.user_metadata?.name || user.email?.split('@')[0] || 'User';
+            const userName = user.user_metadata?.name || user.email?.split('@')[0] || 'User';
             const nameParts = userName.split(' ');
-            
+
             const profileData = {
               id: user.id,
               first_name: nameParts[0] || userName,
@@ -80,7 +80,8 @@ export function withAuth(handler: AuthenticatedHandler) {
               tenant_id: null,
               is_active: true,
               created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()};
+              updated_at: new Date().toISOString(),
+            };
 
             const { data: newProfile, error: createError } = await supabase
               .from('profiles')
@@ -99,9 +100,10 @@ export function withAuth(handler: AuthenticatedHandler) {
                 role: 'user',
                 permissions: [],
                 tenant_id: null,
-                is_active: true};
+                is_active: true,
+              };
             } else {
-                            profile = newProfile;
+              profile = newProfile;
             }
           } else {
             console.error('💥 withAuth: Unexpected profile error:', profileError);
@@ -116,10 +118,11 @@ export function withAuth(handler: AuthenticatedHandler) {
               role: 'user',
               permissions: [],
               tenant_id: null,
-              is_active: true};
+              is_active: true,
+            };
           }
         } else {
-                    profile = profileData;
+          profile = profileData;
         }
       } catch (profileException: unknown) {
         console.error('💥 withAuth: Profile creation exception:', profileException);
@@ -134,7 +137,8 @@ export function withAuth(handler: AuthenticatedHandler) {
           role: 'user',
           permissions: [],
           tenant_id: null,
-          is_active: true};
+          is_active: true,
+        };
       }
 
       // Get user's client access (don't fail if this errors)
@@ -161,10 +165,10 @@ export function withAuth(handler: AuthenticatedHandler) {
         role: (profile?.role as UserRole) || UserRole.VIEWER,
         permissions: profile?.permissions || [],
         clientIds: userClients.map((uc: { client_id: string }) => uc.client_id) || [],
-        tenantId: profile?.tenant_id || ''
+        tenantId: profile?.tenant_id || '',
       };
 
-            // Call the handler
+      // Call the handler
       return await handler(req as AuthenticatedRequest, res);
     } catch (error: unknown) {
       const message = getErrorMessage(error);
@@ -187,23 +191,13 @@ export function withRoles(roles: UserRole | UserRole[]) {
       const userRole = req.user?.role;
 
       if (!userRole) {
-        return errorResponse(
-          res,
-          ErrorCode.UNAUTHORIZED,
-          'User not authenticated',
-          401
-        );
+        return errorResponse(res, ErrorCode.UNAUTHORIZED, 'User not authenticated', 401);
       }
 
       const allowedRoles = Array.isArray(roles) ? roles : [roles];
 
       if (!allowedRoles.includes(userRole)) {
-        return errorResponse(
-          res,
-          ErrorCode.FORBIDDEN,
-          'Insufficient permissions',
-          403
-        );
+        return errorResponse(res, ErrorCode.FORBIDDEN, 'Insufficient permissions', 403);
       }
 
       return await handler(req, res);
@@ -226,12 +220,7 @@ export function withPermissions(requiredPermissions: string | string[]) {
       );
 
       if (!hasAllPermissions) {
-        return errorResponse(
-          res,
-          ErrorCode.FORBIDDEN,
-          'Insufficient permissions',
-          403
-        );
+        return errorResponse(res, ErrorCode.FORBIDDEN, 'Insufficient permissions', 403);
       }
 
       return await handler(req, res);
@@ -252,16 +241,10 @@ export function withClientAccess(clientIdParam: string = 'clientId') {
       }
 
       // Get client ID from request
-      const clientId = req.query[clientIdParam] as string ||
-                      req.body[clientIdParam] as string;
+      const clientId = (req.query[clientIdParam] as string) || (req.body[clientIdParam] as string);
 
       if (!clientId) {
-        return errorResponse(
-          res,
-          ErrorCode.VALIDATION_ERROR,
-          'Client ID is required',
-          400
-        );
+        return errorResponse(res, ErrorCode.VALIDATION_ERROR, 'Client ID is required', 400);
       }
 
       // Check if user has access to the client
