@@ -19,7 +19,8 @@ import {
   errorResponse,
   handleApiError,
   methodNotAllowed,
-  ApiErrorCode} from '@/lib/api-response';
+  ApiErrorCode,
+} from '@/lib/api-response';
 import { withCostTracking } from '../[...route]';
 
 interface RouteContext {
@@ -122,7 +123,7 @@ async function getWorkflowState(req: NextApiRequest, res: NextApiResponse, conte
     processing: false,
     last_error: null,
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    updated_at: new Date().toISOString(),
   };
 
   const data = workflow;
@@ -143,11 +144,13 @@ async function getWorkflowState(req: NextApiRequest, res: NextApiResponse, conte
       processing: data.processing || false,
       lastError: data.last_error,
       createdAt: data.created_at,
-      updatedAt: data.updated_at }
+      updatedAt: data.updated_at,
+    },
     200,
     {
       requestId: context.requestId,
-      timestamp: new Date().toISOString()}
+      timestamp: new Date().toISOString(),
+    }
   );
 }
 
@@ -160,14 +163,20 @@ async function updateWorkflowState(
 
   // Check if there are any updates provided
   if (!workflowId && Object.keys(updates).length === 0) {
-    return errorResponse(res, ApiErrorCode.VALIDATION_ERROR, 'Workflow ID or update data is required', 400);
+    return errorResponse(
+      res,
+      ApiErrorCode.VALIDATION_ERROR,
+      'Workflow ID or update data is required',
+      400
+    );
   }
 
   // Use provided workflowId or generate a new one
   const actualWorkflowId = workflowId || `workflow_${Date.now()}`;
 
   const updateData: Record<string, unknown> = {
-    updated_at: new Date().toISOString()};
+    updated_at: new Date().toISOString(),
+  };
 
   // Map frontend fields to database fields
   if (updates.currentStep !== undefined) updateData.current_step = updates.currentStep;
@@ -195,7 +204,7 @@ async function updateWorkflowState(
     processing: updateData.processing || false,
     last_error: updateData.last_error || null,
     created_at: new Date().toISOString(),
-    updated_at: updateData.updated_at
+    updated_at: updateData.updated_at,
   };
 
   const data = workflow;
@@ -216,11 +225,13 @@ async function updateWorkflowState(
       processing: data.processing || false,
       lastError: data.last_error,
       createdAt: data.created_at,
-      updatedAt: data.updated_at }
+      updatedAt: data.updated_at,
+    },
     200,
     {
       requestId: context.requestId,
-      timestamp: new Date().toISOString()}
+      timestamp: new Date().toISOString(),
+    }
   );
 }
 
@@ -240,7 +251,8 @@ async function _deleteWorkflowState(
 
   return successResponse(res, { deleted: true }, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()});
+    timestamp: new Date().toISOString(),
+  });
 }
 
 // Workflow assets management
@@ -274,7 +286,8 @@ async function getWorkflowAssets(req: NextApiRequest, res: NextApiResponse, cont
       thumbnailUrl: 'https://example.com/image1_thumb.jpg',
       clientId: clientId || null,
       createdBy: context.user.id,
-      createdAt: new Date().toISOString() }
+      createdAt: new Date().toISOString(),
+    },
     {
       id: 'asset2',
       name: 'Sample Video 1',
@@ -283,13 +296,14 @@ async function getWorkflowAssets(req: NextApiRequest, res: NextApiResponse, cont
       thumbnailUrl: 'https://example.com/video1_thumb.jpg',
       clientId: clientId || null,
       createdBy: context.user.id,
-      createdAt: new Date().toISOString()
-    }
+      createdAt: new Date().toISOString(),
+    },
   ];
 
   return successResponse(res, { assets: mockAssets }, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()});
+    timestamp: new Date().toISOString(),
+  });
 }
 
 async function selectWorkflowAssets(
@@ -300,7 +314,8 @@ async function selectWorkflowAssets(
   // Implementation for selecting assets
   return successResponse(res, { success: true }, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()});
+    timestamp: new Date().toISOString(),
+  });
 }
 
 async function removeWorkflowAsset(
@@ -311,7 +326,8 @@ async function removeWorkflowAsset(
   // Implementation for removing assets
   return successResponse(res, { success: true }, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()});
+    timestamp: new Date().toISOString(),
+  });
 }
 
 // AI asset generation with cost tracking
@@ -355,7 +371,8 @@ async function handleGenerateAssets(
     200,
     {
       requestId: context.requestId,
-      timestamp: new Date().toISOString()}
+      timestamp: new Date().toISOString(),
+    }
   );
 }
 
@@ -387,14 +404,17 @@ async function handleBrief(req: NextApiRequest, res: NextApiResponse, context: R
     {
       briefId,
       status: 'processed',
-      extractedData: Record<string, unknown>$1
-  title: 'Extracted Campaign Title',
+      extractedData: {
+        title: 'Extracted Campaign Title',
         objective: 'Campaign objective extracted from brief',
-        targetAudience: 'Target audience identified'}},
+        targetAudience: 'Target audience identified',
+      },
+    },
     200,
     {
       requestId: context.requestId,
-      timestamp: new Date().toISOString()}
+      timestamp: new Date().toISOString(),
+    }
   );
 }
 
@@ -431,11 +451,13 @@ async function generateMotivations(
     title: `Motivation ${i + 1}`,
     description: `Generated motivation ${i + 1} based on brief analysis`,
     category: ['emotional', 'rational', 'social'][i % 3],
-    strength: Math.floor(Math.random() * 100) + 1}));
+    strength: Math.floor(Math.random() * 100) + 1,
+  }));
 
   return successResponse(res, { motivations }, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()});
+    timestamp: new Date().toISOString(),
+  });
 }
 
 async function selectMotivations(req: NextApiRequest, res: NextApiResponse, context: RouteContext) {
@@ -455,7 +477,8 @@ async function selectMotivations(req: NextApiRequest, res: NextApiResponse, cont
 
   return successResponse(res, { success: true }, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()});
+    timestamp: new Date().toISOString(),
+  });
 }
 
 async function handleCopy(req: NextApiRequest, res: NextApiResponse, context: RouteContext) {
@@ -490,12 +513,14 @@ async function generateCopy(req: NextApiRequest, res: NextApiResponse, context: 
       body: `Engaging copy body for ${copyType} on ${platform}. Variation ${i + 1}.`,
       cta: `Action ${i + 1}`,
       platform: platform || 'general',
-      type: copyType || 'social_media'}))
+      type: copyType || 'social_media',
+    }))
   );
 
   return successResponse(res, { copyVariations }, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()});
+    timestamp: new Date().toISOString(),
+  });
 }
 
 async function selectCopy(req: NextApiRequest, res: NextApiResponse, context: RouteContext) {
@@ -515,7 +540,8 @@ async function selectCopy(req: NextApiRequest, res: NextApiResponse, context: Ro
 
   return successResponse(res, { success: true }, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()});
+    timestamp: new Date().toISOString(),
+  });
 }
 
 async function handleTemplates(req: NextApiRequest, res: NextApiResponse, context: RouteContext) {
@@ -540,26 +566,30 @@ async function getTemplates(req: NextApiRequest, res: NextApiResponse, context: 
       platform: platform || 'facebook',
       format: format || 'video',
       thumbnail: 'https://example.com/template1.jpg',
-      description: 'Clean, professional template for business content'},
+      description: 'Clean, professional template for business content',
+    },
     {
       id: 'template_2',
       name: 'Creative Social Template',
       platform: platform || 'facebook',
       format: format || 'video',
       thumbnail: 'https://example.com/template2.jpg',
-      description: 'Eye-catching template for social media engagement' }
+      description: 'Eye-catching template for social media engagement',
+    },
     {
       id: 'template_3',
       name: 'Minimalist Template',
       platform: platform || 'facebook',
       format: format || 'video',
       thumbnail: 'https://example.com/template3.jpg',
-      description: 'Simple, elegant template with focus on content'},
+      description: 'Simple, elegant template with focus on content',
+    },
   ];
 
   return successResponse(res, { templates }, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()});
+    timestamp: new Date().toISOString(),
+  });
 }
 
 async function selectTemplate(req: NextApiRequest, res: NextApiResponse, context: RouteContext) {
@@ -579,7 +609,8 @@ async function selectTemplate(req: NextApiRequest, res: NextApiResponse, context
 
   return successResponse(res, { success: true }, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()});
+    timestamp: new Date().toISOString(),
+  });
 }
 
 async function handleMatrix(req: NextApiRequest, res: NextApiResponse, context: RouteContext) {
@@ -609,15 +640,18 @@ async function handleMatrix(req: NextApiRequest, res: NextApiResponse, context: 
         assetId: asset.id || asset,
         copyId: copy.id || copy,
         status: 'pending',
-        createdAt: new Date().toISOString()}))
+        createdAt: new Date().toISOString(),
+      }))
     ),
     totalCombinations: selectedAssets.length * selectedCopy.length,
     status: 'generated',
-    createdAt: new Date().toISOString()};
+    createdAt: new Date().toISOString(),
+  };
 
   return successResponse(res, { matrix }, 200, {
     requestId: context.requestId,
-    timestamp: new Date().toISOString()});
+    timestamp: new Date().toISOString(),
+  });
 }
 
 async function handleRender(req: NextApiRequest, res: NextApiResponse, context: RouteContext) {
@@ -652,11 +686,13 @@ async function startRender(req: NextApiRequest, res: NextApiResponse, context: R
       renderId,
       status: 'queued',
       estimatedTime: 300, // 5 minutes
-      options: renderOptions || { quality: 'high', format: 'mp4' }},
+      options: renderOptions || { quality: 'high', format: 'mp4' },
+    },
     200,
     {
       requestId: context.requestId,
-      timestamp: new Date().toISOString()}
+      timestamp: new Date().toISOString(),
+    }
   );
 }
 
@@ -682,10 +718,12 @@ async function getRenderStatus(req: NextApiRequest, res: NextApiResponse, contex
             ? 100
             : 0,
       outputUrl: status === 'completed' ? `https://example.com/renders/${renderId}.mp4` : null,
-      error: status === 'failed' ? 'Rendering failed due to template error' : null }
+      error: status === 'failed' ? 'Rendering failed due to template error' : null,
+    },
     200,
     {
       requestId: context.requestId,
-      timestamp: new Date().toISOString()}
+      timestamp: new Date().toISOString(),
+    }
   );
 }
