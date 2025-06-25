@@ -41,15 +41,20 @@ class AICostController {
     return new AICostController();
   }
 
-  async getBudgetStatus(): Promise<void> {
+  async getBudgetStatus(): Promise<{ status: string; remaining: number }> {
     return { status: 'healthy', remaining: 1000 };
   }
 
-  async getTotalSpent(): Promise<void> {
+  async getTotalSpent(): Promise<number> {
     return 0;
   }
 
-  async checkBudget(service: string, model: string, tokens: number, userId: string): Promise<void> {
+  async checkBudget(
+    service: string,
+    model: string,
+    tokens: number,
+    userId: string
+  ): Promise<{ allowed: boolean; budgetRemaining: number; reason: string }> {
     return { allowed: true, budgetRemaining: 1000, reason: 'Budget check passed' };
   }
 
