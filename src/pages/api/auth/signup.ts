@@ -44,14 +44,16 @@ export default async function handler(
   if (!email.includes('@')) {
     return res.status(400).json({
       success: false,
-      error: 'Invalid email format' });
+      error: 'Invalid email format',
+    });
   }
 
   // Basic password validation
   if (password.length < 8) {
     return res.status(400).json({
       success: false,
-      error: 'Password must be at least 8 characters' });
+      error: 'Password must be at least 8 characters',
+    });
   }
 
   try {
@@ -65,14 +67,17 @@ export default async function handler(
       console.error('Supabase environment variables not configured');
       return res.status(500).json({
         success: false,
-        error: 'Authentication service not configured. Please contact support.' });
+        error: 'Authentication service not configured. Please contact support.',
+      });
     }
 
     // Check for demo/test environment
     if (process.env.NEXT_PUBLIC_SUPABASE_URL.includes('demo.supabase.co')) {
       return res.status(200).json({
         success: false,
-        error: 'Demo mode: Please configure real Supabase credentials in Netlify environment variables to enable account creation.' });
+        error:
+          'Demo mode: Please configure real Supabase credentials in Netlify environment variables to enable account creation.',
+      });
     }
 
     // Use Supabase authentication
@@ -84,7 +89,8 @@ export default async function handler(
       password,
       options: {
         data: {
-          name: name },
+          name: name,
+        },
       },
     });
 
@@ -106,13 +112,15 @@ export default async function handler(
 
       return res.status(400).json({
         success: false,
-        error: errorMessage });
+        error: errorMessage,
+      });
     }
 
     if (!authData.user) {
       return res.status(400).json({
         success: false,
-        error: 'Failed to create user account. Please try again.' });
+        error: 'Failed to create user account. Please try again.',
+      });
     }
 
     // Check if email confirmation is required
@@ -122,7 +130,8 @@ export default async function handler(
       process.env.NODE_ENV === 'development' && console.log('Email confirmation required');
       return res.status(200).json({
         success: true,
-        message: 'Please check your email for a confirmation link before logging in.'});
+        message: 'Please check your email for a confirmation link before logging in.',
+      });
     }
 
     // If no email confirmation required, create user profile
@@ -148,7 +157,8 @@ export default async function handler(
         last_name: name.split(' ').slice(1).join(' ') || '',
         role: 'user',
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString() });
+        updated_at: new Date().toISOString(),
+      });
 
       if (profileError) {
         console.error('Error creating profile:', profileError);
@@ -158,18 +168,20 @@ export default async function handler(
 
     return res.status(200).json({
       success: true,
-      user: Record<string, unknown>$1
-  id: authData.user.id,
+      user: {
+        id: authData.user.id,
         email: authData.user.email || email,
         name: name,
         role: 'user',
-        token: authData.session?.access_token || '' },
+        token: authData.session?.access_token || '',
+      },
     });
   } catch (error) {
     const message = getErrorMessage(error);
     console.error('Signup error:', error);
     return res.status(500).json({
       success: false,
-      error: 'An unexpected error occurred. Please try again later.' });
+      error: 'An unexpected error occurred. Please try again later.',
+    });
   }
 }
