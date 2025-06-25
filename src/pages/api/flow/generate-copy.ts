@@ -43,7 +43,8 @@ interface CopyVariation {
 
 // Initialize OpenAI client
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY});
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -55,10 +56,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!user) {
     return res.status(401).json({
       success: false,
-      message: 'Authentication required'
+      message: 'Authentication required',
     });
   }
-  const { motivations, briefData }: { motivations: Motivation[], briefData: BriefData } = req.body;
+  const { motivations, briefData }: { motivations: Motivation[]; briefData: BriefData } = req.body;
 
   if (!motivations || !Array.isArray(motivations) || motivations.length === 0) {
     return res.status(400).json({ success: false, message: 'Selected motivations are required' });
@@ -79,32 +80,34 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     briefTitle: briefData.title,
     briefObjective: briefData.objective?.substring(0, 100) + '...',
     briefProduct: briefData.product,
-    briefValueProp: briefData.valueProposition?.substring(0, 100) + '...'
+    briefValueProp: briefData.valueProposition?.substring(0, 100) + '...',
   });
 
   try {
-        // Generate 5 copy variations per motivation (max 10 words each)
+    // Generate 5 copy variations per motivation (max 10 words each)
     const copyVariations = await generateCopyFromMotivations(motivations, briefData);
 
-        return res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: copyVariations,
-      message: 'Copy variations generated successfully'
+      message: 'Copy variations generated successfully',
     });
-
   } catch (error: any) {
     console.error('Error generating copy:', error);
     return res.status(500).json({
       success: false,
-      message: error instanceof Error ? error.message : 'Failed to generate copy'
+      message: error instanceof Error ? error.message : 'Failed to generate copy',
     });
   }
 }
 
-async function generateCopyFromMotivations(motivations: Motivation[], briefData: BriefData): Promise<CopyVariation[]> {
+async function generateCopyFromMotivations(
+  motivations: Motivation[],
+  briefData: BriefData
+): Promise<CopyVariation[]> {
   // Start with template generation for fast response
   const templateCopy = generateCopyWithTemplates(motivations, briefData);
-  
+
   // Try AI-powered generation if API key is available and we have time
   if (process.env.OPENAI_API_KEY && templateCopy.length < 9) {
     try {
@@ -121,7 +124,10 @@ async function generateCopyFromMotivations(motivations: Motivation[], briefData:
   return templateCopy;
 }
 
-async function generateCopyWithAI(motivations: Motivation[], briefData: BriefData): Promise<CopyVariation[]> {
+async function generateCopyWithAI(
+  motivations: Motivation[],
+  briefData: BriefData
+): Promise<CopyVariation[]> {
   const prompt = `You are an expert copywriter specializing in conversion-focused ad copy. Create compelling copy that bridges the specific motivations with the exact product/service and target audience from the brief.
 
 CREATIVE BRIEF CONTEXT:
@@ -178,15 +184,15 @@ Respond with JSON array only.`;
       messages: [
         {
           role: 'user',
-          content: prompt
-        }
+          content: prompt,
+        },
       ],
       temperature: 0.8,
       max_tokens: 2000, // Reduce tokens for faster response
     }),
-    new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('OpenAI request timeout')), 20000) // Shorter timeout for Netlify compatibility
-    )
+    new Promise(
+      (_, reject) => setTimeout(() => reject(new Error('OpenAI request timeout')), 20000) // Shorter timeout for Netlify compatibility
+    ),
   ]);
 
   const responseText = (response as any).choices[0]?.message?.content?.trim();
@@ -194,7 +200,7 @@ Respond with JSON array only.`;
     throw new Error('No response from OpenAI');
   }
 
-    try {
+  try {
     // Clean up markdown formatting that OpenAI sometimes adds
     let cleanedResponse = responseText;
     if (cleanedResponse.includes('```json')) {
@@ -203,33 +209,37 @@ Respond with JSON array only.`;
     if (cleanedResponse.includes('```')) {
       cleanedResponse = cleanedResponse.replace(/```/g, '');
     }
-    
+
     const copyVariations = JSON.parse(cleanedResponse);
-    
+
     if (!Array.isArray(copyVariations)) {
       throw new Error('Response is not an array');
     }
 
     // Validate and format copy variations
-    return copyVariations.map((copy, index) => ({
-      id: copy.id || `copy_${index + 1}`,
-      text: copy.text || 'AI-generated copy',
-      platform: copy.platform || briefData.platforms[0] || 'Meta',
-      motivation: copy.motivation || motivations[0]?.title || 'Unknown',
-      wordCount: copy.wordCount || (copy.text ? copy.text.split(' ').length : 0),
-      tone: copy.tone || 'engaging',
-      cta: copy.cta || 'Learn more'
-    })).slice(0, 100); // Limit to reasonable number
-
+    return copyVariations
+      .map((copy, index) => ({
+        id: copy.id || `copy_${index + 1}`,
+        text: copy.text || 'AI-generated copy',
+        platform: copy.platform || briefData.platforms[0] || 'Meta',
+        motivation: copy.motivation || motivations[0]?.title || 'Unknown',
+        wordCount: copy.wordCount || (copy.text ? copy.text.split(' ').length : 0),
+        tone: copy.tone || 'engaging',
+        cta: copy.cta || 'Learn more',
+      }))
+      .slice(0, 100); // Limit to reasonable number
   } catch (parseError: any) {
     console.error('Failed to parse OpenAI copy response:', parseError);
     throw new Error('Invalid JSON response from OpenAI');
   }
 }
 
-function generateCopyWithTemplates(motivations: Motivation[], briefData: BriefData): CopyVariation[] {
+function generateCopyWithTemplates(
+  motivations: Motivation[],
+  briefData: BriefData
+): CopyVariation[] {
   const copyVariations: CopyVariation[] = [];
-  
+
   // Copy templates for different tones and styles
   const copyTemplates: Record<string, string[]> = {
     emotional: [
@@ -237,123 +247,130 @@ function generateCopyWithTemplates(motivations: Motivation[], briefData: BriefDa
       'Discover the {benefit} you deserve',
       'Experience {transformation} like never before',
       'Join thousands who found {success}',
-      'Unlock your potential with {offering}'
+      'Unlock your potential with {offering}',
     ],
     social_proof: [
       'Trusted by {number} satisfied customers',
       '{Testimonial} - Customer Success Story',
       'See why experts choose {brand}',
       'Join the {community} movement',
-      '{Rating} stars from verified users'
+      '{Rating} stars from verified users',
     ],
     innovation: [
       'Revolutionary {solution} changes everything',
       'Next-generation {technology} is here',
       'Pioneering the future of {industry}',
       'Advanced {feature} delivers results',
-      'Innovation meets {user_need} perfectly'
+      'Innovation meets {user_need} perfectly',
     ],
     community: [
       'Join our thriving {community} today',
       'Connect with like-minded {audience}',
       'Be part of something bigger',
       'Together we achieve more',
-      'Your {community} awaits you'
+      'Your {community} awaits you',
     ],
     problem_solution: [
       'Solve {problem} in minutes',
       'End {pain_point} forever',
       'Finally, a solution that works',
       'Say goodbye to {frustration}',
-      'The answer to {challenge}'
+      'The answer to {challenge}',
     ],
     aspirational: [
       'Live the {lifestyle} you deserve',
       'Achieve your {dream} today',
       'Step into your best self',
       'Make {aspiration} your reality',
-      'Become the {ideal_self} you envision'
+      'Become the {ideal_self} you envision',
     ],
     urgency: [
       'Limited time: {offer} expires soon',
-      'Act now before it\'s gone',
+      "Act now before it's gone",
       'Last chance for {benefit}',
       'Only {number} spots remaining',
-      'Hurry, {opportunity} ends today'
+      'Hurry, {opportunity} ends today',
     ],
     authority: [
       'Expert-approved {solution} delivers results',
       'Industry leaders trust {brand}',
       'Proven {method} with {result}',
       'Professional-grade {quality} guaranteed',
-      'Award-winning {service} since {year}'
+      'Award-winning {service} since {year}',
     ],
     transformation: [
       'Transform {current_state} into {desired_state}',
       'From {before} to {after}',
       'Your {transformation} journey starts here',
       'Become the {new_you} today',
-      'Change your {life_aspect} forever'
+      'Change your {life_aspect} forever',
     ],
     value: [
       'Save {amount} with {solution}',
       'Get {benefit} for less',
       'Maximum value, minimum cost',
       'ROI guaranteed or money back',
-      'Best {category} value available'
-    ]
+      'Best {category} value available',
+    ],
   };
 
   // Platform-specific adaptations
-  const platformAdaptations: Record<string, { maxWords: number; style: string; emojis: boolean; hashtags: boolean }> = {
-    Instagram: Record<string, unknown>$1
-  maxWords: 8,
+  const platformAdaptations: Record<
+    string,
+    { maxWords: number; style: string; emojis: boolean; hashtags: boolean }
+  > = {
+    Instagram: {
+      maxWords: 8,
       style: 'visual',
       emojis: true,
-      hashtags: true },
-  Facebook: Record<string, unknown>$1
-  maxWords: 10,
+      hashtags: true,
+    },
+    Facebook: {
+      maxWords: 10,
       style: 'conversational',
       emojis: false,
-      hashtags: false },
-  LinkedIn: Record<string, unknown>$1
-  maxWords: 10,
+      hashtags: false,
+    },
+    LinkedIn: {
+      maxWords: 10,
       style: 'professional',
       emojis: false,
-      hashtags: false },
-  Twitter: Record<string, unknown>$1
-  maxWords: 6,
+      hashtags: false,
+    },
+    Twitter: {
+      maxWords: 6,
       style: 'concise',
       emojis: true,
-      hashtags: true },
-  TikTok: Record<string, unknown>$1
-  maxWords: 7,
+      hashtags: true,
+    },
+    TikTok: {
+      maxWords: 7,
       style: 'trendy',
       emojis: true,
-      hashtags: true
-    }
+      hashtags: true,
+    },
   };
 
   // Generate copy for available motivations (at least 1, up to 3 for performance)
   const topMotivations = motivations.slice(0, Math.min(motivations.length, 3));
   const primaryPlatform = briefData.platforms[0] || 'Meta';
-  
+
   topMotivations.forEach((motivation, motivationIndex) => {
     const motivationType = getMotivationType(motivation.title);
     const templates = copyTemplates[motivationType] || copyTemplates.emotional;
     const platformConfig = platformAdaptations[primaryPlatform] || platformAdaptations.Facebook;
-    
+
     // Generate 3 variations per motivation for faster processing
     for (let i = 0; i < 3; i++) {
       const template = templates[i % templates.length];
-      
+
       // Generate copy text based on template and brief data
       const copyText = generateCopyText(template, briefData, motivation, platformConfig);
-      
+
       // Ensure word count is within limit (max 10 words)
       const words = copyText.split(' ');
       const finalText = words.slice(0, Math.min(words.length, 10)).join(' ');
-      
+
       copyVariations.push({
         id: `copy_${motivationIndex}_${i}_${primaryPlatform.toLowerCase()}`,
         text: finalText,
@@ -361,7 +378,7 @@ function generateCopyWithTemplates(motivations: Motivation[], briefData: BriefDa
         motivation: motivation.title,
         wordCount: finalText.split(' ').length,
         tone: getToneFromMotivation(motivation.title),
-        cta: generateCTA(motivation, primaryPlatform)
+        cta: generateCTA(motivation, primaryPlatform),
       });
     }
   });
@@ -374,28 +391,33 @@ function getMotivationType(motivationTitle: string): string {
   const typeMap = {
     'Emotional Connection': 'emotional',
     'Social Proof': 'social_proof',
-    'Innovation': 'innovation',
+    Innovation: 'innovation',
     'Community Building': 'community',
     'Problem Solution': 'problem_solution',
     'Aspirational Lifestyle': 'aspirational',
     'Urgency and Scarcity': 'urgency',
     'Authority and Expertise': 'authority',
     'Personal Transformation': 'transformation',
-    'Value and ROI': 'value'
+    'Value and ROI': 'value',
   };
-  
+
   for (const [key, value] of Object.entries(typeMap)) {
     if (motivationTitle.includes(key.split(' ')[0])) {
       return value;
     }
   }
-  
+
   return 'emotional';
 }
 
-function generateCopyText(template: string, briefData: BriefData, motivation: Motivation, platformConfig: any): string {
+function generateCopyText(
+  template: string,
+  briefData: BriefData,
+  motivation: Motivation,
+  platformConfig: any
+): string {
   let text = template;
-  
+
   // Replace placeholders with brief data
   const replacements = {
     '{goal}': extractGoal(briefData.objective),
@@ -428,19 +450,19 @@ function generateCopyText(template: string, briefData: BriefData, motivation: Mo
     '{new_you}': 'best version',
     '{life_aspect}': 'approach',
     '{amount}': '$' + getRandomNumber(),
-    '{category}': extractCategory(briefData.title)
+    '{category}': extractCategory(briefData.title),
   };
-  
+
   // Apply replacements
   Object.entries(replacements).forEach(([placeholder, value]) => {
     text = text.replace(new RegExp(placeholder.replace(/[{}]/g, '\\$&'), 'g'), value);
   });
-  
+
   // Add platform-specific elements
   if (platformConfig.emojis && Math.random() > 0.5) {
     text = addRelevantEmoji(text, motivation);
   }
-  
+
   return text;
 }
 
@@ -469,12 +491,12 @@ function generateCTA(motivation: Motivation, platform: string): string {
     urgency: ['Act now', 'Hurry', 'Limited time'],
     authority: ['Learn more', 'Get expert', 'Discover'],
     transformation: ['Start today', 'Transform', 'Begin change'],
-    value: ['Save now', 'Get deal', 'Compare']
+    value: ['Save now', 'Get deal', 'Compare'],
   };
 
   const motivationType = getMotivationType(motivation.title);
   const typeCTAs = ctas[motivationType] || ctas.emotional;
-  
+
   return typeCTAs[Math.floor(Math.random() * typeCTAs.length)];
 }
 
@@ -564,24 +586,24 @@ function extractResult(objective: string): string {
 
 function addRelevantEmoji(text: string, motivation: Motivation): string {
   const emojiMap = {
-    'Emotional': '❤️',
-    'Social': '👥',
-    'Innovation': '🚀',
-    'Community': '🤝',
-    'Problem': '✅',
-    'Aspirational': '⭐',
-    'Urgency': '⏰',
-    'Authority': '🏆',
-    'Transformation': '✨',
-    'Value': '💰'
+    Emotional: '❤️',
+    Social: '👥',
+    Innovation: '🚀',
+    Community: '🤝',
+    Problem: '✅',
+    Aspirational: '⭐',
+    Urgency: '⏰',
+    Authority: '🏆',
+    Transformation: '✨',
+    Value: '💰',
   };
-  
+
   for (const [key, emoji] of Object.entries(emojiMap)) {
     if (motivation.title.includes(key)) {
       return `${emoji} ${text}`;
     }
   }
-  
+
   return text;
 }
 
