@@ -21,7 +21,8 @@ import {
   Slider,
   FormControlLabel,
   Switch,
-  Grid} from '@mui/material';
+  Grid,
+} from '@mui/material';
 import {
   PlayArrow as RenderIcon,
   Refresh as RefreshIcon,
@@ -30,7 +31,8 @@ import {
   Stop as StopIcon,
   CheckCircle as CompleteIcon,
   Error as ErrorIcon,
-  Schedule as PendingIcon} from '@mui/icons-material';
+  Schedule as PendingIcon,
+} from '@mui/icons-material';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
 
@@ -54,32 +56,33 @@ interface VideoGenerationPanelProps {
 }
 
 const platforms = [
-  { value: 'youtube', label: 'YouTube'  }
-  { value: 'instagram', label: 'Instagram'  }
-  { value: 'tiktok', label: 'TikTok'  }
-  { value: 'facebook', label: 'Facebook'  }
-  { value: 'linkedin', label: 'LinkedIn'  }
-  { value: 'twitter', label: 'Twitter'  }
+  { value: 'youtube', label: 'YouTube' },
+  { value: 'instagram', label: 'Instagram' },
+  { value: 'tiktok', label: 'TikTok' },
+  { value: 'facebook', label: 'Facebook' },
+  { value: 'linkedin', label: 'LinkedIn' },
+  { value: 'twitter', label: 'Twitter' },
 ];
 
 const styles = [
-  { value: 'commercial', label: 'Commercial'  }
-  { value: 'cinematic', label: 'Cinematic'  }
-  { value: 'documentary', label: 'Documentary'  }
-  { value: 'social_media', label: 'Social Media'  }
-  { value: 'animation', label: 'Animation'  }
+  { value: 'commercial', label: 'Commercial' },
+  { value: 'cinematic', label: 'Cinematic' },
+  { value: 'documentary', label: 'Documentary' },
+  { value: 'social_media', label: 'Social Media' },
+  { value: 'animation', label: 'Animation' },
 ];
 
 const qualities = [
-  { value: 'draft', label: 'Draft (Fast)'  }
-  { value: 'standard', label: 'Standard'  }
-  { value: 'high', label: 'High Quality'  }
+  { value: 'draft', label: 'Draft (Fast)' },
+  { value: 'standard', label: 'Standard' },
+  { value: 'high', label: 'High Quality' },
 ];
 
 const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
   combinations = [],
   campaignId,
-  onComplete}) => {
+  onComplete,
+}) => {
   const { activeClient } = useClient();
   const { showNotification } = useNotification();
 
@@ -109,8 +112,8 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
 
   const fetchJobUpdates = async () => {
     try {
-      const pendingJobs = jobs.filter((job: any) =>
-        job.status === 'pending' || job.status === 'processing'
+      const pendingJobs = jobs.filter(
+        (job: any) => job.status === 'pending' || job.status === 'processing'
       );
       if (pendingJobs.length === 0) return;
 
@@ -118,9 +121,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
         const response = await fetch(`/api/video/status?job_id=${job.id}`);
         const data = await response.json();
         if (data.success) {
-          setJobs(prev => prev.map((j: any) =>
-            j.id === job.id ? { ...j, ...data.job } : j
-          ));
+          setJobs(prev => prev.map((j: any) => (j.id === job.id ? { ...j, ...data.job } : j)));
         }
       }
     } catch (error: any) {
@@ -147,32 +148,39 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
       const videoConfig = {
         type: campaignId ? 'campaign_based' : 'standalone',
         campaign_id: campaignId,
-        video_config: Record<string, unknown>$1
-  prompt,
+        video_config: {
+          prompt,
           style,
           duration,
           platform,
           quality,
-          aspect_ratio: getAspectRatioForPlatform(platform) },
-  content_elements: Record<string, unknown>$1
-  voice_over: includeVoiceOver ? {
-            text: voiceOverText || prompt,
-            voice: 'neural',
-            language: 'en'} : undefined,
-          background_music: true },
-  generation_settings: Record<string, unknown>$1
-  variations_count: variationsCount,
+          aspect_ratio: getAspectRatioForPlatform(platform),
+        },
+        content_elements: {
+          voice_over: includeVoiceOver
+            ? {
+                text: voiceOverText || prompt,
+                voice: 'neural',
+                language: 'en',
+              }
+            : undefined,
+          background_music: true,
+        },
+        generation_settings: {
+          variations_count: variationsCount,
           include_captions: includeCaptions,
           auto_optimize_for_platform: true,
-          save_to_assets: true}};
+          save_to_assets: true,
+        },
+      };
 
       const response = await fetch('/api/video/generate', {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json'
-      
-      },
-        body: JSON.stringify(videoConfig)});
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(videoConfig),
+      });
 
       const data = await response.json();
       if (data.data) {
@@ -183,7 +191,8 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
           status: result.status,
           render_job_id: result.render_job_id,
           estimated_completion: result.estimated_completion,
-          created_at: new Date().toISOString()}));
+          created_at: new Date().toISOString(),
+        }));
         setJobs(newJobs);
         showNotification(`Started generation of ${newJobs.length} videos`, 'success');
       } else {
@@ -212,27 +221,38 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
       tiktok: '9:16',
       facebook: '16:9',
       linkedin: '16:9',
-      twitter: '16:9'};
+      twitter: '16:9',
+    };
     return ratios[platform] || '16:9';
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'pending': return <PendingIcon color="warning" />;
-      case 'processing': return <RenderIcon color="info" />;
-      case 'completed': return <CompleteIcon color="success" />;
-      case 'failed': return <ErrorIcon color="error" />;
-      default: return <PendingIcon />;
+      case 'pending':
+        return <PendingIcon color="warning" />;
+      case 'processing':
+        return <RenderIcon color="info" />;
+      case 'completed':
+        return <CompleteIcon color="success" />;
+      case 'failed':
+        return <ErrorIcon color="error" />;
+      default:
+        return <PendingIcon />;
     }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'warning';
-      case 'processing': return 'info';
-      case 'completed': return 'success';
-      case 'failed': return 'error';
-      default: return 'default';
+      case 'pending':
+        return 'warning';
+      case 'processing':
+        return 'info';
+      case 'completed':
+        return 'success';
+      case 'failed':
+        return 'error';
+      default:
+        return 'default';
     }
   };
 
@@ -250,14 +270,14 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
 
   const completedJobs = jobs.filter((job: any) => job.status === 'completed');
   const failedJobs = jobs.filter((job: any) => job.status === 'failed');
-  const processingJobs = jobs.filter((job: any) => job.status === 'processing' || job.status === 'pending');
+  const processingJobs = jobs.filter(
+    (job: any) => job.status === 'processing' || job.status === 'pending'
+  );
 
   return (
     <Box>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h6">
-          Video Generation
-        </Typography>
+        <Typography variant="h6">Video Generation</Typography>
         <Stack direction="row" spacing={2}>
           <Button
             variant="outlined"
@@ -334,9 +354,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
               <Card>
                 <CardContent>
                   <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
-                    <Typography variant="h6">
-                      Video {job.variation_index}
-                    </Typography>
+                    <Typography variant="h6">Video {job.variation_index}</Typography>
                     <Box display="flex" alignItems="center" gap={1}>
                       {getStatusIcon(job.status)}
                       <Chip
@@ -371,7 +389,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
                   <Stack direction="row" spacing={1}>
                     {job.status === 'completed' && (
                       <>
-       <Button
+                        <Button
                           size="small"
                           startIcon={<PreviewIcon />}
                           onClick={() => previewVideo(job)}
@@ -388,12 +406,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
                       </>
                     )}
                     {(job.status === 'processing' || job.status === 'pending') && (
-                      <Button
-                        size="small"
-                        startIcon={<StopIcon />}
-                        color="error"
-                        disabled
-                      >
+                      <Button size="small" startIcon={<StopIcon />} color="error" disabled>
                         Cancel
                       </Button>
                     )}
@@ -412,18 +425,13 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>
-          Video Generation Settings
-        </DialogTitle>
+        <DialogTitle>Video Generation Settings</DialogTitle>
         <DialogContent>
           <Grid container spacing={3} sx={{ mt: 1 }}>
             <Grid size={{ xs: 12, md: 6 }}>
               <FormControl fullWidth>
                 <InputLabel>Platform</InputLabel>
-                <Select
-                  value={platform}
-                  onChange={(e) => setPlatform(e.target.value)}
-                >
+                <Select value={platform} onChange={e => setPlatform(e.target.value)}>
                   {platforms.map((p: any) => (
                     <MenuItem key={p.value} value={p.value}>
                       {p.label}
@@ -435,10 +443,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
             <Grid size={{ xs: 12, md: 6 }}>
               <FormControl fullWidth>
                 <InputLabel>Style</InputLabel>
-                <Select
-                  value={style}
-                  onChange={(e) => setStyle(e.target.value)}
-                >
+                <Select value={style} onChange={e => setStyle(e.target.value)}>
                   {styles.map((s: any) => (
                     <MenuItem key={s.value} value={s.value}>
                       {s.label}
@@ -450,10 +455,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
             <Grid size={{ xs: 12, md: 6 }}>
               <FormControl fullWidth>
                 <InputLabel>Quality</InputLabel>
-                <Select
-                  value={quality}
-                  onChange={(e) => setQuality(e.target.value)}
-                >
+                <Select value={quality} onChange={e => setQuality(e.target.value)}>
                   {qualities.map((q: any) => (
                     <MenuItem key={q.value} value={q.value}>
                       {q.label}
@@ -463,9 +465,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
               </FormControl>
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Typography gutterBottom>
-                Duration: {duration}s
-              </Typography>
+              <Typography gutterBottom>Duration: {duration}s</Typography>
               <Slider
                 value={duration}
                 onChange={(_, value) => setDuration(value as number)}
@@ -476,9 +476,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
               />
             </Grid>
             <Grid size={{ xs: 12, md: 6 }}>
-              <Typography gutterBottom>
-                Variations: {variationsCount}
-              </Typography>
+              <Typography gutterBottom>Variations: {variationsCount}</Typography>
               <Slider
                 value={variationsCount}
                 onChange={(_, value) => setVariationsCount(value as number)}
@@ -493,7 +491,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
                 control={
                   <Switch
                     checked={includeCaptions}
-                    onChange={(e) => setIncludeCaptions(e.target.checked)}
+                    onChange={e => setIncludeCaptions(e.target.checked)}
                   />
                 }
                 label="Include Captions"
@@ -504,7 +502,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
                 control={
                   <Switch
                     checked={includeVoiceOver}
-                    onChange={(e) => setIncludeVoiceOver(e.target.checked)}
+                    onChange={e => setIncludeVoiceOver(e.target.checked)}
                   />
                 }
                 label="Include Voice Over"
@@ -518,7 +516,7 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
                   rows={3}
                   label="Voice Over Text"
                   value={voiceOverText}
-                  onChange={(e) => setVoiceOverText(e.target.value)}
+                  onChange={e => setVoiceOverText(e.target.value)}
                   placeholder="Enter the script for voice over, or leave empty to use generated content"
                 />
               </Grid>
@@ -526,14 +524,8 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
           </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setConfigDialogOpen(false)}>
-            Cancel
-          </Button>
-          <Button
-            onClick={generateVideos}
-            variant="contained"
-            disabled={generating}
-          >
+          <Button onClick={() => setConfigDialogOpen(false)}>Cancel</Button>
+          <Button onClick={generateVideos} variant="contained" disabled={generating}>
             Start Generation
           </Button>
         </DialogActions>
