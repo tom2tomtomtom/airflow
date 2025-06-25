@@ -98,7 +98,8 @@ interface ValidationMessageProps {
 export const ValidationMessage: React.FC<ValidationMessageProps> = ({
   error,
   touched = true,
-  showIcon = true}) => {
+  showIcon = true,
+}) => {
   if (!error || !touched) return null;
 
   return (
@@ -116,9 +117,10 @@ interface FormValidationSummaryProps {
 
 export const FormValidationSummary: React.FC<FormValidationSummaryProps> = ({
   errors,
-  touched = {}}) => {
+  touched = {},
+}) => {
   const errorMessages = Object.entries(errors)
-    .filter(([key, error]) => error && (touched[key] !== false))
+    .filter(([key, error]) => error && touched[key] !== false)
     .map(([key, error]) => ({ field: key, message: error }));
 
   if (errorMessages.length === 0) return null;
@@ -130,7 +132,8 @@ export const FormValidationSummary: React.FC<FormValidationSummaryProps> = ({
         color: 'error.dark',
         p: 2,
         borderRadius: 1,
-        mb: 2}}
+        mb: 2,
+      }}
     >
       <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
         Please fix the following errors:
@@ -150,53 +153,65 @@ export const FormValidationSummary: React.FC<FormValidationSummaryProps> = ({
 
 // Common validation rules
 export const commonValidationRules = {
-  email: Record<string, unknown>$1
-  required: true,
-    email: true} as ValidationRules,
+  email: {
+    required: true,
+    email: true,
+  } as ValidationRules,
 
-  password: Record<string, unknown>$1
-  required: true,
+  password: {
+    required: true,
     minLength: 8,
     custom: [
       {
         validate: (value: string) => /[A-Z]/.test(value),
-        message: 'Password must contain at least one uppercase letter' }
+        message: 'Password must contain at least one uppercase letter',
+      },
       {
         validate: (value: string) => /[a-z]/.test(value),
-        message: 'Password must contain at least one lowercase letter' }
+        message: 'Password must contain at least one lowercase letter',
+      },
       {
         validate: (value: string) => /[0-9]/.test(value),
-        message: 'Password must contain at least one number' }
-    ]} as ValidationRules,
+        message: 'Password must contain at least one number',
+      },
+    ],
+  } as ValidationRules,
 
-  username: Record<string, unknown>$1
-  required: true,
+  username: {
+    required: true,
     minLength: 3,
     maxLength: 20,
     pattern: /^[a-zA-Z0-9_]+$/,
     custom: [
       {
         validate: (value: string) => !/^[0-9]/.test(value),
-        message: 'Username cannot start with a number' }
-    ]} as ValidationRules,
+        message: 'Username cannot start with a number',
+      },
+    ],
+  } as ValidationRules,
 
-  phoneNumber: Record<string, unknown>$1
-  required: true,
+  phoneNumber: {
+    required: true,
     pattern: /^\+?[1-9]\d{1,14}$/,
     custom: [
       {
         validate: (value: string) => value.replace(/\D/g, '').length >= 10,
-        message: 'Phone number must be at least 10 digits' }
-    ]} as ValidationRules,
+        message: 'Phone number must be at least 10 digits',
+      },
+    ],
+  } as ValidationRules,
 
-  url: Record<string, unknown>$1
-  required: true,
-    url: true} as ValidationRules,
+  url: {
+    required: true,
+    url: true,
+  } as ValidationRules,
 
-  positiveNumber: Record<string, unknown>$1
-  required: true,
+  positiveNumber: {
+    required: true,
     number: true,
-    min: 0} as ValidationRules};
+    min: 0,
+  } as ValidationRules,
+};
 
 // Hook for form validation
 export const useFormValidation = <T extends Record<string, any>>(
@@ -208,10 +223,10 @@ export const useFormValidation = <T extends Record<string, any>>(
   const [touched, setTouched] = React.useState<Record<keyof T, boolean>>({} as any);
 
   const validateForm = React.useCallback(() => {
-    const newErrors: Record<keyof T, string | null> = {} as Record<string, unknown> & Record<string, unknown> & Record<string, unknown> & any;
+    const newErrors: Record<keyof T, string | null> = {} as any;
     let isValid = true;
 
-    Object.keys(validationRules).forEach((field) => {
+    Object.keys(validationRules).forEach(field => {
       const error = validateField(values[field as keyof T], validationRules[field as keyof T]);
       newErrors[field as keyof T] = error;
       if (error) isValid = false;
@@ -222,21 +237,21 @@ export const useFormValidation = <T extends Record<string, any>>(
   }, [values, validationRules]);
 
   const handleChange = (field: keyof T, value: any) => {
-    setValues((prev) => ({ ...prev, [field]: value }));
-    
+    setValues(prev => ({ ...prev, [field]: value }));
+
     // Validate on change if field was already touched
     if (touched[field]) {
       const error = validateField(value, validationRules[field]);
-      setErrors((prev) => ({ ...prev, [field]: error }));
+      setErrors(prev => ({ ...prev, [field]: error }));
     }
   };
 
   const handleBlur = (field: keyof T) => {
-    setTouched((prev) => ({ ...prev, [field]: true }));
-    
+    setTouched(prev => ({ ...prev, [field]: true }));
+
     // Validate on blur
     const error = validateField(values[field], validationRules[field]);
-    setErrors((prev) => ({ ...prev, [field]: error }));
+    setErrors(prev => ({ ...prev, [field]: error }));
   };
 
   const resetForm = () => {
@@ -253,5 +268,6 @@ export const useFormValidation = <T extends Record<string, any>>(
     handleBlur,
     validateForm,
     resetForm,
-    isValid: Object.values(errors).every((error) => !error)};
+    isValid: Object.values(errors).every(error => !error),
+  };
 };
