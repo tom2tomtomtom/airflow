@@ -16,10 +16,11 @@ export interface EmailOptions {
 export async function sendEmail(options: EmailOptions): Promise<{ success: boolean; id?: string }> {
   // Placeholder implementation
   console.log('Email would be sent:', options);
-  
+
   return {
     success: true,
-    id: `email_${Date.now()}`};
+    id: `email_${Date.now()}`,
+  };
 }
 
 /**
@@ -34,7 +35,8 @@ export async function sendDataExportEmail(to: string, downloadUrl: string): Prom
       <p>You can download your data export from the link below:</p>
       <a href="${downloadUrl}">Download Data Export</a>
       <p>This link will expire in 7 days.</p>
-    `});
+    `,
+  });
 }
 
 /**
@@ -48,7 +50,8 @@ export async function sendDataDeletionEmail(to: string): Promise<void> {
       <h1>Data Deletion Completed</h1>
       <p>Your personal data has been successfully deleted from our systems.</p>
       <p>If you have any questions, please contact our support team.</p>
-    `});
+    `,
+  });
 }
 
 /**
@@ -56,8 +59,8 @@ export async function sendDataDeletionEmail(to: string): Promise<void> {
  */
 export async function sendRenderCompleteEmail(
   to: string,
-  renderDetails: Record<string, unknown>$1
-  id: string;
+  renderDetails: {
+    id: string;
     name: string;
     downloadUrl?: string;
     status: string;
@@ -70,9 +73,14 @@ export async function sendRenderCompleteEmail(
       <h1>Your Render is Complete</h1>
       <p>Your render "${renderDetails.name}" has finished processing.</p>
       <p>Status: ${renderDetails.status}</p>
-      ${renderDetails.downloadUrl ? `
+      ${
+        renderDetails.downloadUrl
+          ? `
         <p><a href="${renderDetails.downloadUrl}">Download your render</a></p>
-      ` : ''}
+      `
+          : ''
+      }
       <p>Render ID: ${renderDetails.id}</p>
-    `});
+    `,
+  });
 }
