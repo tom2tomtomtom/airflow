@@ -19,7 +19,8 @@ const GenerationsFilterSchema = z.object({
   offset: z.number().min(0).default(0),
   sort_by: z.enum(['created_at', 'updated_at', 'status']).default('created_at'),
   sort_order: z.enum(['asc', 'desc']).default('desc'),
-  include_jobs: z.boolean().default(false)});
+  include_jobs: z.boolean().default(false),
+});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -39,18 +40,18 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Video Generations API error:', error);
     return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? message : undefined
+      details: process.env.NODE_ENV === 'development' ? message : undefined,
     });
   }
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const validationResult = GenerationsFilterSchema.safeParse(req.query);
-  
+
   if (!validationResult.success) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Invalid query parameters',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
@@ -61,25 +62,29 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     .from('user_clients')
     .select('client_id')
     .eq('user_id', user.id);
-  
+
   if (!userClients || userClients.length === 0) {
-    return res.json({ 
-      data: [], 
+    return res.json({
+      data: [],
       count: 0,
-      summary: getEmptySummary()});
+      summary: getEmptySummary(),
+    });
   }
 
   const clientIds = userClients.map((uc: any) => uc.client_id);
 
   let query = supabase
     .from('video_generations')
-    .select(`
+    .select(
+      `
       *,
       briefs(id, name, clients(id, name, slug)),
       campaigns(id, name, clients(id, name, slug)),
       matrices(id, name, campaigns(id, name, clients(id, name, slug))),
       assets(id, name, file_url)
-    `, { count: 'exact' })
+    `,
+      { count: 'exact' }
+    )
     .order(filters.sort_by, { ascending: filters.sort_order === 'asc' });
 
   // Filter by client access
@@ -144,16 +149,16 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   // Calculate summary statistics
   const summary = calculateSummary(generations || []);
 
-  return res.json({ 
+  return res.json({
     data: processedData,
     count: processedData.length,
     total_jobs: count || 0,
     summary,
-    pagination: Record<string, unknown>$1
-  limit: filters.limit,
+    pagination: {
+      limit: filters.limit,
       offset: filters.offset,
-      total: count || 0
-    }
+      total: count || 0,
+    },
   });
 }
 
@@ -162,7 +167,7 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
 
   if (!generation_id && !job_id) {
     return res.status(400).json({
-      error: 'Either generation_id or job_id is required'
+      error: 'Either generation_id or job_id is required',
     });
   }
 
@@ -173,7 +178,12 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
   }
 }
 
-async function deleteGeneration(req: NextApiRequest, res: NextApiResponse, user: any, generationId: string): Promise<void> {
+async function deleteGeneration(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  generationId: string
+): Promise<void> {
   // Get all jobs for this generation
   const { data: generations } = await supabase
     .from('video_generations')
@@ -198,11 +208,13 @@ async function deleteGeneration(req: NextApiRequest, res: NextApiResponse, user:
   }
 
   // Check if any jobs are still processing
-  const processingJobs = generations.filter((gen: any) => ['pending', 'processing'].includes(gen.status));
+  const processingJobs = generations.filter((gen: any) =>
+    ['pending', 'processing'].includes(gen.status)
+  );
   if (processingJobs.length > 0) {
     return res.status(409).json({
       error: 'Cannot delete generation with active jobs',
-      details: `${processingJobs.length} jobs are still processing`
+      details: `${processingJobs.length} jobs are still processing`,
     });
   }
 
@@ -219,11 +231,16 @@ async function deleteGeneration(req: NextApiRequest, res: NextApiResponse, user:
 
   return res.json({
     message: 'Generation deleted successfully',
-    deleted_jobs: generations.length
+    deleted_jobs: generations.length,
   });
 }
 
-async function deleteJob(req: NextApiRequest, res: NextApiResponse, user: any, jobId: string): Promise<void> {
+async function deleteJob(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  jobId: string
+): Promise<void> {
   // Get job info
   const { data: generation } = await supabase
     .from('video_generations')
@@ -251,23 +268,17 @@ async function deleteJob(req: NextApiRequest, res: NextApiResponse, user: any, j
   if (['pending', 'processing'].includes(generation.status)) {
     return res.status(409).json({
       error: 'Cannot delete active job',
-      status: generation.status
+      status: generation.status,
     });
   }
 
   // Delete associated asset if exists
   if (generation.asset_id) {
-    await supabase
-      .from('assets')
-      .delete()
-      .eq('id', generation.asset_id);
+    await supabase.from('assets').delete().eq('id', generation.asset_id);
   }
 
   // Delete job
-  const { error } = await supabase
-    .from('video_generations')
-    .delete()
-    .eq('id', jobId);
+  const { error } = await supabase.from('video_generations').delete().eq('id', jobId);
 
   if (error) {
     console.error('Error deleting job:', error);
@@ -275,7 +286,7 @@ async function deleteJob(req: NextApiRequest, res: NextApiResponse, user: any, j
   }
 
   return res.json({
-    message: 'Video generation job deleted successfully'
+    message: 'Video generation job deleted successfully',
   });
 }
 
@@ -293,7 +304,8 @@ function groupByGeneration(generations: any[]): any[] {
         created_at: gen.created_at,
         jobs: [],
         status: 'pending',
-        progress: { percentage: 0, completed: 0, total: 0 }};
+        progress: { percentage: 0, completed: 0, total: 0 },
+      };
     }
 
     grouped[genId].jobs.push({
@@ -305,19 +317,23 @@ function groupByGeneration(generations: any[]): any[] {
       error_message: gen.error_message,
       config: gen.config,
       created_at: gen.created_at,
-      updated_at: gen.updated_at});
+      updated_at: gen.updated_at,
+    });
   });
 
   // Calculate progress for each generation
   Object.values(grouped).forEach((gen: any) => {
     const totalJobs = gen.jobs.length;
     const completedJobs = gen.jobs.filter((job: any) => job.status === 'completed').length;
-    const processingJobs = gen.jobs.filter((job: any) => ['pending', 'processing'].includes(job.status)).length;
+    const processingJobs = gen.jobs.filter((job: any) =>
+      ['pending', 'processing'].includes(job.status)
+    ).length;
 
     gen.progress = {
       percentage: totalJobs > 0 ? Math.round((completedJobs / totalJobs) * 100) : 0,
       completed: completedJobs,
-      total: totalJobs};
+      total: totalJobs,
+    };
 
     // Determine overall status
     if (completedJobs === totalJobs) {
@@ -332,8 +348,8 @@ function groupByGeneration(generations: any[]): any[] {
     gen.jobs.sort((a: any, b: any) => a.variation_index - b.variation_index);
   });
 
-  return Object.values(grouped).sort((a: any, b: any) => 
-    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  return Object.values(grouped).sort(
+    (a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
 }
 
@@ -362,7 +378,8 @@ function enhanceGenerationData(generation: any): any {
     error_message: generation.error_message,
     config: generation.config,
     created_at: generation.created_at,
-    updated_at: generation.updated_at};
+    updated_at: generation.updated_at,
+  };
 }
 
 function getContextInfo(generation: any): any {
@@ -371,32 +388,39 @@ function getContextInfo(generation: any): any {
       type: 'brief',
       id: generation.brief_id,
       name: generation.briefs.name,
-      client: generation.briefs.clients};
+      client: generation.briefs.clients,
+    };
   } else if (generation.matrices) {
     return {
       type: 'matrix',
       id: generation.matrix_id,
       name: generation.matrices.name,
-      campaign: generation.matrices.campaigns};
+      campaign: generation.matrices.campaigns,
+    };
   } else if (generation.campaigns) {
     return {
       type: 'campaign',
       id: generation.campaign_id,
       name: generation.campaigns.name,
-      client: generation.campaigns.clients};
+      client: generation.campaigns.clients,
+    };
   } else {
     return {
       type: 'standalone',
-      client_id: generation.client_id};
+      client_id: generation.client_id,
+    };
   }
 }
 
 function calculateSummary(generations: any[]): any {
   const total = generations.length;
-  const byStatus = generations.reduce((acc, gen) => {
-    acc[gen.status] = (acc[gen.status] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const byStatus = generations.reduce(
+    (acc, gen) => {
+      acc[gen.status] = (acc[gen.status] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
   // Group by generation_id to get unique generations
   const uniqueGenerations = getUniqueGenerations(generations);
@@ -404,14 +428,14 @@ function calculateSummary(generations: any[]): any {
 
   // Calculate time-based stats
   const today = new Date().toISOString().split('T')[0];
-  const todayGenerations = generations.filter((gen: any) => 
+  const todayGenerations = generations.filter((gen: any) =>
     gen.created_at.startsWith(today)
   ).length;
 
   const thisWeek = new Date();
   thisWeek.setDate(thisWeek.getDate() - 7);
-  const weeklyGenerations = generations.filter((gen: any) => 
-    new Date(gen.created_at) >= thisWeek
+  const weeklyGenerations = generations.filter(
+    (gen: any) => new Date(gen.created_at) >= thisWeek
   ).length;
 
   return {
@@ -420,17 +444,19 @@ function calculateSummary(generations: any[]): any {
     status_breakdown: byStatus,
     today_count: todayGenerations,
     weekly_count: weeklyGenerations,
-    completion_rate: total > 0 ? Math.round(((byStatus.completed || 0) / total) * 100) : 0};
+    completion_rate: total > 0 ? Math.round(((byStatus.completed || 0) / total) * 100) : 0,
+  };
 }
 
 function getEmptySummary(): any {
   return {
     total_jobs: 0,
     total_generations: 0,
-    status_breakdown: Record<string, unknown>$1
-  today_count: 0,
+    status_breakdown: {},
+    today_count: 0,
     weekly_count: 0,
-    completion_rate: 0};
+    completion_rate: 0,
+  };
 }
 
 export default withAuth(withSecurityHeaders(handler));
