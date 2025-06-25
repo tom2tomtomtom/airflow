@@ -17,7 +17,8 @@ const NotificationCreateSchema = z.object({
   action_url: z.string().optional(),
   action_label: z.string().optional(),
   expires_at: z.string().optional(),
-  metadata: z.any().optional()});
+  metadata: z.any().optional(),
+});
 
 const NotificationFilterSchema = z.object({
   client_id: z.string().uuid().optional(),
@@ -28,7 +29,8 @@ const NotificationFilterSchema = z.object({
   limit: z.number().min(1).max(100).default(50),
   offset: z.number().min(0).default(0),
   sort_by: z.enum(['created_at', 'priority', 'expires_at']).default('created_at'),
-  sort_order: z.enum(['asc', 'desc']).default('desc')});
+  sort_order: z.enum(['asc', 'desc']).default('desc'),
+});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -50,18 +52,18 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Notifications API error:', error);
     return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? message : undefined
+      details: process.env.NODE_ENV === 'development' ? message : undefined,
     });
   }
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const validationResult = NotificationFilterSchema.safeParse(req.query);
-  
+
   if (!validationResult.success) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Invalid query parameters',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
@@ -73,7 +75,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       .from('user_clients')
       .select('client_id')
       .eq('user_id', user.id);
-    
+
     if (!userClients || userClients.length === 0) {
       return res.json({ data: [], count: 0, statistics: getEmptyStatistics() });
     }
@@ -82,11 +84,13 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
 
     let query = supabase
       .from('notifications')
-      .select(`
+      .select(
+        `
         *,
         clients(id, name, slug),
         profiles!notifications_created_by_fkey(full_name, avatar_url)
-      `)
+      `
+      )
       .eq('user_id', user.id)
       .order(filters.sort_by, { ascending: filters.sort_order === 'asc' });
 
@@ -130,15 +134,15 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     // Calculate statistics
     const statistics = await calculateNotificationStatistics(user.id, clientIds);
 
-    return res.json({ 
+    return res.json({
       data: notifications || [],
       count: notifications?.length || 0,
       statistics,
-      pagination: Record<string, unknown>$1
-  limit: filters.limit,
+      pagination: {
+        limit: filters.limit,
         offset: filters.offset,
-        total: count || 0
-      }
+        total: count || 0,
+      },
     });
   } catch (error: any) {
     const message = getErrorMessage(error);
@@ -149,11 +153,11 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
 
 async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const validationResult = NotificationCreateSchema.safeParse(req.body);
-  
+
   if (!validationResult.success) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Validation failed',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
@@ -174,14 +178,14 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
 
     // Determine target users
     let targetUsers = notificationData.target_user_ids || [];
-    
+
     if (targetUsers.length === 0) {
       // Send to all users with access to this client
       const { data: clientUsers } = await supabase
         .from('user_clients')
         .select('user_id')
         .eq('client_id', notificationData.client_id);
-      
+
       targetUsers = clientUsers?.map((u: any) => u.user_id) || [];
     }
 
@@ -192,18 +196,21 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
         user_id: targetUserId,
         created_by: user.id,
         read: false,
-        read_at: null};
+        read_at: null,
+      };
 
       delete notification.target_user_ids; // Remove this field from the insert
 
       return supabase
         .from('notifications')
         .insert(notification)
-        .select(`
+        .select(
+          `
           *,
           clients(id, name, slug),
           profiles!notifications_created_by_fkey(full_name, avatar_url)
-        `)
+        `
+        )
         .single();
     });
 
@@ -220,11 +227,11 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
       await triggerNotificationEvent(notification);
     }
 
-    return res.status(201).json({ 
+    return res.status(201).json({
       message: 'Notifications created successfully',
       data: successfulNotifications,
       created_count: successfulNotifications.length,
-      failed_count: errors.length
+      failed_count: errors.length,
     });
   } catch (error: any) {
     const message = getErrorMessage(error);
@@ -233,11 +240,17 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
   }
 }
 
-async function handleBulkUpdate(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
+async function handleBulkUpdate(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any
+): Promise<void> {
   const { action, notification_ids, client_id } = req.body;
 
   if (!action || !['mark_read', 'mark_unread', 'delete'].includes(action)) {
-    return res.status(400).json({ error: 'Invalid action. Must be mark_read, mark_unread, or delete' });
+    return res
+      .status(400)
+      .json({ error: 'Invalid action. Must be mark_read, mark_unread, or delete' });
   }
 
   try {
@@ -267,10 +280,13 @@ async function handleBulkUpdate(req: NextApiRequest, res: NextApiResponse, user:
 
     switch (action) {
       case 'mark_read':
-        let updateReadQuery = supabase.from('notifications').update({
-          read: true,
-          read_at: new Date().toISOString()
-        }).eq('user_id', user.id);
+        let updateReadQuery = supabase
+          .from('notifications')
+          .update({
+            read: true,
+            read_at: new Date().toISOString(),
+          })
+          .eq('user_id', user.id);
 
         if (notification_ids && Array.isArray(notification_ids) && notification_ids.length > 0) {
           updateReadQuery = updateReadQuery.in('id', notification_ids);
@@ -282,10 +298,13 @@ async function handleBulkUpdate(req: NextApiRequest, res: NextApiResponse, user:
         break;
 
       case 'mark_unread':
-        let updateUnreadQuery = supabase.from('notifications').update({
-          read: false,
-          read_at: null
-        }).eq('user_id', user.id);
+        let updateUnreadQuery = supabase
+          .from('notifications')
+          .update({
+            read: false,
+            read_at: null,
+          })
+          .eq('user_id', user.id);
 
         if (notification_ids && Array.isArray(notification_ids) && notification_ids.length > 0) {
           updateUnreadQuery = updateUnreadQuery.in('id', notification_ids);
@@ -316,7 +335,7 @@ async function handleBulkUpdate(req: NextApiRequest, res: NextApiResponse, user:
 
     return res.json({
       message: `Notifications ${action} successfully`,
-      updated_count: result?.data?.length || 0
+      updated_count: result?.data?.length || 0,
     });
   } catch (error: any) {
     const message = getErrorMessage(error);
@@ -338,20 +357,29 @@ async function calculateNotificationStatistics(userId: string, clientIds: string
 
     const total = notifications.length;
     const unread = notifications.filter((n: any) => !n.read).length;
-    const byType = notifications.reduce((acc, n) => {
-      acc[n.type] = (acc[n.type] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-    
-    const byCategory = notifications.reduce((acc, n) => {
-      acc[n.category] = (acc[n.category] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const byType = notifications.reduce(
+      (acc, n) => {
+        acc[n.type] = (acc[n.type] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
-    const byPriority = notifications.reduce((acc, n) => {
-      acc[n.priority] = (acc[n.priority] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const byCategory = notifications.reduce(
+      (acc, n) => {
+        acc[n.category] = (acc[n.category] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
+
+    const byPriority = notifications.reduce(
+      (acc, n) => {
+        acc[n.priority] = (acc[n.priority] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
     // Calculate notifications from last 24 hours
     const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
@@ -364,7 +392,8 @@ async function calculateNotificationStatistics(userId: string, clientIds: string
       recent_24h: recent,
       by_type: byType,
       by_category: byCategory,
-      by_priority: byPriority};
+      by_priority: byPriority,
+    };
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error calculating notification statistics:', error);
@@ -378,9 +407,9 @@ function getEmptyStatistics() {
     unread: 0,
     read: 0,
     recent_24h: 0,
-    by_type: Record<string, unknown>$1
-  by_category: Record<string, unknown>$1
-  by_priority: {}
+    by_type: {},
+    by_category: {},
+    by_priority: {},
   };
 }
 
@@ -389,7 +418,7 @@ async function triggerNotificationEvent(notification: any): Promise<void> {
   try {
     // Import the broadcastEvent function
     const { broadcastEvent } = await import('../realtime/websocket');
-    
+
     await broadcastEvent(
       'notification',
       {
@@ -400,7 +429,8 @@ async function triggerNotificationEvent(notification: any): Promise<void> {
         category: notification.category,
         priority: notification.priority,
         action_url: notification.action_url,
-        action_label: notification.action_label }
+        action_label: notification.action_label,
+      },
       notification.client_id,
       notification.created_by // Don't send to the creator unless they're the target
     );
@@ -412,18 +442,20 @@ async function triggerNotificationEvent(notification: any): Promise<void> {
 
 // Helper functions for common notification types
 export async function createExecutionNotification(
-  executionId: string, 
-  status: string, 
-  clientId: string, 
+  executionId: string,
+  status: string,
+  clientId: string,
   createdBy: string
 ): Promise<void> {
   try {
     const { data: execution } = await supabase
       .from('executions')
-      .select(`
+      .select(
+        `
         id, platform, content_type,
         matrices(name, campaigns(name))
-      `)
+      `
+      )
       .eq('id', executionId)
       .single();
 
@@ -431,9 +463,10 @@ export async function createExecutionNotification(
 
     const campaignName = (execution as any).matrices?.campaigns?.name || 'Unknown Campaign';
     const statusMessages = {
-      completed: { title: 'Execution Completed', type: 'success'  },
-  failed: { title: 'Execution Failed', type: 'error'  },
-  cancelled: { title: 'Execution Cancelled', type: 'warning' }};
+      completed: { title: 'Execution Completed', type: 'success' },
+      failed: { title: 'Execution Failed', type: 'error' },
+      cancelled: { title: 'Execution Cancelled', type: 'warning' },
+    };
 
     const statusInfo = statusMessages[status as keyof typeof statusMessages];
     if (!statusInfo) return;
@@ -442,7 +475,7 @@ export async function createExecutionNotification(
     const response = await fetch('/api/notifications', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json' 
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         title: statusInfo.title,
@@ -453,7 +486,9 @@ export async function createExecutionNotification(
         client_id: clientId,
         action_url: `/execute?execution=${executionId}`,
         action_label: 'View Details',
-        metadata: { execution_id: executionId, status }})});
+        metadata: { execution_id: executionId, status },
+      }),
+    });
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error creating execution notification:', error);
@@ -461,28 +496,31 @@ export async function createExecutionNotification(
 }
 
 export async function createApprovalNotification(
-  approvalId: string, 
-  action: string, 
-  clientId: string, 
+  approvalId: string,
+  action: string,
+  clientId: string,
   createdBy: string
 ): Promise<void> {
   try {
     const { data: approval } = await supabase
       .from('approvals')
-      .select(`
+      .select(
+        `
         id, approval_type, item_type,
         clients(name)
-      `)
+      `
+      )
       .eq('id', approvalId)
       .single();
 
     if (!approval) return;
 
     const actionMessages = {
-      created: { title: 'New Approval Request', type: 'info'  },
-  approved: { title: 'Approval Granted', type: 'success'  },
-  rejected: { title: 'Approval Rejected', type: 'error'  },
-  changes_requested: { title: 'Changes Requested', type: 'warning' }};
+      created: { title: 'New Approval Request', type: 'info' },
+      approved: { title: 'Approval Granted', type: 'success' },
+      rejected: { title: 'Approval Rejected', type: 'error' },
+      changes_requested: { title: 'Changes Requested', type: 'warning' },
+    };
 
     const actionInfo = actionMessages[action as keyof typeof actionMessages];
     if (!actionInfo) return;
@@ -490,7 +528,7 @@ export async function createApprovalNotification(
     const response = await fetch('/api/notifications', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json' 
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         title: actionInfo.title,
@@ -501,7 +539,9 @@ export async function createApprovalNotification(
         client_id: clientId,
         action_url: `/approvals?approval=${approvalId}`,
         action_label: 'View Details',
-        metadata: { approval_id: approvalId, action }})});
+        metadata: { approval_id: approvalId, action },
+      }),
+    });
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error creating approval notification:', error);
