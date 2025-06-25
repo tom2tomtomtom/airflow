@@ -1,6 +1,17 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { Box, Container, Typography, Paper, Alert, CircularProgress, Chip, List, ListItem, ListItemText } from '@mui/material';
+import {
+  Box,
+  Container,
+  Typography,
+  Paper,
+  Alert,
+  CircularProgress,
+  Chip,
+  List,
+  ListItem,
+  ListItemText,
+} from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
 import WarningIcon from '@mui/icons-material/Warning';
@@ -9,21 +20,21 @@ interface SystemStatus {
   status: 'ready' | 'incomplete';
   timestamp: string;
   environment: Record<string, string>;
-  supabase: Record<string, unknown>$1
-  status: string;
+  supabase: {
+    status: string;
     url: string;
   };
-  configuration: Record<string, unknown>$1
-  isDemoMode: boolean;
+  configuration: {
+    isDemoMode: boolean;
     isConfigured: boolean;
     missingRequired: string[] | null;
   };
-  deployment: Record<string, unknown>$1
-  platform: string;
+  deployment: {
+    platform: string;
     region: string;
   };
-  recommendations: Record<string, unknown>$1
-  message: string;
+  recommendations: {
+    message: string;
     steps: string[];
   } | null;
 }
@@ -75,9 +86,9 @@ export default function SystemStatusPage() {
       <Typography variant="h3" gutterBottom align="center">
         AIrFLOW System Status
       </Typography>
-      
+
       <Box sx={{ mb: 4, textAlign: 'center' }}>
-        <Chip 
+        <Chip
           label={status.status === 'ready' ? 'System Ready' : 'Configuration Incomplete'}
           color={status.status === 'ready' ? 'success' : 'warning'}
           size="medium"
@@ -86,7 +97,6 @@ export default function SystemStatusPage() {
           Last checked: {new Date(status.timestamp).toLocaleString()}
         </Typography>
       </Box>
-
 
       {status.recommendations && (
         <Alert severity="warning" sx={{ mb: 3 }}>
@@ -107,7 +117,13 @@ export default function SystemStatusPage() {
         <Typography variant="h5" gutterBottom>
           Environment Configuration
         </Typography>
-        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 2 }}>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: 2,
+          }}
+        >
           {Object.entries(status.environment).map(([key, value]) => (
             <Box key={key} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               {getStatusIcon(value)}
