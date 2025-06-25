@@ -26,7 +26,7 @@ interface OptimizationOptions {
   enableMetrics?: boolean;
   enableQueryOptimization?: boolean;
   rateLimit?: {
-    max: number;,
+    max: number;
     window: number;
   };
 }
@@ -39,10 +39,12 @@ class APIPerformanceMonitor {
   private static maxMetricsPerEndpoint = 100;
 
   static startTracking(endpoint: string): PerformanceMetrics {
-    const metrics: PerformanceMetrics = {,
-    startTime: Date.now(),
-      memoryUsage: Record<string, unknown>$1
-  before: process.memoryUsage() };
+    const metrics: PerformanceMetrics = {
+      startTime: Date.now(),
+      memoryUsage: {
+        before: process.memoryUsage(),
+      },
+    };
 
     // Store metrics for analysis
     if (!this.metrics.has(endpoint)) {
@@ -107,7 +109,8 @@ class QueryOptimizer {
     this.queryCache.set(cacheKey, {
       result,
       timestamp: Date.now(),
-      endpoint});
+      endpoint,
+    });
   }
 
   static getQueryCount(endpoint: string): number {
@@ -117,15 +120,15 @@ class QueryOptimizer {
   static getCachedQuery(endpoint: string, query: string): unknown | null {
     const cacheKey = `${endpoint}:${this.hashQuery(query)}`;
     const cached = this.queryCache.get(cacheKey);
-    
+
     if (!cached) return null;
-    
+
     // Check if cache is still valid (5 minutes)
     if (Date.now() - cached.timestamp > 5 * 60 * 1000) {
       this.queryCache.delete(cacheKey);
       return null;
     }
-    
+
     return cached.result;
   }
 
@@ -134,7 +137,7 @@ class QueryOptimizer {
     let hash = 0;
     for (let i = 0; i < query.length; i++) {
       const char = query.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
     return hash.toString(36);
@@ -176,7 +179,8 @@ export function withAPIOptimization(
     cacheTTL = 5 * 60 * 1000, // 5 minutes default
     enableCompression = true,
     enableMetrics = true,
-    enableQueryOptimization = true} = options;
+    enableQueryOptimization = true,
+  } = options;
 
   return async (req: NextApiRequest, res: NextApiResponse) => {
     const endpoint = req.url || 'unknown';
@@ -203,11 +207,11 @@ export function withAPIOptimization(
           // Set cache headers
           res.setHeader('X-Cache', 'HIT');
           res.setHeader('Cache-Control', 'public, max-age=300'); // 5 minutes
-          
+
           if (enableCompression) {
             res.setHeader('Content-Encoding', 'none'); // Already compressed
           }
-          
+
           res.status(200).json(cached);
           return;
         }
@@ -217,7 +221,7 @@ export function withAPIOptimization(
       const originalJson = res.json;
       let responseData: unknown = null;
 
-      res.json = function(data: unknown) {
+      res.json = function (data: unknown) {
         responseData = data;
         return originalJson.call(this, data);
       };
@@ -237,10 +241,17 @@ export function withAPIOptimization(
       await handler(req, res);
 
       // Cache successful responses
-      if (enableCaching && req.method === 'GET' && responseData && res.statusCode >= 200 && res.statusCode < 300) {
+      if (
+        enableCaching &&
+        req.method === 'GET' &&
+        responseData &&
+        res.statusCode >= 200 &&
+        res.statusCode < 300
+      ) {
         await cacheManager.set('api-responses', requestCacheKey, responseData, {
           ttl: cacheTTL,
-          staleWhileRevalidate: true});
+          staleWhileRevalidate: true,
+        });
       }
 
       // Set performance headers
@@ -248,7 +259,7 @@ export function withAPIOptimization(
         APIPerformanceMonitor.finishTracking(metrics);
         res.setHeader('X-Response-Time', metrics.duration?.toString() || '0');
         res.setHeader('X-Cache', 'MISS');
-        
+
         if (enableQueryOptimization) {
           metrics.queryCount = QueryOptimizer.getQueryCount(endpoint);
           res.setHeader('X-Query-Count', metrics.queryCount.toString());
@@ -259,10 +270,9 @@ export function withAPIOptimization(
       if (enableCompression && responseData) {
         res.setHeader('Content-Type', 'application/json; charset=utf-8');
       }
-
     } catch (error) {
       console.error(`API Error on ${endpoint}:`, error);
-      
+
       if (metrics) {
         APIPerformanceMonitor.finishTracking(metrics);
       }
@@ -272,12 +282,14 @@ export function withAPIOptimization(
         res.status(500).json({
           success: false,
           error: error.message,
-          timestamp: new Date().toISOString()});
+          timestamp: new Date().toISOString(),
+        });
       } else {
         res.status(500).json({
           success: false,
           error: 'Internal server error',
-          timestamp: new Date().toISOString()});
+          timestamp: new Date().toISOString(),
+        });
       }
     }
   };
@@ -291,7 +303,7 @@ function generateCacheKey(req: NextApiRequest): string {
   const method = req.method || 'GET';
   const query = JSON.stringify(req.query || {});
   const auth = req.headers.authorization || 'anonymous';
-  
+
   // Create a simple hash
   const combined = `${method}:${url}:${query}:${auth.slice(0, 10)}`;
   return Buffer.from(combined).toString('base64').slice(0, 32);
@@ -325,11 +337,7 @@ export class BatchProcessor<T, R> {
   private processor: (items: T[]) => Promise<R[]>;
   private timeout: NodeJS.Timeout | null = null;
 
-  constructor(
-    processor: (items: T[]) => Promise<R[]>,
-    batchSize = 10,
-    flushInterval = 1000
-  ) {
+  constructor(processor: (items: T[]) => Promise<R[]>, batchSize = 10, flushInterval = 1000) {
     this.processor = processor;
     this.batchSize = batchSize;
     this.flushInterval = flushInterval;
@@ -338,7 +346,7 @@ export class BatchProcessor<T, R> {
   async add(item: T): Promise<R> {
     return new Promise((resolve, reject) => {
       this.batch.push(item);
-      
+
       // Store the resolver with the item
       (item as any).__resolver = resolve;
       (item as any).__rejector = reject;
@@ -360,7 +368,7 @@ export class BatchProcessor<T, R> {
     if (this.batch.length === 0) return;
 
     const currentBatch = this.batch.splice(0);
-    
+
     if (this.timeout) {
       clearTimeout(this.timeout);
       this.timeout = null;
@@ -368,7 +376,7 @@ export class BatchProcessor<T, R> {
 
     try {
       const results = await this.processor(currentBatch);
-      
+
       // Resolve each promise with its corresponding result
       currentBatch.forEach((item, index) => {
         if ((item as any).__resolver) {
@@ -377,7 +385,7 @@ export class BatchProcessor<T, R> {
       });
     } catch (error) {
       // Reject all promises in the batch
-      currentBatch.forEach((item) => {
+      currentBatch.forEach(item => {
         if ((item as any).__rejector) {
           (item as any).__rejector(error);
         }
@@ -392,10 +400,12 @@ export class BatchProcessor<T, R> {
 export function getAPIPerformanceStats() {
   return {
     monitor: APIPerformanceMonitor.getMetrics(),
-    queryOptimizer: Record<string, unknown>$1
-  cacheSize: QueryOptimizer['queryCache'].size,
-      totalQueries: Array.from(QueryOptimizer['queryCount'].values()).reduce((a, b) => a + b, 0)},
-    cache: cacheManager.getStats()};
+    queryOptimizer: {
+      cacheSize: QueryOptimizer['queryCache'].size,
+      totalQueries: Array.from(QueryOptimizer['queryCount'].values()).reduce((a, b) => a + b, 0),
+    },
+    cache: cacheManager.getStats(),
+  };
 }
 
 /**
