@@ -168,7 +168,6 @@ const validators = {
     return jwtPattern.test(value) && value.length > 50;
   },
 };
-};
 
 // Convert string values to appropriate types
 const convertValue = (value: string, type: EnvVarDefinition['type']): string | number | boolean => {
