@@ -11,10 +11,12 @@ const PostCreateSchema = z.object({
     text: z.string().min(1, 'Content text is required'),
     images: z.array(z.string()).optional(),
     video: z.string().optional(),
-    link: z.string().url().optional() }),
+    link: z.string().url().optional()
+  }),
   platforms: z.array(z.string()).min(1, 'At least one platform is required'),
   scheduledAt: z.string().optional(),
-  clientId: z.string().uuid() });
+  clientId: z.string().uuid()
+});
 
 const PostUpdateSchema = z.object({
   content: z
@@ -22,7 +24,8 @@ const PostUpdateSchema = z.object({
       text: z.string().optional(),
       images: z.array(z.string()).optional(),
       video: z.string().optional(),
-      link: z.string().url().optional() })
+      link: z.string().url().optional()
+    })
     .optional(),
   platforms: z.array(z.string()).optional(),
   scheduledAt: z.string().optional(),
@@ -51,7 +54,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Social Posts API error:', error);
     return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? message : undefined });
+      details: process.env.NODE_ENV === 'development' ? message : undefined
+    });
   }
 }
 
@@ -122,7 +126,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
 
     return res.json({
       data: filteredPosts,
-      count: count || 0 });
+      count: count || 0
+    });
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error in handleGet:', error);
@@ -136,7 +141,8 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse, user: any
   if (!validationResult.success) {
     return res.status(400).json({
       error: 'Validation failed',
-      details: validationResult.error.issues });
+      details: validationResult.error.issues
+    });
   }
 
   const postData = validationResult.data;
@@ -183,7 +189,8 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse, user: any
         content: postData.content,
         status,
         scheduled_at: postData.scheduledAt || new Date().toISOString(),
-        created_by: user.id })
+        created_by: user.id
+      })
       .select()
       .single();
 
@@ -226,7 +233,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse, user: any
       await Promise.all(resultPromises);
 
       return res.status(201).json({
-        data: { ...post, status: newStatus  }
+        data: { ...post, status: newStatus },
         publishResults,
         message: allSuccessful
           ? 'Post published successfully'
@@ -236,7 +243,8 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse, user: any
       // Return scheduled post
       return res.status(201).json({
         data: post,
-        message: 'Post scheduled successfully' });
+        message: 'Post scheduled successfully'
+      });
     }
   } catch (error: any) {
     const message = getErrorMessage(error);
@@ -257,7 +265,8 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse, user: any
   if (!validationResult.success) {
     return res.status(400).json({
       error: 'Validation failed',
-      details: validationResult.error.issues });
+      details: validationResult.error.issues
+    });
   }
 
   const updateData = validationResult.data;
@@ -295,7 +304,8 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse, user: any
       .from('social_posts')
       .update({
         ...updateData,
-        updated_at: new Date().toISOString() })
+        updated_at: new Date().toISOString()
+      })
       .eq('id', post_id)
       .select()
       .single();
@@ -323,7 +333,8 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse, user: any
 
     return res.json({
       data: updatedPost,
-      message: 'Social post updated successfully' });
+      message: 'Social post updated successfully'
+    });
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error updating social post:', error);
@@ -405,7 +416,8 @@ async function publishToMPlatforms(
         results.push({
           platform,
           success: false,
-          error: 'Platform not connected or inactive' });
+          error: 'Platform not connected or inactive'
+        });
         continue;
       }
 
@@ -422,13 +434,15 @@ async function publishToMPlatforms(
         results.push({
           platform,
           success: false,
-          error: 'Platform API error' });
+          error: 'Platform API error'
+        });
       }
     } catch (error: any) {
       results.push({
         platform,
         success: false,
-        error: getErrorMessage(error) });
+        error: getErrorMessage(error)
+      });
     }
   }
 

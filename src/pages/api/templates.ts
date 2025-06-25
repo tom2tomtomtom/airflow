@@ -22,14 +22,16 @@ const TemplateInsertSchema = z.object({
   created_by: z.string().nullable().optional(),
   client_id: z.string().nullable().optional(),
   created_at: z.string().nullable().optional(),
-  updated_at: z.string().nullable().optional() });
+  updated_at: z.string().nullable().optional()
+});
 
 const TemplateUpdateSchema = TemplateInsertSchema.partial().extend({
-  id: z.string() });
+  id: z.string()
+});
 
 // Helper function to remove undefined values from object
 function removeUndefined<T extends Record<string, any>>(obj: T): T {
-  const result = {} as Record<string, unknown> & Record<string, unknown> & Record<string, unknown> & T;
+  const result = {} as T;
   for (const key in obj) {
     if (obj[key] !== undefined) {
       result[key] = obj[key];
@@ -91,8 +93,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       res.status(204).end();
       return;
-    },
-  default:
+    }
+    default:
       res.setHeader('Allow', ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']);
       res.status(405).end(`Method ${req.method} Not Allowed`);
       return;

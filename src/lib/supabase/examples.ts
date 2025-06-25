@@ -88,12 +88,13 @@ export async function APIRouteExample(userId: string) {
       supabase,
       'user_settings',
       [
-        { user_id: userId, key: 'theme', value: 'dark'  }
-        { user_id: userId, key: 'language', value: 'en'  }
+        { user_id: userId, key: 'theme', value: 'dark' },
+        { user_id: userId, key: 'language', value: 'en' }
       ],
       {
         onConflict: 'user_id,key',
-        ignoreDuplicates: false }
+        ignoreDuplicates: false
+      }
     );
 
     return { profile, settings: updates };
@@ -157,7 +158,8 @@ export async function AuthenticationExample(email: string, password: string) {
           return {
             success: false,
             needsVerification: true,
-            message: 'Please verify your email before signing in' };
+            message: 'Please verify your email before signing in'
+          };
         }
       }
       throw error;
@@ -174,11 +176,12 @@ export async function AuthenticationExample(email: string, password: string) {
       success: true,
       user: data.user,
       profile,
-      session: data.session };
+      session: data.session
+    };
   } catch (error: any) {
     await handleSupabaseError(error, {
       operation: 'signIn',
-      metadata: { email  }
+      metadata: { email }
     });
   }
 }
@@ -198,7 +201,8 @@ export async function FileUploadExample(file: File, bucket: string) {
     // Upload file
     const { error: uploadError } = await supabase.storage.from(bucket).upload(filePath, file, {
       cacheControl: '3600',
-      upsert: false });
+      upsert: false
+    });
 
     if (uploadError) throw uploadError;
 
@@ -207,7 +211,8 @@ export async function FileUploadExample(file: File, bucket: string) {
 
     return {
       url: data.publicUrl,
-      path: filePath };
+      path: filePath
+    };
   } catch (error: any) {
     await handleSupabaseError(error, {
       operation: 'fileUpload',
@@ -235,7 +240,8 @@ export function RealtimeSubscriptionExample(campaignId: string, onUpdate: (paylo
         event: '*',
         schema: 'public',
         table: 'executions',
-        filter: `campaign_id=eq.${campaignId}` },
+        filter: `campaign_id=eq.${campaignId}`
+      },
       payload => {
         console.log('Execution update:', payload);
         onUpdate(payload);
@@ -290,7 +296,8 @@ export async function ComplexOperationExample(clientId: string, campaignData: an
 
     const { error: executionError } = await supabase.from('executions').insert({
       campaign_id: campaign.id,
-      status: 'draft' });
+      status: 'draft'
+    });
 
     if (executionError) {
       // Rollback by deleting the campaign
@@ -303,7 +310,7 @@ export async function ComplexOperationExample(clientId: string, campaignData: an
     await handleSupabaseError(error, {
       operation: 'createCampaign',
       table: 'campaigns',
-      metadata: { clientId  }
+      metadata: { clientId }
     });
   }
 }

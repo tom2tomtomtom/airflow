@@ -21,7 +21,8 @@ const ENV_DEFINITIONS: EnvVarDefinition[] = [
     type: 'string',
     defaultValue: 'development',
     validation: value => ['development', 'production', 'test'].includes(value),
-    description: 'Application environment' },
+    description: 'Application environment',
+  },
   {
     key: 'NEXT_PUBLIC_APP_URL',
     required: true,
@@ -165,9 +166,8 @@ const validators = {
   jwt: (value: string): boolean => {
     const jwtPattern = /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/;
     return jwtPattern.test(value) && value.length > 50;
-  ,
-
-  }
+  },
+};
 };
 
 // Convert string values to appropriate types
@@ -219,7 +219,8 @@ export class EnvironmentConfig {
         this.config.set(envDef.key, envDef.defaultValue);
         loggers.general.info(`Using default value for ${envDef.key}`, {
           key: envDef.key,
-          defaultValue: envDef.defaultValue });
+          defaultValue: envDef.defaultValue,
+        });
         continue;
       }
 

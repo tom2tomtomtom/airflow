@@ -17,7 +17,8 @@ const CopyAssetUpdateSchema = z.object({
   tags: z.array(z.string()).optional(),
   metadata: z.any().optional(),
   performance_score: z.number().min(0).max(100).optional(),
-  brand_compliance_score: z.number().min(0).max(100).optional()});
+  brand_compliance_score: z.number().min(0).max(100).optional()
+});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -117,7 +118,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
     readability_score: calculateReadabilityScore(asset.content),
     sentiment: analyzeSentiment(asset.content),
     keyword_density: calculateKeywordDensity(asset.content),
-    platform_compliance: checkPlatformCompliance(asset.content, asset.platform)};
+    platform_compliance: checkPlatformCompliance(asset.content, asset.platform)
+  };
 
   // Get version history (if implemented)
   const { data: versions } = await supabase
@@ -135,12 +137,13 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
     .limit(10);
 
   return res.json({
-    data: { }
+    data: {
       ...asset,
       related_motivations: relatedMotivations,
       usage_in_variations: contentVariations || [],
       analytics,
-      version_history: versions || []}
+      version_history: versions || []
+    }
   });
 }
 
@@ -189,7 +192,8 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, a
       ...updateData.metadata,
       readability_score: calculateReadabilityScore(updateData.content),
       sentiment: analyzeSentiment(updateData.content),
-      updated_timestamp: new Date().toISOString()};
+      updated_timestamp: new Date().toISOString()
+    };
 
     // Create version history entry
     await supabase
@@ -198,14 +202,16 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, a
         copy_asset_id: assetId,
         content: existingAsset.content,
         created_by: user.id,
-        version_number: await getNextVersionNumber(assetId)});
+        version_number: await getNextVersionNumber(assetId)
+      });
   }
 
   const { data: asset, error } = await supabase
     .from('copy_assets')
     .update({
       ...updateData,
-      updated_at: new Date().toISOString()})
+      updated_at: new Date().toISOString()
+    })
     .eq('id', assetId)
     .select(`
       *,

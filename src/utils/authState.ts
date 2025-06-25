@@ -3,17 +3,18 @@ export interface AuthState {
   user?: unknown;
   loading: boolean;
   error?: string;
-  lastCheck: number;,
-    checkInProgress: boolean;
+  lastCheck: number;
+  checkInProgress: boolean;
 }
 
 export class AuthStateManager {
   private static instance: AuthStateManager;
-  private state: AuthState = {,
+  private state: AuthState = {
     isAuthenticated: false,
     loading: true,
     lastCheck: 0,
-    checkInProgress: false };
+    checkInProgress: false,
+  };
   private listeners: ((state: AuthState) => void)[] = [];
 
   static getInstance(): AuthStateManager {
@@ -68,15 +69,16 @@ export class AuthStateManager {
     this.updateState({
       checkInProgress: true,
       loading: true,
-      error: undefined });
+      error: undefined,
+    });
 
     try {
       const response = await fetch('/api/auth/me', {
         method: 'GET',
         credentials: 'include',
         headers: {
-        'Content-Type': 'application/json' 
-      },
+        'Content-Type': 'application/json',
+        },
       });
 
       if (response.ok) {
@@ -88,7 +90,8 @@ export class AuthStateManager {
           loading: false,
           lastCheck: now,
           checkInProgress: false,
-          error: undefined });
+          error: undefined,
+        });
       } else {
         this.updateState({
           isAuthenticated: false,
@@ -96,7 +99,8 @@ export class AuthStateManager {
           loading: false,
           lastCheck: now,
           checkInProgress: false,
-          error: response.status === 401 ? 'Not authenticated' : 'Auth check failed' });
+          error: response.status === 401 ? 'Not authenticated' : 'Auth check failed',
+        });
       }
     } catch (error: unknown) {
       this.updateState({
@@ -105,7 +109,8 @@ export class AuthStateManager {
         loading: false,
         lastCheck: now,
         checkInProgress: false,
-        error: 'Network error during auth check' });
+        error: 'Network error during auth check',
+      });
     }
 
     return this.getState();
@@ -117,7 +122,8 @@ export class AuthStateManager {
     try {
       await fetch('/api/auth/logout', {
         method: 'POST',
-        credentials: 'include' });
+        credentials: 'include',
+      });
     } catch (error: unknown) {
       console.error('Logout error:', error);
     }
@@ -127,7 +133,8 @@ export class AuthStateManager {
       user: undefined,
       loading: false,
       lastCheck: Date.now(),
-      error: undefined });
+      error: undefined,
+    });
   }
 }
 

@@ -8,9 +8,11 @@ const StrategyScoreSchema = z.object({
   motivations: z.array(
     z.object({
       statement: z.string(),
-      description: z.string() })
+      description: z.string()
+    })
   ),
-  brief_context: z.string() });
+  brief_context: z.string()
+});
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   if (req.method !== 'POST') {
@@ -28,16 +30,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const aiPrompt = `Given the following campaign context, score each motivation for relevance (1-10) and provide a brief justification.\n\nContext:\n${brief_context}\n\nMotivations:\n${motivations.map((m, i) => `${i + 1}. ${m.statement}: ${m.description}`).join('\n')}`;
     // Initialize OpenAI client
     const openai = new OpenAI({
-      apiKey: env.OPENAI_API_KEY });
+      apiKey: env.OPENAI_API_KEY
+    });
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
-        { role: 'system', content: 'You are an expert campaign strategist.'  }
-        { role: 'user', content: aiPrompt  }
+        { role: 'system', content: 'You are an expert campaign strategist.' },
+        { role: 'user', content: aiPrompt }
       ],
       temperature: 0.2,
-      max_tokens: 800 });
+      max_tokens: 800
+    });
 
     const scored = completion.choices[0]?.message?.content;
     return res.status(200).json({ success: true, scored });

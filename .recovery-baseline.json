@@ -1,13 +1,13 @@
 {
-  "phase": "foundation",
-  "timestamp": "2025-06-24T04:52:55Z",
-  "git_branch": "recovery-foundation",
-  "git_commit": "536d7873f8a73a5d628e05d061c21b6a732078a6",
+  "phase": "syntax-recovery",
+  "timestamp": "2025-06-24T04:59:32Z",
+  "git_branch": "recovery-syntax",
+  "git_commit": "46a5306af94067823af375426d3cf44348dad877",
   "metrics": {
-    "total_typescript_errors": 8628,
-    "syntax_errors": 6619,
-    "broken_object_files": 44,
-    "total_source_files": 533
+    "total_typescript_errors": 8605,
+    "syntax_errors": 6598,
+    "broken_object_files":       42,
+    "total_source_files":      533
   },
   "validation": {
     "total_checks": 10,

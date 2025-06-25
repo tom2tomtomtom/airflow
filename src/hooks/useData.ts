@@ -24,7 +24,8 @@ export const campaignToUICampaign = (campaign: Campaign): UICampaign => {
     endDate: campaign.schedule?.endDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
     platforms: campaign.targeting?.platforms || [],
     createdAt: campaign.dateCreated,
-    updatedAt: campaign.lastModified};
+    updatedAt: campaign.lastModified
+  };
 };
 
 // Type mapping for entity types
@@ -129,7 +130,7 @@ export const useClients = () => {
       const response = await fetch('/api/clients', {
         headers: {
           'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : Record<string, unknown>$1,
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
         },
         credentials: 'include', // Include cookies for authentication
       });
@@ -155,7 +156,8 @@ export const useClients = () => {
         return false;
       }
       return failureCount < 3;
-    }});
+    }
+  });
 };
 
 // Custom hook for fetching assets
@@ -175,7 +177,8 @@ export const useAssets = (clientId?: string) => {
       return data || [];
     },
     staleTime: 5 * 60 * 1000,
-    enabled: true});
+    enabled: true
+  });
 };
 
 // Custom hook for fetching templates
@@ -228,7 +231,8 @@ export const useTemplates = () => {
         return false;
       }
       return failureCount < 2;
-    }});
+    }
+  });
 };
 
 // Custom hook for fetching campaigns
@@ -254,7 +258,8 @@ export const useCampaigns = (clientId?: string) => {
       }
     },
     staleTime: 5 * 60 * 1000,
-    retry: false});
+    retry: false
+  });
 };
 
 // Custom hook for fetching a single campaign
@@ -284,7 +289,8 @@ export const useCampaign = (campaignId?: string) => {
     },
     enabled: !!campaignId,
     staleTime: 5 * 60 * 1000,
-    retry: false});
+    retry: false
+  });
 };
 
 // Custom hook for fetching matrices
@@ -303,7 +309,8 @@ export const useMatrices = (clientId?: string) => {
       if (error) throw error;
       return data || [];
     },
-    staleTime: 5 * 60 * 1000});
+    staleTime: 5 * 60 * 1000
+  });
 };
 
 // Custom hook for creating/updating assets

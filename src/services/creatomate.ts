@@ -50,9 +50,10 @@ export class CreatomateService {
     try {
       const response = await fetch(`${this.baseUrl}/templates/${id}`, {
         headers: {
-        'Authorization': `Bearer ${this.apiKey
-      }`,
-          'Content-Type': 'application/json'}});
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json'
+        }
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -70,9 +71,10 @@ export class CreatomateService {
     try {
       const response = await fetch(`${this.baseUrl}/templates?limit=${limit}`, {
         headers: {
-        'Authorization': `Bearer ${this.apiKey
-      }`,
-          'Content-Type': 'application/json'}});
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json'
+        }
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -98,13 +100,15 @@ export class CreatomateService {
       const response = await fetch(`${this.baseUrl}/renders`, {
         method: 'POST',
         headers: {
-        'Authorization': `Bearer ${this.apiKey
-      }`,
-          'Content-Type': 'application/json'},
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({
           template_id: id,
           modifications,
-          output_format: 'mp4'})});
+          output_format: 'mp4'
+        })
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -118,7 +122,8 @@ export class CreatomateService {
         thumbnail: data.thumbnail,
         created_at: data.created_at,
         completed_at: data.completed_at,
-        error: data.error};
+        error: data.error
+      };
     } catch (error: any) {
       console.error('Error rendering video:', error);
       throw new Error(`Failed to render video: ${error}`);
@@ -129,9 +134,10 @@ export class CreatomateService {
     try {
       const response = await fetch(`${this.baseUrl}/renders/${renderId}`, {
         headers: {
-        'Authorization': `Bearer ${this.apiKey
-      }`,
-          'Content-Type': 'application/json'}});
+          'Authorization': `Bearer ${this.apiKey}`,
+          'Content-Type': 'application/json'
+        }
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -145,7 +151,8 @@ export class CreatomateService {
         thumbnail: data.thumbnail,
         created_at: data.created_at,
         completed_at: data.completed_at,
-        error: data.error};
+        error: data.error
+      };
     } catch (error: any) {
       console.error(`Error getting render status ${renderId}:`, error);
       throw new Error('Failed to get render status');
@@ -170,14 +177,17 @@ export class CreatomateService {
           name: 'Background Music',
           type: 'audio',
           source: 'https://creatomate.com/files/assets/b5dc815e-dcc9-4c62-9405-f94913936bf5',
-          modifiable: true }
+          modifiable: true
+        },
         {
           id: 'Text-1',
           name: 'Main Text',
           type: 'text',
           text: 'Welcome to AIrWAVE! 🚀',
-          modifiable: true }
-      ]};
+          modifiable: true
+        }
+      ]
+    };
   }
 
   private mapCreatomateTemplate(data: any): CreatomateTemplate {
@@ -198,7 +208,9 @@ export class CreatomateService {
         type: this.getElementType(element),
         source: element.source,
         text: element.text,
-        modifiable: element.modifiable !== false}))};
+        modifiable: element.modifiable !== false
+      }))
+    };
   }
 
   private getElementType(element: any): 'text' | 'image' | 'video' | 'audio' {

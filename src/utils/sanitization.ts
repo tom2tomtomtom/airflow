@@ -11,7 +11,7 @@ export function escapeHtml(text: string): string {
 }
 
 export function sanitizeInput(input: string): string {
-  return (;
+  return (
     input
       .trim()
       // Remove control characters (null, tab, newline, etc.)

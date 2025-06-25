@@ -18,12 +18,15 @@ const WebhookCreateSchema = z.object({
   retry_policy: z.object({
     max_attempts: z.number().min(1).max(10).default(3),
     backoff_strategy: z.enum(['linear', 'exponential']).default('exponential'),
-    initial_delay_ms: z.number().min(1000).default(1000)}).default({
+    initial_delay_ms: z.number().min(1000).default(1000)
+  }).default({
     max_attempts: 3,
     backoff_strategy: 'exponential',
-    initial_delay_ms: 1000}),
+    initial_delay_ms: 1000
+  }),
   headers: z.record(z.string()).optional(),
-  timeout_ms: z.number().min(1000).max(30000).default(10000)});
+  timeout_ms: z.number().min(1000).max(30000).default(10000)
+});
 
 const WebhookUpdateSchema = WebhookCreateSchema.partial().omit(['client_id'] as any);
 
@@ -32,7 +35,8 @@ const WebhookFilterSchema = z.object({
   active: z.boolean().optional(),
   event_types: z.array(z.string()).optional(),
   limit: z.number().min(1).max(100).default(50),
-  offset: z.number().min(0).default(0)});
+  offset: z.number().min(0).default(0)
+});
 
 // Available webhook event types
 const WEBHOOK_EVENTS = {
@@ -51,7 +55,8 @@ const WEBHOOK_EVENTS = {
   RENDER_COMPLETED: 'render.completed',
   RENDER_FAILED: 'render.failed',
   USER_INVITED: 'user.invited',
-  USER_JOINED: 'user.joined'} as const;
+  USER_JOINED: 'user.joined'
+} as const;
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -148,8 +153,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       count: webhooks?.length || 0,
       statistics,
       events: Object.values(WEBHOOK_EVENTS),
-      pagination: Record<string, unknown>$1
-  limit: filters.limit,
+      pagination: {
+        limit: filters.limit,
         offset: filters.offset,
         total: count || 0
       }
@@ -224,7 +229,8 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
         last_triggered_at: null,
         total_deliveries: 0,
         successful_deliveries: 0,
-        failed_deliveries: 0})
+        failed_deliveries: 0
+      })
       .select(`
         *,
         clients(id, name, slug),
@@ -240,13 +246,14 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
     // Log webhook creation
     await logWebhookEvent(webhook.id, 'created', user.id, {
       events: webhookData.events,
-      url: webhookData.url});
+      url: webhookData.url
+    });
 
     // Send test webhook
     await triggerTestWebhook(webhook);
 
     return res.status(201).json({ 
-      data: { }
+      data: {
         ...webhook,
         secret: `${secret.substring(0, 8)}...` // Don't expose full secret
       }
@@ -281,7 +288,8 @@ async function testWebhookUrl(url: string, timeoutMs: number = 10000): Promise<{
         timestamp: new Date().toISOString(),
         data: { message: 'This is a webhook test from AIrFLOW' }
       }),
-      signal: controller.signal});
+      signal: controller.signal
+    });
 
     clearTimeout(timeoutId);
 
@@ -339,7 +347,8 @@ async function calculateWebhookStatistics(clientIds: string[]): Promise<any> {
       successful_deliveries: successfulDeliveries,
       failed_deliveries: failedDeliveries,
       success_rate: Math.round(successRate * 100) / 100,
-      event_distribution: eventDistribution};
+      event_distribution: eventDistribution
+    };
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error calculating webhook statistics:', error);
@@ -370,7 +379,8 @@ async function logWebhookEvent(webhookId: string, action: string, userId: string
         action,
         user_id: userId,
         metadata,
-        timestamp: new Date().toISOString()});
+        timestamp: new Date().toISOString()
+      });
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error logging webhook event:', error);
@@ -384,10 +394,11 @@ async function triggerTestWebhook(webhook: any): Promise<void> {
       event: 'webhook.test',
       timestamp: new Date().toISOString(),
       webhook_id: webhook.id,
-      data: Record<string, unknown>$1
-  message: 'Webhook successfully configured!',
+      data: {
+        message: 'Webhook successfully configured!',
         client_id: webhook.client_id,
-        events: webhook.events}
+        events: webhook.events
+      }
     };
 
     await deliverWebhook(webhook, payload);
@@ -411,13 +422,15 @@ export async function deliverWebhook(webhook: any, payload: any): Promise<{ succ
       'X-AIrFLOW-Signature': signature,
       'X-AIrFLOW-Event': payload.event,
       'X-AIrFLOW-Delivery': crypto.randomUUID(),
-      ...webhook.headers};
+      ...webhook.headers
+    };
 
     const response = await fetch(webhook.url, {
       method: 'POST',
       headers,
       body: JSON.stringify(payload),
-      signal: controller.signal});
+      signal: controller.signal
+    });
 
     clearTimeout(timeoutId);
 
@@ -432,7 +445,8 @@ export async function deliverWebhook(webhook: any, payload: any): Promise<{ succ
         failed_deliveries: !response.ok 
           ? (webhook.failed_deliveries || 0) + 1 
           : webhook.failed_deliveries || 0,
-        last_triggered_at: new Date().toISOString()})
+        last_triggered_at: new Date().toISOString()
+      })
       .eq('id', webhook.id);
 
     // Log delivery
@@ -445,7 +459,8 @@ export async function deliverWebhook(webhook: any, payload: any): Promise<{ succ
         response_status: response.status,
         response_body: await response.text().catch(() => ''),
         success: response.ok,
-        delivered_at: new Date().toISOString()});
+        delivered_at: new Date().toISOString()
+      });
 
     return { 
       success: response.ok,
@@ -458,7 +473,8 @@ export async function deliverWebhook(webhook: any, payload: any): Promise<{ succ
       .from('webhooks')
       .update({
         total_deliveries: (webhook.total_deliveries || 0) + 1,
-        failed_deliveries: (webhook.failed_deliveries || 0) + 1})
+        failed_deliveries: (webhook.failed_deliveries || 0) + 1
+      })
       .eq('id', webhook.id);
 
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -473,7 +489,8 @@ export async function deliverWebhook(webhook: any, payload: any): Promise<{ succ
         response_status: 0,
         response_body: errorMessage,
         success: false,
-        delivered_at: new Date().toISOString()});
+        delivered_at: new Date().toISOString()
+      });
 
     return { success: false, error: errorMessage };
   }
@@ -507,7 +524,8 @@ export async function triggerWebhookEvent(
       event: eventType,
       timestamp: new Date().toISOString(),
       client_id: clientId,
-      data};
+      data
+    };
 
     // Deliver to all matching webhooks
     const deliveryPromises = webhooks.map((webhook: any) => 

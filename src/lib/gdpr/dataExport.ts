@@ -24,12 +24,13 @@ export interface ExportedData {
 export async function exportUserData(request: DataExportRequest): Promise<ExportedData> {
   // Placeholder implementation for GDPR data export
   return {
-    user: { id: request.userId, email: request.email  },
-  campaigns: [],
+    user: { id: request.userId, email: request.email },
+    campaigns: [],
     assets: [],
     analytics: [],
-    preferences: Record<string, unknown>$1
-  exportedAt: new Date().toISOString()};
+    preferences: {},
+    exportedAt: new Date().toISOString(),
+  };
 }
 
 /**
