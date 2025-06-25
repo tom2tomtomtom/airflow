@@ -19,13 +19,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       default:
         return res.status(405).json({
           success: false,
-          error: { code: 'METHOD_NOT_ALLOWED', message: 'Method not allowed' }});
+          error: { code: 'METHOD_NOT_ALLOWED', message: 'Method not allowed' },
+        });
     }
   } catch (error) {
     console.error('Dashboard API error:', error);
     return res.status(500).json({
       success: false,
-      error: { code: 'INTERNAL_ERROR', message: 'Internal server error' }});
+      error: { code: 'INTERNAL_ERROR', message: 'Internal server error' },
+    });
   }
 }
 
@@ -50,12 +52,15 @@ async function handleGetDashboard(req: NextApiRequest, res: NextApiResponse) {
           firstSeen: alert.firstSeen,
           lastSeen: alert.lastSeen,
           value: alert.value,
-          threshold: alert.threshold}))};
+          threshold: alert.threshold,
+        })),
+      };
 
       return res.status(200).json({
         success: true,
         data: alertStats,
-        meta: { timestamp: new Date().toISOString() }});
+        meta: { timestamp: new Date().toISOString() },
+      });
     }
 
     if (section === 'health') {
@@ -63,15 +68,18 @@ async function handleGetDashboard(req: NextApiRequest, res: NextApiResponse) {
       const alertingHealth = await alerting.healthCheck();
       const systemHealth = {
         overall: 'healthy',
-        components: Record<string, unknown>$1
-  alerting: alertingHealth,
+        components: {
+          alerting: alertingHealth,
           dashboard: true,
-          api: true}};
+          api: true,
+        },
+      };
 
       return res.status(200).json({
         success: true,
         data: systemHealth,
-        meta: { timestamp: new Date().toISOString() }});
+        meta: { timestamp: new Date().toISOString() },
+      });
     }
 
     if (section && typeof section === 'string') {
@@ -82,13 +90,15 @@ async function handleGetDashboard(req: NextApiRequest, res: NextApiResponse) {
       if (!sectionData) {
         return res.status(404).json({
           success: false,
-          error: { code: 'SECTION_NOT_FOUND', message: 'Dashboard section not found' }});
+          error: { code: 'SECTION_NOT_FOUND', message: 'Dashboard section not found' },
+        });
       }
 
       return res.status(200).json({
         success: true,
         data: sectionData,
-        meta: { timestamp: new Date().toISOString() }});
+        meta: { timestamp: new Date().toISOString() },
+      });
     }
 
     // Return full dashboard
@@ -97,12 +107,14 @@ async function handleGetDashboard(req: NextApiRequest, res: NextApiResponse) {
     return res.status(200).json({
       success: true,
       data: dashboard,
-      meta: { timestamp: new Date().toISOString() }});
+      meta: { timestamp: new Date().toISOString() },
+    });
   } catch (error) {
     console.error('Failed to generate dashboard:', error);
     return res.status(500).json({
       success: false,
-      error: { code: 'DASHBOARD_ERROR', message: 'Failed to generate dashboard' }});
+      error: { code: 'DASHBOARD_ERROR', message: 'Failed to generate dashboard' },
+    });
   }
 }
 
@@ -112,7 +124,8 @@ async function handleUpdateMetric(req: NextApiRequest, res: NextApiResponse) {
   if (!metric || typeof value !== 'number') {
     return res.status(400).json({
       success: false,
-      error: { code: 'INVALID_INPUT', message: 'Metric name and numeric value required' }});
+      error: { code: 'INVALID_INPUT', message: 'Metric name and numeric value required' },
+    });
   }
 
   try {
@@ -124,17 +137,17 @@ async function handleUpdateMetric(req: NextApiRequest, res: NextApiResponse) {
 
     return res.status(200).json({
       success: true,
-      data: { metric, value, updated: true  },
-  meta: { timestamp: new Date().toISOString() }});
+      data: { metric, value, updated: true },
+      meta: { timestamp: new Date().toISOString() },
+    });
   } catch (error) {
     console.error('Failed to update metric:', error);
     return res.status(500).json({
       success: false,
-      error: { code: 'UPDATE_ERROR', message: 'Failed to update metric' }});
+      error: { code: 'UPDATE_ERROR', message: 'Failed to update metric' },
+    });
   }
 }
 
 // Apply middleware pipeline
-export default withAuth(
-  withRateLimit('api')(handler)
-);
+export default withAuth(withRateLimit('api')(handler));
