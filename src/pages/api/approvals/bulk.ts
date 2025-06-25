@@ -10,20 +10,33 @@ const BulkApprovalDecisionSchema = z.object({
   approval_ids: z.array(z.string().uuid()).min(1).max(50),
   action: z.enum(['approve', 'reject', 'request_changes']),
   comments: z.string().optional(),
-  changes_requested: z.array(z.object({
-    field: z.string(),
-    reason: z.string()})).optional(),
-  conditions: z.array(z.string()).optional()});
+  changes_requested: z
+    .array(
+      z.object({
+        field: z.string(),
+        reason: z.string(),
+      })
+    )
+    .optional(),
+  conditions: z.array(z.string()).optional(),
+});
 
 const BulkApprovalCreateSchema = z.object({
-  items: z.array(z.object({
-    item_type: z.enum(['motivation', 'content_variation', 'execution', 'campaign']),
-    item_id: z.string().uuid(),
-    approval_type: z.enum(['content', 'legal', 'brand', 'final']).default('content'),
-    priority: z.enum(['low', 'normal', 'high', 'urgent']).default('normal'),
-    due_date: z.string().optional(),
-    notes: z.string().optional()})).min(1).max(20),
-  client_id: z.string().uuid()});
+  items: z
+    .array(
+      z.object({
+        item_type: z.enum(['motivation', 'content_variation', 'execution', 'campaign']),
+        item_id: z.string().uuid(),
+        approval_type: z.enum(['content', 'legal', 'brand', 'final']).default('content'),
+        priority: z.enum(['low', 'normal', 'high', 'urgent']).default('normal'),
+        due_date: z.string().optional(),
+        notes: z.string().optional(),
+      })
+    )
+    .min(1)
+    .max(20),
+  client_id: z.string().uuid(),
+});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -41,9 +54,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Bulk Approvals API error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
+      details:
+        process.env.NODE_ENV === 'development'
+          ? error instanceof Error
+            ? error.message
+            : 'Unknown error'
+          : undefined,
     });
   }
 }
@@ -51,11 +69,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   // Handle bulk approval creation
   const validationResult = BulkApprovalCreateSchema.safeParse(req.body);
-  
+
   if (!validationResult.success) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Validation failed',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
@@ -76,38 +94,39 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
   // Validate all items exist and belong to the client
   const validationResults = await validateBulkItems(items, client_id);
   const invalidItems = validationResults.filter((result: any) => !result.valid);
-  
+
   if (invalidItems.length > 0) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Invalid items found',
-      invalid_items: invalidItems
+      invalid_items: invalidItems,
     });
   }
 
   // Check for existing pending approvals
   const existingApprovals = await checkExistingApprovals(items);
   if (existingApprovals.length > 0) {
-    return res.status(409).json({ 
+    return res.status(409).json({
       error: 'Some items already have pending approvals',
-      existing_approvals: existingApprovals
+      existing_approvals: existingApprovals,
     });
   }
 
   // Create all approvals
-  const approvalData = await Promise.all(items.map(async (item) => {
-    const assignedTo = await determineApprovalAssignee(client_id, item.approval_type, user.id);
-    
-    return {
-      ...item,
-      client_id,
-      assigned_to: assignedTo,
-      created_by: user.id,
-      status: 'pending'};
-  }));
+  const approvalData = await Promise.all(
+    items.map(async item => {
+      const assignedTo = await determineApprovalAssignee(client_id, item.approval_type, user.id);
 
-  const { data: createdApprovals, error } = await supabase
-    .from('approvals')
-    .insert(approvalData)
+      return {
+        ...item,
+        client_id,
+        assigned_to: assignedTo,
+        created_by: user.id,
+        status: 'pending',
+      };
+    })
+  );
+
+  const { data: createdApprovals, error } = await supabase.from('approvals').insert(approvalData)
     .select(`
       *,
       profiles!approvals_created_by_fkey(full_name),
@@ -132,26 +151,29 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
     assigneeNotifications[approval.assigned_to].push(approval);
   });
 
-  await Promise.all(Object.entries(assigneeNotifications).map(([assigneeId, approvals]) => 
-    triggerBulkNotification(assigneeId, approvals as any[], 'created')
-  ));
+  await Promise.all(
+    Object.entries(assigneeNotifications).map(([assigneeId, approvals]) =>
+      triggerBulkNotification(assigneeId, approvals as any[], 'created')
+    )
+  );
 
-  return res.status(201).json({ 
+  return res.status(201).json({
     data: createdApprovals,
-    summary: Record<string, unknown>$1
-  total_created: createdApprovals.length,
-      assignees: Object.keys(assigneeNotifications).length}
+    summary: {
+      total_created: createdApprovals.length,
+      assignees: Object.keys(assigneeNotifications).length,
+    },
   });
 }
 
 async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   // Handle bulk approval decisions
   const validationResult = BulkApprovalDecisionSchema.safeParse(req.body);
-  
+
   if (!validationResult.success) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Validation failed',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
@@ -160,10 +182,12 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any): 
   // Get all approvals and verify permissions
   const { data: approvals, error } = await supabase
     .from('approvals')
-    .select(`
+    .select(
+      `
       *,
       clients(id, name)
-    `)
+    `
+    )
     .in('id', approval_ids);
 
   if (error || !approvals) {
@@ -185,18 +209,18 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any): 
     .map((item: any) => item.approval.id);
 
   if (unauthorizedApprovals.length > 0) {
-    return res.status(403).json({ 
+    return res.status(403).json({
       error: 'Insufficient permissions for some approvals',
-      unauthorized_approval_ids: unauthorizedApprovals
+      unauthorized_approval_ids: unauthorizedApprovals,
     });
   }
 
   // Check all approvals are in pending state
   const nonPendingApprovals = approvals.filter((approval: any) => approval.status !== 'pending');
   if (nonPendingApprovals.length > 0) {
-    return res.status(409).json({ 
+    return res.status(409).json({
       error: 'Some approvals are not in pending state',
-      non_pending_approvals: nonPendingApprovals.map((a: any) => ({ id: a.id, status: a.status }))
+      non_pending_approvals: nonPendingApprovals.map((a: any) => ({ id: a.id, status: a.status })),
     });
   }
 
@@ -204,7 +228,7 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any): 
   const statusMapping = {
     approve: 'approved',
     reject: 'rejected',
-    request_changes: 'changes_requested'
+    request_changes: 'changes_requested',
   };
 
   const newStatus = statusMapping[action];
@@ -216,7 +240,8 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any): 
     changes_requested,
     conditions,
     decided_by: user.id,
-    decided_at: new Date().toISOString()};
+    decided_at: new Date().toISOString(),
+  };
 
   // Update all approvals
   const { data: updatedApprovals, error: updateError } = await supabase
@@ -224,9 +249,9 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any): 
     .update({
       status: newStatus,
       decision_data: decisionData,
-      updated_at: new Date().toISOString()})
-    .in('id', approval_ids)
-    .select(`
+      updated_at: new Date().toISOString(),
+    })
+    .in('id', approval_ids).select(`
       *,
       profiles!approvals_created_by_fkey(full_name),
       clients(name)
@@ -243,14 +268,16 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any): 
   // Update item statuses
   const itemUpdates = approvals.map((approval: any) => ({
     item_type: approval.item_type,
-    item_id: approval.item_id
+    item_id: approval.item_id,
   }));
   await updateItemsStatusAfterDecision(itemUpdates, action);
 
   // Trigger post-decision workflows
-  await Promise.all(updatedApprovals.map((approval: any) => 
-    triggerPostDecisionWorkflow(approval, { action, comments })
-  ));
+  await Promise.all(
+    updatedApprovals.map((approval: any) =>
+      triggerPostDecisionWorkflow(approval, { action, comments })
+    )
+  );
 
   // Group notifications by affected users
   const notificationGroups: Record<string, any[]> = {};
@@ -263,94 +290,99 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any): 
   });
 
   // Send bulk notifications
-  await Promise.all(Object.entries(notificationGroups).map(([userId, approvals]) => 
-    triggerBulkNotification(userId, approvals as any[], `bulk_${action}`)
-  ));
+  await Promise.all(
+    Object.entries(notificationGroups).map(([userId, approvals]) =>
+      triggerBulkNotification(userId, approvals as any[], `bulk_${action}`)
+    )
+  );
 
-  return res.json({ 
+  return res.json({
     data: updatedApprovals,
-    summary: Record<string, unknown>$1
-  total_processed: updatedApprovals.length,
+    summary: {
+      total_processed: updatedApprovals.length,
       action: action,
       decided_by: user.id,
-      decided_at: decisionData.decided_at}
+      decided_at: decisionData.decided_at,
+    },
   });
 }
 
 // Helper functions
 async function validateBulkItems(items: any[], clientId: string): Promise<any[]> {
-  const results = await Promise.all(items.map(async (item) => {
-    try {
-      let query;
-      
-      switch (item.item_type) {
-        case 'motivation':
-          query = supabase
-            .from('motivations')
-            .select('briefs(client_id)')
-            .eq('id', item.item_id)
-            .single();
-          break;
-        
-        case 'content_variation':
-          query = supabase
-            .from('content_variations')
-            .select('briefs(client_id)')
-            .eq('id', item.item_id)
-            .single();
-          break;
-        
-        case 'execution':
-          query = supabase
-            .from('executions')
-            .select('matrices(campaigns(client_id))')
-            .eq('id', item.item_id)
-            .single();
-          break;
-        
-        case 'campaign':
-          query = supabase
-            .from('campaigns')
-            .select('client_id')
-            .eq('id', item.item_id)
-            .single();
-          break;
-        
-        default:
-          return { valid: false, item_id: item.item_id, reason: 'Invalid item type' };
-      }
+  const results = await Promise.all(
+    items.map(async item => {
+      try {
+        let query;
 
-      const { data, error } = await query;
-      
-      if (error || !data) {
-        return { valid: false, item_id: item.item_id, reason: 'Item not found' };
-      }
+        switch (item.item_type) {
+          case 'motivation':
+            query = supabase
+              .from('motivations')
+              .select('briefs(client_id)')
+              .eq('id', item.item_id)
+              .single();
+            break;
 
-      // Check if item belongs to the correct client
-      let itemClientId;
-      switch (item.item_type) {
-        case 'motivation':
-        case 'content_variation':
-          itemClientId = (data as any).briefs?.client_id;
-          break;
-        case 'execution':
-          itemClientId = (data as any).matrices?.campaigns?.client_id;
-          break;
-        case 'campaign':
-          itemClientId = (data as any).client_id;
-          break;
-      }
+          case 'content_variation':
+            query = supabase
+              .from('content_variations')
+              .select('briefs(client_id)')
+              .eq('id', item.item_id)
+              .single();
+            break;
 
-      if (itemClientId !== clientId) {
-        return { valid: false, item_id: item.item_id, reason: 'Item does not belong to specified client' };
-      }
+          case 'execution':
+            query = supabase
+              .from('executions')
+              .select('matrices(campaigns(client_id))')
+              .eq('id', item.item_id)
+              .single();
+            break;
 
-      return { valid: true, item_id: item.item_id };
-    } catch (error: any) {
-    const message = getErrorMessage(error);
-      return { valid: false, item_id: item.item_id, reason: 'Validation error' };
-    }
-  }));
+          case 'campaign':
+            query = supabase.from('campaigns').select('client_id').eq('id', item.item_id).single();
+            break;
+
+          default:
+            return { valid: false, item_id: item.item_id, reason: 'Invalid item type' };
+        }
+
+        const { data, error } = await query;
+
+        if (error || !data) {
+          return { valid: false, item_id: item.item_id, reason: 'Item not found' };
+        }
+
+        // Check if item belongs to the correct client
+        let itemClientId;
+        switch (item.item_type) {
+          case 'motivation':
+          case 'content_variation':
+            itemClientId = (data as any).briefs?.client_id;
+            break;
+          case 'execution':
+            itemClientId = (data as any).matrices?.campaigns?.client_id;
+            break;
+          case 'campaign':
+            itemClientId = (data as any).client_id;
+            break;
+        }
+
+        if (itemClientId !== clientId) {
+          return {
+            valid: false,
+            item_id: item.item_id,
+            reason: 'Item does not belong to specified client',
+          };
+        }
+
+        return { valid: true, item_id: item.item_id };
+      } catch (error: any) {
+        const message = getErrorMessage(error);
+        return { valid: false, item_id: item.item_id, reason: 'Validation error' };
+      }
+    })
+  );
 
   return results;
 }
@@ -363,22 +395,27 @@ async function checkExistingApprovals(items: any[]): Promise<any[]> {
 
   if (!existingApprovals) return [];
 
-  return items.filter((item: any) => 
-    existingApprovals.some(existing => 
-      existing.item_type === item.item_type && 
-      existing.item_id === item.item_id
+  return items
+    .filter((item: any) =>
+      existingApprovals.some(
+        existing => existing.item_type === item.item_type && existing.item_id === item.item_id
+      )
     )
-  ).map((item: any) => ({
-    item_type: item.item_type,
-    item_id: item.item_id,
-    existing_approval_id: existingApprovals.find((existing: any) => 
-      existing.item_type === item.item_type && 
-      existing.item_id === item.item_id
-    )?.id
-  }));
+    .map((item: any) => ({
+      item_type: item.item_type,
+      item_id: item.item_id,
+      existing_approval_id: existingApprovals.find(
+        (existing: any) =>
+          existing.item_type === item.item_type && existing.item_id === item.item_id
+      )?.id,
+    }));
 }
 
-async function determineApprovalAssignee(clientId: string, approvalType: string, requesterId: string): Promise<string | null> {
+async function determineApprovalAssignee(
+  clientId: string,
+  approvalType: string,
+  requesterId: string
+): Promise<string | null> {
   // Reuse the function from index.ts
   try {
     const { data: client } = await supabase
@@ -388,7 +425,7 @@ async function determineApprovalAssignee(clientId: string, approvalType: string,
       .single();
 
     const workflowSettings = client?.approval_workflow_settings || {};
-    
+
     if (workflowSettings[approvalType]?.assigned_to) {
       return workflowSettings[approvalType].assigned_to;
     }
@@ -397,7 +434,8 @@ async function determineApprovalAssignee(clientId: string, approvalType: string,
       content: ['content_reviewer', 'manager'],
       legal: ['legal_reviewer', 'manager'],
       brand: ['brand_manager', 'manager'],
-      final: ['manager', 'director']};
+      final: ['manager', 'director'],
+    };
 
     const roles = roleMapping[approvalType] || ['manager'];
 
@@ -418,50 +456,62 @@ async function determineApprovalAssignee(clientId: string, approvalType: string,
 }
 
 async function updateItemsApprovalStatus(items: any[], status: string): Promise<void> {
-  await Promise.all(items.map(async (item) => {
-    try {
-      const table = item.item_type === 'content_variation' ? 'content_variations' : `${item.item_type}s`;
-      
-      await supabase
-        .from(table)
-        .update({
-          approval_status: status,
-          updated_at: new Date().toISOString()})
-        .eq('id', item.item_id);
-    } catch (error: any) {
-    const message = getErrorMessage(error);
-      console.error(`Error updating item ${item.item_id} status:`, error);
-    }
-  }));
+  await Promise.all(
+    items.map(async item => {
+      try {
+        const table =
+          item.item_type === 'content_variation' ? 'content_variations' : `${item.item_type}s`;
+
+        await supabase
+          .from(table)
+          .update({
+            approval_status: status,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', item.item_id);
+      } catch (error: any) {
+        const message = getErrorMessage(error);
+        console.error(`Error updating item ${item.item_id} status:`, error);
+      }
+    })
+  );
 }
 
 async function updateItemsStatusAfterDecision(items: any[], decision: string): Promise<void> {
   const statusMapping: Record<string, string> = {
     approve: 'approved',
     reject: 'rejected',
-    request_changes: 'changes_requested'
+    request_changes: 'changes_requested',
   };
 
   const newStatus = statusMapping[decision];
-  
-  await Promise.all(items.map(async (item) => {
-    try {
-      const table = item.item_type === 'content_variation' ? 'content_variations' : `${item.item_type}s`;
-      
-      await supabase
-        .from(table)
-        .update({
-          approval_status: newStatus,
-          updated_at: new Date().toISOString()})
-        .eq('id', item.item_id);
-    } catch (error: any) {
-    const message = getErrorMessage(error);
-      console.error(`Error updating item ${item.item_id} status after decision:`, error);
-    }
-  }));
+
+  await Promise.all(
+    items.map(async item => {
+      try {
+        const table =
+          item.item_type === 'content_variation' ? 'content_variations' : `${item.item_type}s`;
+
+        await supabase
+          .from(table)
+          .update({
+            approval_status: newStatus,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', item.item_id);
+      } catch (error: any) {
+        const message = getErrorMessage(error);
+        console.error(`Error updating item ${item.item_id} status after decision:`, error);
+      }
+    })
+  );
 }
 
-async function verifyApprovalPermission(approval: any, userId: string, action: string): Promise<boolean> {
+async function verifyApprovalPermission(
+  approval: any,
+  userId: string,
+  action: string
+): Promise<boolean> {
   try {
     const { data: userClient } = await supabase
       .from('user_clients')
@@ -473,7 +523,8 @@ async function verifyApprovalPermission(approval: any, userId: string, action: s
     if (!userClient) return false;
 
     const permissions: Record<string, boolean> = {
-      decide: approval.assigned_to === userId || ['manager', 'director'].includes(userClient.role)};
+      decide: approval.assigned_to === userId || ['manager', 'director'].includes(userClient.role),
+    };
 
     return permissions[action] || false;
   } catch (error: any) {
@@ -487,15 +538,17 @@ async function triggerPostDecisionWorkflow(approval: any, decision: any): Promis
   try {
     if (decision.action === 'approve') {
       if (approval.item_type === 'execution') {
-        process.env.NODE_ENV === 'development' && console.log('Triggering execution pipeline for bulk approval:', approval.item_id);
+        process.env.NODE_ENV === 'development' &&
+          console.log('Triggering execution pipeline for bulk approval:', approval.item_id);
       }
-      
+
       if (approval.item_type === 'campaign') {
         await supabase
           .from('campaigns')
           .update({
             status: 'active',
-            activated_at: new Date().toISOString()})
+            activated_at: new Date().toISOString(),
+          })
           .eq('id', approval.item_id);
       }
     }
@@ -505,7 +558,12 @@ async function triggerPostDecisionWorkflow(approval: any, decision: any): Promis
   }
 }
 
-async function logBulkApprovalDecision(approvalIds: string[], action: string, userId: string, comments?: string): Promise<void> {
+async function logBulkApprovalDecision(
+  approvalIds: string[],
+  action: string,
+  userId: string,
+  comments?: string
+): Promise<void> {
   try {
     // Empty try block
   } catch (error: any) {
@@ -514,9 +572,19 @@ async function logBulkApprovalDecision(approvalIds: string[], action: string, us
   }
 }
 
-async function triggerBulkNotification(userId: string, approvals: any[], action: string): Promise<void> {
+async function triggerBulkNotification(
+  userId: string,
+  approvals: any[],
+  action: string
+): Promise<void> {
   try {
-    process.env.NODE_ENV === 'development' && console.log('Triggering bulk notification for', approvals.length, 'approvals with action:', action);
+    process.env.NODE_ENV === 'development' &&
+      console.log(
+        'Triggering bulk notification for',
+        approvals.length,
+        'approvals with action:',
+        action
+      );
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error triggering bulk notification:', error);
