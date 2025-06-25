@@ -33,12 +33,13 @@ export enum ApiErrorCode {
   VALIDATION_ERROR = 'VALIDATION_ERROR',
   RATE_LIMIT_EXCEEDED = 'RATE_LIMIT_EXCEEDED',
   CSRF_INVALID = 'CSRF_INVALID',
-  
+
   // Server errors (5xx)
   INTERNAL_ERROR = 'INTERNAL_ERROR',
   DATABASE_ERROR = 'DATABASE_ERROR',
   EXTERNAL_SERVICE_ERROR = 'EXTERNAL_SERVICE_ERROR',
-  TIMEOUT_ERROR = 'TIMEOUT_ERROR'}
+  TIMEOUT_ERROR = 'TIMEOUT_ERROR',
+}
 
 // Success response helper
 export function successResponse<T>(
@@ -50,10 +51,12 @@ export function successResponse<T>(
   const response: ApiResponse<T> = {
     success: true,
     data,
-    meta: Record<string, unknown>$1
-  timestamp: new Date().toISOString(),
-      ...meta}};
-  
+    meta: {
+      timestamp: new Date().toISOString(),
+      ...meta,
+    },
+  };
+
   res.status(statusCode).json(response);
 }
 
@@ -67,27 +70,26 @@ export function errorResponse(
 ): void {
   const response: ApiResponse = {
     success: false,
-    error: Record<string, unknown>$1
-  code,
+    error: {
+      code,
       message,
-      ...(details && { details })},
-    meta: Record<string, unknown>$1
-  timestamp: new Date().toISOString()}};
-  
+      ...(details && { details }),
+    },
+    meta: {
+      timestamp: new Date().toISOString(),
+    },
+  };
+
   res.status(statusCode).json(response);
 }
 
 // Handle caught errors and return appropriate response
-export function handleApiError(
-  res: NextApiResponse,
-  error: unknown,
-  context?: string
-): void {
+export function handleApiError(res: NextApiResponse, error: unknown, context?: string): void {
   // Log error for monitoring (production-safe)
   if (process.env.NODE_ENV === 'development') {
     console.error(`API Error${context ? ` in ${context}` : ''}:`, error);
   }
-  
+
   // Handle specific error types
   if (error instanceof Error) {
     // Database errors
@@ -100,38 +102,23 @@ export function handleApiError(
         process.env.NODE_ENV === 'development' ? error.message : undefined
       );
     }
-    
+
     // Validation errors
     if (error.message.includes('validation') || error.message.includes('required')) {
-      return errorResponse(
-        res,
-        ApiErrorCode.VALIDATION_ERROR,
-        error.message,
-        400
-      );
+      return errorResponse(res, ApiErrorCode.VALIDATION_ERROR, error.message, 400);
     }
-    
+
     // Authentication errors
     if (error.message.includes('unauthorized') || error.message.includes('authentication')) {
-      return errorResponse(
-        res,
-        ApiErrorCode.UNAUTHORIZED,
-        'Authentication required',
-        401
-      );
+      return errorResponse(res, ApiErrorCode.UNAUTHORIZED, 'Authentication required', 401);
     }
-    
+
     // Permission errors
     if (error.message.includes('forbidden') || error.message.includes('permission')) {
-      return errorResponse(
-        res,
-        ApiErrorCode.FORBIDDEN,
-        'Insufficient permissions',
-        403
-      );
+      return errorResponse(res, ApiErrorCode.FORBIDDEN, 'Insufficient permissions', 403);
     }
   }
-  
+
   // Default internal server error
   errorResponse(
     res,
@@ -143,10 +130,7 @@ export function handleApiError(
 }
 
 // Method not allowed helper
-export function methodNotAllowed(
-  res: NextApiResponse,
-  allowedMethods: string[]
-): void {
+export function methodNotAllowed(res: NextApiResponse, allowedMethods: string[]): void {
   res.setHeader('Allow', allowedMethods);
   errorResponse(
     res,
@@ -166,7 +150,8 @@ export function createPaginationMeta(
     page,
     limit,
     total,
-    totalPages: Math.ceil(total / limit)};
+    totalPages: Math.ceil(total / limit),
+  };
 }
 
 // Validation helper
@@ -175,12 +160,12 @@ export function validateRequiredFields(
   requiredFields: string[]
 ): string[] {
   const missing: string[] = [];
-  
+
   for (const field of requiredFields) {
     if (!data[field] || (typeof data[field] === 'string' && data[field].trim() === '')) {
       missing.push(field);
     }
   }
-  
+
   return missing;
 }
