@@ -18,7 +18,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       id: '1',
       message: 'Sample error 1',
       timestamp: new Date().toISOString(),
-      level: 'error' }
+      level: 'error'
+    },
     {
       id: '2', 
       message: 'Sample error 2',
@@ -30,8 +31,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   return res.status(200).json({
     success: true,
     data: errors,
-    meta: Record<string, unknown>$1
-  count: errors.length,
+    meta: {
+      count: errors.length,
       timestamp: new Date().toISOString()
     }
   });

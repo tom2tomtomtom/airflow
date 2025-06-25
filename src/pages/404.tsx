@@ -10,7 +10,7 @@ export default function Custom404() {
   return (
     <>
        <Head>
-        <title>404 - Page Not Found | AIrFLOW</title>
+        <title>404 - Page Not Found | Airflow</title>
       </Head>
 
       <Container maxWidth="md">

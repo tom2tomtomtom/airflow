@@ -1,17 +1,17 @@
 
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import switch from '@/components/switch';
+import { Switch } from '@/components/ui/switch';
 
 describe('switch', () => {
   it('renders correctly', () => {
-    render(<switch />);
+    render(<Switch />);
     expect(screen.getByRole('button')).toBeInTheDocument();
   });
 
   it('handles user interaction', async () => {
     const user = userEvent.setup();
-    render(<switch />);
+    render(<Switch />);
     
     await user.click(screen.getByRole('button'));
     

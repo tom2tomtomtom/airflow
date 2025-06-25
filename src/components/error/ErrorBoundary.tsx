@@ -1,5 +1,5 @@
 /**
- * React Error Boundary for AIRWAVE
+ * React Error Boundary for Airflow
  * Catches JavaScript errors anywhere in the component tree
  * Provides graceful error handling and user-friendly error messages
  */

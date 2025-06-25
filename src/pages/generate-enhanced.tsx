@@ -7,7 +7,7 @@ const GenerateEnhancedPage: React.FC = () => {
   return (
     <>
        <Head>
-        <title>Generate Enhanced | AIRFLOW</title>
+        <title>Generate Enhanced | Airflow</title>
       </Head>
       <DashboardLayout title="Generate Enhanced">
         <Box sx={{ mb: 4 }}>

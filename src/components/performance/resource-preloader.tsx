@@ -1,7 +1,8 @@
 // Resource preloading optimization
+import React from 'react';
 import Head from 'next/head';
 
-export const ResourcePreloader = ({ children }) => (
+export const ResourcePreloader: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <>
        <Head>
       {/* Preload critical resources */}

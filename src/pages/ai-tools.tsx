@@ -12,7 +12,7 @@ const AIToolsPage: React.FC = () => {
   return (
     <>
        <Head>
-        <title>AI Tools | AIrFLOW</title>
+        <title>AI Tools | Airflow</title>
       </Head>
       <DashboardLayout>
         <Box sx={{ mb: 4 }}>

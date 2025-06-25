@@ -12,7 +12,7 @@ const LazyAnalyticsDashboard = dynamic(() => import('../LazyAnalyticsDashboard')
   ssr: false,
 });
 
-const LazyAdvancedAnalytics = dynamic(() => import('../AdvancedAnalytics'), {
+const LazyAdvancedAnalytics = dynamic(() => import('../AdvancedAnalytics').then(mod => ({ default: mod.AdvancedAnalytics })), {
   loading: () => null,
   ssr: false,
 });

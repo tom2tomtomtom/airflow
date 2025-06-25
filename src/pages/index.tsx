@@ -56,7 +56,7 @@ const HomePage = () => {
             sx={{ fontWeight: 'bold', color: 'var(--carbon-amber-main)', cursor: 'pointer' }}
             onClick={() => router.push('/')}
           >
-            AIrFLOW
+            Airflow
           </Typography>
           <Box sx={{ display: 'flex', gap: 2 }}>
             <Button variant="outlined" onClick={() => router.push('/login')}>
@@ -101,7 +101,7 @@ const HomePage = () => {
                 sx={{ mb: 6, fontSize: '1.2rem', maxWidth: '600px', mx: 'auto' }}
               >
                 Create high-performing, scalable ad executions tailored to customer motivations at
-                lightning speed. Transform your creative workflow with AIrWAVE 2.0.
+                lightning speed. Transform your creative workflow with Airflow 2.0.
               </Typography>
 
               {/* Feature Highlights */}

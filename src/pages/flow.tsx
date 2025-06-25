@@ -45,7 +45,7 @@ const FlowPage: React.FC = () => {
   return (
     <>
        <Head>
-        <title>Flow - AI Content Workflow | AIrFLOW</title>
+        <title>Flow - AI Content Workflow | Airflow</title>
         <meta name="description" content="AI-powered content generation workflow" />
       </Head>
 

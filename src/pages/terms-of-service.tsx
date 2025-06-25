@@ -6,10 +6,10 @@ export default function TermsOfService() {
   return (
     <>
        <Head>
-        <title>Terms of Service - AIrFLOW</title>
+        <title>Terms of Service - Airflow</title>
         <meta
           name="description"
-          content="AIrFLOW Terms of Service - Legal terms and conditions for using our platform"
+          content="Airflow Terms of Service - Legal terms and conditions for using our platform"
         />
       </Head>
 
@@ -28,7 +28,7 @@ export default function TermsOfService() {
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold text-gray-900 mb-4">1. Agreement to Terms</h2>
                 <p>
-                  By accessing or using AIrFLOW ("the Service"), you agree to be bound by these
+                  By accessing or using Airflow ("the Service"), you agree to be bound by these
                   Terms of Service ("Terms"). If you disagree with any part of these terms, you may
                   not access the Service.
                 </p>
@@ -38,7 +38,7 @@ export default function TermsOfService() {
                 <h2 className="text-2xl font-semibold text-gray-900 mb-4">
                   2. Description of Service
                 </h2>
-                <p>AIrFLOW is a digital advertising creation platform that provides:</p>
+                <p>Airflow is a digital advertising creation platform that provides:</p>
                 <ul className="list-disc pl-6 mb-4">
                   <li>AI-powered strategy and copy generation</li>
                   <li>Campaign matrix creation and management</li>
@@ -245,7 +245,7 @@ export default function TermsOfService() {
 
                 <h3 className="text-xl font-semibold text-gray-800 mb-3">13.1 Entire Agreement</h3>
                 <p>
-                  These Terms constitute the entire agreement between you and AIrFLOW regarding the
+                  These Terms constitute the entire agreement between you and Airflow regarding the
                   Service.
                 </p>
 
@@ -272,15 +272,15 @@ export default function TermsOfService() {
                 <p>For questions about these Terms, please contact us:</p>
                 <div className="bg-gray-50 p-4 rounded-lg mt-4">
                   <p className="mb-2">
-                    <strong>AIrFLOW Legal Team</strong>
+                    <strong>Airflow Legal Team</strong>
                   </p>
                   <p className="mb-2">
                     Email:{' '}
                     <a
-                      href="mailto:legal@airwave.com"
+                      href="mailto:legal@airflow.com"
                       className="text-indigo-600 hover:text-indigo-500"
                     >
-                      legal@airwave.com
+                      legal@airflow.com
                     </a>
                   </p>
                   <p>Address: [Your Company Address]</p>

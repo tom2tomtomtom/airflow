@@ -2,11 +2,14 @@
 const nextConfig = {
   reactStrictMode: true,
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   eslint: {
     ignoreDuringBuilds: true,
   },
+  pageExtensions: ['tsx', 'ts', 'jsx', 'js'].map(ext => {
+    return process.env.NODE_ENV === 'production' ? ext : `${ext}`
+  }).filter(ext => !ext.includes('test') && !ext.includes('spec')),
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
@@ -35,6 +38,12 @@ const nextConfig = {
       ...config.resolve.alias,
       ioredis: false,
     };
+
+    // Exclude test files from build
+    config.module.rules.push({
+      test: /\.(test|spec)\.(ts|tsx|js|jsx)$/,
+      use: 'ignore-loader'
+    });
 
     return config;
   },

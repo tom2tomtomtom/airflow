@@ -16,7 +16,7 @@ module.exports = {
     '^.+\\.(js|jsx)$': 'babel-jest'
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(.*\\.mjs$))'
+    'node_modules/(?!(@supabase|.*\\.mjs$))'
   ],
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',

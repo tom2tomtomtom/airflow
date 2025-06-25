@@ -267,7 +267,7 @@ const CampaignBuilderPage: React.FC = () => {
   return (
     <>
        <Head>
-        <title>Campaign Builder | AIRFLOW</title>
+        <title>Campaign Builder | Airflow</title>
       </Head>
       <DashboardLayout title="Campaign Builder">
         <Box sx={{ mb: 4 }}>

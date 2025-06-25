@@ -97,7 +97,7 @@ const StrategyPage: React.FC = () => {
   return (
     <>
        <Head>
-        <title>Strategy | AIRFLOW</title>
+        <title>Strategy | Airflow</title>
       </Head>
       <DashboardLayout title="Strategy">
         <Box sx={{ mb: 4 }}>

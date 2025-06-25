@@ -296,7 +296,7 @@ const AnalyticsPage: React.FC = () => {
   return (
     <>
        <Head>
-        <title>Analytics Dashboard | AIRFLOW</title>
+        <title>Analytics Dashboard | Airflow</title>
       </Head>
       <DashboardLayout title="Analytics">
         <Box sx={{ mb: 4 }}>

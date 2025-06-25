@@ -7,7 +7,7 @@ const SocialPublishingPage: React.FC = () => {
   return (
     <>
        <Head>
-        <title>Social Publishing | AIRFLOW</title>
+        <title>Social Publishing | Airflow</title>
       </Head>
       <DashboardLayout title="Social Publishing">
         <Box sx={{ mb: 4 }}>

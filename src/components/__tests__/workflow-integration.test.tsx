@@ -132,7 +132,7 @@ describe('Workflow Integration Tests', () => {
 
     // Wait for component to load
     await waitFor(() => {
-      expect(screen.getByText('AIRWAVE Campaign Builder')).toBeInTheDocument();
+      expect(screen.getByText('Airflow Campaign Builder')).toBeInTheDocument();
     });
 
     // Should show upload step
@@ -159,7 +159,7 @@ describe('Workflow Integration Tests', () => {
 
     // Wait for component to load
     await waitFor(() => {
-      expect(screen.getByText('AIRWAVE Campaign Builder')).toBeInTheDocument();
+      expect(screen.getByText('Airflow Campaign Builder')).toBeInTheDocument();
     });
 
     // Should render without crashing even with API errors
@@ -185,7 +185,7 @@ describe('Workflow Integration Tests', () => {
 
     // Wait for component to load
     await waitFor(() => {
-      expect(screen.getByText('AIRWAVE Campaign Builder')).toBeInTheDocument();
+      expect(screen.getByText('Airflow Campaign Builder')).toBeInTheDocument();
     });
 
     // Should render workflow steps
@@ -197,7 +197,7 @@ describe('Workflow Integration Tests', () => {
     renderWorkflow();
 
     await waitFor(() => {
-      expect(screen.getByText('AIRWAVE Campaign Builder')).toBeInTheDocument();
+      expect(screen.getByText('Airflow Campaign Builder')).toBeInTheDocument();
     });
 
     // Check all workflow steps are displayed

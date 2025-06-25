@@ -116,7 +116,7 @@ const CampaignsPage: React.FC = () => {
   return (
     <DashboardLayout>
       <Head>
-        <title>Campaigns | AIRFLOW</title>
+        <title>Campaigns | Airflow</title>
       </Head>
       <Container maxWidth="lg">
         <Box mb={4}>

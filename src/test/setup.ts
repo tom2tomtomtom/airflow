@@ -46,6 +46,32 @@ global.IntersectionObserver = jest.fn().mockImplementation(() => ({
 // Mock fetch
 global.fetch = jest.fn();
 
+// Mock Supabase client
+jest.mock('@supabase/supabase-js', () => ({
+  createClient: jest.fn(() => ({
+    auth: {
+      getSession: jest.fn(),
+      getUser: jest.fn(),
+      signInWithPassword: jest.fn(),
+      signOut: jest.fn(),
+      onAuthStateChange: jest.fn(),
+    },
+    from: jest.fn(() => ({
+      select: jest.fn(() => ({
+        eq: jest.fn(() => ({
+          single: jest.fn(),
+          data: null,
+          error: null
+        }))
+      })),
+      insert: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    })),
+    rpc: jest.fn(),
+  }))
+}));
+
 // Setup environment variables for tests
 process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co';
 process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';

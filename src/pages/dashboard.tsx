@@ -75,7 +75,7 @@ const DashboardPage = () => {
     <ProtectedRoute>
       <DashboardLayout>
         <Head>
-          <title>Dashboard | AIrFLOW</title>
+          <title>Dashboard | Airflow</title>
         </Head>
         <Container maxWidth="lg">
           {/* Welcome Section */}
@@ -165,12 +165,12 @@ const DashboardPage = () => {
             <Grid size={{ xs: 12 }}>
               <Paper sx={{ p: 3 }}>
                 <Typography variant="h6" gutterBottom>
-                  Getting Started with AIrFLOW
+                  Getting Started with Airflow
                 </Typography>
                 <Grid container spacing={2}>
                   <Grid size={{ xs: 12, md: 6 }}>
                     <Typography variant="body2" color="text.secondary" paragraph>
-                      New to AIrFLOW? Here's your simple workflow:
+                      New to Airflow? Here's your simple workflow:
                     </Typography>
                     <Box component="ol" sx={{ pl: 2 }}>
                       <Box component="li" sx={{ mb: 1 }}>

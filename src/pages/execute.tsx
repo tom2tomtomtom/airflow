@@ -294,7 +294,7 @@ const ExecutePage: React.FC = () => {
   return (
     <>
        <Head>
-        <title>Campaign Execution | AIRFLOW</title>
+        <title>Campaign Execution | Airflow</title>
       </Head>
       <DashboardLayout title="Campaign Execution">
         <Box sx={{ mb: 4 }}>

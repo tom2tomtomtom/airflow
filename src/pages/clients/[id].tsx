@@ -7,7 +7,7 @@ const ClientDetailsPage: React.FC = () => {
   return (
     <>
        <Head>
-        <title>Client Details | AIRFLOW</title>
+        <title>Client Details | Airflow</title>
       </Head>
       <DashboardLayout title="Client Details">
         <Box sx={{ mb: 4 }}>

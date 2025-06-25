@@ -18,18 +18,18 @@ export default function ApiDocsPage() {
   return (
     <>
        <Head>
-        <title>API Documentation - AIRWAVE</title>
-        <meta name="description" content="Comprehensive API documentation for AIRWAVE platform" />
+        <title>API Documentation - Airflow</title>
+        <meta name="description" content="Comprehensive API documentation for Airflow platform" />
       </Head>
 
       <DashboardLayout>
         <Box sx={{ p: 3 }}>
           <Paper sx={{ p: 4, mb: 3 }}>
             <Typography variant="h4" gutterBottom>
-              AIRWAVE API Documentation
+              Airflow API Documentation
             </Typography>
             <Typography variant="body1" color="text.secondary" paragraph>
-              Comprehensive documentation for all AIRWAVE API endpoints. This interactive
+              Comprehensive documentation for all Airflow API endpoints. This interactive
               documentation allows you to explore and test API endpoints directly from your browser.
             </Typography>
 

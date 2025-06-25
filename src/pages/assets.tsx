@@ -90,7 +90,7 @@ const AssetsPage = () => {
   return (
     <DashboardLayout>
       <Head>
-        <title>Assets | AIrWAVE</title>
+        <title>Assets | Airflow</title>
       </Head>
 
       <Box sx={{ width: '100%' }}>

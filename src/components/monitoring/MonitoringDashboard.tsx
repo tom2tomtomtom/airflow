@@ -7,7 +7,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Grid2 as Grid,
   Card,
   CardContent,
   Typography,
@@ -155,6 +154,7 @@ const MonitoringDashboard: React.FC = () => {
       const interval = setInterval(fetchDashboardData, 30000); // Refresh every 30 seconds
       return () => clearInterval(interval);
     }
+    return undefined;
   }, [autoRefresh]);
 
   // Get status color based on health/status
@@ -415,22 +415,22 @@ const MonitoringDashboard: React.FC = () => {
       {/* Tab Content */}
       {selectedTab === 0 && (
         /* Overview Tab */
-        <Grid container spacing={3}>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
           {dashboardData.sections.map(section => (
-            <Grid xs={12} key={section.id}>
+            <Box key={section.id} sx={{ width: '100%', mb: 2 }}>
               <Typography variant="h5" gutterBottom>
                 {section.title}
               </Typography>
-              <Grid container spacing={2}>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
                 {section.metrics.slice(0, 3).map((metric, index) => (
-                  <Grid xs={12} sm={6} md={4} key={index}>
+                  <Box key={index} sx={{ flex: '1 1 300px', minWidth: '300px' }}>
                     <MetricCard metric={metric} />
-                  </Grid>
+                  </Box>
                 ))}
-              </Grid>
-            </Grid>
+              </Box>
+            </Box>
           ))}
-        </Grid>
+        </Box>
       )}
 
       {selectedTab > 0 &&
@@ -440,17 +440,17 @@ const MonitoringDashboard: React.FC = () => {
           const section = dashboardData.sections[selectedTab - 1];
           return (
             <Box>
-              <Grid container spacing={3}>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
                 {/* Metrics */}
                 {section.metrics.map((metric, index) => (
-                  <Grid xs={12} sm={6} md={4} key={index}>
+                  <Box key={index} sx={{ flex: '1 1 300px', minWidth: '300px' }}>
                     <MetricCard metric={metric} />
-                  </Grid>
+                  </Box>
                 ))}
 
                 {/* Charts */}
                 {section.charts.map(chart => (
-                  <Grid xs={12} md={6} key={chart.id}>
+                  <Box key={chart.id} sx={{ flex: '1 1 400px', minWidth: '400px' }}>
                     <Card>
                       <CardContent>
                         <Typography variant="h6" gutterBottom>
@@ -459,9 +459,9 @@ const MonitoringDashboard: React.FC = () => {
                         <Box height={300}>{renderChart(chart)}</Box>
                       </CardContent>
                     </Card>
-                  </Grid>
+                  </Box>
                 ))}
-              </Grid>
+              </Box>
             </Box>
           );
         })()}
@@ -559,12 +559,12 @@ const MonitoringDashboard: React.FC = () => {
         <DialogContent>
           {selectedAlert && (
             <Box>
-              <Grid container spacing={2}>
-                <Grid xs={12} sm={6}>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
                   <Typography variant="subtitle2">Name</Typography>
                   <Typography variant="body1">{selectedAlert.name}</Typography>
-                </Grid>
-                <Grid xs={12} sm={6}>
+                </Box>
+                <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
                   <Typography variant="subtitle2">Severity</Typography>
                   <Chip
                     label={selectedAlert.severity}
@@ -576,28 +576,28 @@ const MonitoringDashboard: React.FC = () => {
                           : 'info'
                     }
                   />
-                </Grid>
-                <Grid xs={12} sm={6}>
+                </Box>
+                <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
                   <Typography variant="subtitle2">Current Value</Typography>
                   <Typography variant="body1">{selectedAlert.value}</Typography>
-                </Grid>
-                <Grid xs={12} sm={6}>
+                </Box>
+                <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
                   <Typography variant="subtitle2">Threshold</Typography>
                   <Typography variant="body1">{selectedAlert.threshold}</Typography>
-                </Grid>
-                <Grid xs={12} sm={6}>
+                </Box>
+                <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
                   <Typography variant="subtitle2">First Seen</Typography>
                   <Typography variant="body1">
                     {new Date(selectedAlert.firstSeen).toLocaleString()}
                   </Typography>
-                </Grid>
-                <Grid xs={12} sm={6}>
+                </Box>
+                <Box sx={{ flex: '1 1 300px', minWidth: '300px' }}>
                   <Typography variant="subtitle2">Last Seen</Typography>
                   <Typography variant="body1">
                     {new Date(selectedAlert.lastSeen).toLocaleString()}
                   </Typography>
-                </Grid>
-              </Grid>
+                </Box>
+              </Box>
             </Box>
           )}
         </DialogContent>

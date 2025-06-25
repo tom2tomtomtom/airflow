@@ -74,7 +74,7 @@ const SignupPage: React.FC = () => {
   return (
     <>
        <Head>
-        <title>Sign Up | AIrFLOW</title>
+        <title>Sign Up | Airflow</title>
       </Head>
       <Box
         sx={{
@@ -106,7 +106,7 @@ const SignupPage: React.FC = () => {
                 WebkitTextFillColor: 'transparent',
                 mb: 1 }}
             >
-              AIrFLOW
+              Airflow
             </Typography>
             <Typography variant="h6" color="text.secondary">
               Create Your Account

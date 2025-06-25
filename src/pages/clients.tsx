@@ -244,7 +244,7 @@ const ClientsPage: React.FC = () => {
   return (
     <>
        <Head>
-        <title>Clients | AIRFLOW</title>
+        <title>Clients | Airflow</title>
       </Head>
       <DashboardLayout title="Clients">
         <Box sx={{ mb: 4 }}>

@@ -145,7 +145,7 @@ function MyApp(props: MyAppProps) {
   return (
     <CacheProvider value={emotionCache}>
       <Head>
-        <title>AIrFLOW - AI-Powered Campaign Management</title>
+        <title>Airflow - AI-Powered Campaign Management</title>
         <meta name="description" content="AI-powered campaign management platform for creating and managing digital marketing assets" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />

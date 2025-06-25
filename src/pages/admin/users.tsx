@@ -7,7 +7,7 @@ const UsersPage: React.FC = () => {
   return (
     <>
        <Head>
-        <title>Users | AIRFLOW</title>
+        <title>Users | Airflow</title>
       </Head>
       <DashboardLayout title="Users">
         <Box sx={{ mb: 4 }}>

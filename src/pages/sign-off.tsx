@@ -7,7 +7,7 @@ const SignOffPage: React.FC = () => {
   return (
     <>
        <Head>
-        <title>Sign Off | AIRFLOW</title>
+        <title>Sign Off | Airflow</title>
       </Head>
       <DashboardLayout title="Sign Off">
         <Box sx={{ mb: 4 }}>

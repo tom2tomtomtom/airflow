@@ -102,7 +102,7 @@ const LoginPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Login | AIrFLOW</title>
+        <title>Login | Airflow</title>
       </Head>
       <Box
         sx={{
@@ -142,7 +142,7 @@ const LoginPage: React.FC = () => {
                 fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
               }}
             >
-              AIrFLOW
+              Airflow
             </Typography>
             <Typography
               variant="h6"

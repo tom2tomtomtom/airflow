@@ -65,7 +65,7 @@ describe('UnifiedBriefWorkflow State Management', () => {
     renderWorkflow();
 
     // Should render the workflow dialog with new title
-    expect(screen.getByText('AIRWAVE Campaign Builder')).toBeInTheDocument();
+    expect(screen.getByText('Airflow Campaign Builder')).toBeInTheDocument();
     // Should render the upload step label
     expect(screen.getByText('Upload Brief')).toBeInTheDocument();
     // Wait for lazy-loaded component to render and check for unique text
@@ -82,7 +82,7 @@ describe('UnifiedBriefWorkflow State Management', () => {
     renderWorkflow();
 
     // Should render the workflow dialog with new title
-    expect(screen.getByText('AIRWAVE Campaign Builder')).toBeInTheDocument();
+    expect(screen.getByText('Airflow Campaign Builder')).toBeInTheDocument();
     // Should render the upload step
     expect(screen.getByText('Upload Brief')).toBeInTheDocument();
   });
@@ -91,7 +91,7 @@ describe('UnifiedBriefWorkflow State Management', () => {
     renderWorkflow();
 
     // Component should render without errors with new title
-    expect(screen.getByText('AIRWAVE Campaign Builder')).toBeInTheDocument();
+    expect(screen.getByText('Airflow Campaign Builder')).toBeInTheDocument();
   });
 
   test('should prevent multiple initializations', () => {
@@ -139,7 +139,7 @@ describe('UnifiedBriefWorkflow State Management', () => {
     const { rerender } = renderWorkflow();
 
     // Component should render initially with new title
-    expect(screen.getByText('AIRWAVE Campaign Builder')).toBeInTheDocument();
+    expect(screen.getByText('Airflow Campaign Builder')).toBeInTheDocument();
 
     rerender(
       <MockNotificationProvider>
@@ -148,6 +148,6 @@ describe('UnifiedBriefWorkflow State Management', () => {
     );
 
     // Should still render after re-render with new title
-    expect(screen.getByText('AIRWAVE Campaign Builder')).toBeInTheDocument();
+    expect(screen.getByText('Airflow Campaign Builder')).toBeInTheDocument();
   });
 });

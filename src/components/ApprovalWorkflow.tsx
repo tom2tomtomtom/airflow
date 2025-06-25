@@ -62,7 +62,12 @@ interface Approval {
   due_date?: string;
   created_at: string;
   updated_at: string;
-  decision_data?: any;
+  decision_data?: {
+    action?: string;
+    comments?: string;
+    changes_requested?: string[];
+    conditions?: string[];
+  };
   notes?: string;
   profiles?: {
     full_name: string;
@@ -71,7 +76,12 @@ interface Approval {
   clients?: {
     name: string;
   };
-  item_details?: any;
+  item_details?: {
+    title?: string;
+    description?: string;
+    content?: string;
+    metadata?: Record<string, unknown>;
+  };
 }
 
 interface ApprovalWorkflowProps {
@@ -108,7 +118,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
   const [decisionData, setDecisionData] = useState({
     action: 'approve' as 'approve' | 'reject' | 'request_changes',
     comments: '',
-    changes_requested: [] as any[],
+    changes_requested: [] as string[],
     conditions: [] as string[],
   });
 
@@ -138,7 +148,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
         const data = await response.json();
         setApprovals(data.data || []);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       const message = getErrorMessage(error);
       loggers.api.error('Error fetching approvals', { error: message });
     } finally {
@@ -169,7 +179,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
         const error = await response.json();
         showNotification(error.error || 'Failed to process approval', 'error');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       const message = getErrorMessage(error);
       showNotification('Error processing approval', 'error');
     }
@@ -177,7 +187,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
 
   // Handle bulk approval
   const handleBulkApproval = async () => {
-    const selectedIds = Object.keys(bulkSelection).filter((id: any) => bulkSelection[id]);
+    const selectedIds = Object.keys(bulkSelection).filter((id: string) => bulkSelection[id]);
     if (selectedIds.length === 0) return;
 
     try {
@@ -203,7 +213,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
         const error = await response.json();
         showNotification(error.error || 'Failed to process bulk approvals', 'error');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       const message = getErrorMessage(error);
       showNotification('Error processing bulk approvals', 'error');
     }
@@ -301,14 +311,14 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
   };
 
   const handleSelectAll = () => {
-    const pendingApprovals = approvals.filter((a: any) => a.status === 'pending');
+    const pendingApprovals = approvals.filter((a: Approval) => a.status === 'pending');
     const allSelected = pendingApprovals.every(a => bulkSelection[a.id]);
 
     if (allSelected) {
       setBulkSelection({});
     } else {
       const newSelection: BulkSelection = {};
-      pendingApprovals.forEach((a: any) => {
+      pendingApprovals.forEach((a: Approval) => {
         newSelection[a.id] = true;
       });
       setBulkSelection(newSelection);
@@ -321,7 +331,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
   }, [activeClient, tabValue, clientId, itemType, itemId]);
 
   const filteredApprovals =
-    tabValue === 'all' ? approvals : approvals.filter((a: any) => a.status === tabValue);
+    tabValue === 'all' ? approvals : approvals.filter((a: Approval) => a.status === tabValue);
   const selectedCount = Object.values(bulkSelection).filter(Boolean).length;
   const overdueCount = approvals.filter(isOverdue).length;
 
@@ -511,7 +521,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
 
                       <ListItemAvatar>
                         <Badge
-                          color={statusDisplay.color as any}
+                          color={statusDisplay.color as 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning'}
                           variant="dot"
                           invisible={approval.status === 'pending'}
                         >
@@ -530,13 +540,13 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
                             <Chip
                               size="small"
                               label={statusDisplay.label}
-                              color={statusDisplay.color as any}
+                              color={statusDisplay.color as 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning'}
                               variant="outlined"
                             />
                             <Chip
                               size="small"
                               label={priorityDisplay.label}
-                              color={priorityDisplay.color as any}
+                              color={priorityDisplay.color as 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning'}
                               variant="outlined"
                             />
                             {overdue && (
@@ -694,7 +704,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
             <Select
               value={decisionData.action}
               label="Action"
-              onChange={e => setDecisionData({ ...decisionData, action: e.target.value as any })}
+              onChange={e => setDecisionData({ ...decisionData, action: e.target.value as 'approve' | 'reject' | 'request_changes' })}
             >
               <MenuItem value="approve">Approve All</MenuItem>
               <MenuItem value="reject">Reject All</MenuItem>

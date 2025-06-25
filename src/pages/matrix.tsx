@@ -251,7 +251,7 @@ const MatrixPage: React.FC = () => {
   return (
     <DashboardLayout title="Matrix Editor">
       <Head>
-        <title>Matrix Editor | AIrWAVE</title>
+        <title>Matrix Editor | Airflow</title>
       </Head>
 
       <Box sx={{ p: 3 }}>

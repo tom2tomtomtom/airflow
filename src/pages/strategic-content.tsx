@@ -7,7 +7,7 @@ const StrategicContentPage: React.FC = () => {
   return (
     <>
        <Head>
-        <title>Strategic Content | AIRFLOW</title>
+        <title>Strategic Content | Airflow</title>
       </Head>
       <DashboardLayout title="Strategic Content">
         <Box sx={{ mb: 4 }}>

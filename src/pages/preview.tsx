@@ -327,7 +327,7 @@ const PreviewPage: React.FC = () => {
   return (
     <>
        <Head>
-        <title>Content Preview | AIRFLOW</title>
+        <title>Content Preview | Airflow</title>
       </Head>
       <DashboardLayout title="Content Preview">
         {loading && (

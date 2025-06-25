@@ -289,7 +289,7 @@ export const WorkflowContainer: React.FC<WorkflowContainerProps> = ({
         borderColor: 'divider' }}>
         <Box>
           <Typography variant="h5" component="div">
-            AIRWAVE Campaign Builder
+            Airflow Campaign Builder
           </Typography>
           <Typography variant="body2" color="text.secondary">
             {workflowSteps[currentStep]?.description}

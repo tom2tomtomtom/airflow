@@ -84,7 +84,7 @@ export default function SystemStatusPage() {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Typography variant="h3" gutterBottom align="center">
-        AIrFLOW System Status
+        Airflow System Status
       </Typography>
 
       <Box sx={{ mb: 4, textAlign: 'center' }}>

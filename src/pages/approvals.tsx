@@ -7,7 +7,7 @@ const ApprovalsPage: React.FC = () => {
   return (
     <>
        <Head>
-        <title>Approvals | AIRFLOW</title>
+        <title>Approvals | Airflow</title>
       </Head>
       <DashboardLayout title="Approvals">
         <Box sx={{ mb: 4 }}>

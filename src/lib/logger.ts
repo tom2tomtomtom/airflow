@@ -16,7 +16,7 @@ interface Request {
 
 interface Response {
   statusCode: number;
-  end: any;
+  end: (...args: unknown[]) => unknown;
 }
 
 interface NextFunction {
@@ -175,7 +175,7 @@ export function logPerformance<T>(
     const duration = performance.now() - start;
     logger.debug(`${operation} completed`, { duration: `${duration.toFixed(2)}ms` });
     return result;
-  } catch (error: any) {
+  } catch (error: unknown) {
     const message = getErrorMessage(error);
     const duration = performance.now() - start;
     logger.error(`${operation} failed`, error, { duration: `${duration.toFixed(2)}ms` });
@@ -203,7 +203,7 @@ export function logRequest(req: CustomRequest, res: Response, next: NextFunction
 
   // Override res.end to log response
   const originalEnd = res.end.bind(res);
-  res.end = function(chunk?: any, encoding?: any, cb?: any) {
+  res.end = function(chunk?: unknown, encoding?: unknown, cb?: unknown) {
     res.end = originalEnd;
     
     // Call original end with proper arguments

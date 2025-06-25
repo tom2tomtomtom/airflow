@@ -417,7 +417,7 @@ const Templates: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Templates | AIRFLOW</title>
+        <title>Templates | Airflow</title>
       </Head>
       <ErrorBoundary>
         <DashboardLayout title="Templates">

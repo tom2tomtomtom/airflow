@@ -342,7 +342,7 @@ const VideoStudioPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>Video Studio | AIRFLOW</title>
+        <title>Video Studio | Airflow</title>
       </Head>
       <DashboardLayout title="Video Studio">
         <Box sx={{ mb: 4 }}>

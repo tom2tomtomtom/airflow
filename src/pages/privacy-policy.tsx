@@ -6,10 +6,10 @@ export default function PrivacyPolicy() {
   return (
     <>
        <Head>
-        <title>Privacy Policy - AIrFLOW</title>
+        <title>Privacy Policy - Airflow</title>
         <meta
           name="description"
-          content="AIrFLOW Privacy Policy - Learn how we collect, use, and protect your data"
+          content="Airflow Privacy Policy - Learn how we collect, use, and protect your data"
         />
       </Head>
 
@@ -28,7 +28,7 @@ export default function PrivacyPolicy() {
               <section className="mb-8">
                 <h2 className="text-2xl font-semibold text-gray-900 mb-4">1. Introduction</h2>
                 <p>
-                  AIrFLOW ("we," "our," or "us") is committed to protecting your privacy. This
+                  Airflow ("we," "our," or "us") is committed to protecting your privacy. This
                   Privacy Policy explains how we collect, use, disclose, and safeguard your
                   information when you use our digital advertising creation platform.
                 </p>
@@ -173,10 +173,10 @@ export default function PrivacyPolicy() {
                 <p>
                   To exercise these rights, please contact us at{' '}
                   <a
-                    href="mailto:privacy@airwave.com"
+                    href="mailto:privacy@airflow.com"
                     className="text-indigo-600 hover:text-indigo-500"
                   >
-                    privacy@airwave.com
+                    privacy@airflow.com
                   </a>
                 </p>
               </section>
@@ -263,25 +263,25 @@ export default function PrivacyPolicy() {
                 </p>
                 <div className="bg-gray-50 p-4 rounded-lg mt-4">
                   <p className="mb-2">
-                    <strong>AIrFLOW Privacy Team</strong>
+                    <strong>Airflow Privacy Team</strong>
                   </p>
                   <p className="mb-2">
                     Email:{' '}
                     <a
-                      href="mailto:privacy@airwave.com"
+                      href="mailto:privacy@airflow.com"
                       className="text-indigo-600 hover:text-indigo-500"
                     >
-                      privacy@airwave.com
+                      privacy@airflow.com
                     </a>
                   </p>
                   <p className="mb-2">Address: [Your Company Address]</p>
                   <p>
                     Data Protection Officer:{' '}
                     <a
-                      href="mailto:dpo@airwave.com"
+                      href="mailto:dpo@airflow.com"
                       className="text-indigo-600 hover:text-indigo-500"
                     >
-                      dpo@airwave.com
+                      dpo@airflow.com
                     </a>
                   </p>
                 </div>

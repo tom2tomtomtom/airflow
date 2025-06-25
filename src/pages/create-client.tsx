@@ -7,7 +7,7 @@ const CreateClientPage: React.FC = () => {
   return (
     <>
        <Head>
-        <title>Create Client | AIRFLOW</title>
+        <title>Create Client | Airflow</title>
       </Head>
       <DashboardLayout title="Create Client">
         <Box sx={{ mb: 4 }}>
