@@ -62,7 +62,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         // For retry, we'll handle the retry_count increment separately
         updateData = {
           status: 'pending',
-          error_message: null
+          error_message: null,
         };
         statusFilter = ['failed'];
         break;
@@ -95,28 +95,27 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
 
     // Log the queue action
-    await supabase
-      .from('execution_logs')
-      .insert({
-        execution_id: null, // Queue-level action
-        action: `queue_${action}`,
-        details: Record<string, unknown>$1
-  queue_id: queueId,
-          matrix_id: matrixId,
-          campaign_id: campaignId,
-          affected_executions: executionIds.length,
-          execution_ids: executionIds },
-  created_at: new Date().toISOString()
-      });
+    await supabase.from('execution_logs').insert({
+      execution_id: null, // Queue-level action
+      action: `queue_${action}`,
+      details: {
+        queue_id: queueId,
+        matrix_id: matrixId,
+        campaign_id: campaignId,
+        affected_executions: executionIds.length,
+        execution_ids: executionIds,
+      },
+      created_at: new Date().toISOString(),
+    });
 
     res.status(200).json({
       success: true,
       message: `Queue ${action} completed successfully`,
-      data: Record<string, unknown>$1
-  queue_id: queueId,
+      data: {
+        queue_id: queueId,
         action,
-        affected_executions: executionIds.length
-      }
+        affected_executions: executionIds.length,
+      },
     });
   } catch (error: any) {
     console.error('Error in queue action API:', error);
