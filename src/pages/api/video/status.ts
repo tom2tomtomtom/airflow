@@ -18,7 +18,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
   if (!generation_id && !job_id) {
     return res.status(400).json({
-      error: 'Either generation_id or job_id is required'
+      error: 'Either generation_id or job_id is required',
     });
   }
 
@@ -33,21 +33,28 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Video Status API error:', error);
     return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? message : undefined
+      details: process.env.NODE_ENV === 'development' ? message : undefined,
     });
   }
 }
 
-async function handleGenerationStatus(req: NextApiRequest, res: NextApiResponse, user: any, generationId: string): Promise<void> {
+async function handleGenerationStatus(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  generationId: string
+): Promise<void> {
   // Get all jobs for this generation
   const { data: generations, error } = await supabase
     .from('video_generations')
-    .select(`
+    .select(
+      `
       *,
       briefs(id, name, clients(id, name)),
       campaigns(id, name, clients(id, name)),
       matrices(id, name, campaigns(id, name, clients(id, name)))
-    `)
+    `
+    )
     .eq('generation_id', generationId)
     .order('variation_index');
 
@@ -70,24 +77,26 @@ async function handleGenerationStatus(req: NextApiRequest, res: NextApiResponse,
 
   // Update status for each job
   const updatedJobs = await Promise.all(
-    generations.map(async (generation) => {
+    generations.map(async generation => {
       if (generation.status === 'processing' && generation.render_job_id) {
         try {
           // Check status with Creatomate
           const renderStatus = await creatomateService.getRenderStatus(generation.render_job_id);
-          
+
           // Update database if status changed
           if (renderStatus.status !== generation.status) {
             const updateData: any = {
               status: renderStatus.status,
-              updated_at: new Date().toISOString()};
+              updated_at: new Date().toISOString(),
+            };
 
             if (renderStatus.status === 'succeeded' && renderStatus.url) {
               updateData.output_url = renderStatus.url;
               updateData.metadata = {
                 ...generation.metadata,
                 completed_at: renderStatus.completed_at,
-                render_url: renderStatus.url};
+                render_url: renderStatus.url,
+              };
 
               // Save to assets if configured
               if (generation.config?.generation_settings?.save_to_assets) {
@@ -98,7 +107,8 @@ async function handleGenerationStatus(req: NextApiRequest, res: NextApiResponse,
               updateData.metadata = {
                 ...generation.metadata,
                 failed_at: new Date().toISOString(),
-                error: renderStatus.error};
+                error: renderStatus.error,
+              };
             }
 
             const { error: updateError } = await supabase
@@ -124,8 +134,8 @@ async function handleGenerationStatus(req: NextApiRequest, res: NextApiResponse,
   const overallProgress = calculateOverallProgress(updatedJobs);
 
   return res.json({
-    data: Record<string, unknown>$1
-  generation_id: generationId,
+    data: {
+      generation_id: generationId,
       total_jobs: updatedJobs.length,
       progress: overallProgress,
       jobs: updatedJobs.map((job: any) => ({
@@ -137,22 +147,31 @@ async function handleGenerationStatus(req: NextApiRequest, res: NextApiResponse,
         error_message: job.error_message,
         created_at: job.created_at,
         updated_at: job.updated_at,
-        config: job.config})),
+        config: job.config,
+      })),
       context: getGenerationContext(updatedJobs[0]),
-      estimated_completion: getEstimatedCompletion(updatedJobs)}
+      estimated_completion: getEstimatedCompletion(updatedJobs),
+    },
   });
 }
 
-async function handleJobStatus(req: NextApiRequest, res: NextApiResponse, user: any, jobId: string): Promise<void> {
+async function handleJobStatus(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  jobId: string
+): Promise<void> {
   // Get specific job
   const { data: generation, error } = await supabase
     .from('video_generations')
-    .select(`
+    .select(
+      `
       *,
       briefs(id, name, clients(id, name)),
       campaigns(id, name, clients(id, name)),
       matrices(id, name, campaigns(id, name, clients(id, name)))
-    `)
+    `
+    )
     .eq('id', jobId)
     .single();
 
@@ -177,18 +196,20 @@ async function handleJobStatus(req: NextApiRequest, res: NextApiResponse, user: 
   if (generation.status === 'processing' && generation.render_job_id) {
     try {
       const renderStatus = await creatomateService.getRenderStatus(generation.render_job_id);
-      
+
       if (renderStatus.status !== generation.status) {
         const updateData: any = {
           status: renderStatus.status,
-          updated_at: new Date().toISOString()};
+          updated_at: new Date().toISOString(),
+        };
 
         if (renderStatus.status === 'succeeded' && renderStatus.url) {
           updateData.output_url = renderStatus.url;
           updateData.metadata = {
             ...generation.metadata,
             completed_at: renderStatus.completed_at,
-            render_url: renderStatus.url};
+            render_url: renderStatus.url,
+          };
 
           // Save to assets if configured
           if (generation.config?.generation_settings?.save_to_assets) {
@@ -217,8 +238,8 @@ async function handleJobStatus(req: NextApiRequest, res: NextApiResponse, user: 
   }
 
   return res.json({
-    data: Record<string, unknown>$1
-  id: updatedGeneration.id,
+    data: {
+      id: updatedGeneration.id,
       generation_id: updatedGeneration.generation_id,
       variation_index: updatedGeneration.variation_index,
       status: updatedGeneration.status,
@@ -231,7 +252,8 @@ async function handleJobStatus(req: NextApiRequest, res: NextApiResponse, user: 
       context: getGenerationContext(updatedGeneration),
       created_at: updatedGeneration.created_at,
       updated_at: updatedGeneration.updated_at,
-      estimated_completion: getJobEstimatedCompletion(updatedGeneration)}
+      estimated_completion: getJobEstimatedCompletion(updatedGeneration),
+    },
   });
 }
 
@@ -251,7 +273,8 @@ async function saveVideoToAssets(generation: any, videoUrl: string): Promise<str
       .from('assets')
       .upload(`${generation.client_id}/videos/${filename}`, videoBuffer, {
         contentType: 'video/mp4',
-        upsert: false});
+        upsert: false,
+      });
 
     if (uploadError) {
       console.error('Error uploading video to storage:', uploadError);
@@ -259,9 +282,7 @@ async function saveVideoToAssets(generation: any, videoUrl: string): Promise<str
     }
 
     // Get public URL
-    const { data: urlData } = supabase.storage
-      .from('assets')
-      .getPublicUrl(uploadData.path);
+    const { data: urlData } = supabase.storage.from('assets').getPublicUrl(uploadData.path);
 
     // Create asset record
     const { data: asset, error: assetError } = await supabase
@@ -274,7 +295,7 @@ async function saveVideoToAssets(generation: any, videoUrl: string): Promise<str
         file_url: urlData.publicUrl,
         file_size: videoBuffer.length,
         metadata: {
-        generation_id: generation.generation_id,
+          generation_id: generation.generation_id,
           job_id: generation.id,
           render_job_id: generation.render_job_id,
           config: generation.config,
@@ -282,8 +303,10 @@ async function saveVideoToAssets(generation: any, videoUrl: string): Promise<str
           duration: generation.config?.video_config?.duration,
           resolution: generation.config?.video_config?.resolution,
           style: generation.config?.video_config?.style,
-          platform: generation.config?.video_config?.platform },
-  created_by: generation.created_by})
+          platform: generation.config?.video_config?.platform,
+        },
+        created_by: generation.created_by,
+      })
       .select()
       .single();
 
@@ -325,7 +348,8 @@ function calculateOverallProgress(jobs: any[]): any {
     failed: failedJobs,
     processing: processingJobs,
     pending: pendingJobs,
-    total: totalJobs};
+    total: totalJobs,
+  };
 }
 
 function getJobProgress(job: any): any {
@@ -354,32 +378,37 @@ function getJobProgress(job: any): any {
   return {
     percentage,
     message,
-    status: job.status};
+    status: job.status,
+  };
 }
 
 function getGenerationContext(generation: any): any {
   const context: any = {
     client_id: generation.client_id,
-    type: 'standalone'};
+    type: 'standalone',
+  };
 
   if (generation.briefs) {
     context.type = 'brief';
     context.brief = {
       id: generation.brief_id,
       name: generation.briefs.name,
-      client: generation.briefs.clients};
+      client: generation.briefs.clients,
+    };
   } else if (generation.matrices) {
     context.type = 'matrix';
     context.matrix = {
       id: generation.matrix_id,
       name: generation.matrices.name,
-      campaign: generation.matrices.campaigns};
+      campaign: generation.matrices.campaigns,
+    };
   } else if (generation.campaigns) {
     context.type = 'campaign';
     context.campaign = {
       id: generation.campaign_id,
       name: generation.campaigns.name,
-      client: generation.campaigns.clients};
+      client: generation.campaigns.clients,
+    };
   }
 
   return context;
