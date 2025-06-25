@@ -1,25 +1,39 @@
 // Dynamic imports for code splitting
 import dynamic from 'next/dynamic';
 
-// Lazy load heavy components
-const LazyDashboard = dynamic(() => import('./Dashboard'), {
+// Lazy load heavy components that actually exist
+const LazyMonitoringDashboard = dynamic(() => import('../monitoring/MonitoringDashboard'), {
   loading: () => null,
-  ssr: false
+  ssr: false,
 });
 
-const LazyChart = dynamic(() => import('./Chart'), {
-  loading: () => null
+const LazyAnalyticsDashboard = dynamic(() => import('../LazyAnalyticsDashboard'), {
+  loading: () => null,
+  ssr: false,
 });
 
-// Route-based code splitting
-const LazyClientPage = dynamic(() => import('../pages/clients'), {
-  loading: () => null
+const LazyAdvancedAnalytics = dynamic(() => import('../AdvancedAnalytics'), {
+  loading: () => null,
+  ssr: false,
 });
 
-// Conditional imports
-const ConditionalComponent = dynamic(
-  () => import('./ConditionalComponent'),
-  { ssr: false }
-);
+// Commented out missing components - can be added when they're created
+// const LazyDashboard = dynamic(() => import('./Dashboard'), {
+//   loading: () => null,
+//   ssr: false
+// });
 
-export { LazyDashboard, LazyChart, LazyClientPage, ConditionalComponent };
+// const LazyChart = dynamic(() => import('./Chart'), {
+//   loading: () => null
+// });
+
+// const LazyClientPage = dynamic(() => import('../pages/clients'), {
+//   loading: () => null
+// });
+
+// const ConditionalComponent = dynamic(
+//   () => import('./ConditionalComponent'),
+//   { ssr: false }
+// );
+
+export { LazyMonitoringDashboard, LazyAnalyticsDashboard, LazyAdvancedAnalytics };
