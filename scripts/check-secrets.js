@@ -90,6 +90,8 @@ const SAFE_PATTERNS = [
   'short-secret', // Test JWT secret for validation
   "JWT_SECRET: 'too-short'", // Test validation context
   "JWT_SECRET: 'short-secret'", // Test validation context
+  'testpassword123', // Test password in validation scripts
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZk', // Supabase demo JWT in tests
 ];
 
 function shouldIgnoreFile(filePath) {
