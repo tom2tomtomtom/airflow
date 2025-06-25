@@ -7,8 +7,10 @@ import { env } from '@/lib/env';
 import fs from 'fs/promises';
 
 export const config = {
-  api: Record<string, unknown>$1
-  bodyParser: false}};
+  api: {
+    bodyParser: false
+  }
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   if (req.method !== 'POST') {
