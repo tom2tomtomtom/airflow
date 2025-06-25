@@ -58,7 +58,7 @@ export const commonSchemas = {
     .refine(path => !path.includes('..') && !path.includes('~'), 'Invalid file path'),
 
   // Pagination
-  pagination: z.object({,
+  pagination: z.object({
     page: z.number().int().min(1).default(1),
     limit: z.number().int().min(1).max(100).default(20),
     sortBy: z.string().optional(),
@@ -69,7 +69,8 @@ export const commonSchemas = {
   dateRange: z
     .object({
       startDate: z.string().datetime().optional(),
-      endDate: z.string().datetime().optional() })
+      endDate: z.string().datetime().optional(),
+    })
     .refine(
       data =>
         !data.startDate || !data.endDate || new Date(data.startDate) <= new Date(data.endDate),
@@ -92,7 +93,7 @@ export function sanitizeSQLString(input: string): string {
 // Sanitize object keys to prevent prototype pollution
 export function sanitizeObject<T extends Record<string, unknown>>(obj: T): T {
   const dangerous = ['__proto__', 'constructor', 'prototype'];
-  const cleaned = {} as Record<string, unknown> & Record<string, unknown> & Record<string, unknown> & T;
+  const cleaned = {} as T;
 
   for (const [key, value] of Object.entries(obj)) {
     if (!dangerous.includes(key)) {
@@ -109,14 +110,15 @@ export function sanitizeObject<T extends Record<string, unknown>>(obj: T): T {
 
 // Validation error response
 export function validationErrorResponse(error: ZodError): NextResponse {
-  const errors = error.errors.map((err: unknown) => ({,
+  const errors = error.errors.map((err: any) => ({
     field: err.path.join('.'),
-    message: err.message }));
+    message: err.message,
+  }));
 
   logger.warn('Validation error', {
     message: 'Validation failed',
     errorCount: errors.length,
-    fields: errors.map((e: unknown) => e.field).join(', '),
+    fields: errors.map((e: any) => e.field).join(', '),
   });
 
   return NextResponse.json(
@@ -144,11 +146,11 @@ export async function validateRequest<T>(
       input = Object.fromEntries(searchParams.entries());
 
       // Convert numeric strings to numbers for common fields
-      ['page', 'limit'].forEach((field: unknown) => {
-        if (input[field]) {
-          const num = Number(input[field]);
+      ['page', 'limit'].forEach((field: string) => {
+        if ((input as any)[field]) {
+          const num = Number((input as any)[field]);
           if (!isNaN(num)) {
-            input[field] = num;
+            (input as any)[field] = num;
           }
         }
       });
@@ -168,7 +170,7 @@ export async function validateRequest<T>(
         return {
           data: {} as T,
           error: NextResponse.json(
-            { success: false, message: 'Invalid JSON body'  }
+            { success: false, message: 'Invalid JSON body' },
             { status: 400 }
           ),
         };
@@ -189,7 +191,7 @@ export async function validateRequest<T>(
     return {
       data: {} as T,
       error: NextResponse.json(
-        { success: false, message: 'Internal validation error'  }
+        { success: false, message: 'Internal validation error' },
         { status: 500 }
       ),
     };
@@ -218,11 +220,11 @@ const fileMaxSizes = {
 
 // Define file validation object separately to avoid self-referential issues
 interface FileValidation {
-  allowedTypes: typeof fileAllowedTypes;,
-    maxSizes: typeof fileMaxSizes;
+  allowedTypes: typeof fileAllowedTypes;
+  maxSizes: typeof fileMaxSizes;
   validate(
-    file: { type: string; size: number; name: string  },
-  category: keyof typeof fileAllowedTypes
+    file: { type: string; size: number; name: string },
+    category: keyof typeof fileAllowedTypes
   ): boolean;
 }
 
@@ -235,8 +237,8 @@ export const fileValidation: FileValidation = {
 
   // Validate file
   validate(
-    file: { type: string; size: number; name: string  },
-  category: keyof typeof fileAllowedTypes
+    file: { type: string; size: number; name: string },
+    category: keyof typeof fileAllowedTypes
   ) {
     const allowedTypes = fileAllowedTypes[category];
     const maxSize = fileMaxSizes[category];
@@ -290,7 +292,8 @@ export async function validateCSRFToken(request: NextRequest): Promise<boolean> 
     logger.warn('CSRF token validation failed', {
       hasHeaderToken: !!token,
       hasCookieToken: !!cookieToken,
-      tokensMatch: token === cookieToken });
+      tokensMatch: token === cookieToken,
+    });
     return false;
   }
 
@@ -312,12 +315,12 @@ export function checkAPIRateLimit(
 // Export validation schemas for specific API routes
 export const apiSchemas = {
   // Auth schemas
-  login: z.object({,
+  login: z.object({
     email: commonSchemas.email,
     password: z.string().min(1, 'Password is required'),
   }),
 
-  signup: z.object({,
+  signup: z.object({
     email: commonSchemas.email,
     password: commonSchemas.password,
     name: z
@@ -329,7 +332,7 @@ export const apiSchemas = {
   }),
 
   // Client schemas
-  createClient: z.object({,
+  createClient: z.object({
     name: z
       .string()
       .min(2, 'Client name is required')
@@ -348,13 +351,14 @@ export const apiSchemas = {
   }),
 
   // Asset schemas
-  uploadAsset: z.object({,
+  uploadAsset: z.object({
     clientId: commonSchemas.uuid,
     category: z.enum(['image', 'video', 'audio', 'document']),
-    tags: z.array(commonSchemas.safeString).optional() }),
+    tags: z.array(commonSchemas.safeString).optional(),
+  }),
 
   // Brief schemas
-  createBrief: z.object({,
+  createBrief: z.object({
     clientId: commonSchemas.uuid,
     title: z
       .string()
@@ -364,5 +368,6 @@ export const apiSchemas = {
       .refine(str => !/[<>'"`;]/.test(str), 'Special characters not allowed'),
     content: commonSchemas.safeText,
     objectives: z.array(commonSchemas.safeText).optional(),
-    targetAudience: commonSchemas.safeText.optional() }),
+    targetAudience: commonSchemas.safeText.optional(),
+  }),
 };
