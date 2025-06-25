@@ -8,9 +8,29 @@ import { z } from 'zod';
 
 const CopyAssetCreateSchema = z.object({
   content: z.string().min(1, 'Content is required'),
-  type: z.enum(['headline', 'body', 'cta', 'subject_line', 'description', 'caption', 'script', 'other']),
+  type: z.enum([
+    'headline',
+    'body',
+    'cta',
+    'subject_line',
+    'description',
+    'caption',
+    'script',
+    'other',
+  ]),
   title: z.string().optional(),
-  platform: z.enum(['facebook', 'instagram', 'youtube', 'tiktok', 'linkedin', 'twitter', 'email', 'universal']).optional(),
+  platform: z
+    .enum([
+      'facebook',
+      'instagram',
+      'youtube',
+      'tiktok',
+      'linkedin',
+      'twitter',
+      'email',
+      'universal',
+    ])
+    .optional(),
   tone: z.string().optional(),
   style: z.string().optional(),
   language: z.string().default('en'),
@@ -24,7 +44,8 @@ const CopyAssetCreateSchema = z.object({
   generation_prompt: z.string().optional(),
   ai_generated: z.boolean().default(false),
   performance_score: z.number().min(0).max(100).optional(),
-  brand_compliance_score: z.number().min(0).max(100).optional()});
+  brand_compliance_score: z.number().min(0).max(100).optional(),
+});
 
 const CopyAssetUpdateSchema = CopyAssetCreateSchema.partial().omit(['client_id'] as any);
 
@@ -44,36 +65,43 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Copy Assets API error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
+      details:
+        process.env.NODE_ENV === 'development'
+          ? error instanceof Error
+            ? error.message
+            : 'Unknown error'
+          : undefined,
     });
   }
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
-  const { 
-    client_id, 
+  const {
+    client_id,
     type,
     platform,
     tone,
     brief_id,
     ai_generated,
-    limit = 50, 
+    limit = 50,
     offset = 0,
     search,
     sort_by = 'created_at',
-    sort_order = 'desc'
+    sort_order = 'desc',
   } = req.query;
 
   let query = supabase
     .from('copy_assets')
-    .select(`
+    .select(
+      `
       *,
       clients(name, slug),
       profiles!copy_assets_created_by_fkey(full_name),
       briefs(name)
-    `)
+    `
+    )
     .order(sort_by as string, { ascending: sort_order === 'asc' });
 
   // Filter by client access for the user
@@ -85,7 +113,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       .from('user_clients')
       .select('client_id')
       .eq('user_id', user.id);
-    
+
     if (userClients && userClients.length > 0) {
       const clientIds = userClients.map((uc: any) => uc.client_id);
       query = query.in('client_id', clientIds);
@@ -121,7 +149,10 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   }
 
   // Pagination
-  query = query.range(parseInt(offset as string), parseInt(offset as string) + parseInt(limit as string) - 1);
+  query = query.range(
+    parseInt(offset as string),
+    parseInt(offset as string) + parseInt(limit as string) - 1
+  );
 
   const { data, error, count } = await query;
 
@@ -131,33 +162,35 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   }
 
   // Calculate analytics for each copy asset
-  const enrichedData = data?.map((asset: any) => ({
-    ...asset,
-    analytics: Record<string, unknown>$1
-  character_count: asset.content.length,
-      word_count: asset.content.split(/\s+/).length,
-      readability_score: calculateReadabilityScore(asset.content),
-      sentiment: analyzeSentiment(asset.content)}
-  })) || [];
+  const enrichedData =
+    data?.map((asset: any) => ({
+      ...asset,
+      analytics: {
+        character_count: asset.content.length,
+        word_count: asset.content.split(/\s+/).length,
+        readability_score: calculateReadabilityScore(asset.content),
+        sentiment: analyzeSentiment(asset.content),
+      },
+    })) || [];
 
-  return res.json({ 
+  return res.json({
     data: enrichedData,
     count,
-    pagination: Record<string, unknown>$1
-  limit: parseInt(limit as string),
+    pagination: {
+      limit: parseInt(limit as string),
       offset: parseInt(offset as string),
-      total: count || 0
-    }
+      total: count || 0,
+    },
   });
 }
 
 async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const validationResult = CopyAssetCreateSchema.safeParse(req.body);
-  
+
   if (!validationResult.success) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Validation failed',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
@@ -195,14 +228,18 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
         ...assetData.metadata,
         readability_score: calculateReadabilityScore(content),
         sentiment: analyzeSentiment(content),
-        created_timestamp: new Date().toISOString() },
-  created_by: user.id})
-    .select(`
+        created_timestamp: new Date().toISOString(),
+      },
+      created_by: user.id,
+    })
+    .select(
+      `
       *,
       clients(name, slug),
       profiles!copy_assets_created_by_fkey(full_name),
       briefs(name)
-    `)
+    `
+    )
     .single();
 
   if (error) {
@@ -218,12 +255,12 @@ function calculateReadabilityScore(text: string): number {
   // Simple readability score based on sentence and word length
   const sentences = text.split(/[.!?]+/).filter((s: any) => s.trim().length > 0);
   const words = text.split(/\s+/).filter((w: any) => w.length > 0);
-  
+
   if (sentences.length === 0 || words.length === 0) return 50;
-  
+
   const avgWordsPerSentence = words.length / sentences.length;
   const avgCharsPerWord = text.replace(/\s+/g, '').length / words.length;
-  
+
   // Simple scoring formula (lower is more readable)
   const score = Math.max(0, 100 - (avgWordsPerSentence * 2 + avgCharsPerWord * 5));
   return Math.min(100, Math.round(score));
@@ -231,13 +268,35 @@ function calculateReadabilityScore(text: string): number {
 
 function analyzeSentiment(text: string): 'positive' | 'neutral' | 'negative' {
   // Simple sentiment analysis based on keywords
-  const positiveWords = ['great', 'excellent', 'amazing', 'wonderful', 'fantastic', 'love', 'best', 'awesome', 'perfect', 'outstanding'];
-  const negativeWords = ['bad', 'terrible', 'awful', 'hate', 'worst', 'horrible', 'disappointing', 'failed', 'broken', 'useless'];
-  
+  const positiveWords = [
+    'great',
+    'excellent',
+    'amazing',
+    'wonderful',
+    'fantastic',
+    'love',
+    'best',
+    'awesome',
+    'perfect',
+    'outstanding',
+  ];
+  const negativeWords = [
+    'bad',
+    'terrible',
+    'awful',
+    'hate',
+    'worst',
+    'horrible',
+    'disappointing',
+    'failed',
+    'broken',
+    'useless',
+  ];
+
   const lowerText = text.toLowerCase();
   const positiveCount = positiveWords.filter((word: any) => lowerText.includes(word)).length;
   const negativeCount = negativeWords.filter((word: any) => lowerText.includes(word)).length;
-  
+
   if (positiveCount > negativeCount) return 'positive';
   if (negativeCount > positiveCount) return 'negative';
   return 'neutral';
@@ -247,7 +306,7 @@ function generateTitleFromContent(content: string, type: string): string {
   // Generate a title based on content and type
   const firstLine = content.split('\n')[0].trim();
   const preview = firstLine.length > 50 ? firstLine.substring(0, 47) + '...' : firstLine;
-  
+
   const typeLabels: Record<string, string> = {
     headline: 'Headline',
     body: 'Body Copy',
@@ -256,7 +315,7 @@ function generateTitleFromContent(content: string, type: string): string {
     description: 'Description',
     caption: 'Caption',
     script: 'Script',
-    other: 'Copy'
+    other: 'Copy',
   };
 
   return `${typeLabels[type] || 'Copy'}: ${preview}`;
