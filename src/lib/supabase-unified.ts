@@ -20,33 +20,30 @@ export const getSupabaseClient = () => {
       throw new Error('Supabase configuration is missing');
     }
 
-    supabaseInstance = createBrowserClient<Database>(
-      supabaseUrl,
-      supabaseAnonKey,
-      {
-        auth: Record<string, unknown>$1
-  autoRefreshToken: true,
-          persistSession: true,
-          detectSessionInUrl: true,
-          storageKey: 'airwave-auth-token', // Use specific storage key to avoid conflicts
+    supabaseInstance = createBrowserClient<Database>(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true,
+        storageKey: 'airwave-auth-token', // Use specific storage key to avoid conflicts
+      },
+      global: {
+        headers: {
+          'x-application-name': 'airwave',
         },
-        global: Record<string, unknown>$1
-  headers: {
-        'x-application-name': 'airwave'
-          
-      }
+      },
+      cookies: {
+        get(name: string) {
+          return getCookie(name);
         },
-        cookies: Record<string, unknown>$1
-  get(name: string) {
-            return getCookie(name);
-          },
-          set(name: string, value: string, options: any) {
-            setCookie(name, value, options);
-          },
-          remove(name: string, options: any) {
-            removeCookie(name, options);
-          }}}
-    );
+        set(name: string, value: string, options: any) {
+          setCookie(name, value, options);
+        },
+        remove(name: string, options: any) {
+          removeCookie(name, options);
+        },
+      },
+    });
   }
   return supabaseInstance;
 };
@@ -57,7 +54,7 @@ export const supabase = getSupabaseClient();
 // Cookie helpers for browser environment
 function getCookie(name: string): string | undefined {
   if (typeof document === 'undefined') return undefined;
-  
+
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
   if (parts.length === 2) {
@@ -68,35 +65,35 @@ function getCookie(name: string): string | undefined {
 
 function setCookie(name: string, value: string, options: any = {}) {
   if (typeof document === 'undefined') return;
-  
+
   let cookieString = `${name}=${value}`;
-  
+
   if (options.maxAge) {
     cookieString += `; Max-Age=${options.maxAge}`;
   }
-  
+
   if (options.path) {
     cookieString += `; Path=${options.path}`;
   } else {
     cookieString += `; Path=/`;
   }
-  
+
   if (options.domain) {
     cookieString += `; Domain=${options.domain}`;
   }
-  
+
   if (options.secure) {
     cookieString += `; Secure`;
   }
-  
+
   if (options.httpOnly) {
     cookieString += `; HttpOnly`;
   }
-  
+
   if (options.sameSite) {
     cookieString += `; SameSite=${options.sameSite}`;
   }
-  
+
   document.cookie = cookieString;
 }
 
@@ -113,16 +110,16 @@ export async function getUserFromToken(token: string): Promise<any> {
   try {
     const client = getSupabaseClient();
     const { data, error } = await client.auth.getUser(token);
-    
+
     if (error) {
       console.error('Supabase auth error:', error);
       throw new Error(`Authentication failed: ${error.message}`);
     }
-    
+
     if (!data.user) {
       throw new Error('No user found for provided token');
     }
-    
+
     return data.user;
   } catch (error: any) {
     const message = getErrorMessage(error);
@@ -142,12 +139,8 @@ export async function getUserProfile(userId: string): Promise<any> {
 
   try {
     const client = getSupabaseClient();
-    const { data, error } = await client
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
-    
+    const { data, error } = await client.from('profiles').select('*').eq('id', userId).single();
+
     if (error) {
       // Handle case where profile doesn't exist
       if (error.code === 'PGRST116') {
@@ -155,7 +148,7 @@ export async function getUserProfile(userId: string): Promise<any> {
       }
       throw new Error(`Failed to get user profile: ${error.message}`);
     }
-    
+
     return data;
   } catch (error: any) {
     const message = getErrorMessage(error);
@@ -176,11 +169,11 @@ export async function getUserClients(userId: string): Promise<string[]> {
       .from('user_clients')
       .select('client_id')
       .eq('user_id', userId);
-    
+
     if (error) {
       throw new Error(`Failed to get user clients: ${error.message}`);
     }
-    
+
     return data?.map((uc: { client_id: string }) => uc.client_id) || [];
   } catch (error: any) {
     const message = getErrorMessage(error);
@@ -229,4 +222,5 @@ export type {
   UserClient,
   Tables,
   Inserts,
-  Updates} from '@/types/database';
+  Updates,
+} from '@/types/database';
