@@ -7,12 +7,12 @@ import { withCSRFProtection } from '@/lib/csrf';
 import { ProductionAICostController } from '@/lib/ai/production-cost-controller';
 
 const aiCostController = ProductionAICostController.getInstance();
-import { 
+import {
   estimateTokensForMotivations,
   estimateTokensForCopy,
   estimateTokensForImageGeneration,
   estimateTokensForBriefParsing,
-  getRecommendedModel
+  getRecommendedModel,
 } from '@/utils/ai-cost-estimation';
 
 interface CostCheckRequest {
@@ -49,7 +49,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<CostCheckRespon
       reason: 'Method not allowed',
       currentUsage: 0,
       budgetRemaining: 0,
-      estimatedCost: 0
+      estimatedCost: 0,
     });
   }
 
@@ -62,14 +62,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse<CostCheckRespon
       reason: 'Missing required fields: service, model, operation',
       currentUsage: 0,
       budgetRemaining: 0,
-      estimatedCost: 0
+      estimatedCost: 0,
     });
   }
 
   try {
     // Calculate estimated tokens based on operation type
     let tokens = estimatedTokens;
-    
+
     if (!tokens) {
       switch (operation) {
         case 'generate-motivations':
@@ -98,17 +98,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse<CostCheckRespon
     }
 
     // Check budget with cost controller
-    const budgetCheck = await aiCostController.checkBudget(
-      service,
-      model,
-      tokens,
-      user.id
-    );
+    const budgetCheck = await aiCostController.checkBudget(service, model, tokens, user.id);
 
     // Get current usage stats
     const monthlyUsage = await aiCostController.getMonthlyUsage(service, user.id);
     const fullReport = await aiCostController.getFullReport(user.id);
-    
+
     // Calculate usage statistics
     const daysElapsed = new Date().getDate();
     const dailyRate = monthlyUsage.totalCost / daysElapsed;
@@ -136,11 +131,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse<CostCheckRespon
       budgetRemaining: budgetCheck.budgetRemaining || 0,
       estimatedCost: recommendation?.cost || 0,
       recommendation,
-      usageStats: Record<string, unknown>$1
-  dailyRate,
+      usageStats: {
+        dailyRate,
         projectedMonthly,
-        percentOfBudget
-      }
+        percentOfBudget,
+      },
     };
 
     // Log the cost check for audit purposes
@@ -149,20 +144,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse<CostCheckRespon
       tokens,
       allowed: budgetCheck.allowed,
       currentUsage: budgetCheck.currentUsage,
-      budgetRemaining: budgetCheck.budgetRemaining
+      budgetRemaining: budgetCheck.budgetRemaining,
     });
 
     return res.status(200).json(response);
-
   } catch (error: any) {
     console.error('Cost check error:', error);
-    
+
     return res.status(500).json({
       allowed: false,
       reason: 'Internal error during cost check',
       currentUsage: 0,
       budgetRemaining: 0,
-      estimatedCost: 0
+      estimatedCost: 0,
     });
   }
 }

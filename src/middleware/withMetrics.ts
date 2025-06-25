@@ -21,9 +21,9 @@ interface MetricsConfig {
 
 // Request context for metrics
 interface RequestContext {
-  startTime: number;,
-    endpoint: string;,
-    method: string;
+  startTime: number;
+  endpoint: string;
+  method: string;
   userAgent?: string;
   clientIp?: string;
   userId?: string;
@@ -31,13 +31,14 @@ interface RequestContext {
 }
 
 // Default configuration
-const DEFAULT_CONFIG: Required<MetricsConfig> = {,
-    trackResponseTime: true,
+const DEFAULT_CONFIG: Required<MetricsConfig> = {
+  trackResponseTime: true,
   trackRequestCount: true,
   trackErrorRate: true,
   trackUserActions: true,
-  customTags: Record<string, unknown>$1
-  samplingRate: 1.0 };
+  customTags: {},
+  samplingRate: 1.0,
+};
 
 /**
  * Middleware to track API metrics automatically
@@ -62,7 +63,8 @@ export function withMetrics(config: MetricsConfig = {}) {
         userAgent: req.headers['user-agent'],
         clientIp: getClientIp(req),
         userId: (req as any).user?.id,
-        clientId: (req as any).user?.selectedClient?.id };
+        clientId: (req as any).user?.selectedClient?.id,
+      };
 
       // Track request start
       if (finalConfig.trackRequestCount) {
@@ -235,7 +237,11 @@ function trackRequestCompletion(
 /**
  * Track errors with detailed context
  */
-function trackError(context: RequestContext, error: unknown, customTags: Record<string, string>): void {
+function trackError(
+  context: RequestContext,
+  error: unknown,
+  customTags: Record<string, string>
+): void {
   const tags = {
     method: context.method,
     endpoint: context.endpoint,

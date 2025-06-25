@@ -34,11 +34,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
       // Define supported platforms
       const supportedPlatforms = [
-        { id: 'facebook', name: 'facebook', displayName: 'Facebook'  }
-        { id: 'instagram', name: 'instagram', displayName: 'Instagram'  }
-        { id: 'twitter', name: 'twitter', displayName: 'Twitter/X'  }
-        { id: 'linkedin', name: 'linkedin', displayName: 'LinkedIn'  }
-        { id: 'tiktok', name: 'tiktok', displayName: 'TikTok'  }
+        { id: 'facebook', name: 'facebook', displayName: 'Facebook' },
+        { id: 'instagram', name: 'instagram', displayName: 'Instagram' },
+        { id: 'twitter', name: 'twitter', displayName: 'Twitter/X' },
+        { id: 'linkedin', name: 'linkedin', displayName: 'LinkedIn' },
+        { id: 'tiktok', name: 'tiktok', displayName: 'TikTok' },
       ];
 
       const platforms: Platform[] = supportedPlatforms.map((platform: any) => {
@@ -54,7 +54,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
           accountName: connection?.platform_username || undefined,
           permissions: connection?.scope?.split(',') || [],
           lastSync: connection?.connected_at || undefined,
-          status: isExpired ? 'expired' : connection ? 'active' : 'active' };
+          status: isExpired ? 'expired' : connection ? 'active' : 'active',
+        };
       });
 
       return res.status(200).json({
@@ -70,7 +71,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Platforms API error:', error);
     return res.status(500).json({
       success: false,
-      error: 'Internal server error' });
+      error: 'Internal server error',
+    });
   }
 }
 

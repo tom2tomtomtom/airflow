@@ -5,8 +5,8 @@ jest.mock('next/router', () => ({
   useRouter: () => ({
     route: '/',
     pathname: '/',
-    query: Record<string, unknown>$1
-  asPath: '/',
+    query: {},
+    asPath: '/',
     push: jest.fn(),
     replace: jest.fn(),
     reload: jest.fn(),
@@ -16,9 +16,9 @@ jest.mock('next/router', () => ({
     events: {
       on: jest.fn(),
       off: jest.fn(),
-      emit: jest.fn()
-    }
-  })
+      emit: jest.fn(),
+    },
+  }),
 }));
 
 // Mock window.matchMedia
@@ -32,15 +32,15 @@ Object.defineProperty(window, 'matchMedia', {
     removeListener: jest.fn(), // deprecated
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn()
-  }))
+    dispatchEvent: jest.fn(),
+  })),
 });
 
 // Mock IntersectionObserver
 global.IntersectionObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),
-  disconnect: jest.fn()
+  disconnect: jest.fn(),
 }));
 
 // Mock fetch
