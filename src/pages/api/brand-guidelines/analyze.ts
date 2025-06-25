@@ -9,23 +9,25 @@ import mammoth from 'mammoth';
 import pdf from 'pdf-parse';
 
 export const config = {
-  api: Record<string, unknown>$1
-  bodyParser: false}};
+  api: {
+    bodyParser: false,
+  },
+};
 
 interface BrandGuidelines {
-  colors: Record<string, unknown>$1
-  primary: string[];
+  colors: {
+    primary: string[];
     secondary: string[];
     accent: string[];
   };
-  toneOfVoice: Record<string, unknown>$1
-  personality: string[];
+  toneOfVoice: {
+    personality: string[];
     communication_style: string;
     dos: string[];
     donts: string[];
   };
-  typography: Record<string, unknown>$1
-  primary_font: string;
+  typography: {
+    primary_font: string;
     secondary_font: string;
     font_weights: string[];
   };
@@ -48,16 +50,21 @@ interface AnalysisResponse {
 }
 
 // Initialize OpenAI client
-const openai = hasOpenAI ? new OpenAI({
-  apiKey: env.OPENAI_API_KEY}) : null;
+const openai = hasOpenAI
+  ? new OpenAI({
+      apiKey: env.OPENAI_API_KEY,
+    })
+  : null;
 
 async function extractTextFromFile(file: formidable.File): Promise<string> {
   const buffer = await fs.readFile(file.filepath);
-  
+
   if (file.mimetype === 'application/pdf') {
     const data = await pdf(buffer);
     return data.text;
-  } else if (file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+  } else if (
+    file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  ) {
     const result = await mammoth.extractRawText({ buffer });
     return result.value;
   } else if (file.mimetype === 'text/plain') {
@@ -69,7 +76,9 @@ async function extractTextFromFile(file: formidable.File): Promise<string> {
 
 async function analyzeBrandGuidelines(text: string): Promise<BrandGuidelines> {
   if (!openai) {
-    throw new Error('OpenAI service not configured. Please set OPENAI_API_KEY environment variable.');
+    throw new Error(
+      'OpenAI service not configured. Please set OPENAI_API_KEY environment variable.'
+    );
   }
 
   try {
@@ -113,15 +122,16 @@ async function analyzeBrandGuidelines(text: string): Promise<BrandGuidelines> {
               "style": "style description",
               "guidelines": ["guideline1", "guideline2"]
             }
-          }`
+          }`,
         },
         {
           role: 'user',
-          content: `Analyze this brand guidelines document and extract the key brand elements:\n\n${text}`
-        }
+          content: `Analyze this brand guidelines document and extract the key brand elements:\n\n${text}`,
+        },
       ],
       temperature: 0.3,
-      max_tokens: 1500});
+      max_tokens: 1500,
+    });
 
     const content = completion.choices[0]?.message?.content;
     if (!content) {
@@ -141,7 +151,6 @@ async function analyzeBrandGuidelines(text: string): Promise<BrandGuidelines> {
   }
 }
 
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<AnalysisResponse>
@@ -152,30 +161,31 @@ export default async function handler(
 
   try {
     // Get client ID from headers or query
-    const clientId = req.headers['x-client-id'] as string || req.query.clientId as string;
-    
+    const clientId = (req.headers['x-client-id'] as string) || (req.query.clientId as string);
+
     if (!clientId) {
       return res.status(400).json({ success: false, error: 'Client ID is required' });
     }
 
     const form = formidable({
       maxFileSize: 10 * 1024 * 1024, // 10MB limit
-      maxFiles: 1});
+      maxFiles: 1,
+    });
 
     const [fields, files] = await form.parse(req);
     const file = Array.isArray(files.file) ? files.file[0] : files.file;
-    
+
     if (!file) {
       return res.status(400).json({ success: false, error: 'No file uploaded' });
     }
 
     // Extract text from document
     const documentText = await extractTextFromFile(file);
-    
+
     if (!documentText || documentText.trim().length < 100) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Document appears to be empty or too short for analysis' 
+      return res.status(400).json({
+        success: false,
+        error: 'Document appears to be empty or too short for analysis',
       });
     }
 
@@ -187,15 +197,15 @@ export default async function handler(
       .from('clients')
       .update({
         brand_guidelines: guidelines,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('id', clientId);
 
     if (updateError) {
       console.error('Error saving brand guidelines:', updateError);
-      return res.status(500).json({ 
-        success: false, 
-        error: 'Failed to save brand guidelines to client profile' 
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to save brand guidelines to client profile',
       });
     }
 
@@ -209,15 +219,14 @@ export default async function handler(
     return res.status(200).json({
       success: true,
       guidelines,
-      clientId
+      clientId,
     });
-
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Brand guidelines analysis error:', error);
     return res.status(500).json({
       success: false,
-      error: message || 'Failed to analyze brand guidelines'
+      error: message || 'Failed to analyze brand guidelines',
     });
   }
 }
