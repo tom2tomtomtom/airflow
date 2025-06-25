@@ -16,7 +16,8 @@ const MatrixCreateSchema = z.object({
   field_assignments: z.any().default({}),
   lock_fields: z.array(z.string()).default([]),
   auto_generate: z.boolean().default(false),
-  generation_settings: z.any().optional()});
+  generation_settings: z.any().optional(),
+});
 
 const MatrixUpdateSchema = MatrixCreateSchema.partial().omit(['campaign_id'] as any);
 
@@ -38,31 +39,34 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Matrices API error:', error);
     return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? message : undefined
+      details: process.env.NODE_ENV === 'development' ? message : undefined,
     });
   }
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
-  const { 
-    campaign_id, 
+  const {
+    campaign_id,
     template_id,
     status,
-    limit = 50, 
+    limit = 50,
     offset = 0,
     search,
     sort_by = 'created_at',
     sort_order = 'desc',
-    include_executions = false} = req.query;
+    include_executions = false,
+  } = req.query;
 
   let query = supabase
     .from('matrices')
-    .select(`
+    .select(
+      `
       *,
       campaigns(id, name, status, clients(name, slug)),
       templates(id, name, platform, aspect_ratio, dimensions),
       profiles!matrices_created_by_fkey(full_name)
-    `)
+    `
+    )
     .order(sort_by as string, { ascending: sort_order === 'asc' });
 
   // Filter by campaign if specified
@@ -74,16 +78,16 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       .from('user_clients')
       .select('client_id')
       .eq('user_id', user.id);
-    
+
     if (userClients && userClients.length > 0) {
       const clientIds = userClients.map((uc: any) => uc.client_id);
-      
+
       // Get campaigns for accessible clients
       const { data: accessibleCampaigns } = await supabase
         .from('campaigns')
         .select('id')
         .in('client_id', clientIds);
-      
+
       if (accessibleCampaigns && accessibleCampaigns.length > 0) {
         const campaignIds = accessibleCampaigns.map((c: any) => c.id);
         query = query.in('campaign_id', campaignIds);
@@ -109,7 +113,10 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   }
 
   // Pagination
-  query = query.range(parseInt(offset as string), parseInt(offset as string) + parseInt(limit as string) - 1);
+  query = query.range(
+    parseInt(offset as string),
+    parseInt(offset as string) + parseInt(limit as string) - 1
+  );
 
   const { data, error, count } = await query;
 
@@ -121,36 +128,39 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   // Include execution statistics if requested
   let enrichedData = data || [];
   if (include_executions === 'true') {
-    enrichedData = await Promise.all((data || []).map(async (matrix) => {
-      const executionStats = await getMatrixExecutionStats(matrix.id);
-      return {
-        ...matrix,
-        execution_stats: executionStats};
-    }));
+    enrichedData = await Promise.all(
+      (data || []).map(async matrix => {
+        const executionStats = await getMatrixExecutionStats(matrix.id);
+        return {
+          ...matrix,
+          execution_stats: executionStats,
+        };
+      })
+    );
   }
 
   // Calculate matrix portfolio statistics
   const portfolioStats = calculateMatrixPortfolioStats(data || []);
 
-  return res.json({ 
+  return res.json({
     data: enrichedData,
     count,
     portfolio_stats: portfolioStats,
-    pagination: Record<string, unknown>$1
-  limit: parseInt(limit as string),
+    pagination: {
+      limit: parseInt(limit as string),
       offset: parseInt(offset as string),
-      total: count || 0
-    }
+      total: count || 0,
+    },
   });
 }
 
 async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const validationResult = MatrixCreateSchema.safeParse(req.body);
-  
+
   if (!validationResult.success) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Validation failed',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
@@ -213,13 +223,16 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
       status: 'draft',
       created_by: user.id,
       approved_by: null,
-      approval_date: null})
-    .select(`
+      approval_date: null,
+    })
+    .select(
+      `
       *,
       campaigns(id, name, status, clients(name, slug)),
       templates(id, name, platform, aspect_ratio),
       profiles!matrices_created_by_fkey(full_name)
-    `)
+    `
+    )
     .single();
 
   if (error) {
@@ -238,58 +251,77 @@ async function getMatrixExecutionStats(matrixId: string): Promise<any> {
       .select('status, platform, content_type, created_at')
       .eq('matrix_id', matrixId);
 
-    if (!executions) return { total: 0, by_status: {} by_platform: {} };
+    if (!executions) return { total: 0, by_status: {}, by_platform: {} };
 
-    const statusBreakdown = executions.reduce((acc, exec) => {
-      acc[exec.status] = (acc[exec.status] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const statusBreakdown = executions.reduce(
+      (acc, exec) => {
+        acc[exec.status] = (acc[exec.status] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
-    const platformBreakdown = executions.reduce((acc, exec) => {
-      acc[exec.platform] = (acc[exec.platform] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const platformBreakdown = executions.reduce(
+      (acc, exec) => {
+        acc[exec.platform] = (acc[exec.platform] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
     return {
       total: executions.length,
       by_status: statusBreakdown,
       by_platform: platformBreakdown,
-      last_execution: executions.length > 0 ? executions[executions.length - 1].created_at : null};
+      last_execution: executions.length > 0 ? executions[executions.length - 1].created_at : null,
+    };
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting execution stats:', error);
-    return { total: 0, by_status: {} by_platform: {} };
+    return { total: 0, by_status: {}, by_platform: {} };
   }
 }
 
 function calculateMatrixPortfolioStats(matrices: any[]): any {
-  const statusCount = matrices.reduce((acc, matrix) => {
-    acc[matrix.status] = (acc[matrix.status] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const statusCount = matrices.reduce(
+    (acc, matrix) => {
+      acc[matrix.status] = (acc[matrix.status] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
-  const templateCount = matrices.reduce((acc, matrix) => {
-    const templateName = matrix.templates?.name || 'Unknown';
-    acc[templateName] = (acc[templateName] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const templateCount = matrices.reduce(
+    (acc, matrix) => {
+      const templateName = matrix.templates?.name || 'Unknown';
+      acc[templateName] = (acc[templateName] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
-  const platformCount = matrices.reduce((acc, matrix) => {
-    const platform = matrix.templates?.platform || 'Unknown';
-    acc[platform] = (acc[platform] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const platformCount = matrices.reduce(
+    (acc, matrix) => {
+      const platform = matrix.templates?.platform || 'Unknown';
+      acc[platform] = (acc[platform] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
-  const avgVariations = matrices.length > 0 
-    ? matrices.reduce((sum, matrix) => sum + (matrix.variations?.length || 0), 0) / matrices.length
-    : 0;
+  const avgVariations =
+    matrices.length > 0
+      ? matrices.reduce((sum, matrix) => sum + (matrix.variations?.length || 0), 0) /
+        matrices.length
+      : 0;
 
   return {
     total_matrices: matrices.length,
     status_distribution: statusCount,
     template_distribution: templateCount,
     platform_distribution: platformCount,
-    average_variations: Math.round(avgVariations * 100) / 100};
+    average_variations: Math.round(avgVariations * 100) / 100,
+  };
 }
 
 function generateMatrixSlug(name: string, campaignId: string): string {
@@ -300,7 +332,7 @@ function generateMatrixSlug(name: string, campaignId: string): string {
     .replace(/-+/g, '-')
     .trim()
     .substring(0, 30);
-  
+
   // Add campaign prefix for uniqueness
   const campaignPrefix = campaignId.substring(0, 8);
   return `${campaignPrefix}-${baseSlug}`;
@@ -310,7 +342,7 @@ async function generateMatrixContent(matrixData: any, template: any, userId: str
   try {
     // This is a simplified auto-generation
     // In a real implementation, this would use AI to generate optimal combinations
-    
+
     const variations: any[] = [];
     const combinations: any[] = [];
     const fieldAssignments: any = {};
@@ -322,7 +354,8 @@ async function generateMatrixContent(matrixData: any, template: any, userId: str
         id: `var-${i + 1}`,
         name: `Variation ${String.fromCharCode(65 + i)}`,
         isActive: true,
-        isDefault: i === 0});
+        isDefault: i === 0,
+      });
     }
 
     // Generate field assignments based on template
@@ -333,8 +366,10 @@ async function generateMatrixContent(matrixData: any, template: any, userId: str
           content: variations.map((v: any) => ({
             id: `content-${field.id}-${v.id}`,
             variationId: v.id,
-            content: field.defaultValue || ''})),
-          assets: []};
+            content: field.defaultValue || '',
+          })),
+          assets: [],
+        };
       });
     }
 
@@ -344,7 +379,8 @@ async function generateMatrixContent(matrixData: any, template: any, userId: str
       name: 'Primary Combination',
       variationIds: [variations[0]?.id],
       isSelected: true,
-      performanceScore: 0});
+      performanceScore: 0,
+    });
 
     if (variations.length > 1) {
       combinations.push({
@@ -352,20 +388,22 @@ async function generateMatrixContent(matrixData: any, template: any, userId: str
         name: 'A/B Test Combination',
         variationIds: variations.slice(0, 2).map((v: any) => v.id),
         isSelected: true,
-        performanceScore: 0});
+        performanceScore: 0,
+      });
     }
 
     return {
       variations,
       combinations,
-      field_assignments: fieldAssignments};
+      field_assignments: fieldAssignments,
+    };
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error generating matrix content:', error);
     return {
       variations: [],
       combinations: [],
-      field_assignments: {}
+      field_assignments: {},
     };
   }
 }
