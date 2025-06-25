@@ -1,25 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Typography, 
-  Card, 
-  Button, 
-  Stack, 
-  Chip, 
-  Alert, 
-  Dialog, 
-  DialogTitle, 
-  DialogContent, 
-  DialogActions, 
-  List, 
-  ListItem, 
-  ListItemText, 
-  ListItemIcon, 
-  FormControl, 
-  InputLabel, 
-  MenuItem, 
-  Switch, 
-  FormControlLabel, 
+import {
+  Box,
+  Typography,
+  Card,
+  Button,
+  Stack,
+  Chip,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Switch,
+  FormControlLabel,
   Grid,
   CardContent,
   CircularProgress,
@@ -27,18 +27,19 @@ import {
   IconButton,
   Tooltip,
   TextField,
-  Select
+  Select,
 } from '@mui/material';
-import { 
-  Videocam as VideocamIcon, 
-  PlayArrow as PlayArrowIcon, 
-  Refresh as RefreshIcon, 
-  Settings as SettingsIcon, 
-  Check as CheckIcon, 
-  Error as ErrorIcon, 
-  Schedule as ScheduleIcon, 
-  Delete as DeleteIcon, 
-  RocketLaunch as RocketLaunchIcon} from '@mui/icons-material';
+import {
+  Videocam as VideocamIcon,
+  PlayArrow as PlayArrowIcon,
+  Refresh as RefreshIcon,
+  Settings as SettingsIcon,
+  Check as CheckIcon,
+  Error as ErrorIcon,
+  Schedule as ScheduleIcon,
+  Delete as DeleteIcon,
+  RocketLaunch as RocketLaunchIcon,
+} from '@mui/icons-material';
 import { useNotification } from '@/contexts/NotificationContext';
 import { getErrorMessage } from '@/utils/errorUtils';
 
@@ -63,7 +64,8 @@ interface VideoExecution {
 const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
   matrixId,
   combinations,
-  onExecutionComplete}) => {
+  onExecutionComplete,
+}) => {
   const { showNotification } = useNotification();
 
   // State
@@ -78,13 +80,14 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
     variations_per_combination: 2,
     platform_optimization: true,
     save_to_assets: true,
-    include_captions: false});
+    include_captions: false,
+  });
 
   // Auto-refresh active executions
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
-    const activeExecutions = executions.filter((exec: any) => 
+    const activeExecutions = executions.filter((exec: any) =>
       ['pending', 'processing'].includes(exec.status)
     );
 
@@ -109,9 +112,8 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
       setLoading(true);
       const response = await fetch(`/api/executions?matrix_id=${matrixId}&content_type=video`, {
         headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')
-      }`
-        }
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
       });
 
       if (response.ok) {
@@ -129,7 +131,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
 
   const checkExecutionStatus = async () => {
     try {
-      const activeExecutions = executions.filter((exec: any) => 
+      const activeExecutions = executions.filter((exec: any) =>
         ['pending', 'processing'].includes(exec.status)
       );
 
@@ -138,30 +140,30 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
       const statusPromises = activeExecutions.map((exec: any) =>
         fetch(`/api/executions/${exec.id}`, {
           headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')
-      }`
-          }
-        }).then(res => res.ok ? res.json() : null)
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }).then(res => (res.ok ? res.json() : null))
       );
 
       const statusResults = await Promise.all(statusPromises);
 
       // Update executions with new status
-      setExecutions(prev => prev.map((exec: any) => {
-        const updatedExec = statusResults.find((result: any) => 
-          result?.data?.id === exec.id
-        );
+      setExecutions(prev =>
+        prev.map((exec: any) => {
+          const updatedExec = statusResults.find((result: any) => result?.data?.id === exec.id);
 
-        if (updatedExec) {
-          return {
-            ...exec,
-            status: updatedExec.data.status,
-            progress: updatedExec.data.progress?.percentage || exec.progress,
-            video_url: updatedExec.data.render_url || exec.video_url,
-            error_message: updatedExec.data.metadata?.error || exec.error_message};
-        }
-        return exec;
-      }));
+          if (updatedExec) {
+            return {
+              ...exec,
+              status: updatedExec.data.status,
+              progress: updatedExec.data.progress?.percentage || exec.progress,
+              video_url: updatedExec.data.render_url || exec.video_url,
+              error_message: updatedExec.data.metadata?.error || exec.error_message,
+            };
+          }
+          return exec;
+        })
+      );
 
       // Check for completions
       statusResults.forEach((result: any) => {
@@ -192,27 +194,30 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
         platforms: ['youtube', 'instagram', 'tiktok'], // Multi-platform execution
         priority: 'normal',
         schedule_type: 'immediate',
-        execution_settings: Record<string, unknown>$1
-  quality: executionSettings.quality,
+        execution_settings: {
+          quality: executionSettings.quality,
           formats: ['mp4'],
           resolutions: ['1920x1080', '1080x1920'], // Horizontal and vertical
           include_previews: true,
           notify_on_completion: true,
-          video_specific: Record<string, unknown>$1
-  auto_generate_variations: executionSettings.auto_generate_variations,
+          video_specific: {
+            auto_generate_variations: executionSettings.auto_generate_variations,
             variations_per_combination: executionSettings.variations_per_combination,
             platform_optimization: executionSettings.platform_optimization,
             save_to_assets: executionSettings.save_to_assets,
-            include_captions: executionSettings.include_captions}
-        }};
+            include_captions: executionSettings.include_captions,
+          },
+        },
+      };
 
       const response = await fetch(`/api/matrices/${matrixId}/execute`, {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')
-      }`},
-        body: JSON.stringify(executeData)});
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify(executeData),
+      });
 
       if (response.ok) {
         const data = await response.json();
@@ -245,9 +250,8 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
       const response = await fetch(`/api/executions/${executionId}/retry`, {
         method: 'POST',
         headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')
-      }`
-        }
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
       });
 
       if (response.ok) {
@@ -268,9 +272,8 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
       const response = await fetch(`/api/executions/${executionId}`, {
         method: 'DELETE',
         headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')
-      }`
-        }
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
       });
 
       if (response.ok) {
@@ -288,25 +291,35 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'success';
-      case 'failed': return 'error';
-      case 'processing': return 'primary';
-      case 'pending': return 'warning';
-      default: return 'default';
+      case 'completed':
+        return 'success';
+      case 'failed':
+        return 'error';
+      case 'processing':
+        return 'primary';
+      case 'pending':
+        return 'warning';
+      default:
+        return 'default';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'completed': return <CheckIcon />;
-      case 'failed': return <ErrorIcon />;
-      case 'processing': return <CircularProgress size={16} />;
-      case 'pending': return <ScheduleIcon />;
-      default: return <ScheduleIcon />;
+      case 'completed':
+        return <CheckIcon />;
+      case 'failed':
+        return <ErrorIcon />;
+      case 'processing':
+        return <CircularProgress size={16} />;
+      case 'pending':
+        return <ScheduleIcon />;
+      default:
+        return <ScheduleIcon />;
     }
   };
 
-  const activeExecutions = executions.filter((exec: any) => 
+  const activeExecutions = executions.filter((exec: any) =>
     ['pending', 'processing'].includes(exec.status)
   );
   const completedExecutions = executions.filter((exec: any) => exec.status === 'completed');
@@ -319,11 +332,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
           Video Execution Center
         </Typography>
         <Stack direction="row" spacing={1}>
-          <Button
-            startIcon={<SettingsIcon />}
-            onClick={() => setShowSettings(true)}
-            size="small"
-          >
+          <Button startIcon={<SettingsIcon />} onClick={() => setShowSettings(true)} size="small">
             Settings
           </Button>
           <Button
@@ -396,7 +405,8 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
             Combinations for Video Execution
           </Typography>
           <Typography variant="body2" color="text.secondary" paragraph>
-            Choose which combinations to generate videos for. Each combination will create multiple video variations.
+            Choose which combinations to generate videos for. Each combination will create multiple
+            video variations.
           </Typography>
 
           <Grid container spacing={2}>
@@ -406,8 +416,13 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
                   variant="outlined"
                   sx={{
                     cursor: 'pointer',
-                    border: selectedCombinations.includes(combination.id) ? '2px solid' : '1px solid',
-                    borderColor: selectedCombinations.includes(combination.id) ? 'primary.main' : 'divider'}}
+                    border: selectedCombinations.includes(combination.id)
+                      ? '2px solid'
+                      : '1px solid',
+                    borderColor: selectedCombinations.includes(combination.id)
+                      ? 'primary.main'
+                      : 'divider',
+                  }}
                   onClick={() => {
                     setSelectedCombinations(prev =>
                       prev.includes(combination.id)
@@ -424,7 +439,10 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
                       Quality Score: {combination.qualityScore || 'N/A'}
                     </Typography>
                     {selectedCombinations.includes(combination.id) && (
-                      <CheckIcon color="primary" sx={{ position: 'absolute', top: 8, right: 8, fontSize: 20 }} />
+                      <CheckIcon
+                        color="primary"
+                        sx={{ position: 'absolute', top: 8, right: 8, fontSize: 20 }}
+                      />
                     )}
                   </CardContent>
                 </Card>
@@ -438,7 +456,9 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
                 <strong>{selectedCombinations.length}</strong> combinations selected
               </Typography>
               <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
-                Estimated videos: {selectedCombinations.length * executionSettings.variations_per_combination * 3} (3 platforms × {executionSettings.variations_per_combination} variations each)
+                Estimated videos:{' '}
+                {selectedCombinations.length * executionSettings.variations_per_combination * 3} (3
+                platforms × {executionSettings.variations_per_combination} variations each)
               </Typography>
               <Button
                 variant="contained"
@@ -464,9 +484,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
             <List>
               {activeExecutions.map((execution: any) => (
                 <ListItem key={execution.id} divider>
-                  <ListItemIcon>
-                    {getStatusIcon(execution.status)}
-                  </ListItemIcon>
+                  <ListItemIcon>{getStatusIcon(execution.status)}</ListItemIcon>
                   <ListItemText
                     primary={execution.combination_name}
                     secondary={
@@ -474,7 +492,11 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
                         <Typography variant="body2">
                           Status: {execution.status} • Progress: {execution.progress}%
                         </Typography>
-                        <LinearProgress variant="determinate" value={execution.progress} sx={{ mt: 1 }} />
+                        <LinearProgress
+                          variant="determinate"
+                          value={execution.progress}
+                          sx={{ mt: 1 }}
+                        />
                       </Box>
                     }
                   />
@@ -500,15 +522,14 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
             <List>
               {executions.map((execution: any) => (
                 <ListItem key={execution.id} divider>
-                  <ListItemIcon>
-                    {getStatusIcon(execution.status)}
-                  </ListItemIcon>
+                  <ListItemIcon>{getStatusIcon(execution.status)}</ListItemIcon>
                   <ListItemText
                     primary={execution.combination_name}
                     secondary={
                       <Box>
                         <Typography variant="body2">
-                          Status: {execution.status} • Created: {new Date(execution.created_at).toLocaleString()}
+                          Status: {execution.status} • Created:{' '}
+                          {new Date(execution.created_at).toLocaleString()}
                         </Typography>
                         {execution.error_message && (
                           <Alert severity="error" sx={{ mt: 1 }}>
@@ -571,7 +592,7 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
               <Select
                 value={executionSettings.quality}
                 label="Quality"
-                onChange={(e) => setExecutionSettings(prev => ({ ...prev, quality: e.target.value }))}
+                onChange={e => setExecutionSettings(prev => ({ ...prev, quality: e.target.value }))}
               >
                 <MenuItem value="draft">Draft (Fast)</MenuItem>
                 <MenuItem value="standard">Standard</MenuItem>
@@ -587,10 +608,15 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
                 type="number"
                 fullWidth
                 value={executionSettings.variations_per_combination}
-                onChange={(e) => setExecutionSettings(prev => ({
-                  ...prev,
-                  variations_per_combination: Math.max(1, Math.min(5, parseInt(e.target.value) || 1))
-                }))}
+                onChange={e =>
+                  setExecutionSettings(prev => ({
+                    ...prev,
+                    variations_per_combination: Math.max(
+                      1,
+                      Math.min(5, parseInt(e.target.value) || 1)
+                    ),
+                  }))
+                }
                 inputProps={{ min: 1, max: 5 }}
               />
             </Box>
@@ -600,10 +626,12 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
                 control={
                   <Switch
                     checked={executionSettings.auto_generate_variations}
-                    onChange={(e) => setExecutionSettings(prev => ({
-                      ...prev,
-                      auto_generate_variations: e.target.checked
-                    }))}
+                    onChange={e =>
+                      setExecutionSettings(prev => ({
+                        ...prev,
+                        auto_generate_variations: e.target.checked,
+                      }))
+                    }
                   />
                 }
                 label="Auto-generate variations"
@@ -612,10 +640,12 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
                 control={
                   <Switch
                     checked={executionSettings.platform_optimization}
-                    onChange={(e) => setExecutionSettings(prev => ({
-                      ...prev,
-                      platform_optimization: e.target.checked
-                    }))}
+                    onChange={e =>
+                      setExecutionSettings(prev => ({
+                        ...prev,
+                        platform_optimization: e.target.checked,
+                      }))
+                    }
                   />
                 }
                 label="Platform optimization"
@@ -624,10 +654,12 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
                 control={
                   <Switch
                     checked={executionSettings.save_to_assets}
-                    onChange={(e) => setExecutionSettings(prev => ({
-                      ...prev,
-                      save_to_assets: e.target.checked
-                    }))}
+                    onChange={e =>
+                      setExecutionSettings(prev => ({
+                        ...prev,
+                        save_to_assets: e.target.checked,
+                      }))
+                    }
                   />
                 }
                 label="Save to assets"
@@ -636,10 +668,12 @@ const VideoExecutionPanel: React.FC<VideoExecutionPanelProps> = ({
                 control={
                   <Switch
                     checked={executionSettings.include_captions}
-                    onChange={(e) => setExecutionSettings(prev => ({
-                      ...prev,
-                      include_captions: e.target.checked
-                    }))}
+                    onChange={e =>
+                      setExecutionSettings(prev => ({
+                        ...prev,
+                        include_captions: e.target.checked,
+                      }))
+                    }
                   />
                 }
                 label="Include captions"
