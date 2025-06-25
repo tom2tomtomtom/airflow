@@ -12,52 +12,58 @@ export interface MiddlewareSupabaseResponse {
 }
 
 // Create Supabase client for middleware usage
-export function createMiddlewareSupabaseClient(
-  request: NextRequest
-): MiddlewareSupabaseResponse {
+export function createMiddlewareSupabaseClient(request: NextRequest): MiddlewareSupabaseResponse {
   const config = validateSupabaseConfig();
-  
-  let response = NextResponse.next({
-    request: Record<string, unknown>$1
-  headers: request.headers}});
 
-  const supabase = createServerClient<Database>(
-    config.url,
-    config.anonKey,
-    {
-      cookies: Record<string, unknown>$1
-  get(name: string) {
-          return request.cookies.get(name)?.value;
-        },
-        set(name: string, value: string, options: CookieOptions) {
-          // Update both request and response cookies
-          request.cookies.set({
-            name,
-            value,
-            ...options});
-          response = NextResponse.next({
-            request: Record<string, unknown>$1
-  headers: request.headers}});
-          response?.cookies?.set({
-            name,
-            value,
-            ...options});
-        },
-        remove(name: string, options: CookieOptions) {
-          // Remove from both request and response
-          request.cookies.set({
-            name,
-            value: '',
-            ...options});
-          response = NextResponse.next({
-            request: Record<string, unknown>$1
-  headers: request.headers}});
-          response?.cookies?.set({
-            name,
-            value: '',
-            ...options});
-        }}}
-  );
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  });
+
+  const supabase = createServerClient<Database>(config.url, config.anonKey, {
+    cookies: {
+      get(name: string) {
+        return request.cookies.get(name)?.value;
+      },
+      set(name: string, value: string, options: CookieOptions) {
+        // Update both request and response cookies
+        request.cookies.set({
+          name,
+          value,
+          ...options,
+        });
+        response = NextResponse.next({
+          request: {
+            headers: request.headers,
+          },
+        });
+        response?.cookies?.set({
+          name,
+          value,
+          ...options,
+        });
+      },
+      remove(name: string, options: CookieOptions) {
+        // Remove from both request and response
+        request.cookies.set({
+          name,
+          value: '',
+          ...options,
+        });
+        response = NextResponse.next({
+          request: {
+            headers: request.headers,
+          },
+        });
+        response?.cookies?.set({
+          name,
+          value: '',
+          ...options,
+        });
+      },
+    },
+  });
 
   return { response, supabase };
 }
@@ -66,23 +72,26 @@ export function createMiddlewareSupabaseClient(
 export async function updateSession(request: NextRequest) {
   try {
     const { response, supabase } = createMiddlewareSupabaseClient(request);
-    
+
     // This will refresh the session if expired - required for Server Components
-    const { data: { user }, error } = await supabase.auth.getUser();
-    
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+
     if (error) {
-      loggers.supabase.debug('Session refresh error in middleware', { 
+      loggers.supabase.debug('Session refresh error in middleware', {
         error: error.message,
-        path: request.nextUrl.pathname 
+        path: request.nextUrl.pathname,
       });
     }
 
     return { response, user };
   } catch (error: any) {
     loggers.supabase.error('Middleware session update failed', error);
-    return { 
-      response: NextResponse.next({ request: { headers: request.headers } }), 
-      user: null 
+    return {
+      response: NextResponse.next({ request: { headers: request.headers } }),
+      user: null,
     };
   }
 }
