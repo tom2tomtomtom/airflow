@@ -22,14 +22,16 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     // First verify user has access to this brief and get its data
     const { data: brief, error } = await supabase
       .from('briefs')
-      .select(`
+      .select(
+        `
         id,
         name,
         raw_content,
         document_url,
         client_id,
         parsing_status
-      `)
+      `
+      )
       .eq('id', id)
       .single();
 
@@ -51,17 +53,17 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
     // Check if brief has content to reparse
     if (!brief.raw_content && !brief.document_url) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'No content available to reparse',
-        details: 'Brief must have raw_content or document_url to be reparsed'
+        details: 'Brief must have raw_content or document_url to be reparsed',
       });
     }
 
     // Check if already processing
     if (brief.parsing_status === 'processing') {
-      return res.status(409).json({ 
+      return res.status(409).json({
         error: 'Brief is already being processed',
-        details: 'Please wait for current parsing to complete'
+        details: 'Please wait for current parsing to complete',
       });
     }
 
@@ -72,7 +74,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
         parsing_status: 'processing',
         parsed_at: null,
         confidence_scores: null,
-        updated_at: new Date().toISOString()})
+        updated_at: new Date().toISOString(),
+      })
       .eq('id', id);
 
     if (updateError) {
@@ -82,20 +85,22 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
     // Get content to parse - prefer raw_content over document_url
     let contentToparse = brief.raw_content;
-    
+
     if (!contentToparse && brief.document_url) {
       // If no raw content but has document URL, we'll need to re-extract
       try {
         const parseResponse = await fetch(`${req.headers.origin}/api/brief-upload`, {
           method: 'POST',
           headers: {
-        'Content-Type': 'application/json',
-            'Authorization': req.headers.authorization || ''
-      },
+            'Content-Type': 'application/json',
+            Authorization: req.headers.authorization || '',
+          },
           body: JSON.stringify({
             document_url: brief.document_url,
             reparse: true,
-            brief_id: id})});
+            brief_id: id,
+          }),
+        });
 
         if (!parseResponse.ok) {
           throw new Error('Failed to re-extract document content');
@@ -105,18 +110,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
         contentToparse = parseData.raw_content;
       } catch (extractError: any) {
         console.error('Error re-extracting document:', extractError);
-        
+
         // Revert status on error
         await supabase
           .from('briefs')
           .update({
             parsing_status: 'error',
-            updated_at: new Date().toISOString()})
+            updated_at: new Date().toISOString(),
+          })
           .eq('id', id);
 
-        return res.status(500).json({ 
+        return res.status(500).json({
           error: 'Failed to extract document content for reparsing',
-          details: extractError instanceof Error ? extractError.message : String(extractError)
+          details: extractError instanceof Error ? extractError.message : String(extractError),
         });
       }
     }
@@ -126,13 +132,15 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
       const parseResponse = await fetch(`${req.headers.origin}/api/brief-parse`, {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json',
-          'Authorization': req.headers.authorization || ''
-      },
+          'Content-Type': 'application/json',
+          Authorization: req.headers.authorization || '',
+        },
         body: JSON.stringify({
           brief_id: id,
           content: contentToparse,
-          reparse: true})});
+          reparse: true,
+        }),
+      });
 
       if (!parseResponse.ok) {
         throw new Error('Failed to trigger brief parsing');
@@ -140,37 +148,41 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
       return res.json({
         message: 'Brief reparsing initiated successfully',
-        data: Record<string, unknown>$1
-  brief_id: id,
+        data: {
+          brief_id: id,
           name: brief.name,
           status: 'processing',
           estimated_completion: new Date(Date.now() + 2 * 60 * 1000).toISOString(), // 2 minutes estimate
-        }
+        },
       });
-
     } catch (parseError: any) {
       console.error('Error triggering brief parsing:', parseError);
-      
+
       // Revert status on error
       await supabase
         .from('briefs')
         .update({
           parsing_status: 'error',
-          updated_at: new Date().toISOString()})
+          updated_at: new Date().toISOString(),
+        })
         .eq('id', id);
 
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: 'Failed to initiate brief reparsing',
-        details: parseError instanceof Error ? parseError.message : String(parseError)
+        details: parseError instanceof Error ? parseError.message : String(parseError),
       });
     }
-
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Brief reparse API error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
+      details:
+        process.env.NODE_ENV === 'development'
+          ? error instanceof Error
+            ? error.message
+            : 'Unknown error'
+          : undefined,
     });
   }
 }
