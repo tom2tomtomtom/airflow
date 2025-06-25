@@ -6,16 +6,16 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 interface RateLimitConfig {
-  windowMs: number; // Time window in milliseconds,
-    maxRequests: number; // Maximum requests per window
+  windowMs: number; // Time window in milliseconds
+  maxRequests: number; // Maximum requests per window
   message?: string; // Custom error message
   skipSuccessfulRequests?: boolean; // Don't count successful requests
   skipFailedRequests?: boolean; // Don't count failed requests
 }
 
 interface RateLimitStore {
-  [key: string]: {,
-    count: number;,
+  [key: string]: {
+    count: number;
     resetTime: number;
   };
 }
@@ -72,7 +72,8 @@ export function createRateLimit(config: RateLimitConfig) {
     if (!entry || entry.resetTime < now) {
       entry = {
         count: 0,
-        resetTime: now + config.windowMs };
+        resetTime: now + config.windowMs,
+      };
       rateLimitStore[key] = entry;
     }
 
@@ -83,7 +84,8 @@ export function createRateLimit(config: RateLimitConfig) {
       res.status(429).json({
         error: config.message || 'Too many requests',
         code: 'RATE_LIMIT_EXCEEDED',
-        retryAfter: resetIn });
+        retryAfter: resetIn,
+      });
       return;
     }
 
@@ -107,35 +109,35 @@ export function createRateLimit(config: RateLimitConfig) {
  */
 export const rateLimiters = {
   // Strict rate limiting for authentication endpoints
-  auth: createRateLimit({,
+  auth: createRateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     maxRequests: 5, // 5 attempts per 15 minutes
     message: 'Too many authentication attempts, please try again later',
   }),
 
   // Moderate rate limiting for API endpoints
-  api: createRateLimit({,
+  api: createRateLimit({
     windowMs: 60 * 1000, // 1 minute
     maxRequests: 60, // 60 requests per minute
     message: 'Too many API requests, please slow down',
   }),
 
   // Strict rate limiting for AI generation endpoints
-  aiGeneration: createRateLimit({,
+  aiGeneration: createRateLimit({
     windowMs: 60 * 1000, // 1 minute
     maxRequests: 10, // 10 generations per minute
     message: 'Too many AI generation requests, please wait before trying again',
   }),
 
   // Lenient rate limiting for general endpoints
-  general: createRateLimit({,
+  general: createRateLimit({
     windowMs: 60 * 1000, // 1 minute
     maxRequests: 100, // 100 requests per minute
     message: 'Too many requests, please slow down',
   }),
 
   // Very strict rate limiting for expensive operations
-  expensive: createRateLimit({,
+  expensive: createRateLimit({
     windowMs: 5 * 60 * 1000, // 5 minutes
     maxRequests: 3, // 3 requests per 5 minutes
     message: 'This operation is rate limited, please try again later',
@@ -172,9 +174,9 @@ export function checkRateLimit(
   req: NextApiRequest,
   config: RateLimitConfig
 ): {
-  limited: boolean;,
-    remaining: number;,
-    resetTime: number;
+  limited: boolean;
+  remaining: number;
+  resetTime: number;
 } {
   const clientId = getClientId(req);
   const key = `${req.url}:${clientId}`;
@@ -185,13 +187,15 @@ export function checkRateLimit(
     return {
       limited: false,
       remaining: config.maxRequests,
-      resetTime: now + config.windowMs };
+      resetTime: now + config.windowMs,
+    };
   }
 
   return {
     limited: entry.count >= config.maxRequests,
     remaining: Math.max(0, config.maxRequests - entry.count),
-    resetTime: entry.resetTime };
+    resetTime: entry.resetTime,
+  };
 }
 
 /**
@@ -207,9 +211,9 @@ export function resetRateLimit(req: NextApiRequest): void {
  * Get rate limit status for monitoring
  */
 export function getRateLimitStats(): {
-  totalEntries: number;,
-    activeEntries: number;,
-    topEndpoints: Array<{ endpoint: string; requests: number }>;
+  totalEntries: number;
+  activeEntries: number;
+  topEndpoints: Array<{ endpoint: string; requests: number }>;
 } {
   const now = Date.now();
   const activeEntries = Object.entries(rateLimitStore).filter(([, entry]) => entry.resetTime > now);
