@@ -19,7 +19,8 @@ const BriefCreateSchema = z.object({
   platforms: z.array(z.string()).optional(),
   budget: z.number().optional(),
   timeline: z.any().optional(),
-  client_id: z.string().uuid('Invalid client ID')});
+  client_id: z.string().uuid('Invalid client ID'),
+});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -37,30 +38,31 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Briefs API error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
+      details:
+        process.env.NODE_ENV === 'development'
+          ? error instanceof Error
+            ? error.message
+            : 'Unknown error'
+          : undefined,
     });
   }
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
-  const { 
-    client_id, 
-    status, 
-    limit = 50, 
-    offset = 0,
-    search 
-  } = req.query;
+  const { client_id, status, limit = 50, offset = 0, search } = req.query;
 
   let query = supabase
     .from('briefs')
-    .select(`
+    .select(
+      `
       *,
       clients(name, slug),
       profiles!briefs_created_by_fkey(full_name),
       motivations(count)
-    `)
+    `
+    )
     .order('created_at', { ascending: false });
 
   // Filter by client access for the user
@@ -72,7 +74,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       .from('user_clients')
       .select('client_id')
       .eq('user_id', user.id);
-    
+
     if (userClients && userClients.length > 0) {
       const clientIds = userClients.map((uc: any) => uc.client_id);
       query = query.in('client_id', clientIds);
@@ -88,11 +90,16 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   }
 
   if (search) {
-    query = query.or(`name.ilike.%${search}%,description.ilike.%${search}%,target_audience.ilike.%${search}%`);
+    query = query.or(
+      `name.ilike.%${search}%,description.ilike.%${search}%,target_audience.ilike.%${search}%`
+    );
   }
 
   // Pagination
-  query = query.range(parseInt(offset as string), parseInt(offset as string) + parseInt(limit as string) - 1);
+  query = query.range(
+    parseInt(offset as string),
+    parseInt(offset as string) + parseInt(limit as string) - 1
+  );
 
   const { data, error, count } = await query;
 
@@ -101,24 +108,24 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
     return res.status(500).json({ error: 'Failed to fetch briefs' });
   }
 
-  return res.json({ 
+  return res.json({
     data: data || [],
     count,
-    pagination: Record<string, unknown>$1
-  limit: parseInt(limit as string),
+    pagination: {
+      limit: parseInt(limit as string),
       offset: parseInt(offset as string),
-      total: count || 0
-    }
+      total: count || 0,
+    },
   });
 }
 
 async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const validationResult = BriefCreateSchema.safeParse(req.body);
-  
+
   if (!validationResult.success) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Validation failed',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
@@ -142,12 +149,15 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
     .insert({
       ...briefData,
       created_by: user.id,
-      parsing_status: briefData.raw_content ? 'pending' : 'completed'})
-    .select(`
+      parsing_status: briefData.raw_content ? 'pending' : 'completed',
+    })
+    .select(
+      `
       *,
       clients(name, slug),
       profiles!briefs_created_by_fkey(full_name)
-    `)
+    `
+    )
     .single();
 
   if (error) {
@@ -161,12 +171,14 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
       await fetch(`${req.headers.origin}/api/brief-parse`, {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json',
-          'Authorization': req.headers.authorization || ''
-      },
+          'Content-Type': 'application/json',
+          Authorization: req.headers.authorization || '',
+        },
         body: JSON.stringify({
           brief_id: brief.id,
-          content: briefData.raw_content})});
+          content: briefData.raw_content,
+        }),
+      });
     } catch (parseError: any) {
       console.error('Error triggering brief parsing:', parseError);
       // Don't fail the request, just log the error
