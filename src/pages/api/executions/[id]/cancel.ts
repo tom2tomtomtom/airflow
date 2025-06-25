@@ -30,20 +30,30 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Execution Cancel API error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
+      details:
+        process.env.NODE_ENV === 'development'
+          ? error instanceof Error
+            ? error.message
+            : 'Unknown error'
+          : undefined,
     });
   }
 }
 
-async function handleCancel(req: NextApiRequest, res: NextApiResponse, user: any, executionId: string): Promise<void> {
+async function handleCancel(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  executionId: string
+): Promise<void> {
   const validationResult = CancelRequestSchema.safeParse(req.body);
-  
+
   if (!validationResult.success) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Validation failed',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
@@ -52,7 +62,8 @@ async function handleCancel(req: NextApiRequest, res: NextApiResponse, user: any
   // First verify user has access to this execution
   const { data: execution, error } = await supabase
     .from('executions')
-    .select(`
+    .select(
+      `
       *,
       matrices(
         id, name,
@@ -61,7 +72,8 @@ async function handleCancel(req: NextApiRequest, res: NextApiResponse, user: any
           clients(id, name)
         )
       )
-    `)
+    `
+    )
     .eq('id', executionId)
     .single();
 
@@ -89,10 +101,10 @@ async function handleCancel(req: NextApiRequest, res: NextApiResponse, user: any
   // Check if execution can be cancelled
   const cancellabilityCheck = checkCancellability(execution, cancelData.force);
   if (!cancellabilityCheck.canCancel) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: cancellabilityCheck.reason,
       current_status: execution.status,
-      suggestions: cancellabilityCheck.suggestions
+      suggestions: cancellabilityCheck.suggestions,
     });
   }
 
@@ -114,14 +126,18 @@ async function handleCancel(req: NextApiRequest, res: NextApiResponse, user: any
         cancelled_by: user.id,
         cancel_reason: cancelData.reason,
         force_cancelled: cancelData.force,
-        cleanup_results: cleanupResults },
-  updated_at: new Date().toISOString()})
+        cleanup_results: cleanupResults,
+      },
+      updated_at: new Date().toISOString(),
+    })
     .eq('id', executionId)
-    .select(`
+    .select(
+      `
       *,
       matrices(id, name, campaigns(id, name)),
       profiles!executions_created_by_fkey(full_name)
-    `)
+    `
+    )
     .single();
 
   if (cancelError) {
@@ -140,26 +156,30 @@ async function handleCancel(req: NextApiRequest, res: NextApiResponse, user: any
 
   return res.json({
     message: 'Execution cancelled successfully',
-    data: Record<string, unknown>$1
-  execution: cancelledExecution,
+    data: {
+      execution: cancelledExecution,
       cleanup_results: cleanupResults,
       related_executions: relatedResults,
-      cancelled_at: new Date().toISOString()}
+      cancelled_at: new Date().toISOString(),
+    },
   });
 }
 
 // Helper functions
-function checkCancellability(execution: any, force: boolean): { canCancel: boolean; reason?: string; suggestions?: string[] } {
+function checkCancellability(
+  execution: any,
+  force: boolean
+): { canCancel: boolean; reason?: string; suggestions?: string[] } {
   const cancellableStatuses = ['pending', 'processing', 'scheduled'];
-  
+
   if (!force && !cancellableStatuses.includes(execution.status)) {
     return {
       canCancel: false,
       reason: `Execution in ${execution.status} state cannot be cancelled`,
       suggestions: [
         'Completed and failed executions cannot be cancelled',
-        'Use force=true to override status check for cleanup purposes'
-      ]
+        'Use force=true to override status check for cleanup purposes',
+      ],
     };
   }
 
@@ -170,8 +190,8 @@ function checkCancellability(execution: any, force: boolean): { canCancel: boole
       reason: 'Execution cancellation already in progress',
       suggestions: [
         'Wait for the current cancellation to complete',
-        'Check execution status in a few moments'
-      ]
+        'Check execution status in a few moments',
+      ],
     };
   }
 
@@ -183,8 +203,8 @@ function checkCancellability(execution: any, force: boolean): { canCancel: boole
       suggestions: [
         'Review dependent executions first',
         'Use force=true to override dependency check',
-        'Cancel dependent executions individually'
-      ]
+        'Cancel dependent executions individually',
+      ],
     };
   }
 
@@ -196,7 +216,8 @@ async function cleanupExternalResources(execution: any): Promise<any> {
     success: false,
     resources_cleaned: [] as any[],
     errors: [] as any[],
-    timestamp: new Date().toISOString()};
+    timestamp: new Date().toISOString(),
+  };
 
   try {
     // Check if this is a Creatomate execution
@@ -210,13 +231,13 @@ async function cleanupExternalResources(execution: any): Promise<any> {
         cleanupResult.resources_cleaned.push({
           type: 'creatomate_job',
           resource_id: jobId,
-          status: 'cancelled'
+          status: 'cancelled',
         });
       } else {
         cleanupResult.errors.push({
           type: 'creatomate_job',
           resource_id: jobId,
-          error: creatomateResult.error
+          error: creatomateResult.error,
         });
       }
     }
@@ -235,7 +256,7 @@ async function cleanupExternalResources(execution: any): Promise<any> {
       if (fileCleanup.success) {
         cleanupResult.resources_cleaned.push({
           type: 'temp_files',
-          count: fileCleanup.files_cleaned
+          count: fileCleanup.files_cleaned,
         });
       }
     }
@@ -247,7 +268,7 @@ async function cleanupExternalResources(execution: any): Promise<any> {
     console.error('Error cleaning up external resources:', error);
     cleanupResult.errors.push({
       type: 'general_cleanup',
-      error: error instanceof Error ? error.message : String(error)
+      error: error instanceof Error ? error.message : String(error),
     });
     return cleanupResult;
   }
@@ -260,18 +281,20 @@ async function cancelCreatomateJob(jobId: string): Promise<{ success: boolean; e
     process.env.NODE_ENV === 'development' && console.log('Cancelling Creatomate render:', jobId);
     // Mock API call delay
     await new Promise(resolve => setTimeout(resolve, 100));
-    
+
     return { success: true };
   } catch (error: any) {
     const message = getErrorMessage(error);
-    return { 
-      success: false, 
-      error: `Failed to cancel Creatomate job: ${error instanceof Error ? error.message : String(error)}`
+    return {
+      success: false,
+      error: `Failed to cancel Creatomate job: ${error instanceof Error ? error.message : String(error)}`,
     };
   }
 }
 
-async function cancelPendingWebhooks(webhookIds: string[]): Promise<{ cleaned: any[]; errors: any[] }> {
+async function cancelPendingWebhooks(
+  webhookIds: string[]
+): Promise<{ cleaned: any[]; errors: any[] }> {
   const cleaned: any[] = [];
   const errors: any[] = [];
 
@@ -282,14 +305,14 @@ async function cancelPendingWebhooks(webhookIds: string[]): Promise<{ cleaned: a
       cleaned.push({
         type: 'webhook',
         resource_id: webhookId,
-        status: 'cancelled'
+        status: 'cancelled',
       });
     } catch (error: any) {
-    const message = getErrorMessage(error);
+      const message = getErrorMessage(error);
       errors.push({
         type: 'webhook',
         resource_id: webhookId,
-        error: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : String(error),
       });
     }
   }
@@ -297,10 +320,13 @@ async function cancelPendingWebhooks(webhookIds: string[]): Promise<{ cleaned: a
   return { cleaned, errors };
 }
 
-async function cleanupTempFiles(tempFiles: string[]): Promise<{ success: boolean; files_cleaned: number }> {
+async function cleanupTempFiles(
+  tempFiles: string[]
+): Promise<{ success: boolean; files_cleaned: number }> {
   try {
     // Simulate file cleanup
-    process.env.NODE_ENV === 'development' && console.log('Cleaning up temp files:', tempFiles.length);
+    process.env.NODE_ENV === 'development' &&
+      console.log('Cleaning up temp files:', tempFiles.length);
     return { success: true, files_cleaned: tempFiles.length };
   } catch (error: any) {
     const message = getErrorMessage(error);
@@ -324,11 +350,11 @@ async function handleRelatedExecutions(execution: any, force: boolean): Promise<
     }
 
     const actions: any[] = [];
-    
+
     // Check if any related executions depend on this one
     for (const related of relatedExecutions) {
       const dependsOnCancelled = related.metadata?.dependencies?.includes(execution.id);
-      
+
       if (dependsOnCancelled) {
         if (force) {
           // Cancel dependent executions
@@ -337,24 +363,24 @@ async function handleRelatedExecutions(execution: any, force: boolean): Promise<
             .update({
               status: 'cancelled',
               metadata: {
-        ...related.metadata,
+                ...related.metadata,
                 cancelled_due_to_dependency: execution.id,
-                cancelled_at: new Date().toISOString()
-      }
+                cancelled_at: new Date().toISOString(),
+              },
             })
             .eq('id', related.id);
-          
+
           actions.push({
             execution_id: related.id,
             action: 'cancelled',
-            reason: 'dependency_cancelled'
+            reason: 'dependency_cancelled',
           });
         } else {
           actions.push({
             execution_id: related.id,
             action: 'flagged',
             reason: 'dependency_cancelled',
-            recommendation: 'Review and potentially cancel'
+            recommendation: 'Review and potentially cancel',
           });
         }
       }
@@ -362,26 +388,31 @@ async function handleRelatedExecutions(execution: any, force: boolean): Promise<
 
     return {
       affected_count: relatedExecutions.length,
-      actions
+      actions,
     };
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error handling related executions:', error);
-    return { 
-      affected_count: 0, 
-      actions: [], 
-      error: 'Failed to process related executions' 
+    return {
+      affected_count: 0,
+      actions: [],
+      error: 'Failed to process related executions',
     };
   }
 }
 
-async function logCancellationEvent(executionId: string, userId: string, reason?: string, force?: boolean): Promise<void> {
+async function logCancellationEvent(
+  executionId: string,
+  userId: string,
+  reason?: string,
+  force?: boolean
+): Promise<void> {
   try {
     // In a full implementation, this would log to an execution_events table
-    console.log(`Execution cancelled: ${executionId} by user ${userId}`, { 
-      reason, 
+    console.log(`Execution cancelled: ${executionId} by user ${userId}`, {
+      reason,
       force,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
     const message = getErrorMessage(error);
@@ -393,7 +424,8 @@ async function triggerCancellationNotification(execution: any, user: any): Promi
   try {
     // In a full implementation, this would trigger real-time notifications
     // via WebSocket or Server-Sent Events to relevant stakeholders
-    process.env.NODE_ENV === 'development' && console.log('Triggering cancellation notification for execution:', execution.id);
+    process.env.NODE_ENV === 'development' &&
+      console.log('Triggering cancellation notification for execution:', execution.id);
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error triggering cancellation notification:', error);
