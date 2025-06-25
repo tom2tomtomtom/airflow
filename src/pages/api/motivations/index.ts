@@ -9,7 +9,17 @@ import { z } from 'zod';
 const MotivationCreateSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().min(1, 'Description is required'),
-  category: z.enum(['emotional', 'rational', 'social', 'fear', 'aspiration', 'convenience', 'status', 'safety', 'other']),
+  category: z.enum([
+    'emotional',
+    'rational',
+    'social',
+    'fear',
+    'aspiration',
+    'convenience',
+    'status',
+    'safety',
+    'other',
+  ]),
   brief_id: z.string().uuid().optional(),
   relevance_score: z.number().min(0).max(100).optional(),
   is_ai_generated: z.boolean().default(false),
@@ -18,7 +28,8 @@ const MotivationCreateSchema = z.object({
   tags: z.array(z.string()).default([]),
   target_emotions: z.array(z.string()).default([]),
   use_cases: z.array(z.string()).default([]),
-  effectiveness_rating: z.number().min(1).max(5).optional()});
+  effectiveness_rating: z.number().min(1).max(5).optional(),
+});
 
 const MotivationUpdateSchema = MotivationCreateSchema.partial().omit(['client_id'] as any);
 
@@ -40,34 +51,37 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Motivations API error:', error);
     return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? message : undefined
+      details: process.env.NODE_ENV === 'development' ? message : undefined,
     });
   }
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
-  const { 
-    client_id, 
+  const {
+    client_id,
     brief_id,
     category,
     is_ai_generated,
     min_relevance,
     max_relevance,
-    limit = 50, 
+    limit = 50,
     offset = 0,
     search,
     sort_by = 'relevance_score',
     sort_order = 'desc',
-    include_usage = false} = req.query;
+    include_usage = false,
+  } = req.query;
 
   let query = supabase
     .from('motivations')
-    .select(`
+    .select(
+      `
       *,
       clients(name, slug),
       briefs(name, title),
       profiles!motivations_created_by_fkey(full_name)
-    `)
+    `
+    )
     .order(sort_by as string, { ascending: sort_order === 'asc' });
 
   // Filter by client access for the user
@@ -79,7 +93,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       .from('user_clients')
       .select('client_id')
       .eq('user_id', user.id);
-    
+
     if (userClients && userClients.length > 0) {
       const clientIds = userClients.map((uc: any) => uc.client_id);
       query = query.in('client_id', clientIds);
@@ -113,7 +127,10 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   }
 
   // Pagination
-  query = query.range(parseInt(offset as string), parseInt(offset as string) + parseInt(limit as string) - 1);
+  query = query.range(
+    parseInt(offset as string),
+    parseInt(offset as string) + parseInt(limit as string) - 1
+  );
 
   const { data, error, count } = await query;
 
@@ -125,39 +142,47 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   // Include usage statistics if requested
   let enrichedData = data || [];
   if (include_usage === 'true') {
-    enrichedData = await Promise.all((data || []).map(async (motivation) => {
-      const usageStats = await getMotivationUsageStats(motivation.id);
-      return {
-        ...motivation,
-        usage_stats: usageStats};
-    }));
+    enrichedData = await Promise.all(
+      (data || []).map(async motivation => {
+        const usageStats = await getMotivationUsageStats(motivation.id);
+        return {
+          ...motivation,
+          usage_stats: usageStats,
+        };
+      })
+    );
   }
 
   // Calculate category distribution
   const categoryStats = calculateCategoryDistribution(data || []);
 
-  return res.json({ 
+  return res.json({
     data: enrichedData,
     count,
-    statistics: Record<string, unknown>$1
-  category_distribution: categoryStats,
-      avg_relevance_score: data?.length ? data.reduce((sum, m) => sum + (m.relevance_score || 0), 0) / data.length : 0,
-      ai_generated_percentage: data?.length ? (data.filter((m: any) => m.is_ai_generated).length / data.length) * 100 : 0 },
-  pagination: Record<string, unknown>$1
-  limit: parseInt(limit as string),
+    statistics: {
+      category_distribution: categoryStats,
+      avg_relevance_score: data?.length
+        ? data.reduce((sum, m) => sum + (m.relevance_score || 0), 0) / data.length
+        : 0,
+      ai_generated_percentage: data?.length
+        ? (data.filter((m: any) => m.is_ai_generated).length / data.length) * 100
+        : 0,
+    },
+    pagination: {
+      limit: parseInt(limit as string),
       offset: parseInt(offset as string),
-      total: count || 0
-    }
+      total: count || 0,
+    },
   });
 }
 
 async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const validationResult = MotivationCreateSchema.safeParse(req.body);
-  
+
   if (!validationResult.success) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Validation failed',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
@@ -202,13 +227,16 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
     .from('motivations')
     .insert({
       ...motivationData,
-      created_by: user.id})
-    .select(`
+      created_by: user.id,
+    })
+    .select(
+      `
       *,
       clients(name, slug),
       briefs(name, title),
       profiles!motivations_created_by_fkey(full_name)
-    `)
+    `
+    )
     .single();
 
   if (error) {
@@ -244,7 +272,8 @@ async function getMotivationUsageStats(motivationId: string): Promise<any> {
       strategy_usage: strategyUsage || 0,
       content_usage: contentUsage || 0,
       copy_usage: copyUsage || 0,
-      total_usage: (strategyUsage || 0) + (contentUsage || 0) + (copyUsage || 0)};
+      total_usage: (strategyUsage || 0) + (contentUsage || 0) + (copyUsage || 0),
+    };
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error calculating usage stats:', error);
@@ -252,13 +281,14 @@ async function getMotivationUsageStats(motivationId: string): Promise<any> {
       strategy_usage: 0,
       content_usage: 0,
       copy_usage: 0,
-      total_usage: 0};
+      total_usage: 0,
+    };
   }
 }
 
 function calculateCategoryDistribution(motivations: any[]): Record<string, number> {
   const distribution: Record<string, number> = {};
-  
+
   motivations.forEach((motivation: any) => {
     const category = motivation.category || 'other';
     distribution[category] = (distribution[category] || 0) + 1;
@@ -267,7 +297,11 @@ function calculateCategoryDistribution(motivations: any[]): Record<string, numbe
   return distribution;
 }
 
-async function calculateRelevanceScore(title: string, description: string, briefId: string): Promise<number> {
+async function calculateRelevanceScore(
+  title: string,
+  description: string,
+  briefId: string
+): Promise<number> {
   try {
     // Get brief details for context
     const { data: brief } = await supabase
@@ -280,17 +314,21 @@ async function calculateRelevanceScore(title: string, description: string, brief
 
     // Simple relevance calculation based on keyword matching
     const motivationText = `${title} ${description}`.toLowerCase();
-    const briefText = `${JSON.stringify(brief.objectives || {})} ${brief.target_audience || ''} ${JSON.stringify(brief.key_messaging || {})}`.toLowerCase();
+    const briefText =
+      `${JSON.stringify(brief.objectives || {})} ${brief.target_audience || ''} ${JSON.stringify(brief.key_messaging || {})}`.toLowerCase();
 
     // Extract keywords
     const motivationKeywords = extractKeywords(motivationText);
     const briefKeywords = extractKeywords(briefText);
 
     // Calculate overlap
-    const intersection = motivationKeywords.filter((keyword: any) => briefKeywords.includes(keyword));
-    const relevanceScore = briefKeywords.length > 0 
-      ? Math.min(100, (intersection.length / briefKeywords.length) * 100 + Math.random() * 20)
-      : 50;
+    const intersection = motivationKeywords.filter((keyword: any) =>
+      briefKeywords.includes(keyword)
+    );
+    const relevanceScore =
+      briefKeywords.length > 0
+        ? Math.min(100, (intersection.length / briefKeywords.length) * 100 + Math.random() * 20)
+        : 50;
 
     return Math.round(relevanceScore);
   } catch (error: any) {
@@ -302,8 +340,39 @@ async function calculateRelevanceScore(title: string, description: string, brief
 
 function extractKeywords(text: string): string[] {
   // Simple keyword extraction
-  const stopWords = ['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should'];
-  
+  const stopWords = [
+    'the',
+    'a',
+    'an',
+    'and',
+    'or',
+    'but',
+    'in',
+    'on',
+    'at',
+    'to',
+    'for',
+    'of',
+    'with',
+    'by',
+    'is',
+    'are',
+    'was',
+    'were',
+    'be',
+    'been',
+    'have',
+    'has',
+    'had',
+    'do',
+    'does',
+    'did',
+    'will',
+    'would',
+    'could',
+    'should',
+  ];
+
   return text
     .split(/\s+/)
     .map((word: any) => word.replace(/[^\w]/g, '').toLowerCase())
