@@ -12,35 +12,60 @@ const VideoGenerateSchema = z.object({
   matrix_id: z.string().uuid().optional(),
   campaign_id: z.string().uuid().optional(),
   template_id: z.string().uuid().optional(),
-  type: z.enum(['standalone', 'brief_based', 'matrix_based', 'campaign_based']).default('standalone'),
+  type: z
+    .enum(['standalone', 'brief_based', 'matrix_based', 'campaign_based'])
+    .default('standalone'),
   video_config: z.object({
     prompt: z.string().min(10),
-    style: z.enum(['cinematic', 'documentary', 'commercial', 'social_media', 'animation']).default('commercial'),
+    style: z
+      .enum(['cinematic', 'documentary', 'commercial', 'social_media', 'animation'])
+      .default('commercial'),
     duration: z.number().min(5).max(60).default(15),
     resolution: z.enum(['720p', '1080p', '4K']).default('1080p'),
-    platform: z.enum(['youtube', 'instagram', 'tiktok', 'facebook', 'linkedin', 'twitter']).optional(),
+    platform: z
+      .enum(['youtube', 'instagram', 'tiktok', 'facebook', 'linkedin', 'twitter'])
+      .optional(),
     aspect_ratio: z.enum(['16:9', '9:16', '1:1', '4:5']).default('16:9'),
-    quality: z.enum(['draft', 'standard', 'high']).default('standard')}),
-  content_elements: z.object({
-    text_overlays: z.array(z.object({
-      text: z.string(),
-      position: z.enum(['top', 'center', 'bottom']).default('center'),
-      style: z.string().optional(),
-      duration: z.number().optional()})).optional(),
-    background_music: z.boolean().default(false),
-    voice_over: z.object({
-      text: z.string(),
-      voice: z.string().default('neural'),
-      language: z.string().default('en')}).optional(),
-    brand_elements: z.object({
-      logo_url: z.string().optional(),
-      color_scheme: z.array(z.string()).optional(),
-      font_family: z.string().optional()}).optional()}).optional(),
-  generation_settings: z.object({
-    variations_count: z.number().min(1).max(5).default(1),
-    include_captions: z.boolean().default(false),
-    auto_optimize_for_platform: z.boolean().default(true),
-    save_to_assets: z.boolean().default(true)}).optional()});
+    quality: z.enum(['draft', 'standard', 'high']).default('standard'),
+  }),
+  content_elements: z
+    .object({
+      text_overlays: z
+        .array(
+          z.object({
+            text: z.string(),
+            position: z.enum(['top', 'center', 'bottom']).default('center'),
+            style: z.string().optional(),
+            duration: z.number().optional(),
+          })
+        )
+        .optional(),
+      background_music: z.boolean().default(false),
+      voice_over: z
+        .object({
+          text: z.string(),
+          voice: z.string().default('neural'),
+          language: z.string().default('en'),
+        })
+        .optional(),
+      brand_elements: z
+        .object({
+          logo_url: z.string().optional(),
+          color_scheme: z.array(z.string()).optional(),
+          font_family: z.string().optional(),
+        })
+        .optional(),
+    })
+    .optional(),
+  generation_settings: z
+    .object({
+      variations_count: z.number().min(1).max(5).default(1),
+      include_captions: z.boolean().default(false),
+      auto_optimize_for_platform: z.boolean().default(true),
+      save_to_assets: z.boolean().default(true),
+    })
+    .optional(),
+});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -57,18 +82,18 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Video Generate API error:', error);
     return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? message : undefined
+      details: process.env.NODE_ENV === 'development' ? message : undefined,
     });
   }
 }
 
 async function handleGenerate(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const validationResult = VideoGenerateSchema.safeParse(req.body);
-  
+
   if (!validationResult.success) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Validation failed',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
@@ -83,9 +108,9 @@ async function handleGenerate(req: NextApiRequest, res: NextApiResponse, user: a
   // Check generation limits
   const limitCheck = await checkGenerationLimits(context.client_id, user.id);
   if (!limitCheck.allowed) {
-    return res.status(429).json({ 
+    return res.status(429).json({
       error: 'Generation limit exceeded',
-      details: limitCheck.details
+      details: limitCheck.details,
     });
   }
 
@@ -100,11 +125,12 @@ async function handleGenerate(req: NextApiRequest, res: NextApiResponse, user: a
 
   return res.json({
     message: 'Video generation initiated successfully',
-    data: Record<string, unknown>$1
-  generation_id: jobs.generation_id,
+    data: {
+      generation_id: jobs.generation_id,
       job_count: jobs.jobs.length,
       estimated_completion: jobs.estimated_completion,
-      jobs: results}
+      jobs: results,
+    },
   });
 }
 
@@ -118,17 +144,17 @@ async function validateGenerationContext(generateData: any, userId: string): Pro
         if (!generateData.brief_id) {
           return { valid: false, error: 'Brief ID required for brief-based generation' };
         }
-        
+
         const { data: brief } = await supabase
           .from('briefs')
           .select('*, clients(id, name)')
           .eq('id', generateData.brief_id)
           .single();
-        
+
         if (!brief) {
           return { valid: false, error: 'Brief not found' };
         }
-        
+
         clientId = brief.client_id;
         context = { brief, type: 'brief' };
         break;
@@ -137,17 +163,17 @@ async function validateGenerationContext(generateData: any, userId: string): Pro
         if (!generateData.matrix_id) {
           return { valid: false, error: 'Matrix ID required for matrix-based generation' };
         }
-        
+
         const { data: matrix } = await supabase
           .from('matrices')
           .select('*, campaigns(id, name, client_id, clients(id, name))')
           .eq('id', generateData.matrix_id)
           .single();
-        
+
         if (!matrix) {
           return { valid: false, error: 'Matrix not found' };
         }
-        
+
         clientId = matrix.campaigns.client_id;
         context = { matrix, campaign: matrix.campaigns, type: 'matrix' };
         break;
@@ -156,17 +182,17 @@ async function validateGenerationContext(generateData: any, userId: string): Pro
         if (!generateData.campaign_id) {
           return { valid: false, error: 'Campaign ID required for campaign-based generation' };
         }
-        
+
         const { data: campaign } = await supabase
           .from('campaigns')
           .select('*, clients(id, name)')
           .eq('id', generateData.campaign_id)
           .single();
-        
+
         if (!campaign) {
           return { valid: false, error: 'Campaign not found' };
         }
-        
+
         clientId = campaign.client_id;
         context = { campaign, type: 'campaign' };
         break;
@@ -178,11 +204,11 @@ async function validateGenerationContext(generateData: any, userId: string): Pro
           .select('client_id, clients(id, name)')
           .eq('user_id', userId)
           .limit(1);
-        
+
         if (!userClients || userClients.length === 0) {
           return { valid: false, error: 'No accessible clients found' };
         }
-        
+
         clientId = userClients[0].client_id;
         context = { client: userClients[0].clients, type: 'standalone' };
         break;
@@ -211,11 +237,14 @@ async function validateGenerationContext(generateData: any, userId: string): Pro
   }
 }
 
-async function checkGenerationLimits(clientId: string, userId: string): Promise<{ allowed: boolean; details?: string }> {
+async function checkGenerationLimits(
+  clientId: string,
+  userId: string
+): Promise<{ allowed: boolean; details?: string }> {
   try {
     // Check daily generation limit
     const today = new Date().toISOString().split('T')[0];
-    
+
     const { count: todayGenerations } = await supabase
       .from('video_generations')
       .select('id', { count: 'exact' })
@@ -227,7 +256,7 @@ async function checkGenerationLimits(clientId: string, userId: string): Promise<
     if (todayGenerations && todayGenerations >= dailyLimit) {
       return {
         allowed: false,
-        details: `Daily video generation limit (${dailyLimit}) exceeded. Current: ${todayGenerations}`
+        details: `Daily video generation limit (${dailyLimit}) exceeded. Current: ${todayGenerations}`,
       };
     }
 
@@ -242,7 +271,7 @@ async function checkGenerationLimits(clientId: string, userId: string): Promise<
     if (activeGenerations && activeGenerations >= concurrentLimit) {
       return {
         allowed: false,
-        details: `Concurrent generation limit (${concurrentLimit}) exceeded. Wait for current generations to complete.`
+        details: `Concurrent generation limit (${concurrentLimit}) exceeded. Wait for current generations to complete.`,
       };
     }
 
@@ -250,9 +279,9 @@ async function checkGenerationLimits(clientId: string, userId: string): Promise<
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error checking generation limits:', error);
-    return { 
-      allowed: false, 
-      details: 'Error checking generation limits' 
+    return {
+      allowed: false,
+      details: 'Error checking generation limits',
     };
   }
 }
@@ -278,21 +307,27 @@ async function enhanceVideoConfig(generateData: any, context: any): Promise<any>
 
   // Auto-optimize for platform if enabled
   if (enhanced.generation_settings?.auto_optimize_for_platform && enhanced.video_config.platform) {
-    enhanced.video_config = optimizeForPlatform(enhanced.video_config, enhanced.video_config.platform);
+    enhanced.video_config = optimizeForPlatform(
+      enhanced.video_config,
+      enhanced.video_config.platform
+    );
   }
 
   // Add brand elements if available
   if (context.context.brief?.brand_guidelines || context.context.campaign?.brand_guidelines) {
-    const brandGuidelines = context.context.brief?.brand_guidelines || context.context.campaign?.brand_guidelines;
-    
+    const brandGuidelines =
+      context.context.brief?.brand_guidelines || context.context.campaign?.brand_guidelines;
+
     if (!enhanced.content_elements) enhanced.content_elements = {};
     if (!enhanced.content_elements.brand_elements) enhanced.content_elements.brand_elements = {};
-    
+
     enhanced.content_elements.brand_elements = {
       ...enhanced.content_elements.brand_elements,
       color_scheme: brandGuidelines.colors || enhanced.content_elements.brand_elements.color_scheme,
-      font_family: brandGuidelines.typography?.primary || enhanced.content_elements.brand_elements.font_family,
-      logo_url: brandGuidelines.logo_url || enhanced.content_elements.brand_elements.logo_url};
+      font_family:
+        brandGuidelines.typography?.primary || enhanced.content_elements.brand_elements.font_family,
+      logo_url: brandGuidelines.logo_url || enhanced.content_elements.brand_elements.logo_url,
+    };
   }
 
   return enhanced;
@@ -306,10 +341,10 @@ async function createVideoGenerationJobs(config: any, context: any, userId: stri
 
   for (let i = 0; i < variationsCount; i++) {
     const jobId = `${generationId}-var-${i + 1}`;
-    
+
     // Create slight variations for each job
     const variationConfig = createVariationConfig(config, i);
-    
+
     const job = {
       id: jobId,
       generation_id: generationId,
@@ -319,7 +354,8 @@ async function createVideoGenerationJobs(config: any, context: any, userId: stri
       client_id: context.client_id,
       created_by: userId,
       status: 'pending',
-      estimated_duration: calculateEstimatedDuration(variationConfig)};
+      estimated_duration: calculateEstimatedDuration(variationConfig),
+    };
 
     jobs.push(job);
   }
@@ -332,7 +368,8 @@ async function createVideoGenerationJobs(config: any, context: any, userId: stri
     jobs,
     estimated_completion: estimatedCompletion.toISOString(),
     client_id: context.client_id,
-    total_variations: variationsCount};
+    total_variations: variationsCount,
+  };
 }
 
 async function processVideoGeneration(jobsData: any): Promise<any> {
@@ -353,7 +390,8 @@ async function processVideoGeneration(jobsData: any): Promise<any> {
           variation_index: job.variation_index,
           config: job.config,
           status: 'pending',
-          created_by: job.created_by})
+          created_by: job.created_by,
+        })
         .select()
         .single();
 
@@ -362,13 +400,14 @@ async function processVideoGeneration(jobsData: any): Promise<any> {
         results.push({
           job_id: job.id,
           status: 'failed',
-          error: getErrorMessage(error)});
+          error: getErrorMessage(error),
+        });
         continue;
       }
 
       // Start video generation process
       const renderResult = await startVideoRender(job);
-      
+
       // Update generation record with render info
       await supabase
         .from('video_generations')
@@ -376,10 +415,10 @@ async function processVideoGeneration(jobsData: any): Promise<any> {
           status: renderResult.success ? 'processing' : 'failed',
           render_job_id: renderResult.job_id,
           metadata: {
-        ...job.config,
+            ...job.config,
             render_started_at: new Date().toISOString(),
-            estimated_completion: renderResult.estimated_completion
-      }
+            estimated_completion: renderResult.estimated_completion,
+          },
         })
         .eq('id', job.id);
 
@@ -387,15 +426,16 @@ async function processVideoGeneration(jobsData: any): Promise<any> {
         job_id: job.id,
         status: renderResult.success ? 'processing' : 'failed',
         render_job_id: renderResult.job_id,
-        estimated_completion: renderResult.estimated_completion});
-
+        estimated_completion: renderResult.estimated_completion,
+      });
     } catch (error: any) {
       const message = getErrorMessage(error);
       console.error('Error processing video generation job:', error);
       results.push({
         job_id: job.id,
         status: 'failed',
-        error: message});
+        error: message,
+      });
     }
   }
 
@@ -403,7 +443,8 @@ async function processVideoGeneration(jobsData: any): Promise<any> {
     total_jobs: jobsData.jobs.length,
     successful: results.filter((r: any) => r.status === 'processing').length,
     failed: results.filter((r: any) => r.status === 'failed').length,
-    results};
+    results,
+  };
 }
 
 function optimizeForPlatform(videoConfig: any, platform: string): any {
@@ -452,9 +493,9 @@ function createVariationConfig(baseConfig: any, variationIndex: number): any {
       ', with subtle animations',
       ', with modern aesthetics',
       ', with vibrant colors',
-      ', with minimalist design'
+      ', with minimalist design',
     ];
-    
+
     const variationText = variations[variationIndex % variations.length];
     variation.video_config.prompt += variationText;
   }
@@ -486,7 +527,7 @@ function calculateEstimatedDuration(config: any): number {
   if (config.content_elements?.voice_over) {
     duration += 30;
   }
-  
+
   if (config.content_elements?.text_overlays?.length > 0) {
     duration += config.content_elements.text_overlays.length * 10;
   }
@@ -498,20 +539,22 @@ async function startVideoRender(job: any): Promise<any> {
   try {
     // Convert config to Creatomate format
     const renderOptions = convertToCreatomateFormat(job);
-    
+
     // Start render using Creatomate service
     const render = await creatomateService.renderVideo(renderOptions);
-    
+
     return {
       success: true,
       job_id: render.id,
-      estimated_completion: new Date(Date.now() + job.estimated_duration * 1000).toISOString()};
+      estimated_completion: new Date(Date.now() + job.estimated_duration * 1000).toISOString(),
+    };
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error starting video render:', error);
     return {
       success: false,
-      error: message};
+      error: message,
+    };
   }
 }
 
@@ -530,7 +573,8 @@ function convertToCreatomateFormat(job: any): any {
       modifications[`text_${index + 1}`] = {
         text: overlay.text,
         position: overlay.position,
-        duration: overlay.duration || config.duration};
+        duration: overlay.duration || config.duration,
+      };
     });
   }
 
@@ -539,16 +583,18 @@ function convertToCreatomateFormat(job: any): any {
     modifications.voice_over = {
       text: content.voice_over.text,
       voice: content.voice_over.voice,
-      language: content.voice_over.language};
+      language: content.voice_over.language,
+    };
   }
 
   // Add brand elements
   if (content.brand_elements) {
     if (content.brand_elements.logo_url) {
       modifications.logo = {
-        source: content.brand_elements.logo_url};
+        source: content.brand_elements.logo_url,
+      };
     }
-    
+
     if (content.brand_elements.color_scheme) {
       modifications.primary_color = content.brand_elements.color_scheme[0];
       if (content.brand_elements.color_scheme[1]) {
@@ -562,22 +608,23 @@ function convertToCreatomateFormat(job: any): any {
     modifications,
     webhookUrl: `${process.env.NEXT_PUBLIC_APP_URL}/api/webhooks/creatomate`,
     metadata: {
-        job_id: job.id,
+      job_id: job.id,
       generation_id: job.generation_id,
       client_id: job.client_id,
-      variation_index: job.variation_index
-      }};
+      variation_index: job.variation_index,
+    },
+  };
 }
 
 function selectCreatomateTemplate(config: any): string {
   // Template selection logic based on config
   const templateMap: Record<string, string> = {
     'youtube_16:9': 'template-3', // YouTube template
-    'instagram_1:1': 'template-2', // Square template  
+    'instagram_1:1': 'template-2', // Square template
     'tiktok_9:16': 'template-4', // Vertical template
     'facebook_16:9': 'template-2', // Horizontal template
     'linkedin_16:9': 'template-5', // Professional template
-    'default': 'template-1', // Default template
+    default: 'template-1', // Default template
   };
 
   const key = config.platform ? `${config.platform}_${config.aspect_ratio}` : 'default';
