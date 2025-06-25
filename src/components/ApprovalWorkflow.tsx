@@ -1,4 +1,5 @@
 import { getErrorMessage } from '@/utils/errorUtils';
+import { loggers } from '@/lib/logger';
 import React, { useState, useEffect } from 'react';
 import {
   Box,
@@ -33,7 +34,8 @@ import {
   Tabs,
   Tab,
   Paper,
-  Tooltip} from '@mui/material';
+  Tooltip,
+} from '@mui/material';
 import {
   CheckCircle as ApproveIcon,
   Cancel as RejectIcon,
@@ -45,7 +47,8 @@ import {
   Comment as CommentIcon,
   History as HistoryIcon,
   Warning as WarningIcon,
-  Notifications as NotificationIcon} from '@mui/icons-material';
+  Notifications as NotificationIcon,
+} from '@mui/icons-material';
 import { useNotification } from '@/contexts/NotificationContext';
 import { useClient } from '@/contexts/ClientContext';
 
@@ -90,7 +93,8 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
   clientId,
   itemType,
   itemId,
-  showActions = true}) => {
+  showActions = true,
+}) => {
   const { activeClient } = useClient();
   const { showNotification } = useNotification();
   const [approvals, setApprovals] = useState<Approval[]>([]);
@@ -105,7 +109,8 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
     action: 'approve' as 'approve' | 'reject' | 'request_changes',
     comments: '',
     changes_requested: [] as any[],
-    conditions: [] as string[]});
+    conditions: [] as string[],
+  });
 
   // Fetch approvals
   const fetchApprovals = async () => {
@@ -120,20 +125,22 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
         ...(tabValue !== 'all' && { status: tabValue }),
         ...(targetClientId && { client_id: targetClientId }),
         ...(itemType && { item_type: itemType }),
-        ...(itemId && { item_id: itemId })});
+        ...(itemId && { item_id: itemId }),
+      });
 
       const response = await fetch(`/api/approvals?${params}`, {
         headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')
-      }`}});
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
 
       if (response.ok) {
         const data = await response.json();
         setApprovals(data.data || []);
       }
     } catch (error: any) {
-    const message = getErrorMessage(error);
-      console.error('Error fetching approvals:', error);
+      const message = getErrorMessage(error);
+      loggers.api.error('Error fetching approvals', { error: message });
     } finally {
       setLoading(false);
     }
@@ -147,10 +154,11 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
       const response = await fetch(`/api/approvals/${selectedApproval.id}`, {
         method: 'PUT',
         headers: {
-        'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')
-      }`},
-        body: JSON.stringify(decisionData)});
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify(decisionData),
+      });
 
       if (response.ok) {
         showNotification(`Approval ${decisionData.action}d successfully`, 'success');
@@ -162,7 +170,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
         showNotification(error.error || 'Failed to process approval', 'error');
       }
     } catch (error: any) {
-    const message = getErrorMessage(error);
+      const message = getErrorMessage(error);
       showNotification('Error processing approval', 'error');
     }
   };
@@ -176,12 +184,14 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
       const response = await fetch('/api/approvals/bulk', {
         method: 'PUT',
         headers: {
-        'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')
-      }`},
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
         body: JSON.stringify({
           approval_ids: selectedIds,
-          ...decisionData})});
+          ...decisionData,
+        }),
+      });
 
       if (response.ok) {
         showNotification(`${selectedIds.length} approvals processed successfully`, 'success');
@@ -194,7 +204,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
         showNotification(error.error || 'Failed to process bulk approvals', 'error');
       }
     } catch (error: any) {
-    const message = getErrorMessage(error);
+      const message = getErrorMessage(error);
       showNotification('Error processing bulk approvals', 'error');
     }
   };
@@ -204,7 +214,8 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
       action: 'approve',
       comments: '',
       changes_requested: [],
-      conditions: []});
+      conditions: [],
+    });
   };
 
   // Get approval status display
@@ -224,10 +235,11 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
   // Get approval type display
   const getTypeDisplay = (type: string) => {
     const displays = {
-      content: { color: '#2196f3', label: 'Content Review'  },
-  legal: { color: '#ff9800', label: 'Legal Review'  },
-  brand: { color: '#9c27b0', label: 'Brand Review'  },
-  final: { color: '#4caf50', label: 'Final Approval' }};
+      content: { color: '#2196f3', label: 'Content Review' },
+      legal: { color: '#ff9800', label: 'Legal Review' },
+      brand: { color: '#9c27b0', label: 'Brand Review' },
+      final: { color: '#4caf50', label: 'Final Approval' },
+    };
     return displays[type as keyof typeof displays] || { color: '#666', label: type };
   };
 
@@ -247,7 +259,9 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
 
   // Check if overdue
   const isOverdue = (approval: Approval) => {
-    return approval.due_date && new Date(approval.due_date) < new Date() && approval.status === 'pending';
+    return (
+      approval.due_date && new Date(approval.due_date) < new Date() && approval.status === 'pending'
+    );
   };
 
   // Time calculations
@@ -255,7 +269,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
     const now = new Date();
     const created = new Date(approval.created_at);
     const diffHours = Math.round((now.getTime() - created.getTime()) / (1000 * 60 * 60));
-    
+
     if (diffHours < 1) return 'Just now';
     if (diffHours < 24) return `${diffHours}h ago`;
     return `${Math.round(diffHours / 24)}d ago`;
@@ -282,13 +296,14 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
   const handleBulkToggle = (approvalId: string) => {
     setBulkSelection(prev => ({
       ...prev,
-      [approvalId]: !prev[approvalId]}));
+      [approvalId]: !prev[approvalId],
+    }));
   };
 
   const handleSelectAll = () => {
     const pendingApprovals = approvals.filter((a: any) => a.status === 'pending');
     const allSelected = pendingApprovals.every(a => bulkSelection[a.id]);
-    
+
     if (allSelected) {
       setBulkSelection({});
     } else {
@@ -305,7 +320,8 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
     fetchApprovals();
   }, [activeClient, tabValue, clientId, itemType, itemId]);
 
-  const filteredApprovals = tabValue === 'all' ? approvals : approvals.filter((a: any) => a.status === tabValue);
+  const filteredApprovals =
+    tabValue === 'all' ? approvals : approvals.filter((a: any) => a.status === tabValue);
   const selectedCount = Object.values(bulkSelection).filter(Boolean).length;
   const overdueCount = approvals.filter(isOverdue).length;
 
@@ -330,9 +346,9 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
               Approval Workflow
             </Typography>
             {overdueCount > 0 && (
-              <Chip 
-                size="small" 
-                color="error" 
+              <Chip
+                size="small"
+                color="error"
                 icon={<WarningIcon />}
                 label={`${overdueCount} overdue`}
               />
@@ -382,7 +398,9 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
           <FormControlLabel
             control={
               <Checkbox
-                checked={filteredApprovals.length > 0 && filteredApprovals.every(a => bulkSelection[a.id])}
+                checked={
+                  filteredApprovals.length > 0 && filteredApprovals.every(a => bulkSelection[a.id])
+                }
                 indeterminate={selectedCount > 0 && selectedCount < filteredApprovals.length}
                 onChange={handleSelectAll}
               />
@@ -421,7 +439,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
                 const typeDisplay = getTypeDisplay(approval.approval_type);
                 const priorityDisplay = getPriorityDisplay(approval.priority);
                 const overdue = isOverdue(approval);
-                
+
                 return (
                   <React.Fragment key={approval.id}>
                     {index > 0 && <Divider />}
@@ -430,7 +448,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
                         <Stack direction="row" spacing={1}>
                           {showActions && approval.status === 'pending' && (
                             <>
-       <Tooltip title="Approve">
+                              <Tooltip title="Approve">
                                 <IconButton
                                   size="small"
                                   color="success"
@@ -473,7 +491,9 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
                           )}
                           <IconButton
                             size="small"
-                            onClick={(e: React.MouseEvent<HTMLElement>) => handleMenuOpen(e, approval)}
+                            onClick={(e: React.MouseEvent<HTMLElement>) =>
+                              handleMenuOpen(e, approval)
+                            }
                           >
                             <MoreIcon />
                           </IconButton>
@@ -488,7 +508,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
                           />
                         </ListItemIcon>
                       )}
-                      
+
                       <ListItemAvatar>
                         <Badge
                           color={statusDisplay.color as any}
@@ -502,13 +522,11 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
                           </Avatar>
                         </Badge>
                       </ListItemAvatar>
-                      
+
                       <ListItemText
                         primary={
                           <Stack direction="row" spacing={1} alignItems="center">
-                            <Typography variant="subtitle2">
-                              {typeDisplay.label}
-                            </Typography>
+                            <Typography variant="subtitle2">{typeDisplay.label}</Typography>
                             <Chip
                               size="small"
                               label={statusDisplay.label}
@@ -534,7 +552,7 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
                         secondary={
                           <Box sx={{ mt: 0.5 }}>
                             <Typography variant="caption" color="text.secondary">
-                              {approval.item_type} • {getTimeDisplay(approval)} • 
+                              {approval.item_type} • {getTimeDisplay(approval)} •
                               {approval.profiles?.full_name || 'Unknown User'}
                             </Typography>
                             {approval.notes && (
@@ -562,59 +580,74 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
       </Card>
 
       {/* Context Menu */}
-      <Menu
-        anchorEl={menuAnchor}
-        open={Boolean(menuAnchor)}
-        onClose={handleMenuClose}
-      >
-        {selectedApproval?.status === 'pending' && showActions && (
-          [
+      <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={handleMenuClose}>
+        {selectedApproval?.status === 'pending' &&
+          showActions && [
             <MenuItem key="approve" onClick={() => handleDecisionClick('approve')}>
-              <ListItemIcon><ApproveIcon fontSize="small" color="success" /></ListItemIcon>
+              <ListItemIcon>
+                <ApproveIcon fontSize="small" color="success" />
+              </ListItemIcon>
               <ListItemText>Approve</ListItemText>
             </MenuItem>,
             <MenuItem key="changes" onClick={() => handleDecisionClick('request_changes')}>
-              <ListItemIcon><RequestChangesIcon fontSize="small" color="warning" /></ListItemIcon>
+              <ListItemIcon>
+                <RequestChangesIcon fontSize="small" color="warning" />
+              </ListItemIcon>
               <ListItemText>Request Changes</ListItemText>
             </MenuItem>,
             <MenuItem key="reject" onClick={() => handleDecisionClick('reject')}>
-              <ListItemIcon><RejectIcon fontSize="small" color="error" /></ListItemIcon>
+              <ListItemIcon>
+                <RejectIcon fontSize="small" color="error" />
+              </ListItemIcon>
               <ListItemText>Reject</ListItemText>
             </MenuItem>,
-            <Divider key="divider" />
-          ]
-        )}
+            <Divider key="divider" />,
+          ]}
         <MenuItem onClick={handleMenuClose}>
-          <ListItemIcon><HistoryIcon fontSize="small" /></ListItemIcon>
+          <ListItemIcon>
+            <HistoryIcon fontSize="small" />
+          </ListItemIcon>
           <ListItemText>View History</ListItemText>
         </MenuItem>
         <MenuItem onClick={handleMenuClose}>
-          <ListItemIcon><CommentIcon fontSize="small" /></ListItemIcon>
+          <ListItemIcon>
+            <CommentIcon fontSize="small" />
+          </ListItemIcon>
           <ListItemText>Add Comment</ListItemText>
         </MenuItem>
       </Menu>
 
       {/* Decision Dialog */}
-      <Dialog open={decisionDialogOpen} onClose={() => setDecisionDialogOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog
+        open={decisionDialogOpen}
+        onClose={() => setDecisionDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle>
-          {decisionData.action === 'approve' ? 'Approve' : 
-           decisionData.action === 'reject' ? 'Reject' : 'Request Changes'}
+          {decisionData.action === 'approve'
+            ? 'Approve'
+            : decisionData.action === 'reject'
+              ? 'Reject'
+              : 'Request Changes'}
         </DialogTitle>
         <DialogContent>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             {selectedApproval?.item_type} approval for {selectedApproval?.clients?.name}
           </Typography>
-          
+
           <TextField
             fullWidth
             label="Comments"
             value={decisionData.comments}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDecisionData({ ...decisionData, comments: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setDecisionData({ ...decisionData, comments: e.target.value })
+            }
             multiline
             rows={3}
             sx={{ mb: 2 }}
           />
-          
+
           {decisionData.action === 'request_changes' && (
             <Alert severity="info" sx={{ mb: 2 }}>
               Specify what changes are needed to help the creator improve the content.
@@ -623,44 +656,59 @@ const ApprovalWorkflow: React.FC<ApprovalWorkflowProps> = ({
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDecisionDialogOpen(false)}>Cancel</Button>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             onClick={handleApprovalDecision}
-            color={decisionData.action === 'approve' ? 'success' : 
-                   decisionData.action === 'reject' ? 'error' : 'warning'}
+            color={
+              decisionData.action === 'approve'
+                ? 'success'
+                : decisionData.action === 'reject'
+                  ? 'error'
+                  : 'warning'
+            }
           >
-            {decisionData.action === 'approve' ? 'Approve' : 
-             decisionData.action === 'reject' ? 'Reject' : 'Request Changes'}
+            {decisionData.action === 'approve'
+              ? 'Approve'
+              : decisionData.action === 'reject'
+                ? 'Reject'
+                : 'Request Changes'}
           </Button>
         </DialogActions>
       </Dialog>
 
       {/* Bulk Action Dialog */}
-      <Dialog open={bulkDialogOpen} onClose={() => setBulkDialogOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog
+        open={bulkDialogOpen}
+        onClose={() => setBulkDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle>Bulk Approval Action</DialogTitle>
         <DialogContent>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             Apply action to {selectedCount} selected approvals
           </Typography>
-          
+
           <FormControl fullWidth sx={{ mb: 2 }}>
             <InputLabel>Action</InputLabel>
             <Select
               value={decisionData.action}
               label="Action"
-              onChange={(e) => setDecisionData({ ...decisionData, action: e.target.value as any })}
+              onChange={e => setDecisionData({ ...decisionData, action: e.target.value as any })}
             >
               <MenuItem value="approve">Approve All</MenuItem>
               <MenuItem value="reject">Reject All</MenuItem>
               <MenuItem value="request_changes">Request Changes</MenuItem>
             </Select>
           </FormControl>
-          
+
           <TextField
             fullWidth
             label="Comments"
             value={decisionData.comments}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDecisionData({ ...decisionData, comments: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setDecisionData({ ...decisionData, comments: e.target.value })
+            }
             multiline
             rows={3}
           />
