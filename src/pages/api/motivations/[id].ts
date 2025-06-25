@@ -9,13 +9,26 @@ import { z } from 'zod';
 const MotivationUpdateSchema = z.object({
   title: z.string().min(1).optional(),
   description: z.string().min(1).optional(),
-  category: z.enum(['emotional', 'rational', 'social', 'fear', 'aspiration', 'convenience', 'status', 'safety', 'other']).optional(),
+  category: z
+    .enum([
+      'emotional',
+      'rational',
+      'social',
+      'fear',
+      'aspiration',
+      'convenience',
+      'status',
+      'safety',
+      'other',
+    ])
+    .optional(),
   relevance_score: z.number().min(0).max(100).optional(),
   tags: z.array(z.string()).optional(),
   target_emotions: z.array(z.string()).optional(),
   use_cases: z.array(z.string()).optional(),
   effectiveness_rating: z.number().min(1).max(5).optional(),
-  generation_context: z.any().optional()});
+  generation_context: z.any().optional(),
+});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -42,23 +55,30 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     console.error('Motivation API error:', error);
     return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? message : undefined
+      details: process.env.NODE_ENV === 'development' ? message : undefined,
     });
   }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, motivationId: string): Promise<void> {
+async function handleGet(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  motivationId: string
+): Promise<void> {
   const { include_usage = true, include_related = true } = req.query;
 
   // First verify user has access to this motivation
   const { data: motivation, error } = await supabase
     .from('motivations')
-    .select(`
+    .select(
+      `
       *,
       clients(name, slug, primary_color, secondary_color),
       briefs(id, name, title, target_audience, objectives),
       profiles!motivations_created_by_fkey(full_name, avatar_url)
-    `)
+    `
+    )
     .eq('id', motivationId)
     .single();
 
@@ -101,17 +121,22 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, m
   enrichedMotivation.performance_history = performanceHistory;
 
   return res.json({
-    data: enrichedMotivation
+    data: enrichedMotivation,
   });
 }
 
-async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, motivationId: string): Promise<void> {
+async function handlePut(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  motivationId: string
+): Promise<void> {
   const validationResult = MotivationUpdateSchema.safeParse(req.body);
-  
+
   if (!validationResult.success) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Validation failed',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
@@ -140,18 +165,21 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, m
 
   const updateData = {
     ...validationResult.data,
-    updated_at: new Date().toISOString()};
+    updated_at: new Date().toISOString(),
+  };
 
   const { data: motivation, error } = await supabase
     .from('motivations')
     .update(updateData)
     .eq('id', motivationId)
-    .select(`
+    .select(
+      `
       *,
       clients(name, slug),
       briefs(name, title),
       profiles!motivations_created_by_fkey(full_name)
-    `)
+    `
+    )
     .single();
 
   if (error) {
@@ -162,7 +190,12 @@ async function handlePut(req: NextApiRequest, res: NextApiResponse, user: any, m
   return res.json({ data: motivation });
 }
 
-async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any, motivationId: string): Promise<void> {
+async function handleDelete(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  motivationId: string
+): Promise<void> {
   // First verify user has access to this motivation
   const { data: existingMotivation } = await supabase
     .from('motivations')
@@ -188,19 +221,16 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse, user: any
 
   // Check if motivation is being used
   const usageCheck = await checkMotivationUsage(motivationId);
-  
+
   if (usageCheck.isInUse) {
-    return res.status(409).json({ 
+    return res.status(409).json({
       error: 'Cannot delete motivation in use',
       details: usageCheck.usageDetails,
-      suggestion: 'Remove the motivation from strategies and content variations first'
+      suggestion: 'Remove the motivation from strategies and content variations first',
     });
   }
 
-  const { error } = await supabase
-    .from('motivations')
-    .delete()
-    .eq('id', motivationId);
+  const { error } = await supabase.from('motivations').delete().eq('id', motivationId);
 
   if (error) {
     console.error('Error deleting motivation:', error);
@@ -216,9 +246,11 @@ async function getDetailedUsageStats(motivationId: string): Promise<any> {
     // Get strategy usage with details
     const { data: strategyUsage } = await supabase
       .from('strategy_motivations')
-      .select(`
+      .select(
+        `
         strategies(id, title, created_at, status)
-      `)
+      `
+      )
       .eq('motivation_id', motivationId);
 
     // Get content variations usage
@@ -236,12 +268,14 @@ async function getDetailedUsageStats(motivationId: string): Promise<any> {
     // Get executions that used this motivation
     const { data: executionUsage } = await supabase
       .from('executions')
-      .select(`
+      .select(
+        `
         id,
         status,
         created_at,
         campaigns(name)
-      `)
+      `
+      )
       .contains('metadata', { motivation_id: motivationId });
 
     return {
@@ -249,11 +283,12 @@ async function getDetailedUsageStats(motivationId: string): Promise<any> {
       content_variations: contentUsage || [],
       copy_assets: copyUsage || [],
       executions: executionUsage || [],
-      totals: Record<string, unknown>$1
-  strategy_count: strategyUsage?.length || 0,
+      totals: {
+        strategy_count: strategyUsage?.length || 0,
         content_count: contentUsage?.length || 0,
         copy_count: copyUsage?.length || 0,
-        execution_count: executionUsage?.length || 0}
+        execution_count: executionUsage?.length || 0,
+      },
     };
   } catch (error: any) {
     const message = getErrorMessage(error);
@@ -263,7 +298,7 @@ async function getDetailedUsageStats(motivationId: string): Promise<any> {
       content_variations: [],
       copy_assets: [],
       executions: [],
-      totals: { strategy_count: 0, content_count: 0, copy_count: 0, execution_count: 0 }
+      totals: { strategy_count: 0, content_count: 0, copy_count: 0, execution_count: 0 },
     };
   }
 }
@@ -304,14 +339,16 @@ async function getRelatedContent(motivationId: string, clientId: string): Promis
     return {
       sibling_motivations: siblingMotivations || [],
       similar_motivations: similarMotivations || [],
-      suggested_content: suggestedContent || []};
+      suggested_content: suggestedContent || [],
+    };
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting related content:', error);
     return {
       sibling_motivations: [],
       similar_motivations: [],
-      suggested_content: []};
+      suggested_content: [],
+    };
   }
 }
 
@@ -334,7 +371,8 @@ async function generateMotivationInsights(motivation: any): Promise<string[]> {
     aspiration: 'Aspirational motivations resonate well with lifestyle brands',
     convenience: 'Convenience motivations are powerful for busy target audiences',
     status: 'Status motivations work well for premium and luxury positioning',
-    safety: 'Safety motivations are crucial for health and security products'};
+    safety: 'Safety motivations are crucial for health and security products',
+  };
 
   if (categoryInsights[motivation.category]) {
     insights.push(categoryInsights[motivation.category]);
@@ -346,9 +384,12 @@ async function generateMotivationInsights(motivation: any): Promise<string[]> {
   }
 
   // Usage insights based on creation date
-  const daysSinceCreated = (Date.now() - new Date(motivation.created_at).getTime()) / (1000 * 60 * 60 * 24);
+  const daysSinceCreated =
+    (Date.now() - new Date(motivation.created_at).getTime()) / (1000 * 60 * 60 * 24);
   if (daysSinceCreated > 30) {
-    insights.push('This motivation has been available for over a month - consider refreshing or testing variations');
+    insights.push(
+      'This motivation has been available for over a month - consider refreshing or testing variations'
+    );
   }
 
   return insights;
@@ -359,7 +400,8 @@ async function getMotivationPerformanceHistory(motivationId: string): Promise<an
     // Get performance data from campaigns that used this motivation
     const { data: performance } = await supabase
       .from('campaign_analytics')
-      .select(`
+      .select(
+        `
         date,
         platform,
         impressions,
@@ -369,7 +411,8 @@ async function getMotivationPerformanceHistory(motivationId: string): Promise<an
         executions!inner(
           metadata
         )
-      `)
+      `
+      )
       .contains('executions.metadata', { motivation_id: motivationId })
       .order('date', { ascending: true })
       .limit(30);
@@ -377,7 +420,8 @@ async function getMotivationPerformanceHistory(motivationId: string): Promise<an
     if (!performance || performance.length === 0) {
       return {
         has_data: false,
-        message: 'No performance data available yet'};
+        message: 'No performance data available yet',
+      };
     }
 
     // Aggregate performance by date
@@ -389,14 +433,15 @@ async function getMotivationPerformanceHistory(motivationId: string): Promise<an
           impressions: 0,
           clicks: 0,
           conversions: 0,
-          platforms: new Set()};
+          platforms: new Set(),
+        };
       }
-      
+
       acc[date].impressions += record.impressions || 0;
       acc[date].clicks += record.clicks || 0;
       acc[date].conversions += record.conversions || 0;
       acc[date].platforms.add(record.platform);
-      
+
       return acc;
     }, {});
 
@@ -404,35 +449,41 @@ async function getMotivationPerformanceHistory(motivationId: string): Promise<an
     const performanceArray = Object.values(dailyPerformance).map((day: any) => ({
       ...day,
       ctr: day.impressions > 0 ? (day.clicks / day.impressions) * 100 : 0,
-      platforms: Array.from(day.platforms)}));
+      platforms: Array.from(day.platforms),
+    }));
 
     // Calculate trends
-    const avgCTR = performanceArray.reduce((sum, day) => sum + day.ctr, 0) / performanceArray.length;
+    const avgCTR =
+      performanceArray.reduce((sum, day) => sum + day.ctr, 0) / performanceArray.length;
     const totalImpressions = performanceArray.reduce((sum, day) => sum + day.impressions, 0);
     const totalClicks = performanceArray.reduce((sum, day) => sum + day.clicks, 0);
 
     return {
       has_data: true,
       daily_performance: performanceArray,
-      summary: Record<string, unknown>$1
-  avg_ctr: Math.round(avgCTR * 100) / 100,
+      summary: {
+        avg_ctr: Math.round(avgCTR * 100) / 100,
         total_impressions: totalImpressions,
         total_clicks: totalClicks,
-        date_range: Record<string, unknown>$1
-  start: performanceArray[0]?.date,
-          end: performanceArray[performanceArray.length - 1]?.date}
-      }
+        date_range: {
+          start: performanceArray[0]?.date,
+          end: performanceArray[performanceArray.length - 1]?.date,
+        },
+      },
     };
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error getting performance history:', error);
     return {
       has_data: false,
-      message: 'Error retrieving performance data'};
+      message: 'Error retrieving performance data',
+    };
   }
 }
 
-async function checkMotivationUsage(motivationId: string): Promise<{ isInUse: boolean; usageDetails: string[] }> {
+async function checkMotivationUsage(
+  motivationId: string
+): Promise<{ isInUse: boolean; usageDetails: string[] }> {
   const usageDetails: string[] = [];
 
   try {
@@ -479,13 +530,15 @@ async function checkMotivationUsage(motivationId: string): Promise<{ isInUse: bo
 
     return {
       isInUse: usageDetails.length > 0,
-      usageDetails};
+      usageDetails,
+    };
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Error checking motivation usage:', error);
     return {
       isInUse: false,
-      usageDetails: ['Error checking usage']};
+      usageDetails: ['Error checking usage'],
+    };
   }
 }
 
