@@ -49,18 +49,32 @@ import { createClient } from '@/lib/supabase/server';
 const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withAPIRateLimit } from '@/lib/rate-limiter';
-import { successResponse, errorResponse, handleApiError, methodNotAllowed, validateRequiredFields, ApiErrorCode } from '@/lib/api-response';
+import {
+  successResponse,
+  errorResponse,
+  handleApiError,
+  methodNotAllowed,
+  validateRequiredFields,
+  ApiErrorCode,
+} from '@/lib/api-response';
 // Simple AICostController stub
 class AICostController {
   static getInstance() {
     return new AICostController();
   }
 
-  async checkBudget(service: string, model: string, tokens: number, userId: string) : Promise<void> {
+  async checkBudget(service: string, model: string, tokens: number, userId: string): Promise<any> {
     return { allowed: true, budgetRemaining: 1000, reason: 'Budget check passed' };
   }
 
-  async trackUsage(service: string, model: string, tokens: number, cost: number, userId: string, metadata: any) : Promise<void> {
+  async trackUsage(
+    service: string,
+    model: string,
+    tokens: number,
+    cost: number,
+    userId: string,
+    metadata: any
+  ): Promise<void> {
     console.log(`Tracked usage: ${service}/${model} - ${tokens} tokens, $${cost}`, metadata);
   }
 }
@@ -118,7 +132,12 @@ async function generateWorkflowAssets(
     }
 
     if (!Array.isArray(prompts) || prompts.length === 0) {
-      return errorResponse(res, ApiErrorCode.VALIDATION_ERROR, 'Prompts must be a non-empty array', 400);
+      return errorResponse(
+        res,
+        ApiErrorCode.VALIDATION_ERROR,
+        'Prompts must be a non-empty array',
+        400
+      );
     }
 
     // Verify workflow exists
@@ -140,7 +159,7 @@ async function generateWorkflowAssets(
     // Process each prompt
     for (let i = 0; i < prompts.length; i++) {
       const prompt = prompts[i];
-      
+
       try {
         // Check AI cost budget
         const costCheck = await costController.checkBudget(
@@ -153,7 +172,7 @@ async function generateWorkflowAssets(
         if (!costCheck.allowed) {
           errors.push({
             prompt: prompt.text,
-            error: costCheck.reason || 'Budget exceeded'
+            error: costCheck.reason || 'Budget exceeded',
           });
           continue;
         }
@@ -165,7 +184,7 @@ async function generateWorkflowAssets(
           if (briefData.targetAudience) context.push(`for ${briefData.targetAudience}`);
           if (briefData.industry) context.push(`in ${briefData.industry} industry`);
           if (briefData.brandGuidelines) context.push('following brand guidelines');
-          
+
           if (context.length > 0) {
             enhancedPrompt = `${prompt.text}, ${context.join(', ')}, professional quality`;
           }
@@ -177,7 +196,7 @@ async function generateWorkflowAssets(
           size: prompt.size || '1024x1024',
           quality: prompt.quality || 'standard',
           style: prompt.style || 'vivid',
-          purpose: prompt.purpose || 'general'
+          purpose: prompt.purpose || 'general',
         });
 
         // Create asset record
@@ -191,28 +210,32 @@ async function generateWorkflowAssets(
           client_id: clientId || workflow.client_id,
           created_by: userId,
           metadata: {
-        ai_generated: true,
+            ai_generated: true,
             original_prompt: prompt.text,
             enhanced_prompt: enhancedPrompt,
-            generation_settings: Record<string, unknown>$1
-  size: prompt.size || '1024x1024',
+            generation_settings: {
+              size: prompt.size || '1024x1024',
               quality: prompt.quality || 'standard',
-              style: prompt.style || 'vivid' },
-  workflow_id: workflowId,
-            brief_context: briefData ? {
-              title: briefData.title,
-              targetAudience: briefData.targetAudience,
-              industry: briefData.industry
-            } : null
+              style: prompt.style || 'vivid',
+            },
+            workflow_id: workflowId,
+            brief_context: briefData
+              ? {
+                  title: briefData.title,
+                  targetAudience: briefData.targetAudience,
+                  industry: briefData.industry,
+                }
+              : null,
           },
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         };
 
         const { data: asset, error: assetError } = await supabase
           .from('assets')
           .insert(assetData)
-          .select(`
+          .select(
+            `
             id,
             name,
             type,
@@ -222,13 +245,14 @@ async function generateWorkflowAssets(
             tags,
             metadata,
             created_at
-          `)
+          `
+          )
           .single();
 
         if (assetError) {
           errors.push({
             prompt: prompt.text,
-            error: 'Failed to save asset to database'
+            error: 'Failed to save asset to database',
           });
           continue;
         }
@@ -243,7 +267,7 @@ async function generateWorkflowAssets(
           {
             operation: 'image_generation',
             prompt: prompt.text,
-            workflow_id: workflowId
+            workflow_id: workflowId,
           }
         );
 
@@ -252,41 +276,45 @@ async function generateWorkflowAssets(
           type: 'image',
           url: asset.file_url,
           metadata: {
-        ...asset.metadata,
+            ...asset.metadata,
             name: asset.name,
             description: asset.description,
             tags: asset.tags,
             thumbnailUrl: asset.thumbnail_url,
             dateCreated: asset.created_at,
-            aiGenerated: true },
-  selected: false
+            aiGenerated: true,
+          },
+          selected: false,
         });
-
       } catch (error: any) {
         console.error(`Error generating asset for prompt ${i}:`, error);
         errors.push({
           prompt: prompt.text,
-          error: 'Failed to generate image'
+          error: 'Failed to generate image',
         });
       }
     }
 
-    return successResponse(res, {
-      generatedAssets,
-      errors,
-      totalGenerated: generatedAssets.length,
-      totalErrors: errors.length
-    }, 200, {
-      timestamp: new Date().toISOString()
-    });
-
+    return successResponse(
+      res,
+      {
+        generatedAssets,
+        errors,
+        totalGenerated: generatedAssets.length,
+        totalErrors: errors.length,
+      },
+      200,
+      {
+        timestamp: new Date().toISOString(),
+      }
+    );
   } catch (error: any) {
     return handleApiError(res, error, 'generateWorkflowAssets');
   }
 }
 
 // Mock image generation function - replace with actual DALL-E API call
-async function generateImage(params: Record<string, unknown>$1
+async function generateImage(params: {
   prompt: string;
   size: string;
   quality: string;
@@ -295,19 +323,19 @@ async function generateImage(params: Record<string, unknown>$1
 }): Promise<{ url: string; revised_prompt?: string }> {
   // In demo mode, return placeholder
   const isDemoMode = !process.env.NEXT_PUBLIC_OPENAI_API_KEY;
-  
+
   if (isDemoMode) {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
+
     // Return demo image URL
     const colors = ['4CAF50', '2196F3', 'FF9800', '9C27B0', 'F44336'];
     const color = colors[Math.floor(Math.random() * colors.length)];
     const [width, height] = params.size.split('x');
-    
+
     return {
       url: `https://via.placeholder.com/${width}x${height}/${color}/white?text=AI+Generated`,
-      revised_prompt: `[DEMO] ${params.prompt}`
+      revised_prompt: `[DEMO] ${params.prompt}`,
     };
   }
 
