@@ -9,28 +9,28 @@ import { getClientIp } from '@/lib/utils/ip';
 
 // Rate limit configuration for different endpoint types
 export const RATE_LIMITS = {
-  auth: 5,           // Authentication endpoints: 5 requests per minute,
-    api: 100,          // Standard API endpoints: 100 requests per minute,
-    ai: 20,            // AI-powered endpoints: 20 requests per minute,
-    upload: 10,        // File upload endpoints: 10 requests per minute,
-    public: 200,       // Public endpoints: 200 requests per minute
+  auth: 5, // Authentication endpoints: 5 requests per minute
+  api: 100, // Standard API endpoints: 100 requests per minute
+  ai: 20, // AI-powered endpoints: 20 requests per minute
+  upload: 10, // File upload endpoints: 10 requests per minute
+  public: 200, // Public endpoints: 200 requests per minute
 } as const;
 
 export type RateLimitType = keyof typeof RATE_LIMITS;
 
 interface RateLimitOptions {
-  windowMs?: number;           // Time window in milliseconds (default: 60000 = 1 minute)
-  maxRequests?: number;        // Max requests per window (overrides type-based limit)
+  windowMs?: number; // Time window in milliseconds (default: 60000 = 1 minute)
+  maxRequests?: number; // Max requests per window (overrides type-based limit)
   skipSuccessfulRequests?: boolean; // Don't count successful requests
-  skipFailedRequests?: boolean;     // Don't count failed requests
+  skipFailedRequests?: boolean; // Don't count failed requests
   keyGenerator?: (req: NextApiRequest) => string; // Custom key generator
 }
 
 interface RateLimitInfo {
-  totalHits: number;,
-    totalTime: number;,
-    remaining: number;,
-    resetTime: Date;
+  totalHits: number;
+  totalTime: number;
+  remaining: number;
+  resetTime: Date;
 }
 
 /**
@@ -42,9 +42,9 @@ class MemoryStore {
   async increment(key: string, windowMs: number): Promise<RateLimitInfo> {
     const now = Date.now();
     const resetTime = now + windowMs;
-    
+
     const current = this.store.get(key);
-    
+
     if (!current || current.resetTime < now) {
       // First request or window expired
       this.store.set(key, { count: 1, resetTime });
@@ -52,18 +52,20 @@ class MemoryStore {
         totalHits: 1,
         totalTime: windowMs,
         remaining: -1, // Will be calculated by caller
-        resetTime: new Date(resetTime)};
+        resetTime: new Date(resetTime),
+      };
     }
-    
+
     // Increment existing count
     current.count++;
     this.store.set(key, current);
-    
+
     return {
       totalHits: current.count,
       totalTime: current.resetTime - now,
       remaining: -1, // Will be calculated by caller
-      resetTime: new Date(current.resetTime)};
+      resetTime: new Date(current.resetTime),
+    };
   }
 
   // Cleanup expired entries periodically
@@ -119,7 +121,8 @@ class RedisStore {
       totalHits,
       totalTime: windowMs,
       remaining: -1, // Will be calculated by caller
-      resetTime: new Date(now + windowMs)};
+      resetTime: new Date(now + windowMs),
+    };
   }
 }
 
@@ -142,7 +145,7 @@ function getStore(): MemoryStore | RedisStore {
     // Fallback to memory store
     if (!memoryStore) {
       memoryStore = new MemoryStore();
-      
+
       // Cleanup memory store every 5 minutes
       setInterval(() => memoryStore.cleanup(), 5 * 60 * 1000);
     }
@@ -157,20 +160,17 @@ function generateKey(req: NextApiRequest, type: RateLimitType): string {
   const ip = getClientIp(req);
   const userAgent = req.headers['user-agent'] || 'unknown';
   const userId = (req as any).user?.id;
-  
+
   // Use user ID if authenticated, otherwise IP + partial user agent
   const identifier = userId || `${ip}:${userAgent.slice(0, 20)}`;
-  
+
   return `rate_limit:${type}:${identifier}`;
 }
 
 /**
  * Rate limiting middleware
  */
-export function withRateLimit(
-  type: RateLimitType,
-  options: RateLimitOptions = {}
-) {
+export function withRateLimit(type: RateLimitType, options: RateLimitOptions = {}) {
   return function rateLimitMiddleware(
     handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void>
   ) {
@@ -181,15 +181,16 @@ export function withRateLimit(
           maxRequests = RATE_LIMITS[type],
           skipSuccessfulRequests = false,
           skipFailedRequests = false,
-          keyGenerator = (req) => generateKey(req, type)} = options;
+          keyGenerator = req => generateKey(req, type),
+        } = options;
 
         const key = keyGenerator(req);
         const store = getStore();
-        
+
         // Get current rate limit info
         const limitInfo = await store.increment(key, windowMs);
         const remaining = Math.max(0, maxRequests - limitInfo.totalHits);
-        
+
         // Set rate limit headers
         res.setHeader('X-RateLimit-Limit', maxRequests);
         res.setHeader('X-RateLimit-Remaining', remaining);
@@ -205,26 +206,30 @@ export function withRateLimit(
             requests: limitInfo.totalHits,
             limit: maxRequests,
             window: windowMs,
-            resetTime: limitInfo.resetTime});
+            resetTime: limitInfo.resetTime,
+          });
 
           res.setHeader('Retry-After', Math.ceil(limitInfo.totalTime / 1000));
-          
+
           return res.status(429).json({
             success: false,
-            error: Record<string, unknown>$1
-  code: 'RATE_LIMIT_EXCEEDED',
+            error: {
+              code: 'RATE_LIMIT_EXCEEDED',
               message: 'Too many requests. Please try again later.',
-              details: Record<string, unknown>$1
-  limit: maxRequests,
+              details: {
+                limit: maxRequests,
                 window: windowMs,
-                resetTime: limitInfo.resetTime.toISOString() });
+                resetTime: limitInfo.resetTime.toISOString(),
+              },
+            },
+          });
         }
 
         // Store original res.json to intercept response
         const originalJson = res.json;
         let statusCode = 200;
-        
-        res.json = function(body: unknown) {
+
+        res.json = function (body: unknown) {
           statusCode = res.statusCode;
           return originalJson.call(this, body);
         };
@@ -236,7 +241,7 @@ export function withRateLimit(
         res.setHeader('X-RateLimit-Remaining', remaining - 1);
 
         // Skip counting based on response status if configured
-        const shouldSkip = 
+        const shouldSkip =
           (skipSuccessfulRequests && statusCode >= 200 && statusCode < 400) ||
           (skipFailedRequests && statusCode >= 400);
 
@@ -247,11 +252,10 @@ export function withRateLimit(
           // eslint-disable-next-line no-console
           console.log('Skipping rate limit count for request:', { statusCode, type });
         }
-
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('Rate limiting middleware error:', error);
-        
+
         // Don't block requests if rate limiting fails
         await handler(req, res);
       }
@@ -271,23 +275,29 @@ export async function checkRateLimit(
     const {
       windowMs = 60000,
       maxRequests = RATE_LIMITS[type],
-      keyGenerator = (req) => generateKey(req, type)} = options;
+      keyGenerator = req => generateKey(req, type),
+    } = options;
 
     const key = keyGenerator(req);
-    
+
     // For memory store, we need to check without incrementing
     // This is a simplified check - in production, use Redis for accuracy
     if (memoryStore) {
       const current = (memoryStore as any).store.get(key);
       if (!current || current.resetTime < Date.now()) {
-        return { exceeded: false, remaining: maxRequests, resetTime: new Date(Date.now() + windowMs) };
+        return {
+          exceeded: false,
+          remaining: maxRequests,
+          resetTime: new Date(Date.now() + windowMs),
+        };
       }
-      
+
       const remaining = Math.max(0, maxRequests - current.count);
       return {
         exceeded: current.count >= maxRequests,
         remaining,
-        resetTime: new Date(current.resetTime)};
+        resetTime: new Date(current.resetTime),
+      };
     }
 
     // For Redis, we can use a separate check operation
@@ -299,7 +309,8 @@ export async function checkRateLimit(
         return {
           exceeded: count >= maxRequests,
           remaining,
-          resetTime: new Date(Date.now() + windowMs)};
+          resetTime: new Date(Date.now() + windowMs),
+        };
       }
     }
 
@@ -320,9 +331,9 @@ export async function resetRateLimit(
   options: RateLimitOptions = {}
 ): Promise<boolean> {
   try {
-    const { keyGenerator = (req) => generateKey(req, type) } = options;
+    const { keyGenerator = req => generateKey(req, type) } = options;
     const key = keyGenerator(req);
-    
+
     if (memoryStore) {
       (memoryStore as any).store.delete(key);
       return true;
