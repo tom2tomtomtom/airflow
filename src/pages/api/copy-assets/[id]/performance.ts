@@ -31,22 +31,29 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     }
     return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
+      details:
+        process.env.NODE_ENV === 'development'
+          ? error instanceof Error
+            ? error.message
+            : 'Unknown error'
+          : undefined,
     });
   }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, assetId: string): Promise<void> {
-  const { 
-    period = '30d',
-    platform,
-    include_predictions = false 
-  } = req.query;
+async function handleGet(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  assetId: string
+): Promise<void> {
+  const { period = '30d', platform, include_predictions = false } = req.query;
 
   // First verify user has access to this copy asset
   const { data: asset, error } = await supabase
     .from('copy_assets')
-    .select(`
+    .select(
+      `
       id,
       title,
       type,
@@ -55,7 +62,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
       performance_score,
       brand_compliance_score,
       created_at
-    `)
+    `
+    )
     .eq('id', assetId)
     .single();
 
@@ -78,7 +86,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
   // Calculate date range
   const endDate = new Date();
   const startDate = new Date();
-  
+
   switch (period) {
     case '7d':
       startDate.setDate(endDate.getDate() - 7);
@@ -96,14 +104,16 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
   // Get campaign analytics where this copy asset was used
   let analyticsQuery = supabase
     .from('campaign_analytics')
-    .select(`
+    .select(
+      `
       *,
       executions(
         id,
         metadata,
         campaigns(name, status)
       )
-    `)
+    `
+    )
     .gte('date', startDate.toISOString().split('T')[0])
     .lte('date', endDate.toISOString().split('T')[0]);
 
@@ -114,20 +124,22 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
   const { data: analytics } = await analyticsQuery;
 
   // Filter analytics to only include executions that used this copy asset
-  const relevantAnalytics = analytics?.filter((analytic: any) => {
-    const execution = analytic.executions;
-    if (!execution || !execution.metadata) return false;
-    
-    // Check if the copy asset ID is referenced in the execution metadata
-    const metadata = execution.metadata;
-    return (
-      metadata.copy_asset_id === assetId ||
-      (metadata.copy_assets && metadata.copy_assets.includes(assetId)) ||
-      (metadata.field_assignments && Object.values(metadata.field_assignments).some((field: any) => 
-        field.content?.some((content: any) => content.copy_asset_id === assetId)
-      ))
-    );
-  }) || [];
+  const relevantAnalytics =
+    analytics?.filter((analytic: any) => {
+      const execution = analytic.executions;
+      if (!execution || !execution.metadata) return false;
+
+      // Check if the copy asset ID is referenced in the execution metadata
+      const metadata = execution.metadata;
+      return (
+        metadata.copy_asset_id === assetId ||
+        (metadata.copy_assets && metadata.copy_assets.includes(assetId)) ||
+        (metadata.field_assignments &&
+          Object.values(metadata.field_assignments).some((field: any) =>
+            field.content?.some((content: any) => content.copy_asset_id === assetId)
+          ))
+      );
+    }) || [];
 
   // Aggregate performance metrics
   const performanceMetrics = aggregatePerformanceMetrics(relevantAnalytics);
@@ -154,7 +166,12 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
   const trendAnalysis = analyzeTrend(relevantAnalytics);
 
   // Generate insights
-  const insights = generatePerformanceInsights(asset, performanceMetrics, comparativePerformance, trendAnalysis);
+  const insights = generatePerformanceInsights(
+    asset,
+    performanceMetrics,
+    comparativePerformance,
+    trendAnalysis
+  );
 
   // Predictions (if requested)
   let predictions = null;
@@ -163,40 +180,49 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any, a
   }
 
   return res.json({
-    data: Record<string, unknown>$1
-  asset_info: Record<string, unknown>$1
-  id: asset.id,
+    data: {
+      asset_info: {
+        id: asset.id,
         title: asset.title,
         type: asset.type,
         platform: asset.platform,
-        created_at: asset.created_at },
-  current_scores: Record<string, unknown>$1
-  performance_score: asset.performance_score,
-        brand_compliance_score: asset.brand_compliance_score },
-  metrics: performanceMetrics,
-      usage_stats: Record<string, unknown>$1
-  total_campaigns: usageStats?.length || 0,
+        created_at: asset.created_at,
+      },
+      current_scores: {
+        performance_score: asset.performance_score,
+        brand_compliance_score: asset.brand_compliance_score,
+      },
+      metrics: performanceMetrics,
+      usage_stats: {
+        total_campaigns: usageStats?.length || 0,
         active_campaigns: usageStats?.filter((u: any) => u.status === 'active').length || 0,
-        campaigns: usageStats || [] },
-  comparative_performance: comparativePerformance,
+        campaigns: usageStats || [],
+      },
+      comparative_performance: comparativePerformance,
       trend_analysis: trendAnalysis,
       insights,
       predictions,
-      period: Record<string, unknown>$1
-  start_date: startDate.toISOString(),
+      period: {
+        start_date: startDate.toISOString(),
         end_date: endDate.toISOString(),
-        period_label: period}
-    }
+        period_label: period,
+      },
+    },
   });
 }
 
-async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, assetId: string): Promise<void> {
+async function handlePost(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  user: any,
+  assetId: string
+): Promise<void> {
   const {
     performance_score,
     brand_compliance_score,
     engagement_metrics,
     conversion_metrics,
-    notes
+    notes,
   } = req.body;
 
   // Verify user has access to this copy asset
@@ -223,7 +249,8 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
 
   // Update performance scores
   const updateData: any = {
-    updated_at: new Date().toISOString()};
+    updated_at: new Date().toISOString(),
+  };
 
   if (performance_score !== undefined) {
     updateData.performance_score = Math.max(0, Math.min(100, performance_score));
@@ -243,12 +270,13 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
 
     updateData.metadata = {
       ...currentAsset?.metadata,
-      performance_update: Record<string, unknown>$1
-  timestamp: new Date().toISOString(),
+      performance_update: {
+        timestamp: new Date().toISOString(),
         updated_by: user.id,
         engagement_metrics,
         conversion_metrics,
-        notes}
+        notes,
+      },
     };
   }
 
@@ -266,7 +294,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any, 
 
   return res.json({
     message: 'Performance metrics updated successfully',
-    data: updatedAsset
+    data: updatedAsset,
   });
 }
 
@@ -281,7 +309,8 @@ function aggregatePerformanceMetrics(analytics: any[]): any {
     ctr: 0,
     cpc: 0,
     cpm: 0,
-    roas: 0};
+    roas: 0,
+  };
 
   if (analytics.length === 0) return totals;
 
@@ -306,13 +335,18 @@ function calculateComparativePerformance(asset: any, similarAssets: any[]): any 
     return {
       performance_percentile: null,
       compliance_percentile: null,
-      ranking: null};
+      ranking: null,
+    };
   }
 
-  const performanceScores = similarAssets.map((a: any) => a.performance_score).filter((s: any) => s !== null);
-  const complianceScores = similarAssets.map((a: any) => a.brand_compliance_score).filter((s: any) => s !== null);
+  const performanceScores = similarAssets
+    .map((a: any) => a.performance_score)
+    .filter((s: any) => s !== null);
+  const complianceScores = similarAssets
+    .map((a: any) => a.brand_compliance_score)
+    .filter((s: any) => s !== null);
 
-  const performancePercentile = asset.performance_score 
+  const performancePercentile = asset.performance_score
     ? calculatePercentile(performanceScores, asset.performance_score)
     : null;
 
@@ -324,8 +358,15 @@ function calculateComparativePerformance(asset: any, similarAssets: any[]): any 
     performance_percentile: performancePercentile,
     compliance_percentile: compliancePercentile,
     total_similar_assets: similarAssets.length,
-    avg_performance_score: performanceScores.length > 0 ? performanceScores.reduce((a, b) => a + b, 0) / performanceScores.length : null,
-    avg_compliance_score: complianceScores.length > 0 ? complianceScores.reduce((a, b) => a + b, 0) / complianceScores.length : null};
+    avg_performance_score:
+      performanceScores.length > 0
+        ? performanceScores.reduce((a, b) => a + b, 0) / performanceScores.length
+        : null,
+    avg_compliance_score:
+      complianceScores.length > 0
+        ? complianceScores.reduce((a, b) => a + b, 0) / complianceScores.length
+        : null,
+  };
 }
 
 function calculatePercentile(scores: number[], value: number): number {
@@ -338,11 +379,14 @@ function analyzeTrend(analytics: any[]): any {
     return {
       direction: 'insufficient_data',
       change_percentage: 0,
-      confidence: 0};
+      confidence: 0,
+    };
   }
 
   // Sort by date
-  const sortedAnalytics = analytics.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  const sortedAnalytics = analytics.sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
 
   // Calculate trend for key metrics
   const firstHalf = sortedAnalytics.slice(0, Math.floor(sortedAnalytics.length / 2));
@@ -351,7 +395,8 @@ function analyzeTrend(analytics: any[]): any {
   const firstHalfAvg = firstHalf.reduce((sum, a) => sum + (a.ctr || 0), 0) / firstHalf.length;
   const secondHalfAvg = secondHalf.reduce((sum, a) => sum + (a.ctr || 0), 0) / secondHalf.length;
 
-  const changePercentage = firstHalfAvg > 0 ? ((secondHalfAvg - firstHalfAvg) / firstHalfAvg) * 100 : 0;
+  const changePercentage =
+    firstHalfAvg > 0 ? ((secondHalfAvg - firstHalfAvg) / firstHalfAvg) * 100 : 0;
 
   return {
     direction: changePercentage > 5 ? 'improving' : changePercentage < -5 ? 'declining' : 'stable',
@@ -360,7 +405,12 @@ function analyzeTrend(analytics: any[]): any {
   };
 }
 
-function generatePerformanceInsights(asset: any, metrics: any, comparative: any, trend: any): string[] {
+function generatePerformanceInsights(
+  asset: any,
+  metrics: any,
+  comparative: any,
+  trend: any
+): string[] {
   const insights: string[] = [];
 
   // Performance insights
@@ -383,7 +433,9 @@ function generatePerformanceInsights(asset: any, metrics: any, comparative: any,
   if (trend.direction === 'improving' && trend.confidence > 0.5) {
     insights.push(`Performance is trending upward with a ${trend.change_percentage}% improvement`);
   } else if (trend.direction === 'declining' && trend.confidence > 0.5) {
-    insights.push(`Performance is declining by ${Math.abs(trend.change_percentage)}% - consider refreshing the copy`);
+    insights.push(
+      `Performance is declining by ${Math.abs(trend.change_percentage)}% - consider refreshing the copy`
+    );
   }
 
   // Brand compliance insights
@@ -402,20 +454,24 @@ function generatePerformancePredictions(metrics: any, trend: any): any {
       next_7_days: null,
       next_30_days: null,
       confidence: 0,
-      notes: 'Insufficient data for predictions'};
+      notes: 'Insufficient data for predictions',
+    };
   }
 
   const currentCTR = metrics.ctr;
-  const trendMultiplier = 1 + (trend.change_percentage / 100);
+  const trendMultiplier = 1 + trend.change_percentage / 100;
 
   return {
-    next_7_days: Record<string, unknown>$1
-  expected_ctr: Math.round(currentCTR * Math.pow(trendMultiplier, 0.25) * 100) / 100,
-      confidence: trend.confidence * 0.8 },
-  next_30_days: Record<string, unknown>$1
-  expected_ctr: Math.round(currentCTR * trendMultiplier * 100) / 100,
-      confidence: trend.confidence * 0.6 },
-  methodology: 'Predictions based on historical trend analysis and performance indicators'};
+    next_7_days: {
+      expected_ctr: Math.round(currentCTR * Math.pow(trendMultiplier, 0.25) * 100) / 100,
+      confidence: trend.confidence * 0.8,
+    },
+    next_30_days: {
+      expected_ctr: Math.round(currentCTR * trendMultiplier * 100) / 100,
+      confidence: trend.confidence * 0.6,
+    },
+    methodology: 'Predictions based on historical trend analysis and performance indicators',
+  };
 }
 
 export default withAuth(withSecurityHeaders(handler));
