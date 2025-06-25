@@ -25,7 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const errorReport: ErrorReport = req.body;
-    
+
     // Validate required fields
     if (!errorReport.message || !errorReport.errorId) {
       return res.status(400).json({ error: 'Missing required fields' });
@@ -36,10 +36,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ...errorReport,
       serverTimestamp: new Date().toISOString(),
       ip: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
-      buildInfo: Record<string, unknown>$1
-  version: process.env.npm_package_version || '1.0.0',
+      buildInfo: {
+        version: process.env.npm_package_version || '1.0.0',
         commit: process.env.VERCEL_GITHUB_COMMIT_SHA || process.env.GIT_COMMIT,
-        environment: process.env.NODE_ENV}};
+        environment: process.env.NODE_ENV,
+      },
+    };
 
     // Log error for server monitoring
     console.error('Client Error Report:', {
@@ -47,7 +49,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       message: errorReport.message,
       url: errorReport.url,
       timestamp: errorReport.timestamp,
-      userAgent: errorReport.userAgent});
+      userAgent: errorReport.userAgent,
+    });
 
     // In production, you would:
     // 1. Store in database for analysis
@@ -58,10 +61,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (process.env.NODE_ENV === 'production') {
       // Example: Store in database
       // await storeErrorReport(enhancedReport);
-      
       // Example: Send to monitoring service
       // await sendToMonitoringService(enhancedReport);
-      
       // Example: Check if this is a critical error and alert
       // if (isCriticalError(errorReport)) {
       //   await sendAlert(enhancedReport);
@@ -71,13 +72,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).json({
       success: true,
       errorId: errorReport.errorId,
-      message: 'Error report received'});
-
+      message: 'Error report received',
+    });
   } catch (error: any) {
     console.error('Error processing error report:', error);
     return res.status(500).json({
       error: 'Failed to process error report',
-      details: process.env.NODE_ENV === 'development' ? getErrorMessage(error) : undefined});
+      details: process.env.NODE_ENV === 'development' ? getErrorMessage(error) : undefined,
+    });
   }
 }
 
@@ -86,7 +88,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 async function storeErrorReport(report: any) {
   // Example implementation - store in your database
   // const { supabase } = require('@/lib/supabase/client');
-  // 
+  //
   // await supabase.from('error_reports').insert({
   //   error_id: report.errorId,
   //   message: report.message,
@@ -106,9 +108,8 @@ async function sendToMonitoringService(report: any) {
   //   await fetch(process.env.ERROR_REPORTING_URL, {
   //     method: 'POST',
   //     headers: {
-        //       'Content-Type': 'application/json',
-  //       'Authorization': `Bearer ${process.env.ERROR_REPORTING_TOKEN
-      }`,
+  //       'Content-Type': 'application/json',
+  //       'Authorization': `Bearer ${process.env.ERROR_REPORTING_TOKEN}`,
   //     },
   //     body: JSON.stringify(report),
   //   });
@@ -124,9 +125,8 @@ function isCriticalError(report: ErrorReport): boolean {
     /ReferenceError/,
   ];
 
-  return criticalPatterns.some(pattern => 
-    pattern.test(report.message) || 
-    (report.stack && pattern.test(report.stack))
+  return criticalPatterns.some(
+    pattern => pattern.test(report.message) || (report.stack && pattern.test(report.stack))
   );
 }
 
@@ -137,5 +137,6 @@ async function sendAlert(report: any) {
     errorId: report.errorId,
     message: report.message,
     url: report.url,
-    timestamp: report.timestamp});
+    timestamp: report.timestamp,
+  });
 }
