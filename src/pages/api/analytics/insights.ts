@@ -10,7 +10,10 @@ const InsightsFilterSchema = z.object({
   client_id: z.string().uuid(),
   date_from: z.string().optional(),
   date_to: z.string().optional(),
-  insight_types: z.array(z.enum(['performance', 'optimization', 'trends', 'anomalies', 'predictions'])).default(['performance', 'optimization', 'trends'])});
+  insight_types: z
+    .array(z.enum(['performance', 'optimization', 'trends', 'anomalies', 'predictions']))
+    .default(['performance', 'optimization', 'trends']),
+});
 
 interface AnalyticsInsights {
   performance_insights: Array<{
@@ -32,8 +35,8 @@ interface AnalyticsInsights {
     priority_score: number;
     actions: string[];
   }>;
-  trend_analysis: Record<string, unknown>$1
-  emerging_trends: Array<{
+  trend_analysis: {
+    emerging_trends: Array<{
       trend: string;
       growth_rate: number;
       platforms: string[];
@@ -54,9 +57,9 @@ interface AnalyticsInsights {
     description: string;
     possible_causes: string[];
   }>;
-  predictions: Record<string, unknown>$1
-  next_30_days: Record<string, unknown>$1
-  expected_impressions: number;
+  predictions: {
+    next_30_days: {
+      expected_impressions: number;
       expected_conversions: number;
       expected_spend: number;
       confidence_level: number;
@@ -69,8 +72,8 @@ interface AnalyticsInsights {
       expected_improvement: string;
     }>;
   };
-  content_performance: Record<string, unknown>$1
-  top_performing_content_types: Array<{
+  content_performance: {
+    top_performing_content_types: Array<{
       type: string;
       avg_engagement: number;
       avg_conversion_rate: number;
@@ -83,8 +86,8 @@ interface AnalyticsInsights {
       improvement_suggestions: string[];
     }>;
   };
-  competitive_insights: Record<string, unknown>$1
-  market_share_estimate: number;
+  competitive_insights: {
+    market_share_estimate: number;
     competitive_position: 'leading' | 'competitive' | 'lagging';
     opportunities: string[];
     threats: string[];
@@ -104,20 +107,25 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Analytics Insights API error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Internal server error',
-      details: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined
+      details:
+        process.env.NODE_ENV === 'development'
+          ? error instanceof Error
+            ? error.message
+            : 'Unknown error'
+          : undefined,
     });
   }
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): Promise<void> {
   const validationResult = InsightsFilterSchema.safeParse(req.query);
-  
+
   if (!validationResult.success) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Invalid query parameters',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
@@ -140,13 +148,11 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
 
   return res.json({
     success: true,
-    data: insights});
+    data: insights,
+  });
 }
 
-async function generateAnalyticsInsights(
-  filters: any,
-  userId: string
-): Promise<AnalyticsInsights> {
+async function generateAnalyticsInsights(filters: any, userId: string): Promise<AnalyticsInsights> {
   // Get client data for analysis
   const clientData = await getClientDataForInsights(filters.client_id);
 
@@ -178,21 +184,24 @@ async function generateAnalyticsInsights(
     anomaly_detection,
     predictions,
     content_performance,
-    competitive_insights};
+    competitive_insights,
+  };
 }
 
 async function getClientDataForInsights(clientId: string): Promise<any> {
   // Get campaigns with their performance data
   const { data: campaigns } = await supabase
     .from('campaigns')
-    .select(`
+    .select(
+      `
       *,
       matrices(
         id, name, status, quality_score,
         executions(id, status, platform, content_type, created_at)
       ),
       briefs(id, name, target_metrics)
-    `)
+    `
+    )
     .eq('client_id', clientId);
 
   // Get recent analytics data
@@ -221,17 +230,30 @@ async function getClientDataForInsights(clientId: string): Promise<any> {
     campaigns: campaigns || [],
     analytics: analytics || [],
     videoGenerations: videoGenerations || [],
-    approvals: approvals || []};
+    approvals: approvals || [],
+  };
 }
 
 function generatePerformanceInsights(data: any): any[] {
   const insights = [];
 
   // Calculate overall performance metrics
-  const totalImpressions = data?.analytics?.reduce((sum: number, item: any) => sum + (item.impressions || 0), 0);
-  const totalClicks = data?.analytics?.reduce((sum: number, item: any) => sum + (item.clicks || 0), 0);
-  const totalConversions = data?.analytics?.reduce((sum: number, item: any) => sum + (item.conversions || 0), 0);
-  const totalSpend = data?.analytics?.reduce((sum: number, item: any) => sum + parseFloat(item.spend || '0'), 0);
+  const totalImpressions = data?.analytics?.reduce(
+    (sum: number, item: any) => sum + (item.impressions || 0),
+    0
+  );
+  const totalClicks = data?.analytics?.reduce(
+    (sum: number, item: any) => sum + (item.clicks || 0),
+    0
+  );
+  const totalConversions = data?.analytics?.reduce(
+    (sum: number, item: any) => sum + (item.conversions || 0),
+    0
+  );
+  const totalSpend = data?.analytics?.reduce(
+    (sum: number, item: any) => sum + parseFloat(item.spend || '0'),
+    0
+  );
 
   const ctr = totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0;
   const conversionRate = totalClicks > 0 ? (totalConversions / totalClicks) * 100 : 0;
@@ -247,7 +269,7 @@ function generatePerformanceInsights(data: any): any[] {
       value: ctr,
       change: 15,
       priority: 'medium',
-      recommendation: 'Continue using similar creative strategies across other campaigns'
+      recommendation: 'Continue using similar creative strategies across other campaigns',
     });
   } else if (ctr < 1.5) {
     insights.push({
@@ -258,7 +280,7 @@ function generatePerformanceInsights(data: any): any[] {
       value: ctr,
       change: -20,
       priority: 'high',
-      recommendation: 'Review ad creative and targeting parameters to improve engagement'
+      recommendation: 'Review ad creative and targeting parameters to improve engagement',
     });
   }
 
@@ -272,7 +294,7 @@ function generatePerformanceInsights(data: any): any[] {
       value: conversionRate,
       change: 25,
       priority: 'low',
-      recommendation: 'Scale successful campaigns to maximize conversions'
+      recommendation: 'Scale successful campaigns to maximize conversions',
     });
   } else if (conversionRate < 2.0) {
     insights.push({
@@ -283,7 +305,7 @@ function generatePerformanceInsights(data: any): any[] {
       value: conversionRate,
       change: -30,
       priority: 'high',
-      recommendation: 'Optimize landing pages and review offer relevance'
+      recommendation: 'Optimize landing pages and review offer relevance',
     });
   }
 
@@ -297,7 +319,7 @@ function generatePerformanceInsights(data: any): any[] {
       value: avgCPC,
       change: -10,
       priority: 'low',
-      recommendation: 'Consider increasing budgets for high-performing campaigns'
+      recommendation: 'Consider increasing budgets for high-performing campaigns',
     });
   }
 
@@ -312,7 +334,7 @@ function generatePerformanceInsights(data: any): any[] {
       value: activeCampaigns,
       change: 0,
       priority: 'medium',
-      recommendation: 'Review campaign performance and consolidate underperforming campaigns'
+      recommendation: 'Review campaign performance and consolidate underperforming campaigns',
     });
   }
 
@@ -326,7 +348,8 @@ function generateOptimizationOpportunities(data: any): any[] {
   opportunities.push({
     category: 'budget',
     title: 'Budget Redistribution Opportunity',
-    description: 'Some campaigns are under-utilizing their budget while others are hitting limits early',
+    description:
+      'Some campaigns are under-utilizing their budget while others are hitting limits early',
     potential_impact: 'Up to 25% increase in conversions with same spend',
     effort_required: 'low',
     priority_score: 85,
@@ -334,8 +357,8 @@ function generateOptimizationOpportunities(data: any): any[] {
       'Identify top-performing campaigns hitting budget limits',
       'Reduce budget from underperforming campaigns',
       'Reallocate budget to high-performers',
-      'Set up automated bidding rules'
-    ]
+      'Set up automated bidding rules',
+    ],
   });
 
   // Creative Optimization
@@ -350,8 +373,8 @@ function generateOptimizationOpportunities(data: any): any[] {
       'Create new video variations using AI generation',
       'Test different visual styles and messaging',
       'Implement dynamic creative optimization',
-      'Rotate creatives based on performance'
-    ]
+      'Rotate creatives based on performance',
+    ],
   });
 
   // Targeting Optimization
@@ -366,8 +389,8 @@ function generateOptimizationOpportunities(data: any): any[] {
       'Create lookalike audiences from converters',
       'Expand geographic targeting for best performers',
       'Test interest-based targeting expansions',
-      'Implement automated audience optimization'
-    ]
+      'Implement automated audience optimization',
+    ],
   });
 
   // Timing Optimization
@@ -382,8 +405,8 @@ function generateOptimizationOpportunities(data: any): any[] {
       'Analyze performance by hour and day',
       'Implement dayparting schedules',
       'Adjust bids based on time performance',
-      'Test weekend vs weekday strategies'
-    ]
+      'Test weekend vs weekday strategies',
+    ],
   });
 
   return opportunities.sort((a, b) => b.priority_score - a.priority_score);
@@ -396,19 +419,20 @@ function generateTrendAnalysis(data: any): any {
         trend: 'Short-form video content',
         growth_rate: 45,
         platforms: ['Instagram', 'TikTok', 'YouTube Shorts'],
-        recommended_action: 'Increase investment in vertical video formats and AI video generation' }
+        recommended_action: 'Increase investment in vertical video formats and AI video generation',
+      },
       {
         trend: 'Interactive content',
         growth_rate: 35,
         platforms: ['Instagram', 'Facebook'],
-        recommended_action: 'Test polls, quizzes, and user-generated content campaigns'
+        recommended_action: 'Test polls, quizzes, and user-generated content campaigns',
       },
       {
         trend: 'Personalized messaging',
         growth_rate: 28,
         platforms: ['Facebook', 'Google', 'LinkedIn'],
-        recommended_action: 'Implement dynamic ads with personalized copy and visuals'
-      }
+        recommended_action: 'Implement dynamic ads with personalized copy and visuals',
+      },
     ],
     declining_metrics: [
       {
@@ -418,8 +442,8 @@ function generateTrendAnalysis(data: any): any {
         suggested_fixes: [
           'Replace static images with video content',
           'Add motion graphics and animations',
-          'Test carousel and collection ad formats'
-        ]
+          'Test carousel and collection ad formats',
+        ],
       },
       {
         metric: 'Desktop conversion rate',
@@ -428,10 +452,10 @@ function generateTrendAnalysis(data: any): any {
         suggested_fixes: [
           'Optimize mobile experience',
           'Implement mobile-first design',
-          'Test mobile-specific ad formats'
-        ]
-      }
-    ]
+          'Test mobile-specific ad formats',
+        ],
+      },
+    ],
   };
 }
 
@@ -440,7 +464,9 @@ function generateAnomalyDetection(data: any): any[] {
 
   // Simulate anomaly detection based on data patterns
   const recentAnalytics = data?.analytics?.slice(0, 7); // Last 7 days
-  const avgImpressions = recentAnalytics.reduce((sum: number, item: any) => sum + (item.impressions || 0), 0) / recentAnalytics.length;
+  const avgImpressions =
+    recentAnalytics.reduce((sum: number, item: any) => sum + (item.impressions || 0), 0) /
+    recentAnalytics.length;
 
   // Check for significant spikes or drops
   recentAnalytics.forEach((item: any, index: number) => {
@@ -455,8 +481,8 @@ function generateAnomalyDetection(data: any): any[] {
           'Increased budget allocation',
           'Viral content performance',
           'Competitor campaign pause',
-          'Seasonal demand surge'
-        ]
+          'Seasonal demand surge',
+        ],
       });
     } else if (item.impressions < avgImpressions * 0.5) {
       anomalies.push({
@@ -469,8 +495,8 @@ function generateAnomalyDetection(data: any): any[] {
           'Budget depletion',
           'Ad disapproval',
           'Targeting restriction',
-          'Platform algorithm change'
-        ]
+          'Platform algorithm change',
+        ],
       });
     }
   });
@@ -481,23 +507,30 @@ function generateAnomalyDetection(data: any): any[] {
 function generatePredictions(data: any): any {
   // Calculate trends for predictions
   const recentData = data?.analytics?.slice(0, 30);
-  const avgDailyImpressions = recentData.reduce((sum: number, item: any) => sum + (item.impressions || 0), 0) / recentData.length;
-  const avgDailyConversions = recentData.reduce((sum: number, item: any) => sum + (item.conversions || 0), 0) / recentData.length;
-  const avgDailySpend = recentData.reduce((sum: number, item: any) => sum + parseFloat(item.spend || '0'), 0) / recentData.length;
+  const avgDailyImpressions =
+    recentData.reduce((sum: number, item: any) => sum + (item.impressions || 0), 0) /
+    recentData.length;
+  const avgDailyConversions =
+    recentData.reduce((sum: number, item: any) => sum + (item.conversions || 0), 0) /
+    recentData.length;
+  const avgDailySpend =
+    recentData.reduce((sum: number, item: any) => sum + parseFloat(item.spend || '0'), 0) /
+    recentData.length;
 
   return {
-    next_30_days: Record<string, unknown>$1
-  expected_impressions: Math.round(avgDailyImpressions * 30 * 1.05), // 5% growth assumption
+    next_30_days: {
+      expected_impressions: Math.round(avgDailyImpressions * 30 * 1.05), // 5% growth assumption
       expected_conversions: Math.round(avgDailyConversions * 30 * 1.03), // 3% growth assumption
       expected_spend: Math.round(avgDailySpend * 30 * 1.02 * 100) / 100, // 2% growth assumption
-      confidence_level: 78 },
-  recommended_budget_adjustments: data?.campaigns?.slice(0, 3).map((campaign: any) => ({
+      confidence_level: 78,
+    },
+    recommended_budget_adjustments: data?.campaigns?.slice(0, 3).map((campaign: any) => ({
       campaign_id: campaign.id,
       campaign_name: campaign.name,
       current_budget: Math.round(Math.random() * 5000 + 1000),
       recommended_budget: Math.round((Math.random() * 5000 + 1000) * 1.15),
-      expected_improvement: '+12% conversions'
-    }))
+      expected_improvement: '+12% conversions',
+    })),
   };
 }
 
@@ -511,18 +544,20 @@ function generateContentPerformanceInsights(data: any): any {
         type: 'AI-generated videos',
         avg_engagement: 4.8,
         avg_conversion_rate: 3.2,
-        sample_count: completedVideos.length }
+        sample_count: completedVideos.length,
+      },
       {
         type: 'User-generated content',
         avg_engagement: 4.1,
         avg_conversion_rate: 2.8,
-        sample_count: 15 }
+        sample_count: 15,
+      },
       {
         type: 'Product demos',
         avg_engagement: 3.7,
         avg_conversion_rate: 4.1,
-        sample_count: 8
-      }
+        sample_count: 8,
+      },
     ],
     underperforming_content: [
       {
@@ -532,10 +567,10 @@ function generateContentPerformanceInsights(data: any): any {
         improvement_suggestions: [
           'Convert to video format',
           'Add interactive elements',
-          'Optimize for mobile viewing'
-        ]
-      }
-    ]
+          'Optimize for mobile viewing',
+        ],
+      },
+    ],
   };
 }
 
@@ -547,14 +582,14 @@ function generateCompetitiveInsights(data: any): any {
       'Expand into underutilized platforms like LinkedIn and Pinterest',
       'Increase video content production to match industry trends',
       'Implement retargeting campaigns to improve conversion rates',
-      'Test emerging ad formats like AR/VR experiences'
+      'Test emerging ad formats like AR/VR experiences',
     ],
     threats: [
       'Competitors increasing spend on high-performing keywords',
       'New entrants using aggressive pricing strategies',
       'Platform algorithm changes favoring larger advertisers',
-      'Rising CPCs in core target segments'
-    ]
+      'Rising CPCs in core target segments',
+    ],
   };
 }
 
