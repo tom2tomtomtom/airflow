@@ -162,7 +162,7 @@ export const AdvancedAnalytics: React.FC = () => {
     setTimeout(() => setLoading(false), 1500);
   };
 
-  const getTrendIcon = (trend: string, change: number) => {
+  const getTrendIcon = (trend: string, _change: number) => {
     if (trend === 'up') return <TrendingUp sx={{ fontSize: 16, color: 'success.main' }} />;
     if (trend === 'down') return <TrendingDown sx={{ fontSize: 16, color: 'error.main' }} />;
     return null;

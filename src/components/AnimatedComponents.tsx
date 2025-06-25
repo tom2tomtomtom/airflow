@@ -48,7 +48,7 @@ const slideInUp = keyframes`
   to { transform: translateY(0); opacity: 1; }
 `;
 
-const fadeInScale = keyframes`
+const _fadeInScale = keyframes`
   from { transform: scale(0.8); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 `;
@@ -66,20 +66,24 @@ const AnimatedCard = styled(Card)(({ theme }) => ({
     transform: 'translateY(-8px)',
     boxShadow: theme.shadows[8],
     '& .card-overlay': {
-      opacity: 1 },
+      opacity: 1,
+    },
   },
   '&:active': {
-    transform: 'translateY(-4px)' },
+    transform: 'translateY(-4px)',
+  },
 }));
 
-const PulseButton = styled(Button)({
+const _PulseButton = styled(Button)({
   '&.pulse': {
-    animation: `${pulse} 2s infinite` },
+    animation: `${pulse} 2s infinite`,
+  },
 });
 
 const BounceIcon = styled(Box)({
   '&.bounce': {
-    animation: `${bounce} 1s ease-in-out` },
+    animation: `${bounce} 1s ease-in-out`,
+  },
 });
 
 const ShimmerBox = styled(Box)({
@@ -90,7 +94,8 @@ const ShimmerBox = styled(Box)({
       #f0f0f0 75%
     )`,
   backgroundSize: '200px 100%',
-  animation: `${shimmer} 1.5s infinite` });
+  animation: `${shimmer} 1.5s infinite`,
+});
 
 // Animated Button with state changes
 export const AnimatedActionButton: React.FC<{
@@ -119,9 +124,11 @@ export const AnimatedActionButton: React.FC<{
         backgroundColor: success ? 'success.main' : error ? 'error.main' : 'primary.main',
         '&:hover': {
           transform: 'translateY(-2px)',
-          boxShadow: 3 },
+          boxShadow: 3,
+        },
         '&:active': {
-          transform: 'scale(0.95)' },
+          transform: 'scale(0.95)',
+        },
       }}
     >
       {loading ? (
@@ -136,7 +143,8 @@ export const AnimatedActionButton: React.FC<{
             animation: 'spin 1s linear infinite',
             '@keyframes spin': {
               '0%': { transform: 'rotate(0deg)' },
-              '100%': { transform: 'rotate(360deg)' } },
+              '100%': { transform: 'rotate(360deg)' },
+            },
           }}
         />
       ) : success ? (
@@ -171,7 +179,8 @@ export const AnimatedLikeButton: React.FC<{
         transition: 'all 0.3s ease',
         '&:hover': {
           transform: 'scale(1.1)',
-          backgroundColor: liked ? 'error.light' : 'action.hover' },
+          backgroundColor: liked ? 'error.light' : 'action.hover',
+        },
       }}
       aria-label="Icon button"
     >
@@ -179,7 +188,8 @@ export const AnimatedLikeButton: React.FC<{
       <Box
         sx={{
           transform: animating ? 'scale(1.3)' : 'scale(1)',
-          transition: 'transform 0.3s ease' }}
+          transition: 'transform 0.3s ease',
+        }}
       >
         {liked ? <Favorite /> : <FavoriteBorder />}
       </Box>
@@ -207,7 +217,8 @@ export const AnimatedUploadZone: React.FC<{
       '&:hover': {
         borderColor: 'primary.main',
         backgroundColor: 'action.hover',
-        transform: 'scale(1.01)' },
+        transform: 'scale(1.01)',
+      },
     }}
   >
     <BounceIcon className={isDragActive ? 'bounce' : ''}>
@@ -215,7 +226,8 @@ export const AnimatedUploadZone: React.FC<{
         sx={{
           fontSize: 48,
           color: isDragActive ? 'primary.main' : 'text.secondary',
-          transition: 'color 0.3s ease' }}
+          transition: 'color 0.3s ease',
+        }}
       />
     </BounceIcon>
     <Typography variant="h6" gutterBottom>
@@ -246,7 +258,8 @@ export const AnimatedProgressCard: React.FC<{
                   : status === 'active'
                     ? 'primary.main'
                     : 'grey.300',
-            transition: 'all 0.3s ease' }}
+            transition: 'all 0.3s ease',
+          }}
         >
           {status === 'completed' ? <Check /> : status === 'active' ? <PlayArrow /> : <Pause />}
         </Avatar>
@@ -259,7 +272,8 @@ export const AnimatedProgressCard: React.FC<{
               bgcolor: 'grey.200',
               borderRadius: 1,
               overflow: 'hidden',
-              mt: 1 }}
+              mt: 1,
+            }}
           >
             <Box
               sx={{
@@ -267,7 +281,8 @@ export const AnimatedProgressCard: React.FC<{
                 height: '100%',
                 bgcolor: status === 'error' ? 'error.main' : 'primary.main',
                 transition: 'width 0.5s ease',
-                borderRadius: 1 }}
+                borderRadius: 1,
+              }}
             />
           </Box>
         </Box>
@@ -307,14 +322,16 @@ export const AnimatedToast: React.FC<{
           bottom: 24,
           right: 24,
           zIndex: 1300,
-          animation: open ? `${slideInUp} 0.3s ease-out` : 'none' }}
+          animation: open ? `${slideInUp} 0.3s ease-out` : 'none',
+        }}
       >
         <Card
           sx={{
             bgcolor: getColor(),
             color: 'white',
             minWidth: 300,
-            boxShadow: 3 }}
+            boxShadow: 3,
+          }}
         >
           <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Typography flex={1}>{message}</Typography>
@@ -339,7 +356,7 @@ export const AnimatedFAB: React.FC<{
   icon: React.ReactNode;
   onClick: () => void;
   tooltip?: string;
-}> = ({ icon, onClick, tooltip }) => {
+}> = ({ icon, onClick, tooltip: _tooltip }) => {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -353,13 +370,15 @@ export const AnimatedFAB: React.FC<{
         transform: hovered ? 'scale(1.1) translateY(-2px)' : 'scale(1)',
         boxShadow: hovered ? 6 : 3,
         '&:active': {
-          transform: 'scale(0.95)' },
+          transform: 'scale(0.95)',
+        },
       }}
     >
       <Box
         sx={{
           transition: 'transform 0.3s ease',
-          transform: hovered ? 'rotate(90deg)' : 'rotate(0deg)' }}
+          transform: hovered ? 'rotate(90deg)' : 'rotate(0deg)',
+        }}
       >
         {icon}
       </Box>
@@ -377,15 +396,18 @@ export const AnimatedStatusChip: React.FC<{
       case 'processing':
         return {
           color: 'primary' as const,
-          sx: { animation: `${pulse} 2s infinite` } };
+          sx: { animation: `${pulse} 2s infinite` },
+        };
       case 'completed':
         return {
           color: 'success' as const,
-          sx: { animation: `${bounce} 1s ease-in-out` } };
+          sx: { animation: `${bounce} 1s ease-in-out` },
+        };
       case 'error':
         return {
           color: 'error' as const,
-          sx: { animation: `${shake} 0.5s ease-in-out` } };
+          sx: { animation: `${shake} 0.5s ease-in-out` },
+        };
       default:
         return { color: 'default' as const };
     }
@@ -404,6 +426,7 @@ export const ShimmerSkeleton: React.FC<{
     sx={{
       width,
       height,
-      borderRadius: variant === 'circular' ? '50%' : variant === 'text' ? 1 : 2 }}
+      borderRadius: variant === 'circular' ? '50%' : variant === 'text' ? 1 : 2,
+    }}
   />
 );
