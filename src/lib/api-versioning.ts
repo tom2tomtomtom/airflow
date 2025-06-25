@@ -5,13 +5,15 @@ import { loggers } from './logger';
 export const API_VERSIONS = {
   v1: '1.0',
   v2: '2.0',
-  latest: '2.0'} as const;
+  latest: '2.0',
+} as const;
 
 export type ApiVersion = keyof typeof API_VERSIONS;
 
 // Version deprecation dates
 export const VERSION_DEPRECATION = {
-  v1: new Date('2025-12-31')} as const;
+  v1: new Date('2025-12-31'),
+} as const;
 
 // Version-specific changes
 export const VERSION_CHANGES = {
@@ -21,9 +23,8 @@ export const VERSION_CHANGES = {
     'Improved asset upload API',
     'Breaking: Changed campaign status enum values',
   ],
-  v1: [
-    'Initial API release',
-  ]} as const;
+  v1: ['Initial API release'],
+} as const;
 
 // Extract version from request
 export function getApiVersion(req: NextApiRequest): ApiVersion {
@@ -56,7 +57,11 @@ function isValidVersion(version: string): boolean {
 
 // Version middleware
 export function withApiVersion<T = any>(
-  handler: (req: NextApiRequest, res: NextApiResponse<T>, version: ApiVersion) => Promise<void> | void
+  handler: (
+    req: NextApiRequest,
+    res: NextApiResponse<T>,
+    version: ApiVersion
+  ) => Promise<void> | void
 ) {
   return async (req: NextApiRequest, res: NextApiResponse<T>) => {
     const version = getApiVersion(req);
@@ -79,12 +84,16 @@ export function withApiVersion<T = any>(
           error: 'API_VERSION_DEPRECATED',
           message: `API version ${version} has been deprecated. Please upgrade to the latest version.`,
           deprecatedOn: deprecationDate.toISOString(),
-          latestVersion: API_VERSIONS.latest} as any);
+          latestVersion: API_VERSIONS.latest,
+        } as any);
       }
 
       // Warn about upcoming deprecation
       if (daysUntilDeprecation <= 90) {
-        res.setHeader('X-API-Deprecation', `This API version will be deprecated on ${deprecationDate.toISOString()}`);
+        res.setHeader(
+          'X-API-Deprecation',
+          `This API version will be deprecated on ${deprecationDate.toISOString()}`
+        );
         res.setHeader('X-API-Deprecation-Days', daysUntilDeprecation.toString());
       }
     }
@@ -95,7 +104,8 @@ export function withApiVersion<T = any>(
       versionNumber,
       method: req.method,
       path: req.url,
-      deprecated: !!deprecationDate});
+      deprecated: !!deprecationDate,
+    });
 
     // Call the handler with version
     return handler(req, res, version);
@@ -123,19 +133,21 @@ function transformV1Response<T>(data: T): T {
     // Example: Convert new status values to old ones
     if ('status' in data) {
       const statusMap: Record<string, string> = {
-        'in_progress': 'active',
-        'scheduled': 'pending',
-        'cancelled': 'archived'};
-      
+        in_progress: 'active',
+        scheduled: 'pending',
+        cancelled: 'archived',
+      };
+
       const status = (data as any).status;
       if (status && statusMap[status]) {
         return {
           ...data,
-          status: statusMap[status]};
+          status: statusMap[status],
+        };
       }
     }
   }
-  
+
   return data;
 }
 
@@ -160,22 +172,26 @@ export function formatErrorResponse(
       return {
         success: false,
         error: errorMessage,
-        code: errorCode};
-    
+        code: errorCode,
+      };
+
     case 'v2':
     case 'latest':
       return {
         success: false,
-        error: Record<string, unknown>$1
-  message: errorMessage,
+        error: {
+          message: errorMessage,
           code: errorCode,
           timestamp: new Date().toISOString(),
-          statusCode}};
-    
+          statusCode,
+        },
+      };
+
     default:
       return {
         success: false,
-        error: errorMessage};
+        error: errorMessage,
+      };
   }
 }
 
@@ -185,19 +201,22 @@ export function getPaginationParams(req: NextApiRequest, version: ApiVersion) {
     case 'v1':
       return {
         page: parseInt(req.query.page as string) || 1,
-        limit: Math.min(parseInt(req.query.limit as string) || 20, 100)};
-    
+        limit: Math.min(parseInt(req.query.limit as string) || 20, 100),
+      };
+
     case 'v2':
     case 'latest':
       return {
         page: parseInt(req.query.page as string) || 1,
         limit: Math.min(parseInt(req.query.limit as string) || 50, 200),
-        cursor: req.query.cursor as string};
-    
+        cursor: req.query.cursor as string,
+      };
+
     default:
       return {
         page: 1,
-        limit: 20};
+        limit: 20,
+      };
   }
 }
 
@@ -212,19 +231,21 @@ export function addResponseMetadata<T>(
       return {
         success: true,
         data,
-        ...metadata};
-    
+        ...metadata,
+      };
+
     case 'v2':
     case 'latest':
       return {
         success: true,
         data,
         metadata: {
-        timestamp: new Date().toISOString(),
+          timestamp: new Date().toISOString(),
           version: API_VERSIONS[version],
-          ...metadata
-      }};
-    
+          ...metadata,
+        },
+      };
+
     default:
       return data;
   }
@@ -233,11 +254,12 @@ export function addResponseMetadata<T>(
 // Version-specific feature flags
 export function isFeatureEnabled(feature: string, version: ApiVersion): boolean {
   const features: Record<string, ApiVersion[]> = {
-    'enhanced_filtering': ['v2', 'latest'],
-    'bulk_operations': ['v2', 'latest'],
-    'websocket_support': ['v2', 'latest'],
-    'ai_suggestions': ['v2', 'latest'],
-    'legacy_auth': ['v1']};
+    enhanced_filtering: ['v2', 'latest'],
+    bulk_operations: ['v2', 'latest'],
+    websocket_support: ['v2', 'latest'],
+    ai_suggestions: ['v2', 'latest'],
+    legacy_auth: ['v1'],
+  };
 
   return features[feature]?.includes(version) || false;
 }
@@ -249,4 +271,5 @@ export default {
   formatErrorResponse,
   getPaginationParams,
   addResponseMetadata,
-  isFeatureEnabled};
+  isFeatureEnabled,
+};
