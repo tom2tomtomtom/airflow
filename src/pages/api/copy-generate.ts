@@ -14,10 +14,12 @@ const CopyGenerateSchema = z.object({
   variations_per_platform: z.number().min(1).max(10).default(3),
   target_audience: z.string().optional(),
   campaign_objectives: z.string().optional(),
-  brand_guidelines: z.string().optional()});
+  brand_guidelines: z.string().optional(),
+});
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY});
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   if (req.method !== 'POST') {
@@ -30,20 +32,20 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   if (!validationResult.success) {
     return res.status(400).json({
       error: 'Invalid input',
-      details: validationResult.error.issues
+      details: validationResult.error.issues,
     });
   }
 
-  const { 
-    client_id, 
-    motivation_ids, 
-    platforms, 
-    tone = 'professional', 
+  const {
+    client_id,
+    motivation_ids,
+    platforms,
+    tone = 'professional',
     style = 'engaging',
     variations_per_platform,
     target_audience,
     campaign_objectives,
-    brand_guidelines
+    brand_guidelines,
   } = validationResult.data;
 
   try {
@@ -72,21 +74,22 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
     // Platform-specific requirements
     const platformSpecs: Record<string, { maxLength: number; format: string }> = {
-      'Instagram': { maxLength: 2200, format: 'Social media post with hashtags'  }
-      'Facebook': { maxLength: 63206, format: 'Engaging social media post'  }
-      'LinkedIn': { maxLength: 3000, format: 'Professional social media post'  }
-      'TikTok': { maxLength: 2200, format: 'Short, catchy video description' },
-      'YouTube': { maxLength: 5000, format: 'Video description with call-to-action'  }
-      'Twitter': { maxLength: 280, format: 'Concise tweet'  }
-      'Email': { maxLength: 1000, format: 'Email subject and body'  }
-      'Website': { maxLength: 500, format: 'Website copy with headline' }};
+      Instagram: { maxLength: 2200, format: 'Social media post with hashtags' },
+      Facebook: { maxLength: 63206, format: 'Engaging social media post' },
+      LinkedIn: { maxLength: 3000, format: 'Professional social media post' },
+      TikTok: { maxLength: 2200, format: 'Short, catchy video description' },
+      YouTube: { maxLength: 5000, format: 'Video description with call-to-action' },
+      Twitter: { maxLength: 280, format: 'Concise tweet' },
+      Email: { maxLength: 1000, format: 'Email subject and body' },
+      Website: { maxLength: 500, format: 'Website copy with headline' },
+    };
 
     const createdCopyAssets = [];
 
     // Generate copy for each platform
     for (const platform of platforms) {
       const platformSpec = platformSpecs[platform] || { maxLength: 1000, format: 'General copy' };
-      
+
       const systemPrompt = `You are an expert copywriter specializing in ${platform} content. Create compelling, conversion-focused copy that drives action.
 
 Guidelines:
@@ -98,9 +101,12 @@ Guidelines:
 
 Focus on psychological triggers and emotional resonance. Each variation should feel distinct while maintaining brand consistency.`;
 
-      const motivationContext = motivations.map((m: any) => 
-        `Title: ${m.title}\nDescription: ${m.description}\nCategory: ${m.category}\nTarget Emotions: ${m.target_emotions?.join(', ')}`
-      ).join('\n\n');
+      const motivationContext = motivations
+        .map(
+          (m: any) =>
+            `Title: ${m.title}\nDescription: ${m.description}\nCategory: ${m.category}\nTarget Emotions: ${m.target_emotions?.join(', ')}`
+        )
+        .join('\n\n');
 
       const userPrompt = `Create ${variations_per_platform} distinct copy variations for ${platform} based on these strategic motivations:
 
@@ -126,11 +132,12 @@ Make each variation unique while staying within the ${platformSpec.maxLength} ch
       const completion = await openai.chat.completions.create({
         model: 'gpt-4o',
         messages: [
-          { role: 'system', content: systemPrompt  }
-          { role: 'user', content: userPrompt }
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
         ],
         temperature: 0.8,
-        max_tokens: 2000});
+        max_tokens: 2000,
+      });
 
       const aiResponse = completion.choices[0]?.message?.content;
       if (!aiResponse) {
@@ -150,7 +157,7 @@ Make each variation unique while staying within the ${platformSpec.maxLength} ch
       // Create copy assets in database
       for (let i = 0; i < copyVariations.length; i++) {
         const variation = copyVariations[i];
-        
+
         const { data: created, error } = await supabase
           .from('copy_assets')
           .insert({
@@ -162,25 +169,29 @@ Make each variation unique while staying within the ${platformSpec.maxLength} ch
             call_to_action: variation.call_to_action,
             hashtags: variation.hashtags || [],
             metadata: {
-        tone,
+              tone,
               style,
               emotional_hook: variation.emotional_hook,
               key_motivation: variation.key_motivation,
-              character_count: (variation.headline + variation.body + variation.call_to_action).length,
-              generation_context: Record<string, unknown>$1
-  model: 'gpt-4o',
+              character_count: (variation.headline + variation.body + variation.call_to_action)
+                .length,
+              generation_context: {
+                model: 'gpt-4o',
                 temperature: 0.8,
                 variation_number: i + 1,
-                total_variations: copyVariations.length
-              }
+                total_variations: copyVariations.length,
+              },
             },
             performance_score: Math.floor(Math.random() * 20) + 80, // Simulated initial score
             is_ai_generated: true,
-            created_by: user.id})
-          .select(`
+            created_by: user.id,
+          })
+          .select(
+            `
             *,
             clients(name, slug)
-          `)
+          `
+          )
           .single();
 
         if (error) {
@@ -197,14 +208,13 @@ Make each variation unique while staying within the ${platformSpec.maxLength} ch
       copy_assets: createdCopyAssets,
       count: createdCopyAssets.length,
       platforms_processed: platforms.length,
-      message: `Generated ${createdCopyAssets.length} copy variations across ${platforms.length} platforms`
+      message: `Generated ${createdCopyAssets.length} copy variations across ${platforms.length} platforms`,
     });
-
   } catch (error: any) {
     console.error('Copy generation error:', error);
     return res.status(500).json({
       error: 'Failed to generate copy',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined,
     });
   }
 }
