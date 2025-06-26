@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import compression from 'compression';
 import { loggers } from './logger';
 import { env } from './env';
 import crypto from 'crypto';
@@ -20,24 +19,33 @@ const CACHE_CONTROL = {
 };
 
 // Response compression middleware
-export const compressionMiddleware = compression({
-  // Enable compression for responses > 1KB
-  threshold: 1024,
+export const compressionMiddleware = async () => {
+  try {
+    const compression = (await import('compression')).default;
+    return compression({
+      // Enable compression for responses > 1KB
+      threshold: 1024,
 
-  // Compression level (1-9, higher = better compression but slower)
-  level: 6,
+      // Compression level (1-9, higher = better compression but slower)
+      level: 6,
 
-  // Filter function to determine if response should be compressed
-  filter: (req, res) => {
-    // Don't compress if client doesn't support it
-    if (req.headers['x-no-compression']) {
-      return false;
-    }
+      // Filter function to determine if response should be compressed
+      filter: (req, res) => {
+        // Don't compress if client doesn't support it
+        if (req.headers['x-no-compression']) {
+          return false;
+        }
 
-    // Use compression's default filter
-    return compression.filter(req, res);
-  },
-});
+        // Use compression's default filter
+        return compression.filter(req, res);
+      },
+    });
+  } catch (error) {
+    // Return a no-op middleware if compression is not available
+    loggers.warn('Compression middleware not available:', error);
+    return (req: any, res: any, next: any) => next();
+  }
+};
 
 // Performance headers middleware
 export function performanceHeaders(type: keyof typeof CACHE_CONTROL = 'api') {
