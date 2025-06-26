@@ -94,4 +94,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)', '/api/:path*'],
+  // Disable edge runtime for this middleware due to Supabase dependency
+  runtime: 'nodejs',
 };
