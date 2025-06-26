@@ -4,6 +4,7 @@
  */
 
 import DOMPurify from 'isomorphic-dompurify';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 export interface ValidationRule {
   required?: boolean;
@@ -267,22 +268,22 @@ export function validateField(value: unknown, rule: ValidationRule): string | nu
         }
         break;
       case 'email':
-        if (!isValidEmail(value)) {
+        if (!isValidEmail(String(value))) {
           return 'Must be a valid email address';
         }
         break;
       case 'url':
-        if (!isValidUrl(value)) {
+        if (!isValidUrl(String(value))) {
           return 'Must be a valid URL';
         }
         break;
       case 'uuid':
-        if (!isValidUuid(value)) {
+        if (!isValidUuid(String(value))) {
           return 'Must be a valid UUID';
         }
         break;
       case 'json':
-        if (!isValidJson(value)) {
+        if (!isValidJson(String(value))) {
           return 'Must be valid JSON';
         }
         break;
@@ -324,7 +325,7 @@ export function validateData(data: unknown, schema: ValidationSchema): Validatio
 
   // Validate each field in schema
   Object.keys(schema).forEach((key: string) => {
-    const value = data[key];
+    const value = (data as Record<string, unknown>)[key];
     const rule = schema[key];
 
     if (rule) {
@@ -480,9 +481,9 @@ export const validationSchemas = {
  */
 export function withValidation(
   schema: ValidationSchema,
-  handler: (req: unknown, res: unknown) => Promise<void>
+  handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void>
 ) {
-  return async (req: unknown, res: unknown) => {
+  return async (req: NextApiRequest, res: NextApiResponse) => {
     const validation = validateData(req.body, schema);
 
     if (!validation.isValid) {
@@ -512,8 +513,11 @@ export function sanitizeFileData(file: unknown): {
     return { isValid: false, error: 'No file provided' };
   }
 
+  // Type guard to ensure file has required properties
+  const fileObj = file as { size?: number; type?: string; name?: string };
+
   // Check file size (10MB max)
-  if (file.size > 10 * 1024 * 1024) {
+  if (fileObj.size && fileObj.size > 10 * 1024 * 1024) {
     return { isValid: false, error: 'File too large (max 10MB)' };
   }
 
@@ -530,15 +534,16 @@ export function sanitizeFileData(file: unknown): {
     'application/pdf',
   ];
 
-  if (!allowedTypes.includes(file.type)) {
+  if (fileObj.type && !allowedTypes.includes(fileObj.type)) {
     return { isValid: false, error: 'File type not allowed' };
   }
 
   // Sanitize filename
-  const sanitizedName = file.name
-    .replace(/[^a-zA-Z0-9.-]/g, '_')
-    .replace(/_{2}/g, '_')
-    .toLowerCase();
+  const sanitizedName = (
+    fileObj.name
+      ? fileObj.name.replace(/[^a-zA-Z0-9.-]/g, '_').replace(/_{2}/g, '_')
+      : 'unnamed_file'
+  ).toLowerCase();
 
   return {
     isValid: true,

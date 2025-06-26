@@ -28,6 +28,7 @@ import {
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
 import { getErrorMessage } from '@/utils/errorUtils';
+import { loggers } from '@/lib/logger';
 
 interface PerformanceDashboardProps {
   clientId?: string;
@@ -102,7 +103,12 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ clientId, d
       }
     } catch (error: any) {
       const message = getErrorMessage(error);
-      console.error('Error loading performance data:', error);
+      loggers.analytics.error('Performance data loading failed', {
+        error: message,
+        clientId: targetClientId,
+        filters,
+        dateRange,
+      });
       showNotification('Failed to load performance data', 'error');
     } finally {
       setLoading(false);
@@ -128,7 +134,11 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ clientId, d
         setInsights(data.data);
       }
     } catch (error: any) {
-      console.error('Error loading insights:', error);
+      loggers.analytics.error('Insights loading failed', {
+        error: getErrorMessage(error),
+        clientId: targetClientId,
+        dateRange,
+      });
     }
   };
 
