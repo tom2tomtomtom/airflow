@@ -250,7 +250,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
       if (data.success && data.client) {
         // Update clients list
-        const updatedClients = clients.map((c: unknown) => (c.id === id ? data.client : c));
+        const updatedClients = clients.map((c: Client) => (c.id === id ? data.client : c));
         setClients(updatedClients);
 
         // Update active client if it's the one being updated
@@ -324,7 +324,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
       if (data.success) {
         // Update local state
-        const updatedClients = clients.filter((c: unknown) => c.id !== id);
+        const updatedClients = clients.filter((c: Client) => c.id !== id);
         setClients(updatedClients);
         localStorage.setItem('airwave_clients', JSON.stringify(updatedClients));
 
@@ -342,7 +342,7 @@ export const ClientProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       console.error('Error deleting client:', error);
 
       // Fallback to local deletion
-      const updatedClients = clients.filter((c: unknown) => c.id !== id);
+      const updatedClients = clients.filter((c: Client) => c.id !== id);
       setClients(updatedClients);
       localStorage.setItem('airwave_clients', JSON.stringify(updatedClients));
 

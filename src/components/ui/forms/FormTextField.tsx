@@ -17,7 +17,13 @@ interface FormTextFieldProps extends Omit<TextFieldProps, 'name'> {
   label: string;
   tooltip?: string;
   description?: string;
-  rules?: Record<string, unknown>;
+  rules?: {
+    required?: boolean | string;
+    minLength?: number;
+    maxLength?: number;
+    pattern?: RegExp;
+    validate?: (value: string) => boolean | string;
+  };
   maxLength?: number;
   showCharacterCount?: boolean;
 }
@@ -45,7 +51,7 @@ export const FormTextField: React.FC<FormTextFieldProps> = ({
 
   // Create accessible field props
   const { fieldProps, labelProps, descriptionProps, errorProps } = createAccessibleField(label, {
-    required: Boolean(rules.required),
+    required: Boolean(rules?.required),
     invalid: hasError,
     description,
     errorMessage,
@@ -62,11 +68,12 @@ export const FormTextField: React.FC<FormTextFieldProps> = ({
             color: 'text.primary',
             display: 'flex',
             alignItems: 'center',
-            gap: 0.5 }}
+            gap: 0.5,
+          }}
           {...labelProps}
         >
           {label}
-          {rules.required && (
+          {Boolean(rules?.required) && (
             <Typography component="span" sx={{ color: 'error.main', ml: 0.5 }}>
               *
             </Typography>
@@ -103,7 +110,8 @@ export const FormTextField: React.FC<FormTextFieldProps> = ({
                 backgroundColor: 'background.paper',
                 '&.Mui-error .MuiOutlinedInput-notchedOutline': {
                   borderColor: 'error.main',
-                  borderWidth: 2 },
+                  borderWidth: 2,
+                },
                 '&.Mui-focused.Mui-error .MuiOutlinedInput-notchedOutline': {
                   boxShadow: '0 0 0 4px rgba(239, 68, 68, 0.1)',
                 },
@@ -132,7 +140,8 @@ export const FormTextField: React.FC<FormTextFieldProps> = ({
             variant="caption"
             sx={{
               color: value.length > maxLength * 0.9 ? 'warning.main' : 'text.secondary',
-              fontWeight: value.length > maxLength * 0.9 ? 600 : 400 }}
+              fontWeight: value.length > maxLength * 0.9 ? 600 : 400,
+            }}
           >
             {value.length}/{maxLength}
           </Typography>
