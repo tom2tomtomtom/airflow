@@ -75,6 +75,7 @@ function parseEnvironment() {
           REFRESH_TOKEN_EXPIRY: '30d',
           STORAGE_BUCKET: 'airflow-assets',
           MAX_FILE_SIZE: 52428800,
+          REDIS_URL: process.env.REDIS_URL,
           NODE_ENV: 'development' as const,
           ENABLE_AI_FEATURES: 'false' as const,
           ENABLE_VIDEO_GENERATION: 'false' as const,
