@@ -210,7 +210,7 @@ async function handler(
 }
 
 // Export with authentication and rate limiting middleware
-export default withRateLimit(withAuth(handler), 'ai');
+export default withRateLimit('ai')(withAuth(handler));
 
 export const config = {
   api: {
