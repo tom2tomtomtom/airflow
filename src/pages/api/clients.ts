@@ -316,9 +316,6 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
 
     return successResponse(res, clients, 200, {
       pagination: paginationMeta,
-      timestamp: new Date().toISOString(),
-      optimized: true,
-      query_type: include_stats === 'true' ? 'with_stats' : 'basic',
     });
   } catch (error: any) {
     return handleApiError(res, error, 'handleGet');
