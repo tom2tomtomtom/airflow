@@ -1,10 +1,13 @@
 import { getErrorMessage } from '@/utils/errorUtils';
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@/lib/supabase/server';
 const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('api/video/generations');
 
 const GenerationsFilterSchema = z.object({
   client_id: z.string().uuid().optional(),
@@ -37,7 +40,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     }
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('Video Generations API error:', error);
+    logger.error('Video Generations API error:', error);
     return res.status(500).json({
       error: 'Internal server error',
       details: process.env.NODE_ENV === 'development' ? message : undefined,
@@ -132,7 +135,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   const { data: generations, error, count } = await query;
 
   if (error) {
-    console.error('Error fetching video generations:', error);
+    logger.error('Error fetching video generations:', error);
     return res.status(500).json({ error: 'Failed to fetch video generations' });
   }
 
@@ -225,7 +228,7 @@ async function deleteGeneration(
     .eq('generation_id', generationId);
 
   if (error) {
-    console.error('Error deleting generation:', error);
+    logger.error('Error deleting generation:', error);
     return res.status(500).json({ error: 'Failed to delete generation' });
   }
 
@@ -281,7 +284,7 @@ async function deleteJob(
   const { error } = await supabase.from('video_generations').delete().eq('id', jobId);
 
   if (error) {
-    console.error('Error deleting job:', error);
+    logger.error('Error deleting job:', error);
     return res.status(500).json({ error: 'Failed to delete job' });
   }
 

@@ -1,10 +1,13 @@
 import { getErrorMessage } from '@/utils/errorUtils';
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@/lib/supabase/server';
 const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('api/executions/cancel');
 
 const CancelRequestSchema = z.object({
   reason: z.string().optional(),
@@ -29,7 +32,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     return handleCancel(req, res, user, id);
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('Execution Cancel API error:', error);
+    logger.error('Execution Cancel API error:', error);
     return res.status(500).json({
       error: 'Internal server error',
       details:
@@ -141,7 +144,7 @@ async function handleCancel(
     .single();
 
   if (cancelError) {
-    console.error('Error cancelling execution:', cancelError);
+    logger.error('Error cancelling execution:', cancelError);
     return res.status(500).json({ error: 'Failed to cancel execution' });
   }
 
@@ -326,7 +329,7 @@ async function cleanupTempFiles(
   try {
     // Simulate file cleanup
     process.env.NODE_ENV === 'development' &&
-      console.log('Cleaning up temp files:', tempFiles.length);
+      logger.info('Cleaning up temp files:', { count: tempFiles.length });
     return { success: true, files_cleaned: tempFiles.length };
   } catch (error: any) {
     const message = getErrorMessage(error);

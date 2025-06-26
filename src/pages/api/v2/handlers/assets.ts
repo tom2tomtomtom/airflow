@@ -158,7 +158,7 @@ async function getAssets(req: NextApiRequest, res: NextApiResponse, context: Rou
   const count = filteredAssets.length;
 
   if (error) {
-    throw new Error(`Failed to fetch assets: ${error.message}`);
+    throw new Error(`Failed to fetch assets: ${error}`);
   }
 
   // Map to frontend format
