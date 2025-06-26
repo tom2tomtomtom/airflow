@@ -36,7 +36,7 @@ export function createLazyComponent<T = Record<string, never>>(
     });
 
   return dynamic(safeImportFn, {
-    loading: () => fallback({}),
+    loading: fallback,
     ssr,
   });
 }
@@ -53,12 +53,21 @@ export const LazyVideoEditor = createLazyComponent(
   { ssr: false }
 );
 
-export const LazyAnalytics = createLazyComponent(() => import('@/components/AdvancedAnalytics'), {
-  ssr: false,
-});
+export const LazyAnalytics = createLazyComponent(
+  () =>
+    import('@/components/AdvancedAnalytics') as Promise<{
+      default: ComponentType<Record<string, never>>;
+    }>,
+  {
+    ssr: false,
+  }
+);
 
 export const LazyWorkflowCanvas = createLazyComponent(
-  () => import('@/components/workflow/WorkflowContainer'),
+  () =>
+    import('@/components/workflow/WorkflowContainer') as Promise<{
+      default: ComponentType<Record<string, never>>;
+    }>,
   { ssr: false }
 );
 
@@ -69,22 +78,23 @@ export const LazyBriefUpload = createLazyComponent(() => import('@/components/Br
   ssr: false,
 });
 
-export const LazyAssetManager = createLazyComponent(
-  () => import('@/components/AssetBrowser'),
-  { ssr: false }
-);
+export const LazyAssetManager = createLazyComponent(() => import('@/components/AssetBrowser'), {
+  ssr: false,
+});
 
 /**
  * Lazy load admin components
  */
-export const LazyAdminPanel = createLazyComponent(() => import('@/components/monitoring/MonitoringDashboard'), {
+export const LazyAdminPanel = createLazyComponent(
+  () => import('@/components/monitoring/MonitoringDashboard'),
+  {
+    ssr: false,
+  }
+);
+
+export const LazyUserManagement = createLazyComponent(() => import('@/components/UserMenu'), {
   ssr: false,
 });
-
-export const LazyUserManagement = createLazyComponent(
-  () => import('@/components/UserMenu'),
-  { ssr: false }
-);
 
 /**
  * Code splitting utility for feature modules

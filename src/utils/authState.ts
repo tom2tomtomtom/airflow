@@ -45,7 +45,7 @@ export class AuthStateManager {
   }
 
   private notifyListeners(): void {
-    this.listeners.forEach((listener: unknown) => {
+    this.listeners.forEach((listener: (state: AuthState) => void) => {
       try {
         listener(this.getState());
       } catch (error: unknown) {
@@ -77,7 +77,7 @@ export class AuthStateManager {
         method: 'GET',
         credentials: 'include',
         headers: {
-        'Content-Type': 'application/json',
+          'Content-Type': 'application/json',
         },
       });
 
