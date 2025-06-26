@@ -34,6 +34,9 @@ const envSchema = z.object({
   STORAGE_BUCKET: z.string().default('airflow-assets'),
   MAX_FILE_SIZE: z.coerce.number().default(52428800), // 50MB
 
+  // Cache
+  REDIS_URL: z.string().optional(),
+
   // Environment
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
 
