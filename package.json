@@ -18,7 +18,7 @@
     "test:types": "node scripts/test-types.js",
     "fix:types": "node scripts/migrate-types.js && npm run type-check:phase1",
     "postinstall": "echo 'Install complete'",
-    "prepare": "is-ci || husky",
+    "prepare": "node -e \"if (process.env.CI !== 'true') { try { require('husky').add('.husky/pre-commit', 'npm run pre-commit'); } catch {} }\"",
     "workers": "tsx workers/index.ts",
     "worker:render": "tsx workers/index.ts --only=render",
     "worker:email": "tsx workers/index.ts --only=email",
