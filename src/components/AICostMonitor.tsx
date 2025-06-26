@@ -1,7 +1,7 @@
 // src/components/AICostMonitor.tsx
 // Real-time AI cost monitoring and budget alerts
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Card,
@@ -60,14 +60,7 @@ export const AICostMonitor: React.FC<CostMonitorProps> = ({
   const [expanded, setExpanded] = useState(showDetails);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
 
-  useEffect(() => {
-    fetchUsageStats();
-
-    const interval = setInterval(fetchUsageStats, refreshInterval);
-    return () => clearInterval(interval);
-  }, [userId, refreshInterval]);
-
-  const fetchUsageStats = async () => {
+  const fetchUsageStats = useCallback(async () => {
     try {
       const response = await fetch('/api/ai/usage-report', {
         method: 'POST',
@@ -90,7 +83,14 @@ export const AICostMonitor: React.FC<CostMonitorProps> = ({
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId]);
+
+  useEffect(() => {
+    fetchUsageStats();
+
+    const interval = setInterval(fetchUsageStats, refreshInterval);
+    return () => clearInterval(interval);
+  }, [fetchUsageStats, refreshInterval]);
 
   const getTotalUsage = () => {
     return Object.values(stats).reduce((total, service) => total + service.usage.totalCost, 0);

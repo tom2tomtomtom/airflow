@@ -241,7 +241,8 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
 
         {isDemoMode && (
           <Alert severity="info" sx={{ mb: 3 }} icon={<InfoIcon />}>
-            You're in demo mode. Generated images will be sample images for demonstration purposes.
+            You&apos;re in demo mode. Generated images will be sample images for demonstration
+            purposes.
           </Alert>
         )}
 

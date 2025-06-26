@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('components/CampaignMatrix');
 import {
   Box,
   Paper,
@@ -159,7 +162,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({ campaignId, onRe
         setAssets(data.assets || []);
       }
     } catch (error: any) {
-      console.error('Error loading assets:', error);
+      logger.error('Error loading assets:', error);
       showNotification('Failed to load assets', 'error');
     } finally {
       setLoadingAssets(false);
@@ -304,7 +307,7 @@ export const CampaignMatrix: React.FC<CampaignMatrixProps> = ({ campaignId, onRe
       setCombinations(newCombinations);
       showNotification(`Generated ${newCombinations.length} combinations`, 'success');
     } catch (error: any) {
-      console.error('Error generating combinations:', error);
+      logger.error('Error generating combinations:', error);
       showNotification('Failed to generate combinations', 'error');
     } finally {
       setGenerating(false);
