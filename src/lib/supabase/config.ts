@@ -11,7 +11,8 @@ export interface SupabaseConfig {
 const ENV_VARS = {
   URL: 'NEXT_PUBLIC_SUPABASE_URL',
   ANON_KEY: 'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-  SERVICE_ROLE_KEY: 'SUPABASE_SERVICE_ROLE_KEY'} as const;
+  SERVICE_ROLE_KEY: 'SUPABASE_SERVICE_ROLE_KEY',
+} as const;
 
 // Validate and clean Supabase configuration
 export function validateSupabaseConfig(): SupabaseConfig {
@@ -19,7 +20,23 @@ export function validateSupabaseConfig(): SupabaseConfig {
   const anonKey = process.env[ENV_VARS.ANON_KEY];
   const serviceRoleKey = process.env[ENV_VARS.SERVICE_ROLE_KEY];
 
-  // Validate required fields
+  // In edge function or build environments, provide fallback values
+  if (!url || !anonKey) {
+    // Check if we're in a build or edge environment
+    const isBuildTime = process.env.NODE_ENV === 'production' && !process.env.NETLIFY_DEV;
+    const isEdgeFunction = typeof Deno !== 'undefined';
+
+    if (isBuildTime || isEdgeFunction) {
+      console.warn('Supabase config not available in current environment, using fallback');
+      return {
+        url: url || 'https://placeholder.supabase.co',
+        anonKey: anonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.placeholder.placeholder',
+        serviceRoleKey: serviceRoleKey,
+      };
+    }
+  }
+
+  // Validate required fields for normal operation
   if (!url) {
     throw new Error(`Missing required environment variable: ${ENV_VARS.URL}`);
   }
@@ -72,7 +89,8 @@ export function validateSupabaseConfig(): SupabaseConfig {
   return {
     url: url.trim(),
     anonKey: cleanedAnonKey,
-    serviceRoleKey: cleanedServiceRoleKey};
+    serviceRoleKey: cleanedServiceRoleKey,
+  };
 }
 
 // Get Supabase URL for public access
@@ -94,7 +112,8 @@ export const STORAGE_BUCKETS = {
   AVATARS: 'avatars',
   CAMPAIGNS: 'campaigns',
   CAMPAIGN_ASSETS: 'campaign-assets',
-  ASSET_THUMBNAILS: 'asset-thumbnails'} as const;
+  ASSET_THUMBNAILS: 'asset-thumbnails',
+} as const;
 
 // Default Supabase client options
 export const DEFAULT_CLIENT_OPTIONS = {
@@ -102,14 +121,17 @@ export const DEFAULT_CLIENT_OPTIONS = {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
-    storageKey: 'airwave-auth-token' },
+    storageKey: 'airwave-auth-token',
+  },
   global: {
     headers: {
-        'x-application-name': 'airwave'
-      },
+      'x-application-name': 'airwave',
+    },
   },
   db: {
-    schema: 'public' },
+    schema: 'public',
+  },
   realtime: {
-    enabled: false },
+    enabled: false,
+  },
 } as const;
