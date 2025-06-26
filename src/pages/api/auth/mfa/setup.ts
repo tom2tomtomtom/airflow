@@ -3,6 +3,9 @@ import { getErrorMessage } from '@/utils/errorUtils';
 import { setupMFA } from '@/lib/mfa';
 import { withAuth } from '@/middleware/withAuth';
 import type { AuthenticatedRequest } from '@/middleware/withAuth';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('api/auth/mfa/setup');
 
 interface MFASetupResponse {
   success: boolean;
@@ -46,7 +49,7 @@ async function handler(
     });
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('MFA setup error:', error);
+    logger.error('MFA setup error:', error);
     return res.status(500).json({
       success: false,
       error: 'Failed to setup MFA. Please try again.',

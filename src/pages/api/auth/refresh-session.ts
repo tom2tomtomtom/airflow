@@ -1,5 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { createServerSupabaseClient } from '@supabase/auth-helpers-nextjs';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('api/auth/refresh-session');
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -67,7 +70,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       },
     });
   } catch (error: any) {
-    console.error('Session refresh error:', error);
+    logger.error('Session refresh error:', error);
     return res.status(500).json({
       success: false,
       error: 'Internal server error',

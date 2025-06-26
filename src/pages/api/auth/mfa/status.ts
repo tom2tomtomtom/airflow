@@ -3,6 +3,9 @@ import { getErrorMessage } from '@/utils/errorUtils';
 import { supabase } from '@/lib/supabase';
 import { withAuth } from '@/middleware/withAuth';
 import type { AuthenticatedRequest } from '@/middleware/withAuth';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('api/auth/mfa/status');
 
 interface MFAStatusResponse {
   success: boolean;
@@ -37,12 +40,12 @@ async function handler(
     if (!supabase) {
       return res.status(500).json({ success: false, error: 'Database connection not available' });
     }
-    
+
     // Get comprehensive MFA status using the database function
     const { data, error } = await supabase.rpc('get_mfa_status', { p_user_id: user.id });
 
     if (error) {
-      console.error('Error fetching MFA status:', error);
+      logger.error('Error fetching MFA status:', error);
       return res.status(500).json({
         success: false,
         error: 'Failed to fetch MFA status',
@@ -63,7 +66,7 @@ async function handler(
     });
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('MFA status error:', error);
+    logger.error('MFA status error:', error);
     return res.status(500).json({
       success: false,
       error: 'Failed to get MFA status. Please try again.',

@@ -1,9 +1,12 @@
 import { getErrorMessage } from '@/utils/errorUtils';
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@supabase/supabase-js';
 import { WebhookManager } from '../../../../lib/webhooks/webhookManager';
 import { withErrorHandler } from '@/lib/errors/errorHandler';
 import { sendRenderCompleteEmail } from '@/lib/email/resend';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('api/webhooks/creatomate');
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -47,7 +50,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   const payload: CreatomateWebhookPayload = req.body;
 
   process.env.NODE_ENV === 'development' &&
-    console.log('Received Creatomate webhook:', payload.event);
+    logger.info('Received Creatomate webhook:', { event: payload.event });
   try {
     // Handle different event types
     switch (payload.event) {
@@ -61,13 +64,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 
       default:
         process.env.NODE_ENV === 'development' &&
-          console.log('Unknown webhook event:', payload.event);
+          logger.warn('Unknown webhook event:', { event: payload.event });
     }
 
     res.status(200).json({ success: true });
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('Error processing Creatomate webhook:', error);
+    logger.error('Error processing Creatomate webhook:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 }
@@ -76,7 +79,7 @@ async function handleRenderCompleted(payload: CreatomateWebhookPayload): Promise
   const { render_id, url, metadata } = payload;
 
   if (!metadata?.execution_id) {
-    console.error('No execution_id in webhook metadata');
+    logger.error('No execution_id in webhook metadata');
     return;
   }
 
@@ -98,7 +101,7 @@ async function handleRenderCompleted(payload: CreatomateWebhookPayload): Promise
     .single();
 
   if (updateError) {
-    console.error('Failed to update execution:', updateError);
+    logger.error('Failed to update execution:', updateError);
     throw updateError;
   }
 
@@ -140,7 +143,7 @@ async function handleRenderFailed(payload: CreatomateWebhookPayload): Promise<vo
   const { render_id, error, metadata } = payload;
 
   if (!metadata?.execution_id) {
-    console.error('No execution_id in webhook metadata');
+    logger.error('No execution_id in webhook metadata');
     return;
   }
 

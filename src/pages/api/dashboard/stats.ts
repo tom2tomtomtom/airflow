@@ -76,7 +76,7 @@ async function getDashboardStats(userId: string): Promise<DashboardStats> {
   if (!supabase) {
     throw new Error('Database connection not available');
   }
-  
+
   // Get user's accessible clients
   const { data: userClients } = await supabase
     .from('user_clients')
@@ -235,7 +235,7 @@ async function getRecentActivities(clientIds: string[], userId: string): Promise
     if (!supabase) {
       throw new Error('Database connection not available');
     }
-    
+
     // Get recent campaigns
     const { data: campaigns } = await supabase
       .from('campaigns')
@@ -327,6 +327,10 @@ async function getRecentActivities(clientIds: string[], userId: string): Promise
 
 async function getPerformanceMetrics(clientIds: string[]): Promise<any> {
   try {
+    if (!supabase) {
+      throw new Error('Database connection not available');
+    }
+
     // Get campaign analytics for accessible clients
     const { data: analytics } = await supabase
       .from('campaign_analytics')

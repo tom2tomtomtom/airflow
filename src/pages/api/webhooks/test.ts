@@ -1,5 +1,5 @@
 import { getErrorMessage } from '@/utils/errorUtils';
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import { withErrorHandler } from '@/lib/errors/errorHandler';
 import { withAPIRateLimit } from '@/lib/rate-limiter';
 import { WebhookManager } from '../../../../lib/webhooks/webhookManager';
@@ -14,23 +14,23 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
   if (process.env.NODE_ENV === 'production') {
     return res.status(404).json({ error: 'Not found' });
   }
-  
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
-  
+
   const { event, data, client_id } = req.body;
-  
+
   if (!event) {
     throw new ValidationError('Event type is required');
   }
-  
+
   // Validate event type
   const validEvents = Object.values(WebhookManager.EVENTS);
-  if (!validEvents.includes(_event)) {
+  if (!validEvents.includes(event)) {
     throw new ValidationError(`Invalid event type. Valid events: ${validEvents.join(', ')}`);
   }
-  
+
   try {
     // Trigger the webhook event
     const webhookManager = WebhookManager.getInstance();
@@ -39,17 +39,20 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
         type: event,
         data: data || {
           test: true,
-          timestamp: new Date().toISOString() },
-  metadata: {
-        source: 'test_endpoint',
-          triggered_at: new Date().toISOString()
-      }},
+          timestamp: new Date().toISOString(),
+        },
+        metadata: {
+          source: 'test_endpoint',
+          triggered_at: new Date().toISOString(),
+        },
+      },
       client_id
     );
-    
+
     res.status(200).json({
       success: true,
-      message: `Webhook event '${event}' triggered successfully`});
+      message: `Webhook event '${event}' triggered successfully`,
+    });
   } catch (error: any) {
     const message = getErrorMessage(error);
     console.error('Failed to trigger test webhook:', error);

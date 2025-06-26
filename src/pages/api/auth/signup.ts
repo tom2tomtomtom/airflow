@@ -1,6 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getErrorMessage } from '@/utils/errorUtils';
 import { supabase } from '@/lib/supabase';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('api/auth/signup');
 
 interface SignupRequest {
   email: string;
@@ -58,12 +61,12 @@ export default async function handler(
   try {
     // Debug logging
     if (process.env.NODE_ENV === 'development') {
-      console.log('Starting signup process for email:', email);
+      logger.info('Starting signup process for email:', { email });
     }
 
     // Check if Supabase is properly configured
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-      console.error('Supabase environment variables not configured');
+      logger.error('Supabase environment variables not configured');
       return res.status(500).json({
         success: false,
         error: 'Authentication service not configured. Please contact support.',
@@ -83,9 +86,9 @@ export default async function handler(
     if (!supabase) {
       return res.status(500).json({ success: false, error: 'Database connection not available' });
     }
-    
+
     if (process.env.NODE_ENV === 'development') {
-      console.log('Creating user with Supabase auth...');
+      logger.info('Creating user with Supabase auth...');
     }
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
@@ -98,7 +101,7 @@ export default async function handler(
     });
 
     if (authError) {
-      console.error('Supabase signup error:', authError);
+      logger.error('Supabase signup error:', authError);
 
       // Provide user-friendly error messages
       let errorMessage = authError.message;
@@ -128,9 +131,9 @@ export default async function handler(
 
     // Check if email confirmation is required
     process.env.NODE_ENV === 'development' &&
-      console.log('User created, checking confirmation requirement...');
+      logger.info('User created, checking confirmation requirement...');
     if (!authData.session) {
-      process.env.NODE_ENV === 'development' && console.log('Email confirmation required');
+      process.env.NODE_ENV === 'development' && logger.info('Email confirmation required');
       return res.status(200).json({
         success: true,
         message: 'Please check your email for a confirmation link before logging in.',
@@ -139,7 +142,7 @@ export default async function handler(
 
     // If no email confirmation required, create user profile
     process.env.NODE_ENV === 'development' &&
-      console.log('No email confirmation required, creating profile...');
+      logger.info('No email confirmation required, creating profile...');
     // First check if profiles table exists by attempting to query it
     const { data: existingProfile, error: profileCheckError } = await supabase
       .from('profiles')
@@ -148,7 +151,7 @@ export default async function handler(
       .single();
 
     if (profileCheckError && profileCheckError.code !== 'PGRST116') {
-      console.error('Error checking profile:', profileCheckError);
+      logger.error('Error checking profile:', profileCheckError);
       // Continue anyway - the user is created in auth
     }
 
@@ -164,7 +167,7 @@ export default async function handler(
       });
 
       if (profileError) {
-        console.error('Error creating profile:', profileError);
+        logger.error('Error creating profile:', profileError);
         // Continue anyway - the auth user is created
       }
     }
@@ -181,7 +184,7 @@ export default async function handler(
     });
   } catch (error) {
     const message = getErrorMessage(error);
-    console.error('Signup error:', error);
+    logger.error('Signup error:', error);
     return res.status(500).json({
       success: false,
       error: 'An unexpected error occurred. Please try again later.',

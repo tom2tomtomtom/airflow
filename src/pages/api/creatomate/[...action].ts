@@ -1,5 +1,8 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('api/creatomate/action');
 
 interface CreatomateTestResponse {
   success: boolean;
@@ -31,7 +34,7 @@ export default async function handler(
 
     // Log action processing in development only
     if (process.env.NODE_ENV === 'development') {
-      console.log('Processing Creatomate action:', actionPath);
+      logger.info('Processing Creatomate action:', { action: actionPath });
     }
     switch (actionPath) {
       case 'test':
@@ -159,7 +162,7 @@ export default async function handler(
       action: actionPath,
     });
   } catch (error: any) {
-    console.error(`Creatomate ${actionPath} test failed:`, error);
+    logger.error(`Creatomate ${actionPath} test failed:`, error);
 
     // Handle specific Creatomate errors
     let errorMessage = 'Unknown error';

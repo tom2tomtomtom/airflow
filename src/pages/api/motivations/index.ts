@@ -1,5 +1,5 @@
 import { getErrorMessage } from '@/utils/errorUtils';
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@/lib/supabase/server';
 const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';

@@ -43,7 +43,7 @@ async function searchClients(
     console.error('Database connection not available');
     return [];
   }
-  
+
   const { data, error } = await supabase
     .from('clients')
     .select('id, name, description, created_at, brand_colors')
@@ -81,7 +81,7 @@ async function searchCampaigns(
     console.error('Database connection not available');
     return [];
   }
-  
+
   const { data, error } = await supabase
     .from('campaigns')
     .select(
@@ -117,6 +117,11 @@ async function searchCampaigns(
  * Search across assets
  */
 async function searchAssets(query: string, userId: string, limit: number): Promise<SearchResult[]> {
+  if (!supabase) {
+    console.error('Database connection not available');
+    return [];
+  }
+
   const { data, error } = await supabase
     .from('assets')
     .select('id, name, description, type, created_at, url')

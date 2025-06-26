@@ -1,10 +1,13 @@
 import { getErrorMessage } from '@/utils/errorUtils';
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@/lib/supabase/server';
 const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('api/approvals/index');
 
 const ApprovalCreateSchema = z.object({
   item_type: z.enum(['motivation', 'content_variation', 'execution', 'campaign']),
@@ -46,7 +49,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     }
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('Approvals API error:', error);
+    logger.error('Approvals API error:', error);
     return res.status(500).json({
       error: 'Internal server error',
       details:
@@ -142,7 +145,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   const { data, error, count } = await query;
 
   if (error) {
-    console.error('Error fetching approvals:', error);
+    logger.error('Error fetching approvals:', error);
     return res.status(500).json({ error: 'Failed to fetch approvals' });
   }
 
@@ -246,7 +249,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
     .single();
 
   if (error) {
-    console.error('Error creating approval:', error);
+    logger.error('Error creating approval:', error);
     return res.status(500).json({ error: 'Failed to create approval' });
   }
 
@@ -359,7 +362,7 @@ async function getApprovalItemDetails(itemType: string, itemId: string): Promise
     };
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('Error getting approval item details:', error);
+    logger.error('Error getting approval item details:', error);
     return null;
   }
 }
@@ -423,7 +426,7 @@ async function determineApprovalAssignee(
     return managers && managers.length > 0 ? managers[0].user_id : null;
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('Error determining approval assignee:', error);
+    logger.error('Error determining approval assignee:', error);
     return null;
   }
 }
@@ -445,7 +448,7 @@ async function updateItemApprovalStatus(
       .eq('id', itemId);
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('Error updating item approval status:', error);
+    logger.error('Error updating item approval status:', error);
   }
 }
 
@@ -454,10 +457,10 @@ async function triggerApprovalNotification(approval: any, action: string): Promi
     // In a full implementation, this would trigger real-time notifications
     // via WebSocket, email, or push notifications
     process.env.NODE_ENV === 'development' &&
-      console.log(`Triggering approval notification for action: ${action}`);
+      logger.info(`Triggering approval notification for action: ${action}`);
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('Error triggering approval notification:', error);
+    logger.error('Error triggering approval notification:', error);
   }
 }
 

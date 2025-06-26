@@ -1,5 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('api/auth/logout');
 
 interface LogoutResponse {
   success: boolean;
@@ -25,7 +28,7 @@ export default async function handler(
           await supabase.auth.signOut();
         }
       } catch (error: any) {
-        console.error('Supabase signout error:', error);
+        logger.error('Supabase signout error:', error);
         // Continue with cookie clearing even if Supabase signout fails
       }
     }
@@ -38,9 +41,10 @@ export default async function handler(
 
     return res.status(200).json({
       success: true,
-      message: 'Logged out successfully' });
+      message: 'Logged out successfully',
+    });
   } catch (error: any) {
-    console.error('Logout error:', error);
+    logger.error('Logout error:', error);
 
     // Still clear cookies even if there's an error
     res.setHeader('Set-Cookie', [
@@ -50,6 +54,7 @@ export default async function handler(
 
     return res.status(200).json({
       success: true,
-      message: 'Logged out successfully' });
+      message: 'Logged out successfully',
+    });
   }
 }
