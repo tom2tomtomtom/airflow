@@ -232,6 +232,10 @@ async function getDashboardStats(userId: string): Promise<DashboardStats> {
 
 async function getRecentActivities(clientIds: string[], userId: string): Promise<Array<any>> {
   try {
+    if (!supabase) {
+      throw new Error('Database connection not available');
+    }
+    
     // Get recent campaigns
     const { data: campaigns } = await supabase
       .from('campaigns')

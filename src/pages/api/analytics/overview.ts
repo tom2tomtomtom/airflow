@@ -258,6 +258,10 @@ async function getTopPerformingContent(
   endDate: Date
 ): Promise<Array<any>> {
   try {
+    if (!supabase) {
+      throw new Error('Database connection not available');
+    }
+    
     // Get campaigns with their analytics, ordered by performance
     const { data: campaigns } = await supabase
       .from('campaigns')
@@ -351,6 +355,10 @@ async function calculateTrends(clientIds: string[], startDate: Date, endDate: Da
   const previousEndDate = new Date(startDate.getTime() - 1);
 
   try {
+    if (!supabase) {
+      throw new Error('Database connection not available');
+    }
+    
     // Get current period data
     const { data: currentCampaigns } = await supabase
       .from('campaigns')

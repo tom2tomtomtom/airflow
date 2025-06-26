@@ -77,6 +77,11 @@ async function searchCampaigns(
   userId: string,
   limit: number
 ): Promise<SearchResult[]> {
+  if (!supabase) {
+    console.error('Database connection not available');
+    return [];
+  }
+  
   const { data, error } = await supabase
     .from('campaigns')
     .select(
