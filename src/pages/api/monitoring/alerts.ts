@@ -223,7 +223,7 @@ async function handleUpdateRule(req: NextApiRequest, res: NextApiResponse) {
       });
     }
 
-    alerting.updateRule(ruleId, validatedData);
+    alerting.updateRule(ruleId, validatedData as Partial<AlertRule>);
     const updatedRule = alerting.getRule(ruleId);
 
     return res.status(200).json({

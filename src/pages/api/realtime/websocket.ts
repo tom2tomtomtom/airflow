@@ -95,13 +95,13 @@ async function handleGetEvents(req: NextApiRequest, res: NextApiResponse, user: 
 
     // Get additional context for events
     const enrichedEvents = await Promise.all(
-      (events || []).map(async (_event) => {
-        const enrichedEvent = { ...event };
+      (events || []).map(async (event) => {
+        const enrichedEvent = { ...event, context: {} };
         
         // Add context based on event type
         switch (event.type) {
           case 'execution_status_change':
-            if (event.data.execution_id) {
+            if (event.data?.execution_id) {
               const { data: execution } = await supabase
                 .from('executions')
                 .select(`
@@ -116,7 +116,7 @@ async function handleGetEvents(req: NextApiRequest, res: NextApiResponse, user: 
             break;
           
           case 'approval_decision':
-            if (event.data.approval_id) {
+            if (event.data?.approval_id) {
               const { data: approval } = await supabase
                 .from('approvals')
                 .select(`
