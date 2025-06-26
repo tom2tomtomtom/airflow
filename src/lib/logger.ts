@@ -109,12 +109,13 @@ class Logger {
 
   error(message: string, error?: Error | unknown, context?: LogContext) {
     const errorContext = { ...context };
-    
+
     if (error instanceof Error) {
       errorContext.error = {
         name: error.name,
         message: error.message,
-        stack: error.stack};
+        stack: error.stack,
+      };
     } else if (error) {
       errorContext.error = String(error);
     }
@@ -145,7 +146,9 @@ export const loggers = {
   ai: createLogger('ai'),
   storage: createLogger('storage'),
   general: createLogger('app'),
-  supabase: createLogger('supabase')};
+  supabase: createLogger('supabase'),
+  analytics: createLogger('analytics'),
+};
 
 // Performance logging utility
 export function logPerformance<T>(
@@ -154,24 +157,24 @@ export function logPerformance<T>(
   fn: () => T | Promise<T>
 ): T | Promise<T> {
   const start = performance.now();
-  
+
   try {
     const result = fn();
-    
+
     if (result instanceof Promise) {
       return result
-        .then((value) => {
+        .then(value => {
           const duration = performance.now() - start;
           logger.debug(`${operation} completed`, { duration: `${duration.toFixed(2)}ms` });
           return value;
         })
-        .catch((error) => {
+        .catch(error => {
           const duration = performance.now() - start;
           logger.error(`${operation} failed`, error, { duration: `${duration.toFixed(2)}ms` });
           throw error;
         });
     }
-    
+
     const duration = performance.now() - start;
     logger.debug(`${operation} completed`, { duration: `${duration.toFixed(2)}ms` });
     return result;
@@ -192,20 +195,21 @@ interface CustomRequest extends Request {
 export function logRequest(req: CustomRequest, res: Response, next: NextFunction) {
   const logger = loggers.api;
   const start = Date.now();
-  
+
   // Log request
   const userAgent = req.headers['user-agent'];
   logger.info(`${req.method} ${req.url}`, {
     method: req.method,
     url: req.url,
     ip: req.ip || req.connection?.remoteAddress || 'unknown',
-    userAgent: Array.isArray(userAgent) ? userAgent[0] : userAgent || 'unknown'});
+    userAgent: Array.isArray(userAgent) ? userAgent[0] : userAgent || 'unknown',
+  });
 
   // Override res.end to log response
   const originalEnd = res.end.bind(res);
-  res.end = function(chunk?: unknown, encoding?: unknown, cb?: unknown) {
+  res.end = function (chunk?: unknown, encoding?: unknown, cb?: unknown) {
     res.end = originalEnd;
-    
+
     // Call original end with proper arguments
     if (typeof chunk === 'function') {
       const result = originalEnd(chunk);
@@ -220,14 +224,15 @@ export function logRequest(req: CustomRequest, res: Response, next: NextFunction
       logResponse();
       return result;
     }
-    
+
     function logResponse() {
       const duration = Date.now() - start;
       logger.info(`${req.method} ${req.url} ${res.statusCode}`, {
         method: req.method,
         url: req.url,
         statusCode: res.statusCode,
-        duration: `${duration}ms`});
+        duration: `${duration}ms`,
+      });
     }
   };
 

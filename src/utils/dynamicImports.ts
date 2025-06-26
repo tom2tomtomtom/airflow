@@ -27,9 +27,14 @@ export function createLazyComponent<T = Record<string, never>>(
     ssr?: boolean;
   } = {}
 ) {
-  const { fallback = LoadingFallback, ssr = false } = options;
+  const { fallback = LoadingFallback, errorFallback = ErrorFallback, ssr = false } = options;
 
-  return dynamic(importFn, {
+  const safeImportFn = () =>
+    importFn().catch(error => ({
+      default: () => errorFallback({ error }) as JSX.Element,
+    }));
+
+  return dynamic(safeImportFn, {
     loading: fallback,
     ssr,
   });

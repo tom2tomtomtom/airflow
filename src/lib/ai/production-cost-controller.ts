@@ -131,6 +131,9 @@ export class ProductionAICostController {
       startOfMonth.setDate(1);
       startOfMonth.setHours(0, 0, 0, 0);
 
+      if (!supabase) {
+        throw new Error('Supabase client not available');
+      }
       const { data, error } = await supabase
         .from('ai_usage_tracking')
         .select('tokens_used, cost')
@@ -167,6 +170,10 @@ export class ProductionAICostController {
     metadata?: Record<string, any>
   ): Promise<boolean> {
     try {
+      if (!supabase) {
+        console.error('Supabase client not available for usage tracking');
+        return false;
+      }
       const { error } = await supabase.from('ai_usage_tracking').insert({
         user_id: userId,
         service,
@@ -196,7 +203,7 @@ export class ProductionAICostController {
   /**
    * Get full budget report for user
    */
-  async getFullReport(userId: string): Promise<void> {
+  async getFullReport(userId: string): Promise<any> {
     const services = ['openai', 'anthropic', 'elevenlabs'] as const;
     const report: any = { services: {} };
 
