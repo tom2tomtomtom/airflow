@@ -6,6 +6,7 @@
 
 import { NextApiRequest, NextApiResponse } from 'next';
 import crypto from 'crypto';
+import { loggers } from '@/lib/logger';
 
 export interface CsrfOptions {
   tokenLength?: number;
@@ -73,7 +74,7 @@ function validateCsrfToken(token: string, cookieToken: string): boolean {
 
     return crypto.timingSafeEqual(Buffer.from(token, 'hex'), Buffer.from(cookieToken, 'hex'));
   } catch (error) {
-    console.error('CSRF token validation error:', error);
+    loggers.auth.error('CSRF token validation error', error);
     return false;
   }
 }
@@ -85,13 +86,12 @@ function extractTokenFromRequest(req: NextApiRequest, headerName: string): strin
   // Try header first
   const headerToken = req.headers[headerName] as string;
 
-  if (process.env.NODE_ENV !== 'production') {
-    console.log('ExtractToken Debug:', {
-      headerName,
-      headerToken,
-      allHeaders: req.headers,
-    });
-  }
+  loggers.auth.debug('CSRF token extraction', {
+    headerName,
+    hasToken: !!headerToken,
+    method: req.method,
+    url: req.url,
+  });
   if (headerToken) {
     return headerToken;
   }
@@ -205,18 +205,17 @@ export function withCsrfProtection(
       // For state-changing methods, validate the token
       const submittedToken = extractTokenFromRequest(req, config.headerName);
 
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('CSRF Debug:', {
-          method,
-          submittedToken: submittedToken ? submittedToken.slice(0, 8) + '...' : 'null',
-          expectedToken: csrfToken.slice(0, 8) + '...',
-          headers: Object.keys(req.headers || {}),
-          headerName: config.headerName,
-        });
-      }
+      loggers.auth.debug('CSRF token validation', {
+        method,
+        hasSubmittedToken: !!submittedToken,
+        hasCsrfToken: !!csrfToken,
+        path,
+      });
 
       if (!submittedToken) {
-        console.warn(`CSRF protection: Missing token for ${method} ${path}`, {
+        loggers.auth.warn('CSRF protection: Missing token', {
+          method,
+          path,
           userAgent: req.headers?.['user-agent'] || 'unknown',
           ip:
             req.headers?.['x-forwarded-for'] || (req as any).connection?.remoteAddress || 'unknown',
@@ -231,9 +230,9 @@ export function withCsrfProtection(
       }
 
       if (!config.validateToken(submittedToken, csrfToken)) {
-        console.warn(`CSRF protection: Invalid token for ${method} ${path}`, {
-          submittedToken: submittedToken.slice(0, 8) + '...',
-          expectedToken: csrfToken.slice(0, 8) + '...',
+        loggers.auth.warn('CSRF protection: Invalid token', {
+          method,
+          path,
           userAgent: req.headers?.['user-agent'] || 'unknown',
           ip:
             req.headers?.['x-forwarded-for'] || (req as any).connection?.remoteAddress || 'unknown',
@@ -253,12 +252,9 @@ export function withCsrfProtection(
       // Store token in request object for handler access
       (req as any).csrfToken = csrfToken;
 
-      // Log successful CSRF validation in development
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`[CSRF] Token validated for ${method} ${path}`);
-      }
+      loggers.auth.debug('CSRF token validation successful', { method, path });
     } catch (error) {
-      console.error('CSRF middleware error:', error);
+      loggers.auth.error('CSRF middleware error', error);
 
       return res.status(500).json({
         success: false,
