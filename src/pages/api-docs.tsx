@@ -1,23 +1,12 @@
 import React from 'react';
 import Head from 'next/head';
-import dynamic from 'next/dynamic';
-import { Box, Typography, Paper, CircularProgress } from '@mui/material';
+import { Box, Typography, Paper } from '@mui/material';
 import DashboardLayout from '@/components/DashboardLayout';
-import { swaggerSpec } from '@/lib/swagger';
-
-// Dynamically import SwaggerUI to avoid SSR issues
-const SwaggerUI = dynamic(() => import('swagger-ui-react'), {
-  loading: () => (
-    <Box display="flex" justifyContent="center" py={4}>
-      <CircularProgress />
-    </Box>
-  ),
-  ssr: false }) as any;
 
 export default function ApiDocsPage() {
   return (
     <>
-       <Head>
+      <Head>
         <title>API Documentation - Airflow</title>
         <meta name="description" content="Comprehensive API documentation for Airflow platform" />
       </Head>
@@ -53,8 +42,15 @@ export default function ApiDocsPage() {
             </Typography>
           </Paper>
 
-          <Paper sx={{ p: 2 }}>
-            <SwaggerUI spec={swaggerSpec} />
+          <Paper sx={{ p: 4, textAlign: 'center' }}>
+            <Typography variant="h6" gutterBottom>
+              API Documentation
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Interactive API documentation will be available here soon.
+              <br />
+              For now, please refer to the API endpoints in your developer tools.
+            </Typography>
           </Paper>
         </Box>
       </DashboardLayout>
@@ -64,6 +60,6 @@ export default function ApiDocsPage() {
 
 export async function getStaticProps() {
   return {
-    props: {}
+    props: {},
   };
 }
