@@ -157,7 +157,7 @@ export class CampaignRenderer {
         briefId: populatedTemplate.briefId,
         quality,
         format,
-        outputFormats
+        outputFormatsCount: outputFormats.length
       });
 
       // Validate render request
@@ -252,7 +252,7 @@ export class CampaignRenderer {
     } catch (error: any) {
       const classified = classifyError(error as Error, {
         route: 'campaign-renderer',
-        metadata: { 
+        payload: { 
           templateId: populatedTemplate.templateId,
           briefId: populatedTemplate.briefId,
           quality,

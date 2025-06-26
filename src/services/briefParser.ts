@@ -107,7 +107,7 @@ export class BriefParser {
     } catch (error: any) {
       const classified = classifyError(error as Error, {
         route: 'brief-parser',
-        metadata: { fileName: file.name, fileSize: file.size },
+        payload: { fileName: file.name, fileSize: file.size },
       });
 
       logger.error('Brief parsing failed', classified.originalError);
@@ -504,6 +504,6 @@ export const parseBrief = (file: File, options?: BriefExtractionOptions): Promis
 
 export const validateBrief = (
   brief: ParsedBrief
-): Promise<ReturnType<BriefParser['validateParsedBrief']>> => {
+): ReturnType<BriefParser['validateParsedBrief']> => {
   return getBriefParser().validateParsedBrief(brief);
 };

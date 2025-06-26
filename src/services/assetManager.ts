@@ -275,7 +275,7 @@ export class AssetManager {
     } catch (error: any) {
       const classified = classifyError(error as Error, {
         route: 'asset-manager',
-        metadata: { fileName: file.name, briefId, fileSize: file.size }
+        payload: { fileName: file.name, briefId, fileSize: file.size }
       });
 
       logger.error('Asset upload failed', classified.originalError);
