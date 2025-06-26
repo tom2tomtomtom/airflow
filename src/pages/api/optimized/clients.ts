@@ -109,7 +109,7 @@ async function getOptimizedClients(
   }
 
   // Transform data for response
-  const clients: Client[] = (result.data || []).map((client: any) => ({
+  const clients: Client[] = ((result as any).data || []).map((client: any) => ({
     id: client.id,
     name: client.name,
     industry: client.industry,
@@ -119,7 +119,7 @@ async function getOptimizedClients(
     campaign_count: client.campaigns?.length || 0,
   }));
 
-  const total = result.count || 0;
+  const total = (result as any).count || 0;
   const queryTime = Date.now() - startTime;
 
   return {
