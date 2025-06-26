@@ -103,7 +103,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ clientId, d
       }
     } catch (error: any) {
       const message = getErrorMessage(error);
-      loggers.analytics.error('Performance data loading failed', {
+      loggers.general.error('Performance data loading failed', {
         error: message,
         clientId: targetClientId,
         filters,
@@ -134,7 +134,7 @@ const PerformanceDashboard: React.FC<PerformanceDashboardProps> = ({ clientId, d
         setInsights(data.data);
       }
     } catch (error: any) {
-      loggers.analytics.error('Insights loading failed', {
+      loggers.general.error('Insights loading failed', {
         error: getErrorMessage(error),
         clientId: targetClientId,
         dateRange,
