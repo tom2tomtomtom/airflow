@@ -30,12 +30,13 @@ export function createLazyComponent<T = Record<string, never>>(
   const { fallback = LoadingFallback, errorFallback = ErrorFallback, ssr = false } = options;
 
   const safeImportFn = () =>
-    importFn().catch(error => ({
-      default: () => errorFallback({ error }) as JSX.Element,
-    }));
+    importFn().catch(error => {
+      const ErrorComponent = () => errorFallback({ error });
+      return { default: ErrorComponent as ComponentType<T> };
+    });
 
   return dynamic(safeImportFn, {
-    loading: fallback,
+    loading: () => fallback({}),
     ssr,
   });
 }
@@ -43,45 +44,45 @@ export function createLazyComponent<T = Record<string, never>>(
 /**
  * Lazy load heavy dashboard components
  */
-export const LazyDashboard = createLazyComponent(() => import('@/components/Dashboard/Dashboard'), {
+export const LazyDashboard = createLazyComponent(() => import('@/components/DashboardLayout'), {
   ssr: false,
 });
 
 export const LazyVideoEditor = createLazyComponent(
-  () => import('@/components/VideoEditor/VideoEditor'),
+  () => import('@/components/VideoExecutionPanel'),
   { ssr: false }
 );
 
-export const LazyAnalytics = createLazyComponent(() => import('@/components/Analytics/Analytics'), {
+export const LazyAnalytics = createLazyComponent(() => import('@/components/AdvancedAnalytics'), {
   ssr: false,
 });
 
 export const LazyWorkflowCanvas = createLazyComponent(
-  () => import('@/components/Workflow/WorkflowCanvas'),
+  () => import('@/components/workflow/WorkflowContainer'),
   { ssr: false }
 );
 
 /**
  * Lazy load heavy form components
  */
-export const LazyBriefUpload = createLazyComponent(() => import('@/components/Forms/BriefUpload'), {
+export const LazyBriefUpload = createLazyComponent(() => import('@/components/BriefUploadModal'), {
   ssr: false,
 });
 
 export const LazyAssetManager = createLazyComponent(
-  () => import('@/components/Assets/AssetManager'),
+  () => import('@/components/AssetBrowser'),
   { ssr: false }
 );
 
 /**
  * Lazy load admin components
  */
-export const LazyAdminPanel = createLazyComponent(() => import('@/components/Admin/AdminPanel'), {
+export const LazyAdminPanel = createLazyComponent(() => import('@/components/monitoring/MonitoringDashboard'), {
   ssr: false,
 });
 
 export const LazyUserManagement = createLazyComponent(
-  () => import('@/components/Admin/UserManagement'),
+  () => import('@/components/UserMenu'),
   { ssr: false }
 );
 
