@@ -92,11 +92,11 @@ class AICostController {
     return new AICostController();
   }
 
-  async getBudgetStatus(): Promise<void> {
+  async getBudgetStatus(): Promise<{ status: string; remaining: number }> {
     return { status: 'healthy', remaining: 1000 };
   }
 
-  async getTotalSpent(): Promise<void> {
+  async getTotalSpent(): Promise<number> {
     return 0;
   }
 
