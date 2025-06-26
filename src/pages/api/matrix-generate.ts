@@ -32,6 +32,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     lock_fields = [],
     variation_count,
   } = parseResult.data;
+  
+  if (!supabase) {
+    return res.status(500).json({ success: false, message: 'Database connection not available' });
+  }
+  
   // Fetch template, assets, and content
   const { data: template, error: templateError } = await supabase
     .from('templates')

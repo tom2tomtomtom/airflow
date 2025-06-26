@@ -23,6 +23,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
+    if (!supabase) {
+      return res.status(500).json({ success: false, message: 'Database connection not available' });
+    }
+    
     let jobId = job_id as string;
 
     // If only asset_id provided, get job_id from asset metadata

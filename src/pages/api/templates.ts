@@ -41,6 +41,10 @@ function removeUndefined<T extends Record<string, any>>(obj: T): T {
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+  if (!supabase) {
+    return res.status(500).json({ error: 'Database connection not available' });
+  }
+  
   switch (req.method) {
     case 'GET': {
       // Get all templates

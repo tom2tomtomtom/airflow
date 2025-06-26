@@ -73,6 +73,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
 }
 
 async function getDashboardStats(userId: string): Promise<DashboardStats> {
+  if (!supabase) {
+    throw new Error('Database connection not available');
+  }
+  
   // Get user's accessible clients
   const { data: userClients } = await supabase
     .from('user_clients')

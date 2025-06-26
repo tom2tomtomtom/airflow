@@ -39,6 +39,11 @@ async function searchClients(
   userId: string,
   limit: number
 ): Promise<SearchResult[]> {
+  if (!supabase) {
+    console.error('Database connection not available');
+    return [];
+  }
+  
   const { data, error } = await supabase
     .from('clients')
     .select('id, name, description, created_at, brand_colors')

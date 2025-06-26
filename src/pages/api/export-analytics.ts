@@ -21,6 +21,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
   const { campaign_id, user_id: _user_id, export_type } = parseResult.data;
 
+  if (!supabase) {
+    return res.status(500).json({ success: false, message: 'Database connection not available' });
+  }
+
   try {
     if (export_type === 'bundle') {
       // Gather all assets for the campaign and return download links (could be zipped in production)
