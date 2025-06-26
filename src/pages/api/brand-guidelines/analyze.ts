@@ -160,6 +160,10 @@ export default async function handler(
   }
 
   try {
+    if (!supabase) {
+      return res.status(500).json({ success: false, error: 'Database connection not available' });
+    }
+    
     // Get client ID from headers or query
     const clientId = (req.headers['x-client-id'] as string) || (req.query.clientId as string);
 

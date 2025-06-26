@@ -34,6 +34,10 @@ async function handler(
       });
     }
 
+    if (!supabase) {
+      return res.status(500).json({ success: false, error: 'Database connection not available' });
+    }
+    
     // Get comprehensive MFA status using the database function
     const { data, error } = await supabase.rpc('get_mfa_status', { p_user_id: user.id });
 

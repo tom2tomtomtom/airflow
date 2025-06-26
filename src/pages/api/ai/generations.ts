@@ -33,6 +33,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
 
     const { clientId } = req.query;
 
+    if (!supabase) {
+      return res.status(500).json({ success: false, message: 'Database connection not available' });
+    }
+
     let query = supabase
       .from('generated_content')
       .select('*')
