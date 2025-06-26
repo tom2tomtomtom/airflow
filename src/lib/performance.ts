@@ -18,33 +18,10 @@ const CACHE_CONTROL = {
   dynamic: 'public, max-age=60, s-maxage=60, stale-while-revalidate=30',
 };
 
-// Response compression middleware
-export const compressionMiddleware = async () => {
-  try {
-    const compression = (await import('compression')).default;
-    return compression({
-      // Enable compression for responses > 1KB
-      threshold: 1024,
-
-      // Compression level (1-9, higher = better compression but slower)
-      level: 6,
-
-      // Filter function to determine if response should be compressed
-      filter: (req, res) => {
-        // Don't compress if client doesn't support it
-        if (req.headers['x-no-compression']) {
-          return false;
-        }
-
-        // Use compression's default filter
-        return compression.filter(req, res);
-      },
-    });
-  } catch (error) {
-    // Return a no-op middleware if compression is not available
-    loggers.warn('Compression middleware not available:', error);
-    return (req: any, res: any, next: any) => next();
-  }
+// Response compression middleware (disabled for build compatibility)
+export const compressionMiddleware = () => {
+  // Return a no-op middleware - compression will be handled by Netlify
+  return (req: any, res: any, next: any) => next();
 };
 
 // Performance headers middleware
