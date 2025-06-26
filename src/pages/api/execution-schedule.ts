@@ -23,6 +23,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .json({ success: false, message: 'Invalid input', errors: parseResult.error.errors });
   }
   const { matrix_id, platform, schedule_time, budget, user_id, config } = parseResult.data;
+  
+  if (!supabase) {
+    return res.status(500).json({ success: false, message: 'Database connection not available' });
+  }
+  
   // Save execution record
   const { data, error } = await supabase
     .from('executions')

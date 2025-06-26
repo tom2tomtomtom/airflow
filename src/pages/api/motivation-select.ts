@@ -20,6 +20,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .json({ success: false, message: 'Invalid input', errors: parseResult.error.errors });
   }
   const { strategy_id, selected, custom = [], user_id } = parseResult.data;
+  
+  if (!supabase) {
+    return res.status(500).json({ success: false, message: 'Database connection not available' });
+  }
+  
   // Save selected motivations and any custom ones
   const { data, error } = await supabase
     .from('selected_motivations')

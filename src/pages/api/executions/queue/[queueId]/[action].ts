@@ -26,6 +26,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       return errorResponse(res, ApiErrorCode.VALIDATION_ERROR, 'Invalid queue ID format', 400);
     }
 
+    if (!supabase) {
+      return errorResponse(res, ApiErrorCode.DATABASE_ERROR, 'Database connection not available', 500);
+    }
+
     // Get executions for this queue
     const { data: executions, error: fetchError } = await supabase
       .from('executions')
