@@ -3,6 +3,8 @@
  * Implements multi-layer caching for API responses, static data, and user content
  */
 
+import React from 'react';
+
 interface CacheConfig {
   ttl: number; // Time to live in milliseconds
   maxSize?: number; // Maximum number of entries
@@ -448,5 +450,3 @@ export async function preloadData<T>(
   }
 }
 
-// React import for the hook
-const React = typeof window !== 'undefined' ? require('react') : { useState: () => [null, () => {}], useEffect: () => {}, useCallback: (fn: any) => fn };

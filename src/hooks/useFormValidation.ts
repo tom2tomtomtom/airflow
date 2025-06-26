@@ -184,7 +184,7 @@ export function useFormValidation<T extends FieldValues>({
 }: UseFormValidationOptions<T> = {}) {
   const form = useForm<T>({
     ...formOptions,
-    resolver: schema ? zodResolver(schema) : undefined,
+    resolver: schema ? zodResolver(schema as any) : undefined,
   });
 
   const {

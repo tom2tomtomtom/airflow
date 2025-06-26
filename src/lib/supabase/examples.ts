@@ -1,4 +1,3 @@
-import { getErrorMessage } from '@/utils/errorUtils';
 /**
  * Example usage patterns for the new Supabase integration
  * These examples demonstrate best practices for different scenarios
@@ -86,13 +85,13 @@ export async function APIRouteExample(userId: string) {
     // Batch operation with conflict handling
     const updates = await upsertWithConflict(
       supabase,
-      'user_settings',
+      'profiles',
       [
-        { user_id: userId, key: 'theme', value: 'dark' },
-        { user_id: userId, key: 'language', value: 'en' }
+        { user_id: userId, theme: 'dark' },
+        { user_id: userId, language: 'en' }
       ],
       {
-        onConflict: 'user_id,key',
+        onConflict: 'user_id',
         ignoreDuplicates: false
       }
     );
@@ -131,7 +130,7 @@ export async function CachedQueryExample(clientId: string) {
 export async function PaginatedQueryExample(page: number = 1) {
   const supabase = getSupabaseBrowserClient();
 
-  return paginatedQuery(supabase, 'campaigns', {
+  return paginatedQuery(supabase, 'briefs', {
     page,
     pageSize: 20,
     orderBy: 'created_at',
@@ -183,6 +182,10 @@ export async function AuthenticationExample(email: string, password: string) {
       operation: 'signIn',
       metadata: { email }
     });
+    return {
+      success: false,
+      error: getErrorMessage(error)
+    };
   }
 }
 
@@ -222,13 +225,14 @@ export async function FileUploadExample(file: File, bucket: string) {
         bucket,
       },
     });
+    throw error; // Re-throw to maintain error propagation
   }
 }
 
 // ============================================
 // Realtime Subscription Example
 // ============================================
-export function RealtimeSubscriptionExample(campaignId: string, onUpdate: (payload: any) => void) {
+export function RealtimeSubscriptionExample(campaignId: string, onUpdate: (payload: { new: any; old: any; eventType: string }) => void) {
   const supabase = getSupabaseBrowserClient();
 
   // Subscribe to changes

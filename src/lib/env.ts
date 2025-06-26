@@ -36,6 +36,12 @@ const envSchema = z.object({
 
   // Cache
   REDIS_URL: z.string().optional(),
+  UPSTASH_REDIS_REST_URL: z.string().optional(),
+  UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
+
+  // Database
+  DB_POOL_SIZE: z.coerce.number().default(10),
+  DB_TIMEOUT: z.coerce.number().default(5000),
 
   // Environment
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
@@ -46,8 +52,8 @@ const envSchema = z.object({
   ENABLE_SOCIAL_PUBLISHING: z.enum(['true', 'false']).default('false'),
 });
 
-// Parse environment with proper error handling
-function parseEnvironment() {
+// Parse environment with proper error handling  
+function parseEnvironment(): z.infer<typeof envSchema> {
   try {
     return envSchema.parse(process.env);
   } catch (error) {
@@ -76,11 +82,15 @@ function parseEnvironment() {
           STORAGE_BUCKET: 'airflow-assets',
           MAX_FILE_SIZE: 52428800,
           REDIS_URL: process.env.REDIS_URL,
+          UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
+          UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
+          DB_POOL_SIZE: 10,
+          DB_TIMEOUT: 5000,
           NODE_ENV: 'development' as const,
           ENABLE_AI_FEATURES: 'false' as const,
           ENABLE_VIDEO_GENERATION: 'false' as const,
           ENABLE_SOCIAL_PUBLISHING: 'false' as const,
-        };
+        } as z.infer<typeof envSchema>;
       }
     }
     throw error;
@@ -88,7 +98,7 @@ function parseEnvironment() {
 }
 
 // Export validated environment
-export const env = parseEnvironment();
+export const env = parseEnvironment() as z.infer<typeof envSchema>;
 
 // Type exports
 export type Env = z.infer<typeof envSchema>;

@@ -64,9 +64,10 @@ export class RedisCache {
         password: config.password,
         database: config.db,
         socket: {
-          reconnectStrategy: (retries) => Math.min(retries * 50, 500),
+          reconnectStrategy: (retries: number) => Math.min(retries * 50, 500),
           connectTimeout: 5000,
-          commandTimeout: 5000 },
+          commandTimeout: 5000 
+        } as any,
       }) as RedisClientType;
       
       this.client.on('error', (error) => {

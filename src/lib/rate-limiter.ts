@@ -5,10 +5,10 @@ import { env } from './env';
 
 // Initialize Redis client for production or fallback to memory
 const redis =
-  env.UPSTASH_REDIS_REST_URL && env.UPSTASH_REDIS_REST_TOKEN
+  (env as any).UPSTASH_REDIS_REST_URL && (env as any).UPSTASH_REDIS_REST_TOKEN
     ? new Redis({
-        url: env.UPSTASH_REDIS_REST_URL,
-        token: env.UPSTASH_REDIS_REST_TOKEN })
+        url: (env as any).UPSTASH_REDIS_REST_URL,
+        token: (env as any).UPSTASH_REDIS_REST_TOKEN })
     : undefined;
 
 // Log Redis status

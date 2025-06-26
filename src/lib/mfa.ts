@@ -63,6 +63,10 @@ export async function setupMFA(userId: string, userEmail: string): Promise<MFASe
   const qrCodeUrl = await generateQRCode(secret, userEmail);
 
   // Store MFA configuration in database
+  if (!supabase) {
+    throw new Error('Supabase client not available');
+  }
+  
   const { error } = await supabase.from('user_mfa').upsert({
     user_id: userId,
     secret_encrypted: await encryptSecret(secret),
@@ -90,6 +94,10 @@ export async function verifyAndEnableMFA(
   token: string
 ): Promise<MFAValidationResult> {
   try {
+    if (!supabase) {
+      return { success: false, error: 'Supabase client not available' };
+    }
+
     // Get user's MFA configuration
     const { data: mfaConfig, error } = await supabase
       .from('user_mfa')
@@ -143,6 +151,10 @@ export async function validateMFAToken(
   isBackupCode: boolean = false
 ): Promise<MFAValidationResult> {
   try {
+    if (!supabase) {
+      return { success: false, error: 'Supabase client not available' };
+    }
+
     // Get user's MFA configuration
     const { data: mfaConfig, error } = await supabase
       .from('user_mfa')
@@ -213,6 +225,10 @@ export async function validateMFAToken(
  */
 export async function isMFAEnabled(userId: string): Promise<boolean> {
   try {
+    if (!supabase) {
+      return false;
+    }
+
     const { data, error } = await supabase
       .from('user_mfa')
       .select('is_enabled')
@@ -246,6 +262,10 @@ export async function disableMFA(
     }
 
     // Disable MFA
+    if (!supabase) {
+      return { success: false, error: 'Supabase client not available' };
+    }
+
     const { error } = await supabase
       .from('user_mfa')
       .update({
@@ -282,6 +302,10 @@ export async function regenerateBackupCodes(
 
     // Generate new backup codes
     const newBackupCodes = generateBackupCodes();
+
+    if (!supabase) {
+      return { success: false, error: 'Supabase client not available' };
+    }
 
     const { error } = await supabase
       .from('user_mfa')

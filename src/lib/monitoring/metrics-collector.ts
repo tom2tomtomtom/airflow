@@ -50,7 +50,7 @@ class StatsDBackend implements MetricsBackend {
           },
         });
       } catch (error) {
-        console.warn('StatsD client not available:', error.message);
+        console.warn('StatsD client not available:', (error as Error).message);
       }
     }
   }

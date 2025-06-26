@@ -1,5 +1,5 @@
 import winston from 'winston';
-import { getLoggingConfig } from '@/lib/config';
+import { getConfig } from '@/lib/config';
 
 export interface LogContext {
   userId?: string;
@@ -30,7 +30,18 @@ export interface StructuredLogEntry {
 
 export class StructuredLogger {
   private logger: winston.Logger;
-  private config = getLoggingConfig();
+  private config = {
+    level: getConfig().LOG_LEVEL || 'info',
+    environment: getConfig().NODE_ENV || 'development',
+    console: { enabled: true, level: getConfig().LOG_LEVEL || 'info' },
+    file: { 
+      enabled: false, 
+      level: getConfig().LOG_LEVEL || 'info',
+      path: './logs/app.log',
+      maxSize: 5242880,
+      maxFiles: 5
+    }
+  };
   private service: string;
   private version: string;
 
@@ -57,15 +68,15 @@ export class StructuredLogger {
     formats.push(
       winston.format.printf(info => {
         const entry: StructuredLogEntry = {
-          timestamp: info.timestamp,
+          timestamp: info.timestamp as string,
           level: info.level.toUpperCase(),
-          message: info.message,
+          message: info.message as string,
           service: this.service,
           environment: this.config.environment,
           version: this.version,
-          context: info.context,
-          stack: info.stack,
-          correlationId: info.correlationId,
+          context: info.context as LogContext | undefined,
+          stack: info.stack as string | undefined,
+          correlationId: info.correlationId as string | undefined,
         };
 
         // Remove undefined values

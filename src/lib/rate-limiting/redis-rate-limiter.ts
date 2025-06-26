@@ -80,7 +80,7 @@ export class RedisRateLimiter {
       pipeline.expire(redisKey, Math.ceil(options.windowMs / 1000));
 
       const results = await pipeline.exec();
-      const count = (results?.[0] as number) || 0;
+      const count = Number(results?.[0] as unknown) || 0;
 
       const resetTime = (window + 1) * options.windowMs;
       const remaining = Math.max(0, options.max - count);

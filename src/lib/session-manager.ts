@@ -10,8 +10,8 @@ const SESSION_TTL = 7 * 24 * 60 * 60; // 7 days in seconds
 const MAX_CONCURRENT_SESSIONS = 5;
 
 // Initialize Redis client for sessions
-const redis = env.REDIS_URL
-  ? new Redis(env.REDIS_URL, {
+const redis = (env as any).REDIS_URL
+  ? new Redis((env as any).REDIS_URL, {
       keyPrefix: 'airwave:',
       retryStrategy: times => {
         const delay = Math.min(times * 50, 2000);

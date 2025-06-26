@@ -416,7 +416,7 @@ export class ErrorClassifier {
       retryable: error.retryable,
       fingerprint: error.fingerprint,
       context: error.context
-    });
+    } as any);
   }
   
   private sendToAPM(error: ClassifiedError): void {
@@ -441,6 +441,7 @@ export class ErrorClassifier {
       },
       user: error.context.userId ? {
         id: error.context.userId,
+        email: (error.context as any).userEmail || 'unknown@example.com',
         clientId: error.context.clientId
       } : undefined
     });

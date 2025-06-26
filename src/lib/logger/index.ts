@@ -1,5 +1,5 @@
 import winston from 'winston';
-import { getLoggingConfig } from '@/lib/config';
+import { getConfig } from '@/lib/config';
 import {
   StructuredLogger,
   LoggerFactory,
@@ -13,7 +13,18 @@ import {
 
 // Create legacy winston logger for backwards compatibility
 const createLegacyLogger = (name: string): winston.Logger => {
-  const config = getLoggingConfig();
+  const appConfig = getConfig();
+  const config = {
+    level: appConfig.LOG_LEVEL || 'info',
+    console: { enabled: true, level: appConfig.LOG_LEVEL || 'info' },
+    file: { 
+      enabled: false, 
+      level: appConfig.LOG_LEVEL || 'info',
+      path: './logs/app.log',
+      maxSize: 5242880,
+      maxFiles: 5
+    }
+  };
 
   const formats = [
     winston.format.timestamp({
@@ -187,14 +198,15 @@ export const setupGracefulShutdown = () => {
 export const initializeLogging = () => {
   const logger = getLogger('system');
 
+  const appConfig = getConfig();
   logger.info('Logging system initialized', {
     environment: process.env.NODE_ENV || 'development',
-    logLevel: getLoggingConfig().level,
+    logLevel: appConfig.LOG_LEVEL || 'info',
     transports: {
-      console: getLoggingConfig().console.enabled,
-      file: getLoggingConfig().file.enabled,
+      console: true,
+      file: false,
     },
-  });
+  } as any);
 
   // Set up graceful shutdown
   setupGracefulShutdown();
@@ -209,6 +221,6 @@ export const initializeLogging = () => {
   process.on('unhandledRejection', (reason, promise) => {
     logger.error('Unhandled promise rejection', reason as Error, {
       promise: promise.toString(),
-    });
+    } as any);
   });
 };

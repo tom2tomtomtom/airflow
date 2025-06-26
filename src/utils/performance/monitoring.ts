@@ -1,5 +1,5 @@
 // Performance monitoring setup
-import { onCLS, onFID, onFCP, onLCP, onTTFB, type Metric } from 'web-vitals';
+import { onCLS, onINP, onFCP, onLCP, onTTFB, type Metric } from 'web-vitals';
 
 // Track Core Web Vitals
 export const setupPerformanceMonitoring = () => {
@@ -9,10 +9,10 @@ export const setupPerformanceMonitoring = () => {
       console.log('CLS:', metric);
     }
   });
-  onFID((metric: Metric) => {
-    // Log FID metric
+  onINP((metric: Metric) => {
+    // Log INP metric (replaces FID in web-vitals v5)
     if (process.env.NODE_ENV === 'development') {
-      console.log('FID:', metric);
+      console.log('INP:', metric);
     }
   });
   onFCP((metric: Metric) => {

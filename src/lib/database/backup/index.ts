@@ -46,7 +46,7 @@ export class DatabaseBackupManager {
     const startTime = Date.now();
 
     try {
-      loggers.general.info('Starting database backup', options);
+      loggers.general.info('Starting database backup', options as any);
 
       // Ensure backup directory exists
       await fs.mkdir(path.dirname(options.destination), { recursive: true });
@@ -100,7 +100,7 @@ export class DatabaseBackupManager {
     const startTime = Date.now();
 
     try {
-      loggers.general.info('Starting database restore', options);
+      loggers.general.info('Starting database restore', options as any);
 
       // Check if backup file exists
       await fs.access(options.backupFile);
@@ -158,7 +158,7 @@ export class DatabaseBackupManager {
     const startTime = Date.now();
 
     try {
-      loggers.general.info('Starting incremental backup', { tables, since });
+      loggers.general.info('Starting incremental backup', { tables, since } as any);
 
       const backupData: Record<string, any[]> = {};
 
@@ -251,7 +251,7 @@ export class DatabaseBackupManager {
         const { error } = await this.supabase.from(table).upsert(records, { onConflict: 'id' });
 
         if (error) {
-          loggers.general.warn(`Failed to restore table ${table}`, error);
+          loggers.general.warn(`Failed to restore table ${table}`, error as any);
         } else {
           tablesRestored++;
           loggers.general.info(`Restored ${records.length} records to ${table}`);
@@ -300,10 +300,10 @@ export class DatabaseBackupManager {
     const parts = ['pg_dump'];
 
     // Connection parameters
-    if (this.config.host) parts.push(`--host=${this.config.host}`);
-    if (this.config.port) parts.push(`--port=${this.config.port}`);
-    if (this.config.database) parts.push(`--dbname=${this.config.database}`);
-    if (this.config.username) parts.push(`--username=${this.config.username}`);
+    if ((this.config as any).host) parts.push(`--host=${(this.config as any).host}`);
+    if ((this.config as any).port) parts.push(`--port=${(this.config as any).port}`);
+    if ((this.config as any).database) parts.push(`--dbname=${(this.config as any).database}`);
+    if ((this.config as any).username) parts.push(`--username=${(this.config as any).username}`);
 
     // Backup options
     parts.push('--verbose');
@@ -334,10 +334,10 @@ export class DatabaseBackupManager {
     const parts = ['pg_restore'];
 
     // Connection parameters
-    if (this.config.host) parts.push(`--host=${this.config.host}`);
-    if (this.config.port) parts.push(`--port=${this.config.port}`);
-    if (this.config.database) parts.push(`--dbname=${this.config.database}`);
-    if (this.config.username) parts.push(`--username=${this.config.username}`);
+    if ((this.config as any).host) parts.push(`--host=${(this.config as any).host}`);
+    if ((this.config as any).port) parts.push(`--port=${(this.config as any).port}`);
+    if ((this.config as any).database) parts.push(`--dbname=${(this.config as any).database}`);
+    if ((this.config as any).username) parts.push(`--username=${(this.config as any).username}`);
 
     // Restore options
     parts.push('--verbose');
@@ -365,7 +365,7 @@ export class DatabaseBackupManager {
           table_name: table.table_name,
         });
         if (dropError) {
-          loggers.general.warn(`Failed to drop table ${table.table_name}`, dropError);
+          loggers.general.warn(`Failed to drop table ${table.table_name}`, dropError as any);
         }
       } catch (error: any) {
         loggers.general.warn(`Error dropping table ${table.table_name}`, error);

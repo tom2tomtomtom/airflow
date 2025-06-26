@@ -73,10 +73,10 @@ export const dbOptimizations = {
   // Connection pooling configuration
   poolConfig: {
     min: 2,
-    max: env.DB_POOL_SIZE || 20,
+    max: (env as any).DB_POOL_SIZE || 20,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000,
-    statement_timeout: env.DB_TIMEOUT || 30000,
+    statement_timeout: (env as any).DB_TIMEOUT || 30000,
   },
   // Query optimization hints
   queryHints: {

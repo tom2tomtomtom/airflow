@@ -115,7 +115,7 @@ export class AIResponseCache {
       let cachedResponse: CachedResponse<T> | null = null;
 
       if (this.useRedis) {
-        cachedResponse = await redisManager.get<CachedResponse<T>>(key);
+        cachedResponse = await redisManager.get(key) as CachedResponse<T> | null;
       } else {
         cachedResponse = (this.memoryCache.get(key) as CachedResponse<T>) || null;
       }

@@ -40,7 +40,7 @@ export class DatabaseSeeder {
     };
     
     try {
-      loggers.general.info('Starting database seeding', options);
+      loggers.general.info('Starting database seeding', options as any);
       
       if (options.reset) {
         await this.resetDatabase();
@@ -90,7 +90,7 @@ export class DatabaseSeeder {
           .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all except system records
         
         if (error) {
-          loggers.general.warn(`Failed to clear table ${table}`, error);
+          loggers.general.warn(`Failed to clear table ${table}`, error as any);
         }
       } catch (error: any) {
         loggers.general.warn(`Error clearing table ${table}`, error);
@@ -315,7 +315,7 @@ export class DatabaseSeeder {
         client_id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
         name: 'Product Launch',
         description: 'New product launch campaign',
-        status: 'draft' as const,
+        status: 'active' as const,
         start_date: '2024-04-01',
         budget: 75000,
         settings: { approval_workflow: false },

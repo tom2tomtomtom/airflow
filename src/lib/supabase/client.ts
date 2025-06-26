@@ -5,9 +5,9 @@ import { validateSupabaseConfig } from './config';
 import { loggers } from '@/lib/logger';
 
 // Singleton instance to prevent multiple GoTrueClient warnings
-let browserClientInstance: SupabaseClient<Database> | null = null;
+let browserClientInstance: SupabaseClient<Database, "public", any> | null = null;
 
-export function createSupabaseBrowserClient(): SupabaseClient<Database> {
+export function createSupabaseBrowserClient(): SupabaseClient<Database, "public", any> {
   // Check if running on client side
   if (typeof window === 'undefined') {
     throw new Error('Supabase browser client can only be used on the client side');
@@ -44,7 +44,9 @@ export function createSupabaseBrowserClient(): SupabaseClient<Database> {
           schema: 'public',
         },
         realtime: {
-          enabled: false, // Disable realtime by default
+          params: {
+            eventsPerSecond: 1,
+          },
         },
       }
     );
@@ -58,7 +60,7 @@ export function createSupabaseBrowserClient(): SupabaseClient<Database> {
 }
 
 // Get or create the browser client
-export function getSupabaseBrowserClient(): SupabaseClient<Database> {
+export function getSupabaseBrowserClient(): SupabaseClient<Database, "public", any> {
   if (typeof window === 'undefined') {
     throw new Error('Browser Supabase client can only be used in browser environment');
   }

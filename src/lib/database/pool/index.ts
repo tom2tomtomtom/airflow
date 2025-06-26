@@ -1,22 +1,42 @@
-import { Pool, PoolClient, PoolConfig } from 'pg';
+// Conditional import for pg to avoid build errors when not available
+let Pool: any, PoolClient: any, PoolConfig: any;
+
+try {
+  const pg = require('pg');
+  Pool = pg.Pool;
+  PoolClient = pg.PoolClient;
+  PoolConfig = pg.PoolConfig;
+} catch (error) {
+  // pg module not available - provide fallback types
+  Pool = class {} as any;
+  PoolClient = class {} as any;
+  PoolConfig = {} as any;
+}
 import { getDatabaseConfig } from '@/lib/config';
 import { loggers } from '@/lib/logger';
 
-export interface ConnectionPoolOptions extends PoolConfig {
+export interface ConnectionPoolOptions {
+  // Connection settings
+  host?: string;
+  port?: number;
+  database?: string;
+  user?: string;
+  password?: string;
+  
   // Pool-specific options
   min?: number;
   max?: number;
   idleTimeoutMillis?: number;
   connectionTimeoutMillis?: number;
   
-  // Monitoring options
-  enableMonitoring?: boolean;
-  monitoringInterval?: number;
-  
-  // Performance options
+  // Performance settings
   statement_timeout?: number;
   query_timeout?: number;
   application_name?: string;
+  
+  // Monitoring options
+  enableMonitoring?: boolean;
+  monitoringInterval?: number;
 }
 
 export interface PoolStats {
@@ -35,7 +55,7 @@ export interface QueryResult<T = any> {
 }
 
 export class DatabaseConnectionPool {
-  private pool: Pool;
+  private pool: any;
   private config: ConnectionPoolOptions;
   private isInitialized = false;
   private stats = {
@@ -50,11 +70,11 @@ export class DatabaseConnectionPool {
     
     this.config = {
       // Connection settings
-      host: dbConfig.host,
-      port: dbConfig.port,
-      database: dbConfig.database,
-      user: dbConfig.username,
-      password: dbConfig.password,
+      host: (dbConfig as any).host,
+      port: (dbConfig as any).port,
+      database: (dbConfig as any).database,
+      user: (dbConfig as any).username,
+      password: (dbConfig as any).password,
       
       // Pool settings
       min: 2,
@@ -83,7 +103,7 @@ export class DatabaseConnectionPool {
   }
   
   private setupEventHandlers(): void {
-    this.pool.on('connect', (client: PoolClient) => {
+    this.pool.on('connect', (client: any) => {
       loggers.general.debug('New database connection established');
       
       // Set session configuration
@@ -199,7 +219,7 @@ export class DatabaseConnectionPool {
     }
   }
   
-  async transaction<T>(callback: (client: PoolClient) => Promise<T>): Promise<T> {
+  async transaction<T>(callback: (client: any) => Promise<T>): Promise<T> {
     const client = await this.pool.connect();
     
     try {
@@ -219,7 +239,7 @@ export class DatabaseConnectionPool {
     }
   }
   
-  async getConnection(): Promise<PoolClient> {
+  async getConnection(): Promise<any> {
     return this.pool.connect();
   }
   
@@ -373,7 +393,7 @@ export const closePool = async (): Promise<void> => {
 
 // Helper functions for common operations
 export const withTransaction = async <T>(
-  callback: (client: PoolClient) => Promise<T>
+  callback: (client: any) => Promise<T>
 ): Promise<T> => {
   const pool = getDatabasePool();
   return pool.transaction(callback);

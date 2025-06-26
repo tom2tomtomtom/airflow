@@ -13,13 +13,10 @@ import { loggers } from './logger';
 export const supabase = typeof window !== 'undefined' ? getSupabaseBrowserClient() : null; // Server components should use createServerSupabaseClient
 
 // Re-export essential functions from the new module structure
-export {
-  getSupabaseBrowserClient,
-  createServerSupabaseClient,
-  getAdminSupabaseClient,
-  validateSupabaseConfig,
-  hasServiceRoleAccess,
-} from './supabase';
+export { getSupabaseBrowserClient } from './supabase/client';
+export { createServerSupabaseClient } from './supabase/server';
+export { getAdminSupabaseClient } from './supabase/admin';
+export { validateSupabaseConfig, hasServiceRoleAccess } from './supabase/config';
 
 // Legacy function - Get service role client (server-side only)
 export const getServiceSupabase = () => {
@@ -59,6 +56,7 @@ export async function getUserFromToken(
       operation: 'getUserFromToken',
       metadata: { hasToken: !!token  }
     });
+    throw error; // Re-throw to ensure function doesn't return undefined
   }
 }
 

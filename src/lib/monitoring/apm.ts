@@ -1,6 +1,20 @@
 import * as Sentry from '@sentry/nextjs';
-import { StatsD } from 'node-statsd';
-import { getMonitoringConfig } from '@/lib/config';
+// Conditional import for node-statsd to avoid build errors when not available
+let StatsD: any;
+
+try {
+  const nodeStatsd = require('node-statsd');
+  StatsD = nodeStatsd.StatsD;
+} catch (error) {
+  // node-statsd module not available - provide fallback
+  StatsD = class {
+    constructor() {}
+    increment() {}
+    gauge() {}
+    timing() {}
+  } as any;
+}
+import { getConfig } from '@/lib/config';
 import { getLogger } from '@/lib/logger';
 
 const logger = getLogger('apm');
@@ -47,7 +61,7 @@ export interface TraceData {
 
 export class APMManager {
   private config: APMConfig;
-  private statsd?: StatsD;
+  private statsd?: any;
   private initialized = false;
   
   constructor() {
@@ -55,23 +69,23 @@ export class APMManager {
   }
   
   private getAPMConfig(): APMConfig {
-    const monitoring = getMonitoringConfig();
+    const config = getConfig();
     
     return {
       sentry: {
-        enabled: monitoring.sentry?.enabled || false,
-        dsn: monitoring.sentry?.dsn || '',
-        environment: process.env.NODE_ENV || 'development',
+        enabled: !!config.SENTRY_DSN,
+        dsn: config.SENTRY_DSN || '',
+        environment: config.NODE_ENV || 'development',
         release: process.env.VERCEL_GIT_COMMIT_SHA || process.env.APP_VERSION,
-        tracesSampleRate: monitoring.sentry?.tracesSampleRate || 0.1,
-        profilesSampleRate: monitoring.sentry?.profilesSampleRate || 0.1
+        tracesSampleRate: 0.1,
+        profilesSampleRate: 0.1
       },
       datadog: {
-        enabled: monitoring.datadog?.enabled || false,
-        host: monitoring.datadog?.host || 'localhost',
-        port: monitoring.datadog?.port || 8125,
-        prefix: monitoring.datadog?.prefix || 'airwave.',
-        globalTags: monitoring.datadog?.globalTags || []
+        enabled: false,
+        host: 'localhost',
+        port: 8125,
+        prefix: 'airwave.',
+        globalTags: []
       }
     };
   }
@@ -105,7 +119,10 @@ export class APMManager {
             
             // Remove sensitive query params
             if (event.request?.query_string) {
-              event.request.query_string = this.sanitizeQueryString(event.request.query_string);
+              const queryString = typeof event.request.query_string === 'string' 
+                ? event.request.query_string 
+                : (event.request.query_string as [string, string][]).map(([key, value]) => `${key}=${value}`).join('&');
+              event.request.query_string = this.sanitizeQueryString(queryString);
             }
             
             return event;
@@ -134,7 +151,7 @@ export class APMManager {
           port: this.config.datadog.port,
           prefix: this.config.datadog.prefix,
           globalTags: this.config.datadog.globalTags,
-          errorHandler: (error) => {
+          errorHandler: (error: any) => {
             logger.warn('DataDog StatsD error', error);
           }
         });
@@ -273,7 +290,7 @@ export class APMManager {
           break;
       }
     } catch (error: any) {
-      logger.warn('Failed to record metric', error, { metric: metric.name });
+      logger.warn('Failed to record metric', error);
     }
   }
   

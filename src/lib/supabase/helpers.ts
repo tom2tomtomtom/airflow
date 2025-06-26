@@ -100,6 +100,7 @@ export async function withRLS<T>(
     await handleSupabaseError(error, {
       operation: `${operation} with RLS`,
       table: tableName});
+    throw error; // Re-throw to maintain error propagation
   }
 }
 
@@ -117,7 +118,7 @@ export async function queryWithCache<T>(
   // Only use cache if available (server-side)
   if (cached) {
     // Try to get from cache first
-    const cachedResult = await cached.get<T>(cacheKey);
+    const cachedResult = await (cached as any).get(cacheKey) as T | null;
     if (cachedResult !== null) {
       loggers.supabase.debug('Cache hit', { key: cacheKey });
       return cachedResult;
@@ -205,6 +206,7 @@ export async function upsertWithConflict<T extends Record<string, any>>(
         recordCount: Array.isArray(data) ? data.length : 1,
         onConflict: options?.onConflict },
     });
+    throw error; // Re-throw to maintain error propagation
   }
 }
 
@@ -270,6 +272,7 @@ export async function paginatedQuery<T>(
       operation: 'paginatedQuery',
       table: tableName,
       metadata: { page, pageSize, orderBy, ascending }});
+    throw error; // Re-throw to maintain error propagation
   }
 }
 

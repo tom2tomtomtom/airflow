@@ -420,7 +420,7 @@ export class MetricsCollector {
       );
 
       if (error) {
-        logger.warn(`Failed to store ${type} metrics`, error);
+        logger.warn(`Failed to store ${type} metrics`, error as any);
       }
 
       // Store in Redis for real-time access
@@ -516,7 +516,11 @@ export class MetricsCollector {
     message: string;
     severity: 'low' | 'medium' | 'high' | 'critical';
   }> {
-    const alerts = [];
+    const alerts: Array<{
+      type: string;
+      message: string;
+      severity: 'low' | 'medium' | 'high' | 'critical';
+    }> = [];
 
     // System alerts
     if (system) {
