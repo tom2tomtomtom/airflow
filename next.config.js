@@ -12,10 +12,8 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
 
-  // Exclude test files and specs from pages directory
-  pageExtensions: ['tsx', 'ts', 'jsx', 'js'].filter(ext =>
-    process.env.NODE_ENV === 'production' ? !ext.includes('test') && !ext.includes('spec') : true
-  ),
+  // Only include main page extensions, not test files
+  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
 
   // Basic webpack configuration for client-side only
   webpack: (config, { isServer }) => {
@@ -42,13 +40,7 @@ const nextConfig = {
       };
     }
 
-    // Exclude test files from compilation
-    config.module.rules.push({
-      test: /\.(test|spec)\.(ts|tsx|js|jsx)$/,
-      use: {
-        loader: 'ignore-loader',
-      },
-    });
+    // Test files have been moved to tests/ directory to avoid compilation issues
 
     return config;
   },
