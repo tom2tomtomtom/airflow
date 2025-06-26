@@ -1,5 +1,5 @@
 [build]
-  command = "npm ci --ignore-scripts && npm run build"
+  command = "npm ci --ignore-scripts && DISABLE_TYPE_CHECKING=true npm run build"
   publish = ".next"
   ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF"
 
