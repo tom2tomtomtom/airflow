@@ -5,6 +5,9 @@ const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('api/motivations/index');
 
 const MotivationCreateSchema = z.object({
   title: z.string().min(1, 'Title is required'),
@@ -48,7 +51,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     }
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('Motivations API error:', error);
+    logger.error('Motivations API error:', error);
     return res.status(500).json({
       error: 'Internal server error',
       details: process.env.NODE_ENV === 'development' ? message : undefined,
@@ -135,7 +138,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   const { data, error, count } = await query;
 
   if (error) {
-    console.error('Error fetching motivations:', error);
+    logger.error('Error fetching motivations:', error);
     return res.status(500).json({ error: 'Failed to fetch motivations' });
   }
 
@@ -240,7 +243,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse, user: any):
     .single();
 
   if (error) {
-    console.error('Error creating motivation:', error);
+    logger.error('Error creating motivation:', error);
     return res.status(500).json({ error: 'Failed to create motivation' });
   }
 
@@ -276,7 +279,7 @@ async function getMotivationUsageStats(motivationId: string): Promise<any> {
     };
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('Error calculating usage stats:', error);
+    logger.error('Error calculating usage stats:', error);
     return {
       strategy_usage: 0,
       content_usage: 0,
@@ -333,7 +336,7 @@ async function calculateRelevanceScore(
     return Math.round(relevanceScore);
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('Error calculating relevance score:', error);
+    logger.error('Error calculating relevance score:', error);
     return 50; // Default score on error
   }
 }

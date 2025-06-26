@@ -6,6 +6,9 @@ import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { creatomateService } from '@/services/creatomate';
 import { z } from 'zod';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('api/video/generate');
 
 const VideoGenerateSchema = z.object({
   brief_id: z.string().uuid().optional(),
@@ -79,7 +82,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     return handleGenerate(req, res, user);
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('Video Generate API error:', error);
+    logger.error('Video Generate API error:', error);
     return res.status(500).json({
       error: 'Internal server error',
       details: process.env.NODE_ENV === 'development' ? message : undefined,
@@ -278,7 +281,7 @@ async function checkGenerationLimits(
     return { allowed: true };
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('Error checking generation limits:', error);
+    logger.error('Error checking generation limits:', error);
     return {
       allowed: false,
       details: 'Error checking generation limits',
@@ -396,7 +399,7 @@ async function processVideoGeneration(jobsData: any): Promise<any> {
         .single();
 
       if (error) {
-        console.error('Error creating generation record:', error);
+        logger.error('Error creating generation record:', error);
         results.push({
           job_id: job.id,
           status: 'failed',
@@ -430,7 +433,7 @@ async function processVideoGeneration(jobsData: any): Promise<any> {
       });
     } catch (error: any) {
       const message = getErrorMessage(error);
-      console.error('Error processing video generation job:', error);
+      logger.error('Error processing video generation job:', error);
       results.push({
         job_id: job.id,
         status: 'failed',
@@ -550,7 +553,7 @@ async function startVideoRender(job: any): Promise<any> {
     };
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('Error starting video render:', error);
+    logger.error('Error starting video render:', error);
     return {
       success: false,
       error: message,

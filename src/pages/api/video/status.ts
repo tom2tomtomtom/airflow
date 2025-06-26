@@ -5,6 +5,9 @@ const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { creatomateService } from '@/services/creatomate';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('api/video/status');
 
 async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   const { method } = req;
@@ -30,7 +33,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     }
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('Video Status API error:', error);
+    logger.error('Video Status API error:', error);
     return res.status(500).json({
       error: 'Internal server error',
       details: process.env.NODE_ENV === 'development' ? message : undefined,
@@ -122,7 +125,7 @@ async function handleGenerationStatus(
           }
         } catch (error: any) {
           const message = getErrorMessage(error);
-          console.error('Error updating generation status:', error);
+          logger.error('Error updating generation status:', error);
         }
       }
 
@@ -233,7 +236,7 @@ async function handleJobStatus(
       }
     } catch (error: any) {
       const message = getErrorMessage(error);
-      console.error('Error updating job status:', error);
+      logger.error('Error updating job status:', error);
     }
   }
 
@@ -277,7 +280,7 @@ async function saveVideoToAssets(generation: any, videoUrl: string): Promise<str
       });
 
     if (uploadError) {
-      console.error('Error uploading video to storage:', uploadError);
+      logger.error('Error uploading video to storage:', uploadError);
       return null;
     }
 
@@ -311,14 +314,14 @@ async function saveVideoToAssets(generation: any, videoUrl: string): Promise<str
       .single();
 
     if (assetError) {
-      console.error('Error creating asset record:', assetError);
+      logger.error('Error creating asset record:', assetError);
       return null;
     }
 
     return asset.id;
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('Error saving video to assets:', error);
+    logger.error('Error saving video to assets:', error);
     return null;
   }
 }

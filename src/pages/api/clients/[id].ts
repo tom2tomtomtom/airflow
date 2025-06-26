@@ -5,6 +5,9 @@ import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import type { Client } from '@/types/models';
 import { createServerClient } from '@supabase/ssr';
 import { getServiceSupabase } from '@/lib/supabase';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('api/clients/[id]');
 
 type ResponseData = {
   success: boolean;
@@ -52,7 +55,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
 
   try {
     if (!user) {
-      console.error('No user found in request');
+      logger.error('No user found in request');
       return res.status(401).json({
         success: false,
         message: 'Authentication required',
@@ -88,7 +91,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
       .single();
 
     if (error) {
-      console.error('Error fetching client:', error);
+      logger.error('Error fetching client:', error);
       if (error.code === 'PGRST116') {
         return res.status(404).json({
           success: false,
@@ -137,7 +140,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>):
     });
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('Individual client API error:', error);
+    logger.error('Individual client API error:', error);
     return res.status(500).json({
       success: false,
       message: 'Internal server error',
