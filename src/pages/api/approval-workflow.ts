@@ -1,4 +1,3 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
 import { z } from 'zod';
@@ -21,6 +20,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .json({ success: false, message: 'Invalid input', errors: parseResult.error.errors });
   }
   const { execution_id, user_id, action, comment, version } = parseResult.data;
+  
+  if (!supabase) {
+    return res.status(500).json({ success: false, message: 'Database connection not available' });
+  }
+  
   // Save approval action
   const { data, error } = await supabase
     .from('approvals')

@@ -1,6 +1,5 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { getErrorMessage } from '@/utils/errorUtils';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { getErrorMessage } from '@/utils/errorUtils';
 import { supabase } from '@/lib/supabase';
 
 interface SignupRequest {
@@ -81,6 +80,10 @@ export default async function handler(
     }
 
     // Use Supabase authentication
+    if (!supabase) {
+      return res.status(500).json({ success: false, error: 'Database connection not available' });
+    }
+    
     if (process.env.NODE_ENV === 'development') {
       console.log('Creating user with Supabase auth...');
     }

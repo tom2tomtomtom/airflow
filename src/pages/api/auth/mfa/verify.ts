@@ -1,6 +1,5 @@
-import { NextApiResponse } from 'next';
-import { getErrorMessage } from '@/utils/errorUtils';
 import type { NextApiResponse } from 'next';
+import { getErrorMessage } from '@/utils/errorUtils';
 import { verifyAndEnableMFA } from '@/lib/mfa';
 import { withAuth } from '@/middleware/withAuth';
 import { z } from 'zod';

@@ -109,8 +109,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse<CostCheckRespon
     const dailyRate = monthlyUsage.totalCost / daysElapsed;
     const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
     const projectedMonthly = dailyRate * daysInMonth;
-    const serviceConfig = fullReport.services[service];
-    const percentOfBudget = (monthlyUsage.totalCost / serviceConfig.budget) * 100;
+    const serviceConfig = fullReport.services?.[service];
+    const percentOfBudget = serviceConfig ? (monthlyUsage.totalCost / serviceConfig.budget) * 100 : 0;
 
     // Get model recommendation if budget is tight
     let recommendation;

@@ -83,7 +83,7 @@ class MemoryStore {
  * Redis store for production rate limiting
  */
 class RedisStore {
-  private redis: unknown; // eslint-disable-line @typescript-eslint/no-explicit-any
+  private redis: any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
   constructor() {
     // Conditional Redis import for server-side only
@@ -106,7 +106,11 @@ class RedisStore {
 
     const now = Date.now();
     const windowStart = now - windowMs;
-    const pipeline = this.redis.pipeline();
+    const pipeline = this.redis?.pipeline();
+    
+    if (!pipeline) {
+      throw new Error('Redis not available for rate limiting');
+    }
 
     // Use sorted set to store timestamps
     pipeline.zremrangebyscore(key, 0, windowStart); // Remove old entries
@@ -318,6 +322,7 @@ export async function checkRateLimit(
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Rate limit check error:', error);
+    const { maxRequests = RATE_LIMITS[type], windowMs = 60000 } = options;
     return { exceeded: false, remaining: maxRequests, resetTime: new Date(Date.now() + windowMs) };
   }
 }

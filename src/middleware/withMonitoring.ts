@@ -181,10 +181,11 @@ function trackRequestCompletion(
   updateErrorRate(sanitizedEndpoint, isError);
 
   // Track slow requests
-  if (duration > config.performanceThresholds.responseTime) {
+  const responseTimeThreshold = config.performanceThresholds?.responseTime;
+  if (responseTimeThreshold && duration > responseTimeThreshold) {
     metrics.counter('api.requests.slow', 1, {
       ...tags,
-      threshold: config.performanceThresholds.responseTime.toString(),
+      threshold: responseTimeThreshold.toString(),
     });
   }
 
@@ -201,11 +202,12 @@ function trackError(
   error: unknown,
   customTags: Record<string, string>
 ): void {
+  const errorObj = error instanceof Error ? error : new Error(String(error));
   const tags = {
     endpoint: sanitizeEndpoint(endpoint),
     method,
-    error_type: error.constructor.name,
-    error_code: error.code || 'unknown',
+    error_type: errorObj.constructor.name,
+    error_code: (errorObj as any).code || 'unknown',
     ...customTags,
   };
 
@@ -214,11 +216,11 @@ function trackError(
   alerting.updateMetric('api.errors.total', 1);
 
   // Track specific error types
-  metrics.counter('api.errors.by_type', 1, { ...tags, type: error.constructor.name });
+  metrics.counter('api.errors.by_type', 1, { ...tags, type: errorObj.constructor.name });
 
   // Track error patterns
-  if (error.message) {
-    const errorPattern = categorizeError(error.message);
+  if (errorObj.message) {
+    const errorPattern = categorizeError(errorObj.message);
     metrics.counter('api.errors.by_pattern', 1, { ...tags, pattern: errorPattern });
   }
 }
@@ -243,9 +245,10 @@ async function monitorSystemHealth(
     alerting.updateMetric('system.memory.usage_percent', heapUsedPercent);
 
     // Check if memory threshold is exceeded
-    if (heapUsedPercent > thresholds.memoryUsage) {
+    const memoryThreshold = thresholds?.memoryUsage;
+    if (memoryThreshold && heapUsedPercent > memoryThreshold) {
       metrics.counter('system.memory.threshold_exceeded', 1, {
-        threshold: thresholds.memoryUsage.toString(),
+        threshold: memoryThreshold.toString(),
         current: heapUsedPercent.toString(),
       });
     }
@@ -277,11 +280,12 @@ async function checkPerformanceThresholds(
   const sanitizedEndpoint = sanitizeEndpoint(endpoint);
 
   // Check response time threshold
-  if (duration > thresholds.responseTime) {
+  const responseTimeThreshold = thresholds?.responseTime;
+  if (responseTimeThreshold && duration > responseTimeThreshold) {
     metrics.counter('alerts.performance.slow_response', 1, {
       endpoint: sanitizedEndpoint,
       duration: duration.toString(),
-      threshold: thresholds.responseTime.toString(),
+      threshold: responseTimeThreshold.toString(),
     });
   }
 
@@ -295,12 +299,13 @@ async function checkPerformanceThresholds(
  * Trigger error-specific alerts
  */
 async function triggerErrorAlert(endpoint: string, error: unknown): Promise<void> {
-  const severity = determineErrorSeverity(error);
+  const errorObj = error instanceof Error ? error : new Error(String(error));
+  const severity = determineErrorSeverity(errorObj);
   const sanitizedEndpoint = sanitizeEndpoint(endpoint);
 
   metrics.counter('alerts.errors.triggered', 1, {
     endpoint: sanitizedEndpoint,
-    error_type: error.constructor.name,
+    error_type: errorObj.constructor.name,
     severity,
   });
 
@@ -392,19 +397,21 @@ function categorizeError(errorMessage: string): string {
  * Determine error severity for alerting
  */
 function determineErrorSeverity(error: unknown): string {
+  const errorObj = error instanceof Error ? error : new Error(String(error));
+  
   // Critical errors that require immediate attention
-  if (error.name === 'DatabaseConnectionError') return 'critical';
-  if (error.name === 'SecurityError') return 'critical';
-  if (error.message?.includes('out of memory')) return 'critical';
+  if (errorObj.name === 'DatabaseConnectionError') return 'critical';
+  if (errorObj.name === 'SecurityError') return 'critical';
+  if (errorObj.message?.includes('out of memory')) return 'critical';
 
   // High priority errors
-  if (error.name === 'AuthenticationError') return 'high';
-  if (error.name === 'PaymentError') return 'high';
-  if (error.status >= 500) return 'high';
+  if (errorObj.name === 'AuthenticationError') return 'high';
+  if (errorObj.name === 'PaymentError') return 'high';
+  if ((errorObj as any).status >= 500) return 'high';
 
   // Medium priority errors
-  if (error.name === 'ValidationError') return 'medium';
-  if (error.status >= 400 && error.status < 500) return 'medium';
+  if (errorObj.name === 'ValidationError') return 'medium';
+  if ((errorObj as any).status >= 400 && (errorObj as any).status < 500) return 'medium';
 
   // Low priority errors
   return 'low';

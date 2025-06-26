@@ -1,7 +1,6 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import { getErrorMessage } from '@/utils/errorUtils';
 import { withAuthRateLimit } from '@/lib/rate-limiter';
-import type { NextApiRequest, NextApiResponse } from 'next';
 import { supabase } from '@/lib/supabase';
 
 interface LoginRequest {
@@ -54,6 +53,9 @@ async function handler(
   }
 
   try {
+    if (!supabase) {
+      return res.status(500).json({ success: false, error: 'Database connection not available' });
+    }
 
     // Use Supabase authentication
     const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
