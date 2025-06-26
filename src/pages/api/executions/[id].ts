@@ -507,7 +507,8 @@ async function logExecutionEvent(
 ): Promise<void> {
   try {
     // In a full implementation, this would log to an execution_events table
-    process.env.NODE_ENV === 'development' && logger.info('Logging execution event:', { event });
+    process.env.NODE_ENV === 'development' &&
+      logger.info('Logging execution event:', { executionId, eventType, details });
   } catch (error: any) {
     const message = getErrorMessage(error);
     logger.error('Error logging execution event:', error);

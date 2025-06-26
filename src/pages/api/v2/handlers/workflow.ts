@@ -348,6 +348,7 @@ async function handleGenerateAssets(
 
   // Implementation for AI asset generation
   const { workflowId, prompt, style: _style, count = 1 } = context.body;
+  const imageCount = typeof count === 'number' ? count : 1;
 
   if (!workflowId || !prompt) {
     return errorResponse(
@@ -366,7 +367,7 @@ async function handleGenerateAssets(
     {
       generationId,
       status: 'processing',
-      estimatedTime: count * 30, // 30 seconds per image
+      estimatedTime: imageCount * 30, // 30 seconds per image
     },
     200,
     {
@@ -435,6 +436,7 @@ async function generateMotivations(
   context: RouteContext
 ) {
   const { workflowId, briefId, count = 5 } = context.body;
+  const motivationCount = typeof count === 'number' ? count : 5;
 
   if (!workflowId || !briefId) {
     return errorResponse(
@@ -446,7 +448,7 @@ async function generateMotivations(
   }
 
   // Generate sample motivations based on brief
-  const motivations = Array.from({ length: count }, (_, i) => ({
+  const motivations = Array.from({ length: motivationCount }, (_, i) => ({
     id: `motivation_${i + 1}`,
     title: `Motivation ${i + 1}`,
     description: `Generated motivation ${i + 1} based on brief analysis`,
@@ -494,6 +496,7 @@ async function handleCopy(req: NextApiRequest, res: NextApiResponse, context: Ro
 
 async function generateCopy(req: NextApiRequest, res: NextApiResponse, context: RouteContext) {
   const { workflowId, motivationIds, copyType, platform } = context.body;
+  const validMotivationIds = Array.isArray(motivationIds) ? motivationIds : [];
 
   if (!workflowId || !motivationIds) {
     return errorResponse(
@@ -505,7 +508,7 @@ async function generateCopy(req: NextApiRequest, res: NextApiResponse, context: 
   }
 
   // Generate sample copy variations
-  const copyVariations = motivationIds.flatMap((motivationId: string, index: number) =>
+  const copyVariations = validMotivationIds.flatMap((motivationId: string, index: number) =>
     Array.from({ length: 3 }, (_, i) => ({
       id: `copy_${motivationId}_${i + 1}`,
       motivationId,
@@ -619,6 +622,8 @@ async function handleMatrix(req: NextApiRequest, res: NextApiResponse, context: 
   }
 
   const { workflowId, selectedAssets, selectedCopy, templateId } = context.body;
+  const validSelectedAssets = Array.isArray(selectedAssets) ? selectedAssets : [];
+  const validSelectedCopy = Array.isArray(selectedCopy) ? selectedCopy : [];
 
   if (!workflowId || !selectedAssets || !selectedCopy || !templateId) {
     return errorResponse(
@@ -634,8 +639,8 @@ async function handleMatrix(req: NextApiRequest, res: NextApiResponse, context: 
     id: `matrix_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
     workflowId,
     templateId,
-    combinations: selectedAssets.flatMap((asset: Record<string, unknown>) =>
-      selectedCopy.map((copy: Record<string, unknown>) => ({
+    combinations: validSelectedAssets.flatMap((asset: Record<string, unknown>) =>
+      validSelectedCopy.map((copy: Record<string, unknown>) => ({
         id: `combo_${asset.id || asset}_${copy.id || copy}`,
         assetId: asset.id || asset,
         copyId: copy.id || copy,
@@ -643,7 +648,7 @@ async function handleMatrix(req: NextApiRequest, res: NextApiResponse, context: 
         createdAt: new Date().toISOString(),
       }))
     ),
-    totalCombinations: selectedAssets.length * selectedCopy.length,
+    totalCombinations: validSelectedAssets.length * validSelectedCopy.length,
     status: 'generated',
     createdAt: new Date().toISOString(),
   };

@@ -426,7 +426,8 @@ async function logRetryEvent(
 ): Promise<void> {
   try {
     // In a full implementation, this would log to an execution_events table
-    process.env.NODE_ENV === 'development' && logger.info('Logging retry event:', { event });
+    process.env.NODE_ENV === 'development' &&
+      logger.info('Logging retry event:', { originalId, retryId, userId, reason });
   } catch (error: any) {
     const message = getErrorMessage(error);
     logger.error('Error logging retry event:', error);

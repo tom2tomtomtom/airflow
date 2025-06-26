@@ -38,7 +38,7 @@ async function extractTextFromFile(fileUrl: string): Promise<string> {
       // For PDF files, try to extract text using pdf-parse
       try {
         const pdf = await import('pdf-parse');
-        const data = await pdf.default(uint8Array);
+        const data = await pdf.default(Buffer.from(uint8Array));
         return data.text;
       } catch (pdfError: any) {
         logger.error('PDF parsing error:', pdfError);
@@ -48,7 +48,7 @@ async function extractTextFromFile(fileUrl: string): Promise<string> {
       // For DOCX files, try to extract text using mammoth
       try {
         const mammoth = await import('mammoth');
-        const result = await mammoth.extractRawText({ buffer: uint8Array });
+        const result = await mammoth.extractRawText({ buffer: Buffer.from(uint8Array) });
         return result.value;
       } catch (docxError: any) {
         logger.error('DOCX parsing error:', docxError);
