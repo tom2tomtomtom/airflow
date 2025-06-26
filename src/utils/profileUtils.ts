@@ -46,6 +46,10 @@ export function formatFullName(firstName: string | null, lastName: string | null
  * Get user profile by ID
  */
 export async function getUserProfile(userId: string): Promise<Profile | null> {
+  if (!supabase) {
+    console.error('Supabase client not initialized');
+    return null;
+  }
   const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
 
   if (error) {
@@ -60,6 +64,10 @@ export async function getUserProfile(userId: string): Promise<Profile | null> {
  * Create a new user profile with consistent schema
  */
 export async function createUserProfile(profileData: CreateProfileData): Promise<Profile | null> {
+  if (!supabase) {
+    console.error('Supabase client not initialized');
+    return null;
+  }
   const { firstName, lastName } = parseFullName(profileData.name);
 
   const { data, error } = await supabase
@@ -70,7 +78,8 @@ export async function createUserProfile(profileData: CreateProfileData): Promise
       last_name: lastName,
       role: profileData.role || 'user',
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString() })
+      updated_at: new Date().toISOString(),
+    })
     .select()
     .single();
 
@@ -89,8 +98,13 @@ export async function updateUserProfile(
   userId: string,
   updates: Partial<{ name: string; role: string; [key: string]: any }>
 ): Promise<Profile | null> {
+  if (!supabase) {
+    console.error('Supabase client not initialized');
+    return null;
+  }
   const profileUpdates: any = {
-    updated_at: new Date().toISOString() };
+    updated_at: new Date().toISOString(),
+  };
 
   // Handle name updates
   if (updates.name) {
@@ -131,7 +145,8 @@ export function formatProfileResponse(profile: Profile, email: string): ProfileR
     name: formatFullName(profile.first_name, profile.last_name),
     role: profile.role,
     first_name: profile.first_name,
-    last_name: profile.last_name };
+    last_name: profile.last_name,
+  };
 }
 
 /**
@@ -150,7 +165,8 @@ export async function getOrCreateUserProfile(
     profile = await createUserProfile({
       id: userId,
       name: name,
-      email: userData.email || undefined });
+      email: userData.email || undefined,
+    });
   }
 
   if (!profile) {
@@ -193,6 +209,10 @@ export function validateProfileData(data: any): { isValid: boolean; errors: stri
  * This function can be used to migrate profiles that might have old schema formats
  */
 export async function migrateLegacyProfile(userId: string): Promise<boolean> {
+  if (!supabase) {
+    console.error('Supabase client not initialized');
+    return false;
+  }
   try {
     const { data: profile, error } = await supabase
       .from('profiles')
@@ -213,7 +233,8 @@ export async function migrateLegacyProfile(userId: string): Promise<boolean> {
         .update({
           first_name: firstName,
           last_name: lastName,
-          updated_at: new Date().toISOString() })
+          updated_at: new Date().toISOString(),
+        })
         .eq('id', userId);
 
       if (updateError) {
