@@ -1,5 +1,8 @@
 import { getErrorMessage } from '@/utils/errorUtils';
 import React, { useState, useEffect } from 'react';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('components/WebhookManager');
 import {
   Box,
   Card,
@@ -16,13 +19,15 @@ import {
   TableRow,
   LinearProgress,
   Stack,
-  Tooltip} from '@mui/material';
+  Tooltip,
+} from '@mui/material';
 import {
   Webhook as WebhookIcon,
   Add as AddIcon,
   Edit as EditIcon,
   Refresh as RefreshIcon,
-  MoreVert as MoreIcon} from '@mui/icons-material';
+  MoreVert as MoreIcon,
+} from '@mui/icons-material';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
 
@@ -105,13 +110,14 @@ const WebhookManager: React.FC = () => {
     retry_policy: {
       max_attempts: 3,
       backoff_strategy: 'exponential' as 'linear' | 'exponential',
-      initial_delay_ms: 1000
+      initial_delay_ms: 1000,
     },
     headers: {} as Record<string, string>,
   });
   const [testData, setTestData] = useState({
     event_type: '',
-    test_data: '{}' });
+    test_data: '{}',
+  });
   // Fetch webhooks
   const fetchWebhooks = async () => {
     if (!activeClient) return;
@@ -119,8 +125,8 @@ const WebhookManager: React.FC = () => {
       setLoading(true);
       const response = await fetch('/api/webhooks', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
       });
       if (response.ok) {
         const data = await response.json();
@@ -131,7 +137,7 @@ const WebhookManager: React.FC = () => {
     } catch (error: any) {
       const message = getErrorMessage(error);
       if (process.env.NODE_ENV === 'development') {
-        console.error('Error fetching webhooks:', error);
+        logger.error('Error fetching webhooks:', error);
       }
       showNotification('Failed to load webhooks', 'error');
     } finally {
@@ -164,11 +170,7 @@ const WebhookManager: React.FC = () => {
           Webhook Management
         </Typography>
         <Stack direction="row" spacing={1}>
-          <Button
-            startIcon={<RefreshIcon />}
-            onClick={fetchWebhooks}
-            disabled={loading}
-          >
+          <Button startIcon={<RefreshIcon />} onClick={fetchWebhooks} disabled={loading}>
             Refresh
           </Button>
           <Button
@@ -236,7 +238,7 @@ const WebhookManager: React.FC = () => {
                             sx={{
                               maxWidth: 200,
                               overflow: 'hidden',
-                              textOverflow: 'ellipsis'
+                              textOverflow: 'ellipsis',
                             }}
                           >
                             {webhook.url}
@@ -246,12 +248,7 @@ const WebhookManager: React.FC = () => {
                       <TableCell>
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                           {webhook.events.slice(0, 3).map((event: any) => (
-                            <Chip
-                              key={event}
-                              label={event}
-                              size="small"
-                              variant="outlined"
-                            />
+                            <Chip key={event} label={event} size="small" variant="outlined" />
                           ))}
                           {webhook.events.length > 3 && (
                             <Chip

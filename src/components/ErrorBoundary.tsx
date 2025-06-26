@@ -2,6 +2,9 @@ import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Box, Container, Typography, Button, Paper, Alert } from '@mui/material';
 import { ErrorOutline, Refresh, Home } from '@mui/icons-material';
 import { errorReporter } from '@/utils/errorReporting';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('components/ErrorBoundary');
 
 interface Props {
   children: ReactNode;
@@ -22,7 +25,8 @@ class ErrorBoundary extends Component<Props, State> {
       hasError: false,
       error: null,
       errorInfo: null,
-      errorId: this.generateErrorId()};
+      errorId: this.generateErrorId(),
+    };
   }
 
   static getDerivedStateFromError(error: Error): Partial<State> {
@@ -33,7 +37,7 @@ class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log error to console in development
     if (process.env.NODE_ENV === 'development') {
-      console.error('ErrorBoundary caught an error:', error, errorInfo);
+      logger.error('ErrorBoundary caught an error:', { error, errorInfo });
     }
 
     // In production, send error to reporting service
@@ -43,10 +47,11 @@ class ErrorBoundary extends Component<Props, State> {
 
     this.setState({
       error,
-      errorInfo});
+      errorInfo,
+    });
   }
 
-  private async reportError(error: Error, errorInfo: ErrorInfo) : Promise<void> {
+  private async reportError(error: Error, errorInfo: ErrorInfo): Promise<void> {
     try {
       // Use the global error reporter
       await errorReporter.reportError(error, {
@@ -55,8 +60,8 @@ class ErrorBoundary extends Component<Props, State> {
         metadata: {
           componentStack: errorInfo.componentStack,
           errorId: this.state.errorId,
-          errorBoundary: true
-        }
+          errorBoundary: true,
+        },
       });
 
       // Also send to Sentry if available
@@ -64,18 +69,18 @@ class ErrorBoundary extends Component<Props, State> {
         (window as any).Sentry.captureException(error, {
           contexts: {
             react: {
-              componentStack: errorInfo.componentStack
-            }
+              componentStack: errorInfo.componentStack,
+            },
           },
           tags: {
             errorBoundary: true,
-            errorId: this.state.errorId
-          }
+            errorId: this.state.errorId,
+          },
         });
       }
     } catch (reportingError: any) {
       // Silently fail if error reporting fails
-      console.warn('Failed to report error:', reportingError);
+      logger.warn('Failed to report error:', reportingError);
     }
   }
 
@@ -88,7 +93,8 @@ class ErrorBoundary extends Component<Props, State> {
       hasError: false,
       error: null,
       errorInfo: null,
-      errorId: this.generateErrorId()});
+      errorId: this.generateErrorId(),
+    });
   };
 
   handleGoHome = () => {
@@ -111,13 +117,15 @@ class ErrorBoundary extends Component<Props, State> {
               p: 4,
               textAlign: 'center',
               borderTop: 4,
-              borderColor: 'error.main'}}
+              borderColor: 'error.main',
+            }}
           >
             <ErrorOutline
               sx={{
                 fontSize: 64,
                 color: 'error.main',
-                mb: 2}}
+                mb: 2,
+              }}
             />
 
             <Typography variant="h4" gutterBottom>
@@ -125,7 +133,8 @@ class ErrorBoundary extends Component<Props, State> {
             </Typography>
 
             <Typography variant="body1" color="text.secondary" paragraph>
-              We&apos;re sorry for the inconvenience. The application encountered an unexpected error.
+              We&apos;re sorry for the inconvenience. The application encountered an unexpected
+              error.
             </Typography>
 
             {process.env.NODE_ENV === 'development' && this.state.error && (
@@ -139,7 +148,8 @@ class ErrorBoundary extends Component<Props, State> {
                   sx={{
                     fontFamily: 'monospace',
                     whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-word'}}
+                    wordBreak: 'break-word',
+                  }}
                 >
                   {this.state.error.toString()}
                 </Typography>
@@ -151,7 +161,8 @@ class ErrorBoundary extends Component<Props, State> {
                       fontFamily: 'monospace',
                       whiteSpace: 'pre-wrap',
                       wordBreak: 'break-word',
-                      mt: 1}}
+                      mt: 1,
+                    }}
                   >
                     {this.state.errorInfo.componentStack}
                   </Typography>
@@ -168,20 +179,12 @@ class ErrorBoundary extends Component<Props, State> {
               >
                 Try Again
               </Button>
-              <Button
-                variant="outlined"
-                startIcon={<Home />}
-                onClick={this.handleGoHome}
-              >
+              <Button variant="outlined" startIcon={<Home />} onClick={this.handleGoHome}>
                 Go to Home
               </Button>
             </Box>
 
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ mt: 3, display: 'block' }}
-            >
+            <Typography variant="caption" color="text.secondary" sx={{ mt: 3, display: 'block' }}>
               Error ID: {this.state.errorId}
             </Typography>
           </Paper>
@@ -205,8 +208,8 @@ export function withErrorBoundary<P extends object>(
       <Component {...props} />
     </ErrorBoundary>
   );
-  
+
   WithErrorBoundaryComponent.displayName = `withErrorBoundary(${Component.displayName || Component.name || 'Component'})`;
-  
+
   return WithErrorBoundaryComponent;
 }
