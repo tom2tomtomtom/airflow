@@ -191,7 +191,7 @@ export function withRoles(roles: UserRole | UserRole[]) {
         loggers.auth.warn('Insufficient role permissions', {
           userId: req.user.id,
           userRole,
-          requiredRoles: allowedRoles,
+          requiredRoles: allowedRoles.join(','),
         });
         return errorResponse(res, ErrorCode.FORBIDDEN, 'Insufficient permissions', 403);
       }
@@ -217,8 +217,8 @@ export function withPermissions(requiredPermissions: string | string[]) {
       if (!hasAllPermissions) {
         loggers.auth.warn('Insufficient permissions', {
           userId: req.user.id,
-          userPermissions,
-          requiredPermissions: permissions,
+          userPermissions: userPermissions.join(','),
+          requiredPermissions: permissions.join(','),
         });
         return errorResponse(res, ErrorCode.FORBIDDEN, 'Insufficient permissions', 403);
       }
@@ -255,7 +255,7 @@ export function withClientAccess(clientIdParam: string = 'clientId') {
         loggers.auth.warn('Client access denied', {
           userId: req.user.id,
           requestedClientId: clientId,
-          userClientIds,
+          userClientIds: userClientIds.join(','),
         });
         return errorResponse(
           res,

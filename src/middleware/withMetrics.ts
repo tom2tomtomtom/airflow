@@ -105,7 +105,7 @@ export function withMetrics(config: MetricsConfig = {}) {
       res.end = function (chunk?: unknown, encoding?: unknown) {
         const size = chunk ? Buffer.byteLength(chunk.toString(), 'utf8') : 0;
         interceptResponse(res.statusCode, size);
-        return originalEnd.call(this, chunk, encoding);
+        return originalEnd.call(this, chunk, encoding as BufferEncoding);
       };
 
       try {
@@ -242,24 +242,25 @@ function trackError(
   error: unknown,
   customTags: Record<string, string>
 ): void {
+  const errorObj = error instanceof Error ? error : new Error(String(error));
   const tags = {
     method: context.method,
     endpoint: context.endpoint,
-    error_type: error.constructor.name,
-    error_message: error.message?.substring(0, 100) || 'unknown',
+    error_type: errorObj.constructor.name,
+    error_message: errorObj.message?.substring(0, 100) || 'unknown',
     ...customTags,
   };
 
   metrics.counter('api.errors.total', 1, tags);
 
   // Track specific error types
-  if (error.name === 'ValidationError') {
+  if (errorObj.name === 'ValidationError') {
     metrics.counter('api.errors.validation', 1, tags);
-  } else if (error.name === 'AuthenticationError') {
+  } else if (errorObj.name === 'AuthenticationError') {
     metrics.counter('api.errors.authentication', 1, tags);
-  } else if (error.name === 'DatabaseError') {
+  } else if (errorObj.name === 'DatabaseError') {
     metrics.counter('api.errors.database', 1, tags);
-  } else if (error.name === 'ExternalServiceError') {
+  } else if (errorObj.name === 'ExternalServiceError') {
     metrics.counter('api.errors.external_service', 1, tags);
   } else {
     metrics.counter('api.errors.unknown', 1, tags);

@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '@/lib/supabase';
+import { createServerSupabaseClient } from '@/lib/supabase';
 
 export interface AuthenticatedRequest extends NextApiRequest {
   user?: {
@@ -20,6 +20,9 @@ export function withAuth(
       if (!token) {
         return res.status(401).json({ error: 'No authentication token provided' });
       }
+
+      // Create server Supabase client
+      const supabase = createServerSupabaseClient(req, res);
 
       // Verify the token with Supabase
       const {

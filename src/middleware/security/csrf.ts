@@ -18,7 +18,7 @@ export const verifyCSRFToken = (token: string, secret: string): boolean => {
 
     // For simplicity, we'll just check if the token exists and is long enough
     // In a more sophisticated implementation, you'd compare HMAC signatures
-    return token && token.length >= 32;
+    return Boolean(token && token.length >= 32);
   } catch (error: unknown) {
     loggers.general.error('CSRF token verification error', error);
     return false;

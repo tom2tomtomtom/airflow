@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getConfig } from '@/lib/config';
 import { loggers } from '@/lib/logger';
+import { isProduction } from '@/lib/env';
 
 // Security headers configuration
 export const getSecurityHeaders = () => {
@@ -15,7 +16,7 @@ export const getSecurityHeaders = () => {
   headers.set('X-XSS-Protection', '1; mode=block');
   
   // Strict Transport Security (HSTS)
-  if (config.ENABLE_SECURITY_HEADERS && config.isProduction) {
+  if (config.ENABLE_SECURITY_HEADERS && isProduction) {
     headers.set('Strict-Transport-Security', `max-age=${config.HSTS_MAX_AGE}; includeSubDomains; preload`);
   }
   
