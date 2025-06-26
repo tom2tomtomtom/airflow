@@ -43,8 +43,9 @@ export const CACHE_TTL = {
 } as const;
 
 // Initialize Redis client for caching
-const redis = env.REDIS_URL
-  ? new Redis(env.REDIS_URL, {
+const redisUrl = (env as any).REDIS_URL;
+const redis = redisUrl
+  ? new Redis(redisUrl, {
       keyPrefix: 'airwave:cache:',
       retryStrategy: times => {
         const delay = Math.min(times * 50, 2000);
