@@ -1,7 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getErrorMessage } from '@/utils/errorUtils';
 import { getServiceSupabase } from '@/lib/supabase';
 import { z } from 'zod';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('api/save-content');
 
 // Request schema for saving generated content
 const SaveContentSchema = z.object({
@@ -10,35 +12,34 @@ const SaveContentSchema = z.object({
   content: z.string().min(1),
   client_id: z.string(),
   tags: z.array(z.string()).optional(),
-  metadata: z.record(z.any()).optional()});
+  metadata: z.record(z.any()).optional(),
+});
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-): Promise<void> {
+export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
   if (req.method !== 'POST') {
-    return res.status(405).json({ 
-      success: false, 
-      message: 'Method not allowed' 
+    return res.status(405).json({
+      success: false,
+      message: 'Method not allowed',
     });
   }
 
   try {
     // Validate request
     const validationResult = SaveContentSchema.safeParse(req.body);
-    
+
     if (!validationResult.success) {
       return res.status(400).json({
         success: false,
         message: 'Invalid input',
-        errors: validationResult.error.errors});
+        errors: validationResult.error.errors,
+      });
     }
 
     const { name, type, content, client_id, tags = [], metadata = {} } = validationResult.data;
 
     // Use service role to bypass RLS for asset creation
     const serviceSupabase = getServiceSupabase();
-    
+
     // Create asset record for text/voice content
     const { data: asset, error: assetError } = await serviceSupabase
       .from('assets')
@@ -53,30 +54,32 @@ export default async function handler(
         client_id,
         tags,
         metadata: {
-        ...metadata,
+          ...metadata,
           content, // Store the actual text/voice content in metadata
-          saved_at: new Date().toISOString() },
-  created_at: new Date().toISOString()})
+          saved_at: new Date().toISOString(),
+        },
+        created_at: new Date().toISOString(),
+      })
       .select()
       .single();
 
     if (assetError) {
-      console.error('Asset creation error:', assetError);
+      logger.error('Asset creation error:', assetError);
       throw new Error('Failed to save content');
     }
 
     return res.status(200).json({
       success: true,
       message: 'Content saved successfully',
-      asset});
-
+      asset,
+    });
   } catch (error: any) {
-    const message = getErrorMessage(error);
-    console.error('Save content API error:', error);
-    
+    logger.error('Save content API error:', error);
+
     return res.status(500).json({
       success: false,
       message: 'Failed to save content',
-      error: error instanceof Error ? error.message : 'Unknown error'});
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
   }
 }

@@ -1,9 +1,12 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@/lib/supabase/server';
 const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { z } from 'zod';
 import OpenAI from 'openai';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('api/strategy-generate');
 
 const StrategyGenerateSchema = z.object({
   brief_id: z.string().uuid().optional(),
@@ -127,7 +130,7 @@ Generate 8 diverse motivational concepts that would drive this audience to take 
     try {
       motivationsData = JSON.parse(aiResponse);
     } catch (parseError: any) {
-      console.error('Failed to parse AI response:', aiResponse);
+      logger.error('Failed to parse AI response:', { aiResponse });
       throw new Error('Invalid response format from AI');
     }
 
@@ -167,7 +170,7 @@ Generate 8 diverse motivational concepts that would drive this audience to take 
         .single();
 
       if (error) {
-        console.error('Error creating motivation:', error);
+        logger.error('Error creating motivation:', error);
         continue;
       }
 
@@ -193,7 +196,7 @@ Generate 8 diverse motivational concepts that would drive this audience to take 
       message: `Generated ${createdMotivations.length} strategic motivations`,
     });
   } catch (error: any) {
-    console.error('Strategy generation error:', error);
+    logger.error('Strategy generation error:', error);
     return res.status(500).json({
       error: 'Failed to generate strategy',
       details: process.env.NODE_ENV === 'development' ? error.message : undefined,

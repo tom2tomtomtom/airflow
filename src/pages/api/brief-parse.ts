@@ -3,16 +3,20 @@ import { supabase } from '@/lib/supabase';
 import { env } from '@/lib/env';
 import { z } from 'zod';
 import OpenAI from 'openai';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('api/brief-parse');
 
 const BriefParseSchema = z.object({
-  brief_id: z.string().uuid() });
+  brief_id: z.string().uuid(),
+});
 
 async function extractTextFromFile(fileUrl: string): Promise<string> {
   try {
     if (!supabase) {
       throw new Error('Database connection not available');
     }
-    
+
     // Get the file from Supabase storage
     const { data: fileData, error: downloadError } = await supabase.storage
       .from(env.STORAGE_BUCKET)
@@ -33,28 +37,28 @@ async function extractTextFromFile(fileUrl: string): Promise<string> {
     } else if (fileUrl.toLowerCase().endsWith('.pdf')) {
       // For PDF files, try to extract text using pdf-parse
       try {
-        const pdf = require('pdf-parse');
-        const data = await pdf(uint8Array);
+        const pdf = await import('pdf-parse');
+        const data = await pdf.default(uint8Array);
         return data.text;
       } catch (pdfError: any) {
-        console.error('PDF parsing error:', pdfError);
+        logger.error('PDF parsing error:', pdfError);
         throw new Error('Failed to parse PDF file. Please ensure it contains readable text.');
       }
     } else if (fileUrl.toLowerCase().endsWith('.docx')) {
       // For DOCX files, try to extract text using mammoth
       try {
-        const mammoth = require('mammoth');
+        const mammoth = await import('mammoth');
         const result = await mammoth.extractRawText({ buffer: uint8Array });
         return result.value;
       } catch (docxError: any) {
-        console.error('DOCX parsing error:', docxError);
+        logger.error('DOCX parsing error:', docxError);
         throw new Error('Failed to parse DOCX file. Please ensure it contains readable text.');
       }
     } else {
       throw new Error('Unsupported file type. Please upload TXT, PDF, or DOCX files only.');
     }
   } catch (error: any) {
-    console.error('Text extraction error:', error);
+    logger.error('Text extraction error:', error);
     throw new Error(`Text extraction failed: ${error.message}`);
   }
 }
@@ -62,7 +66,8 @@ async function extractTextFromFile(fileUrl: string): Promise<string> {
 async function aiParseBrief(text: string): Promise<string> {
   // Initialize OpenAI client
   const openai = new OpenAI({
-    apiKey: env.OPENAI_API_KEY });
+    apiKey: env.OPENAI_API_KEY,
+  });
 
   // Call OpenAI to extract structured info
   const prompt = `Extract the following information from the campaign brief and return it as a valid JSON object:
@@ -85,13 +90,17 @@ Return ONLY the JSON object, no additional text or formatting.`;
     messages: [
       {
         role: 'system',
-        content: 'You are an expert campaign strategist. Extract information from briefs and return it as valid JSON only.' },
+        content:
+          'You are an expert campaign strategist. Extract information from briefs and return it as valid JSON only.',
+      },
       {
         role: 'user',
-        content: `${prompt}\n\nBrief Content:\n${text}` },
+        content: `${prompt}\n\nBrief Content:\n${text}`,
+      },
     ],
     temperature: 0.1,
-    max_tokens: 1000 });
+    max_tokens: 1000,
+  });
 
   const result = completion.choices[0]?.message?.content;
   if (!result) {
@@ -103,7 +112,7 @@ Return ONLY the JSON object, no additional text or formatting.`;
     JSON.parse(result);
     return result;
   } catch (parseError: any) {
-    console.error('AI returned invalid JSON:', result);
+    logger.error('AI returned invalid JSON:', { result });
     // Return a minimal valid JSON structure
     return JSON.stringify({
       title: 'Extracted Brief',
@@ -131,11 +140,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .json({ success: false, message: 'Invalid input', errors: parseResult.error.errors });
   }
   const { brief_id } = parseResult.data;
-  
+
   if (!supabase) {
     return res.status(500).json({ success: false, message: 'Database connection not available' });
   }
-  
+
   const { data: brief, error } = await supabase
     .from('briefs')
     .select('*')
