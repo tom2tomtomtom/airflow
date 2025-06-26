@@ -57,8 +57,19 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  // Update Supabase session
-  const { response, user } = await updateSession(request);
+  // Update Supabase session (with fallback for edge environments)
+  let response: NextResponse;
+  let user: any = null;
+
+  try {
+    const sessionResult = await updateSession(request);
+    response = sessionResult.response;
+    user = sessionResult.user;
+  } catch (error) {
+    // Fallback when Supabase config is not available (e.g., edge functions)
+    response = NextResponse.next();
+    console.warn('Supabase session update failed, proceeding without authentication:', error);
+  }
 
   // Check if route requires authentication
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
