@@ -1,19 +1,23 @@
-import { getErrorMessage } from '@/utils/errorUtils';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { errorResponse, ErrorCode } from '@/utils/api';
 import { UserRole } from '@/types/auth';
-import { createServerClient } from '@supabase/ssr';
+import { loggers } from '@/lib/logger';
+import { env } from '@/lib/env';
+
+// User data structure
+interface AuthUser {
+  id: string;
+  email: string;
+  role: UserRole;
+  permissions: string[];
+  clientIds: string[];
+  tenantId: string;
+}
 
 // Extended request with user information
 export interface AuthenticatedRequest extends NextApiRequest {
-  user?: {
-    id: string;
-    email: string;
-    role: UserRole;
-    permissions: string[];
-    clientIds: string[];
-    tenantId: string;
-  };
+  user: AuthUser;
 }
 
 // Handler type with authenticated request
@@ -22,227 +26,150 @@ export type AuthenticatedHandler = (
   res: NextApiResponse
 ) => Promise<void> | void;
 
-// Enhanced token validation with multiple fallback methods
-async function validateUserToken(req: NextApiRequest): Promise<any> {
-  let supabase;
-  const user: unknown = null;
-  const error: unknown = null;
-
-  // Method 1: Try Supabase SSR with cookies (primary method)
-  try {
-    supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(name: string) {
-            return req.cookies[name];
-          },
-          set(name: string, value: string, options: unknown) {
-            // We don't need to set cookies in API routes
-          },
-          remove(name: string, options: unknown) {
-            // We don't need to remove cookies in API routes
-          },
-        },
-      }
-    );
-
-    const {
-      data: { user: cookieUser },
-      error: cookieError,
-    } = await supabase.auth.getUser();
-
-    if (cookieUser && !cookieError) {
-      return { user: cookieUser, supabase };
-    }
-  } catch (error) {
-    // Handle error silently
-  }
-
-  // Method 2: Try Authorization header (Bearer token)
-  try {
-    const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.substring(7);
-
-      supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-          cookies: {
-            get: () => undefined,
-            set: () => {},
-            remove: () => {},
-          },
-        }
-      );
-
-      const {
-        data: { user: headerUser },
-        error: headerError,
-      } = await supabase.auth.getUser(token);
-
-      if (headerUser && !headerError) {
-        return { user: headerUser, supabase };
-      }
-    }
-  } catch (error) {
-    // Handle error silently
-  }
-
-  // Method 3: Try custom auth headers (fallback for API clients)
-  try {
-    const customToken = req.headers['x-auth-token'] as string;
-    if (customToken) {
-      supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-          cookies: {
-            get: () => undefined,
-            set: () => {},
-            remove: () => {},
-          },
-        }
-      );
-
-      const {
-        data: { user: customUser },
-        error: customError,
-      } = await supabase.auth.getUser(customToken);
-
-      if (customUser && !customError) {
-        return { user: customUser, supabase };
-      }
-    }
-  } catch (error) {
-    // Handle error silently
-  }
-
-  // All methods failed
-  return { user: null, supabase: null };
+// User profile from database
+interface UserProfile {
+  id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  role: UserRole;
+  permissions: string[];
+  tenant_id: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
-// Enhanced user profile handling with better error recovery
-async function getUserProfile(supabase: unknown, user: unknown): Promise<any> {
+// Create Supabase client for server-side authentication
+function createAuthClient(req: NextApiRequest) {
+  return createServerClient(env.NEXT_PUBLIC_SUPABASE_URL, env.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
+    cookies: {
+      get(name: string) {
+        return req.cookies[name];
+      },
+      set(name: string, value: string, options: CookieOptions) {
+        // API routes don't need to set cookies
+      },
+      remove(name: string, options: CookieOptions) {
+        // API routes don't need to remove cookies
+      },
+    },
+  });
+}
+
+// Validate user authentication
+async function validateAuthentication(req: NextApiRequest): Promise<{
+  user: any;
+  supabase: any;
+} | null> {
+  const supabase = createAuthClient(req);
+
   try {
-    const { data: profile, error: profileError } = await supabase
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+
+    if (error || !user) {
+      loggers.auth.warn('Authentication failed', {
+        error: error?.message,
+        hasUser: !!user,
+      });
+      return null;
+    }
+
+    return { user, supabase };
+  } catch (error) {
+    loggers.auth.error('Authentication validation error', error);
+    return null;
+  }
+}
+
+// Get user profile from database
+async function getUserProfile(supabase: any, userId: string): Promise<UserProfile | null> {
+  try {
+    const { data: profile, error } = await supabase
       .from('profiles')
       .select('*')
-      .eq('id', user.id)
+      .eq('id', userId)
       .single();
 
-    if (profileError) {
-      // If profile doesn't exist, create a basic one
-      if (profileError.code === 'PGRST116') {
-        const userName = user.user_metadata?.name || user.email?.split('@')[0] || 'User';
-        const nameParts = userName.split(' ');
-
-        const { data: newProfile, error: createError } = await supabase
-          .from('profiles')
-          .insert({
-            id: user.id,
-            first_name: nameParts[0] || userName,
-            last_name: nameParts.slice(1).join(' ') || '',
-            role: 'user',
-            email: user.email,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          })
-          .select()
-          .single();
-
-        if (createError) {
-          console.error('Error creating profile:', createError);
-          return createFallbackProfile(user);
-        }
-
-        return newProfile;
-      }
-
-      // For other errors, return fallback profile
-      return createFallbackProfile(user);
+    if (error) {
+      loggers.auth.error('Error fetching user profile', error);
+      return null;
     }
 
     return profile;
-  } catch (err: unknown) {
-    console.error('Profile handling exception:', err);
-    return createFallbackProfile(user);
+  } catch (error) {
+    loggers.auth.error('Profile fetch exception', error);
+    return null;
   }
 }
 
-// Create fallback profile when database operations fail
-function createFallbackProfile(user: unknown): unknown {
-  return {
-    id: user.id,
-    email: user.email || '',
-    first_name: user.user_metadata?.name?.split(' ')[0] || user.email?.split('@')[0] || 'User',
-    last_name: user.user_metadata?.name?.split(' ').slice(1).join(' ') || '',
-    role: 'user',
-    permissions: [],
-    tenant_id: null,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-  };
-}
-
-// Enhanced client access fetching with error handling
-async function getUserClients(supabase: unknown, userId: string): Promise<string[]> {
+// Get user's client access
+async function getUserClientAccess(supabase: any, userId: string): Promise<string[]> {
   try {
-    const { data: userClients, error: clientsError } = await supabase
+    const { data: userClients, error } = await supabase
       .from('user_clients')
       .select('client_id')
       .eq('user_id', userId);
 
-    if (clientsError) {
-      console.error('Error fetching user clients:', clientsError);
+    if (error) {
+      loggers.auth.error('Error fetching user clients', error);
       return [];
     }
 
     return userClients?.map((uc: { client_id: string }) => uc.client_id) || [];
-  } catch (err: unknown) {
-    console.error('Client access exception:', err);
+  } catch (error) {
+    loggers.auth.error('Client access fetch exception', error);
     return [];
   }
 }
 
-// Middleware to require authentication
+// Main authentication middleware
 export function withAuth(handler: AuthenticatedHandler) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
-    // Always require proper authentication - no bypasses for security
-
     try {
-      // Enhanced token validation with multiple methods
-      const { user, supabase } = await validateUserToken(req);
-
-      if (!user || !supabase) {
+      // Validate authentication
+      const authResult = await validateAuthentication(req);
+      if (!authResult) {
         return errorResponse(res, ErrorCode.UNAUTHORIZED, 'Authentication required', 401);
       }
 
-      // Get user profile with enhanced error handling
-      const profile = await getUserProfile(supabase, user);
+      const { user: authUser, supabase } = authResult;
 
-      // Get user's client access with error handling
-      const clientIds = await getUserClients(supabase, user.id);
+      // Get user profile
+      const profile = await getUserProfile(supabase, authUser.id);
+      if (!profile) {
+        loggers.auth.warn('User profile not found', { userId: authUser.id });
+        return errorResponse(res, ErrorCode.UNAUTHORIZED, 'User profile not found', 401);
+      }
 
-      // Add user info to request
-      (req as AuthenticatedRequest).user = {
-        id: user.id,
-        email: user.email || '',
-        role: (profile?.role as UserRole) || UserRole.VIEWER,
-        permissions: profile?.permissions || [],
+      // Get user's client access
+      const clientIds = await getUserClientAccess(supabase, authUser.id);
+
+      // Build authenticated user object
+      const user: AuthUser = {
+        id: authUser.id,
+        email: authUser.email,
+        role: profile.role,
+        permissions: profile.permissions || [],
         clientIds,
-        tenantId: profile?.tenant_id || '',
+        tenantId: profile.tenant_id || '',
       };
 
-      console.log(`✅ Request authenticated for user: ${user.email} (${profile?.role})`);
+      // Add user to request
+      (req as AuthenticatedRequest).user = user;
+
+      loggers.auth.info('User authenticated successfully', {
+        userId: user.id,
+        role: user.role,
+        clientCount: clientIds.length,
+      });
 
       // Call the handler
       return await handler(req as AuthenticatedRequest, res);
-    } catch (error: unknown) {
-      const message = getErrorMessage(error);
-      console.error('❌ Authentication error:', error);
+    } catch (error) {
+      loggers.auth.error('Authentication middleware error', error);
       return errorResponse(
         res,
         ErrorCode.INTERNAL_SERVER_ERROR,
@@ -257,15 +184,15 @@ export function withAuth(handler: AuthenticatedHandler) {
 export function withRoles(roles: UserRole | UserRole[]) {
   return (handler: AuthenticatedHandler) => {
     return withAuth(async (req: AuthenticatedRequest, res: NextApiResponse) => {
-      const userRole = req.user?.role;
-
-      if (!userRole) {
-        return errorResponse(res, ErrorCode.UNAUTHORIZED, 'User not authenticated', 401);
-      }
-
+      const userRole = req.user.role;
       const allowedRoles = Array.isArray(roles) ? roles : [roles];
 
       if (!allowedRoles.includes(userRole)) {
+        loggers.auth.warn('Insufficient role permissions', {
+          userId: req.user.id,
+          userRole,
+          requiredRoles: allowedRoles,
+        });
         return errorResponse(res, ErrorCode.FORBIDDEN, 'Insufficient permissions', 403);
       }
 
@@ -278,8 +205,7 @@ export function withRoles(roles: UserRole | UserRole[]) {
 export function withPermissions(requiredPermissions: string | string[]) {
   return (handler: AuthenticatedHandler) => {
     return withAuth(async (req: AuthenticatedRequest, res: NextApiResponse) => {
-      const userPermissions = req.user?.permissions || [];
-
+      const userPermissions = req.user.permissions;
       const permissions = Array.isArray(requiredPermissions)
         ? requiredPermissions
         : [requiredPermissions];
@@ -289,6 +215,11 @@ export function withPermissions(requiredPermissions: string | string[]) {
       );
 
       if (!hasAllPermissions) {
+        loggers.auth.warn('Insufficient permissions', {
+          userId: req.user.id,
+          userPermissions,
+          requiredPermissions: permissions,
+        });
         return errorResponse(res, ErrorCode.FORBIDDEN, 'Insufficient permissions', 403);
       }
 
@@ -301,8 +232,8 @@ export function withPermissions(requiredPermissions: string | string[]) {
 export function withClientAccess(clientIdParam: string = 'clientId') {
   return (handler: AuthenticatedHandler) => {
     return withAuth(async (req: AuthenticatedRequest, res: NextApiResponse) => {
-      const userRole = req.user?.role;
-      const userClientIds = req.user?.clientIds || [];
+      const userRole = req.user.role;
+      const userClientIds = req.user.clientIds;
 
       // Admin can access all clients
       if (userRole === UserRole.ADMIN) {
@@ -321,6 +252,11 @@ export function withClientAccess(clientIdParam: string = 'clientId') {
 
       // Check if user has access to the client
       if (!userClientIds.includes(clientId)) {
+        loggers.auth.warn('Client access denied', {
+          userId: req.user.id,
+          requestedClientId: clientId,
+          userClientIds,
+        });
         return errorResponse(
           res,
           ErrorCode.FORBIDDEN,
