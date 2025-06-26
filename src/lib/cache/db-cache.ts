@@ -25,7 +25,7 @@ export class ClientCache {
     return await cacheManager.get(key, DB_NAMESPACES.CLIENTS);
   }
 
-  static async setClient(clientId: string, userId: string, clientData: any): Promise<void> {
+  static async setClient(clientId: string, userId: string, clientData: any): Promise<boolean> {
     const key = `${userId}:client:${clientId}`;
     const tags = [`user:${userId}`, `client:${clientId}`, 'clients'];
 
@@ -51,7 +51,7 @@ export class ClientCache {
     return await cacheManager.get(key, DB_NAMESPACES.CLIENTS);
   }
 
-  static async setUserClients(userId: string, clients: any[]): Promise<void> {
+  static async setUserClients(userId: string, clients: any[]): Promise<boolean> {
     const key = `${userId}:clients:all`;
     const tags = [`user:${userId}`, 'clients'];
 
@@ -72,23 +72,23 @@ export class ClientCache {
     return success;
   }
 
-  static async invalidateClient(clientId: string): Promise<void> {
+  static async invalidateClient(clientId: string): Promise<number> {
     return await cacheManager.invalidateByTag(`client:${clientId}`);
   }
 
-  static async invalidateUser(userId: string): Promise<void> {
+  static async invalidateUser(userId: string): Promise<number> {
     return await cacheManager.invalidateByTag(`user:${userId}`);
   }
 }
 
 // Asset Data Caching
 export class AssetCache {
-  static async getAsset(assetId: string, userId: string): Promise<void> {
+  static async getAsset(assetId: string, userId: string): Promise<any> {
     const key = `${userId}:asset:${assetId}`;
     return await cacheManager.get(key, DB_NAMESPACES.ASSETS);
   }
 
-  static async setAsset(assetId: string, userId: string, assetData: any): Promise<void> {
+  static async setAsset(assetId: string, userId: string, assetData: any): Promise<boolean> {
     const key = `${userId}:asset:${assetId}`;
     const tags = [`user:${userId}`, `asset:${assetId}`, 'assets'];
 
@@ -109,12 +109,12 @@ export class AssetCache {
     return success;
   }
 
-  static async getClientAssets(clientId: string, userId: string): Promise<void> {
+  static async getClientAssets(clientId: string, userId: string): Promise<any> {
     const key = `${userId}:client:${clientId}:assets`;
     return await cacheManager.get(key, DB_NAMESPACES.ASSETS);
   }
 
-  static async setClientAssets(clientId: string, userId: string, assets: any[]): Promise<void> {
+  static async setClientAssets(clientId: string, userId: string, assets: any[]): Promise<boolean> {
     const key = `${userId}:client:${clientId}:assets`;
     const tags = [`user:${userId}`, `client:${clientId}`, 'assets'];
 
@@ -135,23 +135,27 @@ export class AssetCache {
     return success;
   }
 
-  static async invalidateAsset(assetId: string): Promise<void> {
+  static async invalidateAsset(assetId: string): Promise<number> {
     return await cacheManager.invalidateByTag(`asset:${assetId}`);
   }
 
-  static async invalidateClient(clientId: string): Promise<void> {
+  static async invalidateClient(clientId: string): Promise<number> {
     return await cacheManager.invalidateByTag(`client:${clientId}`);
   }
 }
 
 // Campaign Data Caching
 export class CampaignCache {
-  static async getCampaign(campaignId: string, userId: string): Promise<void> {
+  static async getCampaign(campaignId: string, userId: string): Promise<any> {
     const key = `${userId}:campaign:${campaignId}`;
     return await cacheManager.get(key, DB_NAMESPACES.CAMPAIGNS);
   }
 
-  static async setCampaign(campaignId: string, userId: string, campaignData: any): Promise<void> {
+  static async setCampaign(
+    campaignId: string,
+    userId: string,
+    campaignData: any
+  ): Promise<boolean> {
     const key = `${userId}:campaign:${campaignId}`;
     const tags = [`user:${userId}`, `campaign:${campaignId}`, 'campaigns'];
 
