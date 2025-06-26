@@ -170,6 +170,7 @@
     "jose": "^6.0.11",
     "jsonwebtoken": "^9.0.2",
     "jszip": "^3.10.1",
+    "lodash": "^4.17.21",
     "lucide-react": "^0.522.0",
     "mammoth": "^1.9.1",
     "mixpanel-browser": "^2.65.0",
