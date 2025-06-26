@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 /**
  * @swagger
  * /api/clients:
@@ -206,7 +206,6 @@ import { NextApiRequest, NextApiResponse } from 'next';
  *               $ref: '#/components/schemas/Error'
  */
 
-import type { NextApiRequest, NextApiResponse } from 'next';
 import { withAuth } from '@/middleware/withAuth';
 import { withAPIRateLimit } from '@/lib/rate-limiter';
 import {
