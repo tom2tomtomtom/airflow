@@ -15,7 +15,7 @@ export class ErrorReporter {
   constructor() {
     this.sessionId = this.generateSessionId();
     // In browser environment, setup global error handlers
-    if (typeof window !== 'undefined' && window?.addEventListener) {
+    if (typeof window !== 'undefined') {
       this.setupGlobalErrorHandlers();
     }
   }
@@ -36,27 +36,28 @@ export class ErrorReporter {
   }
 
   private setupGlobalErrorHandlers() {
-
     // Handle unhandled promise rejections
-    window.addEventListener('unhandledrejection', (_event) => {
+    window.addEventListener('unhandledrejection', (event: PromiseRejectionEvent) => {
       this.reportError(new Error(`Unhandled Promise Rejection: ${event.reason}`), {
         action: 'unhandled_promise_rejection',
         metadata: {
           reason: event.reason,
-          promise: event.promise },
+          promise: event.promise,
+        },
       });
     });
 
     // Handle global JavaScript errors
-    window.addEventListener('error', (_event) => {
+    window.addEventListener('error', (event: ErrorEvent) => {
       this.reportError(new Error(event.message), {
         action: 'global_error',
         metadata: {
-        filename: event.filename,
+          filename: event.filename,
           lineno: event.lineno,
           colno: event.colno,
-          source: (event as any).source
-      }});
+          source: (event as any).source,
+        },
+      });
     });
   }
 
@@ -71,20 +72,21 @@ export class ErrorReporter {
         url: typeof window !== 'undefined' ? window.location.href : 'Unknown',
         userId: this.userId,
         sessionId: this.sessionId,
-        context};
+        context,
+      };
 
       // Send to error reporting API
       const response = await fetch('/api/errors', {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json'
-      },
-        body: JSON.stringify(errorReport)});
-      
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(errorReport),
+      });
+
       if (!response.ok) {
         throw new Error(`Error reporting failed: ${response.status}`);
       }
-
     } catch (reportingError: unknown) {
       // Fallback: log to console if reporting fails
       console.error('Failed to report error:', reportingError);
@@ -103,8 +105,9 @@ export class ErrorReporter {
       metadata: {
         endpoint,
         method,
-        timestamp: new Date().toISOString()
-      }});
+        timestamp: new Date().toISOString(),
+      },
+    });
   }
 
   async reportUIError(error: Error, component: string, action: string) {
@@ -113,8 +116,9 @@ export class ErrorReporter {
       component,
       metadata: {
         userAction: action,
-        timestamp: new Date().toISOString()
-      }});
+        timestamp: new Date().toISOString(),
+      },
+    });
   }
 
   async reportValidationError(error: Error, form: string, field?: string) {
@@ -123,8 +127,9 @@ export class ErrorReporter {
       component: form,
       metadata: {
         field,
-        timestamp: new Date().toISOString()
-      }});
+        timestamp: new Date().toISOString(),
+      },
+    });
   }
 }
 
@@ -132,16 +137,16 @@ export class ErrorReporter {
 export const errorReporter = ErrorReporter.getInstance();
 
 // Convenience functions
-export const reportError = (error: Error, context?: ErrorContext) => 
+export const reportError = (error: Error, context?: ErrorContext) =>
   errorReporter.reportError(error, context);
 
-export const reportAPIError = (error: Error, endpoint: string, method?: string) => 
+export const reportAPIError = (error: Error, endpoint: string, method?: string) =>
   errorReporter.reportAPIError(error, endpoint, method);
 
-export const reportUIError = (error: Error, component: string, action: string) => 
+export const reportUIError = (error: Error, component: string, action: string) =>
   errorReporter.reportUIError(error, component, action);
 
-export const reportValidationError = (error: Error, form: string, field?: string) => 
+export const reportValidationError = (error: Error, form: string, field?: string) =>
   errorReporter.reportValidationError(error, form, field);
 
 // Hook for React components
@@ -150,7 +155,8 @@ export function useErrorReporting() {
     reportError: errorReporter.reportError.bind(errorReporter),
     reportAPIError: errorReporter.reportAPIError.bind(errorReporter),
     reportUIError: errorReporter.reportUIError.bind(errorReporter),
-    reportValidationError: errorReporter.reportValidationError.bind(errorReporter)};
+    reportValidationError: errorReporter.reportValidationError.bind(errorReporter),
+  };
 }
 
 // Higher-order function to wrap async functions with error reporting
