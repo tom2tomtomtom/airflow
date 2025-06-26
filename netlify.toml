@@ -15,6 +15,7 @@
   ENABLE_AI_FEATURES = "true"
   ENABLE_VIDEO_GENERATION = "true"
   ENABLE_SOCIAL_PUBLISHING = "true"
+  CI = "true"
   # Security: All sensitive values should be set in Netlify UI Environment Variables
   # These are build-time placeholders only - real values must be configured in deployment
   JWT_SECRET = "demo_jwt_secret_key_for_build_only_12345678901234567890"
