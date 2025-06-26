@@ -146,7 +146,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
       logger.warn('Invalid search query blocked', {
         search: String(search).substring(0, 50),
         user_id: user.id,
-        client_id,
+        client_id: String(client_id || ''),
       });
     }
   }

@@ -208,11 +208,66 @@ const nextConfig = {
       };
     }
 
-    // Production bundle optimizations - temporarily simplified
+    // Production bundle optimizations - CRITICAL for reducing 970MB bundle
     if (!dev && !isServer) {
-      // Temporarily disable all optimizations due to webpack error
-      config.optimization.minimize = false;
-      // config.optimization.splitChunks removed to avoid conflicts
+      // Re-enable optimization with proper configuration
+      config.optimization.minimize = true;
+
+      // Aggressive code splitting for better performance
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        maxInitialRequests: 25,
+        minSize: 20000,
+        maxSize: 244000,
+        cacheGroups: {
+          // Separate MUI components into their own chunk
+          mui: {
+            test: /[\\/]node_modules[\\/]@mui[\\/]/,
+            name: 'mui',
+            chunks: 'all',
+            priority: 20,
+            enforce: true,
+          },
+          // Icons are huge - separate them
+          icons: {
+            test: /[\\/]node_modules[\\/](lucide-react|@mui\/icons-material)[\\/]/,
+            name: 'icons',
+            chunks: 'async', // Only load when needed
+            priority: 15,
+            enforce: true,
+          },
+          // PDF parsing is large - separate it
+          pdf: {
+            test: /[\\/]node_modules[\\/](pdf-parse|pdf\.js-extract)[\\/]/,
+            name: 'pdf',
+            chunks: 'async',
+            priority: 14,
+            enforce: true,
+          },
+          // Chart libraries
+          charts: {
+            test: /[\\/]node_modules[\\/](chart\.js|recharts|react-chartjs-2)[\\/]/,
+            name: 'charts',
+            chunks: 'async',
+            priority: 13,
+            enforce: true,
+          },
+          // React and core libs
+          react: {
+            test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+            name: 'react',
+            chunks: 'all',
+            priority: 25,
+            enforce: true,
+          },
+          // Default chunk
+          default: {
+            minChunks: 2,
+            priority: -20,
+            reuseExistingChunk: true,
+          },
+        },
+      };
     }
 
     // Add rule for font handling
@@ -228,12 +283,27 @@ const nextConfig = {
       },
     });
 
-    // Ensure CSS is handled properly
+    // Tree shaking and dead code elimination
+    config.optimization.usedExports = true;
+    config.optimization.sideEffects = false;
+
+    // Module concatenation for better tree shaking
+    config.optimization.concatenateModules = true;
+
+    // Ensure CSS is handled properly and add bundle optimizations
     config.plugins.push(
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
       })
     );
+
+    // Resolve aliases for better tree shaking
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      // Use ESM versions for better tree shaking
+      '@mui/icons-material': '@mui/icons-material/esm',
+      lodash: 'lodash-es',
+    };
 
     return config;
   },
@@ -242,11 +312,34 @@ const nextConfig = {
   skipMiddlewareUrlNormalize: true,
   skipTrailingSlashRedirect: true,
 
-  // Experimental features
+  // Experimental features for bundle optimization
   experimental: {
-    // optimizeCss: true, // Temporarily disabled due to webpack error
-    optimizePackageImports: ['@mui/material', '@mui/icons-material', 'lodash', 'date-fns'],
-    // instrumentationHook: true, // Removed - instrumentation.js is available by default
+    optimizeCss: true, // Re-enable CSS optimization
+    // Aggressive package optimization for tree shaking
+    optimizePackageImports: [
+      '@mui/material',
+      '@mui/icons-material',
+      'lucide-react',
+      'lodash',
+      'date-fns',
+      'chart.js',
+      'recharts',
+      'react-chartjs-2',
+      '@tanstack/react-query',
+      'axios',
+      'zod',
+    ],
+    // Enable modern optimizations
+    webpackBuildWorker: true,
+    // Improve compilation performance
+    turbo: {
+      rules: {
+        '*.tsx': {
+          loaders: ['@next/swc-loader-turbo'],
+          as: '*.tsx',
+        },
+      },
+    },
   },
 };
 
