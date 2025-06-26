@@ -164,7 +164,7 @@ export class CopyGenerator {
     } catch (error: any) {
       const classified = classifyError(error as Error, {
         route: 'copy-generator',
-        metadata: { 
+        payload: { 
           briefId: brief.id, 
           motivationSetId: motivationSet.id,
           selectedCount: selectedMotivationIds.length 
@@ -653,7 +653,7 @@ export const generateCopySet = (
 
 export const validateCopySet = (
   copySet: CopySet
-): Promise<ReturnType<CopyGenerator['validateCopySet']>> => {
+): ReturnType<CopyGenerator['validateCopySet']> => {
   return getCopyGenerator().validateCopySet(copySet);
 };
 

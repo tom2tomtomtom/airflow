@@ -484,6 +484,10 @@ export class ExportEngine {
 
       // Get campaign and validate platform compatibility
       const campaign = await this.getCampaign(campaignId);
+      if (!campaign) {
+        throw new Error(`Campaign not found: ${campaignId}`);
+      }
+
       const compatibility = this.validatePlatformCompatibility(campaign, spec);
 
       if (!compatibility.compatible) {

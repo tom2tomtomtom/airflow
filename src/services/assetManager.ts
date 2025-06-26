@@ -124,7 +124,7 @@ export class AssetManager {
     'text/plain',
   ];
 
-  private async getSupabase(): Promise<void> {
+  private async getSupabase(): Promise<SupabaseClient<Database, "public", any>> {
     return await this.supabasePromise;
   }
 

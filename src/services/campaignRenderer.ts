@@ -286,7 +286,8 @@ export class CampaignRenderer {
       logger.info('Starting batch render', {
         jobId: job.id,
         templateCount: templates.length,
-        options
+        quality: options.quality,
+        format: options.format
       });
 
       job.status = 'processing';
