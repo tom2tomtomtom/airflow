@@ -108,7 +108,9 @@ async function searchCampaigns(
     metadata: {
       date: new Date(campaign.created_at).toLocaleDateString(),
       status: campaign.status,
-      clientName: campaign.clients?.name,
+      clientName: Array.isArray(campaign.clients)
+        ? campaign.clients[0]?.name
+        : (campaign.clients as any)?.name,
     },
   }));
 }

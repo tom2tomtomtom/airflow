@@ -30,7 +30,7 @@ import {
   Tabs,
   Accordion,
   AccordionSummary,
-  AccordionDetails
+  AccordionDetails,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -47,7 +47,7 @@ import {
   Twitter,
   Instagram,
   LinkedIn,
-  YouTube
+  YouTube,
 } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useClient } from '@/contexts/ClientContext';
@@ -106,20 +106,23 @@ const ClientsPage: React.FC = () => {
     brand_guidelines: {
       voiceTone: '',
       targetAudience: '',
-      keyMessages: []
-    }
+      keyMessages: [],
+    },
   });
 
   // Form validation
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   // Get unique industries for filter
-  const industries = Array.from(new Set(clients.map((client: any) => client.industry).filter(Boolean)));
+  const industries = Array.from(
+    new Set(clients.map((client: any) => client.industry).filter(Boolean))
+  );
 
   // Filter clients
   const filteredClients = clients.filter((client: any) => {
-    const matchesSearch = client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         client.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesIndustry = !industryFilter || client.industry === industryFilter;
     return matchesSearch && matchesIndustry;
   });
@@ -180,12 +183,12 @@ const ClientsPage: React.FC = () => {
         primaryColor: client.primaryColor,
         secondaryColor: client.secondaryColor,
         socialMedia: client.socialMedia || {},
-          contacts: client.contacts || [],
+        contacts: client.contacts || [],
         brand_guidelines: client.brand_guidelines || {
           voiceTone: '',
           targetAudience: '',
-          keyMessages: []
-        }
+          keyMessages: [],
+        },
       });
     } else {
       setSelectedClient(null);
@@ -202,8 +205,8 @@ const ClientsPage: React.FC = () => {
         brand_guidelines: {
           voiceTone: '',
           targetAudience: '',
-          keyMessages: []
-        }
+          keyMessages: [],
+        },
       });
     }
     setFormErrors({});
@@ -236,14 +239,14 @@ const ClientsPage: React.FC = () => {
       twitter: <Twitter />,
       instagram: <Instagram />,
       linkedin: <LinkedIn />,
-      youtube: <YouTube />
+      youtube: <YouTube />,
     };
     return icons[platform] || <WebsiteIcon />;
   };
 
   return (
     <>
-       <Head>
+      <Head>
         <title>Clients | Airflow</title>
       </Head>
       <DashboardLayout title="Clients">
@@ -257,11 +260,7 @@ const ClientsPage: React.FC = () => {
                 Manage your clients and their brand information
               </Typography>
             </Box>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={() => handleOpenDialog()}
-            >
+            <Button variant="contained" startIcon={<AddIcon />} onClick={() => handleOpenDialog()}>
               Add Client
             </Button>
           </Box>
@@ -274,13 +273,13 @@ const ClientsPage: React.FC = () => {
                   fullWidth
                   placeholder="Search clients..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={e => setSearchTerm(e.target.value)}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
                         <SearchIcon />
                       </InputAdornment>
-                    )
+                    ),
                   }}
                 />
               </Grid>
@@ -290,7 +289,7 @@ const ClientsPage: React.FC = () => {
                   <Select
                     value={industryFilter}
                     label="Filter by Industry"
-                    onChange={(e) => setIndustryFilter(e.target.value)}
+                    onChange={e => setIndustryFilter(e.target.value)}
                   >
                     <MenuItem value="">All Industries</MenuItem>;
                     {industries.map((industry: any) => (
@@ -302,8 +301,8 @@ const ClientsPage: React.FC = () => {
                 </FormControl>
               </Grid>
               <Grid size={{ xs: 12, md: 2 }}>
-                <Typography variant="body2" color="text.secondary">;
-                  {filteredClients.length} of {clients.length} clients
+                <Typography variant="body2" color="text.secondary">
+                  ;{filteredClients.length} of {clients.length} clients
                 </Typography>
               </Grid>
             </Grid>
@@ -327,11 +326,7 @@ const ClientsPage: React.FC = () => {
             <Typography variant="body2" color="text.secondary" paragraph>
               Get started by adding your first client
             </Typography>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={() => handleOpenDialog()}
-            >
+            <Button variant="contained" startIcon={<AddIcon />} onClick={() => handleOpenDialog()}>
               Add Your First Client
             </Button>
           </Paper>
@@ -349,18 +344,26 @@ const ClientsPage: React.FC = () => {
                     transition: 'all 0.2s',
                     '&:hover': {
                       transform: 'translateY(-4px)',
-                      boxShadow: 3}}}
+                      boxShadow: 3,
+                    },
+                  }}
                   onClick={() => handleOpenDialog(client)}
                 >
                   <CardContent>
-                    <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={2}>
+                    <Box
+                      display="flex"
+                      alignItems="flex-start"
+                      justifyContent="space-between"
+                      mb={2}
+                    >
                       <Box display="flex" alignItems="center" gap={2}>
                         <Avatar
                           src={client.logo}
                           sx={{
                             bgcolor: client.primaryColor,
                             width: 48,
-                            height: 48}}
+                            height: 48,
+                          }}
                         >
                           <BusinessIcon />
                         </Avatar>
@@ -373,14 +376,12 @@ const ClientsPage: React.FC = () => {
                             size="small"
                             sx={{
                               bgcolor: client.primaryColor,
-                              color: 'white'}}
+                              color: 'white',
+                            }}
                           />
                         </Box>
                       </Box>
-                      <IconButton
-                        size="small"
-                        onClick={(e) => handleMenuOpen(e, client)}
-                      >
+                      <IconButton size="small" onClick={e => handleMenuOpen(e, client)}>
                         <MoreVertIcon />
                       </IconButton>
                     </Box>
@@ -391,26 +392,26 @@ const ClientsPage: React.FC = () => {
 
                     <Box display="flex" alignItems="center" gap={1} mb={2}>
                       {client.website && (
-                        <Tooltip title="Website">;
-                          <IconButton size="small">;
-                            <WebsiteIcon fontSize="small" />;
+                        <Tooltip title="Website">
+                          <IconButton size="small">
+                            <WebsiteIcon fontSize="small" />
                           </IconButton>
                         </Tooltip>
                       )}
-                      {Object.entries(client.socialMedia || {}).map(([platform, url]) => (
-                        url && (
-                          <Tooltip key={platform} title={platform}>
-                            <IconButton size="small">;
-                              {getSocialIcon(platform)}
-                            </IconButton>
-                          </Tooltip>
-                        )
-                      ))}
+                      {Object.entries(client.socialMedia || {}).map(
+                        ([platform, url]) =>
+                          url && (
+                            <Tooltip key={platform} title={platform}>
+                              <IconButton size="small">{getSocialIcon(platform)}</IconButton>
+                            </Tooltip>
+                          )
+                      )}
                     </Box>
 
-                    <Box display="flex" justifyContent="space-between" alignItems="center">;
-                      <Typography variant="caption" color="text.secondary">;
-                        {client.contacts?.length || 0} contacts
+                    <Box display="flex" justifyContent="space-between" alignItems="center">
+                      ;
+                      <Typography variant="caption" color="text.secondary">
+                        ;{client.contacts?.length || 0} contacts
                       </Typography>
                       <Box display="flex" gap={0.5}>
                         <Box
@@ -418,14 +419,16 @@ const ClientsPage: React.FC = () => {
                             width: 12,
                             height: 12,
                             borderRadius: '50%',
-                            bgcolor: client.primaryColor}}
+                            bgcolor: client.primaryColor,
+                          }}
                         />
                         <Box
                           sx={{
                             width: 12,
                             height: 12,
                             borderRadius: '50%',
-                            bgcolor: client.secondaryColor}}
+                            bgcolor: client.secondaryColor,
+                          }}
                         />
                       </Box>
                     </Box>
@@ -437,13 +440,9 @@ const ClientsPage: React.FC = () => {
         )}
 
         {/* Context Menu */}
-        <Menu
-          anchorEl={menuAnchor}
-          open={Boolean(menuAnchor)}
-          onClose={handleMenuClose}
-        >
+        <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={handleMenuClose}>
           <MenuItem
-            onClick={() => {;
+            onClick={() => {
               handleMenuClose();
               if (selectedClient) handleOpenDialog(selectedClient);
             }}
@@ -454,7 +453,7 @@ const ClientsPage: React.FC = () => {
             <ListItemText>Edit Client</ListItemText>
           </MenuItem>
           <MenuItem
-            onClick={() => {;
+            onClick={() => {
               handleMenuClose();
               if (selectedClient) {
                 setClientToDelete(selectedClient);
@@ -471,15 +470,8 @@ const ClientsPage: React.FC = () => {
         </Menu>
 
         {/* Client Form Dialog */}
-        <Dialog
-          open={dialogOpen}
-          onClose={handleCloseDialog}
-          maxWidth="md"
-          fullWidth
-        >
-          <DialogTitle>
-            {selectedClient ? 'Edit Client' : 'Add New Client'}
-          </DialogTitle>
+        <Dialog open={dialogOpen} onClose={handleCloseDialog} maxWidth="md" fullWidth>
+          <DialogTitle>{selectedClient ? 'Edit Client' : 'Add New Client'}</DialogTitle>
           <DialogContent>
             <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)}>
               <Tab label="Basic Info" />
@@ -497,7 +489,7 @@ const ClientsPage: React.FC = () => {
                       fullWidth
                       label="Client Name"
                       value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      onChange={e => setFormData({ ...formData, name: e.target.value })}
                       error={!!formErrors.name}
                       helperText={formErrors.name}
                       required
@@ -509,7 +501,7 @@ const ClientsPage: React.FC = () => {
                       <Select
                         value={formData.industry}
                         label="Industry"
-                        onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
+                        onChange={e => setFormData({ ...formData, industry: e.target.value })}
                       >
                         <MenuItem value="Technology">Technology</MenuItem>
                         <MenuItem value="Healthcare">Healthcare</MenuItem>
@@ -529,7 +521,7 @@ const ClientsPage: React.FC = () => {
                       rows={3}
                       label="Description"
                       value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      onChange={e => setFormData({ ...formData, description: e.target.value })}
                     />
                   </Grid>
                   <Grid size={{ xs: 12, md: 6 }}>
@@ -537,7 +529,7 @@ const ClientsPage: React.FC = () => {
                       fullWidth
                       label="Website"
                       value={formData.website}
-                      onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                      onChange={e => setFormData({ ...formData, website: e.target.value })}
                       placeholder="https://example.com"
                     />
                   </Grid>
@@ -546,7 +538,7 @@ const ClientsPage: React.FC = () => {
                       fullWidth
                       label="Logo URL"
                       value={formData.logo}
-                      onChange={(e) => setFormData({ ...formData, logo: e.target.value })}
+                      onChange={e => setFormData({ ...formData, logo: e.target.value })}
                       placeholder="https://example.com/logo.png"
                     />
                   </Grid>
@@ -562,13 +554,13 @@ const ClientsPage: React.FC = () => {
                       label="Primary Color"
                       type="color"
                       value={formData.primaryColor}
-                      onChange={(e) => setFormData({ ...formData, primaryColor: e.target.value })}
+                      onChange={e => setFormData({ ...formData, primaryColor: e.target.value })}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
                             <PaletteIcon />
                           </InputAdornment>
-                        )
+                        ),
                       }}
                     />
                   </Grid>
@@ -578,13 +570,13 @@ const ClientsPage: React.FC = () => {
                       label="Secondary Color"
                       type="color"
                       value={formData.secondaryColor}
-                      onChange={(e) => setFormData({ ...formData, secondaryColor: e.target.value })}
+                      onChange={e => setFormData({ ...formData, secondaryColor: e.target.value })}
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
                             <PaletteIcon />
                           </InputAdornment>
-                        )
+                        ),
                       }}
                     />
                   </Grid>
@@ -593,13 +585,15 @@ const ClientsPage: React.FC = () => {
                       fullWidth
                       label="Voice & Tone"
                       value={formData.brand_guidelines.voiceTone}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        brand_guidelines: {
-                          ...formData.brand_guidelines,
-                          voiceTone: e.target.value
-                        }
-                      })}
+                      onChange={e =>
+                        setFormData({
+                          ...formData,
+                          brand_guidelines: {
+                            ...formData.brand_guidelines,
+                            voiceTone: e.target.value,
+                          },
+                        })
+                      }
                       placeholder="e.g., Professional and friendly"
                     />
                   </Grid>
@@ -608,13 +602,15 @@ const ClientsPage: React.FC = () => {
                       fullWidth
                       label="Target Audience"
                       value={formData.brand_guidelines.targetAudience}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        brand_guidelines: {
-                          ...formData.brand_guidelines,
-                          targetAudience: e.target.value
-                        }
-                      })}
+                      onChange={e =>
+                        setFormData({
+                          ...formData,
+                          brand_guidelines: {
+                            ...formData.brand_guidelines,
+                            targetAudience: e.target.value,
+                          },
+                        })
+                      }
                       placeholder="e.g., Young professionals aged 25-35"
                     />
                   </Grid>
@@ -629,16 +625,18 @@ const ClientsPage: React.FC = () => {
                       fullWidth
                       label="Facebook"
                       value={formData.socialMedia.facebook || ''}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        socialMedia: { ...formData.socialMedia, facebook: e.target.value }
-                      })}
+                      onChange={e =>
+                        setFormData({
+                          ...formData,
+                          socialMedia: { ...formData.socialMedia, facebook: e.target.value },
+                        })
+                      }
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
                             <Facebook />
                           </InputAdornment>
-                        )
+                        ),
                       }}
                     />
                   </Grid>
@@ -647,16 +645,18 @@ const ClientsPage: React.FC = () => {
                       fullWidth
                       label="Twitter"
                       value={formData.socialMedia.twitter || ''}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        socialMedia: { ...formData.socialMedia, twitter: e.target.value }
-                      })}
+                      onChange={e =>
+                        setFormData({
+                          ...formData,
+                          socialMedia: { ...formData.socialMedia, twitter: e.target.value },
+                        })
+                      }
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
                             <Twitter />
                           </InputAdornment>
-                        )
+                        ),
                       }}
                     />
                   </Grid>
@@ -665,16 +665,18 @@ const ClientsPage: React.FC = () => {
                       fullWidth
                       label="Instagram"
                       value={formData.socialMedia.instagram || ''}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        socialMedia: { ...formData.socialMedia, instagram: e.target.value }
-                      })}
+                      onChange={e =>
+                        setFormData({
+                          ...formData,
+                          socialMedia: { ...formData.socialMedia, instagram: e.target.value },
+                        })
+                      }
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
                             <Instagram />
                           </InputAdornment>
-                        )
+                        ),
                       }}
                     />
                   </Grid>
@@ -683,16 +685,18 @@ const ClientsPage: React.FC = () => {
                       fullWidth
                       label="LinkedIn"
                       value={formData.socialMedia.linkedin || ''}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        socialMedia: { ...formData.socialMedia, linkedin: e.target.value }
-                      })}
+                      onChange={e =>
+                        setFormData({
+                          ...formData,
+                          socialMedia: { ...formData.socialMedia, linkedin: e.target.value },
+                        })
+                      }
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
                             <LinkedIn />
                           </InputAdornment>
-                        )
+                        ),
                       }}
                     />
                   </Grid>
@@ -701,16 +705,18 @@ const ClientsPage: React.FC = () => {
                       fullWidth
                       label="YouTube"
                       value={formData.socialMedia.youtube || ''}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        socialMedia: { ...formData.socialMedia, youtube: e.target.value }
-                      })}
+                      onChange={e =>
+                        setFormData({
+                          ...formData,
+                          socialMedia: { ...formData.socialMedia, youtube: e.target.value },
+                        })
+                      }
                       InputProps={{
                         startAdornment: (
                           <InputAdornment position="start">
                             <YouTube />
                           </InputAdornment>
-                        )
+                        ),
                       }}
                     />
                   </Grid>
@@ -744,11 +750,11 @@ const ClientsPage: React.FC = () => {
                             email: '',
                             role: '',
                             phone: '',
-                            isActive: true
+                            isActive: true,
                           };
                           setFormData({
                             ...formData,
-                            contacts: [...formData.contacts, newContact]
+                            contacts: [...formData.contacts, newContact],
                           });
                         }}
                       >
@@ -760,9 +766,7 @@ const ClientsPage: React.FC = () => {
                       {formData.contacts.map((contact, index) => (
                         <Accordion key={contact.id}>
                           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                            <Typography>
-                              {contact.name || `Contact ${index + 1}`}
-                            </Typography>
+                            <Typography>{contact.name || `Contact ${index + 1}`}</Typography>
                           </AccordionSummary>
                           <AccordionDetails>
                             <Grid container spacing={2}>
@@ -771,7 +775,7 @@ const ClientsPage: React.FC = () => {
                                   fullWidth
                                   label="Name"
                                   value={contact.name}
-                                  onChange={(e) => {
+                                  onChange={e => {
                                     const updatedContacts = [...formData.contacts];
                                     updatedContacts[index] = { ...contact, name: e.target.value };
                                     setFormData({ ...formData, contacts: updatedContacts });
@@ -783,7 +787,7 @@ const ClientsPage: React.FC = () => {
                                   fullWidth
                                   label="Role"
                                   value={contact.role}
-                                  onChange={(e) => {
+                                  onChange={e => {
                                     const updatedContacts = [...formData.contacts];
                                     updatedContacts[index] = { ...contact, role: e.target.value };
                                     setFormData({ ...formData, contacts: updatedContacts });
@@ -796,7 +800,7 @@ const ClientsPage: React.FC = () => {
                                   label="Email"
                                   type="email"
                                   value={contact.email}
-                                  onChange={(e) => {
+                                  onChange={e => {
                                     const updatedContacts = [...formData.contacts];
                                     updatedContacts[index] = { ...contact, email: e.target.value };
                                     setFormData({ ...formData, contacts: updatedContacts });
@@ -808,7 +812,7 @@ const ClientsPage: React.FC = () => {
                                   fullWidth
                                   label="Phone"
                                   value={contact.phone || ''}
-                                  onChange={(e) => {
+                                  onChange={e => {
                                     const updatedContacts = [...formData.contacts];
                                     updatedContacts[index] = { ...contact, phone: e.target.value };
                                     setFormData({ ...formData, contacts: updatedContacts });
@@ -819,7 +823,9 @@ const ClientsPage: React.FC = () => {
                                 <Button
                                   color="error"
                                   onClick={() => {
-                                    const updatedContacts = formData.contacts.filter((_, i) => i !== index);
+                                    const updatedContacts = formData.contacts.filter(
+                                      (_, i) => i !== index
+                                    );
                                     setFormData({ ...formData, contacts: updatedContacts });
                                   }}
                                 >
@@ -841,11 +847,11 @@ const ClientsPage: React.FC = () => {
                             email: '',
                             role: '',
                             phone: '',
-                            isActive: true
+                            isActive: true,
                           };
                           setFormData({
                             ...formData,
-                            contacts: [...formData.contacts, newContact]
+                            contacts: [...formData.contacts, newContact],
                           });
                         }}
                       >
@@ -871,14 +877,12 @@ const ClientsPage: React.FC = () => {
         </Dialog>
 
         {/* Delete Confirmation Dialog */}
-        <Dialog
-          open={deleteDialogOpen}
-          onClose={() => setDeleteDialogOpen(false)}
-        >
+        <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
           <DialogTitle>Delete Client</DialogTitle>
           <DialogContent>
             <Typography>
-              Are you sure you want to delete "{clientToDelete?.name}"? This action cannot be undone.
+              Are you sure you want to delete "{clientToDelete?.name}"? This action cannot be
+              undone.
             </Typography>
           </DialogContent>
           <DialogActions>
