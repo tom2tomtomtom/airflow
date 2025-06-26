@@ -31,6 +31,17 @@ AIRWAVE is a comprehensive AI-powered video marketing platform that enables user
 
 ## 🛡️ **SAFE DEVELOPMENT WORKFLOW**
 
+### **🎯 CRITICAL: Repository Push Instructions**
+
+**ALWAYS push changes to github.com/tom2tomtomtom/airflow**
+
+```bash
+# Push all proven quality changes to the airflow repository
+git push airflow [branch-name]
+```
+
+The `airflow` remote is configured to point to github.com/tom2tomtomtom/airflow and should be used for all commits containing proven, tested changes.
+
 ### **1. Before ANY Change**
 
 ```bash
@@ -50,14 +61,18 @@ npm test
 - Run `npm run type-check` to check for errors
 - Test the specific feature manually
 - Commit immediately with descriptive message
+- **Push proven quality changes to airflow repository**
 
-### **3. Safe Commit Messages**
+### **3. Safe Commit and Push Workflow**
 
 ```bash
 # Good commit messages
 git commit -m "fix: Remove syntax error in Login component line 45"
 git commit -m "feat: Add logout button to header navigation"
 git commit -m "refactor: Simplify user profile data fetching"
+
+# ALWAYS push proven changes to airflow repository
+git push airflow [branch-name]
 
 # Bad commit messages (too vague)
 git commit -m "fixes"
@@ -210,9 +225,11 @@ git checkout -b work-[date]
 git add [specific-file]
 git commit -m "type: Specific description"
 
-# End of day
+# Push proven quality changes to airflow repository
+git push airflow work-[date]
+
+# End of day - also push to origin for backup
 git push origin work-[date]
-# Create PR for review
 ```
 
 ### **Branch Naming**
@@ -252,6 +269,7 @@ git push origin work-[date]
 1. Make change to [filename]
 2. Save and test
 3. Commit: `git commit -m "type: description"`
+4. Push to airflow: `git push airflow [branch-name]`
 
 Would you like me to explain this further before you implement it?
 ```
