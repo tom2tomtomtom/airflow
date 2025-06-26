@@ -1,6 +1,5 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { getErrorMessage } from '@/utils/errorUtils';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { getErrorMessage } from '@/utils/errorUtils';
 import { supabase } from '@/lib/supabase';
 import { env } from '@/lib/env';
 import formidable from 'formidable';
@@ -119,6 +118,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Upload file to Supabase storage
+    if (!supabase) {
+      return res.status(500).json({ success: false, message: 'Database connection not available' });
+    }
+    
     const fileName = `${Date.now()}-${uploadedFile.originalFilename}`;
     const { data: _uploadData, error: uploadError } = await supabase.storage
       .from('briefs')

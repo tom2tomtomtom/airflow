@@ -7,6 +7,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
+    if (!supabase) {
+      return res.status(500).json({ success: false, error: 'Database connection not available' });
+    }
+    
     // Add the brand_guidelines column if it doesn't exist
     process.env.NODE_ENV === 'development' && console.log('Adding brand_guidelines column...');
     const { error: columnError } = await supabase.rpc('exec_sql', {

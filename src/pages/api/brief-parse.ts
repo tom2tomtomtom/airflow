@@ -9,6 +9,10 @@ const BriefParseSchema = z.object({
 
 async function extractTextFromFile(fileUrl: string): Promise<string> {
   try {
+    if (!supabase) {
+      throw new Error('Database connection not available');
+    }
+    
     // Get the file from Supabase storage
     const { data: fileData, error: downloadError } = await supabase.storage
       .from(env.STORAGE_BUCKET)
@@ -127,6 +131,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .json({ success: false, message: 'Invalid input', errors: parseResult.error.errors });
   }
   const { brief_id } = parseResult.data;
+  
+  if (!supabase) {
+    return res.status(500).json({ success: false, message: 'Database connection not available' });
+  }
+  
   const { data: brief, error } = await supabase
     .from('briefs')
     .select('*')

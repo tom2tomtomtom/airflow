@@ -40,6 +40,10 @@ async function getAsset(
   userId: string
 ) {
   try {
+    if (!supabase) {
+      return res.status(500).json({ success: false, message: 'Database connection not available' });
+    }
+    
     const { data: asset, error } = await supabase
       .from('assets')
       .select('*')

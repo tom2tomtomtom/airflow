@@ -98,6 +98,10 @@ async function getAnalyticsOverview(
     ? new Date(filters.startDate)
     : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
+  if (!supabase) {
+    throw new Error('Database connection not available');
+  }
+  
   // Get user's accessible clients
   const { data: userClients } = await supabase
     .from('user_clients')

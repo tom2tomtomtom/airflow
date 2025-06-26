@@ -26,6 +26,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       return errorResponse(res, ApiErrorCode.VALIDATION_ERROR, 'Client ID is required', 400);
     }
 
+    if (!supabase) {
+      return errorResponse(res, ApiErrorCode.DATABASE_ERROR, 'Database connection not available', 500);
+    }
+    
     // Get execution statistics
     const { data: executions, error: executionsError } = await supabase
       .from('executions')

@@ -38,6 +38,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
     
     try {
+      if (!supabase) {
+        return res.status(500).json({ success: false, message: 'Database connection not available' });
+      }
+      
       // Read file from disk
       const fileBuffer = await fs.readFile(file.filepath);
       const filePath = `briefs/${Date.now()}_${file.originalFilename || 'unnamed'}`;
