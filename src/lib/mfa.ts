@@ -66,14 +66,15 @@ export async function setupMFA(userId: string, userEmail: string): Promise<MFASe
   if (!supabase) {
     throw new Error('Supabase client not available');
   }
-  
+
   const { error } = await supabase.from('user_mfa').upsert({
     user_id: userId,
     secret_encrypted: await encryptSecret(secret),
     backup_codes_encrypted: await encryptBackupCodes(backupCodes),
     is_enabled: false, // User needs to verify first
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString() });
+    updated_at: new Date().toISOString(),
+  });
 
   if (error) {
     throw new Error(`Failed to setup MFA: ${error.message}`);
@@ -127,7 +128,8 @@ export async function verifyAndEnableMFA(
       .update({
         is_enabled: true,
         verified_at: new Date().toISOString(),
-        updated_at: new Date().toISOString() })
+        updated_at: new Date().toISOString(),
+      })
       .eq('user_id', userId);
 
     if (updateError) {
@@ -182,7 +184,8 @@ export async function validateMFAToken(
         .update({
           used_backup_codes: updatedUsedCodes,
           last_used_at: new Date().toISOString(),
-          updated_at: new Date().toISOString() })
+          updated_at: new Date().toISOString(),
+        })
         .eq('user_id', userId);
 
       if (updateError) {
@@ -204,7 +207,8 @@ export async function validateMFAToken(
         .from('user_mfa')
         .update({
           last_used_at: new Date().toISOString(),
-          updated_at: new Date().toISOString() })
+          updated_at: new Date().toISOString(),
+        })
         .eq('user_id', userId);
 
       if (updateError) {
@@ -271,7 +275,8 @@ export async function disableMFA(
       .update({
         is_enabled: false,
         disabled_at: new Date().toISOString(),
-        updated_at: new Date().toISOString() })
+        updated_at: new Date().toISOString(),
+      })
       .eq('user_id', userId);
 
     if (error) {
@@ -312,7 +317,8 @@ export async function regenerateBackupCodes(
       .update({
         backup_codes_encrypted: await encryptBackupCodes(newBackupCodes),
         used_backup_codes: [], // Reset used codes
-        updated_at: new Date().toISOString() })
+        updated_at: new Date().toISOString(),
+      })
       .eq('user_id', userId);
 
     if (error) {
@@ -327,24 +333,95 @@ export async function regenerateBackupCodes(
   }
 }
 
-// Encryption utilities (implement with proper key management)
+// Encryption utilities with proper AES-256-GCM encryption
 async function encryptSecret(secret: string): Promise<string> {
-  // In production, use proper encryption with HSM or secure key management
-  // For now, using base64 encoding (NOT SECURE - replace in production)
-  return Buffer.from(secret).toString('base64');
+  const algorithm = 'aes-256-gcm';
+  const keyBuffer = crypto.scryptSync(getEncryptionKey(), 'salt', 32);
+  const iv = crypto.randomBytes(16);
+
+  const cipher = crypto.createCipher(algorithm, keyBuffer, iv);
+  cipher.setAAD(Buffer.from('mfa-secret')); // Additional authentication data
+
+  let encrypted = cipher.update(secret, 'utf8', 'hex');
+  encrypted += cipher.final('hex');
+
+  const authTag = cipher.getAuthTag();
+
+  // Combine IV, auth tag, and encrypted data
+  return `${iv.toString('hex')}:${authTag.toString('hex')}:${encrypted}`;
 }
 
 async function decryptSecret(encryptedSecret: string): Promise<string> {
-  // In production, use proper decryption
-  return Buffer.from(encryptedSecret, 'base64').toString();
+  const algorithm = 'aes-256-gcm';
+  const keyBuffer = crypto.scryptSync(getEncryptionKey(), 'salt', 32);
+
+  const [ivHex, authTagHex, encrypted] = encryptedSecret.split(':');
+  if (!ivHex || !authTagHex || !encrypted) {
+    throw new Error('Invalid encrypted secret format');
+  }
+
+  const iv = Buffer.from(ivHex, 'hex');
+  const authTag = Buffer.from(authTagHex, 'hex');
+
+  const decipher = crypto.createDecipher(algorithm, keyBuffer, iv);
+  decipher.setAAD(Buffer.from('mfa-secret'));
+  decipher.setAuthTag(authTag);
+
+  let decrypted = decipher.update(encrypted, 'hex', 'utf8');
+  decrypted += decipher.final('utf8');
+
+  return decrypted;
 }
 
 async function encryptBackupCodes(codes: string[]): Promise<string> {
-  // In production, use proper encryption
-  return Buffer.from(JSON.stringify(codes)).toString('base64');
+  const algorithm = 'aes-256-gcm';
+  const keyBuffer = crypto.scryptSync(getEncryptionKey(), 'salt', 32);
+  const iv = crypto.randomBytes(16);
+
+  const cipher = crypto.createCipher(algorithm, keyBuffer, iv);
+  cipher.setAAD(Buffer.from('backup-codes'));
+
+  const plaintext = JSON.stringify(codes);
+  let encrypted = cipher.update(plaintext, 'utf8', 'hex');
+  encrypted += cipher.final('hex');
+
+  const authTag = cipher.getAuthTag();
+
+  return `${iv.toString('hex')}:${authTag.toString('hex')}:${encrypted}`;
 }
 
 async function decryptBackupCodes(encryptedCodes: string): Promise<string[]> {
-  // In production, use proper decryption
-  return JSON.parse(Buffer.from(encryptedCodes, 'base64').toString());
+  const algorithm = 'aes-256-gcm';
+  const keyBuffer = crypto.scryptSync(getEncryptionKey(), 'salt', 32);
+
+  const [ivHex, authTagHex, encrypted] = encryptedCodes.split(':');
+  if (!ivHex || !authTagHex || !encrypted) {
+    throw new Error('Invalid encrypted backup codes format');
+  }
+
+  const iv = Buffer.from(ivHex, 'hex');
+  const authTag = Buffer.from(authTagHex, 'hex');
+
+  const decipher = crypto.createDecipher(algorithm, keyBuffer, iv);
+  decipher.setAAD(Buffer.from('backup-codes'));
+  decipher.setAuthTag(authTag);
+
+  let decrypted = decipher.update(encrypted, 'hex', 'utf8');
+  decrypted += decipher.final('utf8');
+
+  return JSON.parse(decrypted);
+}
+
+/**
+ * Get encryption key from environment variable with proper validation
+ */
+function getEncryptionKey(): string {
+  const key = process.env.MFA_ENCRYPTION_KEY;
+  if (!key) {
+    throw new Error('MFA_ENCRYPTION_KEY environment variable is required');
+  }
+  if (key.length < 32) {
+    throw new Error('MFA_ENCRYPTION_KEY must be at least 32 characters long');
+  }
+  return key;
 }

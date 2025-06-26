@@ -65,7 +65,7 @@ export class WebhookManager {
   }
 
   /**
-   * Verify webhook signature
+   * Verify webhook signature with support for multiple formats
    */
   verifySignature(
     signature: string,
@@ -74,24 +74,62 @@ export class WebhookManager {
     tolerance: number = 300000
   ): boolean {
     try {
-      const parts = signature.split(',');
-      const timestamp = parseInt(parts.find(p => p.startsWith('t='))?.split('=')[1] || '0');
-      const receivedSignature = parts.find(p => p.startsWith('v1='))?.split('=')[1] || '';
-
-      // Check timestamp tolerance (default 5 minutes)
-      if (Date.now() - timestamp > tolerance) {
-        return false;
+      // Support for Stripe-style signatures (t=timestamp,v1=signature)
+      if (signature.includes('t=') && signature.includes('v1=')) {
+        return this.verifyStripeStyleSignature(signature, payload, secret, tolerance);
       }
 
-      // Generate expected signature
-      const message = `${timestamp}.${JSON.stringify(payload)}`;
-      const expectedSignature = crypto.createHmac('sha256', secret).update(message).digest('hex');
-
-      // Constant time comparison
-      return crypto.timingSafeEqual(Buffer.from(receivedSignature), Buffer.from(expectedSignature));
+      // Support for simple HMAC-SHA256 signatures (raw hex)
+      return this.verifySimpleHmacSignature(signature, payload, secret);
     } catch (error) {
       return false;
     }
+  }
+
+  /**
+   * Verify Stripe-style webhook signature with timestamp
+   */
+  private verifyStripeStyleSignature(
+    signature: string,
+    payload: any,
+    secret: string,
+    tolerance: number
+  ): boolean {
+    const parts = signature.split(',');
+    const timestamp = parseInt(parts.find(p => p.startsWith('t='))?.split('=')[1] || '0');
+    const receivedSignature = parts.find(p => p.startsWith('v1='))?.split('=')[1] || '';
+
+    // Check timestamp tolerance (default 5 minutes)
+    if (Date.now() - timestamp > tolerance) {
+      return false;
+    }
+
+    // Generate expected signature
+    const message = `${timestamp}.${JSON.stringify(payload)}`;
+    const expectedSignature = crypto.createHmac('sha256', secret).update(message).digest('hex');
+
+    // Constant time comparison
+    return crypto.timingSafeEqual(Buffer.from(receivedSignature), Buffer.from(expectedSignature));
+  }
+
+  /**
+   * Verify simple HMAC-SHA256 signature (commonly used by most webhook providers)
+   */
+  private verifySimpleHmacSignature(signature: string, payload: any, secret: string): boolean {
+    // Remove 'sha256=' prefix if present (GitHub style)
+    const cleanSignature = signature.replace(/^sha256=/, '');
+
+    // Generate expected signature from raw payload
+    const expectedSignature = crypto
+      .createHmac('sha256', secret)
+      .update(JSON.stringify(payload))
+      .digest('hex');
+
+    // Constant time comparison
+    return crypto.timingSafeEqual(
+      Buffer.from(cleanSignature, 'hex'),
+      Buffer.from(expectedSignature, 'hex')
+    );
   }
 
   /**

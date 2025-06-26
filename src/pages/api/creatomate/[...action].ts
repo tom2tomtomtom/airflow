@@ -1,6 +1,9 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiResponse } from 'next';
 import axios from 'axios';
 import { getLogger } from '@/lib/logger';
+import { withAuth } from '@/middleware/withAuth';
+import { withRateLimit } from '@/middleware/withRateLimit';
+import type { AuthenticatedRequest } from '@/middleware/withAuth';
 
 const logger = getLogger('api/creatomate/action');
 
@@ -12,12 +15,22 @@ interface CreatomateTestResponse {
   timestamp?: string;
 }
 
-export default async function handler(
-  req: NextApiRequest,
+async function handler(
+  req: AuthenticatedRequest,
   res: NextApiResponse<CreatomateTestResponse>
 ): Promise<void> {
   const { action } = req.query;
   const actionPath = Array.isArray(action) ? action.join('/') : action;
+  const { user } = req;
+
+  // Ensure user is authenticated
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      error: 'Authentication required',
+      action: actionPath,
+    });
+  }
 
   try {
     // Check if API key is configured
@@ -195,6 +208,9 @@ export default async function handler(
     });
   }
 }
+
+// Export with authentication and rate limiting middleware
+export default withAuth(withRateLimit(handler, 'ai'));
 
 export const config = {
   api: {

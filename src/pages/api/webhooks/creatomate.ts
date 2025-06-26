@@ -32,19 +32,32 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Verify webhook signature (if Creatomate provides one)
+  // MANDATORY webhook signature verification for security
   const signature = req.headers['x-creatomate-signature'] as string;
-  if (signature && process.env.CREATOMATE_WEBHOOK_SECRET) {
-    const webhookManager = WebhookManager.getInstance();
-    const isValid = webhookManager.verifySignature(
-      signature,
-      req.body,
-      process.env.CREATOMATE_WEBHOOK_SECRET
-    );
 
-    if (!isValid) {
-      return res.status(401).json({ error: 'Invalid signature' });
-    }
+  // Require webhook secret to be configured
+  if (!process.env.CREATOMATE_WEBHOOK_SECRET) {
+    logger.error('CREATOMATE_WEBHOOK_SECRET not configured - webhook processing disabled');
+    return res.status(500).json({ error: 'Webhook processing not configured' });
+  }
+
+  // Require signature header to be present
+  if (!signature) {
+    logger.error('Missing webhook signature header');
+    return res.status(401).json({ error: 'Missing webhook signature' });
+  }
+
+  // Verify the signature using HMAC-SHA256
+  const webhookManager = WebhookManager.getInstance();
+  const isValid = webhookManager.verifySignature(
+    signature,
+    req.body,
+    process.env.CREATOMATE_WEBHOOK_SECRET
+  );
+
+  if (!isValid) {
+    logger.error('Invalid webhook signature verification failed');
+    return res.status(401).json({ error: 'Invalid webhook signature' });
   }
 
   const payload: CreatomateWebhookPayload = req.body;

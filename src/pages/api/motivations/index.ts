@@ -126,7 +126,29 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   }
 
   if (search) {
-    query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%,tags.cs.{${search}}`);
+    // Validate and sanitize search input to prevent SQL injection
+    const searchSchema = z
+      .string()
+      .min(1)
+      .max(100)
+      .regex(/^[a-zA-Z0-9\s\-_]+$/, 'Invalid search characters');
+    const validationResult = searchSchema.safeParse(search);
+
+    if (validationResult.success) {
+      const sanitizedSearch = validationResult.data.trim();
+      // Use Supabase's built-in text search which is safe from injection
+      query = query.textSearch('fts', sanitizedSearch, {
+        type: 'websearch',
+        config: 'english',
+      });
+    } else {
+      // Log potential injection attempt
+      logger.warn('Invalid search query blocked', {
+        search: String(search).substring(0, 50),
+        user_id: user.id,
+        client_id,
+      });
+    }
   }
 
   // Pagination
