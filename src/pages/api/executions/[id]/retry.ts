@@ -1,11 +1,14 @@
 import { getErrorMessage } from '@/utils/errorUtils';
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@/lib/supabase/server';
 const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { triggerWebhookEvent, WEBHOOK_EVENTS } from '../../webhooks/index';
 import { z } from 'zod';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('api/executions/retry');
 
 const RetryRequestSchema = z.object({
   force: z.boolean().default(false), // Force retry even if not in retryable state
@@ -32,7 +35,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     return handleRetry(req, res, user, id);
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('Execution Retry API error:', error);
+    logger.error('Execution Retry API error:', error);
     return res.status(500).json({
       error: 'Internal server error',
       details:
@@ -145,7 +148,7 @@ async function handleRetry(
     .single();
 
   if (retryError) {
-    console.error('Error creating retry execution:', retryError);
+    logger.error('Error creating retry execution:', retryError);
     return res.status(500).json({ error: 'Failed to create retry execution' });
   }
 
@@ -280,7 +283,7 @@ async function checkRetryLimits(
     return { allowed: true };
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('Error checking retry limits:', error);
+    logger.error('Error checking retry limits:', error);
     return {
       allowed: false,
       details: 'Error checking retry limits',
@@ -372,7 +375,7 @@ async function triggerRetryExecution(retryExecution: any, delaySeconds: number):
     };
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('Error triggering retry execution:', error);
+    logger.error('Error triggering retry execution:', error);
     return {
       success: false,
       type: 'error',
@@ -423,10 +426,10 @@ async function logRetryEvent(
 ): Promise<void> {
   try {
     // In a full implementation, this would log to an execution_events table
-    process.env.NODE_ENV === 'development' && console.log('Logging retry event:', event);
+    process.env.NODE_ENV === 'development' && logger.info('Logging retry event:', { event });
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('Error logging retry event:', error);
+    logger.error('Error logging retry event:', error);
   }
 }
 
@@ -479,7 +482,7 @@ async function triggerExecutionRetryWebhook(
     await triggerWebhookEvent(WEBHOOK_EVENTS.EXECUTION_STARTED, webhookData, clientId);
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('Error triggering execution retry webhook:', error);
+    logger.error('Error triggering execution retry webhook:', error);
   }
 }
 

@@ -1,7 +1,10 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import { withAuth } from '@/middleware/auth';
 import { supabase } from '@/lib/supabase';
 import { errorResponse, ApiErrorCode } from '@/lib/api-response';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('api/executions/queue/action');
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -27,7 +30,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     }
 
     if (!supabase) {
-      return errorResponse(res, ApiErrorCode.DATABASE_ERROR, 'Database connection not available', 500);
+      return errorResponse(
+        res,
+        ApiErrorCode.DATABASE_ERROR,
+        'Database connection not available',
+        500
+      );
     }
 
     // Get executions for this queue
@@ -38,7 +46,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       .eq('campaign_id', campaignId);
 
     if (fetchError) {
-      console.error('Error fetching executions:', fetchError);
+      logger.error('Error fetching executions:', fetchError);
       return errorResponse(res, ApiErrorCode.DATABASE_ERROR, 'Failed to fetch executions', 500);
     }
 
@@ -94,7 +102,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       .in('id', executionIds);
 
     if (updateError) {
-      console.error('Error updating executions:', updateError);
+      logger.error('Error updating executions:', updateError);
       return errorResponse(res, ApiErrorCode.DATABASE_ERROR, 'Failed to update executions', 500);
     }
 
@@ -122,7 +130,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       },
     });
   } catch (error: any) {
-    console.error('Error in queue action API:', error);
+    logger.error('Error in queue action API:', error);
     return errorResponse(res, ApiErrorCode.INTERNAL_ERROR, 'Internal server error', 500);
   }
 }

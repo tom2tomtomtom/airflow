@@ -1,10 +1,13 @@
 import { getErrorMessage } from '@/utils/errorUtils';
-import { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from 'next';
 import { createClient } from '@/lib/supabase/server';
 const supabase = createClient();
 import { withAuth } from '@/middleware/withAuth';
 import { withSecurityHeaders } from '@/middleware/withSecurityHeaders';
 import { z } from 'zod';
+import { getLogger } from '@/lib/logger';
+
+const logger = getLogger('api/executions/index');
 
 const ExecutionFilterSchema = z.object({
   campaign_id: z.string().uuid().optional(),
@@ -37,7 +40,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void>
     }
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('Executions API error:', error);
+    logger.error('Executions API error:', error);
     return res.status(500).json({
       error: 'Internal server error',
       details: process.env.NODE_ENV === 'development' ? getErrorMessage(error) : undefined,
@@ -126,7 +129,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse, user: any): 
   const { data, error, count } = await query;
 
   if (error) {
-    console.error('Error fetching executions:', error);
+    logger.error('Error fetching executions:', error);
     return res.status(500).json({ error: 'Failed to fetch executions' });
   }
 
@@ -219,7 +222,7 @@ async function getExecutionAnalytics(executionId: string): Promise<any> {
     };
   } catch (error: any) {
     const message = getErrorMessage(error);
-    console.error('Error getting execution analytics:', error);
+    logger.error('Error getting execution analytics:', error);
     return {
       has_data: false,
       error: 'Failed to retrieve analytics',
