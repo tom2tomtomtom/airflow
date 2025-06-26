@@ -134,7 +134,7 @@ export const AIImageGenerator: React.FC<AIImageGeneratorProps> = ({
           } as unknown as Asset,
           generation_details: {
             original_prompt: prompt,
-            enhanced_prompt: isDemoMode ? `[DEMO MODE] Enhanced: ${prompt}` : undefined,
+            ...(isDemoMode && { enhanced_prompt: `[DEMO MODE] Enhanced: ${prompt}` }),
             model: 'dall-e-3',
             settings: {
               size: options.size,

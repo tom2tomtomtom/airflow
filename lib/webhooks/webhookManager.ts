@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 import { AppError } from '../errors/errorHandler';
-import { getErrorMessage } from '../../src/utils/errorUtils';
+import { getErrorMessage } from '@/utils/errorUtils';
 
 // Conditionally import bullQueue only on server side
 let addWebhookJob: any = null;
@@ -108,7 +108,7 @@ export class WebhookManager {
       new URL(url);
     } catch (error) {
       const message = getErrorMessage(error);
-      throw new AppError('Invalid webhook URL', 'INVALID_URL', 400, true);
+      throw new AppError(`Invalid webhook URL: ${message}`, 'INVALID_URL', 400, true);
     }
 
     // Generate secret
@@ -284,7 +284,7 @@ export class WebhookManager {
       console.log(`Queued ${jobs.length} webhook jobs for event: ${event.type}`);
     } catch (error) {
       const message = getErrorMessage(error);
-      console.error('Failed to trigger webhook event:', error);
+      console.error('Failed to trigger webhook event:', message);
       throw error;
     }
   }

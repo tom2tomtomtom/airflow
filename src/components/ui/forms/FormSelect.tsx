@@ -28,9 +28,9 @@ interface FormSelectProps extends Omit<SelectProps, 'name'> {
   label: string;
   options: SelectOption[];
   tooltip?: string;
+  loading?: boolean;
   description?: string;
   rules?: Record<string, unknown>;
-  loading?: boolean;
   allowMultiple?: boolean;
   maxSelections?: number;
 }
@@ -42,9 +42,9 @@ export const FormSelect: React.FC<FormSelectProps> = ({
   tooltip,
   description,
   rules = {},
-  loading = false,
   allowMultiple = false,
   maxSelections,
+  loading = false,
   ...selectProps
 }) => {
   const {
@@ -72,8 +72,8 @@ export const FormSelect: React.FC<FormSelectProps> = ({
 
       return (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-          {selected.map((val: any) => {
-            const option = options.find((opt: any) => opt.value === val);
+          {selected.map((val: string | number) => {
+            const option = options.find((opt: SelectOption) => opt.value === val);
             return (
               <Chip
                 key={val}
@@ -83,7 +83,8 @@ export const FormSelect: React.FC<FormSelectProps> = ({
                   bgcolor: 'primary.main',
                   color: 'primary.contrastText',
                   '& .MuiChip-deleteIcon': {
-                    color: 'primary.contrastText' },
+                    color: 'primary.contrastText',
+                  },
                 }}
               />
             );
@@ -107,11 +108,12 @@ export const FormSelect: React.FC<FormSelectProps> = ({
             color: 'text.primary',
             display: 'flex',
             alignItems: 'center',
-            gap: 0.5 }}
+            gap: 0.5,
+          }}
           {...labelProps}
         >
           {label}
-          {rules.required && (
+          {Boolean(rules?.required) && (
             <Typography component="span" sx={{ color: 'error.main', ml: 0.5 }}>
               *
             </Typography>
@@ -137,14 +139,14 @@ export const FormSelect: React.FC<FormSelectProps> = ({
               {...selectProps}
               {...fieldProps}
               multiple={allowMultiple}
-              loading={loading}
               renderValue={allowMultiple ? renderValue : undefined}
               IconComponent={ExpandMoreIcon}
               sx={{
                 backgroundColor: 'background.paper',
                 '&.Mui-error .MuiOutlinedInput-notchedOutline': {
                   borderColor: 'error.main',
-                  borderWidth: 2 },
+                  borderWidth: 2,
+                },
                 '&.Mui-focused.Mui-error .MuiOutlinedInput-notchedOutline': {
                   boxShadow: '0 0 0 4px rgba(239, 68, 68, 0.1)',
                 },
@@ -171,7 +173,8 @@ export const FormSelect: React.FC<FormSelectProps> = ({
                     sx={{
                       display: 'flex',
                       alignItems: 'center',
-                      gap: 1 }}
+                      gap: 1,
+                    }}
                   >
                     {option.icon && (
                       <Box sx={{ display: 'flex', alignItems: 'center' }}>{option.icon}</Box>
