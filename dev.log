@@ -1,0 +1,252 @@
+
+> airwave@1.0.0 dev
+> next dev
+
+  ▲ Next.js 14.2.30
+  - Local:        http://localhost:3000
+  - Environments: .env.local
+
+ ✓ Starting...
+ ⚠ Duplicate page detected. src/pages/api/health.ts and src/pages/api/health/index.ts resolve to /api/health
+ ⚠ Duplicate page detected. src/pages/api/health.ts and src/pages/api/health/index.ts resolve to /api/health
+ ✓ Ready in 1117ms
+ ✓ Compiled /src/middleware in 166ms (72 modules)
+ ⚠ Duplicate page detected. pages/api/health.ts and pages/api/health/index.ts both resolve to /api/health.
+ ✓ Compiled /api/health in 465ms (355 modules)
+(node:11043) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+ GET /api/health 200 in 1536ms
+ ○ Compiling / ...
+ ✓ Compiled / in 3.5s (1486 modules)
+ GET / 200 in 4462ms
+ GET / 200 in 16ms
+ ○ Compiling /api/clients ...
+ ✓ Compiled /api/clients in 3s (2153 modules)
+Rate limiter Redis status: Using memory fallback
+[2025-06-26T11:47:00.145Z] [INFO] [supabase] Admin Supabase client initialized
+[2025-06-26T11:47:00.150Z] [WARN] [auth] Authentication failed {"error":"Auth session missing!","hasUser":false}
+ GET /api/clients 401 in 3147ms
+ GET /dashboard 200 in 3398ms
+ GET /clients 200 in 656ms
+ GET /clients 200 in 3400ms
+ ○ Compiling /login ...
+ ✓ Compiled /login in 1570ms (2198 modules)
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 1698ms
+ GET /dashboard 200 in 140ms
+Rate limiter Redis status: Using memory fallback
+[2025-06-26T11:47:06.645Z] [INFO] [supabase] Admin Supabase client initialized
+[2025-06-26T11:47:06.648Z] [WARN] [auth] Authentication failed {"error":"Auth session missing!","hasUser":false}
+ GET /api/clients 401 in 54ms
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 22ms
+[2025-06-26T11:47:08.385Z] [WARN] [auth] Authentication failed {"error":"Auth session missing!","hasUser":false}
+ GET /api/clients 401 in 12ms
+ GET /dashboard 200 in 42ms
+ GET /clients 200 in 208ms
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 49ms
+ GET /dashboard 200 in 85ms
+ GET /clients 200 in 145ms
+[2025-06-26T11:47:11.181Z] [WARN] [auth] Authentication failed {"error":"Auth session missing!","hasUser":false}
+ GET /api/clients 401 in 8ms
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 42ms
+ GET /clients 200 in 44ms
+ GET /dashboard 200 in 97ms
+ GET /_next/data/development/login.json?from=%2Fdashboard 200 in 29ms
+[2025-06-26T11:47:15.567Z] [WARN] [auth] Authentication failed {"error":"Auth session missing!","hasUser":false}
+ GET /api/clients 401 in 3ms
+ ⚠ Duplicate page detected. src/pages/api/health.ts and src/pages/api/health/index.ts resolve to /api/health
+ ✓ Compiled in 429ms (159 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (128kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (100kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+[2025-06-26T11:49:51.920Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/"}
+ GET / 200 in 64ms
+[2025-06-26T11:49:51.990Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/"}
+ GET / 200 in 10ms
+[2025-06-26T11:49:53.896Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/dashboard"}
+[2025-06-26T11:49:53.897Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/clients"}
+[2025-06-26T11:49:53.906Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+[2025-06-26T11:49:53.906Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+[2025-06-26T11:49:53.915Z] [WARN] [auth] Authentication failed {"error":"Auth session missing!","hasUser":false}
+ GET /api/clients 401 in 13ms
+ GET /login?from=%2Fdashboard 200 in 100ms
+ GET /login?from=%2Fclients 200 in 104ms
+[2025-06-26T11:53:28.216Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/"}
+ GET / 200 in 15ms
+[2025-06-26T11:53:28.240Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/"}
+ GET / 200 in 9ms
+[2025-06-26T11:53:29.278Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+[2025-06-26T11:53:29.280Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+[2025-06-26T11:53:29.282Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/dashboard"}
+ GET /login 200 in 271ms
+ GET /login 200 in 271ms
+[2025-06-26T11:53:29.597Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login?from=%2Fdashboard 200 in 68ms
+[2025-06-26T11:53:31.903Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/clients"}
+[2025-06-26T11:53:31.919Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login?from=%2Fclients 200 in 71ms
+[2025-06-26T11:53:33.254Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/campaigns"}
+[2025-06-26T11:53:33.260Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login?from=%2Fcampaigns 200 in 20ms
+[2025-06-26T11:53:34.236Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/assets"}
+[2025-06-26T11:53:34.240Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login?from=%2Fassets 200 in 11ms
+[2025-06-26T11:53:35.174Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/motivations"}
+[2025-06-26T11:53:35.181Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login?from=%2Fmotivations 200 in 20ms
+[2025-06-26T11:53:36.061Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login 200 in 18ms
+[2025-06-26T11:53:36.914Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/"}
+ GET / 200 in 8ms
+[2025-06-26T11:53:37.715Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/test-auth"}
+ ○ Compiling /test-auth ...
+ ✓ Compiled /test-auth in 511ms (2121 modules)
+ GET /test-auth 200 in 596ms
+ ✓ Compiled /api/errors in 204ms (664 modules)
+Client Error Report: {
+  errorId: 'ERR_1750938818455_c03dsf2ow',
+  message: 'Unhandled Promise Rejection: Error: Missing required environment variable: NEXT_PUBLIC_SUPABASE_URL',
+  url: 'http://localhost:3000/test-auth',
+  timestamp: '2025-06-26T11:53:38.455Z',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.7204.23 Safari/537.36'
+}
+Client Error Report: {
+  errorId: 'ERR_1750938818457_tpso0de1i',
+  message: 'Unhandled Promise Rejection: Error: Missing required environment variable: NEXT_PUBLIC_SUPABASE_URL',
+  url: 'http://localhost:3000/test-auth',
+  timestamp: '2025-06-26T11:53:38.457Z',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.7204.23 Safari/537.36'
+}
+ POST /api/errors 200 in 274ms
+ POST /api/errors 200 in 274ms
+ ✓ Compiled /api/clients in 89ms (687 modules)
+Rate limiter Redis status: Using memory fallback
+[2025-06-26T11:53:39.443Z] [INFO] [supabase] Admin Supabase client initialized
+[2025-06-26T11:53:39.446Z] [WARN] [auth] Authentication failed {"error":"Auth session missing!","hasUser":false}
+ GET /api/clients 401 in 115ms
+[2025-06-26T11:53:39.457Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login 200 in 76ms
+[2025-06-26T11:54:00.555Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/"}
+ GET / 200 in 23ms
+[2025-06-26T11:54:00.594Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/"}
+ GET / 200 in 4ms
+[2025-06-26T11:54:02.295Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/dashboard"}
+[2025-06-26T11:54:02.307Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login?from=%2Fdashboard 200 in 42ms
+[2025-06-26T11:54:04.823Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login 200 in 66ms
+[2025-06-26T11:54:05.269Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login 200 in 43ms
+[2025-06-26T11:54:06.078Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/dashboard"}
+[2025-06-26T11:54:06.134Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login?from=%2Fdashboard 200 in 50ms
+[2025-06-26T11:54:08.083Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/clients"}
+[2025-06-26T11:54:08.101Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login?from=%2Fclients 200 in 25ms
+[2025-06-26T11:54:08.970Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/clients"}
+[2025-06-26T11:54:09.064Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login?from=%2Fclients 200 in 25ms
+[2025-06-26T11:54:09.260Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/campaigns"}
+[2025-06-26T11:54:09.267Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login?from=%2Fcampaigns 200 in 17ms
+[2025-06-26T11:54:10.185Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/campaigns"}
+[2025-06-26T11:54:10.196Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login?from=%2Fcampaigns 200 in 37ms
+[2025-06-26T11:54:10.955Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/assets"}
+[2025-06-26T11:54:10.975Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login?from=%2Fassets 200 in 107ms
+[2025-06-26T11:54:11.278Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/assets"}
+[2025-06-26T11:54:11.296Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login?from=%2Fassets 200 in 22ms
+[2025-06-26T11:54:12.209Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/motivations"}
+[2025-06-26T11:54:12.219Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login?from=%2Fmotivations 200 in 158ms
+[2025-06-26T11:54:12.570Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/motivations"}
+[2025-06-26T11:54:12.575Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+[2025-06-26T11:54:12.588Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login 200 in 37ms
+ GET /login?from=%2Fmotivations 200 in 46ms
+[2025-06-26T11:54:15.272Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login 200 in 318ms
+[2025-06-26T11:54:15.623Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+[2025-06-26T11:54:15.649Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login 200 in 44ms
+ GET /login 200 in 55ms
+[2025-06-26T11:54:17.395Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/"}
+ GET / 200 in 49ms
+[2025-06-26T11:54:18.140Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/"}
+ GET / 200 in 36ms
+[2025-06-26T11:54:18.518Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/test-auth"}
+ GET /test-auth 200 in 24ms
+Client Error Report: {
+  errorId: 'ERR_1750938859047_3utqd8n5o',
+  message: 'Unhandled Promise Rejection: Error: Missing required environment variable: NEXT_PUBLIC_SUPABASE_URL',
+  url: 'http://localhost:3000/test-auth',
+  timestamp: '2025-06-26T11:54:19.047Z',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15'
+}
+Client Error Report: {
+  errorId: 'ERR_1750938859050_8qqdp7m8b',
+  message: 'Unhandled Promise Rejection: Error: Missing required environment variable: NEXT_PUBLIC_SUPABASE_URL',
+  url: 'http://localhost:3000/test-auth',
+  timestamp: '2025-06-26T11:54:19.050Z',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Safari/605.1.15'
+}
+ POST /api/errors 200 in 7ms
+ POST /api/errors 200 in 7ms
+[2025-06-26T11:54:19.669Z] [WARN] [auth] Authentication failed {"error":"Auth session missing!","hasUser":false}
+ GET /api/clients 401 in 7ms
+[2025-06-26T11:54:19.683Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login 200 in 36ms
+[2025-06-26T11:54:19.759Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/test-auth"}
+ GET /test-auth 200 in 26ms
+Client Error Report: {
+  errorId: 'ERR_1750938861294_hzoy72ij7',
+  message: 'Unhandled Promise Rejection: Error: Missing required environment variable: NEXT_PUBLIC_SUPABASE_URL',
+  url: 'http://localhost:3000/test-auth',
+  timestamp: '2025-06-26T11:54:21.294Z',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0'
+}
+Client Error Report: {
+  errorId: 'ERR_1750938861295_59x7eb1jx',
+  message: 'Unhandled Promise Rejection: Error: Missing required environment variable: NEXT_PUBLIC_SUPABASE_URL',
+  url: 'http://localhost:3000/test-auth',
+  timestamp: '2025-06-26T11:54:21.295Z',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0'
+}
+ POST /api/errors 200 in 19ms
+ POST /api/errors 200 in 19ms
+[2025-06-26T11:54:22.924Z] [WARN] [auth] Authentication failed {"error":"Auth session missing!","hasUser":false}
+ GET /api/clients 401 in 3ms
+[2025-06-26T11:54:22.941Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login 200 in 15ms
+[2025-06-26T11:55:10.433Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/"}
+ GET / 200 in 27ms
+[2025-06-26T11:55:10.479Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/"}
+ GET / 200 in 8ms
+[2025-06-26T11:55:12.039Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+[2025-06-26T11:55:12.040Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+[2025-06-26T11:55:12.040Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+[2025-06-26T11:55:12.040Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login 200 in 39ms
+ GET /login 200 in 54ms
+ GET /login 200 in 54ms
+ GET /login 200 in 68ms
+[2025-06-26T11:55:14.628Z] [DEBUG] [supabase] Session refresh error in middleware {"error":"Auth session missing!","path":"/login"}
+ GET /login 200 in 25ms
+ ✓ Compiled in 183ms (159 modules)
+ ⚠ Duplicate page detected. src/pages/api/health.ts and src/pages/api/health/index.ts resolve to /api/health
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (128kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (100kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ⚠ Duplicate page detected. src/pages/api/health.ts and src/pages/api/health/index.ts resolve to /api/health
+ ✓ Compiled in 537ms (159 modules)
+ ✓ Compiled in 81ms (159 modules)
+ ⚠ Duplicate page detected. src/pages/api/health.ts and src/pages/api/health/index.ts resolve to /api/health
+ ✓ Compiled in 798ms (2266 modules)
+ ✓ Compiled in 236ms (2266 modules)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (128kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (100kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
+ ✓ Compiled in 165ms (159 modules)
+ ⚠ Duplicate page detected. src/pages/api/health.ts and src/pages/api/health/index.ts resolve to /api/health
+ ✓ Compiled in 17ms
+ ⚠ Duplicate page detected. src/pages/api/health.ts and src/pages/api/health/index.ts resolve to /api/health
+ ⚠ Duplicate page detected. src/pages/api/health.ts and src/pages/api/health/index.ts resolve to /api/health
+[?25h
