@@ -77,6 +77,7 @@ const SAFE_PATTERNS = [
   '// Bearer tokens', // Comment
   'Password:', // UI label
   'password:', // Console output context
+  '2.5.5.1', // Version numbers in vendor files
   'DEFAULT_JWT_TOKEN', // Test mock JWT token
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZk', // Test JWT prefix
   '__tests__', // Test directory
