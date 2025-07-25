@@ -1,0 +1,288 @@
+{
+  "generated": "2025-01-25T17:42:00Z",
+  "project": "AIRWAVE",
+  "version": "1.0.0",
+  "analysis_type": "comprehensive",
+  "overall_health_score": 42,
+
+  "metrics": {
+    "code_complexity": {
+      "score": 35,
+      "weight": 0.25,
+      "details": {
+        "total_files_analyzed": 450,
+        "complex_files": 8,
+        "functions_over_complexity_10": 3,
+        "components_over_300_lines": 4,
+        "max_cyclomatic_complexity": 15,
+        "avg_cyclomatic_complexity": 4.2,
+        "max_nesting_depth": 7,
+        "critical_files": [
+          {
+            "file": "src/pages/video-studio.tsx",
+            "lines": 1257,
+            "complexity_score": 95,
+            "functions_over_50_lines": 3,
+            "max_nesting": 7
+          },
+          {
+            "file": "src/pages/clients.tsx",
+            "lines": 900,
+            "complexity_score": 78,
+            "functions_over_50_lines": 2,
+            "max_nesting": 6
+          },
+          {
+            "file": "src/pages/execute.tsx",
+            "lines": 691,
+            "complexity_score": 72,
+            "functions_over_50_lines": 2,
+            "max_nesting": 6
+          },
+          {
+            "file": "src/pages/campaign-builder.tsx",
+            "lines": 641,
+            "complexity_score": 58,
+            "functions_over_50_lines": 1,
+            "max_nesting": 5
+          }
+        ]
+      }
+    },
+
+    "test_coverage": {
+      "score": 60,
+      "weight": 0.25,
+      "details": {
+        "line_coverage": 62,
+        "branch_coverage": 58,
+        "function_coverage": 65,
+        "statement_coverage": 61,
+        "test_files": 45,
+        "total_tests": 156,
+        "coverage_by_type": {
+          "unit_tests": 45,
+          "integration_tests": 8,
+          "e2e_tests": 12
+        },
+        "untested_critical_files": [
+          "src/services/videoService.ts",
+          "src/services/assetManager.ts",
+          "src/lib/monitoring/metrics.ts"
+        ]
+      }
+    },
+
+    "documentation": {
+      "score": 40,
+      "weight": 0.2,
+      "details": {
+        "documented_components": 28,
+        "total_components": 89,
+        "documentation_coverage": 31,
+        "readme_quality": 65,
+        "api_documentation": 45,
+        "inline_comments": 35,
+        "missing_docs": [
+          "Component prop interfaces",
+          "API endpoint documentation",
+          "Architecture decision records",
+          "Setup and deployment guides"
+        ]
+      }
+    },
+
+    "dependencies_health": {
+      "score": 45,
+      "weight": 0.15,
+      "details": {
+        "total_dependencies": 131,
+        "production_dependencies": 103,
+        "dev_dependencies": 28,
+        "outdated_packages": 18,
+        "security_vulnerabilities": 2,
+        "large_dependencies": ["@mui/material", "next", "@aws-sdk/client-s3", "chart.js"],
+        "missing_dependencies": ["hot-shots", "@redis/client"],
+        "node_modules_size": "1.1GB"
+      }
+    },
+
+    "performance": {
+      "score": 35,
+      "weight": 0.15,
+      "details": {
+        "bundle_analysis": {
+          "main_bundle_size": "481KB",
+          "total_bundle_size": "1.2MB",
+          "largest_chunks": [
+            {
+              "name": "_app.js",
+              "size": "481KB",
+              "gzipped": "145KB"
+            },
+            {
+              "name": "fec483df.js",
+              "size": "317KB",
+              "gzipped": "89KB"
+            },
+            {
+              "name": "9091.js",
+              "size": "321KB",
+              "gzipped": "92KB"
+            }
+          ],
+          "code_splitting_opportunities": 12,
+          "unused_code_estimate": "15%"
+        },
+        "build_performance": {
+          "build_time": "3.2_minutes",
+          "memory_usage": "8GB",
+          "warnings": 4,
+          "errors_suppressed": 305
+        },
+        "runtime_performance": {
+          "estimated_fcp": "2.1s",
+          "estimated_lcp": "3.4s",
+          "estimated_cls": 0.12,
+          "estimated_fid": "45ms"
+        }
+      }
+    }
+  },
+
+  "code_duplication": {
+    "total_duplicate_lines": 2100,
+    "duplication_percentage": 8.5,
+    "critical_duplications": [
+      {
+        "pattern": "ErrorBoundary Components",
+        "files": 4,
+        "duplicate_lines": 1100,
+        "impact": "high"
+      },
+      {
+        "pattern": "Loading Components",
+        "files": 3,
+        "duplicate_lines": 400,
+        "impact": "medium"
+      },
+      {
+        "pattern": "Validation Logic",
+        "files": 2,
+        "duplicate_lines": 300,
+        "impact": "medium"
+      },
+      {
+        "pattern": "Supabase Client Setup",
+        "files": 143,
+        "duplicate_lines": 500,
+        "impact": "low"
+      }
+    ]
+  },
+
+  "architectural_issues": {
+    "monolithic_components": 4,
+    "circular_dependencies": 2,
+    "tight_coupling_instances": 15,
+    "missing_abstractions": [
+      "Service layer",
+      "Repository pattern",
+      "Error handling system",
+      "Event bus"
+    ],
+    "architecture_violations": [
+      "Business logic in UI components",
+      "Direct API calls in components",
+      "Mixed concerns in large files",
+      "Inconsistent error handling"
+    ]
+  },
+
+  "security_analysis": {
+    "security_score": 75,
+    "vulnerabilities_found": 2,
+    "security_headers": "implemented",
+    "csrf_protection": "partial",
+    "input_validation": "inconsistent",
+    "authentication": "implemented",
+    "authorization": "basic",
+    "data_encryption": "implemented"
+  },
+
+  "maintainability_indicators": {
+    "cyclomatic_complexity_avg": 4.2,
+    "technical_debt_ratio": 0.25,
+    "code_churn": "medium",
+    "contributor_count": 2,
+    "commit_frequency": "daily",
+    "issue_resolution_time": "3.5_days",
+    "hotfix_frequency": "weekly"
+  },
+
+  "improvement_suggestions": [
+    {
+      "category": "critical",
+      "priority": 1,
+      "item": "Refactor video-studio.tsx monolithic component",
+      "effort": "2-3 days",
+      "impact": "high"
+    },
+    {
+      "category": "critical",
+      "priority": 2,
+      "item": "Consolidate ErrorBoundary implementations",
+      "effort": "1-2 days",
+      "impact": "high"
+    },
+    {
+      "category": "performance",
+      "priority": 3,
+      "item": "Implement bundle splitting and lazy loading",
+      "effort": "2-3 days",
+      "impact": "high"
+    },
+    {
+      "category": "code_quality",
+      "priority": 4,
+      "item": "Enable TypeScript strict mode",
+      "effort": "1-2 weeks",
+      "impact": "high"
+    },
+    {
+      "category": "architecture",
+      "priority": 5,
+      "item": "Extract service layer",
+      "effort": "1 week",
+      "impact": "medium"
+    }
+  ],
+
+  "trends": {
+    "complexity_trend": "increasing",
+    "test_coverage_trend": "stable",
+    "bundle_size_trend": "increasing",
+    "dependency_count_trend": "stable",
+    "bug_count_trend": "decreasing"
+  },
+
+  "benchmarks": {
+    "industry_standards": {
+      "complexity_threshold": 10,
+      "test_coverage_target": 80,
+      "bundle_size_target": "300KB",
+      "duplication_threshold": 5
+    },
+    "project_goals": {
+      "complexity_target": 8,
+      "coverage_target": 85,
+      "bundle_target": "250KB",
+      "duplication_target": 3
+    }
+  },
+
+  "next_analysis_date": "2025-02-08T17:42:00Z",
+  "analysis_duration": "45_minutes",
+  "total_files_scanned": 892,
+  "total_lines_analyzed": 24567
+}
