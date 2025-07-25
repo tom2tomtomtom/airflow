@@ -130,11 +130,22 @@ export interface VideoConfigurationPanelProps {
 
 export interface ContentElementEditorProps {
   elements: ContentElement[];
-  onElementsChange: (elements: ContentElement[]) => void;
+  onElementsChange: (elements: ContentElement[] | ContentElements) => void;
   template: VideoTemplate | null;
   selectedElement: string | null;
   onElementSelect: (elementId: string) => void;
   maxElements?: number;
+  contentElements?: ContentElements;
+  generationSettings?: GenerationSettings;
+  onGenerationSettingsChange?: (settings: Partial<GenerationSettings>) => void;
+}
+
+// Generation settings interface
+export interface GenerationSettings {
+  variations_count: number;
+  include_captions: boolean;
+  auto_optimize_for_platform: boolean;
+  save_to_assets: boolean;
 }
 
 export interface VideoPreviewPanelProps {

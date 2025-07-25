@@ -28,12 +28,12 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 3.4 Implement configuration validation and error handling (exported in index.ts)
   - [x] 3.5 Verify configuration changes work correctly and dev server starts
 
-- [ ] 4. Extract ContentElementEditor Component
-  - [ ] 4.1 Write tests for content element editing and management
-  - [ ] 4.2 Create ContentElementEditor component with element editing interface
-  - [ ] 4.3 Extract content editing state and event handlers from VideoStudioPage
-  - [ ] 4.4 Implement element selection, modification, and validation
-  - [ ] 4.5 Verify content editing functionality works correctly and all tests pass
+- [x] 4. Extract ContentElementEditor Component
+  - [x] 4.1 Write tests for content element editing and management
+  - [x] 4.2 Create ContentElementEditor component with element editing interface
+  - [x] 4.3 Extract content editing state and event handlers into useContentElements hook
+  - [x] 4.4 Implement element selection, modification, and validation (exported in index.ts)
+  - [x] 4.5 Verify content editing functionality works correctly and dev server starts
 
 - [ ] 5. Extract VideoPreviewPanel Component
   - [ ] 5.1 Write tests for video preview generation and display
