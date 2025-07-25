@@ -21,12 +21,12 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 2.4 Integrate VideoTemplateSelector into VideoStudioPage component (exported in index.ts)
   - [x] 2.5 Verify template selection functionality works correctly and dev server starts
 
-- [ ] 3. Extract VideoConfigurationPanel Component
-  - [ ] 3.1 Write tests for video configuration options and validation
-  - [ ] 3.2 Create VideoConfigurationPanel component with configuration controls
-  - [ ] 3.3 Extract video configuration state into useVideoConfig custom hook
-  - [ ] 3.4 Implement configuration validation and error handling
-  - [ ] 3.5 Verify configuration changes work correctly and all tests pass
+- [x] 3. Extract VideoConfigurationPanel Component
+  - [x] 3.1 Write tests for video configuration options and validation
+  - [x] 3.2 Create VideoConfigurationPanel component with configuration controls
+  - [x] 3.3 Extract video configuration state into useVideoConfig custom hook
+  - [x] 3.4 Implement configuration validation and error handling (exported in index.ts)
+  - [x] 3.5 Verify configuration changes work correctly and dev server starts
 
 - [ ] 4. Extract ContentElementEditor Component
   - [ ] 4.1 Write tests for content element editing and management
