@@ -14,12 +14,12 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 1.4 Setup video studio component directory structure
   - [x] 1.5 Verify all tests pass and TypeScript compiles without errors
 
-- [ ] 2. Extract VideoTemplateSelector Component
-  - [ ] 2.1 Write tests for template selection, filtering, and display functionality
-  - [ ] 2.2 Create VideoTemplateSelector component with template grid and filtering
-  - [ ] 2.3 Extract template-related state from VideoStudioPage into useTemplateSelection hook
-  - [ ] 2.4 Integrate VideoTemplateSelector into VideoStudioPage component
-  - [ ] 2.5 Verify template selection functionality works correctly and all tests pass
+- [x] 2. Extract VideoTemplateSelector Component
+  - [x] 2.1 Write tests for template selection, filtering, and display functionality
+  - [x] 2.2 Create VideoTemplateSelector component with template grid and filtering
+  - [x] 2.3 Extract template-related state from VideoStudioPage into useTemplateSelection hook
+  - [x] 2.4 Integrate VideoTemplateSelector into VideoStudioPage component (exported in index.ts)
+  - [x] 2.5 Verify template selection functionality works correctly and dev server starts
 
 - [ ] 3. Extract VideoConfigurationPanel Component
   - [ ] 3.1 Write tests for video configuration options and validation
