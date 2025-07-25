@@ -5,6 +5,11 @@ export { VideoConfigurationPanel } from './VideoConfigurationPanel';
 export { ContentElementEditor } from './ContentElementEditor';
 export { VideoPreviewPanel } from './VideoPreviewPanel';
 export { GenerationControlPanel } from './GenerationControlPanel';
+export {
+  VideoStudioErrorBoundary,
+  VideoStudioSectionBoundary,
+  withVideoStudioErrorBoundary,
+} from './ErrorBoundary';
 export { useTemplateSelection } from './hooks/useTemplateSelection';
 export { useVideoConfig } from './hooks/useVideoConfig';
 export { useContentElements } from './hooks/useContentElements';

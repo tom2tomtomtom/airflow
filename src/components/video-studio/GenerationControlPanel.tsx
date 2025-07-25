@@ -479,8 +479,8 @@ export const GenerationControlPanel: React.FC<GenerationControlPanelProps> = ({
               {EXPORT_PLATFORMS.map(platform => (
                 <ListItem
                   key={platform.id}
-                  button
                   onClick={() => handlePlatformToggle(platform.id)}
+                  sx={{ cursor: 'pointer' }}
                 >
                   <FormControlLabel
                     control={
