@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Head from 'next/head';
 import { Box, Typography, Stepper, Step, StepLabel, Button, Paper, Alert } from '@mui/material';
 import { ArrowBack, ArrowForward, VideoLibrary } from '@mui/icons-material';
@@ -88,7 +88,7 @@ const VideoStudioPage: React.FC = () => {
     config: videoConfig.config,
     elements: contentElements.contentElements,
     template: templateSelection.selectedTemplate,
-    onGenerationComplete: result => {
+    onGenerationComplete: _result => {
       showNotification('Video generation completed successfully!', 'success');
     },
     onGenerationError: error => {
@@ -107,8 +107,8 @@ const VideoStudioPage: React.FC = () => {
     }
   }, [templateSelection.selectedTemplate, videoConfig]);
 
-  // Step validation logic
-  const canProceedToStep = (step: number): boolean => {
+  // Step validation logic with useMemo optimization
+  const canProceedToStep = useCallback((step: number): boolean => {
     switch (step) {
       case 0: // Template selection
         return true;
@@ -123,54 +123,54 @@ const VideoStudioPage: React.FC = () => {
       default:
         return false;
     }
-  };
+  }, [templateSelection.selectedTemplate, videoConfig.config.prompt]);
 
-  const getStepStatus = (step: number): 'completed' | 'active' | 'disabled' => {
+  const getStepStatus = useCallback((step: number): 'completed' | 'active' | 'disabled' => {
     if (step < activeStep) return 'completed';
     if (step === activeStep) return 'active';
     if (canProceedToStep(step)) return 'active';
     return 'disabled';
-  };
+  }, [activeStep, canProceedToStep]);
 
-  // Navigation handlers
-  const handleNext = () => {
+  // Navigation handlers with useCallback optimization
+  const handleNext = useCallback(() => {
     if (activeStep < WORKFLOW_STEPS.length - 1 && canProceedToStep(activeStep + 1)) {
       setActiveStep(activeStep + 1);
     }
-  };
+  }, [activeStep, canProceedToStep]);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     if (activeStep > 0) {
       setActiveStep(activeStep - 1);
     }
-  };
+  }, [activeStep]);
 
-  const handleStepClick = (step: number) => {
+  const handleStepClick = useCallback((step: number) => {
     if (canProceedToStep(step)) {
       setActiveStep(step);
     }
-  };
+  }, [canProceedToStep]);
 
-  // Generation handlers
-  const handleGenerate = async (options: GenerationOptions) => {
+  // Generation handlers with useCallback optimization
+  const handleGenerate = useCallback(async (options: GenerationOptions) => {
     try {
       await videoGeneration.generateVideo(options);
     } catch (error) {
-      console.error('Generation failed:', error);
+      // Error is already handled by the videoGeneration hook
     }
-  };
+  }, [videoGeneration]);
 
-  const handleDownload = () => {
+  const handleDownload = useCallback(() => {
     videoGeneration.downloadVideo();
-  };
+  }, [videoGeneration]);
 
-  const handleExport = (platforms: ExportPlatform[]) => {
+  const handleExport = useCallback((platforms: ExportPlatform[]) => {
     // In a real implementation, this would handle platform-specific exports
     showNotification(`Exporting to ${platforms.length} platform(s)...`, 'info');
-  };
+  }, [showNotification]);
 
-  // Render the appropriate step content with error boundaries
-  const renderStepContent = () => {
+  // Render the appropriate step content with error boundaries - optimized with useMemo
+  const renderStepContent = useMemo(() => {
     switch (activeStep) {
       case 0: // Template Selection
         return (
@@ -259,7 +259,29 @@ const VideoStudioPage: React.FC = () => {
       default:
         return null;
     }
-  };
+  }, [
+    activeStep,
+    templateSelection.templates,
+    templateSelection.selectedTemplate,
+    templateSelection.setSelectedTemplate,
+    templateSelection.filters,
+    templateSelection.setFilters,
+    templateSelection.loading,
+    videoConfig.config,
+    videoConfig.updateConfig,
+    contentElements,
+    selectedElement,
+    videoPreview.previewUrl,
+    videoPreview.generatePreview,
+    videoPreview.loading,
+    videoGeneration.generationStatus,
+    videoGeneration.progress,
+    videoGeneration.result,
+    videoGeneration.videoJobs,
+    handleGenerate,
+    handleDownload,
+    handleExport,
+  ]);
 
   return (
     <>
@@ -351,7 +373,7 @@ const VideoStudioPage: React.FC = () => {
               )}
 
               {/* Render the current step content */}
-              <Box sx={{ mt: 3 }}>{renderStepContent()}</Box>
+              <Box sx={{ mt: 3 }}>{renderStepContent}</Box>
             </Paper>
 
             {/* Error Display */}

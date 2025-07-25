@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import {
   Box,
   Card,
@@ -18,13 +18,109 @@ import {
 import { Search } from '@mui/icons-material';
 import { VideoTemplateSelectorProps, VideoTemplate, TemplateFilters } from './types';
 
+// Individual Template Card Component - Optimized with React.memo
+interface TemplateCardProps {
+  template: VideoTemplate;
+  isSelected: boolean;
+  onSelect: (template: VideoTemplate) => void;
+  onKeyDown: (event: React.KeyboardEvent, template: VideoTemplate) => void;
+}
+
+const TemplateCard = React.memo<TemplateCardProps>(({ template, isSelected, onSelect, onKeyDown }) => {
+  const handleClick = useCallback(() => {
+    onSelect(template);
+  }, [template, onSelect]);
+
+  const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
+    onKeyDown(event, template);
+  }, [template, onKeyDown]);
+
+  return (
+    <Card
+      variant="outlined"
+      role="button"
+      tabIndex={0}
+      aria-label={`Select ${template.name} template`}
+      sx={{
+        cursor: 'pointer',
+        transition: 'all 0.2s',
+        border: isSelected ? '2px solid' : '1px solid',
+        borderColor: isSelected ? 'primary.main' : 'divider',
+        '&:hover': {
+          boxShadow: 2,
+          transform: 'translateY(-2px)',
+        },
+        '&:focus': {
+          outline: 'none',
+          boxShadow: 3,
+          borderColor: 'primary.main',
+        },
+      }}
+      onClick={handleClick}
+      onKeyDown={handleKeyDown}
+    >
+      <CardMedia
+        component="img"
+        height="140"
+        image={template.thumbnail || '/placeholder-template.png'}
+        alt={template.name}
+        sx={{
+          objectFit: 'cover',
+        }}
+      />
+      <CardContent>
+        <Typography variant="h6" gutterBottom>
+          {template.name}
+        </Typography>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          paragraph
+          sx={{
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            minHeight: '2.5em',
+          }}
+        >
+          {template.description}
+        </Typography>
+
+        {/* Metadata Chips */}
+        <Box display="flex" gap={0.5} mb={1} flexWrap="wrap">
+          <Chip label={template.category} size="small" />
+          <Chip label={template.aspect_ratio} size="small" variant="outlined" />
+          <Chip label={`${template.duration}s`} size="small" variant="outlined" />
+        </Box>
+
+        {/* Platform Chips */}
+        <Box display="flex" flexWrap="wrap" gap={0.5}>
+          {template.platform.map(platform => (
+            <Chip
+              key={platform}
+              label={platform}
+              size="small"
+              variant="outlined"
+              sx={{ fontSize: '0.7rem' }}
+            />
+          ))}
+        </Box>
+      </CardContent>
+    </Card>
+  );
+});
+
+TemplateCard.displayName = 'TemplateCard';
+
 /**
  * VideoTemplateSelector Component
  *
  * Displays a grid of video templates with filtering capabilities.
  * Extracted from VideoStudioPage to improve modularity and testability.
+ * Optimized with React.memo and useCallback for performance.
  */
-export const VideoTemplateSelector: React.FC<VideoTemplateSelectorProps> = ({
+const VideoTemplateSelectorComponent: React.FC<VideoTemplateSelectorProps> = ({
   templates,
   selectedTemplate,
   onTemplateSelect,
@@ -87,23 +183,23 @@ export const VideoTemplateSelector: React.FC<VideoTemplateSelectorProps> = ({
     return { categories, platforms, aspectRatios };
   }, [templates]);
 
-  const handleFilterChange = (key: keyof TemplateFilters, value: string) => {
+  const handleFilterChange = useCallback((key: keyof TemplateFilters, value: string) => {
     onFilterChange({
       ...filters,
       [key]: value || undefined,
     });
-  };
+  }, [filters, onFilterChange]);
 
-  const handleTemplateClick = (template: VideoTemplate) => {
+  const handleTemplateClick = useCallback((template: VideoTemplate) => {
     onTemplateSelect(template);
-  };
+  }, [onTemplateSelect]);
 
-  const handleTemplateKeyDown = (event: React.KeyboardEvent, template: VideoTemplate) => {
+  const handleTemplateKeyDown = useCallback((event: React.KeyboardEvent, template: VideoTemplate) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       onTemplateSelect(template);
     }
-  };
+  }, [onTemplateSelect]);
 
   if (loading) {
     return (
@@ -211,78 +307,12 @@ export const VideoTemplateSelector: React.FC<VideoTemplateSelectorProps> = ({
           <Grid container spacing={2}>
             {filteredTemplates.map(template => (
               <Grid size={{ xs: 12, sm: 6, md: 6 }} key={template.id}>
-                <Card
-                  variant="outlined"
-                  role="button"
-                  tabIndex={0}
-                  aria-label={`Select ${template.name} template`}
-                  sx={{
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    border: selectedTemplate?.id === template.id ? '2px solid' : '1px solid',
-                    borderColor: selectedTemplate?.id === template.id ? 'primary.main' : 'divider',
-                    '&:hover': {
-                      boxShadow: 2,
-                      transform: 'translateY(-2px)',
-                    },
-                    '&:focus': {
-                      outline: 'none',
-                      boxShadow: 3,
-                      borderColor: 'primary.main',
-                    },
-                  }}
-                  onClick={() => handleTemplateClick(template)}
-                  onKeyDown={e => handleTemplateKeyDown(e, template)}
-                >
-                  <CardMedia
-                    component="img"
-                    height="140"
-                    image={template.thumbnail || '/placeholder-template.png'}
-                    alt={template.name}
-                    sx={{
-                      objectFit: 'cover',
-                    }}
-                  />
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      {template.name}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      paragraph
-                      sx={{
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                        minHeight: '2.5em',
-                      }}
-                    >
-                      {template.description}
-                    </Typography>
-
-                    {/* Metadata Chips */}
-                    <Box display="flex" gap={0.5} mb={1} flexWrap="wrap">
-                      <Chip label={template.category} size="small" />
-                      <Chip label={template.aspect_ratio} size="small" variant="outlined" />
-                      <Chip label={`${template.duration}s`} size="small" variant="outlined" />
-                    </Box>
-
-                    {/* Platform Chips */}
-                    <Box display="flex" flexWrap="wrap" gap={0.5}>
-                      {template.platform.map(platform => (
-                        <Chip
-                          key={platform}
-                          label={platform}
-                          size="small"
-                          variant="outlined"
-                          sx={{ fontSize: '0.7rem' }}
-                        />
-                      ))}
-                    </Box>
-                  </CardContent>
-                </Card>
+                <TemplateCard
+                  template={template}
+                  isSelected={selectedTemplate?.id === template.id}
+                  onSelect={handleTemplateClick}
+                  onKeyDown={handleTemplateKeyDown}
+                />
               </Grid>
             ))}
           </Grid>
@@ -291,3 +321,6 @@ export const VideoTemplateSelector: React.FC<VideoTemplateSelectorProps> = ({
     </Card>
   );
 };
+
+// Memoized export to prevent unnecessary re-renders
+export const VideoTemplateSelector = React.memo(VideoTemplateSelectorComponent);

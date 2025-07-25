@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   Box,
   Card,
@@ -21,8 +21,9 @@ import { VideoConfigurationPanelProps, VideoConfig } from './types';
  * Provides video configuration controls including prompt, style, platform,
  * resolution, aspect ratio, and duration settings.
  * Extracted from VideoStudioPage to improve modularity and testability.
+ * Optimized with React.memo and useCallback for performance.
  */
-export const VideoConfigurationPanel: React.FC<VideoConfigurationPanelProps> = ({
+const VideoConfigurationPanelComponent: React.FC<VideoConfigurationPanelProps> = ({
   config,
   onConfigChange,
   template,
@@ -81,34 +82,34 @@ export const VideoConfigurationPanel: React.FC<VideoConfigurationPanelProps> = (
     return '';
   };
 
-  // Event handlers
-  const handleConfigChange = (updates: Partial<VideoConfig>) => {
+  // Event handlers with useCallback optimization
+  const handleConfigChange = useCallback((updates: Partial<VideoConfig>) => {
     onConfigChange(updates);
-  };
+  }, [onConfigChange]);
 
-  const handlePromptChange = (prompt: string) => {
+  const handlePromptChange = useCallback((prompt: string) => {
     const error = validatePrompt(prompt);
     setValidationErrors(prev => ({ ...prev, prompt: error }));
     handleConfigChange({ prompt });
-  };
+  }, [handleConfigChange]);
 
-  const handlePromptBlur = () => {
+  const handlePromptBlur = useCallback(() => {
     const error = validatePrompt(config.prompt);
     setValidationErrors(prev => ({ ...prev, prompt: error }));
-  };
+  }, [config.prompt]);
 
-  const handlePlatformChange = (platform: string) => {
+  const handlePlatformChange = useCallback((platform: string) => {
     const aspectRatio = getAspectRatioForPlatform(platform);
     handleConfigChange({
       platform: platform || undefined,
       aspect_ratio: aspectRatio,
     });
-  };
+  }, [handleConfigChange]);
 
-  const handleDurationChange = (_: Event, value: number | number[]) => {
+  const handleDurationChange = useCallback((_: Event, value: number | number[]) => {
     const duration = Array.isArray(value) ? value[0] : value;
     handleConfigChange({ duration });
-  };
+  }, [handleConfigChange]);
 
   // Duration constraints
   const minDuration = constraints?.min_duration || 5;
@@ -295,3 +296,6 @@ export const VideoConfigurationPanel: React.FC<VideoConfigurationPanelProps> = (
     </Card>
   );
 };
+
+// Memoized export to prevent unnecessary re-renders
+export const VideoConfigurationPanel = React.memo(VideoConfigurationPanelComponent);
