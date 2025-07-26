@@ -24,7 +24,7 @@ export function validateSupabaseConfig(): SupabaseConfig {
   if (!url || !anonKey) {
     // Check if we're in a build or edge environment
     const isBuildTime = process.env.NODE_ENV === 'production' && !process.env.NETLIFY_DEV;
-    const isEdgeFunction = typeof Deno !== 'undefined';
+    const isEdgeFunction = typeof (globalThis as any).Deno !== 'undefined';
 
     if (isBuildTime || isEdgeFunction) {
       console.warn('Supabase config not available in current environment, using fallback');

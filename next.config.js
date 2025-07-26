@@ -2,14 +2,14 @@
 const nextConfig = {
   reactStrictMode: true,
 
-  // TypeScript configuration
+  // TypeScript configuration - STRICT MODE ENABLED
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false, // Fixed: Enable TypeScript error checking in builds
   },
 
-  // ESLint configuration
+  // ESLint configuration - LINTING ENABLED
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false, // Fixed: Enable ESLint checking during builds
   },
 
   // Only include main page extensions, not test files
