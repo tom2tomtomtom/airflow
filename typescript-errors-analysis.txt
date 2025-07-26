@@ -1,0 +1,97 @@
+(node:15607) ExperimentalWarning: CommonJS module /Users/thomasdowuona-hyde/.nvm/versions/node/v23.3.0/lib/node_modules/npm/node_modules/debug/src/node.js is loading ES Module /Users/thomasdowuona-hyde/.nvm/versions/node/v23.3.0/lib/node_modules/npm/node_modules/supports-color/index.js using require().
+Support for loading ES Module in require() is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+src/services/assetManager.ts(679,57): error TS2345: Argument of type 'StorageError' is not assignable to parameter of type 'LogContext'.
+  Index signature for type 'string' is missing in type 'StorageError'.
+src/services/copyGenerator.ts(579,21): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ headline: { short: number; medium: number; long: number; }; subheadline: { short: number; medium: number; long: number; }; body: { short: number; medium: number; long: number; }; cta: { short: number; medium: number; long: number; }; tagline: { ...; }; social: { ...; }; }'.
+src/services/motivationGenerator.ts(93,9): error TS2322: Type 'MotivationGenerationOptions' is not assignable to type 'string | number | boolean | LogContext | null | undefined'.
+  Type 'MotivationGenerationOptions' is not assignable to type 'LogContext'.
+    Index signature for type 'string' is missing in type 'MotivationGenerationOptions'.
+src/services/motivationGenerator.ts(132,9): error TS2345: Argument of type '{ route: string; metadata: { briefId: string; motivationCount: number; }; }' is not assignable to parameter of type 'Partial<ErrorContext>'.
+  Object literal may only specify known properties, and 'metadata' does not exist in type 'Partial<ErrorContext>'.
+src/services/motivationGenerator.ts(772,3): error TS2322: Type 'Promise<{ valid: boolean; issues: string[]; suggestions: string[]; }>' is not assignable to type 'Promise<Promise<{ valid: boolean; issues: string[]; suggestions: string[]; }>>'.
+  Type '{ valid: boolean; issues: string[]; suggestions: string[]; }' is missing the following properties from type 'Promise<{ valid: boolean; issues: string[]; suggestions: string[]; }>': then, catch, finally, [Symbol.toStringTag]
+src/services/reviewSystem.ts(434,9): error TS2322: Type 'string[]' is not assignable to type 'string | number | boolean | LogContext | null | undefined'.
+  Type 'string[]' is not assignable to type 'LogContext'.
+    Index signature for type 'string' is missing in type 'string[]'.
+src/styles/theme.ts(158,5): error TS2322: Type '["none", string, string, string, string, string, string, ...any[]]' is not assignable to type '["none", string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string, string]'.
+  Target requires 25 element(s) but source may have fewer.
+src/test-utils/api-test-utils.ts(159,7): error TS2322: Type 'string' is not assignable to type 'RequestMethod | undefined'.
+src/test-utils/api-test-utils.ts(160,7): error TS2322: Type 'unknown' is not assignable to type 'Body | undefined'.
+src/test-utils/api-test-utils.ts(165,19): error TS2352: Conversion of type 'MockRequest<Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>>' to type 'NextApiRequest' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Property 'env' is missing in type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>> & { [key: string]: any; _setParameter: (key: string, value?: string | undefined) => void; ... 10 more ...; headers: HeaderWebAPI; }' but required in type 'NextApiRequest'.
+src/test-utils/api-test-utils.ts(165,47): error TS2352: Conversion of type 'MockResponse<Response<any, Record<string, any>>>' to type 'NextApiResponse' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'Response<any, Record<string, any>> & { _isEndCalled: () => boolean; _getHeaders: () => HeaderWebAPI; _getData: () => any; _getJSONData: () => any; _getBuffer: () => Buffer; ... 9 more ...; cookies: { ...; }; }' is missing the following properties from type '{ send: Send<any>; json: Send<any>; status: (statusCode: number) => NextApiResponse<any>; redirect(url: string): NextApiResponse<any>; redirect(status: number, url: string): NextApiResponse<...>; setDraftMode: (options: { ...; }) => NextApiResponse<...>; setPreviewData: (data: string | object, options?: { ...; } | u...': setDraftMode, setPreviewData, clearPreviewData, revalidate
+src/test-utils/api-test-utils.ts(218,5): error TS2571: Object is of type 'unknown'.
+src/test-utils/api-test-utils.ts(219,10): error TS2571: Object is of type 'unknown'.
+src/test-utils/api-test-utils.ts(225,5): error TS2571: Object is of type 'unknown'.
+src/test-utils/api-test-utils.ts(226,10): error TS2571: Object is of type 'unknown'.
+src/test-utils/api-test-utils.ts(232,5): error TS2571: Object is of type 'unknown'.
+src/test-utils/api-test-utils.ts(233,10): error TS2571: Object is of type 'unknown'.
+src/test-utils/api-test-utils.ts(248,11): error TS18046: 'handler' is of type 'unknown'.
+src/test-utils/api-test-utils.ts(250,16): error TS2551: Property '_getStatusCode' does not exist on type 'NextApiResponse'. Did you mean 'statusCode'?
+src/test-utils/api-test-utils.ts(251,27): error TS2339: Property '_getData' does not exist on type 'NextApiResponse'.
+src/test-utils/api-test-utils.ts(266,11): error TS18046: 'handler' is of type 'unknown'.
+src/test-utils/api-test-utils.ts(268,16): error TS2551: Property '_getStatusCode' does not exist on type 'NextApiResponse'. Did you mean 'statusCode'?
+src/test-utils/api-test-utils.ts(269,27): error TS2339: Property '_getData' does not exist on type 'NextApiResponse'.
+src/test-utils/api-test-utils.ts(281,11): error TS18046: 'handler' is of type 'unknown'.
+src/test-utils/api-test-utils.ts(283,16): error TS2551: Property '_getStatusCode' does not exist on type 'NextApiResponse'. Did you mean 'statusCode'?
+src/test-utils/api-test-utils.ts(284,27): error TS2339: Property '_getData' does not exist on type 'NextApiResponse'.
+src/test-utils/api-test-utils.ts(295,11): error TS18046: 'handler' is of type 'unknown'.
+src/test-utils/api-test-utils.ts(297,16): error TS2551: Property '_getStatusCode' does not exist on type 'NextApiResponse'. Did you mean 'statusCode'?
+src/test-utils/api-test-utils.ts(308,11): error TS18046: 'handler' is of type 'unknown'.
+src/test-utils/api-test-utils.ts(310,16): error TS2551: Property '_getStatusCode' does not exist on type 'NextApiResponse'. Did you mean 'statusCode'?
+src/test-utils/api-test-utils.ts(311,27): error TS2339: Property '_getData' does not exist on type 'NextApiResponse'.
+src/test-utils/api-test-utils.ts(325,21): error TS18046: 'handler' is of type 'unknown'.
+src/test-utils/api-test-utils.ts(335,12): error TS18046: 'res' is of type 'unknown'.
+src/test-utils/api-test-utils.ts(336,29): error TS18046: 'res' is of type 'unknown'.
+src/test-utils/api-test-utils.ts(345,12): error TS18046: 'res' is of type 'unknown'.
+src/test-utils/api-test-utils.ts(346,29): error TS18046: 'res' is of type 'unknown'.
+src/test-utils/api-test-utils.ts(356,11): error TS18046: 'handler' is of type 'unknown'.
+src/test-utils/api-test-utils.ts(361,12): error TS18046: 'res' is of type 'unknown'.
+src/test-utils/api-test-utils.ts(362,29): error TS18046: 'res' is of type 'unknown'.
+src/test-utils/api-test-utils.ts(432,11): error TS18046: 'handler' is of type 'unknown'.
+src/test-utils/api-test-utils.ts(435,16): error TS2551: Property '_getStatusCode' does not exist on type 'NextApiResponse'. Did you mean 'statusCode'?
+src/test-utils/api-test-utils.ts(449,11): error TS18046: 'handler' is of type 'unknown'.
+src/test-utils/api-test-utils.ts(451,41): error TS2339: Property '_getData' does not exist on type 'NextApiResponse'.
+src/test-utils/api-test-utils.ts(465,11): error TS18046: 'handler' is of type 'unknown'.
+src/test-utils/api-test-utils.ts(484,7): error TS18046: 'handler' is of type 'unknown'.
+src/test-utils/test-patterns.ts(146,41): error TS2339: Property '_getData' does not exist on type 'NextApiResponse'.
+src/test-utils/test-patterns.ts(277,41): error TS2339: Property '_getData' does not exist on type 'NextApiResponse'.
+src/test-utils/test-patterns.ts(373,41): error TS2339: Property '_getData' does not exist on type 'NextApiResponse'.
+src/test-utils/test-patterns.ts(457,41): error TS2339: Property '_getData' does not exist on type 'NextApiResponse'.
+src/test-utils/test-patterns.ts(473,41): error TS2339: Property '_getData' does not exist on type 'NextApiResponse'.
+src/test-utils/test-patterns.ts(498,20): error TS2551: Property '_getStatusCode' does not exist on type 'NextApiResponse'. Did you mean 'statusCode'?
+src/test-utils/test-patterns.ts(508,20): error TS2551: Property '_getStatusCode' does not exist on type 'NextApiResponse'. Did you mean 'statusCode'?
+src/test-utils/test-patterns.ts(531,17): error TS2551: Property '_getStatusCode' does not exist on type 'NextApiResponse'. Did you mean 'statusCode'?
+src/test-utils/test-patterns.ts(532,39): error TS2339: Property '_getData' does not exist on type 'NextApiResponse'.
+src/test-utils/test-patterns.ts(547,20): error TS2551: Property '_getStatusCode' does not exist on type 'NextApiResponse'. Did you mean 'statusCode'?
+src/test-utils/test-patterns.ts(605,17): error TS2551: Property '_getStatusCode' does not exist on type 'NextApiResponse'. Did you mean 'statusCode'?
+src/test-utils/test-patterns.ts(606,39): error TS2339: Property '_getData' does not exist on type 'NextApiResponse'.
+src/test-utils/test-patterns.ts(621,22): error TS2551: Property '_getStatusCode' does not exist on type 'NextApiResponse'. Did you mean 'statusCode'?
+src/test-utils/test-patterns.ts(622,39): error TS2339: Property '_getData' does not exist on type 'NextApiResponse'.
+src/test-utils/test-patterns.ts(630,11): error TS2698: Spread types may only be created from object types.
+src/test-utils/test-patterns.ts(643,17): error TS2551: Property '_getStatusCode' does not exist on type 'NextApiResponse'. Did you mean 'statusCode'?
+src/test-utils/test-patterns.ts(644,39): error TS2339: Property '_getData' does not exist on type 'NextApiResponse'.
+src/test-utils/test-patterns.ts(654,11): error TS2698: Spread types may only be created from object types.
+src/test-utils/test-patterns.ts(668,20): error TS2551: Property '_getStatusCode' does not exist on type 'NextApiResponse'. Did you mean 'statusCode'?
+src/test-utils/test-patterns.ts(694,22): error TS2551: Property '_getStatusCode' does not exist on type 'NextApiResponse'. Did you mean 'statusCode'?
+src/test-utils/test-patterns.ts(713,19): error TS2551: Property '_getStatusCode' does not exist on type 'NextApiResponse'. Did you mean 'statusCode'?
+src/test-utils/test-patterns.ts(714,49): error TS2339: Property '_getData' does not exist on type 'NextApiResponse'.
+src/test/setup.ts(83,13): error TS2540: Cannot assign to 'NODE_ENV' because it is a read-only property.
+src/utils/dynamicImports.ts(34,36): error TS2349: This expression is not callable.
+  Not all constituents of type '(({ error: _error }: { error?: Error | undefined; }) => null) | ComponentType<{ error?: Error | undefined; }>' are callable.
+    Type 'ComponentClass<{ error?: Error | undefined; }, any>' has no call signatures.
+src/utils/dynamicImports.ts(39,5): error TS2322: Type '(() => null) | ComponentType' is not assignable to type '((loadingProps: DynamicOptionsLoadingProps) => Element | null) | undefined'.
+  Type 'FunctionComponent<{}>' is not assignable to type '(loadingProps: DynamicOptionsLoadingProps) => Element | null'.
+    Type 'ReactNode' is not assignable to type 'Element | null'.
+      Type 'undefined' is not assignable to type 'Element | null'.
+src/utils/dynamicImports.ts(58,5): error TS2352: Conversion of type 'Promise<typeof import("/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/src/components/AdvancedAnalytics")>' to type 'Promise<{ default: ComponentType<Record<string, never>>; }>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Property 'default' is missing in type 'typeof import("/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/src/components/AdvancedAnalytics")' but required in type '{ default: ComponentType<Record<string, never>>; }'.
+src/utils/dynamicImports.ts(68,5): error TS2352: Conversion of type 'Promise<typeof import("/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/src/components/workflow/WorkflowContainer")>' to type 'Promise<{ default: ComponentType<Record<string, never>>; }>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Property 'default' is missing in type 'typeof import("/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/src/components/workflow/WorkflowContainer")' but required in type '{ default: ComponentType<Record<string, never>>; }'.
+src/utils/dynamicImports.ts(77,58): error TS2322: Type 'Promise<typeof import("/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/src/components/BriefUploadModal")>' is not assignable to type 'Promise<{ default: ComponentType<Record<string, never>>; }>'.
+  Property 'default' is missing in type 'typeof import("/Users/thomasdowuona-hyde/AIRWAVE_0525_CODEX/src/components/BriefUploadModal")' but required in type '{ default: ComponentType<Record<string, never>>; }'.
+src/utils/dynamicImports.ts(110,7): error TS2322: Type 'unknown' is not assignable to type 'T'.
+  'T' could be instantiated with an arbitrary type which could be unrelated to 'unknown'.
+src/utils/dynamicImports.ts(164,27): error TS2307: Cannot find module '@/pages/analytics' or its corresponding type declarations.
