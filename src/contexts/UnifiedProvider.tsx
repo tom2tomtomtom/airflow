@@ -8,7 +8,7 @@ import { getThemeConfig } from '@/styles/theme';
 import { ThemeModeProvider, useThemeMode } from '@/contexts/ThemeContext';
 import { LoadingProvider } from '@/contexts/LoadingContext';
 import { NotificationProvider } from '@/contexts/NotificationContext';
-import ErrorBoundary from '@/components/ErrorBoundary';
+import { UnifiedErrorBoundary } from '@/components/UnifiedErrorBoundary';
 
 // Create a single query client instance
 const queryClient = new QueryClient({
@@ -38,7 +38,7 @@ function UIProvider({ children }: { children: React.ReactNode }) {
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <LoadingProvider>
           <NotificationProvider>
-            <ErrorBoundary>{children}</ErrorBoundary>
+            <UnifiedErrorBoundary context="page">{children}</UnifiedErrorBoundary>
           </NotificationProvider>
         </LoadingProvider>
       </LocalizationProvider>

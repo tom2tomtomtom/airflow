@@ -5,11 +5,11 @@ export { VideoConfigurationPanel } from './VideoConfigurationPanel';
 export { ContentElementEditor } from './ContentElementEditor';
 export { VideoPreviewPanel } from './VideoPreviewPanel';
 export { GenerationControlPanel } from './GenerationControlPanel';
+// Re-export UnifiedErrorBoundary with video-studio context for backward compatibility
 export {
-  VideoStudioErrorBoundary,
-  VideoStudioSectionBoundary,
-  withVideoStudioErrorBoundary,
-} from './ErrorBoundary';
+  UnifiedErrorBoundary as VideoStudioErrorBoundary,
+  UnifiedErrorBoundary as VideoStudioSectionBoundary,
+} from '@/components/UnifiedErrorBoundary';
 export { useTemplateSelection } from './hooks/useTemplateSelection';
 export { useVideoConfig } from './hooks/useVideoConfig';
 export { useContentElements } from './hooks/useContentElements';

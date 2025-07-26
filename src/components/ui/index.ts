@@ -31,12 +31,11 @@ export {
 } from './notifications/NotificationSystem';
 export type { Notification } from './notifications/NotificationSystem';
 
-// Error Handling
+// Error Handling - Migrated to UnifiedErrorBoundary
 export {
-  default as ErrorBoundary,
-  withErrorBoundary,
-  useErrorHandler,
-} from './ErrorBoundary/ErrorBoundary';
+  UIErrorBoundary as ErrorBoundary,
+  withUIErrorBoundary as withErrorBoundary,
+} from '../ErrorBoundaryMigration';
 
 // Re-export common types
 export type { SelectOption } from './forms/FormSelect';
