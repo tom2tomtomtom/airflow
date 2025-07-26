@@ -11,13 +11,15 @@ import {
   AccordionSummary,
   AccordionDetails,
 } from '@mui/material';
-import {
-  Error as ErrorIcon,
-  Refresh as RefreshIcon,
-  ExpandMore as ExpandMoreIcon,
-  Home as HomeIcon,
-  BugReport as BugReportIcon,
-} from '@mui/icons-material';
+// Import Material-UI icons individually to avoid build issues
+import { Error, Refresh, ExpandMore, Home, BugReport } from '@mui/icons-material';
+
+// Create aliases for clarity
+const ErrorIcon = Error;
+const RefreshIcon = Refresh;
+const ExpandMoreIcon = ExpandMore;
+const HomeIcon = Home;
+const BugReportIcon = BugReport;
 import { errorReporter } from '@/utils/errorReporting';
 import { getLogger } from '@/lib/logger';
 

@@ -203,6 +203,62 @@ Accurate documentation is essential for effective Agent OS workflow implementati
 - May require adjustment of timeline expectations
 - Highlights need for better ongoing documentation practices
 
+## 2025-07-26: Enhanced Agent OS v2.0 Installation
+
+**ID:** DEC-006
+**Status:** Accepted
+**Category:** Process
+**Stakeholders:** Development Team, Agent OS Implementation
+
+### Decision
+
+Upgraded AIRWAVE to Enhanced Agent OS v2.0 with three-layer context system (Standards → Project → Specs) and XML-structured workflows for improved AI-assisted development efficiency.
+
+### Context
+
+Previous Agent OS installation was functional but lacked the enhanced context management needed for complex AI workflows. Production readiness assessment revealed critical need for systematic approach to technical debt reduction requiring sophisticated workflow management.
+
+### Key Enhancements Implemented
+
+**Three-Layer Context System:**
+
+- **Layer 1**: Global standards for universal development principles
+- **Layer 2**: Project-specific AIRWAVE context and decisions
+- **Layer 3**: Active specifications for feature implementation
+
+**XML-Structured Workflows:**
+
+- `<step_metadata>` for clear step tracking and validation
+- `<analysis_areas>` for structured codebase analysis
+- `<error_scenarios>` with comprehensive recovery patterns
+- `<validation_checklists>` for quality assurance
+
+**Cross-Reference System:**
+
+- `@` prefix notation for reliable file referencing
+- Workflow composition capabilities for complex tasks
+- Context inheritance rules for conflict resolution
+
+### Rationale
+
+Enhanced Agent OS provides the structured approach needed to systematically address the 42/100 health score and 305+ TypeScript errors blocking production. The three-layer context system ensures consistency while allowing project-specific customization. XML structure enables reliable AI workflow parsing and execution.
+
+### Consequences
+
+**Positive:**
+
+- Systematic approach to technical debt reduction with clear workflows
+- Improved AI assistant context awareness and response quality
+- Better documentation of architectural decisions and development patterns
+- Scalable framework for future feature development
+- Enhanced error handling and recovery mechanisms
+
+**Negative:**
+
+- Learning curve for team members adopting new workflow patterns
+- Additional documentation overhead for maintaining context system
+- Potential over-engineering for simple tasks requiring workflow selection
+
 ## 2025-01-25: AI Integration Strategy
 
 **ID:** DEC-004
