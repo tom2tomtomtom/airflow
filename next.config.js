@@ -40,6 +40,53 @@ const nextConfig = {
       };
     }
 
+    // Bundle optimization - Critical Priority #3
+    if (!isServer) {
+      // Enable tree shaking for Material-UI icons
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@mui/icons-material': '@mui/icons-material/esm',
+      };
+
+      // Optimize chunks for better caching
+      config.optimization = {
+        ...config.optimization,
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            // Vendor chunk for stable dependencies
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              chunks: 'all',
+              priority: 10,
+            },
+            // Material-UI chunk (large dependency)
+            mui: {
+              test: /[\\/]node_modules[\\/]@mui[\\/]/,
+              name: 'mui',
+              chunks: 'all',
+              priority: 20,
+            },
+            // AI services chunk (OpenAI, Anthropic)
+            ai: {
+              test: /[\\/]node_modules[\\/](openai|@anthropic-ai)[\\/]/,
+              name: 'ai-services',
+              chunks: 'all',
+              priority: 15,
+            },
+            // Common utilities chunk
+            common: {
+              minChunks: 2,
+              chunks: 'all',
+              name: 'common',
+              priority: 5,
+            },
+          },
+        },
+      };
+    }
+
     // Test files have been moved to tests/ directory to avoid compilation issues
 
     return config;

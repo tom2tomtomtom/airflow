@@ -6,7 +6,7 @@ import OpenAI from 'openai';
 import { env, hasOpenAI } from '@/lib/env';
 import { supabase } from '@/lib/supabase';
 import mammoth from 'mammoth';
-import pdf from 'pdf-parse';
+// Dynamic import for pdf-parse to reduce bundle size
 
 export const config = {
   api: {
@@ -60,6 +60,8 @@ async function extractTextFromFile(file: formidable.File): Promise<string> {
   const buffer = await fs.readFile(file.filepath);
 
   if (file.mimetype === 'application/pdf') {
+    // Dynamic import for pdf-parse to reduce bundle size
+    const { default: pdf } = await import('pdf-parse');
     const data = await pdf(buffer);
     return data.text;
   } else if (
@@ -141,12 +143,17 @@ async function analyzeBrandGuidelines(text: string): Promise<BrandGuidelines> {
     // Try to parse the JSON response
     try {
       return JSON.parse(content);
-    } catch (parseError: any) {
-      console.error('Failed to parse OpenAI response as JSON:', content);
+    } catch (parseError) {
+      // Log parsing error for debugging but don't expose raw content in production
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to parse OpenAI response as JSON:', content);
+      }
       throw new Error('Failed to parse AI response. Please try again.');
     }
-  } catch (error: any) {
-    console.error('OpenAI analysis error:', error);
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('OpenAI analysis error:', error);
+    }
     throw error;
   }
 }
@@ -163,7 +170,7 @@ export default async function handler(
     if (!supabase) {
       return res.status(500).json({ success: false, error: 'Database connection not available' });
     }
-    
+
     // Get client ID from headers or query
     const clientId = (req.headers['x-client-id'] as string) || (req.query.clientId as string);
 
@@ -176,7 +183,7 @@ export default async function handler(
       maxFiles: 1,
     });
 
-    const [fields, files] = await form.parse(req);
+    const [, files] = await form.parse(req);
     const file = Array.isArray(files.file) ? files.file[0] : files.file;
 
     if (!file) {
@@ -206,7 +213,9 @@ export default async function handler(
       .eq('id', clientId);
 
     if (updateError) {
-      console.error('Error saving brand guidelines:', updateError);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error saving brand guidelines:', updateError);
+      }
       return res.status(500).json({
         success: false,
         error: 'Failed to save brand guidelines to client profile',
@@ -216,8 +225,10 @@ export default async function handler(
     // Clean up temporary file
     try {
       await fs.unlink(file.filepath);
-    } catch (cleanupError: any) {
-      console.warn('Failed to cleanup temp file:', cleanupError);
+    } catch (cleanupError) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Failed to cleanup temp file:', cleanupError);
+      }
     }
 
     return res.status(200).json({
@@ -225,9 +236,11 @@ export default async function handler(
       guidelines,
       clientId,
     });
-  } catch (error: any) {
-    const message = getErrorMessage(error);
-    console.error('Brand guidelines analysis error:', error);
+  } catch (error) {
+    const message = getErrorMessage(error as Error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Brand guidelines analysis error:', error);
+    }
     return res.status(500).json({
       success: false,
       error: message || 'Failed to analyze brand guidelines',

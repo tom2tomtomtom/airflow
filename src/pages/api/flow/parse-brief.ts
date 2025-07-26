@@ -7,13 +7,13 @@ import fs from 'fs';
 import path from 'path';
 import OpenAI from 'openai';
 import mammoth from 'mammoth';
-import pdfParse from 'pdf-parse';
+// Dynamic import for pdf-parse to reduce bundle size
 
 // Configure to handle file uploads
 export const config = {
   api: {
-    bodyParser: false
-  }
+    bodyParser: false,
+  },
 };
 
 interface BriefData {
@@ -35,7 +35,7 @@ interface BriefData {
 
 // Initialize OpenAI client
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 // Function to estimate token count (rough approximation: 1 token ≈ 4 characters)
@@ -46,21 +46,23 @@ function estimateTokenCount(text: string): number {
 // Function to chunk large documents for processing
 function chunkDocument(content: string, maxChunkSize: number = 6000): string[] {
   const estimatedTokens = estimateTokenCount(content);
-  
+
   if (estimatedTokens <= maxChunkSize) {
     return [content];
   }
-  
-  console.log(`Document too large (${estimatedTokens} tokens), chunking into smaller parts...`);
-  
+
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`Document too large (${estimatedTokens} tokens), chunking into smaller parts...`);
+  }
+
   // Split by paragraphs first, then by sentences if needed
   const paragraphs = content.split(/\n\s*\n/);
   const chunks: string[] = [];
   let currentChunk = '';
-  
+
   for (const paragraph of paragraphs) {
     const testChunk = currentChunk + (currentChunk ? '\n\n' : '') + paragraph;
-    
+
     if (estimateTokenCount(testChunk) <= maxChunkSize) {
       currentChunk = testChunk;
     } else {
@@ -69,15 +71,15 @@ function chunkDocument(content: string, maxChunkSize: number = 6000): string[] {
         chunks.push(currentChunk);
         currentChunk = '';
       }
-      
+
       // If single paragraph is too large, split by sentences
       if (estimateTokenCount(paragraph) > maxChunkSize) {
         const sentences = paragraph.split(/(?<=[.!?])\s+/);
         let sentenceChunk = '';
-        
+
         for (const sentence of sentences) {
           const testSentenceChunk = sentenceChunk + (sentenceChunk ? ' ' : '') + sentence;
-          
+
           if (estimateTokenCount(testSentenceChunk) <= maxChunkSize) {
             sentenceChunk = testSentenceChunk;
           } else {
@@ -90,7 +92,7 @@ function chunkDocument(content: string, maxChunkSize: number = 6000): string[] {
             }
           }
         }
-        
+
         if (sentenceChunk) {
           currentChunk = sentenceChunk;
         }
@@ -99,21 +101,21 @@ function chunkDocument(content: string, maxChunkSize: number = 6000): string[] {
       }
     }
   }
-  
+
   // Add the last chunk
   if (currentChunk) {
     chunks.push(currentChunk);
   }
-  
-    return chunks;
+
+  return chunks;
 }
 
 // Function to parse chunked documents by extracting info from each chunk and merging
 async function parseChunkedDocument(chunks: string[], title: string): Promise<BriefData | null> {
-    const chunkResults: Partial<BriefData>[] = [];
-  
+  const chunkResults: Partial<BriefData>[] = [];
+
   for (let i = 0; i < chunks.length; i++) {
-        try {
+    try {
       const chunkPrompt = `You are an expert marketing strategist. Analyze this section of a creative brief and extract any relevant information. This is part ${i + 1} of ${chunks.length} parts.
 
 BRIEF SECTION:
@@ -145,15 +147,15 @@ Return only the JSON object.`;
           messages: [
             {
               role: 'user',
-              content: chunkPrompt
-            }
+              content: chunkPrompt,
+            },
           ],
           temperature: 0.1,
-          max_tokens: 1500
+          max_tokens: 1500,
         }),
-        new Promise((_, reject) => 
+        new Promise((_, reject) =>
           setTimeout(() => reject(new Error('OpenAI chunk request timeout')), 20000)
-        )
+        ),
       ]);
 
       const responseText = (response as any).choices[0]?.message?.content?.trim();
@@ -167,25 +169,29 @@ Return only the JSON object.`;
           if (cleanedResponse.startsWith('```')) {
             cleanedResponse = cleanedResponse.replace(/^```\s*/, '').replace(/\s*```$/, '');
           }
-          
+
           const chunkData = JSON.parse(cleanedResponse);
           chunkResults.push(chunkData);
-                  } catch (parseError: any) {
-          console.warn(`Failed to parse chunk ${i + 1} response:`, parseError);
-          console.warn(`Raw response was:`, responseText.substring(0, 200) + '...');
+        } catch (parseError) {
+          if (process.env.NODE_ENV === 'development') {
+            console.warn(`Failed to parse chunk ${i + 1} response:`, parseError);
+            console.warn(`Raw response was:`, responseText.substring(0, 200) + '...');
+          }
         }
       }
-    } catch (error: any) {
-      console.warn(`Error processing chunk ${i + 1}:`, error);
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn(`Error processing chunk ${i + 1}:`, error);
+      }
     }
   }
-  
+
   // Merge results from all chunks
   if (chunkResults.length === 0) {
-        return null;
+    return null;
   }
-  
-    return mergeChunkResults(chunkResults, title);
+
+  return mergeChunkResults(chunkResults, title);
 }
 
 // Function to merge results from multiple chunks into a single BriefData object
@@ -204,22 +210,25 @@ function mergeChunkResults(chunkResults: Partial<BriefData>[], fallbackTitle: st
     brandGuidelines: '',
     requirements: [],
     industry: '',
-    competitors: []
+    competitors: [],
   };
-  
+
   for (const chunk of chunkResults) {
     // Take the first non-null/non-empty value for string fields
     if (!merged.title && chunk.title) merged.title = chunk.title;
     if (!merged.objective && chunk.objective) merged.objective = chunk.objective;
-    if (!merged.targetAudience && chunk.targetAudience) merged.targetAudience = chunk.targetAudience;
+    if (!merged.targetAudience && chunk.targetAudience)
+      merged.targetAudience = chunk.targetAudience;
     if (!merged.product && chunk.product) merged.product = chunk.product;
     if (!merged.service && chunk.service) merged.service = chunk.service;
-    if (!merged.valueProposition && chunk.valueProposition) merged.valueProposition = chunk.valueProposition;
-    if (!merged.brandGuidelines && chunk.brandGuidelines) merged.brandGuidelines = chunk.brandGuidelines;
+    if (!merged.valueProposition && chunk.valueProposition)
+      merged.valueProposition = chunk.valueProposition;
+    if (!merged.brandGuidelines && chunk.brandGuidelines)
+      merged.brandGuidelines = chunk.brandGuidelines;
     if (!merged.industry && chunk.industry) merged.industry = chunk.industry;
     if (merged.budget === 'TBD' && chunk.budget) merged.budget = chunk.budget;
     if (merged.timeline === 'TBD' && chunk.timeline) merged.timeline = chunk.timeline;
-    
+
     // Merge arrays, removing duplicates
     if (chunk.keyMessages && Array.isArray(chunk.keyMessages)) {
       chunk.keyMessages.forEach((msg: any) => {
@@ -228,7 +237,7 @@ function mergeChunkResults(chunkResults: Partial<BriefData>[], fallbackTitle: st
         }
       });
     }
-    
+
     if (chunk.platforms && Array.isArray(chunk.platforms)) {
       chunk.platforms.forEach((platform: any) => {
         if (platform && !merged.platforms.includes(platform)) {
@@ -236,7 +245,7 @@ function mergeChunkResults(chunkResults: Partial<BriefData>[], fallbackTitle: st
         }
       });
     }
-    
+
     if (chunk.requirements && Array.isArray(chunk.requirements)) {
       chunk.requirements.forEach((req: any) => {
         if (req && !merged.requirements?.includes(req)) {
@@ -253,7 +262,7 @@ function mergeChunkResults(chunkResults: Partial<BriefData>[], fallbackTitle: st
       });
     }
   }
-  
+
   // Ensure minimum defaults
   if (merged.keyMessages.length === 0) {
     merged.keyMessages = ['Key message extracted from brief analysis'];
@@ -261,20 +270,20 @@ function mergeChunkResults(chunkResults: Partial<BriefData>[], fallbackTitle: st
   if (merged.platforms.length === 0) {
     merged.platforms = ['Meta', 'Instagram', 'Facebook'];
   }
-  
-    return merged;
+
+  return merged;
 }
 
 async function parseWithOpenAI(content: string, title: string): Promise<BriefData | null> {
   if (!process.env.OPENAI_API_KEY) {
-        return null;
+    return null;
   }
 
-    // Check if document needs chunking
+  // Check if document needs chunking
   const chunks = chunkDocument(content, 6000); // Leave room for prompt and response
 
   if (chunks.length > 1) {
-        return await parseChunkedDocument(chunks, title);
+    return await parseChunkedDocument(chunks, title);
   }
 
   try {
@@ -321,15 +330,15 @@ Respond ONLY with the JSON object, no additional text or explanation.`;
         messages: [
           {
             role: 'user',
-            content: prompt
-          }
+            content: prompt,
+          },
         ],
         temperature: 0.1,
-        max_tokens: 2000
+        max_tokens: 2000,
       }),
-      new Promise((_, reject) => 
+      new Promise((_, reject) =>
         setTimeout(() => reject(new Error('OpenAI request timeout')), 30000)
-      )
+      ),
     ]);
 
     const responseText = (response as any).choices[0]?.message?.content?.trim();
@@ -337,9 +346,9 @@ Respond ONLY with the JSON object, no additional text or explanation.`;
       throw new Error('No response from OpenAI');
     }
 
-        // Parse the JSON response
+    // Parse the JSON response
     const parsedData = JSON.parse(responseText);
-    
+
     // Validate the parsed data has required fields
     if (!parsedData.title || !parsedData.objective) {
       throw new Error('Invalid response structure from OpenAI');
@@ -371,15 +380,16 @@ Respond ONLY with the JSON object, no additional text or explanation.`;
     }
 
     return parsedData as BriefData;
-
-  } catch (error: any) {
-    console.error('Error in OpenAI parsing:', error);
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error in OpenAI parsing:', error);
+    }
     return null;
   }
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method !== 'POST') {
+  if (req.method !== 'POST') {
     return res.status(405).json({ success: false, message: 'Method not allowed' });
   }
 
@@ -388,68 +398,78 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!user) {
     return res.status(401).json({
       success: false,
-      message: 'Authentication required'
+      message: 'Authentication required',
     });
   }
-  
-    try {
+
+  try {
     // Parse the uploaded file
     const form = formidable({
       uploadDir: '/tmp',
       keepExtensions: true,
       maxFileSize: 10 * 1024 * 1024, // 10MB
-      multiples: false
+      multiples: false,
     });
 
-        const [fields, files] = await form.parse(req);
-    console.log('File upload parsing completed. Files:', Object.keys(files));
+    const [, files] = await form.parse(req);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('File upload parsing completed. Files:', Object.keys(files));
+    }
     const uploadedFile = Array.isArray(files.file) ? files.file[0] : files.file;
 
     if (!uploadedFile) {
       return res.status(400).json({ success: false, message: 'No file uploaded' });
     }
 
-        // Read the file content based on file type
+    // Read the file content based on file type
     let fileContent = '';
     const fileExtension = path.extname(uploadedFile.originalFilename || '').toLowerCase();
-    
-        try {
+
+    try {
       if (fileExtension === '.txt' || fileExtension === '.md') {
         // Read text files directly
         fileContent = fs.readFileSync(uploadedFile.filepath, 'utf8');
-              } else if (fileExtension === '.docx') {
+      } else if (fileExtension === '.docx') {
         // Use mammoth to extract text from .docx files
-                const buffer = fs.readFileSync(uploadedFile.filepath);
+        const buffer = fs.readFileSync(uploadedFile.filepath);
         const result = await mammoth.extractRawText({ buffer });
         fileContent = result.value;
         if (result.messages && result.messages.length > 0) {
-                  }
-              } else if (fileExtension === '.doc') {
+          // Document processing completed with messages
+        }
+      } else if (fileExtension === '.doc') {
         // .doc files are more complex, try mammoth but with fallback
-                try {
+        try {
           const buffer = fs.readFileSync(uploadedFile.filepath);
           const result = await mammoth.extractRawText({ buffer });
           fileContent = result.value;
-                  } catch (docError: any) {
-          console.warn('.doc parsing failed, this format may not be fully supported');
+        } catch (docError) {
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('.doc parsing failed, this format may not be fully supported');
+          }
           fileContent = `Document: ${uploadedFile.originalFilename}\nNote: .doc format may require conversion to .docx for best results.`;
         }
-        
       } else if (fileExtension === '.pdf') {
         // Use pdf-parse to extract text from PDF files
-                const buffer = fs.readFileSync(uploadedFile.filepath);
+        const buffer = fs.readFileSync(uploadedFile.filepath);
+        // Dynamic import for pdf-parse to reduce bundle size
+        const { default: pdfParse } = await import('pdf-parse');
         const pdfData = await pdfParse(buffer);
         fileContent = pdfData.text;
-              } else {
+      } else {
         // Try to read as text for unknown formats
-                fileContent = fs.readFileSync(uploadedFile.filepath, 'utf8');
-              }
-    } catch (error: any) {
-      console.error('Error reading file:', error);
-      throw new Error(`Failed to read file: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        fileContent = fs.readFileSync(uploadedFile.filepath, 'utf8');
+      }
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error reading file:', error);
+      }
+      throw new Error(
+        `Failed to read file: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
-    
-        // Extract basic information from filename and content
+
+    // Extract basic information from filename and content
     const fileName = uploadedFile.originalFilename || 'Untitled Brief';
     const briefTitle = fileName.replace(/\.[^/.]+$/, '');
 
@@ -457,35 +477,38 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const parsedBrief = await parseDocumentContent(fileContent, briefTitle);
 
     // Debug logging to see what was parsed
-    console.log('🔍 BRIEF PARSING - Extracted data:', {
-      title: parsedBrief.title,
-      objective: parsedBrief.objective?.substring(0, 100) + '...',
-      targetAudience: parsedBrief.targetAudience?.substring(0, 100) + '...',
-      keyMessages: parsedBrief.keyMessages,
-      platforms: parsedBrief.platforms,
-      product: parsedBrief.product,
-      service: parsedBrief.service,
-      valueProposition: parsedBrief.valueProposition?.substring(0, 100) + '...',
-      industry: parsedBrief.industry,
-      contentLength: fileContent.length
-    });
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔍 BRIEF PARSING - Extracted data:', {
+        title: parsedBrief.title,
+        objective: parsedBrief.objective?.substring(0, 100) + '...',
+        targetAudience: parsedBrief.targetAudience?.substring(0, 100) + '...',
+        keyMessages: parsedBrief.keyMessages,
+        platforms: parsedBrief.platforms,
+        product: parsedBrief.product,
+        service: parsedBrief.service,
+        valueProposition: parsedBrief.valueProposition?.substring(0, 100) + '...',
+        industry: parsedBrief.industry,
+        contentLength: fileContent.length,
+      });
+    }
 
     // Clean up uploaded file
     fs.unlinkSync(uploadedFile.filepath);
 
-        return res.status(200).json({
+    return res.status(200).json({
       success: true,
       data: parsedBrief,
-      message: 'Brief parsed successfully'
+      message: 'Brief parsed successfully',
     });
-
-  } catch (error: any) {
-    console.error('Error parsing brief:', error);
-    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
-
+  } catch (error) {
     // Generate error ID for tracking
     const errorId = `ERR_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    console.error(`Error ID: ${errorId}`);
+
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error parsing brief:', error);
+      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+      console.error(`Error ID: ${errorId}`);
+    }
 
     // Provide more specific error messages
     let errorMessage = 'Failed to parse brief';
@@ -513,7 +536,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       success: false,
       message: errorMessage,
       errorId,
-      error: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : error) : undefined
+      error:
+        process.env.NODE_ENV === 'development'
+          ? error instanceof Error
+            ? error.message
+            : error
+          : undefined,
     });
   }
 }
@@ -523,23 +551,25 @@ async function parseDocumentContent(content: string, title: string): Promise<Bri
   try {
     const aiParsedData = await parseWithOpenAI(content, title);
     if (aiParsedData) {
-            return aiParsedData;
+      return aiParsedData;
     }
-  } catch (error: any) {
-    console.warn('OpenAI parsing failed, falling back to pattern matching:', error);
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('OpenAI parsing failed, falling back to pattern matching:', error);
+    }
   }
 
   // Fallback to basic pattern matching
-    const contentLower = content.toLowerCase();
-  
+  const contentLower = content.toLowerCase();
+
   // Extract objective
   let objective = '';
   const objectivePatterns = [
     /objective[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
     /goal[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
-    /purpose[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i
+    /purpose[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
   ];
-  
+
   for (const pattern of objectivePatterns) {
     const match = content.match(pattern);
     if (match) {
@@ -553,9 +583,9 @@ async function parseDocumentContent(content: string, title: string): Promise<Bri
   const audiencePatterns = [
     /target audience[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
     /audience[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
-    /demographic[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i
+    /demographic[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
   ];
-  
+
   for (const pattern of audiencePatterns) {
     const match = content.match(pattern);
     if (match) {
@@ -568,13 +598,16 @@ async function parseDocumentContent(content: string, title: string): Promise<Bri
   const keyMessages: string[] = [];
   const messagePatterns = [
     /key messages?[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
-    /messages?[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i
+    /messages?[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
   ];
-  
+
   for (const pattern of messagePatterns) {
     const match = content.match(pattern);
     if (match) {
-      const messages = match[1].split(/[,\n\-\•]/).map((m: any) => m.trim()).filter((m: any) => m.length > 0);
+      const messages = match[1]
+        .split(/[,\n\-•]/)
+        .map((m: string) => m.trim())
+        .filter((m: string) => m.length > 0);
       keyMessages.push(...messages.slice(0, 5)); // Limit to 5 messages
       break;
     }
@@ -582,9 +615,17 @@ async function parseDocumentContent(content: string, title: string): Promise<Bri
 
   // Extract platforms
   const platforms: string[] = [];
-  const platformKeywords = ['instagram', 'facebook', 'linkedin', 'twitter', 'youtube', 'tiktok', 'snapchat'];
-  
-  platformKeywords.forEach((platform: any) => {
+  const platformKeywords = [
+    'instagram',
+    'facebook',
+    'linkedin',
+    'twitter',
+    'youtube',
+    'tiktok',
+    'snapchat',
+  ];
+
+  platformKeywords.forEach((platform: string) => {
     if (contentLower.includes(platform)) {
       platforms.push(platform.charAt(0).toUpperCase() + platform.slice(1));
     }
@@ -592,7 +633,7 @@ async function parseDocumentContent(content: string, title: string): Promise<Bri
 
   // Extract budget
   let budget = '';
-  const budgetPattern = /budget[:\s]+[\$]?([0-9,]+)/i;
+  const budgetPattern = /budget[:\s]+\$?([0-9,]+)/i;
   const budgetMatch = content.match(budgetPattern);
   if (budgetMatch) {
     budget = `$${budgetMatch[1]}`;
@@ -603,9 +644,9 @@ async function parseDocumentContent(content: string, title: string): Promise<Bri
   const timelinePatterns = [
     /timeline[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
     /duration[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
-    /(\d+)\s*(weeks?|months?|days?)/i
+    /(\d+)\s*(weeks?|months?|days?)/i,
   ];
-  
+
   for (const pattern of timelinePatterns) {
     const match = content.match(pattern);
     if (match) {
@@ -626,13 +667,16 @@ async function parseDocumentContent(content: string, title: string): Promise<Bri
   const requirements: string[] = [];
   const requirementPatterns = [
     /requirements?[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
-    /deliverables?[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i
+    /deliverables?[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
   ];
-  
+
   for (const pattern of requirementPatterns) {
     const match = content.match(pattern);
     if (match) {
-      const reqs = match[1].split(/[,\n\-\•]/).map((r: any) => r.trim()).filter((r: any) => r.length > 0);
+      const reqs = match[1]
+        .split(/[,\n\-•]/)
+        .map((r: string) => r.trim())
+        .filter((r: string) => r.length > 0);
       requirements.push(...reqs.slice(0, 10)); // Limit to 10 requirements
       break;
     }
@@ -644,9 +688,9 @@ async function parseDocumentContent(content: string, title: string): Promise<Bri
     /product[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
     /service[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
     /offering[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
-    /solution[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i
+    /solution[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
   ];
-  
+
   for (const pattern of productPatterns) {
     const match = content.match(pattern);
     if (match) {
@@ -660,9 +704,9 @@ async function parseDocumentContent(content: string, title: string): Promise<Bri
   const servicePatterns = [
     /services?[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
     /support[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
-    /assistance[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i
+    /assistance[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
   ];
-  
+
   for (const pattern of servicePatterns) {
     const match = content.match(pattern);
     if (match) {
@@ -678,9 +722,9 @@ async function parseDocumentContent(content: string, title: string): Promise<Bri
     /unique selling point[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
     /usp[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
     /competitive advantage[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
-    /differentiator[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i
+    /differentiator[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
   ];
-  
+
   for (const pattern of valuePropositionPatterns) {
     const match = content.match(pattern);
     if (match) {
@@ -695,9 +739,9 @@ async function parseDocumentContent(content: string, title: string): Promise<Bri
     /industry[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
     /sector[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
     /market[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
-    /vertical[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i
+    /vertical[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
   ];
-  
+
   for (const pattern of industryPatterns) {
     const match = content.match(pattern);
     if (match) {
@@ -711,13 +755,16 @@ async function parseDocumentContent(content: string, title: string): Promise<Bri
   const competitorPatterns = [
     /competitors?[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
     /competition[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
-    /rivals?[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i
+    /rivals?[:\s]+(.*?)(?:\n\n|\n[A-Z]|$)/i,
   ];
-  
+
   for (const pattern of competitorPatterns) {
     const match = content.match(pattern);
     if (match) {
-      const comps = match[1].split(/[,\n\-\•]/).map((c: any) => c.trim()).filter((c: any) => c.length > 0);
+      const comps = match[1]
+        .split(/[,\n\-•]/)
+        .map((c: string) => c.trim())
+        .filter((c: string) => c.length > 0);
       competitors.push(...comps.slice(0, 5)); // Limit to 5 competitors
       break;
     }
@@ -737,19 +784,19 @@ async function parseDocumentContent(content: string, title: string): Promise<Bri
     industry: industry || '',
     competitors: competitors.length > 0 ? competitors : [],
     brandGuidelines,
-    requirements
+    requirements,
   };
-  
-  // Log completion for monitoring (production-safe)
+
+  // Log completion for monitoring (development only)
   if (process.env.NODE_ENV === 'development') {
     console.log('Pattern matching completed. Extracted:', {
       title: result.title,
       objective: result.objective.substring(0, 50) + '...',
       keyMessageCount: result.keyMessages.length,
-      platformCount: result.platforms.length
+      platformCount: result.platforms.length,
     });
   }
-  
+
   return result;
 }
 

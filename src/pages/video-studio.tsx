@@ -5,15 +5,12 @@ import { ArrowBack, ArrowForward, VideoLibrary } from '@mui/icons-material';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useClient } from '@/contexts/ClientContext';
 import { useNotification } from '@/contexts/NotificationContext';
+import { UnifiedErrorBoundary } from '@/components/UnifiedErrorBoundary';
 
-// Import all extracted video studio components
+// Dynamic imports for video studio components (bundle optimization)
+import dynamic from 'next/dynamic';
 import {
   VideoStudioProvider,
-  VideoTemplateSelector,
-  VideoConfigurationPanel,
-  ContentElementEditor,
-  VideoPreviewPanel,
-  GenerationControlPanel,
   useTemplateSelection,
   useVideoConfig,
   useContentElements,
@@ -22,7 +19,47 @@ import {
   GenerationOptions,
   ExportPlatform,
 } from '@/components/video-studio';
-import { VideoStudioSectionBoundary } from '@/components/video-studio/ErrorBoundary';
+
+// Dynamic imports with loading states for better UX
+const VideoTemplateSelector = dynamic(
+  () => import('@/components/video-studio').then(mod => ({ default: mod.VideoTemplateSelector })),
+  {
+    loading: () => <Typography>Loading template selector...</Typography>,
+    ssr: false,
+  }
+);
+
+const VideoConfigurationPanel = dynamic(
+  () => import('@/components/video-studio').then(mod => ({ default: mod.VideoConfigurationPanel })),
+  {
+    loading: () => <Typography>Loading configuration panel...</Typography>,
+    ssr: false,
+  }
+);
+
+const ContentElementEditor = dynamic(
+  () => import('@/components/video-studio').then(mod => ({ default: mod.ContentElementEditor })),
+  {
+    loading: () => <Typography>Loading content editor...</Typography>,
+    ssr: false,
+  }
+);
+
+const VideoPreviewPanel = dynamic(
+  () => import('@/components/video-studio').then(mod => ({ default: mod.VideoPreviewPanel })),
+  {
+    loading: () => <Typography>Loading video preview...</Typography>,
+    ssr: false,
+  }
+);
+
+const GenerationControlPanel = dynamic(
+  () => import('@/components/video-studio').then(mod => ({ default: mod.GenerationControlPanel })),
+  {
+    loading: () => <Typography>Loading generation controls...</Typography>,
+    ssr: false,
+  }
+);
 
 // Define the steps in the video creation workflow
 const WORKFLOW_STEPS = [
@@ -108,29 +145,35 @@ const VideoStudioPage: React.FC = () => {
   }, [templateSelection.selectedTemplate, videoConfig]);
 
   // Step validation logic with useMemo optimization
-  const canProceedToStep = useCallback((step: number): boolean => {
-    switch (step) {
-      case 0: // Template selection
-        return true;
-      case 1: // Configuration
-        return !!templateSelection.selectedTemplate;
-      case 2: // Content editing
-        return !!templateSelection.selectedTemplate && !!videoConfig.config.prompt?.trim();
-      case 3: // Preview
-        return !!templateSelection.selectedTemplate && !!videoConfig.config.prompt?.trim();
-      case 4: // Generation
-        return !!templateSelection.selectedTemplate && !!videoConfig.config.prompt?.trim();
-      default:
-        return false;
-    }
-  }, [templateSelection.selectedTemplate, videoConfig.config.prompt]);
+  const canProceedToStep = useCallback(
+    (step: number): boolean => {
+      switch (step) {
+        case 0: // Template selection
+          return true;
+        case 1: // Configuration
+          return !!templateSelection.selectedTemplate;
+        case 2: // Content editing
+          return !!templateSelection.selectedTemplate && !!videoConfig.config.prompt?.trim();
+        case 3: // Preview
+          return !!templateSelection.selectedTemplate && !!videoConfig.config.prompt?.trim();
+        case 4: // Generation
+          return !!templateSelection.selectedTemplate && !!videoConfig.config.prompt?.trim();
+        default:
+          return false;
+      }
+    },
+    [templateSelection.selectedTemplate, videoConfig.config.prompt]
+  );
 
-  const getStepStatus = useCallback((step: number): 'completed' | 'active' | 'disabled' => {
-    if (step < activeStep) return 'completed';
-    if (step === activeStep) return 'active';
-    if (canProceedToStep(step)) return 'active';
-    return 'disabled';
-  }, [activeStep, canProceedToStep]);
+  const getStepStatus = useCallback(
+    (step: number): 'completed' | 'active' | 'disabled' => {
+      if (step < activeStep) return 'completed';
+      if (step === activeStep) return 'active';
+      if (canProceedToStep(step)) return 'active';
+      return 'disabled';
+    },
+    [activeStep, canProceedToStep]
+  );
 
   // Navigation handlers with useCallback optimization
   const handleNext = useCallback(() => {
@@ -145,36 +188,45 @@ const VideoStudioPage: React.FC = () => {
     }
   }, [activeStep]);
 
-  const handleStepClick = useCallback((step: number) => {
-    if (canProceedToStep(step)) {
-      setActiveStep(step);
-    }
-  }, [canProceedToStep]);
+  const handleStepClick = useCallback(
+    (step: number) => {
+      if (canProceedToStep(step)) {
+        setActiveStep(step);
+      }
+    },
+    [canProceedToStep]
+  );
 
   // Generation handlers with useCallback optimization
-  const handleGenerate = useCallback(async (options: GenerationOptions) => {
-    try {
-      await videoGeneration.generateVideo(options);
-    } catch (error) {
-      // Error is already handled by the videoGeneration hook
-    }
-  }, [videoGeneration]);
+  const handleGenerate = useCallback(
+    async (options: GenerationOptions) => {
+      try {
+        await videoGeneration.generateVideo(options);
+      } catch (error) {
+        // Error is already handled by the videoGeneration hook
+      }
+    },
+    [videoGeneration]
+  );
 
   const handleDownload = useCallback(() => {
     videoGeneration.downloadVideo();
   }, [videoGeneration]);
 
-  const handleExport = useCallback((platforms: ExportPlatform[]) => {
-    // In a real implementation, this would handle platform-specific exports
-    showNotification(`Exporting to ${platforms.length} platform(s)...`, 'info');
-  }, [showNotification]);
+  const handleExport = useCallback(
+    (platforms: ExportPlatform[]) => {
+      // In a real implementation, this would handle platform-specific exports
+      showNotification(`Exporting to ${platforms.length} platform(s)...`, 'info');
+    },
+    [showNotification]
+  );
 
   // Render the appropriate step content with error boundaries - optimized with useMemo
   const renderStepContent = useMemo(() => {
     switch (activeStep) {
       case 0: // Template Selection
         return (
-          <VideoStudioSectionBoundary section="Template Selection">
+          <UnifiedErrorBoundary context="video-studio" section="Template Selection">
             <VideoTemplateSelector
               templates={templateSelection.templates}
               selectedTemplate={templateSelection.selectedTemplate}
@@ -183,12 +235,12 @@ const VideoStudioPage: React.FC = () => {
               onFilterChange={templateSelection.setFilters}
               loading={templateSelection.loading}
             />
-          </VideoStudioSectionBoundary>
+          </UnifiedErrorBoundary>
         );
 
       case 1: // Video Configuration
         return (
-          <VideoStudioSectionBoundary section="Video Configuration">
+          <UnifiedErrorBoundary context="video-studio" section="Video Configuration">
             <VideoConfigurationPanel
               config={videoConfig.config}
               onConfigChange={videoConfig.updateConfig}
@@ -201,12 +253,12 @@ const VideoStudioPage: React.FC = () => {
                 supported_resolutions: ['720p', '1080p', '4K'],
               }}
             />
-          </VideoStudioSectionBoundary>
+          </UnifiedErrorBoundary>
         );
 
       case 2: // Content Elements
         return (
-          <VideoStudioSectionBoundary section="Content Elements">
+          <UnifiedErrorBoundary context="video-studio" section="Content Elements">
             <ContentElementEditor
               elements={contentElements.textOverlays}
               onElementsChange={elements => {
@@ -224,12 +276,12 @@ const VideoStudioPage: React.FC = () => {
               generationSettings={contentElements.generationSettings}
               onGenerationSettingsChange={contentElements.updateGenerationSettings}
             />
-          </VideoStudioSectionBoundary>
+          </UnifiedErrorBoundary>
         );
 
       case 3: // Preview
         return (
-          <VideoStudioSectionBoundary section="Video Preview">
+          <UnifiedErrorBoundary context="video-studio" section="Video Preview">
             <VideoPreviewPanel
               config={videoConfig.config}
               elements={contentElements.contentElements}
@@ -238,12 +290,12 @@ const VideoStudioPage: React.FC = () => {
               onPreviewGenerate={videoPreview.generatePreview}
               loading={videoPreview.loading}
             />
-          </VideoStudioSectionBoundary>
+          </UnifiedErrorBoundary>
         );
 
       case 4: // Generation
         return (
-          <VideoStudioSectionBoundary section="Video Generation">
+          <UnifiedErrorBoundary context="video-studio" section="Video Generation">
             <GenerationControlPanel
               onGenerate={handleGenerate}
               generationStatus={videoGeneration.generationStatus}
@@ -253,7 +305,7 @@ const VideoStudioPage: React.FC = () => {
               onExport={handleExport}
               videoJobs={videoGeneration.videoJobs}
             />
-          </VideoStudioSectionBoundary>
+          </UnifiedErrorBoundary>
         );
 
       default:
