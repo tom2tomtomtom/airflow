@@ -109,6 +109,7 @@
 - **Primary:** React Context API
 - **Complex State:** XState for workflow management
 - **Caching:** TanStack Query (React Query) for server state
+- **Background Jobs:** BullMQ with Redis for queue management
 
 ### Monitoring & Analytics
 
@@ -171,15 +172,24 @@
 - **Current Bundle Size:** 481KB (needs optimization)
 - **Target:** <300KB for main bundle
 - **Strategy:** Route-based code splitting, vendor separation
+- **Current Issue:** 155 JavaScript files, excessive chunk count
 
 ### Caching Strategy
 
 - **Static Assets:** CDN caching with long TTL
 - **API Responses:** Redis caching for expensive operations
 - **Database:** Query optimization with proper indexing
+- **AI Responses:** Cached responses to reduce API costs
 
 ### Memory Management
 
-- **Build Memory:** Currently requires 8GB heap
+- **Build Memory:** Currently requires 8GB heap (critical issue)
 - **Target:** <4GB for build processes
 - **Runtime:** Optimized component rendering with memoization
+
+### Code Quality Status
+
+- **Health Score:** 42/100 (needs improvement to 80+)
+- **TypeScript Errors:** 305 suppressed errors requiring resolution
+- **Test Coverage:** 16.8% (target: 80%+)
+- **Error Boundaries:** 4 different implementations need consolidation

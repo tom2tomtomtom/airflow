@@ -337,21 +337,53 @@ Remember: **Small changes, tested thoroughly, committed frequently** is the path
 - **Spec Planning:** Use `@~/.agent-os/instructions/create-spec.md`
 - **Tasks Execution:** Use `@~/.agent-os/instructions/execute-tasks.md`
 
+## Current Project Status (Updated 2025-07-26)
+
+### ✅ **Phase 0 Complete**: Core Platform Implemented
+
+- Comprehensive AI-powered video marketing platform operational
+- Video Studio successfully refactored from monolithic to modular architecture
+- Full authentication, database, and security framework in place
+- AI integrations (OpenAI, DALL-E, Anthropic) fully operational
+
+### 🔄 **Phase 1 In Progress**: Code Quality & Performance
+
+**Current Priority:** Technical debt reduction and optimization
+
+**Critical Issues Requiring Attention:**
+
+- **Health Score:** 42/100 → Target: 80+
+- **TypeScript Errors:** 305 suppressed errors → Target: 0
+- **Bundle Size:** 481KB → Target: <300KB
+- **Test Coverage:** 16.8% → Target: 80%+
+- **Build Memory:** 8GB heap requirement → Target: <4GB
+
 ## Workflow Instructions
 
 When asked to work on this codebase:
 
-1. **First**, check @.agent-os/product/roadmap.md for current priorities
-2. **Then**, follow the appropriate instruction file:
-   - For new features: @.agent-os/instructions/create-spec.md
-   - For tasks execution: @.agent-os/instructions/execute-tasks.md
-3. **Always**, adhere to the standards in the files listed above
+1. **First**, check @.agent-os/product/roadmap.md for current Phase 1 priorities
+2. **Focus on systematic technical debt reduction** using Agent OS methodology
+3. **For new features**: Use @~/.agent-os/instructions/create-spec.md
+4. **For task execution**: Use @~/.agent-os/instructions/execute-tasks.md
+5. **Always test incrementally** and commit frequently with clear messages
+
+### Phase 1 Priority Tasks (In Order)
+
+1. **TypeScript Strict Mode**: Fix 305 suppressed errors
+2. **ErrorBoundary Consolidation**: Merge 4 implementations into unified system
+3. **Bundle Optimization**: Reduce size and improve code splitting
+4. **Test Coverage**: Increase from 16.8% to 80%+
+5. **Service Layer Extraction**: Separate business logic from UI components
 
 ## Important Notes
 
+- **SAFETY FIRST**: This codebase previously suffered from automated "fix-all" scripts
+- **ONE FILE AT A TIME**: Never implement changes across multiple files simultaneously
+- **TEST EVERYTHING**: Run health checks after every change
+- **COMMIT FREQUENTLY**: Use clear, descriptive commit messages
 - Product-specific files in `.agent-os/product/` override any global standards
-- User's specific instructions override (or amend) instructions found in `.agent-os/specs/...`
-- Always adhere to established patterns, code style, and best practices documented above.
+- Always push proven quality changes to `airflow` repository
 
 ---
 
