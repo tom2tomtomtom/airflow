@@ -2,6 +2,8 @@ import { getLogger } from '@/lib/logger';
 import { classifyError } from '@/lib/error-handling/error-classifier';
 import { cached, CacheProfiles } from '@/lib/cache/redis-cache';
 import { ParsedBrief } from './briefParser';
+import { ServiceLogContext, toServiceLogContext, toErrorContext } from '@/types/services';
+import type { MotivationGenerationOptions as ServiceMotivationOptions } from '@/types/services';
 
 const logger = getLogger('motivation-generator');
 
@@ -48,7 +50,7 @@ export interface MotivationSet {
       };
 }
 
-export interface MotivationGenerationOptions {
+export interface MotivationGenerationOptions extends ServiceMotivationOptions {
   motivationCount?: number;
   diversityWeight?: number;
   includeNiche?: boolean;
@@ -76,7 +78,7 @@ export class MotivationGenerator {
 
   async generateMotivations(
     brief: ParsedBrief,
-    options: MotivationGenerationOptions = {}
+    options: MotivationGenerationOptions = { briefId: '' }
   ): Promise<MotivationSet> {
     const {
       motivationCount = this.DEFAULT_MOTIVATION_COUNT,
@@ -87,11 +89,11 @@ export class MotivationGenerator {
     } = options;
 
     try {
-      logger.info('Starting motivation generation', {
+      logger.info('Starting motivation generation', toServiceLogContext({
         briefId: brief.id,
         motivationCount,
-        options
-      });
+        ...options
+      }));
 
       // Generate core motivations using AI
       const coreMotivations = await this.generateCoreMotivations(brief, motivationCount);
@@ -127,10 +129,10 @@ export class MotivationGenerator {
       return motivationSet;
 
     } catch (error: any) {
-      const classified = classifyError(error as Error, {
+      const classified = classifyError(error as Error, toErrorContext({
         route: 'motivation-generator',
         metadata: { briefId: brief.id, motivationCount }
-      });
+      }));
       
       logger.error('Motivation generation failed', classified.originalError);
       throw error;
@@ -766,10 +768,10 @@ export const generateMotivations = (
   return getMotivationGenerator().generateMotivations(brief, options);
 };
 
-export const validateMotivationSet = (
+export const validateMotivationSet = async (
   motivationSet: MotivationSet
-): Promise<ReturnType<MotivationGenerator['validateMotivationSet']>> => {
-  return getMotivationGenerator().validateMotivationSet(motivationSet);
+): Promise<{ valid: boolean; issues: string[]; suggestions: string[] }> => {
+  return await getMotivationGenerator().validateMotivationSet(motivationSet);
 };
 
 export const refineMotivations = (

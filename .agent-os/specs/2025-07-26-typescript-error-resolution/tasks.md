@@ -18,8 +18,8 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
 - [ ] 2. Foundation Error Resolution (Import/Export and Module Declarations)
   - [x] 2.1 Write tests for module resolution and import/export functionality
   - [x] 2.2 Fix import/export declaration errors that block other type fixes
-  - [ ] 2.3 Resolve module resolution issues and missing path declarations
-  - [ ] 2.4 Add missing type declarations for core utility modules
+  - [x] 2.3 Resolve module resolution issues and missing path declarations
+  - [x] 2.4 Add missing type declarations for core utility modules
   - [ ] 2.5 Establish proper type declaration patterns for custom modules
   - [ ] 2.6 Verify all tests pass after foundation error resolution
 

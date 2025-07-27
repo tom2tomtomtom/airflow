@@ -6,11 +6,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { MockRequest, MockResponse } from 'node-mocks-http';
 
-// Type for Next.js API route handler function
-export type NextApiHandler = (
-  req: NextApiRequest,
-  res: NextApiResponse
-) => Promise<void> | void;
+// Use Next.js built-in NextApiHandler type to avoid conflicts
+export type { NextApiHandler } from 'next';
 
 // Extended mock request type that includes Next.js specific properties
 export interface ExtendedMockRequest extends MockRequest<NextApiRequest> {

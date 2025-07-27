@@ -1,4 +1,5 @@
 import { getLogger } from '@/lib/logger';
+import { toServiceLogContext } from '@/types/services';
 import { createClient } from '@/lib/supabase/server';
 import { RenderedCampaign } from './campaignRenderer';
 import { PopulatedTemplate } from './templateEngine';
@@ -427,12 +428,12 @@ export class ReviewSystem {
 
       await this.sendNotifications(notifications);
 
-      logger.info('Workflow escalated', {
+      logger.info('Workflow escalated', toServiceLogContext({
         workflowId,
         reason,
         escalatedBy,
         escalateTo
-      });
+      }));
 
     } catch (error: any) {
       logger.error('Failed to escalate workflow', error);

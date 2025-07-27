@@ -3,6 +3,7 @@ import { classifyError } from '@/lib/error-handling/error-classifier';
 import { cached, CacheProfiles } from '@/lib/cache/redis-cache';
 import { ParsedBrief } from './briefParser';
 import { PsychologicalMotivation, MotivationSet } from './motivationGenerator';
+import { CopyLengthConstraints } from '@/types/services';
 
 const logger = getLogger('copy-generator');
 
@@ -81,7 +82,7 @@ export class CopyGenerator {
     'web', 'social', 'email', 'print', 'video', 'universal'
   ];
 
-  private readonly CHARACTER_LIMITS = {
+  private readonly CHARACTER_LIMITS: CopyLengthConstraints = {
     headline: { short: 30, medium: 60, long: 90  },
   subheadline: { short: 50, medium: 100, long: 150  },
   body: { short: 100, medium: 250, long: 500  },

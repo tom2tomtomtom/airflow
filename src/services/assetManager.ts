@@ -676,7 +676,11 @@ export class AssetManager {
     const { error } = await supabase.storage.from(bucket).remove([path]);
 
     if (error) {
-      logger.warn('Failed to delete file from storage', error);
+      logger.warn('Failed to delete file from storage', { 
+        error: error.message || String(error),
+        path,
+        bucket
+      });
     }
   }
 
