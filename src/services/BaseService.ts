@@ -1,4 +1,4 @@
-import { getLogger, StructuredLogger } from '@/lib/logger';
+import { LoggerFactory, StructuredLogger } from '@/lib/logger/structured';
 import { classifyError, ClassifiedError } from '@/lib/error-handling/error-classifier';
 import { cached, CacheOptions } from '@/lib/cache/redis-cache';
 import { ServiceLogContext, ServiceError } from '@/types/services';
@@ -50,7 +50,7 @@ export abstract class BaseService {
   constructor(serviceName: string, version = '1.0.0') {
     this.serviceName = serviceName;
     this.version = version;
-    this.logger = getLogger(serviceName);
+    this.logger = LoggerFactory.getLogger(serviceName);
     this.metrics = {
       operationCount: 0,
       errorCount: 0,
@@ -222,7 +222,7 @@ export abstract class BaseService {
   /**
    * Wrap function with caching using the established cache infrastructure
    */
-  protected cached<T>(
+  public cached<T>(
     fn: () => Promise<T>,
     keyGenerator: () => string,
     options: CacheOptions = {}
@@ -233,7 +233,7 @@ export abstract class BaseService {
   /**
    * Execute an operation with error handling and metrics tracking
    */
-  protected async executeOperation<T>(
+  public async executeOperation<T>(
     operationName: string,
     operation: () => Promise<T>,
     context: Record<string, any> = {}
