@@ -13,7 +13,7 @@ export type NextApiHandler = (
 ) => Promise<void> | void;
 
 // Extended mock request type that includes Next.js specific properties
-export interface ExtendedMockRequest extends MockRequest {
+export interface ExtendedMockRequest extends MockRequest<NextApiRequest> {
   env?: any;
   preview?: boolean;
   previewData?: any;
@@ -21,7 +21,7 @@ export interface ExtendedMockRequest extends MockRequest {
 }
 
 // Extended mock response type that includes test utility methods
-export interface ExtendedMockResponse extends MockResponse {
+export interface ExtendedMockResponse extends MockResponse<NextApiResponse> {
   _getStatusCode(): number;
   _getData(): string;
   _getJSONData(): any;

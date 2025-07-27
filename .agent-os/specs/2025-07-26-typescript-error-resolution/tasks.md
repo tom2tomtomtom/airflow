@@ -16,8 +16,8 @@ These are the tasks to be completed for the spec detailed in @.agent-os/specs/20
   - [x] 1.6 Verify all tests pass with current error suppression approach
 
 - [ ] 2. Foundation Error Resolution (Import/Export and Module Declarations)
-  - [ ] 2.1 Write tests for module resolution and import/export functionality
-  - [ ] 2.2 Fix import/export declaration errors that block other type fixes
+  - [x] 2.1 Write tests for module resolution and import/export functionality
+  - [x] 2.2 Fix import/export declaration errors that block other type fixes
   - [ ] 2.3 Resolve module resolution issues and missing path declarations
   - [ ] 2.4 Add missing type declarations for core utility modules
   - [ ] 2.5 Establish proper type declaration patterns for custom modules

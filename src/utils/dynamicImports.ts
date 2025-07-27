@@ -31,7 +31,9 @@ export function createLazyComponent<T = Record<string, never>>(
 
   const safeImportFn = () =>
     importFn().catch(error => {
-      const ErrorComponent = () => errorFallback({ error });
+      const ErrorComponent = typeof errorFallback === 'function' && errorFallback.length > 0
+        ? () => errorFallback({ error })
+        : errorFallback as ComponentType<T>;
       return { default: ErrorComponent as ComponentType<T> };
     });
 
@@ -101,7 +103,7 @@ export class FeatureLazyLoader {
    */
   static async loadFeature<T>(featureName: string, importFn: () => Promise<T>): Promise<T> {
     if (this.cache.has(featureName)) {
-      return this.cache.get(featureName);
+      return this.cache.get(featureName) as T;
     }
 
     const promise = importFn().catch(error => {

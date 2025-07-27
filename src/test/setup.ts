@@ -80,4 +80,8 @@ process.env.OPENAI_API_KEY = 'sk-test-key';
 process.env.ELEVENLABS_API_KEY = 'test-elevenlabs-key';
 process.env.UPSTASH_REDIS_URL = 'redis://localhost:6379';
 process.env.UPSTASH_REDIS_TOKEN = 'test-redis-token';
-process.env.NODE_ENV = 'test';
+Object.defineProperty(process.env, 'NODE_ENV', {
+  value: 'test',
+  writable: true,
+  configurable: true
+});
