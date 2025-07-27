@@ -28,6 +28,7 @@ import { useWorkflow } from './WorkflowProvider';
 let performanceTracker: any = null;
 if (typeof window === 'undefined') {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     performanceTracker = require('@/lib/performance/performance-tracker').performanceTracker;
   } catch (error: any) {
     // Performance tracker not available, use noop
@@ -144,7 +145,7 @@ const workflowSteps = [
     icon: <PlayArrowIcon /> }
 ];
 
-export const WorkflowContainer: React.FC<WorkflowContainerProps> = ({
+const WorkflowContainer: React.FC<WorkflowContainerProps> = ({
   open,
   onClose,
   onComplete,
@@ -366,3 +367,5 @@ export const WorkflowContainer: React.FC<WorkflowContainerProps> = ({
     </Dialog>
   );
 };
+
+export default WorkflowContainer;

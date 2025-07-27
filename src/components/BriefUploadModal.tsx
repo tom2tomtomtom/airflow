@@ -48,7 +48,7 @@ interface FilePreview {
 
 const steps = ['Upload Brief Document', 'AI Processing', 'Review & Confirm'];
 
-export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
+const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
   open,
   onClose,
   onUploadComplete,
@@ -346,3 +346,5 @@ export const BriefUploadModal: React.FC<BriefUploadModalProps> = ({
     </Dialog>
   );
 };
+
+export default BriefUploadModal;

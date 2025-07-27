@@ -54,20 +54,14 @@ export const LazyVideoEditor = createLazyComponent(
 );
 
 export const LazyAnalytics = createLazyComponent(
-  () =>
-    import('@/components/AdvancedAnalytics') as Promise<{
-      default: ComponentType<Record<string, never>>;
-    }>,
+  () => import('@/components/AdvancedAnalytics'),
   {
     ssr: false,
   }
 );
 
 export const LazyWorkflowCanvas = createLazyComponent(
-  () =>
-    import('@/components/workflow/WorkflowContainer') as Promise<{
-      default: ComponentType<Record<string, never>>;
-    }>,
+  () => import('@/components/workflow/WorkflowContainer'),
   { ssr: false }
 );
 
@@ -161,7 +155,7 @@ export const routeBasedComponents = {
   // Dashboard routes
   dashboard: () => import('@/pages/dashboard'),
   campaigns: () => import('@/pages/campaigns'),
-  analytics: () => import('@/pages/analytics'),
+  analytics: () => Promise.resolve({ default: () => null }), // Analytics page is currently disabled
 
   // Content creation routes
   briefUpload: () => Promise.resolve({ default: () => null }),

@@ -4,11 +4,26 @@
  */
 
 import { NextApiRequest, NextApiResponse } from 'next';
-import { createMocks } from 'node-mocks-http';
+import { createMocks, RequestMethod } from 'node-mocks-http';
+import {
+  NextApiHandler,
+  ExtendedMockRequest,
+  ExtendedMockResponse,
+  isMockResponse,
+  DatabaseMockStructure,
+  UserTestData,
+  ClientTestData,
+  WorkflowTestData,
+  AssetTestData,
+  CampaignTestData,
+  HttpMethod,
+  AsyncTestFunction,
+  MockCreationOptions
+} from './types';
 
 // Mock data factories
 export class TestDataFactory {
-  static createUser(overrides: Record<string, unknown> = {}) {
+  static createUser(overrides: Partial<UserTestData> = {}): UserTestData {
     return {
       id: 'test-user-123',
       email: 'test@example.com',
@@ -19,7 +34,7 @@ export class TestDataFactory {
     };
   }
 
-  static createClient(overrides: Record<string, unknown> = {}) {
+  static createClient(overrides: Partial<ClientTestData> = {}): ClientTestData {
     return {
       id: 'test-client-123',
       name: 'Test Client',
@@ -31,7 +46,7 @@ export class TestDataFactory {
     };
   }
 
-  static createWorkflow(overrides: Record<string, unknown> = {}) {
+  static createWorkflow(overrides: Partial<WorkflowTestData> = {}): WorkflowTestData {
     return {
       id: 'test-workflow-123',
       user_id: 'test-user-123',
@@ -50,7 +65,7 @@ export class TestDataFactory {
     };
   }
 
-  static createAsset(overrides: Record<string, unknown> = {}) {
+  static createAsset(overrides: Partial<AssetTestData> = {}): AssetTestData {
     return {
       id: 'test-asset-123',
       name: 'test-image.jpg',
@@ -63,7 +78,7 @@ export class TestDataFactory {
     };
   }
 
-  static createCampaign(overrides: Record<string, unknown> = {}) {
+  static createCampaign(overrides: Partial<CampaignTestData> = {}): CampaignTestData {
     return {
       id: 'test-campaign-123',
       name: 'Test Campaign',
@@ -80,8 +95,8 @@ export class TestDataFactory {
 
 // API request builder for testing
 export class APIRequestBuilder {
-  private method: string = 'GET';
-  private body: unknown = {};
+  private method: HttpMethod = 'GET';
+  private body: any = {};
   private query: Record<string, string> = {};
   private headers: Record<string, string> = {};
 
@@ -89,7 +104,7 @@ export class APIRequestBuilder {
     return new APIRequestBuilder();
   }
 
-  setMethod(method: string) {
+  setMethod(method: HttpMethod) {
     this.method = method;
     return this;
   }
@@ -119,7 +134,7 @@ export class APIRequestBuilder {
     return this;
   }
 
-  setBody(body: unknown) {
+  setBody(body: any) {
     this.body = body;
     return this;
   }
@@ -149,32 +164,41 @@ export class APIRequestBuilder {
     return this;
   }
 
-  withBody(body: unknown) {
+  withBody(body: any) {
     this.body = body;
     return this;
   }
 
-  build() {
+  build(): { req: NextApiRequest; res: NextApiResponse } {
     const { req, res } = createMocks({
-      method: this.method,
+      method: this.method as RequestMethod,
       body: this.body,
       query: this.query,
       headers: this.headers,
     });
 
-    return { req: req as NextApiRequest, res: res as NextApiResponse };
+    // Enhance the mock request with Next.js specific properties
+    const enhancedReq = req as ExtendedMockRequest;
+    enhancedReq.env = process.env;
+    enhancedReq.preview = false;
+    enhancedReq.previewData = undefined;
+
+    return { 
+      req: enhancedReq as NextApiRequest, 
+      res: res as unknown as NextApiResponse 
+    };
   }
 }
 
 // Database mock manager
 export class DatabaseMockManager {
-  private static supabaseMocks: unknown = {};
+  private static supabaseMocks: DatabaseMockStructure;
 
   static reset() {
     return this.resetMocks();
   }
 
-  static resetMocks() {
+  static resetMocks(): DatabaseMockStructure {
     this.supabaseMocks = {
       from: jest.fn(() => ({
         select: jest.fn().mockReturnThis(),
@@ -214,41 +238,48 @@ export class DatabaseMockManager {
     return this.supabaseMocks;
   }
 
-  static mockSuccessfulQuery(data: unknown) {
-    this.supabaseMocks.from.mockReturnValue({
-      ...this.supabaseMocks.from(),
-      single: jest.fn(() => Promise.resolve({ data, error: null })),
-    });
+  static mockSuccessfulQuery(data: any) {
+    if (this.supabaseMocks?.from) {
+      this.supabaseMocks.from.mockReturnValue({
+        ...this.supabaseMocks.from(),
+        single: jest.fn(() => Promise.resolve({ data, error: null })),
+      });
+    }
   }
 
-  static mockFailedQuery(error: unknown) {
-    this.supabaseMocks.from.mockReturnValue({
-      ...this.supabaseMocks.from(),
-      single: jest.fn(() => Promise.resolve({ data: null, error })),
-    });
+  static mockFailedQuery(error: any) {
+    if (this.supabaseMocks?.from) {
+      this.supabaseMocks.from.mockReturnValue({
+        ...this.supabaseMocks.from(),
+        single: jest.fn(() => Promise.resolve({ data: null, error })),
+      });
+    }
   }
 
-  static mockArrayQuery(data: unknown[]) {
-    this.supabaseMocks.from.mockReturnValue({
-      ...this.supabaseMocks.from(),
-      then: jest.fn(() => Promise.resolve({ data, error: null })),
-    });
+  static mockArrayQuery(data: any[]) {
+    if (this.supabaseMocks?.from) {
+      this.supabaseMocks.from.mockReturnValue({
+        ...this.supabaseMocks.from(),
+        then: jest.fn(() => Promise.resolve({ data, error: null })),
+      });
+    }
   }
 
-  static getMocks() {
+  static getMocks(): DatabaseMockStructure {
     return this.supabaseMocks;
   }
 }
 
 // API test runner with common patterns
 export class APITestRunner {
-  static async testAuthRequired(handler: unknown, method: string = 'GET') {
+  static async testAuthRequired(handler: NextApiHandler, method: HttpMethod = 'GET') {
     const { req, res } = APIRequestBuilder.create().setMethod(method).build();
 
     await handler(req, res);
 
-    expect(res._getStatusCode()).toBe(401);
-    expect(JSON.parse(res._getData())).toMatchObject({
+    const mockRes = res as unknown as ExtendedMockResponse;
+    expect(mockRes._getStatusCode()).toBe(401);
+    expect(JSON.parse(mockRes._getData())).toMatchObject({
       success: false,
       error: expect.objectContaining({
         message: expect.stringContaining('Authentication required'),
@@ -256,7 +287,7 @@ export class APITestRunner {
     });
   }
 
-  static async testValidInput(handler: unknown, validData: unknown, method: string = 'POST') {
+  static async testValidInput(handler: NextApiHandler, validData: any, method: HttpMethod = 'POST') {
     const { req, res } = APIRequestBuilder.create()
       .setMethod(method)
       .setBody(validData)
@@ -265,13 +296,14 @@ export class APITestRunner {
 
     await handler(req, res);
 
-    expect(res._getStatusCode()).toBe(200);
-    expect(JSON.parse(res._getData())).toMatchObject({
+    const mockRes = res as unknown as ExtendedMockResponse;
+    expect(mockRes._getStatusCode()).toBe(200);
+    expect(JSON.parse(mockRes._getData())).toMatchObject({
       success: true,
     });
   }
 
-  static async testInvalidInput(handler: unknown, invalidData: unknown, method: string = 'POST') {
+  static async testInvalidInput(handler: NextApiHandler, invalidData: any, method: HttpMethod = 'POST') {
     const { req, res } = APIRequestBuilder.create()
       .setMethod(method)
       .setBody(invalidData)
@@ -280,8 +312,9 @@ export class APITestRunner {
 
     await handler(req, res);
 
-    expect(res._getStatusCode()).toBe(400);
-    expect(JSON.parse(res._getData())).toMatchObject({
+    const mockRes = res as unknown as ExtendedMockResponse;
+    expect(mockRes._getStatusCode()).toBe(400);
+    expect(JSON.parse(mockRes._getData())).toMatchObject({
       success: false,
       error: expect.objectContaining({
         message: expect.any(String),
@@ -289,15 +322,16 @@ export class APITestRunner {
     });
   }
 
-  static async testMethodNotAllowed(handler: unknown, disallowedMethod: string = 'DELETE') {
+  static async testMethodNotAllowed(handler: NextApiHandler, disallowedMethod: HttpMethod = 'DELETE') {
     const { req, res } = APIRequestBuilder.create().setMethod(disallowedMethod).withAuth().build();
 
     await handler(req, res);
 
-    expect(res._getStatusCode()).toBe(405);
+    const mockRes = res as unknown as ExtendedMockResponse;
+    expect(mockRes._getStatusCode()).toBe(405);
   }
 
-  static async testDatabaseError(handler: unknown, method: string = 'GET') {
+  static async testDatabaseError(handler: NextApiHandler, method: HttpMethod = 'GET') {
     DatabaseMockManager.mockFailedQuery({
       message: 'Database connection failed',
       code: 'PGRST301',
@@ -307,8 +341,9 @@ export class APITestRunner {
 
     await handler(req, res);
 
-    expect(res._getStatusCode()).toBe(500);
-    expect(JSON.parse(res._getData())).toMatchObject({
+    const mockRes = res as unknown as ExtendedMockResponse;
+    expect(mockRes._getStatusCode()).toBe(500);
+    expect(JSON.parse(mockRes._getData())).toMatchObject({
       success: false,
       error: expect.objectContaining({
         message: expect.stringContaining('Database'),
@@ -316,7 +351,7 @@ export class APITestRunner {
     });
   }
 
-  static async testRateLimit(handler: unknown, attempts: number = 6) {
+  static async testRateLimit(handler: NextApiHandler, attempts: number = 6) {
     const requests = [];
 
     for (let i = 0; i < attempts; i++) {
@@ -331,9 +366,10 @@ export class APITestRunner {
     // In real implementation, you'd need to test against actual rate limiter
   }
 
-  static expectSuccessResponse(res: unknown, expectedData?: unknown) {
-    expect(res._getStatusCode()).toBe(200);
-    const data = JSON.parse(res._getData());
+  static expectSuccessResponse(res: NextApiResponse, expectedData?: any) {
+    const mockRes = res as unknown as ExtendedMockResponse;
+    expect(mockRes._getStatusCode()).toBe(200);
+    const data = JSON.parse(mockRes._getData());
     expect(data.success).toBe(true);
 
     if (expectedData) {
@@ -341,9 +377,10 @@ export class APITestRunner {
     }
   }
 
-  static expectErrorResponse(res: unknown, expectedStatus: number = 400, expectedMessage?: string) {
-    expect(res._getStatusCode()).toBe(expectedStatus);
-    const data = JSON.parse(res._getData());
+  static expectErrorResponse(res: NextApiResponse, expectedStatus: number = 400, expectedMessage?: string) {
+    const mockRes = res as unknown as ExtendedMockResponse;
+    expect(mockRes._getStatusCode()).toBe(expectedStatus);
+    const data = JSON.parse(mockRes._getData());
     expect(data.success).toBe(false);
     expect(data.error).toBeDefined();
 
@@ -352,14 +389,15 @@ export class APITestRunner {
     }
   }
 
-  static async testEndpoint(handler: unknown, { req, res }: { req: unknown; res: unknown }) {
+  static async testEndpoint(handler: NextApiHandler, { req, res }: { req: NextApiRequest; res: NextApiResponse }) {
     await handler(req, res);
     return { req, res };
   }
 
-  static expectSuccess(res: unknown) {
-    expect(res._getStatusCode()).toBe(200);
-    const data = JSON.parse(res._getData());
+  static expectSuccess(res: NextApiResponse) {
+    const mockRes = res as unknown as ExtendedMockResponse;
+    expect(mockRes._getStatusCode()).toBe(200);
+    const data = JSON.parse(mockRes._getData());
     expect(data.success).toBe(true);
     return data;
   }
@@ -418,7 +456,7 @@ export const mockExternalServices = () => {
 
 // Security test helpers
 export const SecurityTestHelpers = {
-  testSQLInjection: async (handler: unknown, field: string) => {
+  testSQLInjection: async (handler: NextApiHandler, field: string) => {
     const maliciousData = {
       [field]: "'; DROP TABLE users; --",
     };
@@ -432,10 +470,11 @@ export const SecurityTestHelpers = {
     await handler(req, res);
 
     // Should not crash and should return validation error
-    expect(res._getStatusCode()).toBeLessThan(500);
+    const mockRes = res as unknown as ExtendedMockResponse;
+    expect(mockRes._getStatusCode()).toBeLessThan(500);
   },
 
-  testXSSPrevention: async (handler: unknown, field: string) => {
+  testXSSPrevention: async (handler: NextApiHandler, field: string) => {
     const maliciousData = {
       [field]: "<script>alert('xss')</script>",
     };
@@ -448,13 +487,14 @@ export const SecurityTestHelpers = {
 
     await handler(req, res);
 
-    const responseData = JSON.parse(res._getData());
+    const mockRes = res as unknown as ExtendedMockResponse;
+    const responseData = JSON.parse(mockRes._getData());
     if (responseData.data && responseData.data[field]) {
       expect(responseData.data[field]).not.toContain('<script>');
     }
   },
 
-  testCSRFProtection: async (handler: unknown) => {
+  testCSRFProtection: async (handler: NextApiHandler) => {
     const { req, res } = APIRequestBuilder.create()
       .setMethod('POST')
       .setBody({ test: 'data' })
@@ -471,17 +511,17 @@ export const SecurityTestHelpers = {
 
 // Performance test helpers
 export const PerformanceTestHelpers = {
-  measureExecutionTime: async (asyncFunction: () => Promise<any>) => {
+  measureExecutionTime: async (asyncFunction: AsyncTestFunction) => {
     const start = Date.now();
     await asyncFunction();
     const end = Date.now();
     return end - start;
   },
-  testResponseTime: async (handler: unknown, maxTime: number = 1000) => {
+  testResponseTime: async (handler: NextApiHandler, maxTime: number = 1000) => {
     const { req, res } = APIRequestBuilder.create().withAuth().build();
 
-    const executionTime = await PerformanceTestHelpers.measureExecutionTime(() =>
-      handler(req, res)
+    const executionTime = await PerformanceTestHelpers.measureExecutionTime(async () =>
+      await handler(req, res)
     );
 
     expect(executionTime).toBeLessThan(maxTime);

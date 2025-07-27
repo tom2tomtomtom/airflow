@@ -74,7 +74,7 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-export const AdvancedAnalytics: React.FC = () => {
+const AdvancedAnalytics: React.FC = () => {
   const [timeRange, setTimeRange] = useState('7d');
   const [tabValue, setTabValue] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -448,3 +448,5 @@ export const AdvancedAnalytics: React.FC = () => {
     </Box>
   );
 };
+
+export default AdvancedAnalytics;
