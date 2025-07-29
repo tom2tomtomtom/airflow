@@ -306,3 +306,31 @@ Multi-provider approach provides access to specialized AI capabilities while mai
 - Increased integration complexity and maintenance overhead
 - Multiple API patterns and rate limiting considerations
 - Higher operational complexity for monitoring and error handling
+
+## 2025-07-29: Critical Security and Performance Optimization
+
+**ID:** DEC-007
+**Status:** Accepted
+**Category:** Technical
+**Related Spec:** @.agent-os/specs/2025-07-29-security-bundle-optimization/
+
+### Decision
+
+Prioritize immediate resolution of critical production blockers including 6 moderate security vulnerabilities, 481KB bundle optimization to <300KB, and removal of 5,554+ console statements to achieve production-ready security and performance standards.
+
+### Context
+
+Production readiness assessment revealed critical security and performance issues preventing safe deployment. Current Phase 1 blockers include vulnerable dependencies (@sentry/nextjs v7.0.0, node-fetch v2.7.0, @types/node 20.4.5), excessive bundle size impacting user experience, and console statement security/performance risks. These issues must be resolved before new feature development can continue.
+
+### Consequences
+
+**Positive:**
+- Zero security vulnerabilities enabling safe production deployment
+- 37%+ bundle size reduction improving user experience and page load times
+- Structured logging replacing console statements for production performance
+- Removal of 12+ unused dependencies reducing maintenance overhead and attack surface
+
+**Negative:**
+- Temporary pause in new feature development during optimization implementation
+- Potential breaking changes requiring thorough testing of all existing functionality
+- Development time investment focused on technical debt rather than user-facing features

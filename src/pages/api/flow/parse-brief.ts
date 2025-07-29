@@ -51,6 +51,7 @@ function chunkDocument(content: string, maxChunkSize: number = 6000): string[] {
     return [content];
   }
 
+  // Only log chunking in development mode
   if (process.env.NODE_ENV === 'development') {
     console.log(`Document too large (${estimatedTokens} tokens), chunking into smaller parts...`);
   }
@@ -173,6 +174,7 @@ Return only the JSON object.`;
           const chunkData = JSON.parse(cleanedResponse);
           chunkResults.push(chunkData);
         } catch (parseError) {
+          // Only log parse warnings in development mode
           if (process.env.NODE_ENV === 'development') {
             console.warn(`Failed to parse chunk ${i + 1} response:`, parseError);
             console.warn(`Raw response was:`, responseText.substring(0, 200) + '...');
@@ -180,6 +182,7 @@ Return only the JSON object.`;
         }
       }
     } catch (error) {
+      // Only log chunk processing errors in development mode
       if (process.env.NODE_ENV === 'development') {
         console.warn(`Error processing chunk ${i + 1}:`, error);
       }
@@ -381,6 +384,7 @@ Respond ONLY with the JSON object, no additional text or explanation.`;
 
     return parsedData as BriefData;
   } catch (error) {
+    // Only log OpenAI parsing errors in development mode
     if (process.env.NODE_ENV === 'development') {
       console.error('Error in OpenAI parsing:', error);
     }
@@ -412,6 +416,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     });
 
     const [, files] = await form.parse(req);
+    // Only log file upload completion in development mode
     if (process.env.NODE_ENV === 'development') {
       console.log('File upload parsing completed. Files:', Object.keys(files));
     }
@@ -444,6 +449,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           const result = await mammoth.extractRawText({ buffer });
           fileContent = result.value;
         } catch (docError) {
+          // Only log .doc parsing warnings in development mode
           if (process.env.NODE_ENV === 'development') {
             console.warn('.doc parsing failed, this format may not be fully supported');
           }
@@ -461,6 +467,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         fileContent = fs.readFileSync(uploadedFile.filepath, 'utf8');
       }
     } catch (error) {
+      // Only log file reading errors in development mode
       if (process.env.NODE_ENV === 'development') {
         console.error('Error reading file:', error);
       }
@@ -476,7 +483,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     // Parse content using AI/NLP (for now, we'll extract basic patterns)
     const parsedBrief = await parseDocumentContent(fileContent, briefTitle);
 
-    // Debug logging to see what was parsed
+    // Debug logging to see what was parsed - only in development mode
     if (process.env.NODE_ENV === 'development') {
       console.log('🔍 BRIEF PARSING - Extracted data:', {
         title: parsedBrief.title,
@@ -504,6 +511,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     // Generate error ID for tracking
     const errorId = `ERR_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
+    // Log detailed error information in development mode only
     if (process.env.NODE_ENV === 'development') {
       console.error('Error parsing brief:', error);
       console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
@@ -554,6 +562,7 @@ async function parseDocumentContent(content: string, title: string): Promise<Bri
       return aiParsedData;
     }
   } catch (error) {
+    // Only log OpenAI fallback warnings in development mode
     if (process.env.NODE_ENV === 'development') {
       console.warn('OpenAI parsing failed, falling back to pattern matching:', error);
     }
@@ -787,7 +796,7 @@ async function parseDocumentContent(content: string, title: string): Promise<Bri
     requirements,
   };
 
-  // Log completion for monitoring (development only)
+  // Log completion for monitoring - only in development mode
   if (process.env.NODE_ENV === 'development') {
     console.log('Pattern matching completed. Extracted:', {
       title: result.title,

@@ -9,16 +9,19 @@ import { jest } from '@jest/globals';
 // Mock Supabase client
 const mockSupabaseClient = {
   from: jest.fn(),
-  auth: Record<string, unknown>$1
-  getUser: jest.fn(),
+  auth: {
+    getUser: jest.fn(),
     signInWithPassword: jest.fn(),
     signOut: jest.fn(),
-    onAuthStateChange: jest.fn() },
+    onAuthStateChange: jest.fn()
+  },
   rpc: jest.fn(),
-  storage: Record<string, unknown>$1
-  from: jest.fn() },
+  storage: {
+    from: jest.fn()
+  },
   channel: jest.fn(),
-  removeChannel: jest.fn()};
+  removeChannel: jest.fn()
+};
 
 // Mock query builder
 const mockQueryBuilder = {

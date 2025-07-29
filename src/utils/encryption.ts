@@ -28,7 +28,7 @@ export function encryptData(plaintext: string): string {
     const key = getEncryptionKey();
     const iv = crypto.randomBytes(IV_LENGTH);
 
-    const cipher = crypto.createCipher(ALGORITHM, key);
+    const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
     cipher.setAAD(Buffer.from('mfa-secret'));
 
     let encrypted = cipher.update(plaintext, 'utf8', 'hex');
@@ -56,7 +56,7 @@ export function decryptData(encryptedData: string): string {
     );
     const encrypted = encryptedData.slice((IV_LENGTH + TAG_LENGTH) * 2);
 
-    const decipher = crypto.createDecipher(ALGORITHM, key);
+    const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);
     decipher.setAAD(Buffer.from('mfa-secret'));
     decipher.setAuthTag(tag);
 

@@ -105,8 +105,8 @@ export class APMManager {
           
           // Performance monitoring
           integrations: [
-            new Sentry.Integrations.Http({ tracing: true }),
-            new Sentry.Integrations.Express({ app: undefined }),
+            Sentry.httpIntegration(),
+            // Express integration removed in v8 - tracing handled by httpIntegration
           ],
           
           // Filter sensitive data
@@ -214,38 +214,52 @@ export class APMManager {
     finish: (data?: Partial<TraceData>) => void;
   } {
     const startTime = Date.now();
-    let transaction: any;
+    let spanFinishCallback: (() => void) | null = null;
     
     if (this.config.sentry.enabled) {
-      transaction = Sentry.startTransaction({
+      spanFinishCallback = Sentry.startSpan({
         name,
         op: operation
+      }, (span) => {
+        // Return a finish callback
+        return () => {
+          // Span is automatically finished by the callback
+        };
       });
-      Sentry.getCurrentHub().configureScope(scope => scope.setSpan(transaction));
     }
     
     return {
       finish: (data?: Partial<TraceData>) => {
         const duration = Date.now() - startTime;
         
-        // Finish Sentry transaction
-        if (transaction) {
-          if (data?.user) {
-            transaction.setUser({
-              id: data.user.id,
-              email: data.user.email,
-              clientId: data.user.clientId
-            });
-          }
-          
-          if (data?.tags) {
-            Object.entries(data.tags).forEach(([key, value]) => {
-              transaction.setTag(key, value);
-            });
-          }
-          
-          transaction.setStatus(data?.success !== false ? 'ok' : 'internal_error');
-          transaction.finish();
+        // Set span data before finishing
+        if (this.config.sentry.enabled && data) {
+          Sentry.withScope((scope) => {
+            if (data.user) {
+              scope.setUser({
+                id: data.user.id,
+                email: data.user.email,
+                clientId: data.user.clientId
+              });
+            }
+            
+            if (data.tags) {
+              Object.entries(data.tags).forEach(([key, value]) => {
+                scope.setTag(key, value);
+              });
+            }
+            
+            // Set span status
+            const currentSpan = Sentry.getActiveSpan();
+            if (currentSpan) {
+              currentSpan.setStatus({ code: data.success !== false ? 1 : 2 }); // OK : ERROR
+            }
+          });
+        }
+        
+        // Finish the span if we have a callback
+        if (spanFinishCallback) {
+          spanFinishCallback();
         }
         
         // Send DataDog metrics

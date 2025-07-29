@@ -339,7 +339,7 @@ async function encryptSecret(secret: string): Promise<string> {
   const keyBuffer = crypto.scryptSync(getEncryptionKey(), 'salt', 32);
   const iv = crypto.randomBytes(16);
 
-  const cipher = crypto.createCipher(algorithm, keyBuffer, iv);
+  const cipher = crypto.createCipheriv(algorithm, keyBuffer, iv);
   cipher.setAAD(Buffer.from('mfa-secret')); // Additional authentication data
 
   let encrypted = cipher.update(secret, 'utf8', 'hex');
@@ -363,7 +363,7 @@ async function decryptSecret(encryptedSecret: string): Promise<string> {
   const iv = Buffer.from(ivHex, 'hex');
   const authTag = Buffer.from(authTagHex, 'hex');
 
-  const decipher = crypto.createDecipher(algorithm, keyBuffer, iv);
+  const decipher = crypto.createDecipheriv(algorithm, keyBuffer, iv);
   decipher.setAAD(Buffer.from('mfa-secret'));
   decipher.setAuthTag(authTag);
 
@@ -378,7 +378,7 @@ async function encryptBackupCodes(codes: string[]): Promise<string> {
   const keyBuffer = crypto.scryptSync(getEncryptionKey(), 'salt', 32);
   const iv = crypto.randomBytes(16);
 
-  const cipher = crypto.createCipher(algorithm, keyBuffer, iv);
+  const cipher = crypto.createCipheriv(algorithm, keyBuffer, iv);
   cipher.setAAD(Buffer.from('backup-codes'));
 
   const plaintext = JSON.stringify(codes);
@@ -402,7 +402,7 @@ async function decryptBackupCodes(encryptedCodes: string): Promise<string[]> {
   const iv = Buffer.from(ivHex, 'hex');
   const authTag = Buffer.from(authTagHex, 'hex');
 
-  const decipher = crypto.createDecipher(algorithm, keyBuffer, iv);
+  const decipher = crypto.createDecipheriv(algorithm, keyBuffer, iv);
   decipher.setAAD(Buffer.from('backup-codes'));
   decipher.setAuthTag(authTag);
 

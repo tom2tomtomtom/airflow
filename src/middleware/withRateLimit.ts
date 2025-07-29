@@ -90,7 +90,7 @@ class RedisStore {
     if (typeof window === 'undefined') {
       try {
         // Dynamic import to avoid bundling Redis in client
-        const { getRedisClient } = require('@/lib/redis'); // eslint-disable-line @typescript-eslint/no-var-requires
+        const { getRedisClient } = require('@/lib/redis/redis-config'); // eslint-disable-line @typescript-eslint/no-var-requires
         this.redis = getRedisClient();
       } catch (error) {
         // eslint-disable-next-line no-console
