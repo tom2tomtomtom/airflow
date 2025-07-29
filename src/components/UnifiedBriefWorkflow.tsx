@@ -1,13 +1,13 @@
 import React from 'react';
 import { useTheme, useMediaQuery } from '@mui/material';
 import { WorkflowProvider } from './workflow/WorkflowProvider';
-import { WorkflowContainer } from './workflow/WorkflowContainer';
+import WorkflowContainer from './workflow/WorkflowContainer';
 import { MobileOptimizedWorkflow } from './MobileOptimizedWorkflow';
 
 interface UnifiedBriefWorkflowProps {
   open: boolean;
   onClose: () => void;
-  onComplete: (data: any) => void;
+  onComplete: (data: Record<string, unknown>) => void;
 }
 
 export const UnifiedBriefWorkflow: React.FC<UnifiedBriefWorkflowProps> = ({

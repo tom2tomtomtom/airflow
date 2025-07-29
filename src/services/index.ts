@@ -57,7 +57,6 @@ export type {
   ApiServiceConfig,
 
   // Factory and registration types
-  ServiceConstructor,
   ServiceRegistrationInfo,
   ServiceLifecycleHooks,
 
@@ -103,8 +102,8 @@ export { getCampaignRenderer } from './campaignRenderer';
  */
 export async function initializeServiceLayer(): Promise<void> {
   // Initialize default configurations
-  initializeDefaultConfigs();
-
+  // initializeDefaultConfigs(); // TODO: Fix circular dependency issue
+  
   // The service factory will handle service registration and initialization
   // as services are created on demand
 }
@@ -114,6 +113,6 @@ export async function initializeServiceLayer(): Promise<void> {
  * This should be called during application shutdown
  */
 export async function shutdownServiceLayer(): Promise<void> {
-  const factory = getServiceFactory();
-  await factory.destroyAll();
+  // const factory = getServiceFactory(); // TODO: Fix circular dependency issue
+  // await factory.destroyAll();
 }

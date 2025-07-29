@@ -1,6 +1,7 @@
 import React from 'react';
 import { render as rtlRender } from '@testing-library/react';
-import { vi } from 'vitest';
+// import { vi } from 'vitest'; // Using Jest instead
+const vi = jest;
 
 // Mock Supabase client
 export const mockSupabaseClient = {

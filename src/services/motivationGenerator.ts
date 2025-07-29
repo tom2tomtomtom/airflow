@@ -92,7 +92,10 @@ export class MotivationGenerator {
       logger.info('Starting motivation generation', toServiceLogContext({
         briefId: brief.id,
         motivationCount,
-        ...options
+        diversityWeight,
+        includeNiche,
+        psychologyBalance,
+        customPrompts
       }));
 
       // Generate core motivations using AI

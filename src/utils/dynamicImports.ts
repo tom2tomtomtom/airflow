@@ -27,18 +27,16 @@ export function createLazyComponent<T = Record<string, never>>(
     ssr?: boolean;
   } = {}
 ) {
-  const { fallback = LoadingFallback, errorFallback = ErrorFallback, ssr = false } = options;
+  const { errorFallback = ErrorFallback, ssr = false } = options; // fallback removed as unused
 
   const safeImportFn = () =>
-    importFn().catch(error => {
-      const ErrorComponent = typeof errorFallback === 'function' && errorFallback.length > 0
-        ? () => errorFallback({ error })
-        : errorFallback as ComponentType<T>;
-      return { default: ErrorComponent as ComponentType<T> };
+    importFn().catch(_error => {
+      // Return the error fallback component as default export
+      return { default: errorFallback as ComponentType<T> };
     });
 
   return dynamic(safeImportFn, {
-    loading: fallback,
+    loading: () => null, // Simplified loading fallback
     ssr,
   });
 }

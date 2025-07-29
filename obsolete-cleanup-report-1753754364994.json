@@ -1,0 +1,466 @@
+{
+  "timestamp": "2025-07-29T01:59:24.994Z",
+  "summary": {
+    "totalFilesRemoved": 88,
+    "totalDirectoriesRemoved": 46,
+    "totalSizeFreed": "1.29 MB",
+    "totalSizeFreedBytes": 1355014
+  },
+  "removedItems": [
+    {
+      "type": "file",
+      "path": "AIRWAVE-E2E-TESTS.md",
+      "size": 8970
+    },
+    {
+      "type": "file",
+      "path": "AIRWAVE_NEXT_STEPS_PLAN.md",
+      "size": 6730
+    },
+    {
+      "type": "file",
+      "path": "AIRWAVE_PRODUCTION_READINESS_REPORT.md",
+      "size": 7679
+    },
+    {
+      "type": "file",
+      "path": "AIRWAVE_TEST_COVERAGE_REPORT.md",
+      "size": 9252
+    },
+    {
+      "type": "file",
+      "path": "API_TESTING_FIX_COMPREHENSIVE_REPORT.md",
+      "size": 7463
+    },
+    {
+      "type": "file",
+      "path": "CLEANUP_IMPROVEMENTS_README.md",
+      "size": 3474
+    },
+    {
+      "type": "file",
+      "path": "CODE_IMPROVEMENTS_REPORT.md",
+      "size": 7581
+    },
+    {
+      "type": "file",
+      "path": "COMPLETION_PLAN_BACKUP.md",
+      "size": 3588
+    },
+    {
+      "type": "file",
+      "path": "COMPREHENSIVE_CODE_REVIEW_REPORT_CURRENT.md",
+      "size": 7268
+    },
+    {
+      "type": "file",
+      "path": "COMPREHENSIVE_REMEDIATION_PLAN.md",
+      "size": 6787
+    },
+    {
+      "type": "file",
+      "path": "COMPREHENSIVE_TESTING_AND_ERROR_FIXING_REPORT.md",
+      "size": 8201
+    },
+    {
+      "type": "file",
+      "path": "COMPREHENSIVE_TEST_COVERAGE_ANALYSIS.md",
+      "size": 9052
+    },
+    {
+      "type": "file",
+      "path": "COMPREHENSIVE_UI_TESTING_PLAN.md",
+      "size": 12106
+    },
+    {
+      "type": "file",
+      "path": "ENVIRONMENT_SETUP.md",
+      "size": 4293
+    },
+    {
+      "type": "file",
+      "path": "ENVIRONMENT_SETUP_SECURITY.md",
+      "size": 3443
+    },
+    {
+      "type": "file",
+      "path": "EXECUTIVE_SUMMARY.md",
+      "size": 1887
+    },
+    {
+      "type": "file",
+      "path": "EXPANDED_COVERAGE_TRACKING_REPORT.md",
+      "size": 3878
+    },
+    {
+      "type": "file",
+      "path": "IMPLEMENTATION_ROADMAP.md",
+      "size": 7216
+    },
+    {
+      "type": "file",
+      "path": "MERGE_STRATEGY.md",
+      "size": 3591
+    },
+    {
+      "type": "file",
+      "path": "NEXT_PHASES_TASK_LIST.md",
+      "size": 7015
+    },
+    {
+      "type": "file",
+      "path": "PERFORMANCE_BASELINE.md",
+      "size": 7765
+    },
+    {
+      "type": "file",
+      "path": "PHASE_1_CHECKLIST.md",
+      "size": 9719
+    },
+    {
+      "type": "file",
+      "path": "PHASE_1_TESTING_IMPLEMENTATION.md",
+      "size": 10522
+    },
+    {
+      "type": "file",
+      "path": "PHASE_2_CRITICAL_TESTING_TASKS.md",
+      "size": 6750
+    },
+    {
+      "type": "file",
+      "path": "QUICK_FIX_GUIDE.md",
+      "size": 4008
+    },
+    {
+      "type": "file",
+      "path": "QUICK_STATUS_CURRENT.md",
+      "size": 2833
+    },
+    {
+      "type": "file",
+      "path": "README_HONEST.md",
+      "size": 3402
+    },
+    {
+      "type": "file",
+      "path": "REMEDIATION_PLAN.md",
+      "size": 10112
+    },
+    {
+      "type": "file",
+      "path": "REPOSITORY_CLEANUP_PLAN.md",
+      "size": 2186
+    },
+    {
+      "type": "file",
+      "path": "SECURITY_ENVIRONMENT_AUDIT.md",
+      "size": 6839
+    },
+    {
+      "type": "file",
+      "path": "SECURITY_FIXES_COMPLETED.md",
+      "size": 5563
+    },
+    {
+      "type": "file",
+      "path": "SUCCESSFUL_IMPROVEMENTS_SUMMARY.md",
+      "size": 5263
+    },
+    {
+      "type": "file",
+      "path": "TEST_COVERAGE_SUMMARY_REPORT.md",
+      "size": 7011
+    },
+    {
+      "type": "file",
+      "path": "TEST_REPORT.md",
+      "size": 9586
+    },
+    {
+      "type": "file",
+      "path": "TYPESCRIPT_ERROR_AUDIT.md",
+      "size": 5777
+    },
+    {
+      "type": "file",
+      "path": "TYPESCRIPT_MIGRATION_PROGRESS.md",
+      "size": 3656
+    },
+    {
+      "type": "file",
+      "path": "TYPESCRIPT_MIGRATION_REPORT.md",
+      "size": 1128
+    },
+    {
+      "type": "file",
+      "path": "TYPESCRIPT_STRICT_MODE_PLAN.md",
+      "size": 3773
+    },
+    {
+      "type": "file",
+      "path": "api-issues.md",
+      "size": 2874
+    },
+    {
+      "type": "file",
+      "path": "cleanup-report-2025-07-28.md",
+      "size": 11377
+    },
+    {
+      "type": "file",
+      "path": "error-dependency-matrix.md",
+      "size": 10295
+    },
+    {
+      "type": "file",
+      "path": "performance-baseline.md",
+      "size": 8347
+    },
+    {
+      "type": "file",
+      "path": "pre-deployment-check-report-2025-07-28.md",
+      "size": 11019
+    },
+    {
+      "type": "file",
+      "path": "security-resolution-summary.md",
+      "size": 3902
+    },
+    {
+      "type": "file",
+      "path": "security-update-plan.md",
+      "size": 4678
+    },
+    {
+      "type": "file",
+      "path": "typescript-error-audit.md",
+      "size": 1851
+    },
+    {
+      "type": "file",
+      "path": "typescript-error-categorization.md",
+      "size": 7994
+    },
+    {
+      "type": "file",
+      "path": "ui-testing-results.md",
+      "size": 6266
+    },
+    {
+      "type": "file",
+      "path": "analyze_complexity.js",
+      "size": 2844
+    },
+    {
+      "type": "file",
+      "path": "debug-workflow.js",
+      "size": 3521
+    },
+    {
+      "type": "file",
+      "path": "final-test-syntax-fix.js",
+      "size": 3530
+    },
+    {
+      "type": "file",
+      "path": "fix-all-syntax.js",
+      "size": 1719
+    },
+    {
+      "type": "file",
+      "path": "fix-console-statements.js",
+      "size": 2733
+    },
+    {
+      "type": "file",
+      "path": "fix-final-syntax.js",
+      "size": 929
+    },
+    {
+      "type": "file",
+      "path": "fix-jsx-advanced.js",
+      "size": 3432
+    },
+    {
+      "type": "file",
+      "path": "fix-jsx-semicolons.js",
+      "size": 1748
+    },
+    {
+      "type": "file",
+      "path": "fix-record-pattern.js",
+      "size": 2535
+    },
+    {
+      "type": "file",
+      "path": "fix-record-syntax.js",
+      "size": 2382
+    },
+    {
+      "type": "file",
+      "path": "fix-remaining-syntax.js",
+      "size": 1469
+    },
+    {
+      "type": "file",
+      "path": "fix-syntax.js",
+      "size": 1952
+    },
+    {
+      "type": "file",
+      "path": "manual-ui-test.js",
+      "size": 6232
+    },
+    {
+      "type": "file",
+      "path": "quick-fix-record.js",
+      "size": 1936
+    },
+    {
+      "type": "file",
+      "path": "test-complete-workflow.js",
+      "size": 12297
+    },
+    {
+      "type": "file",
+      "path": "test-current-ui.js",
+      "size": 5710
+    },
+    {
+      "type": "file",
+      "path": "test-flow-functionality.js",
+      "size": 6966
+    },
+    {
+      "type": "file",
+      "path": "test-merged-improvements.js",
+      "size": 3952
+    },
+    {
+      "type": "file",
+      "path": "bundle-metrics.json",
+      "size": 154
+    },
+    {
+      "type": "file",
+      "path": "dev-tooling-status.json",
+      "size": 462
+    },
+    {
+      "type": "file",
+      "path": "dev.log",
+      "size": 18101
+    },
+    {
+      "type": "file",
+      "path": "performance-baseline.json",
+      "size": 2340
+    },
+    {
+      "type": "file",
+      "path": "production-readiness-report.html",
+      "size": 19596
+    },
+    {
+      "type": "file",
+      "path": "production-readiness-report.json",
+      "size": 16896
+    },
+    {
+      "type": "file",
+      "path": "quality-gate-status.json",
+      "size": 497
+    },
+    {
+      "type": "file",
+      "path": "quality-metrics.json",
+      "size": 413
+    },
+    {
+      "type": "file",
+      "path": "security-audit-baseline.json",
+      "size": 3710
+    },
+    {
+      "type": "file",
+      "path": "smoke-test-report-1753743428787.json",
+      "size": 305
+    },
+    {
+      "type": "file",
+      "path": "smoke-test-report-1753743037446.json",
+      "size": 305
+    },
+    {
+      "type": "file",
+      "path": "strict-mode-migration-plan.json",
+      "size": 234
+    },
+    {
+      "type": "file",
+      "path": "test-brief-content.txt",
+      "size": 2212
+    },
+    {
+      "type": "file",
+      "path": "test-credentials.json",
+      "size": 164
+    },
+    {
+      "type": "file",
+      "path": "test-workflow-manual.md",
+      "size": 5842
+    },
+    {
+      "type": "file",
+      "path": "console-cleanup-report-1753754078817.json",
+      "size": 39972
+    },
+    {
+      "type": "file",
+      "path": "unused-imports-cleanup-report-1753754167468.json",
+      "size": 20731
+    },
+    {
+      "type": "file",
+      "path": "tsconfig.migration-final.json",
+      "size": 556
+    },
+    {
+      "type": "file",
+      "path": "tsconfig.migration-phase1.json",
+      "size": 616
+    },
+    {
+      "type": "file",
+      "path": "tsconfig.migration-phase2.json",
+      "size": 229
+    },
+    {
+      "type": "file",
+      "path": "tsconfig.tsbuildinfo",
+      "size": 668125
+    },
+    {
+      "type": "file",
+      "path": "package.json.backup",
+      "size": 11724
+    },
+    {
+      "type": "directory",
+      "path": "archive",
+      "size": 58520
+    },
+    {
+      "type": "directory",
+      "path": ".misleading-docs-backup",
+      "size": 113453
+    },
+    {
+      "type": "directory",
+      "path": "temp",
+      "size": 0
+    }
+  ]
+}
