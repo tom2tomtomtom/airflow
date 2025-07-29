@@ -125,7 +125,10 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
         }
       }
     } catch (error: any) {
-      console.error('Error fetching job updates:', error);
+      // Only log fetch errors in development mode
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error fetching job updates:', error);
+      }
     }
   };
 
@@ -199,7 +202,10 @@ const VideoGenerationPanel: React.FC<VideoGenerationPanelProps> = ({
         throw new Error(data.error || 'Failed to start video generation');
       }
     } catch (error: any) {
-      console.error('Video generation error:', error);
+      // Only log generation errors in development mode
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Video generation error:', error);
+      }
       showNotification('Failed to start video generation: ' + error.message, 'error');
     } finally {
       setGenerating(false);
