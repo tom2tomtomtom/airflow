@@ -46,6 +46,7 @@ function DefaultErrorFallback({ error, errorInfo, resetError, eventId }: ErrorFa
   const handleReportError = () => {
     // In production, this could open a support ticket or error reporting form
     if (isDevelopment) {
+      // Keep development error logging for debugging
       // eslint-disable-next-line no-console
       console.error('Error details:', { error, errorInfo, eventId });
     } else {
@@ -196,7 +197,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       eventId,
     });
 
-    // Log error locally
+    // Log error locally - preserve for development debugging and production error tracking
     // eslint-disable-next-line no-console
     console.error('ErrorBoundary caught an error:', error, errorInfo);
 
@@ -244,11 +245,17 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
             url: window.location.href,
           }),
         }).catch(reportingError => {
-          console.error('Failed to report error:', reportingError);
+          // Only log in development to avoid console noise in production
+          if (process.env.NODE_ENV === 'development') {
+            console.error('Failed to report error:', reportingError);
+          }
         });
       }
     } catch (reportingError) {
-      console.error('Error reporting failed:', reportingError);
+      // Only log in development to avoid console noise in production
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error reporting failed:', reportingError);
+      }
     }
   }
 
@@ -318,7 +325,10 @@ export function FeatureErrorBoundary({
   feature: string;
 }) {
   const handleError = (error: Error, errorInfo: ErrorInfo) => {
-    console.error(`Error in ${feature}:`, error, errorInfo);
+    // Only log in development - in production, rely on the error reporting API
+    if (process.env.NODE_ENV === 'development') {
+      console.error(`Error in ${feature}:`, error, errorInfo);
+    }
 
     // Report feature-specific error
     fetch('/api/errors', {
@@ -336,7 +346,12 @@ export function FeatureErrorBoundary({
         errorInfo,
         timestamp: new Date().toISOString(),
       }),
-    }).catch(console.error);
+    }).catch(reportingError => {
+      // Only log in development to avoid console noise in production
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to report feature error:', reportingError);
+      }
+    });
   };
 
   const CustomFallback = ({ error, resetError }: ErrorFallbackProps) => (
