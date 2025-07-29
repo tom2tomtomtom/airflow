@@ -1,0 +1,26 @@
+[phases.setup]
+nixPkgs = ['nodejs_18', 'npm-9_x']
+
+[phases.install]
+cmds = [
+  'npm ci --ignore-scripts'
+]
+
+[phases.build]
+cmds = [
+  'npm run build',
+  'cp -r public .next/standalone/public',
+  'cp -r .next/static .next/standalone/.next/static'
+]
+
+[start]
+cmd = 'node .next/standalone/server.js'
+
+[variables]
+NODE_ENV = 'production'
+NEXT_TELEMETRY_DISABLED = '1'
+
+[staticAssets]
+# Enable Railway to serve static assets properly
+"public" = "./public"
+".next/static" = "./.next/static"
